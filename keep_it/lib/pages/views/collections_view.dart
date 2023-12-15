@@ -1,18 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../constants.dart';
-
 import '../../models/collection.dart';
 import '../../models/collections.dart';
-
 import '../../models/theme.dart';
+
 import '../../providers/theme.dart';
-import '../../providers/db_store.dart';
 import 'app_theme.dart';
 import 'collections_page/add_collection.dart';
 import 'collections_page/add_collection_form.dart';
@@ -88,43 +87,64 @@ class _CollectionsView2State extends ConsumerState<CollectionsView2> {
   }
 
   Widget buildGrid(context, constraints) {
-    return CLPageView(
-      pageBuilder: (BuildContext context, int pageNum) {
-        return Center(
-          child: CLText.veryLarge("Page $pageNum", color: Colors.blue),
-        );
-      },
-      pageMax: 10,
+    return PaginatedGrid(
+      collections: widget.collections.collections,
+      constraints: constraints,
     );
   }
 }
 
 class PaginatedGrid extends ConsumerWidget {
-  const PaginatedGrid({super.key, required this.constraints});
+  const PaginatedGrid({
+    super.key,
+    required this.collections,
+    required this.constraints,
+  });
+  final List<Collection> collections;
   final BoxConstraints constraints;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container();
-  }
-
-  calculateItemsPerPage(Size itemSize, BoxConstraints constraints) {
-    int boxesInRow = ((constraints.maxWidth - 32) / itemSize.width).floor();
-    int boxesInColumn =
-        ((constraints.maxHeight - 32) / itemSize.height).floor();
-    final totalBoxes = Size(boxesInRow.toDouble(), boxesInColumn.toDouble());
+    const childSize = Size(100, 100);
+    PaginatedCollection paginatedCollection = PaginatedCollection(
+        items: collections,
+        itemSize: childSize,
+        pageSize: Size(
+          constraints.maxWidth,
+          constraints.maxHeight,
+        ));
+    return CLPageView(
+      pageBuilder: (BuildContext context, int pageNum) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            for (var r = 0; r < paginatedCollection.itemsInColumn; r++)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  for (var c = 0; c < paginatedCollection.itemsInRow; c++)
+                    Container(
+                      width: childSize.width,
+                      height: childSize.height,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(border: Border.all()),
+                      child: Center(
+                        child: Text(
+                            paginatedCollection.getItem(pageNum, r, c)?.label ??
+                                "Empty"),
+                      ),
+                    )
+                ],
+              )
+          ],
+        );
+      },
+      pageMax: paginatedCollection.pageMax,
+    );
   }
 }
 
-/**
- * 
- Align(
-                                          alignment: Alignment.topLeft,
-                                          child: ,
-                                        );
- */
-/* 
-class CollectionGrid extends ConsumerWidget {
+/* class CollectionGrid extends ConsumerWidget {
   const CollectionGrid({
     super.key,
     required this.collectionsPage,
@@ -171,7 +191,7 @@ class CollectionGrid extends ConsumerWidget {
       ),
     );
   }
-} */
+}  */
 /* 
 class CollectionView extends ConsumerWidget {
   const CollectionView({
