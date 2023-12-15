@@ -11,6 +11,7 @@ import '../../models/collection.dart';
 import '../../models/collections.dart';
 import '../../models/theme.dart';
 
+import '../../providers/db_store.dart';
 import '../../providers/theme.dart';
 import 'app_theme.dart';
 import 'collections_page/add_collection.dart';
@@ -90,6 +91,7 @@ class _CollectionsView2State extends ConsumerState<CollectionsView2> {
     return PaginatedGrid(
       collections: widget.collections.collections,
       constraints: constraints,
+      quickMenuScopeKey: quickMenuScopeKey,
     );
   }
 }
@@ -99,13 +101,15 @@ class PaginatedGrid extends ConsumerWidget {
     super.key,
     required this.collections,
     required this.constraints,
+    required this.quickMenuScopeKey,
   });
   final List<Collection> collections;
   final BoxConstraints constraints;
+  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const childSize = Size(100, 100);
+    const childSize = Size(100, 120);
     PaginatedCollection paginatedCollection = PaginatedCollection(
         items: collections,
         itemSize: childSize,
@@ -123,16 +127,17 @@ class PaginatedGrid extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   for (var c = 0; c < paginatedCollection.itemsInRow; c++)
-                    Container(
+                    SizedBox(
                       width: childSize.width,
                       height: childSize.height,
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(border: Border.all()),
+                      //padding: const EdgeInsets.all(8),
+                      //decoration: BoxDecoration(border: Border.all()),
                       child: Center(
-                        child: Text(
-                            paginatedCollection.getItem(pageNum, r, c)?.label ??
-                                "Empty"),
-                      ),
+                          child: CollectionView(
+                              collection:
+                                  paginatedCollection.getItem(pageNum, r, c),
+                              quickMenuScopeKey: quickMenuScopeKey,
+                              size: childSize)),
                     )
                 ],
               )
@@ -192,63 +197,71 @@ class PaginatedGrid extends ConsumerWidget {
     );
   }
 }  */
-/* 
+
 class CollectionView extends ConsumerWidget {
   const CollectionView({
     super.key,
     required this.quickMenuScopeKey,
+    this.collection,
+    required this.size,
   });
+  final Collection? collection;
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  final Size size;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionsAsync = ref.read(collectionsProvider(null));
     final theme = ref.watch(themeProvider);
     return SizedBox(
-      width: 200,
-      child: CLQuickMenuAnchor.longPress(
-        parentKey: quickMenuScopeKey,
-        color: theme.colorTheme.textColor,
-        disabledColor: theme.colorTheme.disabledColor,
-        menuBuilder: (context, boxconstraints, {required Function() onDone}) {
-          return AppTheme(
-            child: CLQuickMenuGrid(
-              menuItems: [
-                CLQuickMenuItem('Edit', Icons.edit,
-                    onTap: collectionsAsync.whenOrNull(
-                        data: (Collections collections) => () {
-                              onDone.call();
-                              showDialog<void>(
-                                context: context,
-                                builder: (context) => buildEditor(
-                                  context,
-                                  collections,
-                                  e,
-                                  theme,
-                                ),
-                              );
-                            })),
-                CLQuickMenuItem('Delete', Icons.delete, onTap: () {
-                  onDone.call();
-                  ref
-                      .read(collectionsProvider(null).notifier)
-                      .deleteCollection(e);
-                }),
-              ],
-              foregroundColor: theme.colorTheme.textColor,
-              backgroundColor: theme.colorTheme.overlayBackgroundColor,
+      width: size.width,
+      height: size.height,
+      child: collection == null
+          ? Container()
+          : CLQuickMenuAnchor.longPress(
+              parentKey: quickMenuScopeKey,
+              color: theme.colorTheme.textColor,
               disabledColor: theme.colorTheme.disabledColor,
+              menuBuilder: (context, boxconstraints,
+                  {required Function() onDone}) {
+                return AppTheme(
+                  child: CLQuickMenuGrid(
+                    menuItems: [
+                      CLQuickMenuItem('Edit', Icons.edit,
+                          onTap: collectionsAsync.whenOrNull(
+                              data: (Collections collections) => () {
+                                    onDone.call();
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (context) => buildEditor(
+                                        context,
+                                        collections,
+                                        collection!,
+                                        theme,
+                                      ),
+                                    );
+                                  })),
+                      CLQuickMenuItem('Delete', Icons.delete, onTap: () {
+                        onDone.call();
+                        ref
+                            .read(collectionsProvider(null).notifier)
+                            .deleteCollection(collection!);
+                      }),
+                    ],
+                    foregroundColor: theme.colorTheme.textColor,
+                    backgroundColor: theme.colorTheme.overlayBackgroundColor,
+                    disabledColor: theme.colorTheme.disabledColor,
+                  ),
+                );
+              },
+              child: CLRoundIconLabeled(
+                label: collection!.label,
+              ),
             ),
-          );
-        },
-        child: CLRoundIconLabeled(
-          label: e.label,
-        ),
-      ),
     );
   }
-} */
+}
 
 buildEditor(BuildContext context, Collections collections,
     Collection collection, KeepItTheme theme,
