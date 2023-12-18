@@ -41,12 +41,22 @@ class _CollectionsViewState extends ConsumerState<CollectionsView> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   MainHeader(quickMenuScopeKey: quickMenuScopeKey),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: CLText.large(
-                      "Your Collections",
-                      color: theme.colorTheme.textColor,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: CLText.large(
+                            "Your Collections",
+                            color: theme.colorTheme.textColor,
+                          ),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 8),
+                        child: AddNewCollection(),
+                      )
+                    ],
                   ),
                   Flexible(
                     child: (widget.collections.isEmpty)
@@ -66,10 +76,10 @@ class _CollectionsViewState extends ConsumerState<CollectionsView> {
                             },
                           ),
                   ),
-                  const SizedBox(
+                  /* const SizedBox(
                     height: 8,
                   ),
-                  AddNewCollection(quickMenuScopeKey: quickMenuScopeKey),
+                  AddNewCollection(quickMenuScopeKey: quickMenuScopeKey), */
                 ]),
           ),
         ),

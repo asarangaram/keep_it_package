@@ -86,7 +86,6 @@ buildEditor(BuildContext context, Collections collections,
     backgroundColor: theme.colorTheme.backgroundColor,
     insetPadding: const EdgeInsets.all(8.0),
     child: UpsertCollectionForm(
-      collections: collections,
       collection: collection,
       onDone: onDone,
     ),

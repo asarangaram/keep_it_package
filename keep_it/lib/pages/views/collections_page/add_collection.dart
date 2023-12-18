@@ -7,12 +7,7 @@ import '../../../providers/db_store.dart';
 import 'add_collection_form.dart';
 
 class AddNewCollection extends ConsumerStatefulWidget {
-  const AddNewCollection({
-    super.key,
-    required this.quickMenuScopeKey,
-  });
-
-  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  const AddNewCollection({super.key});
 
   @override
   ConsumerState<AddNewCollection> createState() => _AddNewCollectionState();
@@ -23,9 +18,8 @@ class _AddNewCollectionState extends ConsumerState<AddNewCollection> {
   Widget build(BuildContext context) {
     final collectionsAsync = ref.read(collectionsProvider(null));
     final theme = ref.watch(themeProvider);
-    return CLButtonIconLabelled.standard(
-      Icons.add_circle_outline_outlined,
-      "New Collection",
+    return CLButtonIcon.small(
+      Icons.add,
       onTap: collectionsAsync.whenOrNull(
           data: (collections) => () => showDialog<void>(
                 context: context,
@@ -33,7 +27,7 @@ class _AddNewCollectionState extends ConsumerState<AddNewCollection> {
                   return Dialog(
                       backgroundColor: theme.colorTheme.backgroundColor,
                       insetPadding: const EdgeInsets.all(8.0),
-                      child: UpsertCollectionForm(collections: collections));
+                      child: const UpsertCollectionForm());
                 },
               )),
       color: theme.colorTheme.textColor,
