@@ -53,6 +53,7 @@ class CLTextFieldForm extends ConsumerStatefulWidget {
 class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
   late final List<TextEditingController> controllers;
   late final List<FocusNode> focusNodes;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -112,6 +113,8 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
                   label: field.value.label,
                   hint: field.value.hint,
                 ),
+              if (errorMessage != null)
+                CLText.small(errorMessage!, color: widget.errorColor),
               Center(
                 child: CLButtonText.large(
                   widget.buttonLabel,
@@ -119,7 +122,9 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
                   disabledColor: widget.disabledColor,
                   onTap: () {
                     if (formKey.currentState!.validate()) {
-                      widget.onSubmit(controllers.map((e) => e.text).toList());
+                      errorMessage = widget
+                          .onSubmit(controllers.map((e) => e.text).toList());
+                      setState(() {});
                     }
                   },
                 ),
@@ -132,9 +137,7 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
                         color: widget.foregroundColor,
                         disabledColor: widget.disabledColor,
                         onTap: MediaQuery.of(context).viewInsets.bottom > 0
-                            ? () {
-                              
-                            }
+                            ? () {}
                             : null)
                   else
                     Container(),
