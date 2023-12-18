@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:window_size/window_size.dart';
 import 'pages/page_show_image.dart';
 import 'pages/page_collections.dart';
 import 'pages/views/shared_items_view.dart';
@@ -72,7 +73,13 @@ class KeepItApp implements AppDescriptor {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    //setWindowTitle('My App');
+    setWindowFrame(const Rect.fromLTWH(0, 0, 900, 900 * 16 / 9));
 
+    setWindowMaxSize(const Size(900, 900 * 16 / 9));
+    setWindowMinSize(const Size(450, 450 * 16 / 9));
+  }
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );

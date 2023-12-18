@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,34 +34,38 @@ class UpsertCollectionForm extends ConsumerWidget {
       )
     ];
 
-    return CLTextFieldForm(
-      buttonLabel: (collection?.id == null) ? "Create" : "Update",
-      clFormFields: clFormFields,
-      onCancel: () {
-        Navigator.of(context).pop();
-        onDone?.call();
-      }, // Close the dialog},
-      onSubmit: (List<String> values) {
-        final label = values[0];
-        final description = values[1].trim().isEmpty ? null : values[1].trim();
+    return SizedBox(
+      width: min(MediaQuery.of(context).size.width, 450),
+      child: CLTextFieldForm(
+        buttonLabel: (collection?.id == null) ? "Create" : "Update",
+        clFormFields: clFormFields,
+        onCancel: () {
+          Navigator.of(context).pop();
+          onDone?.call();
+        }, // Close the dialog},
+        onSubmit: (List<String> values) {
+          final label = values[0];
+          final description =
+              values[1].trim().isEmpty ? null : values[1].trim();
 
-        try {
-          ref.read(collectionsProvider(null).notifier).upsertCollection(
-              Collection(
-                  id: collection?.id,
-                  label: label.trim(),
-                  description: description));
-        } catch (e) {
-          return e.toString();
-        }
-        Navigator.of(context).pop(); // Close the dialog
-        onDone?.call();
-        return null;
-      },
-      foregroundColor: theme.colorTheme.textColor,
-      backgroundColor: theme.colorTheme.overlayBackgroundColor,
-      disabledColor: theme.colorTheme.disabledColor,
-      errorColor: theme.colorTheme.errorColor,
+          try {
+            ref.read(collectionsProvider(null).notifier).upsertCollection(
+                Collection(
+                    id: collection?.id,
+                    label: label.trim(),
+                    description: description));
+          } catch (e) {
+            return e.toString();
+          }
+          Navigator.of(context).pop(); // Close the dialog
+          onDone?.call();
+          return null;
+        },
+        foregroundColor: theme.colorTheme.textColor,
+        backgroundColor: theme.colorTheme.overlayBackgroundColor,
+        disabledColor: theme.colorTheme.disabledColor,
+        errorColor: theme.colorTheme.errorColor,
+      ),
     );
   }
 

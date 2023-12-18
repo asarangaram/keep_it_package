@@ -17,7 +17,7 @@ class CollectionsPage extends ConsumerWidget {
       error: (err, _) => CLErrorView(
         errorMessage: err.toString(),
       ),
-      data: (collections) => CollectionsView2(collections: collections),
+      data: (collections) => CollectionsView(collections: collections),
     );
   }
 }
