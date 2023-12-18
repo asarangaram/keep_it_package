@@ -90,8 +90,6 @@ class UpsertCollectionForm extends ConsumerWidget {
     }
     if (collections.map((e) => e.label.trim()).contains(name.trim())) {
       return "$name already exists";
-    } else {
-      print("Not in the list!!");
     }
     return null;
   }
