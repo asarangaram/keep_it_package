@@ -41,18 +41,18 @@ class PaginatedGrid extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   for (var c = 0; c < paginatedCollection.itemsInRow; c++)
-                    SizedBox(
-                      width: childSize.width,
-                      height: childSize.height,
-                      //padding: const EdgeInsets.all(8),
-                      //decoration: BoxDecoration(border: Border.all()),
-                      child: Center(
-                          child: CollectionView(
-                        collection: paginatedCollection.getItem(pageNum, r, c),
-                        quickMenuScopeKey: quickMenuScopeKey,
-                        size: childSize,
-                        random: random,
-                      )),
+                    Center(
+                      child: SizedBox(
+                        width: childSize.width,
+                        height: childSize.height,
+                        child: CollectionView(
+                          collection:
+                              paginatedCollection.getItem(pageNum, r, c),
+                          quickMenuScopeKey: quickMenuScopeKey,
+                          size: childSize,
+                          random: random,
+                        ),
+                      ),
                     )
                 ],
               )

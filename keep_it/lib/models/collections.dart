@@ -47,6 +47,16 @@ class PaginationInfo {
   int get hashCode => items.hashCode ^ pageSize.hashCode ^ itemSize.hashCode;
 }
 
+extension ExtONDouble on double {
+  double nearest(double value) {
+    if (value == 0.0) {
+      // Avoid division by zero
+      return value;
+    }
+    return ((this / value).floor() * value);
+  }
+}
+
 class PaginatedCollection {
   late final List<List<List<Collection>>> pages;
   late int itemsInRow;
@@ -59,11 +69,9 @@ class PaginatedCollection {
     final itemSize = paginationInfo.itemSize;
     final items = paginationInfo.items;
     itemsInRow =
-        ((((pageSize.width / 200).floor() * 200) - 32) / itemSize.width)
-            .floor();
+        ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor();
     itemsInColumn =
-        ((((pageSize.height / 200).floor() * 200) - 32) / itemSize.height)
-            .floor();
+        ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor();
     itemsInRow = max(1, itemsInRow);
     itemsInColumn = max(1, itemsInColumn);
     pages = [];

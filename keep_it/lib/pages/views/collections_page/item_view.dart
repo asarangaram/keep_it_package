@@ -31,51 +31,46 @@ class CollectionView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionsAsync = ref.read(collectionsProvider(null));
     final theme = ref.watch(themeProvider);
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: collection == null
-          ? Container()
-          : CLQuickMenuAnchor.longPress(
-              parentKey: quickMenuScopeKey,
-              color: theme.colorTheme.textColor,
-              disabledColor: theme.colorTheme.disabledColor,
-              menuBuilder: (context, boxconstraints,
-                  {required Function() onDone}) {
-                return AppTheme(
-                  child: CLQuickMenuGrid(
-                    menuItems: [
-                      CLQuickMenuItem('Edit', Icons.edit,
-                          onTap: collectionsAsync.whenOrNull(
-                              data: (Collections collections) => () {
-                                    onDone.call();
-                                    showDialog<void>(
-                                      context: context,
-                                      builder: (context) => buildEditor(
-                                        context,
-                                        collections,
-                                        collection!,
-                                        theme,
-                                      ),
-                                    );
-                                  })),
-                      CLQuickMenuItem('Delete', Icons.delete, onTap: () {
-                        onDone.call();
-                        ref
-                            .read(collectionsProvider(null).notifier)
-                            .deleteCollection(collection!);
-                      }),
-                    ],
-                    foregroundColor: theme.colorTheme.textColor,
-                    backgroundColor: theme.colorTheme.overlayBackgroundColor,
-                    disabledColor: theme.colorTheme.disabledColor,
-                  ),
-                );
-              },
-              child:
-                  CLRoundIconLabeled(label: collection!.label, random: random),
-            ),
-    );
+    return collection == null
+        ? Container()
+        : CLQuickMenuAnchor.longPress(
+            parentKey: quickMenuScopeKey,
+            color: theme.colorTheme.textColor,
+            disabledColor: theme.colorTheme.disabledColor,
+            menuBuilder: (context, boxconstraints,
+                {required Function() onDone}) {
+              return AppTheme(
+                child: CLQuickMenuGrid(
+                  menuItems: [
+                    CLQuickMenuItem('Edit', Icons.edit,
+                        onTap: collectionsAsync.whenOrNull(
+                            data: (Collections collections) => () {
+                                  onDone.call();
+                                  showDialog<void>(
+                                    context: context,
+                                    builder: (context) => buildEditor(
+                                      context,
+                                      collections,
+                                      collection!,
+                                      theme,
+                                    ),
+                                  );
+                                })),
+                    CLQuickMenuItem('Delete', Icons.delete, onTap: () {
+                      onDone.call();
+                      ref
+                          .read(collectionsProvider(null).notifier)
+                          .deleteCollection(collection!);
+                    }),
+                  ],
+                  foregroundColor: theme.colorTheme.textColor,
+                  backgroundColor: theme.colorTheme.overlayBackgroundColor,
+                  disabledColor: theme.colorTheme.disabledColor,
+                ),
+              );
+            },
+            child: CLRoundIconLabeled(label: collection!.label, random: random),
+          );
   }
 }
 
