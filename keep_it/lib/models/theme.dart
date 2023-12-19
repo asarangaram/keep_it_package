@@ -7,6 +7,7 @@ class ColorTheme {
   final Color overlayBackgroundColor;
   final Color errorColor;
   final Color selectedColor;
+  final Color buttonText;
   ColorTheme({
     required this.textColor,
     required this.backgroundColor,
@@ -14,6 +15,7 @@ class ColorTheme {
     required this.overlayBackgroundColor,
     required this.errorColor,
     required this.selectedColor,
+    required this.buttonText,
   });
 }
 
