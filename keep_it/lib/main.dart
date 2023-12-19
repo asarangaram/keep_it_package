@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 import 'package:window_size/window_size.dart';
 import 'pages/page_show_image.dart';
 import 'pages/page_collections.dart';
+import 'pages/test_page.dart';
 import 'pages/views/shared_items_view.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -35,7 +36,8 @@ class KeepItApp implements AppDescriptor {
     return {
       "home": (context) => const PageShowImage(
           imagePath: "assets/wallpaperflare.com_wallpaper-2.jpg"),
-      "collections": (context) => const CollectionsPage()
+      "collections": (context) => const CollectionsPage(),
+      "testPage": (context) => const TestPage()
     };
   }
 
@@ -66,7 +68,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location == "/") return "/collections";
+        if (location == "/") return "/testPage";
         return null;
       };
 }

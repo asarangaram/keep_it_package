@@ -9,7 +9,11 @@ class SaveOrCancel extends ConsumerWidget {
     super.key,
     required this.onSave,
     required this.onDiscard,
+    this.saveLabel,
+    this.cancelLabel,
   });
+  final String? saveLabel;
+  final String? cancelLabel;
   final Function() onDiscard;
   final Function() onSave;
 
@@ -23,7 +27,7 @@ class SaveOrCancel extends ConsumerWidget {
         Flexible(
           child: Center(
             child: CLButtonText.large(
-              "Save",
+              saveLabel ?? "Save",
               color: theme.colorTheme.buttonText,
               disabledColor: theme.colorTheme.disabledColor,
               onTap: onSave,
@@ -38,7 +42,7 @@ class SaveOrCancel extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 16.0),
                 child: CLButtonText.small(
-                  "Cancel",
+                  cancelLabel ?? "Cancel",
                   color: theme.colorTheme.textColor,
                   disabledColor: theme.colorTheme.disabledColor,
                   onTap: onDiscard,
