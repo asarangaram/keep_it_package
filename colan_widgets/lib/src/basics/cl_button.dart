@@ -3,6 +3,7 @@ import 'package:colan_widgets/src/basics/cl_icon.dart';
 import 'package:colan_widgets/src/basics/cl_text.dart';
 import 'package:colan_widgets/src/models/cl_scale_type.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class _CLButton extends StatelessWidget {
   final IconData? iconData;
@@ -11,49 +12,76 @@ class _CLButton extends StatelessWidget {
   final Color disabledColor;
   final CLScaleType scaleType;
   final Function()? onTap;
+  final BoxDecoration? boxDecoration;
 
-  const _CLButton(
-      {super.key,
-      required this.iconData,
-      required this.label,
-      required this.color,
-      required this.disabledColor,
-      required this.scaleType,
-      this.onTap});
+  const _CLButton({
+    super.key,
+    required this.iconData,
+    required this.label,
+    required this.color,
+    required this.disabledColor,
+    required this.scaleType,
+    this.onTap,
+    this.boxDecoration,
+  });
 
   Color get color_ => onTap == null ? disabledColor : color;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: onTap,
-        child: switch (iconData) {
-          null => switch (scaleType) {
-              CLScaleType.veryLarge => CLLabel.veryLarge,
-              CLScaleType.large => CLLabel.large,
-              CLScaleType.standard => CLLabel.standard,
-              CLScaleType.small => CLLabel.small,
-              CLScaleType.verySmall => CLLabel.verySmall,
-              CLScaleType.tiny => CLLabel.tiny,
-            }(label!, color: color_),
-          _ => switch (label) {
-              null => switch (scaleType) {
-                  CLScaleType.veryLarge => CLIcon.veryLarge,
-                  CLScaleType.large => CLIcon.large,
-                  CLScaleType.standard => CLIcon.standard,
-                  CLScaleType.small => CLIcon.small,
-                  CLScaleType.verySmall => CLIcon.verySmall,
-                  CLScaleType.tiny => CLIcon.tiny,
-                }(iconData!, color: color_),
-              _ => switch (scaleType) {
-                  CLScaleType.veryLarge => CLIconLabelled.veryLarge,
-                  CLScaleType.large => CLIconLabelled.large,
-                  CLScaleType.standard => CLIconLabelled.standard,
-                  CLScaleType.small => CLIconLabelled.small,
-                  CLScaleType.verySmall => CLIconLabelled.verySmall,
-                  CLScaleType.tiny => CLIconLabelled.tiny,
-                }(iconData!, label!, color: color_)
-            },
-        });
+        child: ButtonBackground(
+          boxDecoration: boxDecoration,
+          child: switch (iconData) {
+            null => switch (scaleType) {
+                CLScaleType.veryLarge => CLLabel.veryLarge,
+                CLScaleType.large => CLLabel.large,
+                CLScaleType.standard => CLLabel.standard,
+                CLScaleType.small => CLLabel.small,
+                CLScaleType.verySmall => CLLabel.verySmall,
+                CLScaleType.tiny => CLLabel.tiny,
+              }(label!, color: color_),
+            _ => switch (label) {
+                null => switch (scaleType) {
+                    CLScaleType.veryLarge => CLIcon.veryLarge,
+                    CLScaleType.large => CLIcon.large,
+                    CLScaleType.standard => CLIcon.standard,
+                    CLScaleType.small => CLIcon.small,
+                    CLScaleType.verySmall => CLIcon.verySmall,
+                    CLScaleType.tiny => CLIcon.tiny,
+                  }(iconData!, color: color_),
+                _ => switch (scaleType) {
+                    CLScaleType.veryLarge => CLIconLabelled.veryLarge,
+                    CLScaleType.large => CLIconLabelled.large,
+                    CLScaleType.standard => CLIconLabelled.standard,
+                    CLScaleType.small => CLIconLabelled.small,
+                    CLScaleType.verySmall => CLIconLabelled.verySmall,
+                    CLScaleType.tiny => CLIconLabelled.tiny,
+                  }(iconData!, label!, color: color_)
+              },
+          },
+        ));
+  }
+}
+
+class ButtonBackground extends ConsumerWidget {
+  const ButtonBackground({
+    super.key,
+    required this.child,
+    this.boxDecoration,
+  });
+  final Widget child;
+  final BoxDecoration? boxDecoration;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (boxDecoration == null) {
+      return child;
+    }
+    return Container(
+      decoration: boxDecoration!,
+      child: Center(child: child),
+    );
   }
 }
 
@@ -198,4 +226,79 @@ class CLButtonIconLabelled extends _CLButton {
     required super.disabledColor,
     super.onTap,
   }) : super(label: label, iconData: iconData, scaleType: CLScaleType.tiny);
+}
+
+class CLButtonElevatedText extends _CLButton {
+  const CLButtonElevatedText.veryLarge(
+    String label, {
+    super.key,
+    required super.color,
+    required super.disabledColor,
+    super.onTap,
+    required BoxDecoration boxDecoration,
+  }) : super(
+            label: label,
+            iconData: null,
+            scaleType: CLScaleType.veryLarge,
+            boxDecoration: boxDecoration);
+  const CLButtonElevatedText.large(
+    String label, {
+    super.key,
+    required super.color,
+    required super.disabledColor,
+    super.onTap,
+    required BoxDecoration boxDecoration,
+  }) : super(
+            label: label,
+            iconData: null,
+            scaleType: CLScaleType.large,
+            boxDecoration: boxDecoration);
+  const CLButtonElevatedText.standard(
+    String label, {
+    super.key,
+    required super.color,
+    required super.disabledColor,
+    super.onTap,
+    required BoxDecoration boxDecoration,
+  }) : super(
+            label: label,
+            iconData: null,
+            scaleType: CLScaleType.standard,
+            boxDecoration: boxDecoration);
+  const CLButtonElevatedText.small(
+    String label, {
+    super.key,
+    required super.color,
+    required super.disabledColor,
+    super.onTap,
+    required BoxDecoration boxDecoration,
+  }) : super(
+            label: label,
+            iconData: null,
+            scaleType: CLScaleType.small,
+            boxDecoration: boxDecoration);
+  const CLButtonElevatedText.verySmall(
+    String label, {
+    super.key,
+    required super.color,
+    required super.disabledColor,
+    super.onTap,
+    required BoxDecoration boxDecoration,
+  }) : super(
+            label: label,
+            iconData: null,
+            scaleType: CLScaleType.verySmall,
+            boxDecoration: boxDecoration);
+  const CLButtonElevatedText.tiny(
+    String label, {
+    super.key,
+    required super.color,
+    required super.disabledColor,
+    super.onTap,
+    required BoxDecoration boxDecoration,
+  }) : super(
+            label: label,
+            iconData: null,
+            scaleType: CLScaleType.tiny,
+            boxDecoration: boxDecoration);
 }
