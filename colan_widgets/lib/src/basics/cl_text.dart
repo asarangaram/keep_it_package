@@ -19,6 +19,7 @@ class _CLText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text,
+        textAlign: TextAlign.center, // TODO: Configurable
         maxLines: isLabel ? 1 : null,
         overflow: isLabel ? TextOverflow.ellipsis : null,
         style: Theme.of(context)
