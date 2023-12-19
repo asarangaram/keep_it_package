@@ -5,13 +5,15 @@ class CLFullscreenBox extends StatelessWidget {
   final Widget child;
   final bool useSafeArea;
   final Color backgroundColor;
+  final bool hasBorder;
 
-  const CLFullscreenBox({
-    Key? key,
-    required this.child,
-    this.useSafeArea = false,
-    required this.backgroundColor,
-  }) : super(key: key);
+  const CLFullscreenBox(
+      {Key? key,
+      required this.child,
+      this.useSafeArea = false,
+      required this.backgroundColor,
+      this.hasBorder = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +26,36 @@ class CLFullscreenBox extends StatelessWidget {
         bottom: useSafeArea,
         child: ClipRect(
           clipBehavior: Clip.antiAlias,
-          child: LayoutBuilder(
-            builder: ((context, constraints) => child),
+          child: ScaffoldBorder(
+            hasBorder: hasBorder,
+            child: LayoutBuilder(
+              builder: ((context, constraints) => child),
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class ScaffoldBorder extends StatelessWidget {
+  const ScaffoldBorder({
+    super.key,
+    required this.hasBorder,
+    required this.child,
+  });
+  final bool hasBorder;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    if (!hasBorder) return child;
+    return Container(
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: const BorderRadius.all(Radius.circular(16))),
+      child: child,
     );
   }
 }
