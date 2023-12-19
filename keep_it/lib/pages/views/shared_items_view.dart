@@ -1,12 +1,13 @@
 import 'package:app_loader/app_loader.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../db/db.dart';
 import '../../providers/theme.dart';
 import '../../providers/db_manager.dart';
+import 'receive_shared_media.dart';
 
 class SharedItemsView extends ConsumerWidget {
   const SharedItemsView({
@@ -19,9 +20,9 @@ class SharedItemsView extends ConsumerWidget {
   final Function() onDiscard;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imageAsync = ref.watch(dbManagerProvider);
-    return imageAsync.when(
-        data: (DatabaseManager dbManager) => SharedItemsViewInternal(
+    final dbManagerAsync = ref.watch(dbManagerProvider);
+    return dbManagerAsync.when(
+        data: (DatabaseManager dbManager) => ReceiveSharedMedia(
               media: media,
               onDiscard: onDiscard,
               dbManager: dbManager,
