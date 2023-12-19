@@ -15,6 +15,8 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, KeepItTheme>((ref) {
           colorTheme: ColorTheme(
               textColor: Colors.black,
               backgroundColor: Colors.white.reduceBrightness(0.2),
+              selectedColor: const Color.fromARGB(255, 0xFF, 0xFF, 0xF0)
+                  .reduceBrightness(0.2),
               disabledColor: Colors.grey.shade300,
               overlayBackgroundColor: Colors.white,
               errorColor: Colors.red)));
