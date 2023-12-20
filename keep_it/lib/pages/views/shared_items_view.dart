@@ -44,15 +44,14 @@ class SharedItemsView extends ConsumerWidget {
                 data: (collections) => () => showDialog<void>(
                       context: context,
                       builder: (BuildContext context) {
-                        return CollectionListViewDialog.fromDBSelectable(
+                        return CollectionListView.fromDBSelectable(
                           clusterID: null,
                           onSelectionDone: (collectionList) async {
-                            
-                            List<int> ids = collectionList
+                            List<int> ids = (collectionList)
                                 .where((c) => c.id != null)
                                 .map((c) => c.id!)
                                 .toList();
-                           
+
                             // No one might be reading this, read once
                             ref.read(clustersProvider(null));
                             final clusterId = ref

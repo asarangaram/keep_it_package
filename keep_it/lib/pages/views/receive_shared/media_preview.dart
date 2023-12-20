@@ -32,13 +32,17 @@ class MediaPreview extends ConsumerWidget {
         _ => ShowAsText(text: e.key, type: e.value)
       };
     } else {
-      return Column(
-        children: [
-          for (final e in media.entries) ...[
-            ShowAsText(text: e.key, type: e.value),
-            const SizedBox(height: 16),
-          ]
-        ],
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (final e in media.entries) ...[
+              ShowAsText(text: e.key, type: e.value),
+              const SizedBox(height: 16),
+            ]
+          ],
+        ),
       );
     }
   }

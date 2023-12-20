@@ -10,8 +10,8 @@ import 'collections_page/add_collection.dart';
 import 'collections_page/main_header.dart';
 import 'collections_page/paginated_grid.dart';
 
-class CollectionsView extends ConsumerStatefulWidget {
-  const CollectionsView({super.key, required this.collections});
+class CollectionsGridView extends ConsumerStatefulWidget {
+  const CollectionsGridView({super.key, required this.collections});
 
   final Collections collections;
 
@@ -20,7 +20,7 @@ class CollectionsView extends ConsumerStatefulWidget {
       _CollectionsViewState();
 }
 
-class _CollectionsViewState extends ConsumerState<CollectionsView> {
+class _CollectionsViewState extends ConsumerState<CollectionsGridView> {
   final GlobalKey quickMenuScopeKey = GlobalKey();
 
   @override

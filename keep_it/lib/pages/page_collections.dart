@@ -1,23 +1,20 @@
-import 'package:app_loader/app_loader.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import 'views/collections_view.dart';
+import 'views/collection_list_view.dart';
 
 class CollectionsPage extends ConsumerWidget {
   const CollectionsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(collectionsProvider(null));
-
-    return collectionsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(
-        errorMessage: err.toString(),
+    return CLFullscreenBox(
+      useSafeArea: true,
+      child: CollectionListView.fromDB(
+        clusterID: null,
+        onTabItem: (index) {},
       ),
-      data: (collections) => CollectionsView(collections: collections),
     );
   }
 }
