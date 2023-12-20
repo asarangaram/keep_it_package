@@ -8,7 +8,7 @@ import '../../../constants.dart';
 import '../../../models/collection.dart';
 import '../../../models/collections.dart';
 import '../../../models/theme.dart';
-import '../../../providers/db_store.dart';
+import '../../../providers/db_store/db_collection.dart';
 import '../../../providers/theme.dart';
 import '../app_theme.dart';
 import 'add_collection_form.dart';

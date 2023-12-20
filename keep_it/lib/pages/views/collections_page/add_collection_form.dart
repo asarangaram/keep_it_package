@@ -5,7 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/models/collection.dart';
-import 'package:keep_it/providers/db_store.dart';
+import 'package:keep_it/providers/db_store/db_collection.dart';
 
 import '../../../providers/theme.dart';
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/theme.dart';
-import '../../../providers/db_store.dart';
+import '../../../providers/db_store/db_collection.dart';
 import 'add_collection_form.dart';
 
 class AddNewCollection extends ConsumerStatefulWidget {

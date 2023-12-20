@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/collection.dart';
-import '../../providers/db_store.dart';
+import '../../providers/db_store/db_collection.dart';
 import '../../providers/select_handler.dart';
 import '../../providers/theme.dart';
 import 'receive_shared/save_or_cancel.dart';
