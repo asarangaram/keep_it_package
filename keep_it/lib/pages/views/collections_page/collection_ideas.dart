@@ -1,11 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/receive_shared/save_or_cancel.dart';
 
 import '../../../models/collection.dart';
-import '../../../providers/select_handler.dart';
 import '../../../providers/theme.dart';
+import '../collection_list_view.dart';
 
 class TestButton extends ConsumerWidget {
   const TestButton({super.key});
@@ -22,158 +21,21 @@ class TestButton extends ConsumerWidget {
         onTap: () => showDialog<void>(
           context: context,
           builder: (BuildContext context) {
-            return Dialog(
-                backgroundColor: theme.colorTheme.backgroundColor,
-                insetPadding: const EdgeInsets.all(8.0),
-                child: CollectionListView(
-                  collectionList: defaultCollections,
-                  onTab: (index) => print("index selected: $index"),
-                  onSelectionDone: (l) {
-                    print(l.map((e) => e.label).join(","));
-                    Navigator.of(context).pop();
-                  },
-                  onSelectionCancel: () {
-                    Navigator.of(context).pop();
-                  },
-                ));
+            return CollectionListViewDialog.fromDBSelectable(
+              clusterID: null,
+              onSelectionDone: (l) {
+                debugPrint(l.map((e) => e.label).join(","));
+                Navigator.of(context).pop();
+              },
+              onSelectionCancel: () {
+                debugPrint("dialog cancelled");
+                Navigator.of(context).pop();
+              },
+            );
           },
         ),
       ),
     );
-  }
-}
-
-class CollectionListView extends ConsumerWidget {
-  const CollectionListView({
-    super.key,
-    required this.collectionList,
-    this.onTab,
-    this.onSelectionDone,
-    this.onSelectionCancel,
-  });
-  final List<Collection> collectionList;
-
-  final Function(int index)? onTab;
-  final Function(List<Collection>)? onSelectionDone;
-  final Function()? onSelectionCancel;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    bool isSelectable = onSelectionDone != null;
-    final theme = ref.watch(themeProvider);
-
-    final selectedItems =
-        ref.watch(selectableItemsSelectedItemsProvider(collectionList));
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          if (isSelectable)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CLButtonText.standard(
-                  "Select All",
-                  color: theme.colorTheme.buttonText,
-                  disabledColor: theme.colorTheme.disabledColor,
-                  onTap: () {
-                    for (var c in collectionList) {
-                      ref.read(selectableItemProvider(c).notifier).select();
-                    }
-                  },
-                ),
-                CLButtonText.standard(
-                  "Select None",
-                  color: theme.colorTheme.buttonText,
-                  disabledColor: theme.colorTheme.disabledColor,
-                  onTap: () {
-                    for (var c in collectionList) {
-                      ref.read(selectableItemProvider(c).notifier).deselect();
-                    }
-                  },
-                )
-              ],
-            ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: collectionList.length,
-              itemBuilder: (context, index) {
-                final selectableItem =
-                    ref.watch(selectableItemProvider(collectionList[index]));
-                return ListTile(
-                  title: Text(collectionList[index].label),
-                  subtitle: Text(collectionList[index].description ?? ""),
-                  leading: (isSelectable)
-                      ? Checkbox(
-                          value: selectableItem.isSelected,
-                          onChanged: (value) {
-                            // Update the isChecked property when the checkbox is toggled
-                            if (value != null) {
-                              ref
-                                  .read(selectableItemProvider(
-                                          collectionList[index])
-                                      .notifier)
-                                  .toggleSelection();
-                            }
-                          },
-                        )
-                      : null,
-                  onTap: () => onTab?.call(index),
-                );
-              },
-            ),
-          ),
-          if (isSelectable) ...[
-            const Divider(
-              thickness: 4,
-              height: 4,
-            ),
-            SizedBox(
-              height: 80,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 8.0),
-                  child: SelectedCollections(
-                    collectionList: collectionList,
-                  ),
-                ),
-              ),
-            ),
-            const Divider(
-              thickness: 1,
-              height: 4,
-            ),
-            SaveOrCancel(
-              onSave: () => onSelectionDone
-                  ?.call(selectedItems.map((e) => e as Collection).toList()),
-              onDiscard: onSelectionCancel ?? () {},
-              saveLabel: "Create Selected",
-            )
-          ]
-        ],
-      ),
-    );
-  }
-}
-
-class SelectedCollections extends ConsumerWidget {
-  const SelectedCollections({super.key, required this.collectionList});
-  final List<Collection> collectionList;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedItems =
-        ref.watch(selectableItemsSelectedItemsProvider(collectionList));
-
-    return Text.rich(TextSpan(children: [
-      TextSpan(
-          text: selectedItems.map((e) => e.label).join(", "),
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(fontSize: CLScaleType.small.fontSize))
-    ]));
   }
 }
 

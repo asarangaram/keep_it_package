@@ -1,13 +1,13 @@
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../db/db.dart';
-import '../../providers/theme.dart';
-import '../../providers/db_manager.dart';
-import 'receive_shared_media.dart';
+import '../../providers/db_store.dart';
+
+import 'collection_list_view.dart';
+import 'receive_shared/media_preview.dart';
+import 'receive_shared/save_or_cancel.dart';
 
 class SharedItemsView extends ConsumerWidget {
   const SharedItemsView({
@@ -20,71 +20,48 @@ class SharedItemsView extends ConsumerWidget {
   final Function() onDiscard;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dbManagerAsync = ref.watch(dbManagerProvider);
-    return dbManagerAsync.when(
-        data: (DatabaseManager dbManager) => ReceiveSharedMedia(
-              media: media,
-              onDiscard: onDiscard,
-              dbManager: dbManager,
-            ),
-        loading: () => const CLLoadingView(),
-        error: (err, _) => CLErrorView(errorMessage: err.toString()));
-  }
-}
+    final collectionsAsync = ref.watch(collectionsProvider(null));
 
-class SharedItemsViewInternal extends ConsumerWidget {
-  const SharedItemsViewInternal({
-    super.key,
-    required this.media,
-    required this.onDiscard,
-    required this.dbManager,
-  });
-
-  final Map<String, SupportedMediaType> media;
-  final Function() onDiscard;
-  final DatabaseManager dbManager;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
     return CLFullscreenBox(
-      useSafeArea: true,
-      backgroundColor: theme.colorTheme.backgroundColor,
-      child: Stack(
-        children: [
-          Center(
-              child: SingleChildScrollView(
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              for (final e in media.entries) ...[
-                Text.rich(TextSpan(children: [
-                  TextSpan(
-                      text: "${e.value.name.toUpperCase()}: ",
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: e.key)
-                ])),
-                const SizedBox(height: 16),
-              ],
-              TextButton(
-                  child: CLText.standard(
-                    "Save",
-                    color: theme.colorTheme.textColor,
-                  ),
-                  onPressed: () {
-                    // TODO: Implement
-                    //onDiscard();
-                  })
-            ]),
-          )),
-          Positioned(
-              top: 16,
-              right: 16,
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: onDiscard,
-              ))
-        ],
-      ),
-    );
+        useSafeArea: true,
+        // backgroundColor: theme.colorTheme.backgroundColor,
+        hasBorder: true,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(child: MediaPreview(media: media)),
+            const SizedBox(
+              height: 8,
+            ),
+            SaveOrCancel(
+              saveLabel: "Keep it",
+              cancelLabel: "Discard",
+              onDiscard: onDiscard,
+              onSave: collectionsAsync.when(
+                loading: () => null,
+                error: (err, _) => null,
+                data: (collections) => () => showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CollectionListViewDialog.fromDBSelectable(
+                          clusterID: null,
+                          onSelectionDone: (collection) {
+                            // TODO :Implement
+                            Navigator.of(context).pop();
+                          },
+                          onSelectionCancel: () {
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      },
+                    ),
+              ),
+            )
+          ],
+        ));
   }
 }
+
+/*
+
+*/

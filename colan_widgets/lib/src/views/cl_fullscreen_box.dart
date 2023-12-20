@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 class CLFullscreenBox extends StatelessWidget {
   final Widget child;
   final bool useSafeArea;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final bool hasBorder;
 
   const CLFullscreenBox(
       {Key? key,
       required this.child,
       this.useSafeArea = false,
-      required this.backgroundColor,
+      this.backgroundColor,
       this.hasBorder = false})
       : super(key: key);
 

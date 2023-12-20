@@ -1,11 +1,10 @@
 import 'package:app_loader/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/preview_single_image.dart';
+import 'package:keep_it/pages/views/receive_shared/preview_single_image.dart';
 
-
-class PreviewOfMediaEntries extends ConsumerWidget {
-  const PreviewOfMediaEntries({
+class MediaPreview extends ConsumerWidget {
+  const MediaPreview({
     super.key,
     required this.media,
   });

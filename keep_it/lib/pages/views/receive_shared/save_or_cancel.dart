@@ -15,7 +15,7 @@ class SaveOrCancel extends ConsumerWidget {
   final String? saveLabel;
   final String? cancelLabel;
   final Function() onDiscard;
-  final Function() onSave;
+  final Function()? onSave;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,16 +24,19 @@ class SaveOrCancel extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Flexible(
-          child: Center(
-            child: CLButtonText.large(
-              saveLabel ?? "Save",
-              color: theme.colorTheme.buttonText,
-              disabledColor: theme.colorTheme.disabledColor,
-              onTap: onSave,
+        if (onSave == null)
+          const CircularProgressIndicator()
+        else
+          Flexible(
+            child: Center(
+              child: CLButtonText.veryLarge(
+                saveLabel ?? "Save",
+                color: theme.colorTheme.buttonText,
+                disabledColor: theme.colorTheme.disabledColor,
+                onTap: onSave,
+              ),
             ),
           ),
-        ),
         Flexible(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
