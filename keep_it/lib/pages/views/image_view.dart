@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/theme.dart';
+import '../../data/providers/theme.dart';
 
 final List<String> imagePaths = [
   'assets/image1.jpg',

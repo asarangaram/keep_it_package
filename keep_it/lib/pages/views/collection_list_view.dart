@@ -2,11 +2,10 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../../models/collection.dart';
-import '../../providers/db_store/db_collection.dart';
-import '../../providers/select_handler.dart';
-import '../../providers/theme.dart';
+import '../../data/providers/select_handler.dart';
+import '../../data/providers/theme.dart';
 import 'receive_shared/save_or_cancel.dart';
 
 class CollectionListView extends ConsumerWidget {
@@ -102,7 +101,7 @@ class CollectionListView extends ConsumerWidget {
       ),
       data: (collections) => _CollectionListViewImpl(
         isDialogView: true,
-        collectionList: collections.collections,
+        collectionList: collections.entries,
         onTab: onTabItemNullable,
         onSelectionDone: onSelectionDoneNullable,
         onSelectionCancel: onSelectionCancelNullable,

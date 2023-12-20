@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/db/db.dart';
 
-import '../../models/collection.dart';
-import '../../models/collections.dart';
+import '../models/collection.dart';
+import '../models/db.dart';
 import 'db_manager.dart';
 
 class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {

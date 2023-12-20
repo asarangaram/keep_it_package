@@ -3,13 +3,11 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../../../constants.dart';
-import '../../../models/collection.dart';
-import '../../../models/collections.dart';
-import '../../../models/theme.dart';
-import '../../../providers/db_store/db_collection.dart';
-import '../../../providers/theme.dart';
+import '../../../data/models/theme.dart';
+import '../../../data/providers/theme.dart';
 import '../app_theme.dart';
 import 'add_collection_form.dart';
 

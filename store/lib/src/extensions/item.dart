@@ -1,6 +1,6 @@
 import 'package:sqlite3/sqlite3.dart';
 
-import '../../../models/item.dart';
+import '../models/item.dart';
 
 extension ItemDB on Item {
   static itemGetById(Database db, int itemId) {

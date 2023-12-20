@@ -1,8 +1,8 @@
 import 'package:sqlite3/sqlite3.dart';
 
-export 'src/extensions/cluster.dart';
-export 'src/extensions/item.dart';
-export 'src/extensions/collections.dart';
+export '../extensions/cluster.dart';
+export '../extensions/item.dart';
+export '../extensions/collections.dart';
 
 class DatabaseManager {
   late Database db;

@@ -1,8 +1,8 @@
 import 'package:app_loader/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../providers/db_store/db_collection.dart';
 import 'views/collections_view.dart';
 
 class CollectionsPage extends ConsumerWidget {

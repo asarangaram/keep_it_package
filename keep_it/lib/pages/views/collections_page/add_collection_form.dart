@@ -4,10 +4,9 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/models/collection.dart';
-import 'package:keep_it/providers/db_store/db_collection.dart';
+import 'package:store/store.dart';
 
-import '../../../providers/theme.dart';
+import '../../../data/providers/theme.dart';
 
 class UpsertCollectionForm extends ConsumerWidget {
   const UpsertCollectionForm({super.key, this.collection, this.onDone});
@@ -34,7 +33,7 @@ class UpsertCollectionForm extends ConsumerWidget {
               type: CLFormFieldTypes.textField,
               validator: (name) => validateName(
                 name,
-                collections.collections,
+                collections.entries,
               ),
               label: "Name",
               initialValue: collection?.label ?? "",

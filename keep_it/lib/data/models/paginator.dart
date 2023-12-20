@@ -5,28 +5,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'collection.dart';
-
-List<List<T>> paginate<T>(List<T> list, int pageLength) {
-  List<List<T>> pages = [];
-  for (int i = 0; i < list.length; i += pageLength) {
-    int end = (i + pageLength < list.length) ? i + pageLength : list.length;
-    pages.add(list.sublist(i, end));
-  }
-  return pages;
-}
-
-class Collections {
-  final List<Collection> collections;
-
-  Collections(this.collections);
-
-  bool get isEmpty => collections.isEmpty;
-  bool get isNotEmpty => collections.isNotEmpty;
-}
-
 class PaginationInfo {
-  final List<Collection> items;
+  final List items;
   final Size pageSize;
   final Size itemSize;
 
@@ -57,14 +37,14 @@ extension ExtONDouble on double {
   }
 }
 
-class PaginatedCollection {
-  late final List<List<List<Collection>>> pages;
+class PaginatedList {
+  late final List<List<List>> pages;
   late int itemsInRow;
   late int itemsInColumn;
   final PaginationInfo paginationInfo;
   calculateItemsPerPage(Size itemSize, BoxConstraints constraints) {}
 
-  PaginatedCollection(this.paginationInfo) {
+  PaginatedList(this.paginationInfo) {
     final pageSize = paginationInfo.pageSize;
     final itemSize = paginationInfo.itemSize;
     final items = paginationInfo.items;
@@ -79,25 +59,32 @@ class PaginatedCollection {
       pages.add(paginate(p, itemsInRow));
     }
   }
+  List<List<T>> paginate<T>(List<T> list, int pageLength) {
+    List<List<T>> pages = [];
+    for (int i = 0; i < list.length; i += pageLength) {
+      int end = (i + pageLength < list.length) ? i + pageLength : list.length;
+      pages.add(list.sublist(i, end));
+    }
+    return pages;
+  }
 
   int get pageMax => pages.length;
 
-  List<List<Collection>> page(int pageNum) {
+  List<List> page(int pageNum) {
     if (pageNum >= pageMax) {
       return pages[pageMax - 1];
     }
     return pages[pageNum];
   }
 
-  Collection? getItem(int pageNum, int r, int c) {
+  dynamic getItem(int pageNum, int r, int c) {
     if (pages[pageNum].length <= r) return null;
     if (pages[pageNum][r].length <= c) return null;
     return pages[pageNum][r][c];
   }
 }
 
-final paginatedCollectionProvider =
-    StateProvider.family<PaginatedCollection, PaginationInfo>(
-        (ref, paginationInfo) {
-  return PaginatedCollection(paginationInfo);
+final paginatedListProvider =
+    StateProvider.family<PaginatedList, PaginationInfo>((ref, paginationInfo) {
+  return PaginatedList(paginationInfo);
 });

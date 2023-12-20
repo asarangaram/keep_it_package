@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../../../models/collection.dart';
-import '../../../models/collections.dart';
+import '../../../data/models/paginator.dart';
 import 'item_view.dart';
 
 class PaginatedGrid extends ConsumerWidget {
@@ -22,8 +22,8 @@ class PaginatedGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const childSize = Size(100, 120);
-    PaginatedCollection paginatedCollection =
-        ref.watch(paginatedCollectionProvider(PaginationInfo(
+    PaginatedList paginatedCollection =
+        ref.watch(paginatedListProvider(PaginationInfo(
             items: collections,
             itemSize: childSize,
             pageSize: Size(

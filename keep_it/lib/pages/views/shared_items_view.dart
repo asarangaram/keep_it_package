@@ -2,8 +2,7 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../providers/db_store/db_collection.dart';
+import 'package:store/store.dart';
 
 import 'collection_list_view.dart';
 import 'receive_shared/media_preview.dart';

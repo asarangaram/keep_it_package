@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/db/db.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+
+import '../models/db.dart';
 
 final dbManagerProvider = FutureProvider<DatabaseManager>((ref) async {
   final bool isDBPersist = ref.read(isDBPersistProvider);

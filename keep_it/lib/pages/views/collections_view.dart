@@ -2,10 +2,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../../models/collections.dart';
-
-import '../../providers/theme.dart';
+import '../../data/providers/theme.dart';
 import 'app_theme.dart';
 import 'collections_page/add_collection.dart';
 import 'collections_page/main_header.dart';
@@ -69,7 +68,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsView> {
                         : LayoutBuilder(
                             builder: (context, BoxConstraints constraints) {
                               return PaginatedGrid(
-                                collections: widget.collections.collections,
+                                collections: widget.collections.entries,
                                 constraints: constraints,
                                 quickMenuScopeKey: quickMenuScopeKey,
                               );

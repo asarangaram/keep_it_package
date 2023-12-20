@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/theme.dart';
+import '../data/providers/theme.dart';
 import 'views/collections_page/collection_ideas.dart';
 
 class TestPage extends ConsumerWidget {

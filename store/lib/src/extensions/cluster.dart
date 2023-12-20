@@ -1,6 +1,6 @@
 import 'package:sqlite3/sqlite3.dart';
 
-import '../../../models/cluster.dart';
+import '../models/cluster.dart';
 
 extension ClusterDB on Cluster {
   static getById(Database db, int clusterId) {

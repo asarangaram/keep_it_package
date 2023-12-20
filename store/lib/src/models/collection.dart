@@ -47,3 +47,12 @@ class Collection {
   @override
   int get hashCode => id.hashCode ^ label.hashCode ^ description.hashCode;
 }
+
+class Collections {
+  final List<Collection> entries;
+
+  Collections(this.entries);
+
+  bool get isEmpty => entries.isEmpty;
+  bool get isNotEmpty => entries.isNotEmpty;
+}

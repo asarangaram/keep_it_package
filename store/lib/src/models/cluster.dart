@@ -36,3 +36,12 @@ class Cluster {
     );
   }
 }
+
+class Clusters {
+  final List<Cluster> entries;
+
+  Clusters(this.entries);
+
+  bool get isEmpty => entries.isEmpty;
+  bool get isNotEmpty => entries.isNotEmpty;
+}

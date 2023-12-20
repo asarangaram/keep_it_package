@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../providers/theme.dart';
+import '../../../data/providers/theme.dart';
 import '../app_theme.dart';
 
 class MainHeader extends ConsumerWidget {
