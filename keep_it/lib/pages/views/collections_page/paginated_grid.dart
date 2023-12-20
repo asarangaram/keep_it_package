@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../data/models/paginator.dart';
-import 'item_view.dart';
+import 'collection_view.dart';
 
 class PaginatedGrid extends ConsumerWidget {
   const PaginatedGrid({

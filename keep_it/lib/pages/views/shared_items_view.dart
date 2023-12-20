@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -44,9 +46,49 @@ class SharedItemsView extends ConsumerWidget {
                       builder: (BuildContext context) {
                         return CollectionListViewDialog.fromDBSelectable(
                           clusterID: null,
-                          onSelectionDone: (collection) {
-                            // TODO :Implement
-                            Navigator.of(context).pop();
+                          onSelectionDone: (collectionList) async {
+                            
+                            List<int> ids = collectionList
+                                .where((c) => c.id != null)
+                                .map((c) => c.id!)
+                                .toList();
+                           
+                            // No one might be reading this, read once
+                            ref.read(clustersProvider(null));
+                            final clusterId = ref
+                                .read(clustersProvider(null).notifier)
+                                .upsertCluster(Cluster(description: ""), ids);
+
+                            for (var entry in media.entries) {
+                              switch (entry.value) {
+                                case SupportedMediaType.image:
+                                  // Copy item to storage.
+                                  final newFile = await FileHandler.move(
+                                      entry.key,
+                                      toDir: "keepIt");
+                                  // if URL is stored, read it and delete
+                                  final logFileName = '${entry.key}.url';
+                                  String? imageUrl;
+                                  if (File(logFileName).existsSync()) {
+                                    imageUrl =
+                                        await File(logFileName).readAsString();
+                                    File(logFileName).delete();
+                                  }
+                                  final item = Item(
+                                      path: newFile,
+                                      ref: imageUrl,
+                                      clusterId: clusterId);
+                                  ref
+                                      .read(itemsProvider(clusterId).notifier)
+                                      .upsertItem(item);
+                                default:
+                                  throw UnimplementedError();
+                              }
+                            }
+                            onDiscard();
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
                           },
                           onSelectionCancel: () {
                             Navigator.of(context).pop();
@@ -60,7 +102,3 @@ class SharedItemsView extends ConsumerWidget {
         ));
   }
 }
-
-/*
-
-*/

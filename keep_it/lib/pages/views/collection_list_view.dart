@@ -271,8 +271,13 @@ class _CollectionListViewImpl extends ConsumerWidget {
               height: 4,
             ),
             SaveOrCancel(
-              onSave: () => onSelectionDone
-                  ?.call(selectedItems.map((e) => e as Collection).toList()),
+              onSave: () {
+                onSelectionDone
+                    ?.call(selectedItems.map((e) => e as Collection).toList());
+                for (var c in selectedItems) {
+                  ref.read(selectableItemProvider(c).notifier).deselect();
+                }
+              },
               onDiscard: onSelectionCancel ?? () {},
               saveLabel: "Create Selected",
             )

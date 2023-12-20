@@ -19,10 +19,11 @@ extension ItemDB on Item {
   ) {
     if (id != null) {
       db.execute(
-          'UPDATE Item SET path = ?, ref = ?, cluster_id = ? WHERE id = ?',
+          'UPDATE OR IGNORE Item SET path = ?, ref = ?, cluster_id = ? WHERE id = ?',
           [path, ref, clusterId, id!]);
     }
-    db.execute('INSERT INTO Item (path, ref, cluster_id) VALUES (?, ?, ?)',
+    db.execute(
+        'INSERT OR IGNORE INTO Item (path, ref, cluster_id) VALUES (?, ?, ?)',
         [path, ref, clusterId]);
     return db.lastInsertRowId;
   }

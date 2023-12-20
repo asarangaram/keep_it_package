@@ -7,9 +7,11 @@ import 'db_manager.dart';
 class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
   DatabaseManager? databaseManager;
   int? clusterID;
+  Ref ref;
 
   bool isLoading = false;
   ClusterNotifier({
+    required this.ref,
     this.databaseManager,
     this.clusterID,
   }) : super(const AsyncValue.loading()) {
@@ -32,17 +34,28 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
     });
   }
 
-  void upsertCluster(Cluster cluster) {
+  int upsertCluster(Cluster cluster, List<int> collectionIds) {
     if (databaseManager == null) {
       throw Exception("DB Manager is not ready");
     }
 
-    cluster.upsert(databaseManager!.db);
+    // Save Cluster and get Cluster ID.
+    // Associate it wtih all the CollectionIds
+    // invalidate the clusters queries by Collection id for all CollectionIds
+
+    final clusterId = cluster.upsert(databaseManager!.db);
+
+    for (var id in collectionIds) {
+      ClusterDB.addCollectionToCluster(databaseManager!.db, id, clusterId);
+      //ref.read(clustersProvider(id));
+      //ref.invalidate(clustersProvider(id));
+    }
 
     loadClusters();
+    return clusterId;
   }
 
-  void upsertClusters(List<Cluster> clusters) {
+  /*  void upsertClusters(List<Cluster> clusters) {
     if (databaseManager == null) {
       throw Exception("DB Manager is not ready");
     }
@@ -50,7 +63,7 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
       cluster.upsert(databaseManager!.db);
     }
     loadClusters();
-  }
+  } */
 
   void deleteCluster(Cluster cluster) {
     if (databaseManager == null) {
@@ -74,12 +87,20 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
 
 final clustersProvider =
     StateNotifierProvider.family<ClusterNotifier, AsyncValue<Clusters>, int?>(
-        (ref, clusterId) {
+        (ref, clusterID) {
+  ref.onDispose(() {
+    print("disposing clustersProvider Notifier");
+  });
+  print("Creating notifier for Collecftion id: null");
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
-    data: (DatabaseManager dbManager) =>
-        ClusterNotifier(databaseManager: dbManager, clusterID: clusterId),
-    error: (_, __) => ClusterNotifier(),
-    loading: () => ClusterNotifier(),
+    data: (DatabaseManager dbManager) => ClusterNotifier(
+        ref: ref, databaseManager: dbManager, clusterID: clusterID),
+    error: (_, __) => ClusterNotifier(
+      ref: ref,
+    ),
+    loading: () => ClusterNotifier(
+      ref: ref,
+    ),
   );
 });

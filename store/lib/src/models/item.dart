@@ -53,3 +53,12 @@ class Item {
     return 'Item(id: $id, path: $path, ref: $ref, clusterId: $clusterId)';
   }
 }
+
+class Items {
+  final List<Item> entries;
+
+  Items(this.entries);
+
+  bool get isEmpty => entries.isEmpty;
+  bool get isNotEmpty => entries.isNotEmpty;
+}

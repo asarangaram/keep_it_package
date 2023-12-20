@@ -47,7 +47,7 @@ extension ClusterDB on Cluster {
   static void addCollectionToCluster(
       Database db, int collectionId, int clusterId) {
     db.execute(
-        'INSERT INTO CollectionCluster (collection_id, cluster_id) VALUES (?, ?)',
+        'INSERT OR IGNORE INTO CollectionCluster (collection_id, cluster_id) VALUES (?, ?)',
         [collectionId, clusterId]);
   }
 }
