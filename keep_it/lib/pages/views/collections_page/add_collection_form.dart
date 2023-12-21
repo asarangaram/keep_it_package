@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class UpsertCollectionForm extends ConsumerWidget {
-  const UpsertCollectionForm({super.key, this.collection, this.onDone});
+class UpsertCollectionDialogForm extends ConsumerWidget {
+  const UpsertCollectionDialogForm({super.key, this.collection, this.onDone});
 
   final Collection? collection;
   final Function()? onDone;
@@ -42,10 +42,6 @@ class UpsertCollectionForm extends ConsumerWidget {
               initialValue: collection?.description ?? "",
             )
           ],
-          onCancel: () {
-            Navigator.of(context).pop();
-            onDone?.call();
-          }, // Close the dialog},
           onSubmit: (List<String> values) {
             final label = values[0];
             final description =
@@ -60,7 +56,7 @@ class UpsertCollectionForm extends ConsumerWidget {
             } catch (e) {
               return e.toString();
             }
-            Navigator.of(context).pop(); // Close the dialog
+
             onDone?.call();
             return null;
           },

@@ -69,7 +69,7 @@ buildEditor(
     {Function()? onDone}) {
   return Dialog(
     insetPadding: const EdgeInsets.all(8.0),
-    child: UpsertCollectionForm(
+    child: UpsertCollectionDialogForm(
       collection: collection,
       onDone: onDone,
     ),

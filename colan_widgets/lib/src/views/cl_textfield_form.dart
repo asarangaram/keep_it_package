@@ -26,7 +26,6 @@ class CLTextFieldForm extends ConsumerStatefulWidget {
   final String buttonLabel;
   final List<CLFormField> clFormFields;
   final Function(List<String> values) onSubmit;
-  final Function() onCancel;
 
   final Color? foregroundColor;
   final Color? backgroundColor;
@@ -38,7 +37,6 @@ class CLTextFieldForm extends ConsumerStatefulWidget {
     required this.buttonLabel,
     required this.clFormFields,
     required this.onSubmit,
-    required this.onCancel,
     this.foregroundColor,
     this.backgroundColor,
     this.disabledColor,
@@ -127,31 +125,16 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
                   },
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (isMobilePlatform)
-                    CLButtonIcon.small(Icons.keyboard_hide,
-                        color: widget.foregroundColor,
-                        disabledColor: widget.disabledColor,
-                        onTap: MediaQuery.of(context).viewInsets.bottom > 0
-                            ? () {}
-                            : null)
-                  else
-                    Container(),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: CLButtonText.small(
-                      "Cancel",
+              if (isMobilePlatform)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: CLButtonIcon.small(Icons.keyboard_hide,
                       color: widget.foregroundColor,
                       disabledColor: widget.disabledColor,
-                      onTap: () {
-                        widget.onCancel();
-                      },
-                    ),
-                  )
-                ],
-              )
+                      onTap: MediaQuery.of(context).viewInsets.bottom > 0
+                          ? () {}
+                          : null),
+                )
             ]),
           ),
         ),

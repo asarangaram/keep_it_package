@@ -57,11 +57,12 @@ class MainHeader extends ConsumerWidget {
     return items.map((list) {
       return list
           .map((e) => CLMenuItem(e.title, e.icon, onTap: () {
-                onDone();
                 if (e.onTap != null) {
-                  return e.onTap!.call();
+                  e.onTap!.call();
+                } else {
+                  CLButtonsGrid.showSnackBarAboveDialog(context, e.title);
                 }
-                CLButtonsGrid.showSnackBarAboveDialog(context, e.title);
+                onDone();
               }))
           .toList();
     }).toList();

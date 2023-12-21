@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../main/keep_it_main_view.dart';
+import 'add_collection_form.dart';
 import 'paginated_grid.dart';
 
 class CollectionGridView extends ConsumerStatefulWidget {
@@ -33,10 +34,48 @@ class CollectionGridViewState extends ConsumerState<CollectionGridView> {
   bool isGridView = true;
   @override
   Widget build(BuildContext context) {
+    final collectionsAsync = ref.watch(collectionsProvider(null));
+    final handleCreateNew = collectionsAsync.whenOrNull(
+        data: (collections) => ({Function()? onDone}) => showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return CLDialogWrapper(onCancel: () {
+                  Navigator.of(context).pop();
+                }, child: UpsertCollectionDialogForm(
+                  onDone: () {
+                    Navigator.of(context).pop();
+                    onDone?.call();
+                  },
+                ));
+              },
+            ));
     return KeepItMainView(
       menuItems: [
         [
-          CLMenuItem("New\nCollection", Icons.add),
+          CLMenuItem(
+            "New\nCollection",
+            Icons.add,
+            onTap: () => showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return CLButtonsGrid.dialog(
+                  clMenuItems2D: [
+                    [
+                      CLMenuItem("Suggested\nCollections", Icons.menu),
+                      CLMenuItem("Create New", Icons.new_label, onTap: () {
+                        handleCreateNew?.call(onDone: () {
+                          Navigator.of(context).pop();
+                        });
+                      }),
+                    ]
+                  ],
+                  onCancel: () {
+                    Navigator.of(context).pop();
+                  },
+                );
+              },
+            ),
+          ),
           CLMenuItem("ListView", Icons.view_list)
         ]
       ],

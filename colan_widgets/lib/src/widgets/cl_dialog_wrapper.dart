@@ -20,11 +20,16 @@ class CLDialogWrapper extends StatelessWidget {
     if (!isDialog) {
       return child;
     }
-    return Dialog(
-      shape: const ContinuousRectangleBorder(),
+    return AlertDialog(
+      scrollable: true,
+
+      //shape: const ContinuousRectangleBorder(),
       backgroundColor: backgroundColor,
       insetPadding: padding ?? const EdgeInsets.all(8.0),
-      child: Column(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Align(
             alignment: Alignment.topRight,
@@ -36,7 +41,7 @@ class CLDialogWrapper extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: child),
+          Flexible(child: child),
         ],
       ),
     );

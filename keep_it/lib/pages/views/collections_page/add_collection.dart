@@ -25,7 +25,7 @@ class _AddNewCollectionState extends ConsumerState<AddNewCollection> {
                 builder: (BuildContext context) {
                   return const Dialog(
                       insetPadding: EdgeInsets.all(8.0),
-                      child: UpsertCollectionForm());
+                      child: UpsertCollectionDialogForm());
                 },
               )),
     );
