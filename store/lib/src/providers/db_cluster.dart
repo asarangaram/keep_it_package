@@ -88,10 +88,6 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
 final clustersProvider =
     StateNotifierProvider.family<ClusterNotifier, AsyncValue<Clusters>, int?>(
         (ref, clusterID) {
-  ref.onDispose(() {
-    print("disposing clustersProvider Notifier");
-  });
-  print("Creating notifier for Collecftion id: null");
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) => ClusterNotifier(
