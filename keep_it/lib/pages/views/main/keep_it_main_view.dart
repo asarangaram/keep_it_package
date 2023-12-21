@@ -8,8 +8,9 @@ import 'main_header.dart';
 class KeepItMainView extends ConsumerStatefulWidget {
   final Widget Function(BuildContext context,
       GlobalKey<State<StatefulWidget>> quickMenuScopeKey) pageBuilder;
-  final Widget Function(BuildContext context,
-      GlobalKey<State<StatefulWidget>> quickMenuScopeKey)? actionsBuilder;
+  final List<
+      Widget Function(BuildContext context,
+          GlobalKey<State<StatefulWidget>> quickMenuScopeKey)>? actionsBuilder;
 
   final String? title;
 
@@ -39,6 +40,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 MainHeader(
+                  actionsBuilders: widget.actionsBuilder,
                   quickMenuScopeKey: quickMenuScopeKey,
                   title: widget.title,
                   mainActionItems: [

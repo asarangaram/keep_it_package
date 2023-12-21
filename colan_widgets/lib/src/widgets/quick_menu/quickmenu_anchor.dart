@@ -7,7 +7,7 @@ import 'quickmenu_controller.dart';
 class CLQuickMenuAnchor extends ConsumerStatefulWidget {
   const CLQuickMenuAnchor({
     super.key,
-    this.child,
+    required this.child,
     required this.parentKey,
     required this.menuBuilder,
     this.color,
@@ -17,7 +17,7 @@ class CLQuickMenuAnchor extends ConsumerStatefulWidget {
         onTap = null;
   const CLQuickMenuAnchor.longPress(
       {super.key,
-      this.child,
+      required this.child,
       required this.parentKey,
       required this.menuBuilder,
       this.color,
@@ -26,7 +26,7 @@ class CLQuickMenuAnchor extends ConsumerStatefulWidget {
       : isLongPress = true,
         onLongPress = null;
 
-  final Widget? child;
+  final Widget child;
   final GlobalKey parentKey;
   final MenuBuilder menuBuilder;
   final bool isLongPress;
@@ -109,13 +109,10 @@ class CLQuickMenuAnchorState extends ConsumerState<CLQuickMenuAnchor> {
             : showMenu;
 
     return GestureDetector(
-      onTapDown: onTapDown,
-      onLongPressDown: onLongPressDown,
-      onTap: onTap,
-      onLongPress: onLongPress,
-      child: widget.child ??
-          CLIcon.verySmall(Icons.more_vert,
-              color: canResponse ? widget.color : widget.disabledColor),
-    );
+        onTapDown: onTapDown,
+        onLongPressDown: onLongPressDown,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: widget.child);
   }
 }

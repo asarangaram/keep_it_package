@@ -6,14 +6,15 @@ class MainHeader extends ConsumerWidget {
   const MainHeader({
     super.key,
     required this.quickMenuScopeKey,
-    this.actionsBuilder,
+    this.actionsBuilders,
     this.mainActionItems,
     this.title,
   });
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-  final Widget Function(BuildContext context,
-      GlobalKey<State<StatefulWidget>> quickMenuScopeKey)? actionsBuilder;
+  final List<
+      Widget Function(BuildContext context,
+          GlobalKey<State<StatefulWidget>> quickMenuScopeKey)>? actionsBuilders;
   final List<List<CLMenuItem>>? mainActionItems;
   final String? title;
 
@@ -33,9 +34,14 @@ class MainHeader extends ConsumerWidget {
                 ),
               ),
             ),
+          if (actionsBuilders != null && actionsBuilders!.isNotEmpty)
+            ...actionsBuilders!.map((e) => Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: e(context, quickMenuScopeKey),
+                )),
           if (mainActionItems != null)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.only(right: 16),
               child: CLQuickMenuAnchor(
                 parentKey: quickMenuScopeKey,
                 menuBuilder: (context, boxconstraints,
@@ -47,7 +53,7 @@ class MainHeader extends ConsumerWidget {
                     children2D: insertOnDone(context, mainActionItems!, onDone),
                   );
                 },
-                child: const CLIcon.large(
+                child: const CLIcon.veryLarge(
                   Icons.more_vert,
                 ),
               ),
@@ -57,7 +63,7 @@ class MainHeader extends ConsumerWidget {
     );
   }
 
-  List<List<CLMenuItem>> insertOnDone(
+  static List<List<CLMenuItem>> insertOnDone(
       BuildContext context, List<List<CLMenuItem>> items, onDone) {
     return items.map((list) {
       return list

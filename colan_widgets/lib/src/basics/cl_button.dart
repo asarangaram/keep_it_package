@@ -29,7 +29,7 @@ class _CLButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: onTap,
+        onTap: onTap ?? () => showSnackBarAboveDialog(context, label ?? "Icon"),
         child: ButtonBackground(
           boxDecoration: boxDecoration,
           child: switch (iconData) {
@@ -61,6 +61,46 @@ class _CLButton extends StatelessWidget {
               },
           },
         ));
+  }
+
+  // TODO: Merge from another object
+  static void showSnackBarAboveDialog(BuildContext context, String message,
+      {Duration duration = const Duration(milliseconds: 400)}) {
+    // Create an overlay entry
+    OverlayEntry entry;
+
+    entry = OverlayEntry(
+      builder: (BuildContext context) => Positioned(
+        top: MediaQuery.of(context).size.height *
+            0.8, // Adjust position as needed
+        width: MediaQuery.of(context).size.width,
+        child: Material(
+          color: Colors.transparent,
+          child: SafeArea(
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration:
+                  BoxDecoration(color: Theme.of(context).colorScheme.onSurface),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: CLText.large(
+                  message,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Insert the overlay entry above the current overlay entries (dialogs)
+    Overlay.of(context).insert(entry);
+
+    // Remove the overlay entry after a certain duration
+    Future.delayed(const Duration(seconds: 2), () {
+      entry.remove();
+    });
   }
 }
 

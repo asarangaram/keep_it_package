@@ -3,6 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/pages/views/main/main_header.dart';
 import 'package:store/store.dart';
 
 import '../main/keep_it_main_view.dart';
@@ -24,9 +25,37 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
   Widget build(BuildContext context) {
     return KeepItMainView(
       title: widget.collections.isNotEmpty ? "Collections" : null,
-      actionsBuilder: (context, quickMenuScopeKey) {
-        return Container();
-      },
+      actionsBuilder: [
+        (context, quickMenuScopeKey) {
+          return CLQuickMenuAnchor(
+            parentKey: quickMenuScopeKey,
+            menuBuilder: (context, boxconstraints,
+                {required Function() onDone}) {
+              return CLButtonsGrid(
+                scaleType: CLScaleType.veryLarge,
+                size: const Size(kMinInteractiveDimension * 1.5,
+                    kMinInteractiveDimension * 1.5),
+                children2D: MainHeader.insertOnDone(
+                    context,
+                    [
+                      [
+                        CLMenuItem("Suggested\nCollections", Icons.menu),
+                        CLMenuItem("Create New", Icons.new_label,
+                            onTap: () => newCollectionForm(onDone: onDone))
+                      ]
+                    ],
+                    onDone),
+              );
+            },
+            child: const CLIcon.veryLarge(
+              Icons.add,
+            ),
+          );
+        },
+        (context, quickMenuScopeKey) => const CLButtonIcon.veryLarge(
+              Icons.view_list,
+            )
+      ],
       pageBuilder: (context, quickMenuScopeKey) {
         if (widget.collections.isEmpty) {}
         return CollectionGrid(
