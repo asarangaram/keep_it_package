@@ -4,26 +4,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../basics/cl_button.dart';
 import '../basics/cl_icon.dart';
 import '../basics/cl_text.dart';
+import '../models/cl_scale_type.dart';
 import 'cl_quickmenu.dart';
 
 class CLButtonsGrid extends ConsumerWidget {
-  const CLButtonsGrid({
-    super.key,
-    required this.clMenuItems2D,
-  }) : onCancelNullable = null;
-  const CLButtonsGrid.dialog({
-    super.key,
-    required this.clMenuItems2D,
-    required Function() onCancel,
-  }) : onCancelNullable = onCancel;
+  const CLButtonsGrid(
+      {super.key,
+      required this.clMenuItems2D,
+      this.scaleType = CLScaleType.standard})
+      : onCancelNullable = null;
+  const CLButtonsGrid.dialog(
+      {super.key,
+      required this.clMenuItems2D,
+      required Function() onCancel,
+      this.scaleType = CLScaleType.standard})
+      : onCancelNullable = onCancel;
   final List<List<CLMenuItem>> clMenuItems2D;
   final Function()? onCancelNullable;
+  final CLScaleType scaleType;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final length =
         clMenuItems2D.map((e) => e.length).reduce((a, b) => a > b ? a : b);
-    return Center(
+    return Align(
+      alignment: Alignment.topCenter,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -38,13 +43,27 @@ class CLButtonsGrid extends ConsumerWidget {
                 children: [
                   for (var i = 0; i < clMenuItems1D.length; i++)
                     Expanded(
-                      child: CLButtonElevated.large(
+                      child: switch (scaleType) {
+                        CLScaleType.veryLarge => CLButtonElevated.veryLarge,
+                        CLScaleType.large => CLButtonElevated.large,
+                        CLScaleType.standard => CLButtonElevated.standard,
+                        CLScaleType.small => CLButtonElevated.small,
+                        CLScaleType.verySmall => CLButtonElevated.verySmall,
+                        CLScaleType.tiny => CLButtonElevated.tiny,
+                      }(
                         onTap: clMenuItems1D[i].onTap ??
                             () {
                               showSnackBarAboveDialog(
                                   context, clMenuItems1D[i].title);
                             },
-                        child: CLIconLabelled.large(
+                        child: switch (scaleType) {
+                          CLScaleType.veryLarge => CLIconLabelled.veryLarge,
+                          CLScaleType.large => CLIconLabelled.large,
+                          CLScaleType.standard => CLIconLabelled.standard,
+                          CLScaleType.small => CLIconLabelled.small,
+                          CLScaleType.verySmall => CLIconLabelled.verySmall,
+                          CLScaleType.tiny => CLIconLabelled.tiny,
+                        }(
                           clMenuItems1D[i].icon,
                           clMenuItems1D[i].title,
                         ),
