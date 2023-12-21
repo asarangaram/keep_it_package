@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../data/providers/theme.dart';
-
 class UpsertCollectionForm extends ConsumerWidget {
   const UpsertCollectionForm({super.key, this.collection, this.onDone});
 
@@ -16,7 +14,6 @@ class UpsertCollectionForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
     final collectionsAsync = ref.watch(collectionsProvider(null));
 
     return collectionsAsync.when(
@@ -67,10 +64,6 @@ class UpsertCollectionForm extends ConsumerWidget {
             onDone?.call();
             return null;
           },
-          foregroundColor: theme.colorTheme.textColor,
-          backgroundColor: theme.colorTheme.overlayBackgroundColor,
-          disabledColor: theme.colorTheme.disabledColor,
-          errorColor: theme.colorTheme.errorColor,
         ),
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:app_loader/app_loader.dart';
+/* import 'package:app_loader/app_loader.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,3 +22,4 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, KeepItTheme>((ref) {
               overlayBackgroundColor: Colors.white,
               errorColor: Colors.red)));
 });
+ */

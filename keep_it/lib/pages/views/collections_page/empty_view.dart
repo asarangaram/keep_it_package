@@ -23,7 +23,6 @@ class EmptyViewCollection extends ConsumerWidget {
                   child: CLIconLabelled.large(
                     (v)[0],
                     (v)[1],
-                    color: Colors.blue,
                   ),
                 ),
               ),
@@ -31,64 +30,6 @@ class EmptyViewCollection extends ConsumerWidget {
         ),
       ),
     );
-    /* 
-    return AspectRatio(
-      aspectRatio: 1 / 2,
-      child: Center(
-        child: GridButton(
-          // borderColor: theme.colorTheme.textColor,
-          // borderWidth: 2,
-          onPressed: (dynamic val) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(val.toString()),
-                duration: const Duration(milliseconds: 400),
-              ),
-            );
-          },
-          items: [
-            [
-              GridButtonItem(
-                value: "Suggestions",
-                //color: theme.colorTheme.overlayBackgroundColor,
-                child: AspectRatio(
-                  aspectRatio: 1 / 1,
-                  child: Card(
-                    //alignment: Alignment.center,
-                    margin: const EdgeInsets.all(0),
-                    child: CLIconLabelled.large(
-                      Icons.menu,
-                      "Suggested Collections",
-                      color: theme.colorTheme.textColor,
-                    ),
-                  ),
-                ),
-                // textStyle: textStyle.copyWith(color: Colors.white),
-              ),
-              GridButtonItem(
-                value: "CreateNew",
-                //color: theme.colorTheme.overlayBackgroundColor,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Card(
-                    // alignment: Alignment.center,
-                    margin: const EdgeInsets.all(0),
-                    //decoration: BoxDecoration(
-                    //  color: theme.colorTheme.overlayBackgroundColor),
-                    child: CLIconLabelled.large(
-                      Icons.new_label,
-                      "CreateNew",
-                      color: theme.colorTheme.textColor,
-                    ),
-                  ),
-                ),
-                // textStyle: textStyle.copyWith(color: Colors.white),
-              ),
-            ],
-          ],
-        ),
-      ),
-    ); */
   }
 }
 

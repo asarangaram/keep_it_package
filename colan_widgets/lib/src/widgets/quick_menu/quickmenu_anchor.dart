@@ -10,8 +10,8 @@ class CLQuickMenuAnchor extends ConsumerStatefulWidget {
     this.child,
     required this.parentKey,
     required this.menuBuilder,
-    required this.color,
-    required this.disabledColor,
+    this.color,
+    this.disabledColor,
     this.onLongPress,
   })  : isLongPress = false,
         onTap = null;
@@ -20,8 +20,8 @@ class CLQuickMenuAnchor extends ConsumerStatefulWidget {
       this.child,
       required this.parentKey,
       required this.menuBuilder,
-      required this.color,
-      required this.disabledColor,
+      this.color,
+      this.disabledColor,
       this.onTap})
       : isLongPress = true,
         onLongPress = null;
@@ -30,8 +30,8 @@ class CLQuickMenuAnchor extends ConsumerStatefulWidget {
   final GlobalKey parentKey;
   final MenuBuilder menuBuilder;
   final bool isLongPress;
-  final Color color;
-  final Color disabledColor;
+  final Color? color;
+  final Color? disabledColor;
   final Function()? onTap;
   final Function()? onLongPress;
 

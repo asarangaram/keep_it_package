@@ -11,12 +11,11 @@ class TestPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
-    return CLFullscreenBox(
-        backgroundColor: theme.colorTheme.backgroundColor,
-        // hasBorder: true,
-        useSafeArea: true,
-        child: const EmptyViewCollection());
+    //final theme = ref.watch(themeProvider);
+    return const CLFullscreenBox(
+      useSafeArea: true,
+      child: EmptyViewCollection(),
+    );
   }
 }
 
@@ -25,12 +24,9 @@ class TestButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
     return Center(
       child: CLButtonElevatedText.large(
         "show Dialog",
-        color: theme.colorTheme.textColor,
-        disabledColor: theme.colorTheme.disabledColor,
         boxDecoration: BoxDecoration(border: Border.all()),
         onTap: () => showDialog<void>(
           context: context,

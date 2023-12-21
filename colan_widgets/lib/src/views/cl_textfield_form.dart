@@ -28,10 +28,10 @@ class CLTextFieldForm extends ConsumerStatefulWidget {
   final Function(List<String> values) onSubmit;
   final Function() onCancel;
 
-  final Color foregroundColor;
-  final Color backgroundColor;
-  final Color disabledColor;
-  final Color errorColor;
+  final Color? foregroundColor;
+  final Color? backgroundColor;
+  final Color? disabledColor;
+  final Color? errorColor;
 
   const CLTextFieldForm({
     super.key,
@@ -39,10 +39,10 @@ class CLTextFieldForm extends ConsumerStatefulWidget {
     required this.clFormFields,
     required this.onSubmit,
     required this.onCancel,
-    required this.foregroundColor,
-    required this.backgroundColor,
-    required this.disabledColor,
-    required this.errorColor,
+    this.foregroundColor,
+    this.backgroundColor,
+    this.disabledColor,
+    this.errorColor,
   });
 
   @override
@@ -85,15 +85,13 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
       data: Theme.of(context).copyWith(
           inputDecorationTheme: InputDecorationTheme(
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        disabledBorder: _buildOutlineInputBorder(widget.disabledColor),
-        enabledBorder: _buildOutlineInputBorder(widget.foregroundColor),
-        focusedBorder:
-            _buildOutlineInputBorder(widget.foregroundColor, width: 2),
-        errorBorder: _buildOutlineInputBorder(widget.errorColor),
-        focusedErrorBorder:
-            _buildOutlineInputBorder(widget.errorColor, width: 2),
-        errorStyle: _buildTextStyle(widget.errorColor),
-        floatingLabelStyle: _buildTextStyle(widget.foregroundColor),
+        disabledBorder: _buildOutlineInputBorder(),
+        enabledBorder: _buildOutlineInputBorder(),
+        focusedBorder: _buildOutlineInputBorder(width: 2),
+        errorBorder: _buildOutlineInputBorder(),
+        focusedErrorBorder: _buildOutlineInputBorder(width: 2),
+        errorStyle: _buildTextStyle(),
+        floatingLabelStyle: _buildTextStyle(),
       )),
       child: SingleChildScrollView(
         child: Container(
@@ -161,19 +159,18 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
     );
   }
 
-  OutlineInputBorder _buildOutlineInputBorder(Color color,
-          {double width = 1}) =>
+  OutlineInputBorder _buildOutlineInputBorder({
+    double width = 1,
+  }) =>
       OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
         borderSide: BorderSide(
-          color: color,
           width: width,
         ),
       );
 
-  TextStyle _buildTextStyle(Color color) =>
+  TextStyle _buildTextStyle() =>
       Theme.of(context).textTheme.bodyLarge!.copyWith(
-            color: color,
             fontSize: CLScaleType.standard.fontSize,
           );
 }

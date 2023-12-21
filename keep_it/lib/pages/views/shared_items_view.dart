@@ -25,7 +25,6 @@ class SharedItemsView extends ConsumerWidget {
 
     return CLFullscreenBox(
         useSafeArea: true,
-        // backgroundColor: theme.colorTheme.backgroundColor,
         hasBorder: true,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

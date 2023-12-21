@@ -39,9 +39,7 @@ class ImageView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
     return CLFullscreenBox(
-      backgroundColor: theme.colorTheme.backgroundColor,
       child: FutureBuilder<ui.Image>(
         future: getImageGrid(),
         builder: (context, snapshot) {

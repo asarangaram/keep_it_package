@@ -28,13 +28,11 @@ class CollectionView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionsAsync = ref.read(collectionsProvider(null));
-    final theme = ref.watch(themeProvider);
+
     return collection == null
         ? Container()
         : CLQuickMenuAnchor.longPress(
             parentKey: quickMenuScopeKey,
-            color: theme.colorTheme.textColor,
-            disabledColor: theme.colorTheme.disabledColor,
             menuBuilder: (context, boxconstraints,
                 {required Function() onDone}) {
               return AppTheme(
@@ -47,11 +45,7 @@ class CollectionView extends ConsumerWidget {
                                   showDialog<void>(
                                     context: context,
                                     builder: (context) => buildEditor(
-                                      context,
-                                      collections,
-                                      collection!,
-                                      theme,
-                                    ),
+                                        context, collections, collection!),
                                   );
                                 })),
                     CLQuickMenuItem('Delete', Icons.delete, onTap: () {
@@ -61,9 +55,6 @@ class CollectionView extends ConsumerWidget {
                           .deleteCollection(collection!);
                     }),
                   ],
-                  foregroundColor: theme.colorTheme.textColor,
-                  backgroundColor: theme.colorTheme.overlayBackgroundColor,
-                  disabledColor: theme.colorTheme.disabledColor,
                 ),
               );
             },
@@ -72,11 +63,10 @@ class CollectionView extends ConsumerWidget {
   }
 }
 
-buildEditor(BuildContext context, Collections collections,
-    Collection collection, KeepItTheme theme,
+buildEditor(
+    BuildContext context, Collections collections, Collection collection,
     {Function()? onDone}) {
   return Dialog(
-    backgroundColor: theme.colorTheme.backgroundColor,
     insetPadding: const EdgeInsets.all(8.0),
     child: UpsertCollectionForm(
       collection: collection,

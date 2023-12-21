@@ -5,15 +5,15 @@ class CLQuickMenuGrid extends StatelessWidget {
   const CLQuickMenuGrid({
     super.key,
     required this.menuItems,
-    required this.foregroundColor,
-    required this.backgroundColor,
-    required this.disabledColor,
+    this.foregroundColor,
+    this.backgroundColor,
+    this.disabledColor,
   });
 
   final List<CLQuickMenuItem> menuItems;
-  final Color foregroundColor;
-  final Color backgroundColor;
-  final Color disabledColor;
+  final Color? foregroundColor;
+  final Color? backgroundColor;
+  final Color? disabledColor;
   final CLScaleType scaleType = CLScaleType.small;
 
   @override

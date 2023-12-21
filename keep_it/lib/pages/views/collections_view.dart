@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../data/providers/theme.dart';
 import 'app_theme.dart';
 import 'collections_page/add_collection.dart';
 import 'collections_page/main_header.dart';
@@ -25,11 +24,8 @@ class _CollectionsViewState extends ConsumerState<CollectionsGridView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ref.watch(themeProvider);
-
     return CLFullscreenBox(
       useSafeArea: true,
-      backgroundColor: theme.colorTheme.backgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CLQuickMenuScope(
@@ -40,18 +36,17 @@ class _CollectionsViewState extends ConsumerState<CollectionsGridView> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   MainHeader(quickMenuScopeKey: quickMenuScopeKey),
-                  Row(
+                  const Row(
                     children: [
                       Expanded(
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: CLText.large(
                             "Your Collections",
-                            color: theme.colorTheme.textColor,
                           ),
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(right: 8),
                         child: AddNewCollection(),
                       )
@@ -59,10 +54,9 @@ class _CollectionsViewState extends ConsumerState<CollectionsGridView> {
                   ),
                   Flexible(
                     child: (widget.collections.isEmpty)
-                        ? Center(
+                        ? const Center(
                             child: CLText.small(
                               "No collections found",
-                              color: theme.colorTheme.textColor,
                             ),
                           )
                         : LayoutBuilder(

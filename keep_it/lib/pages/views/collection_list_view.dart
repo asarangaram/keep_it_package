@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../data/providers/theme.dart';
 import 'generic_list_viewer.dart';
 
 class CollectionListView extends ConsumerWidget {
@@ -75,45 +74,36 @@ class CollectionListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
     if (!fromDB) {
       if (collectionListNullable == null) {
         throw "Implementation Error";
       }
-      return Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.black), color: Colors.blue),
-        child: Center(
-          child: CLDialogWrapper(
-            isDialog: isDialogView,
-            padding: EdgeInsets.zero,
-            child: switch (onSelectionDoneNullable) {
-              null => CLListView(
-                  items: collectionListNullable!
-                      .map((e) => CLListItem(
-                            title: e.label,
-                            subTitle: e.description,
-                          ))
-                      .toList(),
-                  color: theme.colorTheme.textColor,
-                  disabledColor: theme.colorTheme.disabledColor,
-                ),
-              _ => CLListView.selectable(
-                  items: collectionListNullable!
-                      .map((e) => CLListItem(
-                            title: e.label,
-                            subTitle: e.description,
-                          ))
-                      .toList(),
-                  color: theme.colorTheme.textColor,
-                  disabledColor: theme.colorTheme.disabledColor,
-                  onSelectionDone: (l) {
-                    onSelectionDoneNullable?.call(
-                        l.map((e) => collectionListNullable![e]).toList());
-                  },
-                )
-            },
-          ),
+      return Center(
+        child: CLDialogWrapper(
+          isDialog: isDialogView,
+          padding: EdgeInsets.zero,
+          child: switch (onSelectionDoneNullable) {
+            null => CLListView(
+                items: collectionListNullable!
+                    .map((e) => CLListItem(
+                          title: e.label,
+                          subTitle: e.description,
+                        ))
+                    .toList(),
+              ),
+            _ => CLListView.selectable(
+                items: collectionListNullable!
+                    .map((e) => CLListItem(
+                          title: e.label,
+                          subTitle: e.description,
+                        ))
+                    .toList(),
+                onSelectionDone: (l) {
+                  onSelectionDoneNullable
+                      ?.call(l.map((e) => collectionListNullable![e]).toList());
+                },
+              )
+          },
         ),
       );
     }
@@ -138,8 +128,6 @@ class CollectionListView extends ConsumerWidget {
                           subTitle: e.description,
                         ))
                     .toList(),
-                color: theme.colorTheme.textColor,
-                disabledColor: theme.colorTheme.disabledColor,
               ),
             _ => CLListView.selectable(
                 items: collections.entries
@@ -148,8 +136,6 @@ class CollectionListView extends ConsumerWidget {
                           subTitle: e.description,
                         ))
                     .toList(),
-                color: theme.colorTheme.textColor,
-                disabledColor: theme.colorTheme.disabledColor,
                 onSelectionDone: (l) {
                   onSelectionDoneNullable
                       ?.call(l.map((e) => collections.entries[e]).toList());
