@@ -1,10 +1,8 @@
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/collections_page/collection_grid_view.dart';
 
-import 'views/collections_page/collection_list_view.dart';
+import 'views/collections_page/collection_grid_view.dart';
 
 class CollectionsPage extends ConsumerWidget {
   const CollectionsPage({super.key});
