@@ -37,22 +37,24 @@ class CollectionView extends ConsumerWidget {
               return AppTheme(
                 child: CLQuickMenuGrid(
                   menuItems: [
-                    CLMenuItem('Edit', Icons.edit,
-                        onTap: collectionsAsync.whenOrNull(
-                            data: (Collections collections) => () {
-                                  onDone.call();
-                                  showDialog<void>(
-                                    context: context,
-                                    builder: (context) => buildEditor(
-                                        context, collections, collection!),
-                                  );
-                                })),
-                    CLMenuItem('Delete', Icons.delete, onTap: () {
-                      onDone.call();
-                      ref
-                          .read(collectionsProvider(null).notifier)
-                          .deleteCollection(collection!);
-                    }),
+                    [
+                      CLMenuItem('Edit', Icons.edit,
+                          onTap: collectionsAsync.whenOrNull(
+                              data: (Collections collections) => () {
+                                    onDone.call();
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (context) => buildEditor(
+                                          context, collections, collection!),
+                                    );
+                                  })),
+                      CLMenuItem('Delete', Icons.delete, onTap: () {
+                        onDone.call();
+                        ref
+                            .read(collectionsProvider(null).notifier)
+                            .deleteCollection(collection!);
+                      }),
+                    ]
                   ],
                 ),
               );

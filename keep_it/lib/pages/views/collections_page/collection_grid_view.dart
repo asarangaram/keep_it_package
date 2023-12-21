@@ -1,17 +1,28 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'add_collection.dart';
-import 'main_header.dart';
+import '../main/keep_it_main_view.dart';
 import 'paginated_grid.dart';
 
 class CollectionGridView extends ConsumerStatefulWidget {
-  const CollectionGridView({super.key, required this.collections});
+  const CollectionGridView({
+    super.key,
+    required List<Collection> collections,
 
-  final Collections collections;
+    // ignore: prefer_initializing_formals
+  })  : collectionsNullable = collections,
+        clusterID = null;
+  const CollectionGridView.fromDB({
+    super.key,
+    this.clusterID,
+  }) : collectionsNullable = null;
+
+  final List<Collection>? collectionsNullable;
+  final int? clusterID;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -19,64 +30,101 @@ class CollectionGridView extends ConsumerStatefulWidget {
 }
 
 class CollectionGridViewState extends ConsumerState<CollectionGridView> {
-  final GlobalKey quickMenuScopeKey = GlobalKey();
-
+  bool isGridView = true;
   @override
   Widget build(BuildContext context) {
-    return CLFullscreenBox(
-      useSafeArea: true,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CLQuickMenuScope(
-          key: quickMenuScopeKey,
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                MainHeader(
-                  quickMenuScopeKey: quickMenuScopeKey,
-                  menuItems: const [],
-                ),
-                const Row(
-                  children: [
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: CLText.large(
-                          "Your Collections",
-                        ),
+    return KeepItMainView(
+      menuItems: [
+        [
+          CLMenuItem("New\nCollection", Icons.add),
+          CLMenuItem("ListView", Icons.view_list)
+        ]
+      ],
+      pageBuilder: (context, quickMenuScopeKey) {
+        return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: CLText.large(
+                        "Collections",
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: AddNewCollection(),
+                  ),
+                ],
+              ),
+              Flexible(
+                child: switch (widget.collectionsNullable) {
+                  null =>
+                    CollectionGridFromDB(quickMenuScopeKey: quickMenuScopeKey),
+                  _ => CollectionGrid(
+                      quickMenuScopeKey: quickMenuScopeKey,
+                      collectionList: widget.collectionsNullable!,
                     )
-                  ],
-                ),
-                Flexible(
-                  child: (widget.collections.isEmpty)
-                      ? const Center(
-                          child: CLText.small(
-                            "No collections found",
-                          ),
-                        )
-                      : LayoutBuilder(
-                          builder: (context, BoxConstraints constraints) {
-                            return PaginatedGrid(
-                              collections: widget.collections.entries,
-                              constraints: constraints,
-                              quickMenuScopeKey: quickMenuScopeKey,
-                            );
-                          },
-                        ),
-                ),
-                /* const SizedBox(
-                  height: 8,
-                ),
-                AddNewCollection(quickMenuScopeKey: quickMenuScopeKey), */
-              ]),
-        ),
-      ),
+                },
+              )
+              // if (widget.collectionsNullable != null)
+            ]);
+      },
     );
   }
 }
+
+class CollectionGridFromDB extends ConsumerWidget {
+  const CollectionGridFromDB({
+    super.key,
+    required this.quickMenuScopeKey,
+  });
+  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final collectionsAsync = ref.watch(collectionsProvider(null));
+    return collectionsAsync.when(
+        loading: () => const CLLoadingView(),
+        error: (err, _) => CLErrorView(errorMessage: err.toString()),
+        data: (collections) {
+          print("Loaded ${collections.entries.length} collections");
+          return CollectionGrid(
+              collectionList: collections.entries,
+              quickMenuScopeKey: quickMenuScopeKey);
+        });
+  }
+}
+
+class CollectionGrid extends ConsumerWidget {
+  const CollectionGrid({
+    super.key,
+    required this.quickMenuScopeKey,
+    required this.collectionList,
+  });
+  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  final List<Collection> collectionList;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (collectionList.isEmpty) {
+      return const Center(
+        child: CLText.small(
+          "No collections found",
+        ),
+      );
+    } else {
+      return LayoutBuilder(
+        builder: (context, BoxConstraints constraints) {
+          // return Text("Loaded ${collectionList.length} collections");
+          return PaginatedGrid(
+            collections: collectionList,
+            constraints: constraints,
+            quickMenuScopeKey: quickMenuScopeKey,
+          );
+        },
+      );
+    }
+  }
+}
+
+/*  */

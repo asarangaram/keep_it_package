@@ -79,7 +79,7 @@ class CLButtonsGrid extends ConsumerWidget {
     );
   }
 
-  void showSnackBarAboveDialog(BuildContext context, String message,
+  static void showSnackBarAboveDialog(BuildContext context, String message,
       {Duration duration = const Duration(milliseconds: 400)}) {
     // Create an overlay entry
     OverlayEntry entry;

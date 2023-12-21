@@ -3,21 +3,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'collections_page/main_header.dart';
-
-abstract class KeepItPage extends StatelessWidget {
-  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-
-  const KeepItPage({
-    super.key,
-    required this.quickMenuScopeKey,
-  });
-}
+import 'main_header.dart';
 
 class KeepItMainView extends ConsumerStatefulWidget {
   final Widget Function(BuildContext context,
       GlobalKey<State<StatefulWidget>> quickMenuScopeKey) pageBuilder;
-  final List<CLMenuItem> menuItems;
+  final List<List<CLMenuItem>> menuItems;
 
   const KeepItMainView({
     super.key,
@@ -48,20 +39,16 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
                   quickMenuScopeKey: quickMenuScopeKey,
                   menuItems: [
                     ...widget.menuItems,
-                    CLMenuItem(
-                      'Paste',
-                      Icons.content_paste,
-                      onTap: () {
-                        debugPrint("paste");
-                      },
-                    ),
-                    CLMenuItem(
-                      'Settings',
-                      Icons.settings,
-                      onTap: () {
-                        debugPrint("settings");
-                      },
-                    ),
+                    [
+                      CLMenuItem(
+                        'Clipboard',
+                        Icons.content_paste,
+                      ),
+                      CLMenuItem(
+                        'Settings',
+                        Icons.settings,
+                      ),
+                    ],
                   ],
                 ),
                 Expanded(child: widget.pageBuilder(context, quickMenuScopeKey))

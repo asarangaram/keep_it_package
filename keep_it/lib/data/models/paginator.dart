@@ -48,10 +48,21 @@ class PaginatedList {
     final pageSize = paginationInfo.pageSize;
     final itemSize = paginationInfo.itemSize;
     final items = paginationInfo.items;
-    itemsInRow =
-        ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor();
-    itemsInColumn =
-        ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor();
+    try {
+      if (pageSize.width == double.infinity) {
+        throw Exception("Width is unbounded, can't handle");
+      }
+      if (pageSize.height == double.infinity) {
+        throw Exception("Width is unbounded, can't handle");
+      }
+      itemsInRow =
+          ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor();
+      itemsInColumn =
+          ((pageSize.height.nearest(itemSize.height)) / itemSize.height)
+              .floor();
+    } catch (e) {
+      rethrow;
+    }
     itemsInRow = max(1, itemsInRow);
     itemsInColumn = max(1, itemsInColumn);
     pages = [];

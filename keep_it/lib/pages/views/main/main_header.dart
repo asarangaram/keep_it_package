@@ -10,7 +10,7 @@ class MainHeader extends ConsumerWidget {
   });
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-  final List<CLMenuItem> menuItems;
+  final List<List<CLMenuItem>> menuItems;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +22,7 @@ class MainHeader extends ConsumerWidget {
           const Expanded(
             child: Center(
               child: CLText.veryLarge(
-                "Collections",
+                "Keep It",
               ),
             ),
           ),
@@ -33,12 +33,13 @@ class MainHeader extends ConsumerWidget {
               menuBuilder: (context, boxconstraints,
                   {required Function() onDone}) {
                 return CLQuickMenuGrid(
-                  menuItems: menuItems.map((e) {
-                    return CLMenuItem(e.title, e.icon, onTap: () {
-                      e.onTap?.call();
-                      onDone();
-                    });
-                  }).toList(),
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .primaryContainer
+                      .withAlpha(200),
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onPrimaryContainer,
+                  menuItems: insertOnDone(context, menuItems, onDone),
                 );
               },
               child: const CLIcon.small(
@@ -49,6 +50,21 @@ class MainHeader extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  List<List<CLMenuItem>> insertOnDone(
+      BuildContext context, List<List<CLMenuItem>> items, onDone) {
+    return items.map((list) {
+      return list
+          .map((e) => CLMenuItem(e.title, e.icon, onTap: () {
+                onDone();
+                if (e.onTap != null) {
+                  return e.onTap!.call();
+                }
+                CLButtonsGrid.showSnackBarAboveDialog(context, e.title);
+              }))
+          .toList();
+    }).toList();
   }
 }
 /*
