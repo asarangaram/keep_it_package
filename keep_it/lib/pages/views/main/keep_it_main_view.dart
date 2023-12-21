@@ -29,8 +29,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
 
   @override
   Widget build(BuildContext context) {
-    return CLFullscreenBox(
-      useSafeArea: true,
+    return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CLQuickMenuScope(

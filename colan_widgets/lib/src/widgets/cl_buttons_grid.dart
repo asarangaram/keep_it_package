@@ -1,55 +1,59 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../basics/cl_button.dart';
 import '../basics/cl_icon.dart';
 import '../basics/cl_text.dart';
+import '../models/cl_menu_item.dart';
 import '../models/cl_scale_type.dart';
-import 'cl_quickmenu.dart';
+import 'cl_dialog_wrapper.dart';
 
 class CLButtonsGrid extends ConsumerWidget {
-  const CLButtonsGrid(
-      {super.key,
-      required this.clMenuItems2D,
-      this.scaleType = CLScaleType.standard})
-      : onCancelNullable = null,
+  const CLButtonsGrid({
+    super.key,
+    required this.children2D,
+    this.scaleType = CLScaleType.standard,
+    this.size,
+  })  : onCancelNullable = null,
         isDialog = false;
-  const CLButtonsGrid.dialog(
-      {super.key,
-      required this.clMenuItems2D,
-      required Function() onCancel,
-      this.scaleType = CLScaleType.standard})
-      : onCancelNullable = onCancel,
+  const CLButtonsGrid.dialog({
+    super.key,
+    required this.children2D,
+    required Function() onCancel,
+    this.scaleType = CLScaleType.standard,
+    this.size,
+  })  : onCancelNullable = onCancel,
         isDialog = true;
-  final List<List<CLMenuItem>> clMenuItems2D;
+  final List<List<CLMenuItem>> children2D;
   final Function()? onCancelNullable;
   final CLScaleType scaleType;
   final bool isDialog;
+  final Size? size;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final length =
-        clMenuItems2D.map((e) => e.length).reduce((a, b) => a > b ? a : b);
+    final hCount =
+        children2D.map((e) => e.length).reduce((a, b) => a > b ? a : b);
+    final vCount = children2D.length;
+    final width = size == null ? null : size!.width * hCount;
+    final height = size == null ? null : size!.height * vCount;
+
     return CLDialogWrapper(
       isDialog: isDialog,
       onCancel: onCancelNullable,
       child: SizedBox(
-        height: isDialog
-            ? clMenuItems2D.length * kMinInteractiveDimension * 4
-            : null,
+        height: height,
+        width: width,
         child: Align(
           alignment: Alignment.topCenter,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (var clMenuItems1D in clMenuItems2D)
+              for (var clMenuItems1D in children2D)
                 Flexible(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       for (var i = 0; i < clMenuItems1D.length; i++)
@@ -80,7 +84,7 @@ class CLButtonsGrid extends ConsumerWidget {
                             ),
                           ),
                         ),
-                      for (var i = clMenuItems1D.length; i < length; i++)
+                      for (var i = clMenuItems1D.length; i < hCount; i++)
                         Expanded(child: Container())
                     ],
                   ),

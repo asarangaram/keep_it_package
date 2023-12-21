@@ -43,14 +43,11 @@ class MainHeader extends ConsumerWidget {
               parentKey: quickMenuScopeKey,
               menuBuilder: (context, boxconstraints,
                   {required Function() onDone}) {
-                return CLQuickMenuGrid(
-                  backgroundColor: Theme.of(context)
-                      .colorScheme
-                      .primaryContainer
-                      .withAlpha(200),
-                  foregroundColor:
-                      Theme.of(context).colorScheme.onPrimaryContainer,
-                  menuItems: insertOnDone(context, menuItems, onDone),
+                return CLButtonsGrid(
+                  scaleType: CLScaleType.veryLarge,
+                  size: const Size(kMinInteractiveDimension * 1.5,
+                      kMinInteractiveDimension * 1.5),
+                  children2D: insertOnDone(context, menuItems, onDone),
                 );
               },
               child: const CLIcon.large(

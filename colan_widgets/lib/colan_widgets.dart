@@ -1,6 +1,7 @@
 library colon_widgets;
 
 export 'src/models/cl_scale_type.dart';
+export 'src/models/cl_menu_item.dart';
 
 export 'src/basics/cl_text.dart';
 export 'src/basics/cl_icon.dart';

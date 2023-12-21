@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/cl_menu_item.dart';
 import '../widgets/cl_buttons_grid.dart';
-import '../widgets/quick_menu/quickmenu_item.dart';
 
 class CLButtonsGridDemo extends StatelessWidget {
   const CLButtonsGridDemo({
@@ -10,7 +10,7 @@ class CLButtonsGridDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CLButtonsGrid(clMenuItems2D: [
+    return CLButtonsGrid(children2D: [
       [
         CLMenuItem("Item 1.1", Icons.menu),
         CLMenuItem("Item 1.2", Icons.new_label),

@@ -110,7 +110,7 @@ class CollectionGridViewState extends ConsumerState<CollectionGridView> {
             onCancel: () {
               Navigator.of(context).pop();
             },
-            clMenuItems2D: [
+            children2D: [
               [
                 CLMenuItem("Suggested\nCollections", Icons.menu),
                 CLMenuItem("Create New", Icons.new_label, onTap: () {
@@ -184,7 +184,7 @@ class CollectionGrid extends ConsumerWidget {
               height: 32,
             ),
             CLButtonsGrid(
-              clMenuItems2D: [
+              children2D: [
                 [
                   CLMenuItem("Suggested\nCollections", Icons.menu),
                   CLMenuItem("Create New", Icons.new_label, onTap: () {

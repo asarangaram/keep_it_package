@@ -57,8 +57,11 @@ class CollectionView extends ConsumerWidget {
             menuBuilder: (context, boxconstraints,
                 {required Function() onDone}) {
               return AppTheme(
-                child: CLQuickMenuGrid(
-                  menuItems: [
+                child: CLButtonsGrid(
+                  scaleType: CLScaleType.veryLarge,
+                  size: const Size(kMinInteractiveDimension * 1.5,
+                      kMinInteractiveDimension * 1.5),
+                  children2D: [
                     [
                       CLMenuItem('Edit', Icons.edit,
                           onTap: collectionsAsync.whenOrNull(
