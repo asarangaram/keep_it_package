@@ -8,10 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:window_size/window_size.dart';
+
 import 'pages/page_show_image.dart';
 import 'pages/page_collections.dart';
-import 'pages/demo_page.dart';
-import 'pages/views/collections_page/empty_view.dart';
+
 import 'pages/views/shared_items_view.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -39,15 +39,7 @@ class KeepItApp implements AppDescriptor {
       "home": (context) => const PageShowImage(
           imagePath: "assets/wallpaperflare.com_wallpaper-2.jpg"),
       "collections": (context) => const CollectionsPage(),
-      "demo_EmptyViewCollection": (context) => DemoPage(
-            child: EmptyViewCollection(
-              
-              clMenuItems: [
-                CLMenuItem("Suggested Collections", Icons.menu, onTap: () {}),
-                CLMenuItem("New Collection", Icons.new_label, onTap: () {}),
-              ],
-            ),
-          )
+      "demo": (context) => const DemoMain()
     };
   }
 
@@ -78,7 +70,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location == "/") return "/demo_EmptyViewCollection";
+        if (location == "/") return "/demo";
         return null;
       };
 }

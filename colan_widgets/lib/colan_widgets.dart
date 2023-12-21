@@ -14,3 +14,6 @@ export 'src/views/cl_textfield_form.dart';
 export 'src/widgets/cl_scrollable.dart';
 export 'src/widgets/cl_quickmenu.dart';
 export 'src/widgets/cl_dialog_wrapper.dart';
+export 'src/widgets/cl_buttons_grid.dart';
+
+export 'src/demos/demo_main.dart' show DemoMain;

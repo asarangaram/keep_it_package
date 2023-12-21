@@ -1,27 +1,44 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class CLDialogWrapper extends StatelessWidget {
   const CLDialogWrapper({
     super.key,
-    this.isDialog = true,
     required this.child,
+    this.isDialog = true,
     this.backgroundColor,
     this.padding,
+    this.onCancel,
   });
   final bool isDialog;
   final Widget child;
   final Color? backgroundColor;
   final EdgeInsets? padding;
+  final Function()? onCancel;
   @override
   Widget build(BuildContext context) {
     if (!isDialog) {
-      return Padding(
-          padding: padding ?? const EdgeInsets.all(8.0), child: child);
+      return child;
     }
     return Dialog(
+      shape: const ContinuousRectangleBorder(),
       backgroundColor: backgroundColor,
       insetPadding: padding ?? const EdgeInsets.all(8.0),
-      child: child,
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0, right: 8.0),
+              child: CLButtonIcon.small(
+                Icons.close,
+                onTap: onCancel,
+              ),
+            ),
+          ),
+          Expanded(child: child),
+        ],
+      ),
     );
   }
 }
