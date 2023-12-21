@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../app_theme.dart';
 import 'add_collection.dart';
 import 'main_header.dart';
 import 'paginated_grid.dart';
@@ -34,7 +33,10 @@ class CollectionGridViewState extends ConsumerState<CollectionGridView> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                MainHeader(quickMenuScopeKey: quickMenuScopeKey),
+                MainHeader(
+                  quickMenuScopeKey: quickMenuScopeKey,
+                  menuItems: const [],
+                ),
                 const Row(
                   children: [
                     Expanded(

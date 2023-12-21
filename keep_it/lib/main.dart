@@ -10,9 +10,20 @@ import 'package:path/path.dart' as path;
 import 'package:window_size/window_size.dart';
 
 import 'pages/page_show_image.dart';
-import 'pages/page_collections.dart';
 
+import 'pages/views/keep_it_main_view.dart';
 import 'pages/views/shared_items_view.dart';
+
+class DummyPage extends KeepItPage {
+  const DummyPage({required super.quickMenuScopeKey, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.blue,
+    );
+  }
+}
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -38,7 +49,11 @@ class KeepItApp implements AppDescriptor {
     return {
       "home": (context) => const PageShowImage(
           imagePath: "assets/wallpaperflare.com_wallpaper-2.jpg"),
-      "collections": (context) => const CollectionsPage(),
+      "collections": (context) => KeepItMainView(
+            menuItems: const [],
+            pageBuilder: (context, quickMenuScopeKey) =>
+                DummyPage(quickMenuScopeKey: quickMenuScopeKey),
+          ),
       "demo": (context) => const DemoMain()
     };
   }
