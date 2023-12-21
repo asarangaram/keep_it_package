@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'views/collection_list_view.dart';
+import 'views/collections_page/collection_list_view.dart';
 
 class CollectionsPage extends ConsumerWidget {
   const CollectionsPage({super.key});

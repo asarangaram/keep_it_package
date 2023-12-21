@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'generic_list_viewer.dart';
+import '../generic_list_viewer.dart';
 
 class CollectionListView extends ConsumerWidget {
   const CollectionListView({

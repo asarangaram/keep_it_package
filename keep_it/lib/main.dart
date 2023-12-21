@@ -70,7 +70,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location == "/") return "/demo";
+        if (location == "/") return "/collections";
         return null;
       };
 }
