@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/pages/views/collections_page/collection_view.dart';
 
 class CLListItem {
   String title;
@@ -146,7 +145,10 @@ class CLListViewState extends State<CLListView> {
                 widget.saveLabelNullable ?? "Save",
                 color: widget.color,
                 disabledColor: widget.disabledColor,
-                onTap: () => widget.onSelectionDoneNullalbe!.call([]),
+                onTap: () => widget.onSelectionDoneNullalbe!.call(
+                    List.generate(selectionList!.length, (index) => index)
+                        .where((index) => selectionList![index])
+                        .toList()),
               ),
             ),
           )
