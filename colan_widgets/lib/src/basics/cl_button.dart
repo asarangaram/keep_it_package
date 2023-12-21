@@ -320,7 +320,7 @@ class _CLButtonElevated extends StatelessWidget {
       fit: BoxFit.scaleDown,
       child: SizedBox(
         width: scaleType.fontSize * 8,
-        height: scaleType.fontSize * 10,
+        height: scaleType.fontSize * 8,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
