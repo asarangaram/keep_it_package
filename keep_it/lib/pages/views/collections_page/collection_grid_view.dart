@@ -9,99 +9,47 @@ import '../main/keep_it_main_view.dart';
 import 'add_collection_form.dart';
 import 'paginated_grid.dart';
 
-class CollectionGridView extends ConsumerStatefulWidget {
-  const CollectionGridView({
-    super.key,
-    required List<Collection> collections,
-
-    // ignore: prefer_initializing_formals
-  })  : collectionsNullable = collections,
-        clusterID = null;
-  const CollectionGridView.fromDB({
-    super.key,
-    this.clusterID,
-  }) : collectionsNullable = null;
-
-  final List<Collection>? collectionsNullable;
-  final int? clusterID;
+class CollectionsView extends ConsumerStatefulWidget {
+  const CollectionsView(this.collections, {super.key});
+  final Collections collections;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      CollectionGridViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() => CollectionsViewState();
 }
 
-class CollectionGridViewState extends ConsumerState<CollectionGridView> {
+class CollectionsViewState extends ConsumerState<CollectionsView> {
   bool isGridView = true;
 
-  newCollectionForm({Function()? onDone}) => showDialog<void>(
+  @override
+  Widget build(BuildContext context) {
+    return KeepItMainView(
+      title: widget.collections.isNotEmpty ? "Collections" : null,
+      actionsBuilder: (context, quickMenuScopeKey) {
+        return Container();
+      },
+      pageBuilder: (context, quickMenuScopeKey) {
+        if (widget.collections.isEmpty) {}
+        return CollectionGrid(
+          quickMenuScopeKey: quickMenuScopeKey,
+          collectionList: widget.collections.entries,
+        );
+      },
+    );
+  }
+
+  void newCollectionForm({Function()? onDone}) => showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return CLDialogWrapper(onCancel: () {
             Navigator.of(context).pop();
           }, child: UpsertCollectionDialogForm(
             onDone: () {
-              Navigator.of(context).pop();
               onDone?.call();
+              Navigator.of(context).pop();
             },
           ));
         },
       );
-
-  @override
-  Widget build(BuildContext context) {
-    final collectionsAsync = ref.watch(collectionsProvider(null));
-
-    return collectionsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(errorMessage: err.toString()),
-      data: (collections) {
-        return KeepItMainView(
-          actions: [
-            CLButtonIcon.large(
-              Icons.add,
-              onTap: () {},
-            ),
-            CLButtonIcon.large(
-              Icons.view_list,
-              onTap: () {},
-            )
-          ],
-          menuItems: const [],
-          pageBuilder: (context, quickMenuScopeKey) {
-            return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Row(
-                    children: [
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: CLText.large(
-                            "Collections",
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Flexible(
-                    child: switch (widget.collectionsNullable) {
-                      null => CollectionGridFromDB(
-                          quickMenuScopeKey: quickMenuScopeKey),
-                      _ => CollectionGrid(
-                          quickMenuScopeKey: quickMenuScopeKey,
-                          collectionList: widget.collectionsNullable!,
-                        )
-                    },
-                  )
-                  // if (widget.collectionsNullable != null)
-                ]);
-          },
-        );
-      },
-    );
-  }
-
   onCreateNewCollection(Function({Function()? onDone}) handleCreateNew) =>
       showDialog<void>(
         context: context,

@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class CLErrorView extends StatelessWidget {
@@ -9,23 +10,20 @@ class CLErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Center(
-        child: Column(
-          children: [
-            Text(
-              errorMessage,
-              maxLines: 1,
-              textAlign: TextAlign.center,
-            ),
-            if (errorDetails != null)
-              Text(
-                errorDetails!,
-                maxLines: 5,
-                textAlign: TextAlign.center,
-              ),
-          ],
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CLText.veryLarge(errorMessage,
+                  color: Theme.of(context).colorScheme.error),
+              if (errorDetails != null)
+                CLText.small(errorDetails!,
+                    color: Theme.of(context).colorScheme.error),
+            ],
+          ),
         ),
       ),
     );

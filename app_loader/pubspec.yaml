@@ -22,6 +22,8 @@ dependencies:
   http: ^1.1.0
   http_parser: ^4.0.2
   progress_indicators: ^1.0.0
+  colan_widgets:
+    path: ../colan_widgets
 
 dev_dependencies:
   flutter_test:

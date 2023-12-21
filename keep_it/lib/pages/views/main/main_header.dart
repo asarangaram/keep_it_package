@@ -6,55 +6,52 @@ class MainHeader extends ConsumerWidget {
   const MainHeader({
     super.key,
     required this.quickMenuScopeKey,
-    required this.menuItems,
-    required this.actions,
-    this.showCaption = false,
+    this.actionsBuilder,
+    this.mainActionItems,
+    this.title,
   });
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-  final List<List<CLMenuItem>> menuItems;
-  final bool showCaption;
-  final List<CLButtonIcon> actions;
+  final Widget Function(BuildContext context,
+      GlobalKey<State<StatefulWidget>> quickMenuScopeKey)? actionsBuilder;
+  final List<List<CLMenuItem>>? mainActionItems;
+  final String? title;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
-        mainAxisAlignment:
-            showCaption ? MainAxisAlignment.start : MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (showCaption)
-            const Expanded(
-              child: Center(
+          if (title != null)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
                 child: CLText.veryLarge(
-                  "Keep It",
+                  title!,
                 ),
               ),
             ),
-          for (var a in actions)
+          if (mainActionItems != null)
             Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: a,
-            ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: CLQuickMenuAnchor(
-              parentKey: quickMenuScopeKey,
-              menuBuilder: (context, boxconstraints,
-                  {required Function() onDone}) {
-                return CLButtonsGrid(
-                  scaleType: CLScaleType.veryLarge,
-                  size: const Size(kMinInteractiveDimension * 1.5,
-                      kMinInteractiveDimension * 1.5),
-                  children2D: insertOnDone(context, menuItems, onDone),
-                );
-              },
-              child: const CLIcon.large(
-                Icons.more_vert,
+              padding: const EdgeInsets.only(right: 8),
+              child: CLQuickMenuAnchor(
+                parentKey: quickMenuScopeKey,
+                menuBuilder: (context, boxconstraints,
+                    {required Function() onDone}) {
+                  return CLButtonsGrid(
+                    scaleType: CLScaleType.veryLarge,
+                    size: const Size(kMinInteractiveDimension * 1.5,
+                        kMinInteractiveDimension * 1.5),
+                    children2D: insertOnDone(context, mainActionItems!, onDone),
+                  );
+                },
+                child: const CLIcon.large(
+                  Icons.more_vert,
+                ),
               ),
-            ),
-          )
+            )
         ],
       ),
     );
