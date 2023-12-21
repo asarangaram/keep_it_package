@@ -6,8 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../constants.dart';
-import '../../../data/models/theme.dart';
-import '../../../data/providers/theme.dart';
+
 import '../app_theme.dart';
 import 'add_collection_form.dart';
 

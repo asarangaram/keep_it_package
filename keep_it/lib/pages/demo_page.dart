@@ -2,22 +2,19 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/providers/theme.dart';
 import 'views/collection_list_view.dart';
-import 'views/collections_page/empty_view.dart';
 
-class TestPage extends ConsumerWidget {
-  const TestPage({super.key});
+class DemoPage extends ConsumerWidget {
+  const DemoPage({super.key, required this.child});
+  final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final theme = ref.watch(themeProvider);
-    return const CLFullscreenBox(
-      useSafeArea: true,
-      child: EmptyViewCollection(),
-    );
+    return CLFullscreenBox(useSafeArea: true, child: child);
   }
 }
+
+//EmptyViewCollection()
 
 class TestButton extends ConsumerWidget {
   const TestButton({super.key});
