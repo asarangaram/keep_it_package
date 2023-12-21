@@ -19,8 +19,9 @@ class _CLText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text,
-        maxLines: isLabel ? 1 : null,
-        overflow: isLabel ? TextOverflow.ellipsis : null,
+        maxLines: isLabel ? 1 : 2,
+        overflow: TextOverflow.fade,
+        textAlign: TextAlign.center,
         style: Theme.of(context)
             .textTheme
             .bodyLarge!
