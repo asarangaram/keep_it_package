@@ -9,11 +9,15 @@ class KeepItMainView extends ConsumerStatefulWidget {
   final Widget Function(BuildContext context,
       GlobalKey<State<StatefulWidget>> quickMenuScopeKey) pageBuilder;
   final List<List<CLMenuItem>> menuItems;
+  final List<CLButtonIcon> actions;
+  final bool showCaption;
 
   const KeepItMainView({
     super.key,
     required this.pageBuilder,
     required this.menuItems,
+    required this.actions,
+    this.showCaption = false,
   });
 
   @override
@@ -37,6 +41,8 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
               children: [
                 MainHeader(
                   quickMenuScopeKey: quickMenuScopeKey,
+                  actions: const [],
+                  showCaption: widget.showCaption,
                   menuItems: [
                     ...widget.menuItems,
                     [

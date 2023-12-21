@@ -24,6 +24,28 @@ class CollectionView extends ConsumerWidget {
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final Size size;
 
+  newCollectionForm(
+    BuildContext context, {
+    Function()? onDone,
+    Collection? collection,
+  }) =>
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return CLDialogWrapper(
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              child: UpsertCollectionDialogForm(
+                collection: collection,
+                onDone: () {
+                  Navigator.of(context).pop();
+                  onDone?.call();
+                },
+              ));
+        },
+      );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionsAsync = ref.read(collectionsProvider(null));
@@ -40,14 +62,9 @@ class CollectionView extends ConsumerWidget {
                     [
                       CLMenuItem('Edit', Icons.edit,
                           onTap: collectionsAsync.whenOrNull(
-                              data: (Collections collections) => () {
-                                    onDone.call();
-                                    showDialog<void>(
-                                      context: context,
-                                      builder: (context) => buildEditor(
-                                          context, collections, collection!),
-                                    );
-                                  })),
+                              data: (Collections collections) => () =>
+                                  newCollectionForm(context,
+                                      onDone: onDone, collection: collection))),
                       CLMenuItem('Delete', Icons.delete, onTap: () {
                         onDone.call();
                         ref

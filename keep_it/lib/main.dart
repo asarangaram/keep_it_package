@@ -5,14 +5,15 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:window_size/window_size.dart';
 
+import 'pages/page_collections.dart';
 import 'pages/page_show_image.dart';
 
-import 'pages/views/collections_page/collection_grid_view.dart';
-
+import 'pages/views/app_theme.dart';
 import 'pages/views/shared_items_view.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -39,7 +40,7 @@ class KeepItApp implements AppDescriptor {
     return {
       "home": (context) => const PageShowImage(
           imagePath: "assets/wallpaperflare.com_wallpaper-2.jpg"),
-      "collections": (context) => const CollectionGridView.fromDB(),
+      "collections": (context) => const AppTheme(child: CollectionsPage()),
       "demo": (context) => const DemoMain()
     };
   }

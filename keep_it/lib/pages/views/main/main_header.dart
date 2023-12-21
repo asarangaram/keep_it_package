@@ -7,25 +7,36 @@ class MainHeader extends ConsumerWidget {
     super.key,
     required this.quickMenuScopeKey,
     required this.menuItems,
+    required this.actions,
+    this.showCaption = false,
   });
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final List<List<CLMenuItem>> menuItems;
+  final bool showCaption;
+  final List<CLButtonIcon> actions;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment:
+            showCaption ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
-          const Expanded(
-            child: Center(
-              child: CLText.veryLarge(
-                "Keep It",
+          if (showCaption)
+            const Expanded(
+              child: Center(
+                child: CLText.veryLarge(
+                  "Keep It",
+                ),
               ),
             ),
-          ),
+          for (var a in actions)
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: a,
+            ),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: CLQuickMenuAnchor(
@@ -42,7 +53,7 @@ class MainHeader extends ConsumerWidget {
                   menuItems: insertOnDone(context, menuItems, onDone),
                 );
               },
-              child: const CLIcon.small(
+              child: const CLIcon.large(
                 Icons.more_vert,
               ),
             ),

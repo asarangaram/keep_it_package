@@ -32,85 +32,97 @@ class CollectionGridView extends ConsumerStatefulWidget {
 
 class CollectionGridViewState extends ConsumerState<CollectionGridView> {
   bool isGridView = true;
+
+  newCollectionForm({Function()? onDone}) => showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return CLDialogWrapper(onCancel: () {
+            Navigator.of(context).pop();
+          }, child: UpsertCollectionDialogForm(
+            onDone: () {
+              Navigator.of(context).pop();
+              onDone?.call();
+            },
+          ));
+        },
+      );
+
   @override
   Widget build(BuildContext context) {
     final collectionsAsync = ref.watch(collectionsProvider(null));
-    final handleCreateNew = collectionsAsync.whenOrNull(
-        data: (collections) => ({Function()? onDone}) => showDialog<void>(
-              context: context,
-              builder: (BuildContext context) {
-                return CLDialogWrapper(onCancel: () {
-                  Navigator.of(context).pop();
-                }, child: UpsertCollectionDialogForm(
-                  onDone: () {
-                    Navigator.of(context).pop();
-                    onDone?.call();
-                  },
-                ));
-              },
-            ));
-    return KeepItMainView(
-      menuItems: [
-        [
-          CLMenuItem(
-            "New\nCollection",
-            Icons.add,
-            onTap: () => showDialog<void>(
-              context: context,
-              builder: (BuildContext context) {
-                return CLButtonsGrid.dialog(
-                  clMenuItems2D: [
-                    [
-                      CLMenuItem("Suggested\nCollections", Icons.menu),
-                      CLMenuItem("Create New", Icons.new_label, onTap: () {
-                        handleCreateNew?.call(onDone: () {
-                          Navigator.of(context).pop();
-                        });
-                      }),
-                    ]
-                  ],
-                  onCancel: () {
-                    Navigator.of(context).pop();
-                  },
-                );
-              },
+
+    return collectionsAsync.when(
+      loading: () => const CLLoadingView(),
+      error: (err, _) => CLErrorView(errorMessage: err.toString()),
+      data: (collections) {
+        return KeepItMainView(
+          actions: [
+            CLButtonIcon.large(
+              Icons.add,
+              onTap: () {},
             ),
-          ),
-          CLMenuItem("ListView", Icons.view_list)
-        ]
-      ],
-      pageBuilder: (context, quickMenuScopeKey) {
-        return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Row(
+            CLButtonIcon.large(
+              Icons.view_list,
+              onTap: () {},
+            )
+          ],
+          menuItems: const [],
+          pageBuilder: (context, quickMenuScopeKey) {
+            return Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: CLText.large(
-                        "Collections",
+                  const Row(
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: CLText.large(
+                            "Collections",
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              Flexible(
-                child: switch (widget.collectionsNullable) {
-                  null =>
-                    CollectionGridFromDB(quickMenuScopeKey: quickMenuScopeKey),
-                  _ => CollectionGrid(
-                      quickMenuScopeKey: quickMenuScopeKey,
-                      collectionList: widget.collectionsNullable!,
-                    )
-                },
-              )
-              // if (widget.collectionsNullable != null)
-            ]);
+                  Flexible(
+                    child: switch (widget.collectionsNullable) {
+                      null => CollectionGridFromDB(
+                          quickMenuScopeKey: quickMenuScopeKey),
+                      _ => CollectionGrid(
+                          quickMenuScopeKey: quickMenuScopeKey,
+                          collectionList: widget.collectionsNullable!,
+                        )
+                    },
+                  )
+                  // if (widget.collectionsNullable != null)
+                ]);
+          },
+        );
       },
     );
   }
+
+  onCreateNewCollection(Function({Function()? onDone}) handleCreateNew) =>
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return CLButtonsGrid.dialog(
+            onCancel: () {
+              Navigator.of(context).pop();
+            },
+            clMenuItems2D: [
+              [
+                CLMenuItem("Suggested\nCollections", Icons.menu),
+                CLMenuItem("Create New", Icons.new_label, onTap: () {
+                  newCollectionForm(onDone: () {
+                    Navigator.of(context).pop();
+                  });
+                }),
+              ],
+            ],
+          );
+        },
+      );
 }
 
 class CollectionGridFromDB extends ConsumerWidget {
@@ -126,7 +138,6 @@ class CollectionGridFromDB extends ConsumerWidget {
         loading: () => const CLLoadingView(),
         error: (err, _) => CLErrorView(errorMessage: err.toString()),
         data: (collections) {
-          print("Loaded ${collections.entries.length} collections");
           return CollectionGrid(
               collectionList: collections.entries,
               quickMenuScopeKey: quickMenuScopeKey);
@@ -145,10 +156,44 @@ class CollectionGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final collectionsAsync = ref.watch(collectionsProvider(null));
+    final handleCreateNew = collectionsAsync.whenOrNull(
+        data: (collections) => ({Function()? onDone}) => showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return CLDialogWrapper(onCancel: () {
+                  Navigator.of(context).pop();
+                }, child: UpsertCollectionDialogForm(
+                  onDone: () {
+                    Navigator.of(context).pop();
+                    onDone?.call();
+                  },
+                ));
+              },
+            ));
     if (collectionList.isEmpty) {
-      return const Center(
-        child: CLText.small(
-          "No collections found",
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CLText.large(
+              "Create your first collection",
+            ),
+            const SizedBox(
+              height: 32,
+            ),
+            CLButtonsGrid(
+              clMenuItems2D: [
+                [
+                  CLMenuItem("Suggested\nCollections", Icons.menu),
+                  CLMenuItem("Create New", Icons.new_label, onTap: () {
+                    handleCreateNew?.call(onDone: () {});
+                  }),
+                ]
+              ],
+            )
+          ],
         ),
       );
     } else {
@@ -164,6 +209,4 @@ class CollectionGrid extends ConsumerWidget {
       );
     }
   }
-}
-
-/*  */
+} /*  */

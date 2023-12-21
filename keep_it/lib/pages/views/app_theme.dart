@@ -7,6 +7,13 @@ class AppTheme extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Theme(data: Theme.of(context).copyWith(), child: child);
+    return Theme(
+        data: Theme.of(context).copyWith(
+            textTheme: Theme.of(context).textTheme.copyWith(
+                bodyLarge: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.w600))),
+        child: child);
   }
 }
