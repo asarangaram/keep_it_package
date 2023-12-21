@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class CLQuickMenuItem {
+class CLMenuItem {
   String title;
   IconData icon;
   void Function()? onTap;
-  CLQuickMenuItem(this.title, this.icon, {this.onTap});
+  CLMenuItem(this.title, this.icon, {this.onTap});
 }

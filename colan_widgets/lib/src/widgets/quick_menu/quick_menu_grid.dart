@@ -10,7 +10,7 @@ class CLQuickMenuGrid extends StatelessWidget {
     this.disabledColor,
   });
 
-  final List<CLQuickMenuItem> menuItems;
+  final List<CLMenuItem> menuItems;
   final Color? foregroundColor;
   final Color? backgroundColor;
   final Color? disabledColor;

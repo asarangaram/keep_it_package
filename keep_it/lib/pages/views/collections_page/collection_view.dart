@@ -37,7 +37,7 @@ class CollectionView extends ConsumerWidget {
               return AppTheme(
                 child: CLQuickMenuGrid(
                   menuItems: [
-                    CLQuickMenuItem('Edit', Icons.edit,
+                    CLMenuItem('Edit', Icons.edit,
                         onTap: collectionsAsync.whenOrNull(
                             data: (Collections collections) => () {
                                   onDone.call();
@@ -47,7 +47,7 @@ class CollectionView extends ConsumerWidget {
                                         context, collections, collection!),
                                   );
                                 })),
-                    CLQuickMenuItem('Delete', Icons.delete, onTap: () {
+                    CLMenuItem('Delete', Icons.delete, onTap: () {
                       onDone.call();
                       ref
                           .read(collectionsProvider(null).notifier)

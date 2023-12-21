@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_loader/app_loader.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,8 +39,14 @@ class KeepItApp implements AppDescriptor {
       "home": (context) => const PageShowImage(
           imagePath: "assets/wallpaperflare.com_wallpaper-2.jpg"),
       "collections": (context) => const CollectionsPage(),
-      "demo_EmptyViewCollection": (context) => const DemoPage(
-            child: EmptyViewCollection(),
+      "demo_EmptyViewCollection": (context) => DemoPage(
+            child: EmptyViewCollection(
+              
+              clMenuItems: [
+                CLMenuItem("Suggested Collections", Icons.menu, onTap: () {}),
+                CLMenuItem("New Collection", Icons.new_label, onTap: () {}),
+              ],
+            ),
           )
     };
   }

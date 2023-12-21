@@ -36,7 +36,7 @@ class MainHeader extends ConsumerWidget {
                   child: CLQuickMenuGrid(
                     menuItems: [
                       for (var i = 0; i < 1; i++) ...[
-                        CLQuickMenuItem(
+                        CLMenuItem(
                           'Paste',
                           Icons.content_paste,
                           onTap: () {
@@ -44,7 +44,7 @@ class MainHeader extends ConsumerWidget {
                             onDone();
                           },
                         ),
-                        CLQuickMenuItem(
+                        CLMenuItem(
                           'Settings',
                           Icons.settings,
                           onTap: () {

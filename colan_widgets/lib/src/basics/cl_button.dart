@@ -302,3 +302,64 @@ class CLButtonElevatedText extends _CLButton {
             scaleType: CLScaleType.tiny,
             boxDecoration: boxDecoration);
 }
+
+class _CLButtonElevated extends StatelessWidget {
+  const _CLButtonElevated({
+    super.key,
+    required this.child,
+    this.onTap,
+    required this.scaleType,
+  });
+  final Widget child;
+  final void Function()? onTap;
+  final CLScaleType scaleType;
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: SizedBox(
+        width: scaleType.fontSize * 8,
+        height: scaleType.fontSize * 10,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Card(
+                elevation: 12,
+                shape: const ContinuousRectangleBorder(),
+                margin: const EdgeInsets.all(0),
+                child: InkWell(
+                  onTap: onTap,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: child,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CLButtonElevated extends _CLButtonElevated {
+  const CLButtonElevated.veryLarge(
+      {super.key, required super.child, super.onTap})
+      : super(scaleType: CLScaleType.veryLarge);
+  const CLButtonElevated.large({super.key, required super.child, super.onTap})
+      : super(scaleType: CLScaleType.large);
+  const CLButtonElevated.standard(
+      {super.key, required super.child, super.onTap})
+      : super(scaleType: CLScaleType.standard);
+  const CLButtonElevated.small({super.key, required super.child, super.onTap})
+      : super(scaleType: CLScaleType.small);
+  const CLButtonElevated.verySmall(
+      {super.key, required super.child, super.onTap})
+      : super(scaleType: CLScaleType.verySmall);
+  const CLButtonElevated.tiny({super.key, required super.child, super.onTap})
+      : super(scaleType: CLScaleType.tiny);
+}

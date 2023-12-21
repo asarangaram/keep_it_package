@@ -4,7 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/pages/views/app_theme.dart';
 
 class EmptyViewCollection extends ConsumerWidget {
-  const EmptyViewCollection({super.key});
+  const EmptyViewCollection({
+    super.key,
+    required this.clMenuItems,
+  });
+  final List<CLMenuItem> clMenuItems;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -13,16 +17,15 @@ class EmptyViewCollection extends ConsumerWidget {
         alignment: Alignment.center,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            for (List v in [
-              [Icons.menu, "Suggested\nCollections"],
-              [Icons.menu, "New\nCollection"],
-            ])
+            for (var menuItem in clMenuItems)
               Expanded(
-                child: ElevatedIconLabelled(
+                child: CLButtonElevated.large(
+                  onTap: menuItem.onTap,
                   child: CLIconLabelled.large(
-                    (v)[0],
-                    (v)[1],
+                    menuItem.icon,
+                    menuItem.title,
                   ),
                 ),
               ),
@@ -33,41 +36,6 @@ class EmptyViewCollection extends ConsumerWidget {
   }
 }
 
-class ElevatedIconLabelled extends StatelessWidget {
-  const ElevatedIconLabelled({super.key, this.child});
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: SizedBox(
-        width: CLScaleType.large.fontSize * 8,
-        height: CLScaleType.large.fontSize * 10,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Card(
-                elevation: 12,
-                shape: const ContinuousRectangleBorder(),
-                margin: const EdgeInsets.all(0),
-                child: InkWell(
-                  onTap: () {},
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: child,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 /*
 
 child: 
