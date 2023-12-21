@@ -36,12 +36,12 @@ class _CLIcon extends StatelessWidget {
           size: scaleType.iconSize,
         ),
         switch (scaleType) {
-          CLScaleType.veryLarge => CLLabel.veryLarge,
-          CLScaleType.large => CLLabel.large,
-          CLScaleType.standard => CLLabel.standard,
-          CLScaleType.small => CLLabel.small,
-          CLScaleType.verySmall => CLLabel.verySmall,
-          CLScaleType.tiny => CLLabel.tiny,
+          CLScaleType.veryLarge => CLText.veryLarge,
+          CLScaleType.large => CLText.large,
+          CLScaleType.standard => CLText.standard,
+          CLScaleType.small => CLText.small,
+          CLScaleType.verySmall => CLText.verySmall,
+          CLScaleType.tiny => CLText.tiny,
         }(text!, color: color)
       ],
     );
