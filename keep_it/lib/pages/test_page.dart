@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/providers/theme.dart';
 import 'views/collection_list_view.dart';
+import 'views/collections_page/empty_view.dart';
 
 class TestPage extends ConsumerWidget {
   const TestPage({super.key});
@@ -13,9 +14,9 @@ class TestPage extends ConsumerWidget {
     final theme = ref.watch(themeProvider);
     return CLFullscreenBox(
         backgroundColor: theme.colorTheme.backgroundColor,
-        hasBorder: true,
+        // hasBorder: true,
         useSafeArea: true,
-        child: const Center(child: TestButton()));
+        child: const EmptyViewCollection());
   }
 }
 
