@@ -65,6 +65,7 @@ class _CLButton extends StatelessWidget {
 
   // TODO: Merge from another object
   static void showSnackBarAboveDialog(BuildContext context, String message,
+      // ignore: unused_element
       {Duration duration = const Duration(milliseconds: 400)}) {
     // Create an overlay entry
     OverlayEntry entry;

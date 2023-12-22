@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../basics/cl_icon.dart';
 import 'quickmenu_controller.dart';
 
 class CLQuickMenuAnchor extends ConsumerStatefulWidget {

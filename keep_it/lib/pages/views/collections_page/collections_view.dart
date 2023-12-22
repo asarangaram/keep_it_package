@@ -2,11 +2,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/main/main_header.dart';
 import 'package:store/store.dart';
 
 import '../main/keep_it_main_view.dart';
-import 'add_collection_form.dart';
+
 import 'collections_empty.dart';
 import 'collections_grid.dart';
 import 'collections_list.dart';

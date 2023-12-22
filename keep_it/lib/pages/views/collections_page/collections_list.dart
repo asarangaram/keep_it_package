@@ -1,11 +1,9 @@
 import 'dart:math';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'collection_preview.dart';
 import 'collections_list_item.dart';
 
 class CollectionsList extends ConsumerWidget {
@@ -33,20 +31,16 @@ class CollectionsList extends ConsumerWidget {
 
     Random random = Random(42);
 
-    return Container(
-      // decoration: BoxDecoration(border: Border.all()),
-      child: ListView.builder(
-        itemCount: collectionList.length,
-        itemBuilder: (context, index) {
-          return CollectionsListItem(
-            collectionList[index],
-            isSelected: selectionMask?[index],
-            random: random,
-            onTap:
-                (onSelection == null) ? null : () => onSelection!.call(index),
-          );
-        },
-      ),
+    return ListView.builder(
+      itemCount: collectionList.length,
+      itemBuilder: (context, index) {
+        return CollectionsListItem(
+          collectionList[index],
+          isSelected: selectionMask?[index],
+          random: random,
+          onTap: (onSelection == null) ? null : () => onSelection!.call(index),
+        );
+      },
     );
   }
 }
