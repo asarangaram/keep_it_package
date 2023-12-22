@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'views/collections_page/collection_grid_view.dart';
+import 'views/collections_page/collections_view.dart';
 
 class CollectionsPage extends ConsumerWidget {
   const CollectionsPage({super.key});

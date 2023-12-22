@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../data/models/paginator.dart';
-import 'collection_view.dart';
+import 'collections_grid_item.dart';
 
 class PaginatedGrid extends ConsumerWidget {
   const PaginatedGrid({
@@ -45,7 +45,7 @@ class PaginatedGrid extends ConsumerWidget {
                       child: SizedBox(
                         width: childSize.width,
                         height: childSize.height,
-                        child: CollectionView(
+                        child: CollectionsGridItem(
                           collection:
                               paginatedCollection.getItem(pageNum, r, c),
                           quickMenuScopeKey: quickMenuScopeKey,

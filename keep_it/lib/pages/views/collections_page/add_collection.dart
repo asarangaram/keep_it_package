@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart';
+/* import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -25,9 +25,10 @@ class _AddNewCollectionState extends ConsumerState<AddNewCollection> {
                 builder: (BuildContext context) {
                   return const Dialog(
                       insetPadding: EdgeInsets.all(8.0),
-                      child: UpsertCollectionDialogForm());
+                      child: UpsertCollectionForm());
                 },
               )),
     );
   }
 }
+ */

@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class UpsertCollectionDialogForm extends ConsumerWidget {
-  const UpsertCollectionDialogForm({super.key, this.collection, this.onDone});
+class UpsertCollectionForm extends ConsumerWidget {
+  const UpsertCollectionForm({super.key, this.collection, this.onDone});
 
   final Collection? collection;
   final Function()? onDone;

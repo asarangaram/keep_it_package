@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'collections_page/collection_list_view.dart';
+import 'collections_page/collection_list_view_old.dart';
 import 'receive_shared/media_preview.dart';
 import 'receive_shared/save_or_cancel.dart';
 
