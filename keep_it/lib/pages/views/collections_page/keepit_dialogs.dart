@@ -41,25 +41,23 @@ class KeepItDialogs {
               onCancel: () {
                 Navigator.of(context).pop();
               },
-              child: SingleChildScrollView(
-                child: CLSelectionWrapper(
-                  selectableList: collectionList,
-                  multiSelection: true,
-                  onSelectionDone: (selectedIndices) {
-                    onSelectionDone(selectedIndices);
-                    Navigator.of(context).pop();
-                  },
-                  listBuilder: (
-                      {required onSelection,
-                      required selectableList,
-                      required selectionMask}) {
-                    return CollectionsList(
-                      collectionList: selectableList as List<Collection>,
-                      selectionMask: selectionMask,
-                      onSelection: onSelection,
-                    );
-                  },
-                ),
+              child: CLSelectionWrapper(
+                selectableList: collectionList,
+                multiSelection: true,
+                onSelectionDone: (selectedIndices) {
+                  onSelectionDone(selectedIndices);
+                  Navigator.of(context).pop();
+                },
+                listBuilder: (
+                    {required onSelection,
+                    required selectableList,
+                    required selectionMask}) {
+                  return CollectionsList(
+                    collectionList: selectableList as List<Collection>,
+                    selectionMask: selectionMask,
+                    onSelection: onSelection,
+                  );
+                },
               ),
             );
           });
