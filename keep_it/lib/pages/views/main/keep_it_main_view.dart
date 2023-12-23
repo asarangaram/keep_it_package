@@ -32,7 +32,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(7.9),
         child: CLQuickMenuScope(
           key: quickMenuScopeKey,
           child: Column(
@@ -46,12 +46,15 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
                   mainActionItems: [
                     [
                       CLMenuItem(
-                        'Clipboard',
-                        Icons.content_paste,
+                        'Paste',
+                        Icons.content_paste_go_outlined,
+                        
                       ),
                       CLMenuItem(
                         'Settings',
                         Icons.settings,
+                        /*Icons.settings_applications_sharp,*/ 
+                        //TODO: For Dark Mode
                       ),
                     ],
                   ],

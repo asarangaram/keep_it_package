@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../basics/cl_button.dart';
@@ -31,6 +32,7 @@ class CLSelectionWrapperState extends State<CLSelectionWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedCount = selectionMask.where((e) => e == true).toList().length;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -47,17 +49,33 @@ class CLSelectionWrapperState extends State<CLSelectionWrapper> {
               },
               selectionMask: selectionMask),
         ),
-        CLButtonText.veryLarge(
-          "Done",
-          onTap: () {
-            widget.onSelectionDone(selectionMask
-                .asMap()
-                .entries
-                .where((element) => element.value)
-                .map((e) => e.key)
-                .toList());
-          },
-        )
+        const Divider(
+          thickness: 2,
+        ),
+        if (selectedCount > 0) ...[
+          const SizedBox(
+            height: 16,
+          ),
+          CLText.small("$selectedCount selected"),
+          CLButtonText.veryLarge(
+            "Done",
+            onTap: () {
+              widget.onSelectionDone(selectionMask
+                  .asMap()
+                  .entries
+                  .where((element) => element.value)
+                  .map((e) => e.key)
+                  .toList());
+            },
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+        ] else ...[
+          const SizedBox(height: 16),
+          const CLText.large("Select from Suggestions"),
+          const SizedBox(height: 16)
+        ]
       ],
     );
   }

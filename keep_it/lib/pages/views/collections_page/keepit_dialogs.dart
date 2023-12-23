@@ -1,8 +1,11 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+
 import 'package:store/store.dart';
 
+import '../../../data/db_default_collections.dart';
 import 'add_collection_form.dart';
+import 'collections_from_db.dart';
 import 'collections_list.dart';
 
 class KeepItDialogs {
@@ -28,43 +31,73 @@ class KeepItDialogs {
         },
       );
 
+  static Widget _selectCollections(
+    BuildContext context,
+    List<Collection> collections, {
+    required dynamic Function(List<Collection>) onSelectionDone,
+  }) {
+    if (collections.isEmpty) {
+      throw Exception("CollectionList can't be empty!");
+    }
+    return CLDialogWrapper(
+      backgroundColor: Colors.transparent,
+      isDialog: true,
+      onCancel: () {
+        Navigator.of(context).pop();
+      },
+      child: CLSelectionWrapper(
+        selectableList: collections,
+        multiSelection: true,
+        onSelectionDone: (selectedIndices) {
+          onSelectionDone(selectedIndices.map((e) => collections[e]).toList());
+
+          Navigator.of(context).pop();
+        },
+        listBuilder: (
+            {required onSelection,
+            required selectableList,
+            required selectionMask}) {
+          if (selectableList.isEmpty) {
+            throw Exception("CollectionList can't be empty!");
+          }
+          return CollectionsList(
+            collectionList: selectableList as List<Collection>,
+            selectionMask: selectionMask,
+            onSelection: onSelection,
+          );
+        },
+      ),
+    );
+  }
+
   static selectCollections(
     BuildContext context, {
-    required List<Collection> collectionList,
-    required Function(List<int>) onSelectionDone,
+    List<Collection>? collectionList,
+    required Function(List<Collection>) onSelectionDone,
   }) =>
       showDialog<void>(
           context: context,
           builder: (BuildContext context) {
-            return CLDialogWrapper(
-              isDialog: true,
-              onCancel: () {
-                Navigator.of(context).pop();
-              },
-              child: CLSelectionWrapper(
-                selectableList: collectionList,
-                multiSelection: true,
-                onSelectionDone: (selectedIndices) {
-                  onSelectionDone(selectedIndices);
-                  Navigator.of(context).pop();
-                },
-                listBuilder: (
-                    {required onSelection,
-                    required selectableList,
-                    required selectionMask}) {
-                  return CollectionsList(
-                    collectionList: selectableList as List<Collection>,
-                    selectionMask: selectionMask,
-                    onSelection: onSelection,
-                  );
-                },
-              ),
+            if (collectionList != null) {
+              return CLBackground(
+                brighnessFactor: 0.25,
+                child: _selectCollections(context, collectionList,
+                    onSelectionDone: onSelectionDone),
+              );
+            }
+            return CollectionsFromDB(
+              buildOnData: (collectionFromDB) => _selectCollections(
+                  context, collectionFromDB.entries,
+                  onSelectionDone: onSelectionDone),
             );
           });
-  /**
-           * 
-           
-           */
+
+  static void onSuggestions(
+    context, {
+    required dynamic Function(List<Collection>) onSelectionDone,
+  }) =>
+      selectCollections(context,
+          collectionList: defaultCollections, onSelectionDone: (_) {});
 
   // Not used
   /* onCreateNewCollection(BuildContext context,

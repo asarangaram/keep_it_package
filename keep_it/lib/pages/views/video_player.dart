@@ -1,6 +1,7 @@
 import 'dart:io';
-
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
+  late Future<void> Function() _initializeVideoPlayerFuture;
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       File(widget.path),
     );
 
-    _initializeVideoPlayerFuture = _controller.initialize();
+    _initializeVideoPlayerFuture = () async => await _controller.initialize();
   }
 
   @override
@@ -46,7 +47,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     return // Use a FutureBuilder to display a loading spinner while waiting for the
 // VideoPlayerController to finish initializing.
         FutureBuilder(
-      future: _initializeVideoPlayerFuture,
+      future: _initializeVideoPlayerFuture(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           // If the VideoPlayerController has finished initialization, use
@@ -54,32 +55,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           return AspectRatio(
             aspectRatio: _controller.value.aspectRatio,
             // Use the VideoPlayer widget to display the video.
-            child: Stack(
-              children: [
-                VideoPlayer(_controller),
-                Positioned(
-                    child: IconButton(
-                  onPressed: () {
-                    // Wrap the play or pause in a call to `setState`. This ensures the
-                    // correct icon is shown.
-                    setState(() {
-                      // If the video is playing, pause it.
-                      if (_controller.value.isPlaying) {
-                        _controller.pause();
-                      } else {
-                        // If the video is paused, play it.
-                        _controller.setVolume(0.0);
-                        _controller.play();
-                      }
-                    });
-                  },
-                  icon: Icon(
-                    _controller.value.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                  ),
-                ))
-              ],
+            child: GestureDetector(
+              onTap: () {
+                // If the video is playing, pause it.
+                if (_controller.value.isPlaying) {
+                  _controller.pause();
+                } else {
+                  // If the video is paused, play it.
+                  _controller.setVolume(0.0);
+                  _controller.play();
+                }
+              },
+              child: Stack(
+                children: [
+                  VideoPlayer(_controller),
+                  Center(
+                    child: VideoController(controller: _controller),
+                  )
+                ],
+              ),
             ),
           );
         } else {
@@ -93,3 +87,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 }
+
+class VideoController extends StatefulWidget {
+  const VideoController({
+    super.key,
+    required VideoPlayerController controller,
+  }) : _controller = controller;
+
+  final VideoPlayerController _controller;
+
+  @override
+  State<VideoController> createState() => _VideoControllerState();
+}
+
+class _VideoControllerState extends State<VideoController> {
+  @override
+  void initState() {
+    widget._controller.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget._controller.value.isPlaying) {
+      return CLIcon.veryLarge(
+        widget._controller.value.isPlaying
+            ? Icons.pause_circle
+            : Icons.play_arrow_sharp,
+        color: Colors.white,
+      );
+    } else {
+      return Container();
+    }
+  }
+}
+
+final isPlayingProvider = StateProvider<bool>((ref) {
+  return false;
+});

@@ -23,6 +23,7 @@ class _CLIcon extends StatelessWidget {
       return Icon(
         iconData,
         color: color,
+        size: scaleType.iconSize,
       );
     }
 

@@ -21,12 +21,12 @@ class CLDialogWrapper extends StatelessWidget {
       return child;
     }
     return Dialog(
-      shape: const RoundedRectangleBorder(),
+      shape: const ContinuousRectangleBorder(),
       //scrollable: true,
 
       //shape: const ContinuousRectangleBorder(),
       backgroundColor: backgroundColor,
-      insetPadding: padding ?? const EdgeInsets.all(8.0),
+      insetPadding: padding ?? EdgeInsets.zero,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width,

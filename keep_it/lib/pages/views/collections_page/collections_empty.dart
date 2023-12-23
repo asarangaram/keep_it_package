@@ -24,7 +24,9 @@ class CollectionsEmpty extends StatelessWidget {
           CLButtonsGrid(
             children2D: [
               [
-                CLMenuItem("Suggested\nCollections", Icons.menu),
+                CLMenuItem("Suggested\nCollections", Icons.menu,
+                    onTap: () => KeepItDialogs.onSuggestions(context,
+                        onSelectionDone: (_) {})),
                 CLMenuItem("Create New", Icons.new_label,
                     onTap: () => KeepItDialogs.upsertCollection(context))
               ]

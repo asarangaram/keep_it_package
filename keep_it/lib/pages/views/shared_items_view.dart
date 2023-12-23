@@ -43,9 +43,10 @@ class SharedItemsView extends ConsumerWidget {
                     onDiscard: onDiscard,
                     onSave: () => KeepItDialogs.selectCollections(
                       context,
-                      collectionList: collections.entries,
-                      onSelectionDone: (List<int> selectedIndices) {
-                        print(selectedIndices);
+                      onSelectionDone: (List<Collection> selectedCollections) {
+                        print(selectedCollections);
+
+                        onSelectionDone(context, ref, selectedCollections);
                       },
                     ),
                   ),
@@ -78,6 +79,7 @@ class SharedItemsView extends ConsumerWidget {
     for (var entry in media.entries) {
       switch (entry.value) {
         case SupportedMediaType.image:
+        case SupportedMediaType.video:
           // Copy item to storage.
           final newFile = await FileHandler.move(entry.key, toDir: "keepIt");
           // if URL is stored, read it and delete

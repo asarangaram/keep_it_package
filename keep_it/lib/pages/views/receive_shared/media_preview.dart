@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/pages/views/receive_shared/preview_single_image.dart';
 
+import '../video_player.dart';
+
 class MediaPreview extends ConsumerWidget {
   const MediaPreview({
     super.key,
@@ -28,6 +30,9 @@ class MediaPreview extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(16.0),
                   child: PreviewSingleImage(imagePath: e.key)),
             ),
+          ),
+        SupportedMediaType.video => VideoPlayerScreen(
+            path: e.key,
           ),
         _ => ShowAsText(text: e.key, type: e.value)
       };
