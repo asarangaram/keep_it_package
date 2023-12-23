@@ -26,23 +26,25 @@ class CLDialogWrapper extends StatelessWidget {
       //shape: const ContinuousRectangleBorder(),
       backgroundColor: backgroundColor,
       insetPadding: padding ?? const EdgeInsets.all(8.0),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, right: 8.0),
-              child: CLButtonIcon.small(
-                Icons.close,
-                onTap: onCancel,
+      content: SizedBox.expand(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0, right: 8.0),
+                child: CLButtonIcon.small(
+                  Icons.close,
+                  onTap: onCancel,
+                ),
               ),
             ),
-          ),
-          Flexible(child: child),
-        ],
+            Flexible(child: child),
+          ],
+        ),
       ),
     );
   }

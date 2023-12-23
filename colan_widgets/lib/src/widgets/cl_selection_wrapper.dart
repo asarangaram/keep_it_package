@@ -34,7 +34,7 @@ class CLSelectionWrapperState extends State<CLSelectionWrapper> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Flexible(
+        Expanded(
           child: widget.listBuilder(
               selectableList: widget.selectableList,
               onSelection: (index) {

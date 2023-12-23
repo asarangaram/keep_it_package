@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import 'add_collection_form.dart';
+import 'collections_list.dart';
 
 class KeepItDialogs {
   static upsertCollection(
@@ -26,6 +27,46 @@ class KeepItDialogs {
               ));
         },
       );
+
+  static selectCollections(
+    BuildContext context, {
+    required List<Collection> collectionList,
+    required Function(List<int>) onSelectionDone,
+  }) =>
+      showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return CLDialogWrapper(
+              isDialog: true,
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              child: SingleChildScrollView(
+                child: CLSelectionWrapper(
+                  selectableList: collectionList,
+                  multiSelection: true,
+                  onSelectionDone: (selectedIndices) {
+                    onSelectionDone(selectedIndices);
+                    Navigator.of(context).pop();
+                  },
+                  listBuilder: (
+                      {required onSelection,
+                      required selectableList,
+                      required selectionMask}) {
+                    return CollectionsList(
+                      collectionList: selectableList as List<Collection>,
+                      selectionMask: selectionMask,
+                      onSelection: onSelection,
+                    );
+                  },
+                ),
+              ),
+            );
+          });
+  /**
+           * 
+           
+           */
 
   // Not used
   /* onCreateNewCollection(BuildContext context,
