@@ -43,10 +43,16 @@ class SharedItemsView extends ConsumerWidget {
                     onDiscard: onDiscard,
                     onSave: () => KeepItDialogs.selectCollections(
                       context,
-                      onSelectionDone: (List<Collection> selectedCollections) {
-                        print(selectedCollections);
-
-                        onSelectionDone(context, ref, selectedCollections);
+                      onSelectionDone:
+                          (List<Collection> selectedCollections) async {
+                        await onSelectionDone(
+                            context, ref, selectedCollections);
+                        if (context.mounted) {
+                          CLButtonsGrid.showSnackBarAboveDialog(
+                              context, "Item(s) Saved",
+                              onSnackBarRemoved: onDiscard);
+                        }
+                        // onDiscard();
                       },
                     ),
                   ),
@@ -91,6 +97,7 @@ class SharedItemsView extends ConsumerWidget {
           }
           final item = Item(path: newFile, ref: imageUrl, clusterId: clusterId);
           ref.read(itemsProvider(clusterId).notifier).upsertItem(item);
+
         default:
           throw UnimplementedError();
       }

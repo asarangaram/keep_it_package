@@ -53,12 +53,12 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
                 ],
               );
             },
-            child: const CLIcon.veryLarge(
+            child: const CLIcon.standard(
               Icons.add,
             ),
           );
         },
-        (context, quickMenuScopeKey) => CLButtonIcon.veryLarge(
+        (context, quickMenuScopeKey) => CLButtonIcon.small(
               isGridView ? Icons.view_list : Icons.widgets,
               onTap: () {
                 setState(() {

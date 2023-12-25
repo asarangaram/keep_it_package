@@ -48,7 +48,7 @@ class CLListTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CLText.veryLarge(
+                      CLText.large(
                         title,
                         // textAlign: TextAlign.center,
                       ),

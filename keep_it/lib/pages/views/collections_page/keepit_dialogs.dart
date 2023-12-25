@@ -82,13 +82,16 @@ class KeepItDialogs {
               return CLBackground(
                 brighnessFactor: 0.25,
                 child: _selectCollections(context, collectionList,
-                    onSelectionDone: onSelectionDone),
+                    onSelectionDone: (_) {
+                  onSelectionDone(_);
+                }),
               );
             }
             return CollectionsFromDB(
               buildOnData: (collectionFromDB) => _selectCollections(
-                  context, collectionFromDB.entries,
-                  onSelectionDone: onSelectionDone),
+                  context, collectionFromDB.entries, onSelectionDone: (_) {
+                onSelectionDone(_);
+              }),
             );
           });
 

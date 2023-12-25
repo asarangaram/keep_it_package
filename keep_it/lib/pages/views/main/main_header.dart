@@ -36,12 +36,12 @@ class MainHeader extends ConsumerWidget {
             ),
           if (actionsBuilders != null && actionsBuilders!.isNotEmpty)
             ...actionsBuilders!.map((e) => Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                  padding: const EdgeInsets.only(right: 8.0),
                   child: e(context, quickMenuScopeKey),
                 )),
           if (mainActionItems != null)
             Padding(
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.only(right: 8),
               child: CLQuickMenuAnchor(
                 parentKey: quickMenuScopeKey,
                 menuBuilder: (context, boxconstraints,
@@ -53,7 +53,7 @@ class MainHeader extends ConsumerWidget {
                     children2D: insertOnDone(context, mainActionItems!, onDone),
                   );
                 },
-                child: const CLIcon.veryLarge(
+                child: const CLIcon.small(
                   Icons.more_vert,
                 ),
               ),

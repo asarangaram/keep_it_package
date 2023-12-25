@@ -97,7 +97,8 @@ class CLButtonsGrid extends ConsumerWidget {
   }
 
   static void showSnackBarAboveDialog(BuildContext context, String message,
-      {Duration duration = const Duration(milliseconds: 400)}) {
+      {Duration duration = const Duration(milliseconds: 400),
+      Function()? onSnackBarRemoved}) {
     // Create an overlay entry
     OverlayEntry entry;
 
@@ -132,6 +133,7 @@ class CLButtonsGrid extends ConsumerWidget {
     // Remove the overlay entry after a certain duration
     Future.delayed(const Duration(seconds: 2), () {
       entry.remove();
+      onSnackBarRemoved?.call();
     });
   }
 }
