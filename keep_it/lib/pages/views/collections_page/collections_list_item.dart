@@ -31,11 +31,7 @@ class CollectionsListItem extends StatelessWidget {
         subTitle: collection.description ?? "",
         leading: SizedBox.square(
           dimension: previewSize,
-          child: Stack(
-            children: [
-              CollectionPreview(random: random),
-            ],
-          ),
+          child: CollectionPreview(random: random),
         ),
         onTap: onTap,
       ),

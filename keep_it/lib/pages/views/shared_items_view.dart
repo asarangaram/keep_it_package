@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
 import 'package:store/store.dart';
 
-import 'collections_page/collections_from_db.dart';
+import 'load_from_store/load_collections.dart';
 import 'receive_shared/media_preview.dart';
 import 'receive_shared/save_or_cancel.dart';
 
@@ -25,7 +25,7 @@ class SharedItemsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CLFullscreenBox(
       useSafeArea: false,
-      child: CollectionsFromDB(
+      child: LoadCollections(
         buildOnData: (collections) {
           return SafeArea(
             child: SizedBox(

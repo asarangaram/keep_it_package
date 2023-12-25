@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import '../../../data/db_default_collections.dart';
+import '../main/background.dart';
 import 'add_collection_form.dart';
-import 'collections_from_db.dart';
+import '../load_from_store/load_collections.dart';
 import 'collections_list.dart';
 
 class KeepItDialogs {
@@ -39,33 +40,37 @@ class KeepItDialogs {
     if (collections.isEmpty) {
       throw Exception("CollectionList can't be empty!");
     }
-    return CLDialogWrapper(
-      backgroundColor: Colors.transparent,
-      isDialog: true,
-      onCancel: () {
-        Navigator.of(context).pop();
-      },
-      child: CLSelectionWrapper(
-        selectableList: collections,
-        multiSelection: true,
-        onSelectionDone: (selectedIndices) {
-          onSelectionDone(selectedIndices.map((e) => collections[e]).toList());
-
+    return CLBackground(
+      brighnessFactor: collections.isNotEmpty ? 0.25 : 0,
+      child: CLDialogWrapper(
+        backgroundColor: Colors.transparent,
+        isDialog: true,
+        onCancel: () {
           Navigator.of(context).pop();
         },
-        listBuilder: (
-            {required onSelection,
-            required selectableList,
-            required selectionMask}) {
-          if (selectableList.isEmpty) {
-            throw Exception("CollectionList can't be empty!");
-          }
-          return CollectionsList(
-            collectionList: selectableList as List<Collection>,
-            selectionMask: selectionMask,
-            onSelection: onSelection,
-          );
-        },
+        child: CLSelectionWrapper(
+          selectableList: collections,
+          multiSelection: true,
+          onSelectionDone: (selectedIndices) {
+            onSelectionDone(
+                selectedIndices.map((e) => collections[e]).toList());
+
+            Navigator.of(context).pop();
+          },
+          listBuilder: (
+              {required onSelection,
+              required selectableList,
+              required selectionMask}) {
+            if (selectableList.isEmpty) {
+              throw Exception("CollectionList can't be empty!");
+            }
+            return CollectionsList(
+              collectionList: selectableList as List<Collection>,
+              selectionMask: selectionMask,
+              onSelection: onSelection,
+            );
+          },
+        ),
       ),
     );
   }
@@ -87,7 +92,7 @@ class KeepItDialogs {
                 }),
               );
             }
-            return CollectionsFromDB(
+            return LoadCollections(
               buildOnData: (collectionFromDB) => _selectCollections(
                   context, collectionFromDB.entries, onSelectionDone: (_) {
                 onSelectionDone(_);

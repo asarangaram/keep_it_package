@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'views/collections_page/collections_from_db.dart';
+import 'views/load_from_store/load_collections.dart';
 import 'views/collections_page/collections_view.dart';
 
 class CollectionsPage extends ConsumerWidget {
@@ -12,7 +12,7 @@ class CollectionsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CLFullscreenBox(
       useSafeArea: false,
-      child: CollectionsFromDB(
+      child: LoadCollections(
           buildOnData: (collections) => CollectionsView(collections)),
     );
   }
