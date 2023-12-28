@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final List<RandomImageGenerator> images = [];
+  final List<RandomImage> images = [];
 
   MyHomePage({super.key});
 
@@ -35,8 +35,8 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Generated Images'),
       ),
-      body: FutureBuilder<List<Uint8List>>(
-        future: RandomImageGenerator.generateImages(
+      body: FutureBuilder<List<RandomImage>>(
+        future: RandomImage.generateImages(
             100), // Generate 10 images for demonstration
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -52,7 +52,7 @@ class MyHomePage extends StatelessWidget {
             listOfItem: images,
             numberOfColumn: (MediaQuery.of(context).size.width / 200).ceil(),
             itemBuilder: (item) {
-              final img = item as RandomImageGenerator;
+              final img = item as RandomImage;
               return AspectRatio(
                   aspectRatio: img.width / img.height,
                   child: Image.memory(img.image));

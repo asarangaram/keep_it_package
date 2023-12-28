@@ -4,19 +4,18 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-class RandomImageGenerator {
+class RandomImage {
   Uint8List image;
   int width;
   int height;
   static final random = Random();
-  RandomImageGenerator({
+  RandomImage({
     required this.image,
     required this.width,
     required this.height,
   });
 
-  static Future<RandomImageGenerator> generateImage(
-      {double? aspectRatio}) async {
+  static Future<RandomImage> generateImage({double? aspectRatio}) async {
     aspectRatio = aspectRatio ?? 1.0;
     final width = (100 + aspectRatio * 200).toInt();
     final height = width ~/ aspectRatio;
@@ -76,13 +75,12 @@ class RandomImageGenerator {
     final image = await picture.toImage(width, height);
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
-    return RandomImageGenerator(
+    return RandomImage(
         image: byteData!.buffer.asUint8List(), width: width, height: height);
   }
 
-  static Future<List<RandomImageGenerator>> generateImages(
-      int numImages) async {
-    final List<RandomImageGenerator> images = [];
+  static Future<List<RandomImage>> generateImages(int numImages) async {
+    final List<RandomImage> images = [];
 
     for (var i = 0; i < numImages; i++) {
       final aspectRatio = 0.7 + (1.3 - 0.7) * (i / numImages);
