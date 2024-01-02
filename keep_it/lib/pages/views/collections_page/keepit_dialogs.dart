@@ -35,10 +35,14 @@ class KeepItDialogs {
     BuildContext context,
     List<Collection> collections, {
     required dynamic Function(List<Collection>) onSelectionDone,
+    String? labelSelected,
+    String? labelNoneSelected,
   }) {
     if (collections.isEmpty) {
       throw Exception("CollectionList can't be empty!");
     }
+    print(labelSelected);
+    print(labelNoneSelected);
     return CLBackground(
       brighnessFactor: collections.isNotEmpty ? 0.25 : 0,
       child: CLDialogWrapper(
@@ -56,6 +60,8 @@ class KeepItDialogs {
 
             Navigator.of(context).pop();
           },
+          labelNoneSelected: labelNoneSelected,
+          labelSelected: labelSelected,
           listBuilder: (
               {required onSelection,
               required selectableList,
@@ -78,6 +84,8 @@ class KeepItDialogs {
     BuildContext context, {
     List<Collection>? collectionList,
     required Function(List<Collection>) onSelectionDone,
+    String? labelSelected,
+    String? labelNoneSelected,
   }) =>
       showDialog<void>(
           context: context,
@@ -85,17 +93,23 @@ class KeepItDialogs {
             if (collectionList != null) {
               return CLBackground(
                 brighnessFactor: 0.25,
-                child: _selectCollections(context, collectionList,
-                    onSelectionDone: (_) {
-                  onSelectionDone(_);
-                }),
+                child: _selectCollections(
+                  context,
+                  collectionList,
+                  onSelectionDone: onSelectionDone,
+                  labelSelected: labelSelected,
+                  labelNoneSelected: labelNoneSelected,
+                ),
               );
             }
             return LoadCollections(
               buildOnData: (collectionFromDB) => _selectCollections(
-                  context, collectionFromDB.entries, onSelectionDone: (_) {
-                onSelectionDone(_);
-              }),
+                context,
+                collectionFromDB.entries,
+                onSelectionDone: onSelectionDone,
+                labelSelected: labelSelected,
+                labelNoneSelected: labelNoneSelected,
+              ),
             );
           });
 
@@ -108,6 +122,8 @@ class KeepItDialogs {
       context,
       collectionList: availableSuggestions,
       onSelectionDone: onSelectionDone,
+      labelNoneSelected: "Select from Suggestions",
+      labelSelected: "Create Selected",
     );
   }
 

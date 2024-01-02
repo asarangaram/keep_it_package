@@ -59,12 +59,15 @@ class CLButtonsGrid extends ConsumerWidget {
                       for (var i = 0; i < clMenuItems1D.length; i++)
                         Expanded(
                           child: switch (scaleType) {
-                            CLScaleType.veryLarge => CLButtonElevated.veryLarge,
-                            CLScaleType.large => CLButtonElevated.large,
-                            CLScaleType.standard => CLButtonElevated.standard,
-                            CLScaleType.small => CLButtonElevated.small,
-                            CLScaleType.verySmall => CLButtonElevated.verySmall,
-                            CLScaleType.tiny => CLButtonElevated.tiny,
+                            CLScaleType.veryLarge =>
+                              CLButtonSquereElevated.veryLarge,
+                            CLScaleType.large => CLButtonSquereElevated.large,
+                            CLScaleType.standard =>
+                              CLButtonSquereElevated.standard,
+                            CLScaleType.small => CLButtonSquereElevated.small,
+                            CLScaleType.verySmall =>
+                              CLButtonSquereElevated.verySmall,
+                            CLScaleType.tiny => CLButtonSquereElevated.tiny,
                           }(
                             onTap: clMenuItems1D[i].onTap ??
                                 () {

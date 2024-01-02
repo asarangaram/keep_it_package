@@ -52,8 +52,11 @@ class SharedItemsView extends ConsumerWidget {
                               context, "Item(s) Saved",
                               onSnackBarRemoved: onDiscard);
                         }
+
                         // onDiscard();
                       },
+                      labelNoneSelected: "Select Tags",
+                      labelSelected: "Save",
                     ),
                   ),
                 ],

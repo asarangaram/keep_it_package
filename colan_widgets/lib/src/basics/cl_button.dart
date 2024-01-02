@@ -133,6 +133,7 @@ class CLButtonText extends _CLButton {
     super.color,
     super.disabledColor,
     super.onTap,
+    super.boxDecoration,
   }) : super(label: label, iconData: null, scaleType: CLScaleType.veryLarge);
   const CLButtonText.large(
     String label, {
@@ -140,6 +141,7 @@ class CLButtonText extends _CLButton {
     super.color,
     super.disabledColor,
     super.onTap,
+    super.boxDecoration,
   }) : super(label: label, iconData: null, scaleType: CLScaleType.large);
   const CLButtonText.standard(
     String label, {
@@ -147,6 +149,7 @@ class CLButtonText extends _CLButton {
     super.color,
     super.disabledColor,
     super.onTap,
+    super.boxDecoration,
   }) : super(label: label, iconData: null, scaleType: CLScaleType.standard);
   const CLButtonText.small(
     String label, {
@@ -161,6 +164,7 @@ class CLButtonText extends _CLButton {
     super.color,
     super.disabledColor,
     super.onTap,
+    super.boxDecoration,
   }) : super(label: label, iconData: null, scaleType: CLScaleType.verySmall);
   const CLButtonText.tiny(
     String label, {
@@ -168,6 +172,7 @@ class CLButtonText extends _CLButton {
     super.color,
     super.disabledColor,
     super.onTap,
+    super.boxDecoration,
   }) : super(label: label, iconData: null, scaleType: CLScaleType.tiny);
 }
 
@@ -344,8 +349,8 @@ class CLButtonElevatedText extends _CLButton {
             boxDecoration: boxDecoration);
 }
 
-class _CLButtonElevated extends StatelessWidget {
-  const _CLButtonElevated({
+class _CLButtonSquereElevated extends StatelessWidget {
+  const _CLButtonSquereElevated({
     super.key,
     required this.child,
     this.onTap,
@@ -387,20 +392,23 @@ class _CLButtonElevated extends StatelessWidget {
   }
 }
 
-class CLButtonElevated extends _CLButtonElevated {
-  const CLButtonElevated.veryLarge(
+class CLButtonSquereElevated extends _CLButtonSquereElevated {
+  const CLButtonSquereElevated.veryLarge(
       {super.key, required super.child, super.onTap})
       : super(scaleType: CLScaleType.veryLarge);
-  const CLButtonElevated.large({super.key, required super.child, super.onTap})
+  const CLButtonSquereElevated.large(
+      {super.key, required super.child, super.onTap})
       : super(scaleType: CLScaleType.large);
-  const CLButtonElevated.standard(
+  const CLButtonSquereElevated.standard(
       {super.key, required super.child, super.onTap})
       : super(scaleType: CLScaleType.standard);
-  const CLButtonElevated.small({super.key, required super.child, super.onTap})
+  const CLButtonSquereElevated.small(
+      {super.key, required super.child, super.onTap})
       : super(scaleType: CLScaleType.small);
-  const CLButtonElevated.verySmall(
+  const CLButtonSquereElevated.verySmall(
       {super.key, required super.child, super.onTap})
       : super(scaleType: CLScaleType.verySmall);
-  const CLButtonElevated.tiny({super.key, required super.child, super.onTap})
+  const CLButtonSquereElevated.tiny(
+      {super.key, required super.child, super.onTap})
       : super(scaleType: CLScaleType.tiny);
 }
