@@ -1,22 +1,14 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class RandomImage {
-  Uint8List image;
-  int width;
-  int height;
   static final random = Random();
-  RandomImage({
-    required this.image,
-    required this.width,
-    required this.height,
-  });
 
-  static Future<RandomImage> generateImage({double? aspectRatio}) async {
-    aspectRatio = aspectRatio ?? 1.0;
+  static Future<ui.Image> generateImage() async {
+    const aspectRatio = 1.2; // (random.nextInt(500).toDouble() / 100) + 0.7;
+
     final width = (100 + aspectRatio * 200).toInt();
     final height = width ~/ aspectRatio;
 
@@ -40,7 +32,7 @@ class RandomImage {
 
       switch (shape) {
         case 0:
-          final radius = random.nextInt(width ~/ 4);
+          final radius = random.nextInt(min(width, height) ~/ 4);
           final x = random.nextInt(width - 2 * radius);
           final y = random.nextInt(height - 2 * radius);
           final circlePaint = Paint()..color = fillColor;
@@ -50,7 +42,7 @@ class RandomImage {
               circlePaint);
           break;
         case 1:
-          final side = random.nextInt(width ~/ 2);
+          final side = random.nextInt(min(width, height) ~/ 2);
           final x = random.nextInt(width - side);
           final y = random.nextInt(height - side);
           final rect = Rect.fromLTWH(
@@ -73,20 +65,40 @@ class RandomImage {
 
     final picture = recorder.endRecording();
     final image = await picture.toImage(width, height);
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
-    return RandomImage(
-        image: byteData!.buffer.asUint8List(), width: width, height: height);
+    return image;
   }
 
-  static Future<List<RandomImage>> generateImages(int numImages) async {
-    final List<RandomImage> images = [];
+  static Future<List<ui.Image>> generateImages(int numImages) async {
+    final List<ui.Image> images = [];
 
     for (var i = 0; i < numImages; i++) {
-      final aspectRatio = 0.7 + (1.3 - 0.7) * (i / numImages);
-      images.add(await generateImage(aspectRatio: aspectRatio));
+      images.add(await generateImage());
     }
 
     return images;
+  }
+
+  static List<List<ui.Image>> columnizeImages(
+    List<ui.Image> images, {
+    int numberOfColumns = 3,
+    bool byHeight = true,
+  }) {
+    List<List<ui.Image>> columnizedImages =
+        List.generate(numberOfColumns, (index) => []);
+    List<int> heights = List.generate(numberOfColumns, (index) => 0);
+    final numberOfImages = images.length;
+
+    for (var img = 0; img < numberOfImages; img++) {
+      int minIndex = heights
+          .asMap()
+          .entries
+          .reduce((a, b) => a.value < b.value ? a : b)
+          .key;
+
+      columnizedImages[minIndex].add(images[img]);
+      heights[minIndex] += images[img].height + 16;
+    }
+    return columnizedImages;
   }
 }
