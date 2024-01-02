@@ -1,10 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../../../data/db_default_collections.dart';
 import '../main/background.dart';
 import 'add_collection_form.dart';
 import '../load_from_store/load_collections.dart';

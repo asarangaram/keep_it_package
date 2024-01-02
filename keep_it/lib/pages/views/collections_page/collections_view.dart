@@ -100,8 +100,10 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
 }
 
 final availableSuggestionsProvider =
-    StateProvider.family<List<Collection>, List<Collection>>(
+    StateProvider.family<List<Collection>, List<Collection>?>(
         (ref, existingCollections) {
+  if (existingCollections == null) return defaultCollections;
+
   final List<Collection> availableSuggestions;
   availableSuggestions = defaultCollections.where((element) {
     return !existingCollections.map((e) => e.label).contains(element.label);
