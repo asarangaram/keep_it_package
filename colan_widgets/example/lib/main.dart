@@ -32,34 +32,9 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Generated Images'),
-      ),
-      body: FutureBuilder<List<RandomImage>>(
-        future: RandomImage.generateImages(
-            100), // Generate 10 images for demonstration
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No images generated.'));
-          }
-
-          return SingleChildScrollView(
-              child: MasonryView(
-            listOfItem: images,
-            numberOfColumn: (MediaQuery.of(context).size.width / 200).ceil(),
-            itemBuilder: (item) {
-              final img = item as RandomImage;
-              return AspectRatio(
-                  aspectRatio: img.width / img.height,
-                  child: Image.memory(img.image));
-            },
-          ));
-        },
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Generated Images'),
+        ),
+        body: const Center(child: Text("Hellow")));
   }
 }
