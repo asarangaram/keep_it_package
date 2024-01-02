@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
@@ -103,9 +104,14 @@ class KeepItDialogs {
   static void onSuggestions(
     context, {
     required dynamic Function(List<Collection>) onSelectionDone,
-  }) =>
-      selectCollections(context,
-          collectionList: defaultCollections, onSelectionDone: (_) {});
+    List<Collection>? availableSuggestions,
+  }) {
+    selectCollections(
+      context,
+      collectionList: availableSuggestions,
+      onSelectionDone: onSelectionDone,
+    );
+  }
 
   // Not used
   /* onCreateNewCollection(BuildContext context,
