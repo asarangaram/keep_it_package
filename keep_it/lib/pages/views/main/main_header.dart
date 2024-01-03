@@ -9,6 +9,7 @@ class MainHeader extends ConsumerWidget {
     this.actionsBuilders,
     this.mainActionItems,
     this.title,
+    this.onPop,
   });
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
@@ -17,47 +18,60 @@ class MainHeader extends ConsumerWidget {
           GlobalKey<State<StatefulWidget>> quickMenuScopeKey)>? actionsBuilders;
   final List<List<CLMenuItem>>? mainActionItems;
   final String? title;
+  final void Function()? onPop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (title != null)
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: CLText.veryLarge(
-                  title!,
-                ),
-              ),
+          if (onPop != null)
+            CLButtonIcon.small(
+              Icons.arrow_back,
+              onTap: onPop,
             ),
-          if (actionsBuilders != null && actionsBuilders!.isNotEmpty)
-            ...actionsBuilders!.map((e) => Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: e(context, quickMenuScopeKey),
-                )),
-          if (mainActionItems != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: CLQuickMenuAnchor(
-                parentKey: quickMenuScopeKey,
-                menuBuilder: (context, boxconstraints,
-                    {required Function() onDone}) {
-                  return CLButtonsGrid(
-                    scaleType: CLScaleType.veryLarge,
-                    size: const Size(kMinInteractiveDimension * 1.5,
-                        kMinInteractiveDimension * 1.5),
-                    children2D: insertOnDone(context, mainActionItems!, onDone),
-                  );
-                },
-                child: const CLIcon.small(
-                  Icons.more_vert,
-                ),
-              ),
-            )
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (title != null)
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: CLText.veryLarge(
+                        title!,
+                      ),
+                    ),
+                  ),
+                if (actionsBuilders != null && actionsBuilders!.isNotEmpty)
+                  ...actionsBuilders!.map((e) => Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: e(context, quickMenuScopeKey),
+                      )),
+                if (mainActionItems != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: CLQuickMenuAnchor(
+                      parentKey: quickMenuScopeKey,
+                      menuBuilder: (context, boxconstraints,
+                          {required Function() onDone}) {
+                        return CLButtonsGrid(
+                          scaleType: CLScaleType.veryLarge,
+                          size: const Size(kMinInteractiveDimension * 1.5,
+                              kMinInteractiveDimension * 1.5),
+                          children2D:
+                              insertOnDone(context, mainActionItems!, onDone),
+                        );
+                      },
+                      child: const CLIcon.small(
+                        Icons.more_vert,
+                      ),
+                    ),
+                  )
+              ],
+            ),
+          ),
         ],
       ),
     );

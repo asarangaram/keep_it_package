@@ -13,12 +13,14 @@ class KeepItMainView extends ConsumerStatefulWidget {
           GlobalKey<State<StatefulWidget>> quickMenuScopeKey)>? actionsBuilder;
 
   final String? title;
+  final void Function()? onPop;
 
   const KeepItMainView({
     super.key,
     required this.pageBuilder,
     this.actionsBuilder,
     this.title,
+    this.onPop,
   });
 
   @override
@@ -43,17 +45,17 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
                   actionsBuilders: widget.actionsBuilder,
                   quickMenuScopeKey: quickMenuScopeKey,
                   title: widget.title,
+                  onPop: widget.onPop,
                   mainActionItems: [
                     [
                       CLMenuItem(
                         'Paste',
                         Icons.content_paste_go_outlined,
-                        
                       ),
                       CLMenuItem(
                         'Settings',
                         Icons.settings,
-                        /*Icons.settings_applications_sharp,*/ 
+                        /*Icons.settings_applications_sharp,*/
                         //TODO: For Dark Mode
                       ),
                     ],

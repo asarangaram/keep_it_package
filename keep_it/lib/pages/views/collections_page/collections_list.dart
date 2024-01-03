@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import 'collections_list_item.dart';
@@ -39,8 +40,11 @@ class CollectionsList extends ConsumerWidget {
             collectionList[index],
             isSelected: selectionMask?[index],
             random: random,
-            onTap:
-                (onSelection == null) ? null : () => onSelection!.call(index),
+            onTap: (onSelection == null)
+                ? () {
+                    context.push("/cluster/${collectionList[index].id}");
+                  }
+                : () => onSelection!.call(index),
           );
         },
       ),

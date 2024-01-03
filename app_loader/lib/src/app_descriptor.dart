@@ -1,9 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'models/supported_media.dart';
 
-typedef CLWidgetBuilder = Widget Function(BuildContext context);
+typedef CLWidgetBuilder = Widget Function(
+  BuildContext context,
+  GoRouterState state,
+);
 typedef CLAppInitializer = Future<bool> Function(Ref ref);
 typedef CLTransitionBuilder = Widget Function(
   BuildContext context,

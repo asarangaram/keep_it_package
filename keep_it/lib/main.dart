@@ -5,6 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -14,6 +15,7 @@ import 'pages/page_collections.dart';
 import 'pages/page_show_image.dart';
 
 import 'pages/views/app_theme.dart';
+import 'pages/page_clusters.dart';
 import 'pages/views/shared_items_view.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -38,10 +40,15 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
-      "home": (context) => const PageShowImage(
+      "home": (context, state) => const PageShowImage(
           imagePath: "assets/wallpaperflare.com_wallpaper-2.jpg"),
-      "collections": (context) => const AppTheme(child: CollectionsPage()),
-      "demo": (context) => const DemoMain()
+      "collections": (context, state) =>
+          const AppTheme(child: CollectionsPage()),
+      "demo": (context, state) => const DemoMain(),
+      "clusters": (context, GoRouterState state) =>
+          const ClusterPage(collectionId: null),
+      "cluster/:id": (context, GoRouterState state) =>
+          ClusterPage(collectionId: int.parse(state.pathParameters['id']!))
     };
   }
 

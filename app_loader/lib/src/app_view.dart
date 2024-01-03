@@ -46,7 +46,8 @@ class _RaLRouterState extends ConsumerState<AppView> {
       name: name,
       pageBuilder: (context, state) => CustomTransitionPage<void>(
         key: state.pageKey,
-        child: builder(context), //const AppTheme(child: LogOutUserPage()),
+        child:
+            builder(context, state), //const AppTheme(child: LogOutUserPage()),
         transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
       ),
     );

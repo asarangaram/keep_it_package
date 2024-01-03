@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import 'collection_preview.dart';
@@ -25,9 +26,6 @@ class CollectionsListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final clustersAsync = ref.watch(clustersProvider(collection.id));
-    final int? clustersCount = clustersAsync.whenOrNull(
-      data: (clusters) => clusters.entries.length,
-    );
 
     return SizedBox(
       height: previewSize,
