@@ -143,8 +143,10 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
             File(logFileName).delete();
           }
           final item = Item(
-            path: newFile,
-            ref: imageUrl,
+            path: newFile.replaceAll(
+                "${await FileHandler.getDocumentsDirectory(null)}/", ""),
+            ref: imageUrl?.replaceAll(
+                "${await FileHandler.getDocumentsDirectory(null)}/", ""),
             clusterId: clusterId,
           );
           ref.read(itemsProvider(clusterId).notifier).upsertItem(item);
