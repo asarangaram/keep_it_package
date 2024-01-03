@@ -83,13 +83,14 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
       data: Theme.of(context).copyWith(
           inputDecorationTheme: InputDecorationTheme(
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        disabledBorder: _buildOutlineInputBorder(),
-        enabledBorder: _buildOutlineInputBorder(),
-        focusedBorder: _buildOutlineInputBorder(width: 2),
-        errorBorder: _buildOutlineInputBorder(),
-        focusedErrorBorder: _buildOutlineInputBorder(width: 2),
-        errorStyle: _buildTextStyle(),
-        floatingLabelStyle: _buildTextStyle(),
+        disabledBorder: CLTextField.buildOutlineInputBorder(context),
+        enabledBorder: CLTextField.buildOutlineInputBorder(context),
+        focusedBorder: CLTextField.buildOutlineInputBorder(context, width: 2),
+        errorBorder: CLTextField.buildOutlineInputBorder(context),
+        focusedErrorBorder:
+            CLTextField.buildOutlineInputBorder(context, width: 2),
+        errorStyle: CLTextField.buildTextStyle(context),
+        floatingLabelStyle: CLTextField.buildTextStyle(context),
       )),
       child: SingleChildScrollView(
         child: Container(
@@ -141,19 +142,4 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
       ),
     );
   }
-
-  OutlineInputBorder _buildOutlineInputBorder({
-    double width = 1,
-  }) =>
-      OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(
-          width: width,
-        ),
-      );
-
-  TextStyle _buildTextStyle() =>
-      Theme.of(context).textTheme.bodyLarge!.copyWith(
-            fontSize: CLScaleType.standard.fontSize,
-          );
 }

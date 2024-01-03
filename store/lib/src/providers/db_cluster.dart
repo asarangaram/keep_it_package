@@ -6,14 +6,14 @@ import 'db_manager.dart';
 
 class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
   DatabaseManager? databaseManager;
-  int? clusterID;
+  int? collectionID;
   Ref ref;
 
   bool isLoading = false;
   ClusterNotifier({
     required this.ref,
     this.databaseManager,
-    this.clusterID,
+    this.collectionID,
   }) : super(const AsyncValue.loading()) {
     loadClusters();
   }
@@ -22,11 +22,11 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
     if (databaseManager == null) return;
     final List<Cluster> clusters;
 
-    if (clusterID == null) {
+    if (collectionID == null) {
       clusters = ClusterDB.getAll(databaseManager!.db);
     } else {
-      clusters =
-          ClusterDB.getClustersForCollection(databaseManager!.db, clusterID!);
+      clusters = ClusterDB.getClustersForCollection(
+          databaseManager!.db, collectionID!);
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -34,7 +34,7 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
     });
   }
 
-  int upsertCluster(Cluster cluster, List<int> collectionIds) {
+  Future<int> upsertCluster(Cluster cluster, List<int> collectionIds) async {
     if (databaseManager == null) {
       throw Exception("DB Manager is not ready");
     }
@@ -49,9 +49,10 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
       ClusterDB.addCollectionToCluster(databaseManager!.db, id, clusterId);
       //ref.read(clustersProvider(id));
       //ref.invalidate(clustersProvider(id));
+      ref.read(clustersProvider(id).notifier).loadClusters();
     }
 
-    loadClusters();
+    await loadClusters();
     return clusterId;
   }
 
@@ -91,7 +92,7 @@ final clustersProvider =
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) => ClusterNotifier(
-        ref: ref, databaseManager: dbManager, clusterID: clusterID),
+        ref: ref, databaseManager: dbManager, collectionID: clusterID),
     error: (_, __) => ClusterNotifier(
       ref: ref,
     ),

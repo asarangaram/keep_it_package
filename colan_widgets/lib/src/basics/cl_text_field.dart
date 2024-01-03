@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../models/cl_scale_type.dart';
+
 class CLTextField extends StatelessWidget {
   final TextEditingController controller;
 
@@ -115,4 +117,22 @@ class CLTextField extends StatelessWidget {
       ),
     );
   }
+
+  static OutlineInputBorder buildOutlineInputBorder(
+    BuildContext context, {
+    double width = 1,
+  }) =>
+      OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(
+          width: width,
+        ),
+      );
+
+  static TextStyle buildTextStyle(
+    BuildContext context,
+  ) =>
+      Theme.of(context).textTheme.bodyLarge!.copyWith(
+            fontSize: CLScaleType.standard.fontSize,
+          );
 }

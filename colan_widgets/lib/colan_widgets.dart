@@ -7,6 +7,7 @@ export 'src/basics/cl_text.dart';
 export 'src/basics/cl_icon.dart';
 export 'src/basics/cl_button.dart';
 export 'src/basics/cl_list_tile.dart';
+export 'src/basics/cl_text_field.dart';
 
 export 'src/views/cl_fullscreen_box.dart';
 export 'src/views/cl_image_viewer.dart';

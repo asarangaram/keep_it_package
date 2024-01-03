@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'cl_text.dart';
-
 class CLListTile extends StatelessWidget {
   final Widget? leading;
-  final String title;
-  final String? subTitle;
+  final Widget title;
+  final Widget? subTitle;
   final Function()? onTap;
   final Function()? onLongPress;
   final Function()? onDoubleTap;
@@ -48,17 +46,13 @@ class CLListTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CLText.large(
-                        title,
-                        // textAlign: TextAlign.center,
-                      ),
+                      title,
                       if (subTitle != null) ...[
                         const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: CLText.small(
-                            subTitle!,
-                            textAlign: TextAlign.start,
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: subTitle,
                           ),
                         )
                       ]
