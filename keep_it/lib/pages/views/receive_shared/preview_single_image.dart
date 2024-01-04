@@ -1,31 +1,40 @@
-import 'dart:ui' as ui;
-import 'package:app_loader/app_loader.dart';
+/* import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class PreviewSingleImage extends ConsumerWidget {
-  const PreviewSingleImage({
+class ImageCard extends StatelessWidget {
+  const ImageCard(
+    this.image, {
     super.key,
-    required this.imagePath,
   });
-  final String imagePath;
+  final ui.Image image;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final imageAsync = ref.watch(imageProvider(imagePath));
-    return Padding(
-      padding: const EdgeInsets.all(1.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.0),
-        child: imageAsync.when(
-            data: (ui.Image image) => RawImage(
-                  image: image,
-                  filterQuality: FilterQuality.high,
-                ),
-            loading: () => const CLLoadingView(),
-            error: (err, _) => CLErrorView(errorMessage: err.toString())),
+  Widget build(BuildContext context) {
+    return FittedBox(
+      child: Container(
+        decoration:
+            BoxDecoration(border: Border.all(color: Colors.yellow, width: 8)),
+        child: Card(
+          elevation: 8,
+          color: Colors.grey,
+          shadowColor: Colors.grey,
+          surfaceTintColor: Colors.grey..withOpacity(0.5),
+          margin: EdgeInsets.zero,
+          child: SizedBox(
+            width: image.width.toDouble(),
+            height: image.height.toDouble(),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: RawImage(
+                image: image,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 }
+ */

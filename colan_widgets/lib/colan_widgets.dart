@@ -1,5 +1,10 @@
 library colon_widgets;
 
+export 'src/extensions/ext_color.dart';
+export 'src/extensions/ext_double.dart';
+export 'src/extensions/ext_list.dart';
+export 'src/extensions/ext_ui_image.dart';
+
 export 'src/models/cl_scale_type.dart';
 export 'src/models/cl_menu_item.dart';
 
@@ -13,6 +18,7 @@ export 'src/views/cl_fullscreen_box.dart';
 export 'src/views/cl_image_viewer.dart';
 export 'src/views/cl_page_view.dart';
 export 'src/views/cl_textfield_form.dart';
+export 'src/views/cl_gridview.dart';
 
 export 'src/widgets/cl_scrollable.dart';
 export 'src/widgets/cl_quickmenu.dart';

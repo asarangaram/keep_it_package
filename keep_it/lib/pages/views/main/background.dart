@@ -1,4 +1,4 @@
-import 'package:app_loader/app_loader.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class CLBackground extends StatelessWidget {

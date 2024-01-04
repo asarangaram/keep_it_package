@@ -1,20 +1,20 @@
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/receive_shared/preview_single_image.dart';
+
 import 'package:store/store.dart';
 
-import '../video_player.dart';
+import '../load_from_store/load_image.dart';
 
 class MediaPreview extends ConsumerWidget {
   const MediaPreview({
     super.key,
     required this.media,
     this.children,
+    this.maxItems = 12,
+    this.showAll = false,
   });
-  final Map<String, SupportedMediaType> media;
-  final List<Widget>? children;
+
   factory MediaPreview.fromItems(Items items, {List<Widget>? children}) {
     Map<String, SupportedMediaType> media = {};
     for (var item in items.entries) {
@@ -23,31 +23,63 @@ class MediaPreview extends ConsumerWidget {
     return MediaPreview(media: media, children: children);
   }
 
+  final Map<String, SupportedMediaType> media;
+  final List<Widget>? children;
+  final int maxItems;
+  final bool showAll;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isAllImages = media.values.every(
-      (element) => element == SupportedMediaType.image,
+      (element) => [SupportedMediaType.image, SupportedMediaType.video]
+          .contains(element),
     );
     if (isAllImages) {
-      MapEntry<String, SupportedMediaType> e = media.entries.first;
-      return Card(
-        shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(16.0), // Adjust the radius as needed
+      return Container(
+        decoration: const BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+                    width: 2.0, color: Color.fromARGB(255, 192, 192, 192)))),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.only(
+          bottom: 16,
+          left: 8,
+          right: 8,
         ),
-        elevation: 8,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
+        child: Material(
+          elevation: 6.0,
+          color: Colors.transparent,
+          shadowColor: Colors.transparent,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Flexible(
-                  child: RowColumn(
-                children: media.entries
-                    .map(
-                      (e) => PreviewSingleImage(imagePath: e.key),
-                    )
-                    .toList(),
-              )),
+                child: CLGridViewCustom(
+                  maxItems: maxItems,
+                  showAll: showAll,
+                  children: media.entries
+                      .map(
+                        (e) => switch (e.value) {
+                          SupportedMediaType.image ||
+                          SupportedMediaType.video =>
+                            LoadMediaImage(
+                              path: e.key,
+                              type: e.value,
+                              onImageLoaded: (image) {
+                                return CLImageViewer(
+                                  image: (image).image,
+                                  allowZoom: false,
+                                );
+                              },
+                            ),
+                          /* SupportedMediaType.video =>
+                            VideoPlayerScreen(path: e.key),*/
+                          _ => throw Exception("Unexpected")
+                        },
+                      )
+                      .toList(),
+                ),
+              ),
               if (children != null) ...children!
             ],
           ),
@@ -86,44 +118,6 @@ class ShowAsText extends ConsumerWidget {
   }
 }
 
-/**
- * 
- * SupportedMediaType.video => VideoPlayerScreen(
-            path: e.key,
-          ),
- */
+///
+/// SupportedMediaType.video => ,
 
-class RowColumn extends ConsumerWidget {
-  final List<Widget> children;
-  const RowColumn({
-    super.key,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final hCount = switch (children.length) {
-      1 => 1,
-      < 6 => 2,
-      _ => 3,
-    };
-    final items2D = children.convertTo2D(hCount);
-    return Column(
-      children: [
-        for (var r in items2D)
-          Flexible(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var index = 0; index < r.length; index++)
-                  Flexible(child: r[index]),
-                /* for (var index = r.length; index < hCount; index++)
-                  Flexible(
-                    child: Container(),  )*/
-              ],
-            ),
-          )
-      ],
-    );
-  }
-}

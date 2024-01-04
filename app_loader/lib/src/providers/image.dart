@@ -6,7 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 import '../utils/file_handler.dart';
 
-class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
+class MediaData {}
+
+class ImageData extends MediaData {
+  ui.Image image;
+
+  ImageData(this.image);
+}
+
+class ImageNotifier extends StateNotifier<AsyncValue<ImageData>> {
   String imagePath;
   ImageNotifier(this.imagePath) : super(const AsyncValue.loading()) {
     _get();
@@ -14,60 +22,43 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
 
   Future<void> _get() async {
     state = await AsyncValue.guard(() async {
+      final Uint8List data;
       try {
-        if (imagePath.startsWith('/')) {
-          return await imageFromFile;
-        }
-        if (imagePath.startsWith('assets')) {
-          return await imageFromAssets;
-        }
-        return await imageFromDocuments;
+        data = switch (imagePath) {
+          (String s) when imagePath.startsWith('/') =>
+            (await rootBundle.load(s)).buffer.asUint8List(),
+          (String s) when imagePath.startsWith('assets') =>
+            Uint8List.fromList(await File(s).readAsBytes()),
+          _ => await tryDocumentsDir(imagePath)
+        };
       } catch (err) {
         throw Exception("Failed to load Image");
       }
+      return await loadImage(data);
     });
   }
 
-  Future<ui.Image> get imageFromAssets async {
-    final data = await rootBundle.load(imagePath);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+  Future<ImageData> loadImage(Uint8List data) async {
+    ui.Codec codec = await ui.instantiateImageCodec(data);
     ui.FrameInfo fi = await codec.getNextFrame();
     ui.Image uiImage = fi.image;
 
-    return uiImage;
+    return ImageData(uiImage);
   }
 
-  Future<ui.Image> get imageFromFile async {
-    File file = File(imagePath);
-    List<int> bytes = await file.readAsBytes();
-
-    // Decode the image from bytes
-    ui.Codec codec = await ui.instantiateImageCodec(Uint8List.fromList(bytes));
-    ui.FrameInfo fi = await codec.getNextFrame();
-
-    ui.Image uiImage = fi.image;
-    return uiImage;
-  }
-
-  Future<ui.Image> get imageFromDocuments async {
+  Future<Uint8List> tryDocumentsDir(String imagePath) async {
     final documentsDir = await FileHandler.getDocumentsDirectory(null);
     File file = File(path.join(documentsDir, imagePath));
     if (!file.existsSync()) {
       throw Exception("File doesn't exists");
     }
     List<int> bytes = await file.readAsBytes();
-
-    // Decode the image from bytes
-    ui.Codec codec = await ui.instantiateImageCodec(Uint8List.fromList(bytes));
-    ui.FrameInfo fi = await codec.getNextFrame();
-
-    ui.Image uiImage = fi.image;
-    return uiImage;
+    return Uint8List.fromList(bytes);
   }
 }
 
 final imageProvider =
-    StateNotifierProvider.family<ImageNotifier, AsyncValue<ui.Image>, String>(
+    StateNotifierProvider.family<ImageNotifier, AsyncValue<ImageData>, String>(
         (ref, imagePath) {
   return ImageNotifier(imagePath);
 });

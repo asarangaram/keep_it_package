@@ -35,8 +35,6 @@ class CLSelectionWrapperState extends State<CLSelectionWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.labelNoneSelected);
-    print(widget.labelSelected);
     final selectedCount = selectionMask.where((e) => e == true).toList().length;
 
     return Column(

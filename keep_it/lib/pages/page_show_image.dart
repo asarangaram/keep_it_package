@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 
 import 'package:app_loader/app_loader.dart';
 
@@ -18,8 +17,11 @@ class PageShowImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imageAsync = ref.watch(imageProvider(imagePath));
     return imageAsync.when(
-        data: (ui.Image image) => ImageView(
-              image: image,
+        data: (MediaData image) => ImageView(
+              image: switch (image.runtimeType) {
+                ImageData _ => (image as ImageData).image,
+                _ => throw Exception("Unsupported")
+              },
             ),
         loading: () => const CLLoadingView(),
         error: (err, _) => CLErrorView(errorMessage: err.toString()));

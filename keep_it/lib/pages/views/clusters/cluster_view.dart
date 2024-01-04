@@ -14,30 +14,27 @@ class ClusterView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notes =
         (cluster.description.isEmpty) ? "No Description" : cluster.description;
-    return AspectRatio(
-      aspectRatio: 0.7,
-      child: LoadItems(
-        clusterID: cluster.id,
-        hasBackground: false,
-        buildOnData: (items) {
-          return MediaPreview.fromItems(
-            items,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: CLText.large(
-                    notes,
-                    textAlign: TextAlign.start,
-                  ),
+    return LoadItems(
+      clusterID: cluster.id,
+      hasBackground: false,
+      buildOnData: (items) {
+        return MediaPreview.fromItems(
+          items,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: CLText.large(
+                  notes,
+                  textAlign: TextAlign.start,
                 ),
-              )
-            ],
-          );
-        },
-      ),
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 }

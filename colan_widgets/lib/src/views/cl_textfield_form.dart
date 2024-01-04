@@ -123,7 +123,9 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
                     if (formKey.currentState!.validate()) {
                       errorMessage = widget
                           .onSubmit(controllers.map((e) => e.text).toList());
-                      setState(() {});
+                      setState(() {
+                        
+                      });
                     }
                   },
                 ),
