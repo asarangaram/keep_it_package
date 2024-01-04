@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
+import 'package:app_loader/app_loader.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,16 +26,6 @@ class PaginationInfo {
 
   @override
   int get hashCode => items.hashCode ^ pageSize.hashCode ^ itemSize.hashCode;
-}
-
-extension ExtONDouble on double {
-  double nearest(double value) {
-    if (value == 0.0) {
-      // Avoid division by zero
-      return value;
-    }
-    return ((this / value).floor() * value);
-  }
 }
 
 class PaginatedList {
@@ -66,17 +57,9 @@ class PaginatedList {
     itemsInRow = max(1, itemsInRow);
     itemsInColumn = max(1, itemsInColumn);
     pages = [];
-    for (var p in paginate(items, itemsInRow * itemsInColumn)) {
-      pages.add(paginate(p, itemsInRow));
+    for (var p in items.convertTo2D(itemsInRow * itemsInColumn)) {
+      pages.add(p.convertTo2D(itemsInRow));
     }
-  }
-  List<List<T>> paginate<T>(List<T> list, int pageLength) {
-    List<List<T>> pages = [];
-    for (int i = 0; i < list.length; i += pageLength) {
-      int end = (i + pageLength < list.length) ? i + pageLength : list.length;
-      pages.add(list.sublist(i, end));
-    }
-    return pages;
   }
 
   int get pageMax => pages.length;

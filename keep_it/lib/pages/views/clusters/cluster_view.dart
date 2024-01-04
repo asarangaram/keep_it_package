@@ -21,10 +21,7 @@ class ClusterView extends ConsumerWidget {
         hasBackground: false,
         buildOnData: (items) {
           return MediaPreview.fromItems(
-            Items([
-              items.entries.first,
-              items.entries.first,
-            ]),
+            items,
             children: [
               Padding(
                 padding:

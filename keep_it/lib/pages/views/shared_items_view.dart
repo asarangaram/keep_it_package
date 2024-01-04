@@ -125,7 +125,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     final clusterId = await ref
         .read(clustersProvider(null).notifier)
         .upsertCluster(Cluster(description: descriptionController.text), ids);
-    final ItemsAsync = ref.watch(itemsProvider(clusterId));
+
     for (var entry in widget.media.entries) {
       switch (entry.value) {
         case SupportedMediaType.image:
@@ -147,6 +147,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                 "${await FileHandler.getDocumentsDirectory(null)}/", ""),
             clusterId: clusterId,
           );
+          ref.read(itemsProvider(clusterId));
           ref.read(itemsProvider(clusterId).notifier).upsertItem(item);
 
         default:

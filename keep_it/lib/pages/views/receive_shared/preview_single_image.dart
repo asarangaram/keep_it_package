@@ -14,12 +14,18 @@ class PreviewSingleImage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final imageAsync = ref.watch(imageProvider(imagePath));
-    return imageAsync.when(
-        data: (ui.Image image) => RawImage(
-              image: image,
-              filterQuality: FilterQuality.high,
-            ),
-        loading: () => const CLLoadingView(),
-        error: (err, _) => CLErrorView(errorMessage: err.toString()));
+    return Padding(
+      padding: const EdgeInsets.all(1.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.0),
+        child: imageAsync.when(
+            data: (ui.Image image) => RawImage(
+                  image: image,
+                  filterQuality: FilterQuality.high,
+                ),
+            loading: () => const CLLoadingView(),
+            error: (err, _) => CLErrorView(errorMessage: err.toString())),
+      ),
+    );
   }
 }
