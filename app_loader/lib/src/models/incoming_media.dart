@@ -5,9 +5,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:share_handler/share_handler.dart';
+import 'package:store/store.dart';
 import '../utils/file_handler.dart';
 import '../utils/url_handler.dart';
-import 'supported_media.dart';
 
 extension ColonExtensionOnString on String {
   bool isURL() {
@@ -77,6 +77,7 @@ class IncomingMedia {
 
             case SupportedMediaType.url:
             case SupportedMediaType.text: // This shouldn't appear
+
             case null:
               newMedia[e.key] = e.value;
           }

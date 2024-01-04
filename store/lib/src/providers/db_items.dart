@@ -20,7 +20,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
   loadItems() async {
     if (databaseManager == null) return;
-    final List<Item> items;
+    final List<ItemInDB> items;
 
     if (clusterID == null) {
       items = ItemDB.getAll(databaseManager!.db);
@@ -33,7 +33,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     });
   }
 
-  void upsertItem(Item item) {
+  void upsertItem(ItemInDB item) {
     if (databaseManager == null) {
       throw Exception("DB Manager is not ready");
     }
@@ -54,7 +54,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     loadItems();
   } */
 
-  void deleteItem(Item item) {
+  void deleteItem(ItemInDB item) {
     if (databaseManager == null) {
       throw Exception("DB Manager is not ready");
     }
@@ -63,7 +63,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     loadItems();
   }
 
-  void deleteItems(List<Item> items) {
+  void deleteItems(List<ItemInDB> items) {
     if (databaseManager == null) {
       throw Exception("DB Manager is not ready");
     }

@@ -1,6 +1,5 @@
 library app_loader;
 
-export 'src/models/supported_media.dart';
 export 'src/extensions/ext_color.dart';
 
 export 'src/app_descriptor.dart';

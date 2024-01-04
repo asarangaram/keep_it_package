@@ -1,8 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'models/supported_media.dart';
+import 'package:store/store.dart';
 
 typedef CLWidgetBuilder = Widget Function(
   BuildContext context,

@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:colan_widgets/src/basics/cl_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../basics/cl_button.dart';
+import '../basics/cl_text.dart';
+import '../basics/cl_text_field.dart';
 
 enum CLFormFieldTypes { textField, textFieldMultiLine }
 

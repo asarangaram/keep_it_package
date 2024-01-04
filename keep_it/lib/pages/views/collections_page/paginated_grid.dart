@@ -33,33 +33,58 @@ class PaginatedGrid extends ConsumerWidget {
     Random random = Random(42);
     return CLPageView(
       pageBuilder: (BuildContext context, int pageNum) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (var r = 0; r < paginatedCollection.itemsInColumn; r++)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  for (var c = 0; c < paginatedCollection.itemsInRow; c++)
-                    Center(
-                      child: SizedBox(
-                        width: childSize.width,
-                        height: childSize.height,
-                        child: CollectionsGridItem(
-                          collection:
-                              paginatedCollection.getItem(pageNum, r, c),
-                          quickMenuScopeKey: quickMenuScopeKey,
-                          size: childSize,
-                          random: random,
-                        ),
-                      ),
-                    )
-                ],
-              )
-          ],
+        return RowColumnGrid(
+          itemsInColumn: paginatedCollection.itemsInColumn,
+          itemsInRow: paginatedCollection.itemsInRow,
+          itemBuilder: (context, r, c) {
+            return Center(
+              child: SizedBox(
+                width: childSize.width,
+                height: childSize.height,
+                child: CollectionsGridItem(
+                  collection: paginatedCollection.getItem(pageNum, r, c),
+                  quickMenuScopeKey: quickMenuScopeKey,
+                  size: childSize,
+                  random: random,
+                ),
+              ),
+            );
+          },
         );
       },
       pageMax: paginatedCollection.pageMax,
+    );
+  }
+}
+
+class RowColumnGrid extends StatelessWidget {
+  const RowColumnGrid({
+    super.key,
+    required this.itemsInColumn,
+    required this.itemsInRow,
+    required this.itemBuilder,
+  });
+
+  final int itemsInColumn;
+  final int itemsInRow;
+  final Widget Function(BuildContext context, int r, int c) itemBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        for (var r = 0; r < itemsInColumn; r++)
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                for (var c = 0; c < itemsInRow; c++)
+                  Expanded(child: itemBuilder(context, r, c))
+              ],
+            ),
+          )
+      ],
     );
   }
 }

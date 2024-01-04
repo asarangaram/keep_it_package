@@ -1,8 +1,6 @@
-import 'dart:typed_data';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_masonry_view/flutter_masonry_view.dart';
 
 void main() {
   runApp(const MyApp());

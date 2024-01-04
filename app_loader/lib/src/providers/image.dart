@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as path;
+import '../utils/file_handler.dart';
 
 class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
   String imagePath;
@@ -19,7 +21,7 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
         if (imagePath.startsWith('assets')) {
           return await imageFromAssets;
         }
-        throw UnimplementedError();
+        return await imageFromDocuments;
       } catch (err) {
         throw Exception("Failed to load Image");
       }
@@ -37,6 +39,22 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
 
   Future<ui.Image> get imageFromFile async {
     File file = File(imagePath);
+    List<int> bytes = await file.readAsBytes();
+
+    // Decode the image from bytes
+    ui.Codec codec = await ui.instantiateImageCodec(Uint8List.fromList(bytes));
+    ui.FrameInfo fi = await codec.getNextFrame();
+
+    ui.Image uiImage = fi.image;
+    return uiImage;
+  }
+
+  Future<ui.Image> get imageFromDocuments async {
+    final documentsDir = await FileHandler.getDocumentsDirectory(null);
+    File file = File(path.join(documentsDir, imagePath));
+    if (!file.existsSync()) {
+      throw Exception("File doesn't exists");
+    }
     List<int> bytes = await file.readAsBytes();
 
     // Decode the image from bytes

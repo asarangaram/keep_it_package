@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../app_descriptor.dart';
-import '../models/supported_media.dart';
+
 import '../providers/incoming_media.dart';
 
 class PageIncomingMedia extends ConsumerWidget {

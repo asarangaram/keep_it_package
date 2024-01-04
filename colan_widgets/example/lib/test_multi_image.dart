@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -184,7 +183,7 @@ class _StackBasedState extends State<StackBased>
       child: Stack(
           children: allImages.sublist(0, 5).asMap().entries.map((e) {
         final offset = e.key * 2.0 - _animation.value;
-        print("offset is $offset");
+
         return Transform.translate(
           offset: Offset(offset, offset),
           child: Card(

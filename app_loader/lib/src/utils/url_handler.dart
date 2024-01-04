@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
+import 'package:store/store.dart';
 
-import '../models/supported_media.dart';
 import 'file_handler.dart';
 
 class URLHandler {

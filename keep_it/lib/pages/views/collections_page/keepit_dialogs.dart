@@ -41,8 +41,7 @@ class KeepItDialogs {
     if (collections.isEmpty) {
       throw Exception("CollectionList can't be empty!");
     }
-    print(labelSelected);
-    print(labelNoneSelected);
+
     return CLBackground(
       brighnessFactor: collections.isNotEmpty ? 0.25 : 0,
       child: CLDialogWrapper(

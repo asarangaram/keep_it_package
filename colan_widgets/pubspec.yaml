@@ -1,7 +1,6 @@
 name: colan_widgets
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
 
 environment:
   sdk: '>=3.2.2 <4.0.0'

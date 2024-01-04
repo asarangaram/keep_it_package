@@ -40,6 +40,7 @@ class DatabaseManager {
         path TEXT NOT NULL UNIQUE,
         ref TEXT,
         cluster_id INTEGER,
+        type TEXT NOT NULL,
         FOREIGN KEY (cluster_id) REFERENCES Cluster(id)
       )
     ''');
