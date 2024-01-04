@@ -13,16 +13,26 @@ class CLErrorView extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CLText.veryLarge(errorMessage,
-                  color: Theme.of(context).colorScheme.error),
-              if (errorDetails != null)
-                CLText.small(errorDetails!,
-                    color: Theme.of(context).colorScheme.error),
-            ],
+        child: FittedBox(
+          child: SizedBox(
+            width: 200,
+            height: 200,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CLIcon.veryLarge(
+                    Icons.warning,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  CLText.veryLarge(errorMessage,
+                      color: Theme.of(context).colorScheme.error),
+                  if (errorDetails != null)
+                    CLText.small(errorDetails!,
+                        color: Theme.of(context).colorScheme.error),
+                ],
+              ),
+            ),
           ),
         ),
       ),

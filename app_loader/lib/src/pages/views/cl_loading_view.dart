@@ -11,15 +11,13 @@ class CLLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ScalingText(
-            message ?? 'Loading ...',
-            style: Theme.of(context).textTheme.displayMedium,
-          ),
-        ],
+    return FittedBox(
+      fit: BoxFit.cover,
+      child: Center(
+        child: ScalingText(
+          message ?? 'Loading ...',
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
       ),
     );
   }
