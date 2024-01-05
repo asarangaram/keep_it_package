@@ -18,7 +18,7 @@ class PageShowImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CLFullscreenBox(
       child: LoadMediaImage(
-        mediaEntry: MapEntry(imagePath, SupportedMediaType.image),
+        mediaEntry: MapEntry(imagePath, CLMediaType.image),
         onImageLoaded: (image) {
           return ImageView(
             image: image,

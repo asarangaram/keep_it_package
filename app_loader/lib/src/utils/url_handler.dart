@@ -1,15 +1,15 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
-import 'package:store/store.dart';
 
 import 'file_handler.dart';
 
 class URLHandler {
-  static Future<SupportedMediaType?> getMimeType(String url) async {
+  static Future<CLMediaType?> getMimeType(String url) async {
     try {
       final response = await http.head(Uri.parse(url));
 
@@ -18,18 +18,17 @@ class URLHandler {
         final String contentType = response.headers['content-type']!;
 
         return switch (contentType) {
-          (String c) when c.startsWith("image") => SupportedMediaType.image,
-          (String c) when c.startsWith("video") => SupportedMediaType.video,
-          (String c) when c.startsWith("audio") => SupportedMediaType.video,
-          (String c) when c.startsWith("application/pdf") =>
-            SupportedMediaType.file,
-          _ => SupportedMediaType.url
+          (String c) when c.startsWith("image") => CLMediaType.image,
+          (String c) when c.startsWith("video") => CLMediaType.video,
+          (String c) when c.startsWith("audio") => CLMediaType.video,
+          (String c) when c.startsWith("application/pdf") => CLMediaType.file,
+          _ => CLMediaType.url
         };
       }
     } catch (e) {
       /** */
     }
-    return SupportedMediaType.url;
+    return CLMediaType.url;
   }
 
   static Future<String?> downloadAndSaveImage(String imageUrl) async {

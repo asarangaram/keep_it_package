@@ -1,7 +1,7 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:store/store.dart';
 
 typedef CLWidgetBuilder = Widget Function(
   BuildContext context,
@@ -19,7 +19,7 @@ typedef CLRedirector = Future<String?> Function(String location);
 typedef IncomingMediaViewBuilder = Widget Function(
   BuildContext context,
   WidgetRef ref, {
-  required Map<String, SupportedMediaType> sharedMedia,
+  required Map<String, CLMediaType> sharedMedia,
   required Function() onDiscard,
 })?;
 

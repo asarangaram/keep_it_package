@@ -1,11 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:share_handler/share_handler.dart';
-import 'package:store/store.dart';
+
 import '../utils/file_handler.dart';
 import '../utils/url_handler.dart';
 
@@ -23,7 +24,7 @@ extension ColonExtensionOnString on String {
 
 @immutable
 class IncomingMedia {
-  final List<Map<String, SupportedMediaType>> data;
+  final List<Map<String, CLMediaType>> data;
   const IncomingMedia._({
     required this.data,
   });
@@ -39,7 +40,7 @@ class IncomingMedia {
   }
 
   IncomingMedia copyWith({
-    List<Map<String, SupportedMediaType>>? data,
+    List<Map<String, CLMediaType>>? data,
   }) {
     return IncomingMedia._(data: data ?? this.data);
   }
@@ -54,18 +55,18 @@ class IncomingMedia {
     return this;
   }
 
-  Future<Map<String, SupportedMediaType>> receiveFiles(
-      Map<String, SupportedMediaType> media) async {
-    Map<String, SupportedMediaType> newMedia = {};
+  Future<Map<String, CLMediaType>> receiveFiles(
+      Map<String, CLMediaType> media) async {
+    Map<String, CLMediaType> newMedia = {};
     for (var e in media.entries) {
       switch (e.value) {
-        case SupportedMediaType.url:
+        case CLMediaType.url:
           final mimeType = await URLHandler.getMimeType(e.key);
           switch (mimeType) {
-            case SupportedMediaType.image:
-            case SupportedMediaType.audio:
-            case SupportedMediaType.video:
-            case SupportedMediaType.file:
+            case CLMediaType.image:
+            case CLMediaType.audio:
+            case CLMediaType.video:
+            case CLMediaType.file:
               final String? r = await URLHandler.downloadAndSaveImage(e.key);
               if (r != null) {
                 newMedia[r] = mimeType!;
@@ -75,21 +76,21 @@ class IncomingMedia {
               }
               break;
 
-            case SupportedMediaType.url:
-            case SupportedMediaType.text: // This shouldn't appear
+            case CLMediaType.url:
+            case CLMediaType.text: // This shouldn't appear
 
             case null:
               newMedia[e.key] = e.value;
           }
           break;
-        case SupportedMediaType.text:
+        case CLMediaType.text:
           newMedia[e.key] = e.value;
           break;
 
-        case SupportedMediaType.image:
-        case SupportedMediaType.video:
-        case SupportedMediaType.audio:
-        case SupportedMediaType.file:
+        case CLMediaType.image:
+        case CLMediaType.video:
+        case CLMediaType.audio:
+        case CLMediaType.file:
           final newFile = await FileHandler.move(e.key, toDir: 'incoming');
           newMedia[newFile] = e.value;
       }
@@ -107,18 +108,18 @@ class IncomingMedia {
   }
 
   Future<IncomingMedia> pop() async {
-    final Map<String, SupportedMediaType> item2Delete = data[0];
+    final Map<String, CLMediaType> item2Delete = data[0];
 
     for (var e in item2Delete.entries) {
       switch (e.value) {
-        case SupportedMediaType.text:
-        case SupportedMediaType.url:
+        case CLMediaType.text:
+        case CLMediaType.url:
           break;
 
-        case SupportedMediaType.image:
-        case SupportedMediaType.video:
-        case SupportedMediaType.audio:
-        case SupportedMediaType.file:
+        case CLMediaType.image:
+        case CLMediaType.video:
+        case CLMediaType.audio:
+        case CLMediaType.file:
           await deleteIfExists(e.key);
       }
     }
@@ -126,24 +127,23 @@ class IncomingMedia {
     return IncomingMedia._(data: List.from(data.sublist(1)));
   }
 
-  static Map<String, SupportedMediaType> getMedia(SharedMedia sharedMedia) {
-    Map<String, SupportedMediaType> newMedia = {};
+  static Map<String, CLMediaType> getMedia(SharedMedia sharedMedia) {
+    Map<String, CLMediaType> newMedia = {};
     if (sharedMedia.content?.isNotEmpty ?? false) {
       final text = sharedMedia.content!;
-      newMedia[text] =
-          text.isURL() ? SupportedMediaType.url : SupportedMediaType.text;
+      newMedia[text] = text.isURL() ? CLMediaType.url : CLMediaType.text;
     }
     if (sharedMedia.imageFilePath != null) {
-      newMedia[sharedMedia.imageFilePath!] = SupportedMediaType.image;
+      newMedia[sharedMedia.imageFilePath!] = CLMediaType.image;
     }
     if (sharedMedia.attachments?.isNotEmpty ?? false) {
       for (var e in sharedMedia.attachments!) {
         if (e != null) {
           newMedia[e.path] = switch (e.type) {
-            SharedAttachmentType.image => SupportedMediaType.image,
-            SharedAttachmentType.video => SupportedMediaType.video,
-            SharedAttachmentType.audio => SupportedMediaType.audio,
-            SharedAttachmentType.file => SupportedMediaType.file,
+            SharedAttachmentType.image => CLMediaType.image,
+            SharedAttachmentType.video => CLMediaType.video,
+            SharedAttachmentType.audio => CLMediaType.audio,
+            SharedAttachmentType.file => CLMediaType.file,
           };
         }
       }

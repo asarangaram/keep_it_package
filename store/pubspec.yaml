@@ -1,7 +1,6 @@
 name: store
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
 
 environment:
   sdk: '>=3.2.2 <4.0.0'
@@ -14,6 +13,8 @@ dependencies:
   path: ^1.8.3
   path_provider: ^2.1.1
   sqlite3: ^2.2.0
+  colan_widgets:
+    path: ../colan_widgets
 
 dev_dependencies:
   flutter_test:

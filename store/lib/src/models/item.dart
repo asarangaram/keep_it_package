@@ -1,4 +1,4 @@
-import 'supported_media.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 extension ColonExtensionOnString on String {
   bool isURL() {
@@ -14,11 +14,11 @@ extension ColonExtensionOnString on String {
 
 class Item {
   String path;
-  SupportedMediaType type;
+  CLMediaType type;
   String? ref;
   Item({required this.path, required this.type, this.ref});
 
-  Item copyWith({String? path, SupportedMediaType? type, String? ref}) {
+  Item copyWith({String? path, CLMediaType? type, String? ref}) {
     return Item(
       path: path ?? this.path,
       type: type ?? this.type,
@@ -27,8 +27,7 @@ class Item {
   }
 
   factory Item.fromText(String text) {
-    SupportedMediaType type =
-        text.isURL() ? SupportedMediaType.url : SupportedMediaType.text;
+    CLMediaType type = text.isURL() ? CLMediaType.url : CLMediaType.text;
     return Item(path: text, type: type);
   }
 }
@@ -52,7 +51,7 @@ class ItemInDB extends Item {
     String? path,
     String? ref,
     int? clusterId,
-    SupportedMediaType? type,
+    CLMediaType? type,
   }) {
     return ItemInDB(
       id: id ?? this.id,
@@ -74,7 +73,7 @@ class ItemInDB extends Item {
   }
 
   factory ItemInDB.fromMap(Map<String, dynamic> map) {
-    if (SupportedMediaType.values.asNameMap()[map['type'] as String] == null) {
+    if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception("Incorrect type");
     }
 
@@ -83,7 +82,7 @@ class ItemInDB extends Item {
       path: map['path'] as String,
       ref: map['ref'] != null ? map['ref'] as String : null,
       clusterId: map['cluster_id'] as int,
-      type: SupportedMediaType.values.asNameMap()[map['type'] as String]!,
+      type: CLMediaType.values.asNameMap()[map['type'] as String]!,
     );
     //map['type'] as String
   }

@@ -1,6 +1,6 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 import '../app_descriptor.dart';
 
@@ -34,7 +34,7 @@ class IncomingMediaViewDefault extends StatelessWidget {
     required this.onDiscard,
   });
 
-  final Map<String, SupportedMediaType> media;
+  final Map<String, CLMediaType> media;
   final Function() onDiscard;
 
   @override

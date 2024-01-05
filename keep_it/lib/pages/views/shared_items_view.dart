@@ -19,7 +19,7 @@ class SharedItemsView extends ConsumerStatefulWidget {
     required this.onDiscard,
   });
 
-  final Map<String, SupportedMediaType> media;
+  final Map<String, CLMediaType> media;
   final Function() onDiscard;
 
   @override
@@ -132,8 +132,8 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
 
     for (var entry in widget.media.entries) {
       switch (entry.value) {
-        case SupportedMediaType.image:
-        case SupportedMediaType.video:
+        case CLMediaType.image:
+        case CLMediaType.video:
           // Copy item to storage.
           final newFile = await FileHandler.move(entry.key, toDir: "keepIt");
           // if URL is stored, read it and delete

@@ -1,15 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
-import 'package:store/store.dart';
+
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../utils/file_handler.dart';
 
 class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
-  MapEntry<String, SupportedMediaType> mediaEntry;
+  MapEntry<String, CLMediaType> mediaEntry;
   ImageNotifier(this.mediaEntry) : super(const AsyncValue.loading()) {
     _get();
   }
@@ -19,8 +20,8 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
       final String absPath = await getAbsoluteFilePath(mediaEntry.key);
       try {
         return switch (mediaEntry.value) {
-          SupportedMediaType.image => await tryAsImage(absPath),
-          SupportedMediaType.video => await tryAsVideo(absPath),
+          CLMediaType.image => await tryAsImage(absPath),
+          CLMediaType.video => await tryAsVideo(absPath),
           _ => throw UnimplementedError()
         };
       } catch (err) {
@@ -75,9 +76,7 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
   }
 }
 
-final imageProvider = StateNotifierProvider.family<
-    ImageNotifier,
-    AsyncValue<ui.Image>,
-    MapEntry<String, SupportedMediaType>>((ref, mediaEntry) {
+final imageProvider = StateNotifierProvider.family<ImageNotifier,
+    AsyncValue<ui.Image>, MapEntry<String, CLMediaType>>((ref, mediaEntry) {
   return ImageNotifier(mediaEntry);
 });

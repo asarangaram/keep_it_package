@@ -24,8 +24,7 @@ dependencies:
   progress_indicators: ^1.0.0
   colan_widgets:
     path: ../colan_widgets
-  store: 
-    path: ../store
+
   video_thumbnail: ^0.5.3
     
 dev_dependencies:

@@ -16,14 +16,14 @@ class MediaPreview extends ConsumerWidget {
   });
 
   factory MediaPreview.fromItems(Items items, {List<Widget>? children}) {
-    Map<String, SupportedMediaType> media = {};
+    Map<String, CLMediaType> media = {};
     for (var item in items.entries) {
       media[item.path] = item.type;
     }
     return MediaPreview(media: media, children: children);
   }
 
-  final Map<String, SupportedMediaType> media;
+  final Map<String, CLMediaType> media;
   final List<Widget>? children;
   final int maxItems;
   final bool showAll;
@@ -31,8 +31,7 @@ class MediaPreview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isAllImages = media.values.every(
-      (element) => [SupportedMediaType.image, SupportedMediaType.video]
-          .contains(element),
+      (element) => [CLMediaType.image, CLMediaType.video].contains(element),
     );
     if (isAllImages) {
       return Container(
@@ -61,8 +60,8 @@ class MediaPreview extends ConsumerWidget {
                   children: media.entries
                       .map(
                         (e) => switch (e.value) {
-                          SupportedMediaType.image ||
-                          SupportedMediaType.video =>
+                          CLMediaType.image ||
+                          CLMediaType.video =>
                             LoadMediaImage(
                               mediaEntry: e,
                               onImageLoaded: (image) {
@@ -73,7 +72,7 @@ class MediaPreview extends ConsumerWidget {
                                       image: image,
                                       allowZoom: false,
                                       overlayWidget: switch (e.value) {
-                                        SupportedMediaType.video =>
+                                        CLMediaType.video =>
                                           const VidoePlayIcon(),
                                         _ => null
                                       },
@@ -115,7 +114,7 @@ class MediaPreview extends ConsumerWidget {
 class ShowAsText extends ConsumerWidget {
   const ShowAsText({super.key, required this.text, this.type});
   final String text;
-  final SupportedMediaType? type;
+  final CLMediaType? type;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Text.rich(TextSpan(children: [
