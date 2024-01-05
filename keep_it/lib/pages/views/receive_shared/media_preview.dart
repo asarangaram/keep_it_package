@@ -46,6 +46,7 @@ class MediaPreview extends ConsumerWidget {
           left: 8,
           right: 8,
         ),
+        alignment: Alignment.center,
         child: Material(
           elevation: 6.0,
           color: Colors.transparent,
@@ -65,9 +66,19 @@ class MediaPreview extends ConsumerWidget {
                             LoadMediaImage(
                               mediaEntry: e,
                               onImageLoaded: (image) {
-                                return CLImageViewer(
-                                  image: image,
-                                  allowZoom: false,
+                                return Center(
+                                  child: AspectRatio(
+                                    aspectRatio: image.width / image.height,
+                                    child: CLImageViewer(
+                                      image: image,
+                                      allowZoom: false,
+                                      overlayWidget: switch (e.value) {
+                                        SupportedMediaType.video =>
+                                          const VidoePlayIcon(),
+                                        _ => null
+                                      },
+                                    ),
+                                  ),
                                 );
                               },
                             ),
@@ -120,3 +131,25 @@ class ShowAsText extends ConsumerWidget {
 ///
 /// SupportedMediaType.video => ,
 
+class VidoePlayIcon extends StatelessWidget {
+  const VidoePlayIcon({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Theme.of(context)
+            .colorScheme
+            .onBackground
+            .withAlpha(192), // Color for the circular container
+      ),
+      child: CLIcon.veryLarge(
+        Icons.play_arrow_sharp,
+        color: Theme.of(context).colorScheme.background.withAlpha(192),
+      ),
+    );
+  }
+}

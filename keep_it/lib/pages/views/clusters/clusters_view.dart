@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +20,8 @@ class ClustersView extends ConsumerWidget {
           : null,
       pageBuilder: (context, quickMenuScopeKey) {
         return SingleChildScrollView(
-          child: Column(
+          child: CLGridViewCustom(
+            showAll: true,
             children:
                 clusters.entries.map((e) => ClusterView(cluster: e)).toList(),
           ),
