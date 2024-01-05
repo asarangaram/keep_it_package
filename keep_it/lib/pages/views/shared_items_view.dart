@@ -67,7 +67,11 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Flexible(child: MediaPreview(media: widget.media)),
+                    Flexible(
+                        child: MediaPreview(
+                      media: widget.media,
+                      showAll: true,
+                    )),
                     const SizedBox(
                       height: 8,
                     ),
