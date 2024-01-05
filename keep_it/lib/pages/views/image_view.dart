@@ -37,31 +37,29 @@ class ImageView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CLFullscreenBox(
-      child: FutureBuilder<ui.Image>(
-        future: getImageGrid(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error loading images ${snapshot.error}',
-              ),
-            );
-          } else if (snapshot.hasData) {
-            return Center(
-              child: CLImageViewer(
-                image: snapshot.data!,
-              ),
-            );
-          } else {
-            return Container(); // Handle other cases as needed
-          }
-        },
-      ),
+    return FutureBuilder<ui.Image>(
+      future: getImageGrid(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error loading images ${snapshot.error}',
+            ),
+          );
+        } else if (snapshot.hasData) {
+          return Center(
+            child: CLImageViewer(
+              image: snapshot.data!,
+            ),
+          );
+        } else {
+          return Container(); // Handle other cases as needed
+        }
+      },
     );
   }
 }

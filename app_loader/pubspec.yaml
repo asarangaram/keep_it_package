@@ -26,6 +26,7 @@ dependencies:
     path: ../colan_widgets
   store: 
     path: ../store
+  video_thumbnail: ^0.5.3
     
 dev_dependencies:
   flutter_test:

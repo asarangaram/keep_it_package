@@ -1,10 +1,11 @@
-
-import 'package:app_loader/app_loader.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import 'views/image_view.dart';
+import 'views/load_from_store/load_image.dart';
 
 class PageShowImage extends ConsumerWidget {
   const PageShowImage({
@@ -15,15 +16,15 @@ class PageShowImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imageAsync = ref.watch(imageProvider(imagePath));
-    return imageAsync.when(
-        data: (MediaData image) => ImageView(
-              image: switch (image.runtimeType) {
-                ImageData _ => (image as ImageData).image,
-                _ => throw Exception("Unsupported")
-              },
-            ),
-        loading: () => const CLLoadingView(),
-        error: (err, _) => CLErrorView(errorMessage: err.toString()));
+    return CLFullscreenBox(
+      child: LoadMediaImage(
+        mediaEntry: MapEntry(imagePath, SupportedMediaType.image),
+        onImageLoaded: (image) {
+          return ImageView(
+            image: image,
+          );
+        },
+      ),
+    );
   }
 }

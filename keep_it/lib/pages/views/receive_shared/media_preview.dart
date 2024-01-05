@@ -63,11 +63,10 @@ class MediaPreview extends ConsumerWidget {
                           SupportedMediaType.image ||
                           SupportedMediaType.video =>
                             LoadMediaImage(
-                              path: e.key,
-                              type: e.value,
+                              mediaEntry: e,
                               onImageLoaded: (image) {
                                 return CLImageViewer(
-                                  image: (image).image,
+                                  image: image,
                                   allowZoom: false,
                                 );
                               },
