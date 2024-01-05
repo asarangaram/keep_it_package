@@ -16,9 +16,10 @@ class PageShowImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    assert(false); // CLMediaInfo in stack might affect the behaviour
     return CLFullscreenBox(
       child: LoadMediaImage(
-        mediaEntry: MapEntry(imagePath, CLMediaType.image),
+        mediaInfo: CLMediaInfo(path: imagePath, type: CLMediaType.image),
         onImageLoaded: (image) {
           return ImageView(
             image: image,

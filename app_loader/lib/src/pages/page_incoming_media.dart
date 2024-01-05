@@ -34,7 +34,7 @@ class IncomingMediaViewDefault extends StatelessWidget {
     required this.onDiscard,
   });
 
-  final Map<String, CLMediaType> media;
+  final CLMediaInfoGroup media;
   final Function() onDiscard;
 
   @override
@@ -43,12 +43,12 @@ class IncomingMediaViewDefault extends StatelessWidget {
       body: Center(
           child: SingleChildScrollView(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          for (final e in media.entries) ...[
+          for (final e in media.list) ...[
             Text.rich(TextSpan(children: [
               TextSpan(
-                  text: "${e.value.name.toUpperCase()}: ",
+                  text: "${e.type.name.toUpperCase()}: ",
                   style: const TextStyle(fontWeight: FontWeight.bold)),
-              TextSpan(text: e.key)
+              TextSpan(text: e.path)
             ])),
             const SizedBox(height: 16),
           ],

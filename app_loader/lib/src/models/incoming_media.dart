@@ -24,7 +24,7 @@ extension ColonExtensionOnString on String {
 
 @immutable
 class IncomingMedia {
-  final List<Map<String, CLMediaType>> data;
+  final List<CLMediaInfoGroup> data;
   const IncomingMedia._({
     required this.data,
   });
@@ -40,13 +40,13 @@ class IncomingMedia {
   }
 
   IncomingMedia copyWith({
-    List<Map<String, CLMediaType>>? data,
+    List<CLMediaInfoGroup>? data,
   }) {
     return IncomingMedia._(data: data ?? this.data);
   }
 
   Future<IncomingMedia> append(SharedMedia sharedMedia) async {
-    final media = getMedia(sharedMedia);
+    final CLMediaInfoGroup media = getMedia(sharedMedia);
     final newMedia = await receiveFiles(media);
 
     if (newMedia.isNotEmpty) {
@@ -55,24 +55,23 @@ class IncomingMedia {
     return this;
   }
 
-  Future<Map<String, CLMediaType>> receiveFiles(
-      Map<String, CLMediaType> media) async {
-    Map<String, CLMediaType> newMedia = {};
-    for (var e in media.entries) {
-      switch (e.value) {
+  Future<CLMediaInfoGroup> receiveFiles(CLMediaInfoGroup media) async {
+    List<CLMediaInfo> newMedia = [];
+    for (var e in media.list) {
+      switch (e.type) {
         case CLMediaType.url:
-          final mimeType = await URLHandler.getMimeType(e.key);
+          final mimeType = await URLHandler.getMimeType(e.path);
           switch (mimeType) {
             case CLMediaType.image:
             case CLMediaType.audio:
             case CLMediaType.video:
             case CLMediaType.file:
-              final String? r = await URLHandler.downloadAndSaveImage(e.key);
+              final String? r = await URLHandler.downloadAndSaveImage(e.path);
               if (r != null) {
-                newMedia[r] = mimeType!;
+                newMedia.add(CLMediaInfo(path: r, type: mimeType!));
               } else {
                 //retain as url
-                newMedia[e.key] = e.value;
+                newMedia.add(e);
               }
               break;
 
@@ -80,22 +79,22 @@ class IncomingMedia {
             case CLMediaType.text: // This shouldn't appear
 
             case null:
-              newMedia[e.key] = e.value;
+              newMedia.add(e);
           }
           break;
         case CLMediaType.text:
-          newMedia[e.key] = e.value;
+          newMedia.add(e);
           break;
 
         case CLMediaType.image:
         case CLMediaType.video:
         case CLMediaType.audio:
         case CLMediaType.file:
-          final newFile = await FileHandler.move(e.key, toDir: 'incoming');
-          newMedia[newFile] = e.value;
+          final newFile = await FileHandler.move(e.path, toDir: 'incoming');
+          newMedia.add(CLMediaInfo(path: newFile, type: e.type));
       }
     }
-    return newMedia;
+    return CLMediaInfoGroup(newMedia);
   }
 
   deleteIfExists(String fpath) async {
@@ -108,10 +107,10 @@ class IncomingMedia {
   }
 
   Future<IncomingMedia> pop() async {
-    final Map<String, CLMediaType> item2Delete = data[0];
+    final CLMediaInfoGroup item2Delete = data[0];
 
-    for (var e in item2Delete.entries) {
-      switch (e.value) {
+    for (var e in item2Delete.list) {
+      switch (e.type) {
         case CLMediaType.text:
         case CLMediaType.url:
           break;
@@ -120,36 +119,40 @@ class IncomingMedia {
         case CLMediaType.video:
         case CLMediaType.audio:
         case CLMediaType.file:
-          await deleteIfExists(e.key);
+          await deleteIfExists(e.path);
       }
     }
 
     return IncomingMedia._(data: List.from(data.sublist(1)));
   }
 
-  static Map<String, CLMediaType> getMedia(SharedMedia sharedMedia) {
-    Map<String, CLMediaType> newMedia = {};
+  static CLMediaInfoGroup getMedia(SharedMedia sharedMedia) {
+    List<CLMediaInfo> newMedia = [];
     if (sharedMedia.content?.isNotEmpty ?? false) {
       final text = sharedMedia.content!;
-      newMedia[text] = text.isURL() ? CLMediaType.url : CLMediaType.text;
+      newMedia.add(CLMediaInfo(
+          path: text, type: text.isURL() ? CLMediaType.url : CLMediaType.text));
     }
     if (sharedMedia.imageFilePath != null) {
-      newMedia[sharedMedia.imageFilePath!] = CLMediaType.image;
+      newMedia.add(CLMediaInfo(
+          path: sharedMedia.imageFilePath!, type: CLMediaType.image));
     }
     if (sharedMedia.attachments?.isNotEmpty ?? false) {
       for (var e in sharedMedia.attachments!) {
         if (e != null) {
-          newMedia[e.path] = switch (e.type) {
-            SharedAttachmentType.image => CLMediaType.image,
-            SharedAttachmentType.video => CLMediaType.video,
-            SharedAttachmentType.audio => CLMediaType.audio,
-            SharedAttachmentType.file => CLMediaType.file,
-          };
+          newMedia.add(CLMediaInfo(
+              path: e.path,
+              type: switch (e.type) {
+                SharedAttachmentType.image => CLMediaType.image,
+                SharedAttachmentType.video => CLMediaType.video,
+                SharedAttachmentType.audio => CLMediaType.audio,
+                SharedAttachmentType.file => CLMediaType.file,
+              }));
         }
       }
     }
 
-    return newMedia;
+    return CLMediaInfoGroup(newMedia);
   }
 
   @override

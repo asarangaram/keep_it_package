@@ -10,23 +10,23 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import '../utils/file_handler.dart';
 
 class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
-  MapEntry<String, CLMediaType> mediaEntry;
-  ImageNotifier(this.mediaEntry) : super(const AsyncValue.loading()) {
+  CLMediaInfo mediaInfo;
+  ImageNotifier(this.mediaInfo) : super(const AsyncValue.loading()) {
     _get();
   }
 
   Future<void> _get() async {
     state = await AsyncValue.guard(() async {
-      final String absPath = await getAbsoluteFilePath(mediaEntry.key);
+      final String absPath = await getAbsoluteFilePath(mediaInfo.path);
       try {
-        return switch (mediaEntry.value) {
+        return switch (mediaInfo.type) {
           CLMediaType.image => await tryAsImage(absPath),
           CLMediaType.video => await tryAsVideo(absPath),
           _ => throw UnimplementedError()
         };
       } catch (err) {
         throw Exception(
-            "Failed to load the media ${mediaEntry.key}, ${mediaEntry.value}");
+            "Failed to load the media ${mediaInfo.path}, ${mediaInfo.type}");
       }
     });
   }
@@ -77,6 +77,6 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
 }
 
 final imageProvider = StateNotifierProvider.family<ImageNotifier,
-    AsyncValue<ui.Image>, MapEntry<String, CLMediaType>>((ref, mediaEntry) {
+    AsyncValue<ui.Image>, CLMediaInfo>((ref, mediaEntry) {
   return ImageNotifier(mediaEntry);
 });

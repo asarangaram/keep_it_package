@@ -56,7 +56,7 @@ class KeepItApp implements AppDescriptor {
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder =>
       (BuildContext context, WidgetRef ref,
-          {required Map<String, CLMediaType> sharedMedia,
+          {required CLMediaInfoGroup sharedMedia,
           required Function() onDiscard}) {
         return SharedItemsView(
           media: sharedMedia,

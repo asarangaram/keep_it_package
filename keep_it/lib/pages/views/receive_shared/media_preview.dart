@@ -16,22 +16,23 @@ class MediaPreview extends ConsumerWidget {
   });
 
   factory MediaPreview.fromItems(Items items, {List<Widget>? children}) {
-    Map<String, CLMediaType> media = {};
+    List<CLMediaInfo> media = [];
     for (var item in items.entries) {
-      media[item.path] = item.type;
+      media.add(CLMediaInfo(path: item.path, type: item.type));
     }
     return MediaPreview(media: media, children: children);
   }
 
-  final Map<String, CLMediaType> media;
+  final List<CLMediaInfo> media;
   final List<Widget>? children;
   final int maxItems;
   final bool showAll;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAllImages = media.values.every(
-      (element) => [CLMediaType.image, CLMediaType.video].contains(element),
+    final isAllImages = media.every(
+      (element) =>
+          [CLMediaType.image, CLMediaType.video].contains(element.type),
     );
     if (isAllImages) {
       return Container(
@@ -57,13 +58,13 @@ class MediaPreview extends ConsumerWidget {
                 child: CLGridViewCustom(
                   maxItems: maxItems,
                   showAll: showAll,
-                  children: media.entries
+                  children: media
                       .map(
-                        (e) => switch (e.value) {
+                        (e) => switch (e.type) {
                           CLMediaType.image ||
                           CLMediaType.video =>
                             LoadMediaImage(
-                              mediaEntry: e,
+                              mediaInfo: e,
                               onImageLoaded: (image) {
                                 return Center(
                                   child: AspectRatio(
@@ -71,7 +72,7 @@ class MediaPreview extends ConsumerWidget {
                                     child: CLImageViewer(
                                       image: image,
                                       allowZoom: false,
-                                      overlayWidget: switch (e.value) {
+                                      overlayWidget: switch (e.type) {
                                         CLMediaType.video =>
                                           const VidoePlayIcon(),
                                         _ => null
@@ -100,8 +101,8 @@ class MediaPreview extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            for (final e in media.entries) ...[
-              ShowAsText(text: e.key, type: e.value),
+            for (final e in media) ...[
+              ShowAsText(text: e.path, type: e.type),
               const SizedBox(height: 16),
             ]
           ],

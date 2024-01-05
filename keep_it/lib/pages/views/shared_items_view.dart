@@ -19,7 +19,7 @@ class SharedItemsView extends ConsumerStatefulWidget {
     required this.onDiscard,
   });
 
-  final Map<String, CLMediaType> media;
+  final CLMediaInfoGroup media;
   final Function() onDiscard;
 
   @override
@@ -69,7 +69,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                   children: [
                     Flexible(
                         child: MediaPreview(
-                      media: widget.media,
+                      media: widget.media.list,
                       showAll: true,
                     )),
                     const SizedBox(
@@ -130,21 +130,21 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
         .read(clustersProvider(null).notifier)
         .upsertCluster(Cluster(description: descriptionController.text), ids);
 
-    for (var entry in widget.media.entries) {
-      switch (entry.value) {
+    for (var entry in widget.media.list) {
+      switch (entry.type) {
         case CLMediaType.image:
         case CLMediaType.video:
           // Copy item to storage.
-          final newFile = await FileHandler.move(entry.key, toDir: "keepIt");
+          final newFile = await FileHandler.move(entry.path, toDir: "keepIt");
           // if URL is stored, read it and delete
-          final logFileName = '${entry.key}.url';
+          final logFileName = '${entry.path}.url';
           String? imageUrl;
           if (File(logFileName).existsSync()) {
             imageUrl = await File(logFileName).readAsString();
             File(logFileName).delete();
           }
           final item = ItemInDB(
-            type: entry.value,
+            type: entry.type,
             path: newFile.replaceAll(
                 "${await FileHandler.getDocumentsDirectory(null)}/", ""),
             ref: imageUrl?.replaceAll(

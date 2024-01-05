@@ -5,20 +5,19 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 class LoadMediaImage extends ConsumerWidget {
   const LoadMediaImage({
     super.key,
-    required this.mediaEntry,
+    required this.mediaInfo,
     required this.onImageLoaded,
   });
 
   final Widget Function(ui.Image mediaData) onImageLoaded;
-  final MapEntry<String, CLMediaType> mediaEntry;
+  final CLMediaInfo mediaInfo;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imageAsync = ref.watch(imageProvider(mediaEntry));
+    final imageAsync = ref.watch(imageProvider(mediaInfo));
 
     return imageAsync.when(
         data: (ui.Image data) => onImageLoaded(data),

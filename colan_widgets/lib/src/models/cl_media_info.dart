@@ -53,3 +53,11 @@ class CLMediaInfo {
   @override
   int get hashCode => path.hashCode ^ type.hashCode;
 }
+
+class CLMediaInfoGroup {
+  List<CLMediaInfo> list;
+  CLMediaInfoGroup(this.list);
+
+  bool get isEmpty => list.isEmpty;
+  bool get isNotEmpty => list.isNotEmpty;
+}
