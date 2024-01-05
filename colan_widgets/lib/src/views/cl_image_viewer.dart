@@ -55,10 +55,30 @@ class _CLImageViewerState extends State<CLImageViewer> {
                 image: widget.image,
               ));
         } else {
-          return Center(
-              child: RawImage(
-            image: widget.image,
-          ));
+          return Stack(
+            children: [
+              Center(
+                  child: RawImage(
+                image: widget.image,
+              )),
+              Positioned.fill(
+                child: Center(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground, // Color for the circular container
+                    ),
+                    child: CLIcon.veryLarge(
+                      Icons.play_arrow_sharp,
+                      color: Theme.of(context).colorScheme.background,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
         }
       })),
     );
