@@ -65,7 +65,10 @@ class _CLImageViewerState extends State<CLImageViewer> {
               if (widget.overlayWidget != null)
                 Positioned.fill(
                   child: Center(
-                    child: widget.overlayWidget,
+                    child: FractionallySizedBox(
+                        widthFactor: 0.4,
+                        heightFactor: 0.4,
+                        child: FittedBox(child: widget.overlayWidget)),
                   ),
                 )
             ],

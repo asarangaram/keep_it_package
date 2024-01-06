@@ -35,64 +35,51 @@ class MediaPreview extends ConsumerWidget {
           [CLMediaType.image, CLMediaType.video].contains(element.type),
     );
     if (isAllImages) {
-      return Container(
-        decoration: const BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-                    width: 2.0, color: Color.fromARGB(255, 192, 192, 192)))),
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.only(
-          bottom: 16,
-          left: 8,
-          right: 8,
-        ),
-        alignment: Alignment.center,
-        child: Material(
-          elevation: 6.0,
-          color: Colors.transparent,
-          shadowColor: Colors.transparent,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: CLGridViewCustom(
-                  maxItems: maxItems,
-                  showAll: showAll,
-                  children: media
-                      .map(
-                        (e) => switch (e.type) {
-                          CLMediaType.image ||
-                          CLMediaType.video =>
-                            LoadMediaImage(
-                              mediaInfo: e,
-                              onImageLoaded: (image) {
-                                return Center(
-                                  child: AspectRatio(
-                                    aspectRatio: image.width / image.height,
-                                    child: CLImageViewer(
-                                      image: image,
-                                      allowZoom: false,
-                                      overlayWidget: switch (e.type) {
-                                        CLMediaType.video =>
-                                          const VidoePlayIcon(),
-                                        _ => null
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          /* SupportedMediaType.video =>
-                            VideoPlayerScreen(path: e.key),*/
-                          _ => throw Exception("Unexpected")
-                        },
-                      )
-                      .toList(),
-                ),
+      return Material(
+        elevation: 6.0,
+        color: Colors.transparent,
+        shadowColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: CLGridViewCustom(
+                maxItems: maxItems,
+                showAll: showAll,
+
+                // backgroundColor: Colors.blue,
+                children: media
+                    .map(
+                      (e) => switch (e.type) {
+                        CLMediaType.image ||
+                        CLMediaType.video =>
+                          LoadMediaImage(
+                            mediaInfo: e,
+                            onImageLoaded: (image) {
+                              return CLImageViewer(
+                                image: image,
+                                allowZoom: false,
+                                overlayWidget: switch (e.type) {
+                                  CLMediaType.video => const VidoePlayIcon(),
+                                  _ => null
+                                },
+                              );
+                            },
+                          ),
+                        /* SupportedMediaType.video =>
+                          VideoPlayerScreen(path: e.key),*/
+                        _ => throw Exception("Unexpected")
+                      },
+                    )
+                    .toList(),
               ),
-              if (children != null) ...children!
-            ],
-          ),
+            ),
+            const Divider(
+              height: 2,
+              thickness: 4,
+            ),
+            if (children != null) ...children!
+          ],
         ),
       );
     } else {

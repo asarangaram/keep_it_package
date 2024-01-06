@@ -9,7 +9,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import 'package:store/store.dart';
 import 'package:window_size/window_size.dart';
 
 import 'pages/page_collections.dart';

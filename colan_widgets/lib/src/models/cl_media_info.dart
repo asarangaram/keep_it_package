@@ -1,11 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+
 import 'cl_media_type.dart';
 
 class CLMediaInfo {
-  String path;
-  CLMediaType type;
+  final String path;
+  final CLMediaType type;
   CLMediaInfo({
     required this.path,
     required this.type,
@@ -55,7 +56,7 @@ class CLMediaInfo {
 }
 
 class CLMediaInfoGroup {
-  List<CLMediaInfo> list;
+  final List<CLMediaInfo> list;
   CLMediaInfoGroup(this.list);
 
   bool get isEmpty => list.isEmpty;

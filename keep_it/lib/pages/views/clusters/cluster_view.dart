@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,7 +25,7 @@ class ClusterView extends ConsumerWidget {
                   const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: CLText.large(
+                child: Text(
                   notes,
                   textAlign: TextAlign.start,
                 ),

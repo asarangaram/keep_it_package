@@ -19,12 +19,11 @@ class ClustersView extends ConsumerWidget {
             }
           : null,
       pageBuilder: (context, quickMenuScopeKey) {
-        return SingleChildScrollView(
-          child: CLGridViewCustom(
-            showAll: true,
-            children:
-                clusters.entries.map((e) => ClusterView(cluster: e)).toList(),
-          ),
+        return CLGridViewCustom(
+          showAll: true,
+          maxCrossAxisCount: 3,
+          children:
+              clusters.entries.map((e) => ClusterView(cluster: e)).toList(),
         );
       },
     );
