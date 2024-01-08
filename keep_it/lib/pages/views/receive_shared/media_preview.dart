@@ -50,26 +50,28 @@ class MediaPreview extends ConsumerWidget {
                 // backgroundColor: Colors.blue,
                 children: media
                     .map(
-                      (e) => switch (e.type) {
-                        CLMediaType.image ||
-                        CLMediaType.video =>
-                          LoadMediaImage(
-                            mediaInfo: e,
-                            onImageLoaded: (image) {
-                              return CLImageViewer(
-                                image: image,
-                                allowZoom: false,
-                                overlayWidget: switch (e.type) {
-                                  CLMediaType.video => const VidoePlayIcon(),
-                                  _ => null
-                                },
-                              );
-                            },
-                          ),
-                        /* SupportedMediaType.video =>
+                      (e) => [
+                        switch (e.type) {
+                          CLMediaType.image ||
+                          CLMediaType.video =>
+                            LoadMediaImage(
+                              mediaInfo: e,
+                              onImageLoaded: (image) {
+                                return CLImageViewer(
+                                  image: image,
+                                  allowZoom: false,
+                                  overlayWidget: switch (e.type) {
+                                    CLMediaType.video => const VidoePlayIcon(),
+                                    _ => null
+                                  },
+                                );
+                              },
+                            ),
+                          /* SupportedMediaType.video =>
                           VideoPlayerScreen(path: e.key),*/
-                        _ => throw Exception("Unexpected")
-                      },
+                          _ => throw Exception("Unexpected")
+                        }
+                      ],
                     )
                     .toList(),
               ),

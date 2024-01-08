@@ -17,7 +17,7 @@ class CLGridViewCustom extends StatelessWidget {
 
   final int maxItems;
   final bool showAll;
-  final List<Widget> children;
+  final List<List<Widget>> children;
   final Color? textColor;
   final Color? backgroundColor;
   final int maxCrossAxisCount;
@@ -45,7 +45,7 @@ class CLGridViewCustom extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              for (var r in items2D)
+              for (var r in items2D) ...[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,12 +59,35 @@ class CLGridViewCustom extends StatelessWidget {
                           left: (index == 0) ? 1.0 : 8.0,
                           right: 1.0,
                         ),
-                        child: r[index],
+                        child: r[index][0],
                       )),
                     for (var index = r.length; index < hCount; index++)
                       Flexible(child: Container())
                   ],
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var index = 0; index < r.length; index++)
+                      if (r[index].length > 1)
+                        Flexible(
+                            child: Container(
+                          margin: EdgeInsets.only(
+                            top: 1.0,
+                            bottom: 1.0,
+                            left: (index == 0) ? 1.0 : 8.0,
+                            right: 1.0,
+                          ),
+                          child: r[index][1],
+                        ))
+                      else
+                        Flexible(child: Container()),
+                    for (var index = r.length; index < hCount; index++)
+                      Flexible(child: Container())
+                  ],
+                ),
+              ],
               if (!showAll && children.length > maxItems)
                 CLText.small(
                   " + ${children.length - maxItems} items",
