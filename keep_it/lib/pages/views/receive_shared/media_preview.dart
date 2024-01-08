@@ -76,10 +76,6 @@ class MediaPreview extends ConsumerWidget {
                     .toList(),
               ),
             ),
-            const Divider(
-              height: 2,
-              thickness: 4,
-            ),
             if (children != null) ...children!
           ],
         ),

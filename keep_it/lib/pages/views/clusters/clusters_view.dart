@@ -22,8 +22,12 @@ class ClustersView extends ConsumerWidget {
         return CLGridViewCustom(
           showAll: true,
           maxCrossAxisCount: 2,
-          children:
-              clusters.entries.map((e) => [ClusterView(cluster: e)]).toList(),
+          children: clusters.entries
+              .map((e) => [
+                    ClusterView(cluster: e),
+                    ClusterDescription(cluster: e),
+                  ])
+              .toList(),
         );
       },
     );

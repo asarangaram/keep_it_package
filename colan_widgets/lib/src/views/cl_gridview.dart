@@ -48,7 +48,7 @@ class CLGridViewCustom extends StatelessWidget {
               for (var r in items2D) ...[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     for (var index = 0; index < r.length; index++)
                       Flexible(
