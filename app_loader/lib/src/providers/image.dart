@@ -9,6 +9,39 @@ import 'package:path/path.dart' as path;
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../utils/file_handler.dart';
 
+class VideoHandler {
+  static Future<Uint8List> createVideoThumbnail(String videoPath) async {
+    final thumbnail = await VideoThumbnail.thumbnailData(
+      video: videoPath,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth:
+          256, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      quality: 25,
+    );
+    return thumbnail!;
+  }
+
+  static Future<void> generateVideoThumbnail(String videoPath) async {
+    File thumbnailFile = File("$videoPath.tb");
+    final thumbnail = await createVideoThumbnail(videoPath);
+    await thumbnailFile.writeAsBytes(thumbnail);
+  }
+
+  static Future<Uint8List> loadVideoThumbnail(String videoPath,
+      {bool regenerateIfNotExists = false}) async {
+    File thumbnailFile = File("$videoPath.tb");
+    if (thumbnailFile.existsSync()) {
+      print("reading thumbnail of $videoPath");
+      return await thumbnailFile.readAsBytes();
+    }
+    final thumbnail = await createVideoThumbnail(videoPath);
+    if (regenerateIfNotExists) {
+      await thumbnailFile.writeAsBytes(thumbnail);
+    }
+    return thumbnail;
+  }
+}
+
 class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
   CLMediaInfo mediaInfo;
   ImageNotifier(this.mediaInfo) : super(const AsyncValue.loading()) {
@@ -32,13 +65,9 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
   }
 
   Future<ui.Image> tryAsVideo(String mediaPath) async =>
-      await loadImage((await VideoThumbnail.thumbnailData(
-        video: await getAbsoluteFilePath(mediaPath),
-        imageFormat: ImageFormat.JPEG,
-        maxWidth:
-            256, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-        quality: 25,
-      ))!);
+      await loadImage(await VideoHandler.loadVideoThumbnail(
+          await getAbsoluteFilePath(mediaPath),
+          regenerateIfNotExists: true));
 
   Future<String> getAbsoluteFilePath(String mediaPath) async {
     return switch (mediaPath) {

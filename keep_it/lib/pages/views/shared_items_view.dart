@@ -151,6 +151,10 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                 "${await FileHandler.getDocumentsDirectory(null)}/", ""),
             clusterId: clusterId,
           );
+          // Create thumbnail
+          if (entry.type == CLMediaType.video) {
+            await VideoHandler.generateVideoThumbnail(newFile);
+          }
           ref.read(itemsProvider(clusterId));
           ref.read(itemsProvider(clusterId).notifier).upsertItem(item);
 
