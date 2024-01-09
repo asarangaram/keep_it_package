@@ -62,7 +62,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   _controller.pause();
                 } else {
                   // If the video is paused, play it.
-                  _controller.setVolume(0.0);
+                  _controller.setVolume(1.0);
                   _controller.play();
                 }
               },

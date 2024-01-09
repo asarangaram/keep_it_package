@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:video_thumbnail/video_thumbnail.dart';
-import '../utils/file_handler.dart';
 
 class VideoHandler {
   static Future<Uint8List> createVideoThumbnail(String videoPath) async {
@@ -51,7 +50,8 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
 
   Future<void> _get() async {
     state = await AsyncValue.guard(() async {
-      final String absPath = await getAbsoluteFilePath(mediaInfo.path);
+      final String absPath =
+          await FileHandler.getAbsoluteFilePath(mediaInfo.path);
       try {
         return switch (mediaInfo.type) {
           CLMediaType.image => await tryAsImage(absPath),
@@ -67,16 +67,8 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
 
   Future<ui.Image> tryAsVideo(String mediaPath) async =>
       await loadImage(await VideoHandler.loadVideoThumbnail(
-          await getAbsoluteFilePath(mediaPath),
+          await FileHandler.getAbsoluteFilePath(mediaPath),
           regenerateIfNotExists: true));
-
-  Future<String> getAbsoluteFilePath(String mediaPath) async {
-    return switch (mediaPath) {
-      (String s) when mediaPath.startsWith('/') => s,
-      (String s) when mediaPath.startsWith('assets') => s,
-      _ => path.join(await FileHandler.getDocumentsDirectory(null), mediaPath),
-    };
-  }
 
   Future<ui.Image> tryAsImage(String mediaPath) async =>
       await loadImage(switch (mediaPath) {

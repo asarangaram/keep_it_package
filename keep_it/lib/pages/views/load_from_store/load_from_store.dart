@@ -49,12 +49,12 @@ class LoadClusters extends ConsumerWidget {
 class LoadItems extends ConsumerWidget {
   const LoadItems({
     super.key,
-    this.clusterID,
+    required this.clusterID,
     required this.buildOnData,
     this.hasBackground = true,
   });
   final Widget Function(Items items) buildOnData;
-  final int? clusterID;
+  final int clusterID;
   final bool hasBackground;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

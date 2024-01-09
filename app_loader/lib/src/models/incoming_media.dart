@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 
 import 'package:share_handler/share_handler.dart';
 
-import '../utils/file_handler.dart';
 import '../utils/url_handler.dart';
 
 extension ColonExtensionOnString on String {

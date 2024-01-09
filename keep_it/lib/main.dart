@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keep_it/pages/page_items.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -48,7 +49,9 @@ class KeepItApp implements AppDescriptor {
       "clusters": (context, GoRouterState state) =>
           const ClustersPage(collectionId: null),
       "clusters/by_collection_id/:id": (context, GoRouterState state) =>
-          ClustersPage(collectionId: int.parse(state.pathParameters['id']!))
+          ClustersPage(collectionId: int.parse(state.pathParameters['id']!)),
+      "items/by_cluster_id/:id": (context, GoRouterState state) =>
+          ItemsPage(clusterID: int.parse(state.pathParameters['id']!))
     };
   }
 

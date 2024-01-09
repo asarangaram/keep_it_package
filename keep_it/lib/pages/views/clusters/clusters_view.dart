@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../load_from_store/load_items.dart';
+import '../load_from_store/load_from_store.dart';
+
 import '../main/keep_it_main_view.dart';
 import '../receive_shared/media_preview.dart';
 
@@ -26,9 +27,9 @@ class ClustersView extends ConsumerWidget {
           children: clusters.entries
               .map((e) => [
                     GestureDetector(
-                      //onTap: context.go(location),
+                      onTap: () => context.push("/items/by_cluster_id/${e.id}"),
                       child: LoadItems(
-                        clusterID: e.id,
+                        clusterID: e.id!,
                         hasBackground: false,
                         buildOnData: (items) {
                           return MediaPreview.fromItems(
@@ -39,7 +40,8 @@ class ClustersView extends ConsumerWidget {
                     ),
                     if (e.description.isNotEmpty)
                       GestureDetector(
-                        // onTap: ,
+                        onTap: () =>
+                            context.push("/items/by_cluster_id/${e.id}"),
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 8, right: 8, top: 8, bottom: 8),

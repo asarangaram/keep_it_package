@@ -46,4 +46,20 @@ class FileHandler {
         await FileHandler.copyAndDeleteFile(filePath, destinationPath);
     return newFile;
   }
+
+  static Future<String> getAbsoluteFilePath(String mediaPath) async {
+    final dir = await FileHandler.getDocumentsDirectory(null);
+    return getAbsoluteFilePathSync(mediaPath, dir: dir);
+  }
+
+  static String getAbsoluteFilePathSync(
+    String mediaPath, {
+    required String dir,
+  }) {
+    return switch (mediaPath) {
+      (String s) when mediaPath.startsWith('/') => s,
+      (String s) when mediaPath.startsWith('assets') => s,
+      _ => path.join(dir, mediaPath),
+    };
+  }
 }

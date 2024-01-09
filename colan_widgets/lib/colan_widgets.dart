@@ -32,3 +32,4 @@ export 'src/widgets/cl_selection_wrapper.dart';
 export 'src/demos/demo_main.dart' show DemoMain;
 
 export 'src/utils/rand_image_generator.dart';
+export 'src/utils/file_handler.dart';

@@ -6,8 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 
-import 'file_handler.dart';
-
 class URLHandler {
   static Future<CLMediaType?> getMimeType(String url) async {
     try {

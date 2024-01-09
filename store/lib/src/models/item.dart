@@ -1,5 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 
+import 'cluster.dart';
+
 extension ColonExtensionOnString on String {
   bool isURL() {
     try {
@@ -120,8 +122,8 @@ class ItemInDB extends Item {
 
 class Items {
   final List<ItemInDB> entries;
-
-  Items(this.entries);
+  final Cluster cluster;
+  Items(this.cluster, this.entries);
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;

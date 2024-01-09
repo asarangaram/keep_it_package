@@ -4,13 +4,13 @@ import '../models/cluster.dart';
 import '../models/db.dart';
 import 'db_manager.dart';
 
-class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
+class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
   DatabaseManager? databaseManager;
   int? collectionID;
   Ref ref;
 
   bool isLoading = false;
-  ClusterNotifier({
+  ClustersNotifier({
     required this.ref,
     this.databaseManager,
     this.collectionID,
@@ -87,16 +87,16 @@ class ClusterNotifier extends StateNotifier<AsyncValue<Clusters>> {
 }
 
 final clustersProvider =
-    StateNotifierProvider.family<ClusterNotifier, AsyncValue<Clusters>, int?>(
+    StateNotifierProvider.family<ClustersNotifier, AsyncValue<Clusters>, int?>(
         (ref, clusterID) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
-    data: (DatabaseManager dbManager) => ClusterNotifier(
+    data: (DatabaseManager dbManager) => ClustersNotifier(
         ref: ref, databaseManager: dbManager, collectionID: clusterID),
-    error: (_, __) => ClusterNotifier(
+    error: (_, __) => ClustersNotifier(
       ref: ref,
     ),
-    loading: () => ClusterNotifier(
+    loading: () => ClustersNotifier(
       ref: ref,
     ),
   );

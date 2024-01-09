@@ -1,5 +1,7 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/cluster.dart';
 import '../models/item.dart';
 import '../models/db.dart';
 import 'db_manager.dart';
@@ -21,15 +23,23 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   loadItems() async {
     if (databaseManager == null) return;
     final List<ItemInDB> items;
+    final Cluster cluster;
 
-    if (clusterID == null) {
-      items = ItemDB.getAll(databaseManager!.db);
-    } else {
-      items = ItemDB.getItemsForCluster(databaseManager!.db, clusterID!);
-    }
+    items = ItemDB.getItemsForCluster(databaseManager!.db, clusterID!);
+    cluster = ClusterDB.getById(databaseManager!.db, clusterID!);
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Items(items);
+      final dir = await FileHandler.getDocumentsDirectory(null);
+      return Items(
+          cluster,
+          items
+              .map(
+                (e) => e.copyWith(
+                  path: FileHandler.getAbsoluteFilePathSync(e.path, dir: dir),
+                ),
+              )
+              .toList());
     });
   }
 

@@ -35,7 +35,7 @@ class CLGridViewListBased extends StatelessWidget {
         });
 
     final items2D = items.convertTo2D(hCount);
-    print("rows are ${items2D.length}");
+
     return DecoratedBox(
       decoration: BoxDecoration(color: backgroundColor),
       child: Padding(
@@ -44,7 +44,7 @@ class CLGridViewListBased extends StatelessWidget {
             itemCount: items2D.length,
             itemBuilder: (context, index) {
               final r = items2D[index];
-              print("index is $index");
+
               return ListTile(
                   title: Column(children: [
                 Row(
