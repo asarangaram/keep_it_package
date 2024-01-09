@@ -1,4 +1,5 @@
 import 'package:app_loader/app_loader.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,18 +20,19 @@ class LoadClusters extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final clustersAsync = ref.watch(clustersProvider(collectionID));
-    return clustersAsync.when(
-        loading: () => CLBackground(
-            hasBackground: hasBackground,
-            brighnessFactor: 0.3,
-            child: const CLLoadingView()),
-        error: (err, _) => CLBackground(
-            hasBackground: hasBackground,
-            brighnessFactor: 0.3,
-            child: CLErrorView(errorMessage: err.toString())),
-        data: (clusters) => CLBackground(
-            hasBackground: hasBackground,
-            brighnessFactor: clusters.isNotEmpty ? 0.25 : 0,
-            child: buildOnData(clusters)));
+    final brighnessFactor = clustersAsync.whenOrNull(
+            data: (clusters) => clusters.isEmpty ? 0.0 : null) ??
+        0.25;
+    return CLFullscreenBox(
+      useSafeArea: false,
+      child: CLBackground(
+        hasBackground: hasBackground,
+        brighnessFactor: brighnessFactor,
+        child: clustersAsync.when(
+            loading: () => const CLLoadingView(),
+            error: (err, _) => CLErrorView(errorMessage: err.toString()),
+            data: (clusters) => buildOnData(clusters)),
+      ),
+    );
   }
 }

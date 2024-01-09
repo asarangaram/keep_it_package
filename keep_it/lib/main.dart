@@ -46,9 +46,9 @@ class KeepItApp implements AppDescriptor {
           const AppTheme(child: CollectionsPage()),
       "demo": (context, state) => const DemoMain(),
       "clusters": (context, GoRouterState state) =>
-          const ClusterPage(collectionId: null),
-      "cluster/:id": (context, GoRouterState state) =>
-          ClusterPage(collectionId: int.parse(state.pathParameters['id']!))
+          const ClustersPage(collectionId: null),
+      "clusters/by_collection_id/:id": (context, GoRouterState state) =>
+          ClustersPage(collectionId: int.parse(state.pathParameters['id']!))
     };
   }
 

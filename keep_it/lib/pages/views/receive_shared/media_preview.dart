@@ -30,11 +30,11 @@ class MediaPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAllImages = media.every(
+    final isAllSupportedMedia = media.every(
       (element) =>
           [CLMediaType.image, CLMediaType.video].contains(element.type),
     );
-    if (isAllImages) {
+    if (isAllSupportedMedia) {
       return Material(
         elevation: 6.0,
         color: Colors.transparent,

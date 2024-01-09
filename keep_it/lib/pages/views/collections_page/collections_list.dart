@@ -42,7 +42,8 @@ class CollectionsList extends ConsumerWidget {
             random: random,
             onTap: (onSelection == null)
                 ? () {
-                    context.push("/cluster/${collectionList[index].id}");
+                    context.push(
+                        "/clusters/by_collection_id/${collectionList[index].id}");
                   }
                 : () => onSelection!.call(index),
           );
