@@ -15,7 +15,7 @@ class VideoHandler {
       video: videoPath,
       imageFormat: ImageFormat.JPEG,
       maxWidth:
-          256, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+          64, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
       quality: 25,
     );
     return thumbnail!;
@@ -28,14 +28,15 @@ class VideoHandler {
   }
 
   static Future<Uint8List> loadVideoThumbnail(String videoPath,
-      {bool regenerateIfNotExists = false}) async {
+      {bool regenerateIfNotExists = false, bool regenerate = false}) async {
     File thumbnailFile = File("$videoPath.tb");
-    if (thumbnailFile.existsSync()) {
-      print("reading thumbnail of $videoPath");
-      return await thumbnailFile.readAsBytes();
+    if (!regenerate) {
+      if (thumbnailFile.existsSync()) {
+        return await thumbnailFile.readAsBytes();
+      }
     }
     final thumbnail = await createVideoThumbnail(videoPath);
-    if (regenerateIfNotExists) {
+    if (regenerateIfNotExists || regenerate) {
       await thumbnailFile.writeAsBytes(thumbnail);
     }
     return thumbnail;
