@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
 import 'package:store/store.dart';
 
-import 'load_from_store/load_collections.dart';
+import 'load_from_store/load_from_store.dart';
 import 'receive_shared/media_preview.dart';
 import 'receive_shared/save_or_cancel.dart';
 

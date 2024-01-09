@@ -5,7 +5,7 @@ import 'package:store/store.dart';
 
 import '../main/background.dart';
 import 'add_collection_form.dart';
-import '../load_from_store/load_collections.dart';
+import '../load_from_store/load_from_store.dart';
 import 'collections_list.dart';
 
 class KeepItDialogs {
