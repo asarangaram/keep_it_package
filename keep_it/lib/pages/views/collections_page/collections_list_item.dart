@@ -3,31 +3,30 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/pages/views/collections_page/collection_preview.dart';
 import 'package:store/store.dart';
-
-import 'collection_preview.dart';
 
 class CollectionsListItem extends ConsumerWidget {
   const CollectionsListItem(
     this.collection, {
+    required this.random,
     super.key,
     this.isSelected,
-    required this.random,
     this.onTap,
   });
 
   final bool? isSelected;
   final Collection collection;
   final Random random;
-  final Function()? onTap;
-  final double previewSize = 128; // TODO: should come from settings
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const previewSize = 128; // TODO(asarangaram): should come from settings.
     final clustersAsync = ref.watch(clustersProvider(collection.id));
 
     return SizedBox(
-      height: previewSize,
+      height: previewSize.toDouble(),
       child: CLListTile(
         isSelected: isSelected ?? false,
         title: CLText.large(collection.label),
@@ -36,26 +35,27 @@ class CollectionsListItem extends ConsumerWidget {
           children: [
             Flexible(
               child: CLText.small(
-                collection.description ?? "",
+                collection.description ?? '',
                 textAlign: TextAlign.start,
               ),
             ),
             Align(
               alignment: Alignment.centerRight,
               child: clustersAsync.when(
-                  data: (clusters) {
-                    return CLText.small(
-                      clusters.entries.length.toString(),
-                      textAlign: TextAlign.end,
-                    );
-                  },
-                  error: (_, __) => const CLIcon.small(Icons.error),
-                  loading: () => const CLIcon.small(Icons.timer)),
-            )
+                data: (clusters) {
+                  return CLText.small(
+                    clusters.entries.length.toString(),
+                    textAlign: TextAlign.end,
+                  );
+                },
+                error: (_, __) => const CLIcon.small(Icons.error),
+                loading: () => const CLIcon.small(Icons.timer),
+              ),
+            ),
           ],
         ),
         leading: SizedBox.square(
-          dimension: previewSize,
+          dimension: previewSize.toDouble(),
           child: CollectionPreview(random: random),
         ),
         onTap: onTap,

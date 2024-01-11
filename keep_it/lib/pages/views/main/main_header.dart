@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MainHeader extends ConsumerWidget {
   const MainHeader({
-    super.key,
     required this.quickMenuScopeKey,
+    super.key,
     this.actionsBuilders,
     this.mainActionItems,
     this.title,
@@ -14,8 +14,10 @@ class MainHeader extends ConsumerWidget {
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final List<
-      Widget Function(BuildContext context,
-          GlobalKey<State<StatefulWidget>> quickMenuScopeKey)>? actionsBuilders;
+      Widget Function(
+        BuildContext context,
+        GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
+      )>? actionsBuilders;
   final List<List<CLMenuItem>>? mainActionItems;
   final String? title;
   final void Function()? onPop;
@@ -23,7 +25,7 @@ class MainHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: Row(
         children: [
           if (onPop != null)
@@ -45,21 +47,28 @@ class MainHeader extends ConsumerWidget {
                     ),
                   ),
                 if (actionsBuilders != null && actionsBuilders!.isNotEmpty)
-                  ...actionsBuilders!.map((e) => Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: e(context, quickMenuScopeKey),
-                      )),
+                  ...actionsBuilders!.map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: e(context, quickMenuScopeKey),
+                    ),
+                  ),
                 if (mainActionItems != null)
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: CLQuickMenuAnchor(
                       parentKey: quickMenuScopeKey,
-                      menuBuilder: (context, boxconstraints,
-                          {required Function() onDone}) {
+                      menuBuilder: (
+                        context,
+                        boxconstraints, {
+                        required void Function() onDone,
+                      }) {
                         return CLButtonsGrid(
                           scaleType: CLScaleType.veryLarge,
-                          size: const Size(kMinInteractiveDimension * 1.5,
-                              kMinInteractiveDimension * 1.5),
+                          size: const Size(
+                            kMinInteractiveDimension * 1.5,
+                            kMinInteractiveDimension * 1.5,
+                          ),
                           children2D:
                               insertOnDone(context, mainActionItems!, onDone),
                         );
@@ -68,7 +77,7 @@ class MainHeader extends ConsumerWidget {
                         Icons.more_vert,
                       ),
                     ),
-                  )
+                  ),
               ],
             ),
           ),
@@ -78,17 +87,26 @@ class MainHeader extends ConsumerWidget {
   }
 
   static List<List<CLMenuItem>> insertOnDone(
-      BuildContext context, List<List<CLMenuItem>> items, onDone) {
+    BuildContext context,
+    List<List<CLMenuItem>> items,
+    void Function() onDone,
+  ) {
     return items.map((list) {
       return list
-          .map((e) => CLMenuItem(e.title, e.icon, onTap: () {
+          .map(
+            (e) => CLMenuItem(
+              e.title,
+              e.icon,
+              onTap: () {
                 if (e.onTap != null) {
                   e.onTap!.call();
                 } else {
                   CLButtonsGrid.showSnackBarAboveDialog(context, e.title);
                 }
                 onDone();
-              }))
+              },
+            ),
+          )
           .toList();
     }).toList();
   }

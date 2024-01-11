@@ -6,8 +6,8 @@ import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({
-    super.key,
     required this.path,
+    super.key,
     this.aspectRatio,
   });
   final String path;
@@ -31,7 +31,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       File(widget.path),
     );
 
-    _initializeVideoPlayerFuture = () async => await _controller.initialize();
+    _initializeVideoPlayerFuture = () async => _controller.initialize();
   }
 
   @override
@@ -45,9 +45,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     // Complete the code in the next step.
-    return // Use a FutureBuilder to display a loading spinner while waiting for the
-// VideoPlayerController to finish initializing.
-        FutureBuilder(
+    // Use a FutureBuilder to display a loading spinner while
+    // waiting for the  VideoPlayerController to finish initializing.
+    return FutureBuilder(
       future: _initializeVideoPlayerFuture(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
@@ -64,8 +64,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     _controller.pause();
                   } else {
                     // If the video is paused, play it.
-                    _controller.setVolume(1.0);
-                    _controller.play();
+                    _controller
+                      ..setVolume(1)
+                      ..play();
                   }
                 },
                 child: Stack(
@@ -73,7 +74,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     VideoPlayer(_controller),
                     Center(
                       child: VideoController(controller: _controller),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -93,8 +94,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
 class VideoController extends StatefulWidget {
   const VideoController({
-    super.key,
     required VideoPlayerController controller,
+    super.key,
   }) : _controller = controller;
 
   final VideoPlayerController _controller;

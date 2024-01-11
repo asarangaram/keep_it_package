@@ -14,28 +14,28 @@ class CLListItem {
 
 class CLListView extends StatefulWidget {
   const CLListView({
-    super.key,
     required this.items,
+    super.key,
     this.onTab,
     this.color,
     this.disabledColor,
   })  : onSelectionDoneNullalbe = null,
         canSelectAll = false,
         saveLabelNullable = null;
-  const CLListView.selectable(
-      {super.key,
-      required this.items,
-      this.onTab,
-      this.color,
-      this.disabledColor,
-      required Function(List<int> list) onSelectionDone,
-      this.canSelectAll = true,
-      String? saveLabel})
-      : onSelectionDoneNullalbe = onSelectionDone,
+  const CLListView.selectable({
+    required this.items,
+    required void Function(List<int> list) onSelectionDone,
+    super.key,
+    this.onTab,
+    this.color,
+    this.disabledColor,
+    this.canSelectAll = true,
+    String? saveLabel,
+  })  : onSelectionDoneNullalbe = onSelectionDone,
         saveLabelNullable = saveLabel;
   final List<CLListItem> items;
 
-  final Function(int index)? onTab;
+  final void Function(int index)? onTab;
   final Color? color;
   final Color? disabledColor;
   final void Function(List<int> list)? onSelectionDoneNullalbe;
@@ -64,10 +64,11 @@ class CLListViewState extends State<CLListView> {
   Widget build(BuildContext context) {
     final canSelectAll = widget.canSelectAll && (selectionList != null);
     final items = widget.items;
-    List<Widget>? leading = selectionList
+    final List<Widget>? leading = selectionList
         ?.asMap()
         .entries
-        .map((e) => Checkbox(
+        .map(
+          (e) => Checkbox(
             value: e.value,
             onChanged: (value) {
               if (value != null) {
@@ -75,7 +76,9 @@ class CLListViewState extends State<CLListView> {
                   selectionList![e.key] = value;
                 });
               }
-            }))
+            },
+          ),
+        )
         .toList();
 
     return Column(
@@ -85,15 +88,15 @@ class CLListViewState extends State<CLListView> {
           child: ListView.builder(
             itemCount: items.length + (canSelectAll ? 1 : 0),
             itemBuilder: (context, i) {
-              var index = i - ((selectionList != null) ? 1 : 0);
+              final index = i - ((selectionList != null) ? 1 : 0);
 
               if (canSelectAll && (i == 0)) {
                 return ListTile(
                   visualDensity: VisualDensity.compact,
                   title: CLText.standard(
                     selectionList!.every((element) => element == true)
-                        ? "Select None"
-                        : "Select All",
+                        ? 'Select None'
+                        : 'Select All',
                   ),
                   leading: Checkbox(
                     value: selectionList!.every((element) => element == true),
@@ -136,17 +139,18 @@ class CLListViewState extends State<CLListView> {
         ),
         if (widget.onSelectionDoneNullalbe != null)
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 32),
+            padding: const EdgeInsets.only(top: 8, bottom: 32),
             child: Center(
               child: CLButtonText.veryLarge(
-                widget.saveLabelNullable ?? "Save",
+                widget.saveLabelNullable ?? 'Save',
                 onTap: () => widget.onSelectionDoneNullalbe!.call(
-                    List.generate(selectionList!.length, (index) => index)
-                        .where((index) => selectionList![index])
-                        .toList()),
+                  List.generate(selectionList!.length, (index) => index)
+                      .where((index) => selectionList![index])
+                      .toList(),
+                ),
               ),
             ),
-          )
+          ),
       ],
     );
   }

@@ -8,14 +8,17 @@ import 'views/load_from_store/load_image.dart';
 
 class PageShowImage extends ConsumerWidget {
   const PageShowImage({
-    super.key,
     required this.imagePath,
+    super.key,
   });
   final String imagePath;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    assert(false); // CLMediaInfo in stack might affect the behaviour
+    assert(
+      false,
+      'Untested',
+    ); // CLMediaInfo in stack might affect the behaviour
     return CLFullscreenBox(
       child: LoadMedia(
         mediaInfo: CLMediaImage(path: imagePath, type: CLMediaType.image),

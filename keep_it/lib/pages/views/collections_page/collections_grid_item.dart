@@ -3,21 +3,19 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/constants.dart';
+import 'package:keep_it/pages/views/app_theme.dart';
+import 'package:keep_it/pages/views/collections_page/collection_preview.dart';
+import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
 import 'package:store/store.dart';
-
-import '../../../constants.dart';
-
-import '../app_theme.dart';
-import 'collection_preview.dart';
-import 'keepit_dialogs.dart';
 
 class CollectionsGridItem extends ConsumerWidget {
   const CollectionsGridItem({
-    super.key,
     required this.quickMenuScopeKey,
-    this.collection,
     required this.size,
     required this.random,
+    super.key,
+    this.collection,
   });
   final Collection? collection;
   final Random random;
@@ -33,26 +31,42 @@ class CollectionsGridItem extends ConsumerWidget {
         ? Container()
         : CLQuickMenuAnchor.longPress(
             parentKey: quickMenuScopeKey,
-            menuBuilder: (context, boxconstraints,
-                {required Function() onDone}) {
+            menuBuilder: (
+              context,
+              boxconstraints, {
+              required void Function() onDone,
+            }) {
               return AppTheme(
                 child: CLButtonsGrid(
                   scaleType: CLScaleType.veryLarge,
-                  size: const Size(kMinInteractiveDimension * 1.5,
-                      kMinInteractiveDimension * 1.5),
+                  size: const Size(
+                    kMinInteractiveDimension * 1.5,
+                    kMinInteractiveDimension * 1.5,
+                  ),
                   children2D: [
                     [
-                      CLMenuItem('Edit', Icons.edit,
-                          onTap: collectionsAsync.whenOrNull(
-                              data: (Collections collections) => () =>
-                                  KeepItDialogs.upsertCollection(context,
-                                      onDone: onDone, collection: collection))),
-                      CLMenuItem('Delete', Icons.delete, onTap: () {
-                        onDone.call();
-                        ref
-                            .read(collectionsProvider(null).notifier)
-                            .deleteCollection(collection!);
-                      }),
+                      CLMenuItem(
+                        'Edit',
+                        Icons.edit,
+                        onTap: collectionsAsync.whenOrNull(
+                          data: (Collections collections) =>
+                              () => KeepItDialogs.upsertCollection(
+                                    context,
+                                    onDone: onDone,
+                                    collection: collection,
+                                  ),
+                        ),
+                      ),
+                      CLMenuItem(
+                        'Delete',
+                        Icons.delete,
+                        onTap: () {
+                          onDone.call();
+                          ref
+                              .read(collectionsProvider(null).notifier)
+                              .deleteCollection(collection!);
+                        },
+                      ),
                     ]
                   ],
                 ),
@@ -65,12 +79,12 @@ class CollectionsGridItem extends ConsumerWidget {
 
 class CLRoundIconLabeled extends StatelessWidget {
   const CLRoundIconLabeled({
+    required this.random,
     super.key,
     this.label,
     this.child,
     this.horizontalSpacing = 0,
     this.verticalSpacing = 0,
-    required this.random,
   });
 
   final String? label;
@@ -85,7 +99,9 @@ class CLRoundIconLabeled extends StatelessWidget {
       aspectRatio: (label != null) ? Constants.aspectRatio : 1.0,
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: horizontalSpacing, vertical: verticalSpacing),
+          horizontal: horizontalSpacing,
+          vertical: verticalSpacing,
+        ),
         child: SizedBox.expand(
           child: Column(
             children: [
@@ -101,7 +117,7 @@ class CLRoundIconLabeled extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                )
+                ),
             ],
           ),
         ),

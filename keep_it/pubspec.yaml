@@ -9,37 +9,37 @@ environment:
   sdk: '>=3.1.2 <4.0.0'
 
 dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.2
-  image: ^4.1.3
-  flutter_riverpod: ^2.4.9
-  colan_widgets:
-    path: ../colan_widgets
   app_loader:
     path: ../app_loader
+  colan_widgets:
+    path: ../colan_widgets
+  collection: ^1.17.2
+  cupertino_icons: ^1.0.2
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.4.9
+  go_router: ^12.1.1
+  infinite_carousel: ^1.0.3
+  logger: ^2.0.2+1
+  palette_generator: ^0.3.3+3
+  path: ^1.8.3
+  path_provider: ^2.1.1
+  share_handler: ^0.0.18
+  shared_preferences: ^2.2.2
+  sqlite3: ^2.1.0
   store: 
     path: ../store
-  logger: ^2.0.2+1
-  go_router: ^12.1.1
-  shared_preferences: ^2.2.2
-  share_handler: ^0.0.18
   video_player: ^2.8.1
-  sqlite3: ^2.1.0
-  path_provider: ^2.1.1
-  path: ^1.8.3
-  collection: ^1.17.2
-  palette_generator: ^0.3.3+3
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding
       path: plugins/window_size
-  infinite_carousel: ^1.0.3
   
 dev_dependencies:
+  flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  very_good_analysis: ^5.1.0
 
 flutter:
   uses-material-design: true

@@ -20,27 +20,34 @@ class CollectionsEmpty extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CLText.large("Create your first collection"),
+          const CLText.large('Create your first collection'),
           const SizedBox(
             height: 32,
           ),
           CLButtonsGrid(
             children2D: [
               [
-                CLMenuItem("Suggested\nCollections", Icons.menu,
-                    onTap: () => KeepItDialogs.onSuggestions(context,
-                            availableSuggestions: availableSuggestions,
-                            onSelectionDone:
-                                (List<Collection> selectedCollections) {
-                          ref
-                              .read(collectionsProvider(null).notifier)
-                              .upsertCollections(selectedCollections);
-                        })),
-                CLMenuItem("Create New", Icons.new_label,
-                    onTap: () => KeepItDialogs.upsertCollection(context))
+                CLMenuItem(
+                  'Suggested\nCollections',
+                  Icons.menu,
+                  onTap: () => KeepItDialogs.onSuggestions(
+                    context,
+                    availableSuggestions: availableSuggestions,
+                    onSelectionDone: (List<Collection> selectedCollections) {
+                      ref
+                          .read(collectionsProvider(null).notifier)
+                          .upsertCollections(selectedCollections);
+                    },
+                  ),
+                ),
+                CLMenuItem(
+                  'Create New',
+                  Icons.new_label,
+                  onTap: () => KeepItDialogs.upsertCollection(context),
+                ),
               ]
             ],
-          )
+          ),
         ],
       ),
     );

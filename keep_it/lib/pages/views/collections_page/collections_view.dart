@@ -1,16 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/data/db_default_collections.dart';
+import 'package:keep_it/pages/views/collections_page/collections_empty.dart';
+import 'package:keep_it/pages/views/collections_page/collections_grid.dart';
+import 'package:keep_it/pages/views/collections_page/collections_list.dart';
+import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
+import 'package:keep_it/pages/views/main/keep_it_main_view.dart';
 import 'package:store/store.dart';
-
-import '../../../data/db_default_collections.dart';
-import '../main/keep_it_main_view.dart';
-
-import 'collections_empty.dart';
-import 'collections_grid.dart';
-import 'collections_list.dart';
-import 'keepit_dialogs.dart';
 
 class CollectionsView extends ConsumerStatefulWidget {
   const CollectionsView(this.collections, {super.key});
@@ -33,7 +30,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
       );
     }
     return KeepItMainView(
-      title: "Collections",
+      title: 'Collections',
       actionsBuilder: [
         (context, quickMenuScopeKey) {
           if (availableSuggestions.isEmpty) {
@@ -44,27 +41,42 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
           } else {
             return CLQuickMenuAnchor(
               parentKey: quickMenuScopeKey,
-              menuBuilder: (context, boxconstraints,
-                  {required Function() onDone}) {
+              menuBuilder: (
+                context,
+                boxconstraints, {
+                required void Function() onDone,
+              }) {
                 return CLButtonsGrid(
                   scaleType: CLScaleType.veryLarge,
-                  size: const Size(kMinInteractiveDimension * 1.5,
-                      kMinInteractiveDimension * 1.5),
+                  size: const Size(
+                    kMinInteractiveDimension * 1.5,
+                    kMinInteractiveDimension * 1.5,
+                  ),
                   children2D: [
                     [
-                      CLMenuItem("Suggested\nCollections", Icons.menu,
-                          onTap: () => KeepItDialogs.onSuggestions(context,
-                                  availableSuggestions: availableSuggestions,
-                                  onSelectionDone:
-                                      (List<Collection> selectedCollections) {
-                                ref
-                                    .read(collectionsProvider(null).notifier)
-                                    .upsertCollections(selectedCollections);
-                                onDone();
-                              })),
-                      CLMenuItem("Create New", Icons.new_label,
-                          onTap: () => KeepItDialogs.upsertCollection(context,
-                              onDone: onDone))
+                      CLMenuItem(
+                        'Suggested\nCollections',
+                        Icons.menu,
+                        onTap: () => KeepItDialogs.onSuggestions(
+                          context,
+                          availableSuggestions: availableSuggestions,
+                          onSelectionDone:
+                              (List<Collection> selectedCollections) {
+                            ref
+                                .read(collectionsProvider(null).notifier)
+                                .upsertCollections(selectedCollections);
+                            onDone();
+                          },
+                        ),
+                      ),
+                      CLMenuItem(
+                        'Create New',
+                        Icons.new_label,
+                        onTap: () => KeepItDialogs.upsertCollection(
+                          context,
+                          onDone: onDone,
+                        ),
+                      ),
                     ]
                   ],
                 );
@@ -82,7 +94,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
                   isGridView = !isGridView;
                 });
               },
-            )
+            ),
       ],
       pageBuilder: (context, quickMenuScopeKey) {
         if (isGridView) {
@@ -104,10 +116,7 @@ final availableSuggestionsProvider =
         (ref, existingCollections) {
   if (existingCollections == null) return defaultCollections;
 
-  final List<Collection> availableSuggestions;
-  availableSuggestions = defaultCollections.where((element) {
+  return defaultCollections.where((element) {
     return !existingCollections.map((e) => e.label).contains(element.label);
   }).toList();
-
-  return availableSuggestions;
 });

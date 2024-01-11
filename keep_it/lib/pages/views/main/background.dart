@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class CLBackground extends StatelessWidget {
   const CLBackground({
-    super.key,
     required this.child,
+    super.key,
     this.brighnessFactor = 0,
     this.hasBackground = true,
   });
@@ -29,9 +29,11 @@ class CLBackground extends StatelessWidget {
                 Colors.indigo,
                 Colors.purple,
               ]
-                  .map((e) => brighnessFactor < 0
-                      ? e.reduceBrightness(-brighnessFactor)
-                      : e.increaseBrightness(brighnessFactor))
+                  .map(
+                    (e) => brighnessFactor < 0
+                        ? e.reduceBrightness(-brighnessFactor)
+                        : e.increaseBrightness(brighnessFactor),
+                  )
                   .toList(),
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

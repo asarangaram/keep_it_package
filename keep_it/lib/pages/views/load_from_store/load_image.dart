@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoadMedia extends ConsumerWidget {
   const LoadMedia({
-    super.key,
     required this.mediaInfo,
     required this.onMediaLoaded,
+    super.key,
   });
 
   final Widget Function(CLMedia media) onMediaLoaded;
@@ -18,9 +18,10 @@ class LoadMedia extends ConsumerWidget {
     final mediaAsync = ref.watch(mediaProvider(mediaInfo));
 
     return mediaAsync.when(
-        data: (media) => onMediaLoaded(media),
-        loading: () => const Center(child: CLLoadingView()),
-        error: (err, _) =>
-            Center(child: CLErrorView(errorMessage: err.toString())));
+      data: onMediaLoaded,
+      loading: () => const Center(child: CLLoadingView()),
+      error: (err, _) =>
+          Center(child: CLErrorView(errorMessage: err.toString())),
+    );
   }
 }

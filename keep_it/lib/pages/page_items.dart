@@ -8,15 +8,13 @@ import 'views/load_from_store/load_from_store.dart';
 import 'views/main/background.dart';
 
 class ItemsPage extends ConsumerWidget {
-  const ItemsPage({super.key, required this.clusterID});
+  const ItemsPage({required this.clusterID, super.key});
 
   final int clusterID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CLFullscreenBox(
-      useSafeArea: false,
       child: CLBackground(
-        hasBackground: true,
         brighnessFactor: 0.25,
         child: LoadItems(
           clusterID: clusterID,

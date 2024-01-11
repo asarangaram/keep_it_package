@@ -3,17 +3,16 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/data/models/paginator.dart';
+import 'package:keep_it/pages/views/collections_page/collections_grid_item.dart';
 import 'package:store/store.dart';
-
-import '../../../data/models/paginator.dart';
-import 'collections_grid_item.dart';
 
 class PaginatedGrid extends ConsumerWidget {
   const PaginatedGrid({
-    super.key,
     required this.collections,
     required this.constraints,
     required this.quickMenuScopeKey,
+    super.key,
   });
   final List<Collection> collections;
   final BoxConstraints constraints;
@@ -22,15 +21,19 @@ class PaginatedGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const childSize = Size(100, 120);
-    PaginatedList paginatedCollection =
-        ref.watch(paginatedListProvider(PaginationInfo(
-            items: collections,
-            itemSize: childSize,
-            pageSize: Size(
-              constraints.maxWidth,
-              constraints.maxHeight,
-            ))));
-    Random random = Random(42);
+    final paginatedCollection = ref.watch(
+      paginatedListProvider(
+        PaginationInfo(
+          items: collections,
+          itemSize: childSize,
+          pageSize: Size(
+            constraints.maxWidth,
+            constraints.maxHeight,
+          ),
+        ),
+      ),
+    );
+    final random = Random(42);
     return CLPageView(
       pageBuilder: (BuildContext context, int pageNum) {
         return RowColumnGrid(
@@ -42,7 +45,8 @@ class PaginatedGrid extends ConsumerWidget {
                 width: childSize.width,
                 height: childSize.height,
                 child: CollectionsGridItem(
-                  collection: paginatedCollection.getItem(pageNum, r, c),
+                  collection:
+                      paginatedCollection.getItem(pageNum, r, c) as Collection,
                   quickMenuScopeKey: quickMenuScopeKey,
                   size: childSize,
                   random: random,
@@ -59,10 +63,10 @@ class PaginatedGrid extends ConsumerWidget {
 
 class RowColumnGrid extends StatelessWidget {
   const RowColumnGrid({
-    super.key,
     required this.itemsInColumn,
     required this.itemsInRow,
     required this.itemBuilder,
+    super.key,
   });
 
   final int itemsInColumn;
@@ -80,10 +84,10 @@ class RowColumnGrid extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 for (var c = 0; c < itemsInRow; c++)
-                  Expanded(child: itemBuilder(context, r, c))
+                  Expanded(child: itemBuilder(context, r, c)),
               ],
             ),
-          )
+          ),
       ],
     );
   }

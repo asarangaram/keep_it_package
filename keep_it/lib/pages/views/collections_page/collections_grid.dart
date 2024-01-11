@@ -6,9 +6,9 @@ import 'paginated_grid.dart';
 
 class CollectionsGrid extends ConsumerWidget {
   const CollectionsGrid({
-    super.key,
     required this.quickMenuScopeKey,
     required this.collectionList,
+    super.key,
   });
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final List<Collection> collectionList;

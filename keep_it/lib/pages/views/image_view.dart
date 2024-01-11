@@ -13,22 +13,26 @@ final List<String> imagePaths = [
 ];
 
 class ImageView extends ConsumerWidget {
-  const ImageView({super.key, required this.image});
+  const ImageView({required this.image, super.key});
   final ui.Image image;
 
   Future<ui.Image> getImageGrid() async {
     final images = await loadImages(imagePaths);
-    return await ImageGrid.imageGrid4(
-        images[0], images[1], images[2], images[3]);
+    // as per lint, we don't need await, haven't understood.
+    return ImageGrid.imageGrid4(
+      images[0],
+      images[1],
+      images[2],
+      images[3],
+    );
   }
 
   Future<List<ui.Image>> loadImages(List<String> imagePaths) async {
-    List<ui.Image> images = [];
+    final images = <ui.Image>[];
     for (var i = 0; i < 4; i++) {
-      final ByteData data = await rootBundle.load(imagePaths[i]);
-      final ui.Codec codec =
-          await ui.instantiateImageCodec(Uint8List.view(data.buffer));
-      final ui.FrameInfo frameInfo = await codec.getNextFrame();
+      final data = await rootBundle.load(imagePaths[i]);
+      final codec = await ui.instantiateImageCodec(Uint8List.view(data.buffer));
+      final frameInfo = await codec.getNextFrame();
       images.add(frameInfo.image);
     }
 

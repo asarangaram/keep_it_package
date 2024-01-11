@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+@immutable
 class SelectableItem {
+  const SelectableItem({required this.collection, this.isSelected = false});
   final dynamic collection;
   final bool isSelected;
-
-  SelectableItem({required this.collection, this.isSelected = false});
 
   SelectableItem copyWith({
     bool? isSelected,
@@ -33,15 +34,15 @@ class SelectableItem {
 class SelectableItemNotifier extends StateNotifier<SelectableItem> {
   SelectableItemNotifier(super.selectableItem);
 
-  toggleSelection() {
+  void toggleSelection() {
     state = state.toggleSelection();
   }
 
-  select() {
+  void select() {
     state = state.select();
   }
 
-  deselect() {
+  void deselect() {
     state = state.deselect();
   }
 }
@@ -52,10 +53,10 @@ final selectableItemProvider = StateNotifierProvider.family<
 });
 
 final selectableItemsSelectedItemsProvider =
-    StateProvider.family<List, List>((ref, items) {
-  List cList = [];
-  for (var c in items) {
-    SelectableItem sc = ref.watch(selectableItemProvider(c));
+    StateProvider.family<List<dynamic>, List<dynamic>>((ref, items) {
+  final cList = <dynamic>[];
+  for (final c in items) {
+    final sc = ref.watch(selectableItemProvider(c));
     if (sc.isSelected) cList.add(sc.collection);
   }
   return cList;

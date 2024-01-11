@@ -6,22 +6,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'main_header.dart';
 
 class KeepItMainView extends ConsumerStatefulWidget {
-  final Widget Function(BuildContext context,
-      GlobalKey<State<StatefulWidget>> quickMenuScopeKey) pageBuilder;
-  final List<
-      Widget Function(BuildContext context,
-          GlobalKey<State<StatefulWidget>> quickMenuScopeKey)>? actionsBuilder;
-
-  final String? title;
-  final void Function()? onPop;
-
   const KeepItMainView({
-    super.key,
     required this.pageBuilder,
+    super.key,
     this.actionsBuilder,
     this.title,
     this.onPop,
   });
+  final Widget Function(
+    BuildContext context,
+    GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
+  ) pageBuilder;
+  final List<
+      Widget Function(
+        BuildContext context,
+        GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
+      )>? actionsBuilder;
+
+  final String? title;
+  final void Function()? onPop;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => KeepItMainViewState();
@@ -38,31 +41,32 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
         child: CLQuickMenuScope(
           key: quickMenuScopeKey,
           child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                MainHeader(
-                  actionsBuilders: widget.actionsBuilder,
-                  quickMenuScopeKey: quickMenuScopeKey,
-                  title: widget.title,
-                  onPop: widget.onPop,
-                  mainActionItems: [
-                    [
-                      CLMenuItem(
-                        'Paste',
-                        Icons.content_paste_go_outlined,
-                      ),
-                      CLMenuItem(
-                        'Settings',
-                        Icons.settings,
-                        /*Icons.settings_applications_sharp,*/
-                        //TODO: For Dark Mode
-                      ),
-                    ],
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              MainHeader(
+                actionsBuilders: widget.actionsBuilder,
+                quickMenuScopeKey: quickMenuScopeKey,
+                title: widget.title,
+                onPop: widget.onPop,
+                mainActionItems: [
+                  [
+                    CLMenuItem(
+                      'Paste',
+                      Icons.content_paste_go_outlined,
+                    ),
+                    CLMenuItem(
+                      'Settings',
+                      Icons.settings,
+                      /*Icons.settings_applications_sharp,*/
+                      // TODO(asarangaram): For Dark Mode.
+                    ),
                   ],
-                ),
-                Expanded(child: widget.pageBuilder(context, quickMenuScopeKey))
-              ]),
+                ],
+              ),
+              Expanded(child: widget.pageBuilder(context, quickMenuScopeKey)),
+            ],
+          ),
         ),
       ),
     );

@@ -6,13 +6,17 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+@immutable
 class PaginationInfo {
-  final List items;
+  final List<dynamic> items;
   final Size pageSize;
   final Size itemSize;
 
-  PaginationInfo(
-      {required this.items, required this.pageSize, required this.itemSize});
+  const PaginationInfo({
+    required this.items,
+    required this.pageSize,
+    required this.itemSize,
+  });
 
   @override
   bool operator ==(covariant PaginationInfo other) {
@@ -29,11 +33,10 @@ class PaginationInfo {
 }
 
 class PaginatedList {
-  late final List<List<List>> pages;
+  late final List<List<List<dynamic>>> pages;
   late int itemsInRow;
   late int itemsInColumn;
   final PaginationInfo paginationInfo;
-  calculateItemsPerPage(Size itemSize, BoxConstraints constraints) {}
 
   PaginatedList(this.paginationInfo) {
     final pageSize = paginationInfo.pageSize;
@@ -57,14 +60,14 @@ class PaginatedList {
     itemsInRow = max(1, itemsInRow);
     itemsInColumn = max(1, itemsInColumn);
     pages = [];
-    for (var p in items.convertTo2D(itemsInRow * itemsInColumn)) {
+    for (final p in items.convertTo2D(itemsInRow * itemsInColumn)) {
       pages.add(p.convertTo2D(itemsInRow));
     }
   }
 
   int get pageMax => pages.length;
 
-  List<List> page(int pageNum) {
+  List<List<dynamic>> page(int pageNum) {
     if (pageNum >= pageMax) {
       return pages[pageMax - 1];
     }

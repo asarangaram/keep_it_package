@@ -8,16 +8,16 @@ import '../load_from_store/load_image.dart';
 
 class MediaPreview extends ConsumerWidget {
   const MediaPreview({
-    super.key,
     required this.media,
+    super.key,
     this.children,
     this.maxItems = 12,
     this.showAll = false,
   });
 
   factory MediaPreview.fromItems(Items items, {List<Widget>? children}) {
-    List<CLMediaImage> media = [];
-    for (var item in items.entries) {
+    final media = <CLMediaImage>[];
+    for (final item in items.entries) {
       media.add(CLMediaImage(path: item.path, type: item.type));
     }
     return MediaPreview(media: media, children: children);
@@ -36,7 +36,7 @@ class MediaPreview extends ConsumerWidget {
     );
     if (isAllSupportedMedia) {
       return Material(
-        elevation: 6.0,
+        elevation: 6,
         color: Colors.transparent,
         shadowColor: Colors.transparent,
         child: Column(
@@ -67,14 +67,14 @@ class MediaPreview extends ConsumerWidget {
                             ),
                           /* SupportedMediaType.video =>
                           VideoPlayerScreen(path: e.key),*/
-                          _ => throw Exception("Unexpected")
-                        }
+                          _ => throw Exception('Unexpected')
+                        },
                       ],
                     )
                     .toList(),
               ),
             ),
-            if (children != null) ...children!
+            if (children != null) ...children!,
           ],
         ),
       );
@@ -87,7 +87,7 @@ class MediaPreview extends ConsumerWidget {
             for (final e in media) ...[
               ShowAsText(text: e.path, type: e.type),
               const SizedBox(height: 16),
-            ]
+            ],
           ],
         ),
       );
@@ -96,18 +96,23 @@ class MediaPreview extends ConsumerWidget {
 }
 
 class ShowAsText extends ConsumerWidget {
-  const ShowAsText({super.key, required this.text, this.type});
+  const ShowAsText({required this.text, super.key, this.type});
   final String text;
   final CLMediaType? type;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Text.rich(TextSpan(children: [
-      if (type != null)
-        TextSpan(
-            text: "${type!.name.toUpperCase()}: ",
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-      TextSpan(text: text)
-    ]));
+    return Text.rich(
+      TextSpan(
+        children: [
+          if (type != null)
+            TextSpan(
+              text: '${type!.name.toUpperCase()}: ',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          TextSpan(text: text),
+        ],
+      ),
+    );
   }
 }
 

@@ -7,31 +7,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keep_it/pages/page_items.dart';
-
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
+import 'pages/page_clusters.dart';
 import 'pages/page_collections.dart';
 import 'pages/page_show_image.dart';
-
 import 'pages/views/app_theme.dart';
-import 'pages/page_clusters.dart';
 import 'pages/views/shared_items_view.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
-  String get title => "Keep It";
+  String get title => 'Keep It';
 
   @override
   CLAppInitializer get appInitializer => (ref) async {
-        //TODO: Delete only if saved preference is set to reset
-        // ignore: dead_code
+        // TODO(asarangaram): Delete only if saved preference is set to reset.
+
+        // ignore: dead_code, literal_only_boolean_expressions
         if (false) {
           final appDir = await getApplicationDocumentsDirectory();
           final fullPath = path.join(appDir.path, 'keepIt.db');
           if (File(fullPath).existsSync()) {
-            File(fullPath).delete();
+            await File(fullPath).delete();
           }
         }
 
@@ -41,25 +40,28 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
-      "home": (context, state) => const PageShowImage(
-          imagePath: "assets/wallpaperflare.com_wallpaper-2.jpg"),
-      "collections": (context, state) =>
+      'home': (context, state) => const PageShowImage(
+            imagePath: 'assets/wallpaperflare.com_wallpaper-2.jpg',
+          ),
+      'collections': (context, state) =>
           const AppTheme(child: CollectionsPage()),
-      "demo": (context, state) => const DemoMain(),
-      "clusters": (context, GoRouterState state) =>
+      'demo': (context, state) => const DemoMain(),
+      'clusters': (context, GoRouterState state) =>
           const ClustersPage(collectionId: null),
-      "clusters/by_collection_id/:id": (context, GoRouterState state) =>
+      'clusters/by_collection_id/:id': (context, GoRouterState state) =>
           ClustersPage(collectionId: int.parse(state.pathParameters['id']!)),
-      "items/by_cluster_id/:id": (context, GoRouterState state) =>
-          ItemsPage(clusterID: int.parse(state.pathParameters['id']!))
+      'items/by_cluster_id/:id': (context, GoRouterState state) =>
+          ItemsPage(clusterID: int.parse(state.pathParameters['id']!)),
     };
   }
 
   @override
-  IncomingMediaViewBuilder get incomingMediaViewBuilder =>
-      (BuildContext context, WidgetRef ref,
-          {required CLMediaInfoGroup sharedMedia,
-          required Function() onDiscard}) {
+  IncomingMediaViewBuilder get incomingMediaViewBuilder => (
+        BuildContext context,
+        WidgetRef ref, {
+        required CLMediaInfoGroup sharedMedia,
+        required void Function() onDiscard,
+      }) {
         return SharedItemsView(
           media: sharedMedia,
           onDiscard: onDiscard,
@@ -82,7 +84,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location == "/") return "/collections";
+        if (location == '/') return '/collections';
         return null;
       };
 }
@@ -99,8 +101,11 @@ void main() {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-  return runApp(ProviderScope(
+  return runApp(
+    ProviderScope(
       child: AppLoader(
-    appDescriptor: KeepItApp(),
-  )));
+        appDescriptor: KeepItApp(),
+      ),
+    ),
+  );
 }

@@ -4,16 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SaveOrCancel extends ConsumerWidget {
   const SaveOrCancel({
-    super.key,
     required this.onSave,
     required this.onDiscard,
+    super.key,
     this.saveLabel,
     this.cancelLabel,
   });
   final String? saveLabel;
   final String? cancelLabel;
-  final Function() onDiscard;
-  final Function()? onSave;
+  final void Function() onDiscard;
+  final void Function()? onSave;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +27,7 @@ class SaveOrCancel extends ConsumerWidget {
           Flexible(
             child: Center(
               child: CLButtonText.veryLarge(
-                saveLabel ?? "Save",
+                saveLabel ?? 'Save',
                 onTap: onSave,
               ),
             ),
@@ -38,12 +38,12 @@ class SaveOrCancel extends ConsumerWidget {
             children: [
               Container(), //incase of keyboard, implement this.
               Padding(
-                padding: const EdgeInsets.only(right: 16.0),
+                padding: const EdgeInsets.only(right: 16),
                 child: CLButtonText.small(
-                  cancelLabel ?? "Cancel",
+                  cancelLabel ?? 'Cancel',
                   onTap: onDiscard,
                 ),
-              )
+              ),
             ],
           ),
         ),

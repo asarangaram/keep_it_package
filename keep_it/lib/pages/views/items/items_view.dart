@@ -11,8 +11,8 @@ import '../video_player.dart';
 
 class ItemsView extends ConsumerWidget {
   const ItemsView({
-    super.key,
     required this.items,
+    super.key,
   });
 
   final Items items;
@@ -20,79 +20,76 @@ class ItemsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
-        onPop: context.canPop()
-            ? () {
-                context.pop();
-              }
-            : null,
-        pageBuilder: (context, quickMenuScopeKey) {
-          return Column(
-            children: [
-              Flexible(
-                flex: 2,
-                child: Align(
-                  child: InfiniteCarousel.builder(
-                      itemCount: items.entries.length,
-                      itemExtent: MediaQuery.of(context).size.width,
-                      center: false,
-                      anchor: 0.0,
-                      velocityFactor: 1,
-                      onIndexChanged: (index) {},
-                      axisDirection: Axis.horizontal,
-                      loop: false,
-                      itemBuilder: (context, itemIndex, realIndex) {
-                        return Container(
-                          alignment: Alignment.bottomCenter,
-                          padding: const EdgeInsets.all(1.0),
-                          child: LoadMedia(
-                            mediaInfo: CLMediaImage(
-                              path: items.entries[realIndex].path,
-                              type: items.entries[realIndex].type,
-                            ),
-                            onMediaLoaded: (mediaData) {
-                              return switch (mediaData) {
-                                (CLMediaImage image)
-                                    when mediaData.runtimeType ==
-                                        CLMediaImage =>
-                                  CLImageViewer(
-                                    image: image.data!,
-                                    allowZoom: false,
-                                  ),
-                                (CLMediaVideo video)
-                                    when mediaData.runtimeType ==
-                                        CLMediaVideo =>
-                                  VideoPlayerScreen(
-                                    path: video.path,
-                                    aspectRatio: mediaData.aspectRatio,
-                                  ),
-                                _ => throw UnimplementedError(
-                                    "Not yet implemented")
-                              };
-                            },
-                          ),
-                        );
-                      }),
+      onPop: context.canPop()
+          ? () {
+              context.pop();
+            }
+          : null,
+      pageBuilder: (context, quickMenuScopeKey) {
+        return Column(
+          children: [
+            Flexible(
+              flex: 2,
+              child: Align(
+                child: InfiniteCarousel.builder(
+                  itemCount: items.entries.length,
+                  itemExtent: MediaQuery.of(context).size.width,
+                  center: false,
+                  velocityFactor: 1,
+                  onIndexChanged: (index) {},
+                  loop: false,
+                  itemBuilder: (context, itemIndex, realIndex) {
+                    return Container(
+                      alignment: Alignment.bottomCenter,
+                      padding: const EdgeInsets.all(1),
+                      child: LoadMedia(
+                        mediaInfo: CLMediaImage(
+                          path: items.entries[realIndex].path,
+                          type: items.entries[realIndex].type,
+                        ),
+                        onMediaLoaded: (mediaData) {
+                          return switch (mediaData) {
+                            (final CLMediaImage image)
+                                when mediaData.runtimeType == CLMediaImage =>
+                              CLImageViewer(
+                                image: image.data!,
+                                allowZoom: false,
+                              ),
+                            (final CLMediaVideo video)
+                                when mediaData.runtimeType == CLMediaVideo =>
+                              VideoPlayerScreen(
+                                path: video.path,
+                                aspectRatio: mediaData.aspectRatio,
+                              ),
+                            _ => throw UnimplementedError(
+                                'Not yet implemented',
+                              )
+                          };
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
-              Flexible(
-                  child: TextField(
+            ),
+            Flexible(
+              child: TextField(
                 maxLines: 100,
                 decoration: const InputDecoration(
-                    labelText: 'About',
-                    helperText: "Tab on the text to edit",
-                    enabled: false, // Disable editing
-                    suffixIcon: CLIcon.standard(Icons.edit_outlined)),
+                  labelText: 'About',
+                  helperText: 'Tab on the text to edit',
+                  enabled: false, // Disable editing
+                  suffixIcon: CLIcon.standard(Icons.edit_outlined),
+                ),
                 controller:
                     TextEditingController(text: items.cluster.description),
-                onTap: () {
-                  print('TextField tapped');
-                },
-                onChanged: (value) {
-                  print('Value changed: $value');
-                }, // Set initial text
-              ))
-            ],
-          );
-        });
+                onTap: () {},
+                onChanged: (value) {}, // Set initial text
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

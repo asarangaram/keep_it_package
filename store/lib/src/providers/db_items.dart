@@ -54,15 +54,15 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     loadItems();
   }
 
-  /*  void upsertItems(List<Item> items) {
+  void upsertItems(List<ItemInDB> items) {
     if (databaseManager == null) {
       throw Exception("DB Manager is not ready");
     }
     for (var item in items) {
-      item.upsert(databaseManager!.db);
+      upsertItem(item);
     }
     loadItems();
-  } */
+  }
 
   void deleteItem(ItemInDB item) {
     if (databaseManager == null) {
