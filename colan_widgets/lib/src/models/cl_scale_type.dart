@@ -16,7 +16,7 @@ enum CLScaleType {
       };
 
   double get iconSize {
-    final double size = switch (this) {
+    final size = switch (this) {
       CLScaleType.veryLarge => 32,
       CLScaleType.large => 24,
       CLScaleType.standard => 20,
@@ -27,11 +27,3 @@ enum CLScaleType {
     return size * 2;
   }
 }
-/*
-   CLScaleType.veryLarge => 32,
-        CLScaleType.large => 28,
-        CLScaleType.standard => 24,
-        CLScaleType.small => 20,
-        CLScaleType.verySmall => 16,
-        CLScaleType.tiny => 12,
-        */

@@ -10,22 +10,22 @@ import 'cl_dialog_wrapper.dart';
 
 class CLButtonsGrid extends ConsumerWidget {
   const CLButtonsGrid({
-    super.key,
     required this.children2D,
+    super.key,
     this.scaleType = CLScaleType.standard,
     this.size,
   })  : onCancelNullable = null,
         isDialog = false;
   const CLButtonsGrid.dialog({
-    super.key,
     required this.children2D,
-    required Function() onCancel,
+    required void Function() onCancel,
+    super.key,
     this.scaleType = CLScaleType.standard,
     this.size,
   })  : onCancelNullable = onCancel,
         isDialog = true;
   final List<List<CLMenuItem>> children2D;
-  final Function()? onCancelNullable;
+  final void Function()? onCancelNullable;
   final CLScaleType scaleType;
   final bool isDialog;
   final Size? size;
@@ -50,7 +50,7 @@ class CLButtonsGrid extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (var clMenuItems1D in children2D)
+              for (final clMenuItems1D in children2D)
                 Flexible(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -72,7 +72,9 @@ class CLButtonsGrid extends ConsumerWidget {
                             onTap: clMenuItems1D[i].onTap ??
                                 () {
                                   showSnackBarAboveDialog(
-                                      context, clMenuItems1D[i].title);
+                                    context,
+                                    clMenuItems1D[i].title,
+                                  );
                                 },
                             child: switch (scaleType) {
                               CLScaleType.veryLarge => CLIconLabelled.veryLarge,
@@ -88,7 +90,7 @@ class CLButtonsGrid extends ConsumerWidget {
                           ),
                         ),
                       for (var i = clMenuItems1D.length; i < hCount; i++)
-                        Expanded(child: Container())
+                        Expanded(child: Container()),
                     ],
                   ),
                 ),
@@ -99,9 +101,12 @@ class CLButtonsGrid extends ConsumerWidget {
     );
   }
 
-  static void showSnackBarAboveDialog(BuildContext context, String message,
-      {Duration duration = const Duration(milliseconds: 400),
-      Function()? onSnackBarRemoved}) {
+  static void showSnackBarAboveDialog(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(milliseconds: 400),
+    void Function()? onSnackBarRemoved,
+  }) {
     // Create an overlay entry
     OverlayEntry entry;
 
@@ -140,8 +145,3 @@ class CLButtonsGrid extends ConsumerWidget {
     });
   }
 }
-
-/*
-
-child: 
-                     */

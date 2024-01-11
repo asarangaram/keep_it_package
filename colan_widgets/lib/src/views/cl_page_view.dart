@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CLPageView extends StatefulWidget {
   const CLPageView({
-    super.key,
     required this.pageBuilder,
     required this.pageMax,
+    super.key,
   });
   final int pageMax;
   final Widget Function(BuildContext context, int pageNum) pageBuilder;
@@ -31,7 +31,7 @@ class CLPageViewState extends State<CLPageView> {
         return AnimatedBuilder(
           animation: _pageController,
           builder: (context, child) {
-            double value = 1.0;
+            var value = 1.0;
             if (_pageController.position.haveDimensions) {
               value = _pageController.page! - index;
               value = (1 - (value.abs() * 0.5)).clamp(0.0, 1.0);
@@ -41,7 +41,9 @@ class CLPageViewState extends State<CLPageView> {
             );
           },
           child: widget.pageBuilder(
-              context, _currentPage), // Replace with your widgets
+            context,
+            _currentPage,
+          ), // Replace with your widgets
         );
       },
     );

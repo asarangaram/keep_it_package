@@ -4,18 +4,17 @@ import 'package:flutter/material.dart';
 import '../models/cl_scale_type.dart';
 
 class _CLIcon extends StatelessWidget {
+  const _CLIcon(
+    this.iconData, {
+    required this.text,
+    required this.scaleType,
+    super.key,
+    this.color,
+  });
   final IconData iconData;
   final String? text;
   final CLScaleType scaleType;
   final Color? color;
-
-  const _CLIcon(
-    this.iconData, {
-    super.key,
-    required this.text,
-    required this.scaleType,
-    this.color,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class _CLIcon extends StatelessWidget {
           CLScaleType.small => CLText.small,
           CLScaleType.verySmall => CLText.verySmall,
           CLScaleType.tiny => CLText.tiny,
-        }(text!, color: color)
+        }(text!, color: color),
       ],
     );
   }
@@ -66,22 +65,40 @@ class CLIcon extends _CLIcon {
 }
 
 class CLIconLabelled extends _CLIcon {
-  const CLIconLabelled.veryLarge(super.iconData, String text,
-      {super.key, super.color})
-      : super(text: text, scaleType: CLScaleType.veryLarge);
-  const CLIconLabelled.large(super.iconData, String text,
-      {super.key, super.color})
-      : super(text: text, scaleType: CLScaleType.large);
-  const CLIconLabelled.standard(super.iconData, String text,
-      {super.key, super.color})
-      : super(text: text, scaleType: CLScaleType.standard);
-  const CLIconLabelled.small(super.iconData, String text,
-      {super.key, super.color})
-      : super(text: text, scaleType: CLScaleType.small);
-  const CLIconLabelled.verySmall(super.iconData, String text,
-      {super.key, super.color})
-      : super(text: text, scaleType: CLScaleType.verySmall);
-  const CLIconLabelled.tiny(super.iconData, String text,
-      {super.key, super.color})
-      : super(text: text, scaleType: CLScaleType.tiny);
+  const CLIconLabelled.veryLarge(
+    super.iconData,
+    String text, {
+    super.key,
+    super.color,
+  }) : super(text: text, scaleType: CLScaleType.veryLarge);
+  const CLIconLabelled.large(
+    super.iconData,
+    String text, {
+    super.key,
+    super.color,
+  }) : super(text: text, scaleType: CLScaleType.large);
+  const CLIconLabelled.standard(
+    super.iconData,
+    String text, {
+    super.key,
+    super.color,
+  }) : super(text: text, scaleType: CLScaleType.standard);
+  const CLIconLabelled.small(
+    super.iconData,
+    String text, {
+    super.key,
+    super.color,
+  }) : super(text: text, scaleType: CLScaleType.small);
+  const CLIconLabelled.verySmall(
+    super.iconData,
+    String text, {
+    super.key,
+    super.color,
+  }) : super(text: text, scaleType: CLScaleType.verySmall);
+  const CLIconLabelled.tiny(
+    super.iconData,
+    String text, {
+    super.key,
+    super.color,
+  }) : super(text: text, scaleType: CLScaleType.tiny);
 }

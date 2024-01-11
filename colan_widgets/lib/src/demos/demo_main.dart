@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'cl_buttons_grid_demo.dart';
 
-Map<String, Function(BuildContext context)> demos = {
-  "EmptyViewCollection": (BuildContext context) {
+Map<String, Widget Function(BuildContext context)> demos = {
+  'EmptyViewCollection': (BuildContext context) {
     return const CLButtonsGridDemo();
-  }
+  },
 };
 
 class DemoMain extends ConsumerStatefulWidget {
@@ -20,7 +20,8 @@ class DemoMain extends ConsumerStatefulWidget {
 class DemoMainState extends ConsumerState<DemoMain> {
   late String demoID;
 
-  late Widget currWidget, currDialog;
+  late Widget currWidget;
+  late Widget currDialog;
   int currentIndex = 0;
   @override
   void initState() {
@@ -33,13 +34,14 @@ class DemoMainState extends ConsumerState<DemoMain> {
     currWidget = demos[demoID]!.call(context);
     currDialog = TestButton(
       dialog: CLDialogWrapper(
-          onCancel: () {
-            Navigator.of(context).pop();
-          },
-          child: demos[demoID]!.call(context)),
+        onCancel: () {
+          Navigator.of(context).pop();
+        },
+        child: demos[demoID]!.call(context),
+      ),
     );
     return CLFullscreenBox.navBar(
-      key: ValueKey("$demoID $currentIndex"),
+      key: ValueKey('$demoID $currentIndex'),
       useSafeArea: true,
       currentIndex: currentIndex,
       onPageChange: (index) {
@@ -49,27 +51,31 @@ class DemoMainState extends ConsumerState<DemoMain> {
       },
       navMap: {
         const BottomNavigationBarItem(
-            icon: Icon(Icons.menu), label: "Demo List"): Padding(
+          icon: Icon(Icons.menu),
+          label: 'Demo List',
+        ): Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              const Center(child: CLText.veryLarge("Demos")),
+              const Center(child: CLText.veryLarge('Demos')),
               Expanded(
                 child: ListView(
                   children: demos.keys
-                      .map((e) => ListTile(
-                            shape: const ContinuousRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(4))),
-                            title: CLText.large(e),
-                            onTap: () {
-                              setState(() {
-                                demoID = e;
-                                currentIndex = 1;
-                              });
-                            },
-                          ))
+                      .map(
+                        (e) => ListTile(
+                          shape: const ContinuousRectangleBorder(
+                            side: BorderSide(),
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                          ),
+                          title: CLText.large(e),
+                          onTap: () {
+                            setState(() {
+                              demoID = e;
+                              currentIndex = 1;
+                            });
+                          },
+                        ),
+                      )
                       .toList(),
                 ),
               ),
@@ -77,22 +83,26 @@ class DemoMainState extends ConsumerState<DemoMain> {
           ),
         ),
         const BottomNavigationBarItem(
-            icon: Icon(Icons.widgets), label: "Widget"): currWidget,
+          icon: Icon(Icons.widgets),
+          label: 'Widget',
+        ): currWidget,
         const BottomNavigationBarItem(
-            icon: Icon(Icons.open_in_new), label: "Dialog"): currDialog,
+          icon: Icon(Icons.open_in_new),
+          label: 'Dialog',
+        ): currDialog,
       },
     );
   }
 }
 
 class TestButton extends ConsumerWidget {
-  const TestButton({super.key, required this.dialog});
+  const TestButton({required this.dialog, super.key});
   final Widget dialog;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: CLButtonElevatedText.large(
-        "show Dialog",
+        'show Dialog',
         boxDecoration: const BoxDecoration(),
         onTap: () => showDialog<void>(
           context: context,

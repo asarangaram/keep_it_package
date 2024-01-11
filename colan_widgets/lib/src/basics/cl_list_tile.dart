@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CLListTile extends StatelessWidget {
-  final Widget? leading;
-  final Widget title;
-  final Widget? subTitle;
-  final Function()? onTap;
-  final Function()? onLongPress;
-  final Function()? onDoubleTap;
-
-  final Color? tileColor;
-
-  final bool isSelected;
-
   // Constructor for the custom list tile
   const CLListTile({
+    required this.title,
     super.key,
     this.leading,
-    required this.title,
     this.subTitle,
     this.onTap,
     this.onLongPress,
@@ -24,11 +13,21 @@ class CLListTile extends StatelessWidget {
     this.tileColor,
     this.isSelected = false,
   });
+  final Widget? leading;
+  final Widget title;
+  final Widget? subTitle;
+  final void Function()? onTap;
+  final void Function()? onLongPress;
+  final void Function()? onDoubleTap;
+
+  final Color? tileColor;
+
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Card(
         color: Colors.transparent,
         shadowColor: isSelected ? null : Colors.transparent,
@@ -42,7 +41,7 @@ class CLListTile extends StatelessWidget {
               if (leading != null) leading!,
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -51,11 +50,11 @@ class CLListTile extends StatelessWidget {
                         const SizedBox(height: 10),
                         Flexible(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
+                            padding: const EdgeInsets.only(left: 8),
                             child: subTitle,
                           ),
-                        )
-                      ]
+                        ),
+                      ],
                     ],
                   ),
                 ),

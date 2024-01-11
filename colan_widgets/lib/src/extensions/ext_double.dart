@@ -4,7 +4,6 @@ extension ExtONDouble on double {
       // Avoid division by zero
       return value;
     }
-    return ((this / value).floor() * value);
+    return (this / value).floor() * value;
   }
 }
-

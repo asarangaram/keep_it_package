@@ -1,20 +1,22 @@
+import 'dart:ui' as ui;
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 /// If OnTap is provided, onZoom is assigned to onDoubleTap
 class CLImageViewer extends StatefulWidget {
-  const CLImageViewer(
-      {super.key,
-      required this.image,
-      this.allowZoom = true,
-      this.isFullScreen = false,
-      this.onTap,
-      this.overlayWidget});
+  const CLImageViewer({
+    required this.image,
+    super.key,
+    this.allowZoom = true,
+    this.isFullScreen = false,
+    this.onTap,
+    this.overlayWidget,
+  });
   final ui.Image image;
   final bool allowZoom;
   final bool isFullScreen;
-  final Function()? onTap;
+  final void Function()? onTap;
   final Widget? overlayWidget;
 
   @override
@@ -23,9 +25,9 @@ class CLImageViewer extends StatefulWidget {
 
 class _CLImageViewerState extends State<CLImageViewer> {
   late bool fullscreen;
-  late Function()? onTap;
-  late Function()? onDoubleTap;
-  late Function()? onZoom;
+  late void Function()? onTap;
+  late void Function()? onDoubleTap;
+  late void Function()? onZoom;
 
   @override
   void initState() {
@@ -47,34 +49,39 @@ class _CLImageViewerState extends State<CLImageViewer> {
     return GestureDetector(
       onTap: onTap,
       onDoubleTap: onDoubleTap,
-      child: LayoutBuilder(builder: ((context, constraints) {
-        if (fullscreen) {
-          return CLScrollable(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (fullscreen) {
+            return CLScrollable(
               childHeight: widget.image.height.toDouble(),
               childWidth: widget.image.width.toDouble(),
               child: RawImage(
                 image: widget.image,
-              ));
-        } else {
-          return Stack(
-            children: [
-              Center(
+              ),
+            );
+          } else {
+            return Stack(
+              children: [
+                Center(
                   child: RawImage(
-                image: widget.image,
-              )),
-              if (widget.overlayWidget != null)
-                Positioned.fill(
-                  child: Center(
-                    child: FractionallySizedBox(
+                    image: widget.image,
+                  ),
+                ),
+                if (widget.overlayWidget != null)
+                  Positioned.fill(
+                    child: Center(
+                      child: FractionallySizedBox(
                         widthFactor: 0.4,
                         heightFactor: 0.4,
-                        child: FittedBox(child: widget.overlayWidget)),
+                        child: FittedBox(child: widget.overlayWidget),
+                      ),
+                    ),
                   ),
-                )
-            ],
-          );
-        }
-      })),
+              ],
+            );
+          }
+        },
+      ),
     );
   }
 }

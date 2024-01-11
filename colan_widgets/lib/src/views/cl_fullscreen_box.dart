@@ -1,6 +1,32 @@
 import 'package:flutter/material.dart';
 
 class CLFullscreenBox extends StatelessWidget {
+  const CLFullscreenBox({
+    required Widget child,
+    super.key,
+    this.useSafeArea = false,
+    this.backgroundColor,
+    this.hasBorder = false,
+  })  
+  // ignore: prefer_initializing_formals
+  : child = child,
+        isEnhanced = false,
+        children = null,
+        currentIndex = null,
+        onPageChange = null;
+  const CLFullscreenBox.navBar({
+    required Map<BottomNavigationBarItem, Widget> navMap,
+    required int currentIndex,
+    super.key,
+    this.onPageChange,
+    this.useSafeArea = false,
+    this.backgroundColor,
+    this.hasBorder = false,
+  })  : isEnhanced = true,
+        child = null,
+        children = navMap,
+        // ignore: prefer_initializing_formals
+        currentIndex = currentIndex;
   final Widget? child;
   final bool useSafeArea;
   final Color? backgroundColor;
@@ -8,34 +34,7 @@ class CLFullscreenBox extends StatelessWidget {
   final bool isEnhanced;
   final Map<BottomNavigationBarItem, Widget>? children;
   final int? currentIndex;
-  final Function(int index)? onPageChange;
-  const CLFullscreenBox(
-      {Key? key,
-      required Widget child,
-      this.useSafeArea = false,
-      this.backgroundColor,
-      this.hasBorder = false})
-      // ignore: prefer_initializing_formals
-      : child = child,
-        isEnhanced = false,
-        children = null,
-        currentIndex = null,
-        onPageChange = null,
-        super(key: key);
-  const CLFullscreenBox.navBar(
-      {Key? key,
-      required Map<BottomNavigationBarItem, Widget> navMap,
-      required int currentIndex,
-      this.onPageChange,
-      this.useSafeArea = false,
-      this.backgroundColor,
-      this.hasBorder = false})
-      : isEnhanced = true,
-        child = null,
-        children = navMap,
-        // ignore: prefer_initializing_formals
-        currentIndex = currentIndex,
-        super(key: key);
+  final void Function(int index)? onPageChange;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +60,7 @@ class CLFullscreenBox extends StatelessWidget {
           child: ScaffoldBorder(
             hasBorder: hasBorder,
             child: LayoutBuilder(
-              builder: ((context, constraints) => child!),
+              builder: (context, constraints) => child!,
             ),
           ),
         ),
@@ -71,22 +70,22 @@ class CLFullscreenBox extends StatelessWidget {
 }
 
 class CLFullscreenBoxEnhanced extends StatefulWidget {
-  final bool useSafeArea;
-  final Color? backgroundColor;
-  final bool hasBorder;
-  final int currentIndex;
-  final Function(int index)? onPageChange;
-
-  final Map<BottomNavigationBarItem, Widget> navMap;
   const CLFullscreenBoxEnhanced({
-    super.key,
     required this.navMap,
     required this.currentIndex,
+    super.key,
     this.useSafeArea = false,
     this.backgroundColor,
     this.hasBorder = false,
     this.onPageChange,
   });
+  final bool useSafeArea;
+  final Color? backgroundColor;
+  final bool hasBorder;
+  final int currentIndex;
+  final void Function(int index)? onPageChange;
+
+  final Map<BottomNavigationBarItem, Widget> navMap;
 
   @override
   State<StatefulWidget> createState() => _CLFullscreenBoxEnhancedState();
@@ -130,8 +129,8 @@ class _CLFullscreenBoxEnhancedState extends State<CLFullscreenBoxEnhanced> {
           child: ScaffoldBorder(
             hasBorder: widget.hasBorder,
             child: LayoutBuilder(
-              builder: ((context, constraints) =>
-                  (widget.navMap.values.toList())[currentIndex]),
+              builder: (context, constraints) =>
+                  widget.navMap.values.toList()[currentIndex],
             ),
           ),
         ),
@@ -142,9 +141,9 @@ class _CLFullscreenBoxEnhancedState extends State<CLFullscreenBoxEnhanced> {
 
 class ScaffoldBorder extends StatelessWidget {
   const ScaffoldBorder({
-    super.key,
     required this.hasBorder,
     required this.child,
+    super.key,
   });
   final bool hasBorder;
   final Widget child;
@@ -155,8 +154,9 @@ class ScaffoldBorder extends StatelessWidget {
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-          border: Border.all(),
-          borderRadius: const BorderRadius.all(Radius.circular(16))),
+        border: Border.all(),
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+      ),
       child: child,
     );
   }

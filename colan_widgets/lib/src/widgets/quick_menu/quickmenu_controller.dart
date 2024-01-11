@@ -1,12 +1,21 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter/widgets.dart';
-
 typedef MenuBuilder = Widget Function(
-    BuildContext context, BoxConstraints boxconstraints,
-    {required Function() onDone});
+  BuildContext context,
+  BoxConstraints boxconstraints, {
+  required void Function() onDone,
+});
 
 class QuickMenuController {
+  QuickMenuController({
+    this.isMenuShowing = false,
+    this.anchorSize,
+    this.anchorOffset,
+    this.parentOffset,
+    this.edit = false,
+    this.menuBuilder,
+  });
   final bool isMenuShowing;
 
   final Size? anchorSize;
@@ -16,38 +25,31 @@ class QuickMenuController {
   final bool edit;
   final MenuBuilder? menuBuilder;
 
-  QuickMenuController({
-    this.isMenuShowing = false,
-    this.anchorSize,
-    this.anchorOffset,
-    this.parentOffset,
-    this.edit = false,
-    this.menuBuilder,
-  });
-
-  QuickMenuController copyWith(
-      {GlobalKey? parentKey,
-      bool? isMenuShowing,
-      Size? anchorSize,
-      Offset? anchorOffset,
-      Offset? parentOffset,
-      bool? edit,
-      MenuBuilder? menuBuilder}) {
+  QuickMenuController copyWith({
+    GlobalKey? parentKey,
+    bool? isMenuShowing,
+    Size? anchorSize,
+    Offset? anchorOffset,
+    Offset? parentOffset,
+    bool? edit,
+    MenuBuilder? menuBuilder,
+  }) {
     return QuickMenuController(
-        isMenuShowing: isMenuShowing ?? this.isMenuShowing,
-        anchorSize: anchorSize ?? this.anchorSize,
-        anchorOffset: anchorOffset ?? this.anchorOffset,
-        parentOffset: parentOffset ?? this.parentOffset,
-        edit: edit ?? this.edit,
-        menuBuilder: menuBuilder ?? this.menuBuilder);
+      isMenuShowing: isMenuShowing ?? this.isMenuShowing,
+      anchorSize: anchorSize ?? this.anchorSize,
+      anchorOffset: anchorOffset ?? this.anchorOffset,
+      parentOffset: parentOffset ?? this.parentOffset,
+      edit: edit ?? this.edit,
+      menuBuilder: menuBuilder ?? this.menuBuilder,
+    );
   }
 
   QuickMenuController showMenu({
-    Size? region,
     required Size anchorSize,
     required Offset anchorOffset,
     required Offset parentOffset,
     required MenuBuilder? menuBuilder,
+    Size? region,
   }) {
     return copyWith(
       anchorSize: anchorSize,
@@ -59,22 +61,18 @@ class QuickMenuController {
   }
 
   QuickMenuController hideMenu() => copyWith(
-        anchorSize: null,
-        anchorOffset: null,
-        parentOffset: null,
         isMenuShowing: false,
-        menuBuilder: null,
       );
 }
 
 class QuickMenuControllerNotifier extends StateNotifier<QuickMenuController> {
   QuickMenuControllerNotifier() : super(QuickMenuController());
   void showMenu({
-    Size? overlaySize,
     required Size anchorSize,
     required Offset anchorOffset,
     required Offset parentOffset,
     required MenuBuilder? menuBuilder,
+    Size? overlaySize,
   }) =>
       state = state.showMenu(
         region: overlaySize,

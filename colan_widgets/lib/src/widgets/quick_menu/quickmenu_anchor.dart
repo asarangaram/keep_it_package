@@ -5,24 +5,24 @@ import 'quickmenu_controller.dart';
 
 class CLQuickMenuAnchor extends ConsumerStatefulWidget {
   const CLQuickMenuAnchor({
-    super.key,
     required this.child,
     required this.parentKey,
     required this.menuBuilder,
+    super.key,
     this.color,
     this.disabledColor,
     this.onLongPress,
   })  : isLongPress = false,
         onTap = null;
-  const CLQuickMenuAnchor.longPress(
-      {super.key,
-      required this.child,
-      required this.parentKey,
-      required this.menuBuilder,
-      this.color,
-      this.disabledColor,
-      this.onTap})
-      : isLongPress = true,
+  const CLQuickMenuAnchor.longPress({
+    required this.child,
+    required this.parentKey,
+    required this.menuBuilder,
+    super.key,
+    this.color,
+    this.disabledColor,
+    this.onTap,
+  })  : isLongPress = true,
         onLongPress = null;
 
   final Widget child;
@@ -31,8 +31,8 @@ class CLQuickMenuAnchor extends ConsumerStatefulWidget {
   final bool isLongPress;
   final Color? color;
   final Color? disabledColor;
-  final Function()? onTap;
-  final Function()? onLongPress;
+  final void Function()? onTap;
+  final void Function()? onLongPress;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -46,20 +46,20 @@ class CLQuickMenuAnchorState extends ConsumerState<CLQuickMenuAnchor> {
   Offset? parentOffset;
   bool canResponse = true;
 
-  getDetails() {
-    RenderBox? overLayBox =
+  void getDetails() {
+    final overLayBox =
         Overlay.of(context).context.findRenderObject() as RenderBox?;
-    final RenderBox parentBox =
-        widget.parentKey.currentContext?.findRenderObject() as RenderBox;
-    parentOffset = parentBox.localToGlobal(const Offset(0, 0));
+    final parentBox =
+        widget.parentKey.currentContext!.findRenderObject()! as RenderBox;
+    parentOffset = parentBox.localToGlobal(Offset.zero);
 
-    RenderBox? childBox = context.findRenderObject() as RenderBox?;
+    final childBox = context.findRenderObject() as RenderBox?;
     anchorSize = childBox!.size;
-    anchorOffset = childBox.localToGlobal(const Offset(0, 0));
+    anchorOffset = childBox.localToGlobal(Offset.zero);
     overlaySize = overLayBox?.size;
   }
 
-  showMenu() {
+  void showMenu() {
     if (anchorOffset != null &&
         anchorSize != null &&
         parentOffset != null &&
@@ -83,14 +83,16 @@ class CLQuickMenuAnchorState extends ConsumerState<CLQuickMenuAnchor> {
           canResponse = false;
         });
       } else {
-        Future.delayed(const Duration(milliseconds: 300)).then((_) => {
-              if (mounted)
-                {
-                  setState(() {
-                    canResponse = true;
-                  })
-                }
-            });
+        Future<dynamic>.delayed(const Duration(milliseconds: 300)).then(
+          (_) => {
+            if (mounted)
+              {
+                setState(() {
+                  canResponse = true;
+                }),
+              },
+          },
+        );
       }
     });
 
@@ -108,10 +110,11 @@ class CLQuickMenuAnchorState extends ConsumerState<CLQuickMenuAnchor> {
             : showMenu;
 
     return GestureDetector(
-        onTapDown: onTapDown,
-        onLongPressDown: onLongPressDown,
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: widget.child);
+      onTapDown: onTapDown,
+      onLongPressDown: onLongPressDown,
+      onTap: onTap,
+      onLongPress: onLongPress,
+      child: widget.child,
+    );
   }
 }

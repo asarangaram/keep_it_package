@@ -1,8 +1,8 @@
 extension ExtDimension<T> on List<T> {
   List<List<T>> convertTo2D(int innerDimension) {
-    List<List<T>> pages = [];
-    for (int i = 0; i < length; i += innerDimension) {
-      int end = (i + innerDimension < length) ? i + innerDimension : length;
+    final pages = <List<T>>[];
+    for (var i = 0; i < length; i += innerDimension) {
+      final end = (i + innerDimension < length) ? i + innerDimension : length;
       pages.add(sublist(i, end));
     }
     return pages;

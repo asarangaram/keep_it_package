@@ -1,31 +1,32 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-class CLSelectionWrapper extends StatefulWidget {
+class CLSelectionWrapper<T> extends StatefulWidget {
   const CLSelectionWrapper({
-    super.key,
     required this.selectableList,
     required this.listBuilder,
     required this.onSelectionDone,
+    super.key,
     this.multiSelection = false,
     this.labelSelected,
     this.labelNoneSelected,
   });
-  final List selectableList;
+  final List<T> selectableList;
   final bool multiSelection;
   final String? labelSelected;
   final String? labelNoneSelected;
-  final Widget Function(
-      {required List selectableList,
-      required Function(int index) onSelection,
-      required List<bool> selectionMask}) listBuilder;
-  final Function(List<int> selectedIndex) onSelectionDone;
+  final Widget Function({
+    required List<T> selectableList,
+    required void Function(int index) onSelection,
+    required List<bool> selectionMask,
+  }) listBuilder;
+  final void Function(List<int> selectedIndex) onSelectionDone;
 
   @override
-  State<StatefulWidget> createState() => CLSelectionWrapperState();
+  State<StatefulWidget> createState() => CLSelectionWrapperState<T>();
 }
 
-class CLSelectionWrapperState extends State<CLSelectionWrapper> {
+class CLSelectionWrapperState<T> extends State<CLSelectionWrapper<T>> {
   late final List<bool> selectionMask;
   @override
   void initState() {
@@ -42,28 +43,29 @@ class CLSelectionWrapperState extends State<CLSelectionWrapper> {
       children: [
         Expanded(
           child: widget.listBuilder(
-              selectableList: widget.selectableList,
-              onSelection: (index) {
-                if (!widget.multiSelection) {
-                  widget.onSelectionDone([index]);
-                }
-                setState(() {
-                  selectionMask[index] = !selectionMask[index];
-                });
-              },
-              selectionMask: selectionMask),
+            selectableList: widget.selectableList,
+            onSelection: (index) {
+              if (!widget.multiSelection) {
+                widget.onSelectionDone([index]);
+              }
+              setState(() {
+                selectionMask[index] = !selectionMask[index];
+              });
+            },
+            selectionMask: selectionMask,
+          ),
         ),
         const Divider(
           thickness: 2,
         ),
         const SizedBox(height: 16),
         if (selectedCount > 0) ...[
-          CLText.small("$selectedCount selected"),
+          CLText.small('$selectedCount selected'),
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: CLButtonText.veryLarge(
-                widget.labelSelected ?? "Done",
+                widget.labelSelected ?? 'Done',
                 boxDecoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(8),
@@ -77,18 +79,20 @@ class CLSelectionWrapperState extends State<CLSelectionWrapper> {
                   ],
                 ),
                 onTap: () {
-                  widget.onSelectionDone(selectionMask
-                      .asMap()
-                      .entries
-                      .where((element) => element.value)
-                      .map((e) => e.key)
-                      .toList());
+                  widget.onSelectionDone(
+                    selectionMask
+                        .asMap()
+                        .entries
+                        .where((element) => element.value)
+                        .map((e) => e.key)
+                        .toList(),
+                  );
                 },
               ),
             ),
           ),
         ] else ...[
-          CLText.large(widget.labelNoneSelected ?? "Select few"),
+          CLText.large(widget.labelNoneSelected ?? 'Select few'),
         ],
         const SizedBox(height: 16),
       ],

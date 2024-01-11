@@ -1,20 +1,18 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
+
 import 'cl_media_type.dart';
 
+@immutable
 sealed class CLMedia {
-  final String path;
-  final CLMediaType type;
-  ui.Image? preview;
-  late double aspectRatio;
-
   CLMedia({
     required this.path,
     required this.type,
     this.preview,
   }) {
     if (!path.startsWith('/')) {
-      throw Exception("CLMedia must have absolute path");
+      throw Exception('CLMedia must have absolute path');
     }
     if (preview == null) {
       aspectRatio = 1;
@@ -22,6 +20,10 @@ sealed class CLMedia {
       aspectRatio = preview!.width / preview!.height;
     }
   }
+  final String path;
+  final CLMediaType type;
+  final ui.Image? preview;
+  late final double aspectRatio;
 
   CLMedia copyWith({
     String? path,
@@ -43,18 +45,20 @@ sealed class CLMedia {
 
   @override
   String toString() {
-    return "$path, $type, $aspectRatio ${(preview != null) ? "${preview?.width} x ${preview?.height}" : ""}";
+    return '$path, $type, $aspectRatio '
+        ' ${(preview != null) ? "${preview?.width} x ${preview?.height}" : ""}';
   }
 }
 
+@immutable
 class CLMediaImage extends CLMedia {
-  ui.Image? data;
   CLMediaImage({
     required super.path,
     required super.type,
     super.preview,
     this.data,
   }) : super();
+  final ui.Image? data;
 
   @override
   CLMediaImage copyWith({
@@ -64,31 +68,43 @@ class CLMediaImage extends CLMedia {
     ui.Image? data,
   }) {
     return CLMediaImage(
-        data: data ?? this.data,
-        path: path ?? super.path,
-        type: type ?? super.type,
-        preview: preview ?? super.preview);
+      data: data ?? this.data,
+      path: path ?? super.path,
+      type: type ?? super.type,
+      preview: preview ?? super.preview,
+    );
   }
 
   static Future<ui.Image> createThumbnail(
-      ui.Image originalImage, int thumbnailWidth, int thumbnailHeight) async {
-    final ui.PictureRecorder recorder = ui.PictureRecorder();
-    final ui.Canvas canvas = ui.Canvas(
-        recorder,
-        ui.Rect.fromPoints(const ui.Offset(0.0, 0.0),
-            ui.Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble())));
-    canvas.drawImageRect(
-        originalImage,
-        ui.Rect.fromPoints(
-            const ui.Offset(0.0, 0.0),
-            ui.Offset(originalImage.width.toDouble(),
-                originalImage.height.toDouble())),
-        ui.Rect.fromPoints(const ui.Offset(0.0, 0.0),
-            ui.Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble())),
-        ui.Paint());
+    ui.Image originalImage,
+    int thumbnailWidth,
+    int thumbnailHeight,
+  ) async {
+    final recorder = ui.PictureRecorder();
+    ui.Canvas(
+      recorder,
+      ui.Rect.fromPoints(
+        ui.Offset.zero,
+        ui.Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble()),
+      ),
+    ).drawImageRect(
+      originalImage,
+      ui.Rect.fromPoints(
+        ui.Offset.zero,
+        ui.Offset(
+          originalImage.width.toDouble(),
+          originalImage.height.toDouble(),
+        ),
+      ),
+      ui.Rect.fromPoints(
+        ui.Offset.zero,
+        ui.Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble()),
+      ),
+      ui.Paint(),
+    );
 
-    final ui.Picture picture = recorder.endRecording();
-    final ui.Image thumbnailImage =
+    final picture = recorder.endRecording();
+    final thumbnailImage =
         await picture.toImage(thumbnailWidth, thumbnailHeight);
     return thumbnailImage;
   }
@@ -108,15 +124,16 @@ class CLMediaVideo extends CLMedia {
     ui.Image? preview,
   }) {
     return CLMediaImage(
-        path: path ?? super.path,
-        type: type ?? super.type,
-        preview: preview ?? super.preview);
+      path: path ?? super.path,
+      type: type ?? super.type,
+      preview: preview ?? super.preview,
+    );
   }
 }
 
 class CLMediaInfoGroup {
-  final List<CLMedia> list;
   CLMediaInfoGroup(this.list);
+  final List<CLMedia> list;
 
   bool get isEmpty => list.isEmpty;
   bool get isNotEmpty => list.isNotEmpty;

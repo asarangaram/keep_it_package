@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 class FileHandler {
   static Future<String> getDocumentsDirectory(String? subFolder) async {
@@ -14,14 +14,16 @@ class FileHandler {
       documentsDirectory = (await getApplicationDocumentsDirectory()).path;
     }
 
-    if (!await Directory(documentsDirectory).exists()) {
+    if (!Directory(documentsDirectory).existsSync()) {
       await Directory(documentsDirectory).create(recursive: true);
     }
     return documentsDirectory;
   }
 
   static Future<String> copyAndDeleteFile(
-      String srcFilePath, destinationPath) async {
+    String srcFilePath,
+    String destinationPath,
+  ) async {
     try {
       // Copy the file to the destination
       await File(srcFilePath).copy(destinationPath);
@@ -35,13 +37,13 @@ class FileHandler {
     }
   }
 
-  static Future<String> move(filePath, {required String toDir}) async {
+  static Future<String> move(String filePath, {required String toDir}) async {
     // Get the file name from the path
-    String fileName = path.basename(filePath);
+    final fileName = path.basename(filePath);
 
     // Set the destination directory in the documents folder
-    String documentsDirectory = await FileHandler.getDocumentsDirectory(toDir);
-    String destinationPath = path.join(documentsDirectory, fileName);
+    final documentsDirectory = await FileHandler.getDocumentsDirectory(toDir);
+    final destinationPath = path.join(documentsDirectory, fileName);
     final newFile =
         await FileHandler.copyAndDeleteFile(filePath, destinationPath);
     return newFile;
@@ -59,8 +61,8 @@ class FileHandler {
     /// prefix the directory if the path is not absolute
     ///  if from assets, leave it as it is.
     return switch (mediaPath) {
-      (String s) when mediaPath.startsWith('assets') => s,
-      (String s) when mediaPath.startsWith('/') => s,
+      (final String s) when mediaPath.startsWith('assets') => s,
+      (final String s) when mediaPath.startsWith('/') => s,
       _ => path.join(dir, mediaPath),
     };
   }

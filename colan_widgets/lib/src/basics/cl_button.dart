@@ -11,16 +11,16 @@ class _CLButton extends StatelessWidget {
   final Color? color;
   final Color? disabledColor;
   final CLScaleType scaleType;
-  final Function()? onTap;
+  final void Function()? onTap;
   final BoxDecoration? boxDecoration;
 
   const _CLButton({
-    super.key,
     required this.iconData,
     required this.label,
+    required this.scaleType,
+    super.key,
     this.color,
     this.disabledColor,
-    required this.scaleType,
     this.onTap,
     this.boxDecoration,
   });
@@ -29,44 +29,46 @@ class _CLButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: onTap ?? () => showSnackBarAboveDialog(context, label ?? "Icon"),
-        child: ButtonBackground(
-          boxDecoration: boxDecoration,
-          child: switch (iconData) {
-            null => switch (scaleType) {
-                CLScaleType.veryLarge => CLLabel.veryLarge,
-                CLScaleType.large => CLLabel.large,
-                CLScaleType.standard => CLLabel.standard,
-                CLScaleType.small => CLLabel.small,
-                CLScaleType.verySmall => CLLabel.verySmall,
-                CLScaleType.tiny => CLLabel.tiny,
-              }(label!, color: color_),
-            _ => switch (label) {
-                null => switch (scaleType) {
-                    CLScaleType.veryLarge => CLIcon.veryLarge,
-                    CLScaleType.large => CLIcon.large,
-                    CLScaleType.standard => CLIcon.standard,
-                    CLScaleType.small => CLIcon.small,
-                    CLScaleType.verySmall => CLIcon.verySmall,
-                    CLScaleType.tiny => CLIcon.tiny,
-                  }(iconData!, color: color_),
-                _ => switch (scaleType) {
-                    CLScaleType.veryLarge => CLIconLabelled.veryLarge,
-                    CLScaleType.large => CLIconLabelled.large,
-                    CLScaleType.standard => CLIconLabelled.standard,
-                    CLScaleType.small => CLIconLabelled.small,
-                    CLScaleType.verySmall => CLIconLabelled.verySmall,
-                    CLScaleType.tiny => CLIconLabelled.tiny,
-                  }(iconData!, label!, color: color_)
-              },
-          },
-        ));
+      onTap: onTap ?? () => showSnackBarAboveDialog(context, label ?? 'Icon'),
+      child: ButtonBackground(
+        boxDecoration: boxDecoration,
+        child: switch (iconData) {
+          null => switch (scaleType) {
+              CLScaleType.veryLarge => CLLabel.veryLarge,
+              CLScaleType.large => CLLabel.large,
+              CLScaleType.standard => CLLabel.standard,
+              CLScaleType.small => CLLabel.small,
+              CLScaleType.verySmall => CLLabel.verySmall,
+              CLScaleType.tiny => CLLabel.tiny,
+            }(label!, color: color_),
+          _ => switch (label) {
+              null => switch (scaleType) {
+                  CLScaleType.veryLarge => CLIcon.veryLarge,
+                  CLScaleType.large => CLIcon.large,
+                  CLScaleType.standard => CLIcon.standard,
+                  CLScaleType.small => CLIcon.small,
+                  CLScaleType.verySmall => CLIcon.verySmall,
+                  CLScaleType.tiny => CLIcon.tiny,
+                }(iconData!, color: color_),
+              _ => switch (scaleType) {
+                  CLScaleType.veryLarge => CLIconLabelled.veryLarge,
+                  CLScaleType.large => CLIconLabelled.large,
+                  CLScaleType.standard => CLIconLabelled.standard,
+                  CLScaleType.small => CLIconLabelled.small,
+                  CLScaleType.verySmall => CLIconLabelled.verySmall,
+                  CLScaleType.tiny => CLIconLabelled.tiny,
+                }(iconData!, label!, color: color_)
+            },
+        },
+      ),
+    );
   }
 
-  // TODO: Merge from another object
-  static void showSnackBarAboveDialog(BuildContext context, String message,
-      // ignore: unused_element
-      {Duration duration = const Duration(milliseconds: 400)}) {
+  // TODO(asarangaram): Merge from another object.
+  static void showSnackBarAboveDialog(
+    BuildContext context,
+    String message,
+  ) {
     // Create an overlay entry
     OverlayEntry entry;
 
@@ -107,8 +109,8 @@ class _CLButton extends StatelessWidget {
 
 class ButtonBackground extends ConsumerWidget {
   const ButtonBackground({
-    super.key,
     required this.child,
+    super.key,
     this.boxDecoration,
   });
   final Widget child;
@@ -120,7 +122,7 @@ class ButtonBackground extends ConsumerWidget {
       return child;
     }
     return Container(
-      decoration: boxDecoration!,
+      decoration: boxDecoration,
       child: Center(child: child),
     );
   }
@@ -230,7 +232,10 @@ class CLButtonIconLabelled extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-            label: label, iconData: iconData, scaleType: CLScaleType.veryLarge);
+          label: label,
+          iconData: iconData,
+          scaleType: CLScaleType.veryLarge,
+        );
   const CLButtonIconLabelled.large(
     IconData iconData,
     String label, {
@@ -263,7 +268,10 @@ class CLButtonIconLabelled extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-            label: label, iconData: iconData, scaleType: CLScaleType.verySmall);
+          label: label,
+          iconData: iconData,
+          scaleType: CLScaleType.verySmall,
+        );
   const CLButtonIconLabelled.tiny(
     IconData iconData,
     String label, {
@@ -277,84 +285,90 @@ class CLButtonIconLabelled extends _CLButton {
 class CLButtonElevatedText extends _CLButton {
   const CLButtonElevatedText.veryLarge(
     String label, {
+    required BoxDecoration boxDecoration,
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
-    required BoxDecoration boxDecoration,
   }) : super(
-            label: label,
-            iconData: null,
-            scaleType: CLScaleType.veryLarge,
-            boxDecoration: boxDecoration);
+          label: label,
+          iconData: null,
+          scaleType: CLScaleType.veryLarge,
+          boxDecoration: boxDecoration,
+        );
   const CLButtonElevatedText.large(
     String label, {
+    required BoxDecoration boxDecoration,
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
-    required BoxDecoration boxDecoration,
   }) : super(
-            label: label,
-            iconData: null,
-            scaleType: CLScaleType.large,
-            boxDecoration: boxDecoration);
+          label: label,
+          iconData: null,
+          scaleType: CLScaleType.large,
+          boxDecoration: boxDecoration,
+        );
   const CLButtonElevatedText.standard(
     String label, {
+    required BoxDecoration boxDecoration,
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
-    required BoxDecoration boxDecoration,
   }) : super(
-            label: label,
-            iconData: null,
-            scaleType: CLScaleType.standard,
-            boxDecoration: boxDecoration);
+          label: label,
+          iconData: null,
+          scaleType: CLScaleType.standard,
+          boxDecoration: boxDecoration,
+        );
   const CLButtonElevatedText.small(
     String label, {
+    required BoxDecoration boxDecoration,
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
-    required BoxDecoration boxDecoration,
   }) : super(
-            label: label,
-            iconData: null,
-            scaleType: CLScaleType.small,
-            boxDecoration: boxDecoration);
+          label: label,
+          iconData: null,
+          scaleType: CLScaleType.small,
+          boxDecoration: boxDecoration,
+        );
   const CLButtonElevatedText.verySmall(
     String label, {
+    required BoxDecoration boxDecoration,
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
-    required BoxDecoration boxDecoration,
   }) : super(
-            label: label,
-            iconData: null,
-            scaleType: CLScaleType.verySmall,
-            boxDecoration: boxDecoration);
+          label: label,
+          iconData: null,
+          scaleType: CLScaleType.verySmall,
+          boxDecoration: boxDecoration,
+        );
   const CLButtonElevatedText.tiny(
     String label, {
+    required BoxDecoration boxDecoration,
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
-    required BoxDecoration boxDecoration,
   }) : super(
-            label: label,
-            iconData: null,
-            scaleType: CLScaleType.tiny,
-            boxDecoration: boxDecoration);
+          label: label,
+          iconData: null,
+          scaleType: CLScaleType.tiny,
+          boxDecoration: boxDecoration,
+        );
 }
 
 class _CLButtonSquereElevated extends StatelessWidget {
   const _CLButtonSquereElevated({
-    super.key,
     required this.child,
-    this.onTap,
     required this.scaleType,
+    super.key,
+    this.onTap,
   });
   final Widget child;
   final void Function()? onTap;
@@ -369,17 +383,16 @@ class _CLButtonSquereElevated extends StatelessWidget {
         height: scaleType.fontSize * 8,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: AspectRatio(
               aspectRatio: 1,
               child: Card(
                 elevation: 12,
                 shape: const ContinuousRectangleBorder(),
-                margin: const EdgeInsets.all(0),
+                margin: EdgeInsets.zero,
                 child: InkWell(
                   onTap: onTap,
                   child: Align(
-                    alignment: Alignment.center,
                     child: child,
                   ),
                 ),
@@ -393,22 +406,34 @@ class _CLButtonSquereElevated extends StatelessWidget {
 }
 
 class CLButtonSquereElevated extends _CLButtonSquereElevated {
-  const CLButtonSquereElevated.veryLarge(
-      {super.key, required super.child, super.onTap})
-      : super(scaleType: CLScaleType.veryLarge);
-  const CLButtonSquereElevated.large(
-      {super.key, required super.child, super.onTap})
-      : super(scaleType: CLScaleType.large);
-  const CLButtonSquereElevated.standard(
-      {super.key, required super.child, super.onTap})
-      : super(scaleType: CLScaleType.standard);
-  const CLButtonSquereElevated.small(
-      {super.key, required super.child, super.onTap})
-      : super(scaleType: CLScaleType.small);
-  const CLButtonSquereElevated.verySmall(
-      {super.key, required super.child, super.onTap})
-      : super(scaleType: CLScaleType.verySmall);
-  const CLButtonSquereElevated.tiny(
-      {super.key, required super.child, super.onTap})
-      : super(scaleType: CLScaleType.tiny);
+  const CLButtonSquereElevated.veryLarge({
+    required super.child,
+    super.key,
+    super.onTap,
+  }) : super(scaleType: CLScaleType.veryLarge);
+  const CLButtonSquereElevated.large({
+    required super.child,
+    super.key,
+    super.onTap,
+  }) : super(scaleType: CLScaleType.large);
+  const CLButtonSquereElevated.standard({
+    required super.child,
+    super.key,
+    super.onTap,
+  }) : super(scaleType: CLScaleType.standard);
+  const CLButtonSquereElevated.small({
+    required super.child,
+    super.key,
+    super.onTap,
+  }) : super(scaleType: CLScaleType.small);
+  const CLButtonSquereElevated.verySmall({
+    required super.child,
+    super.key,
+    super.onTap,
+  }) : super(scaleType: CLScaleType.verySmall);
+  const CLButtonSquereElevated.tiny({
+    required super.child,
+    super.key,
+    super.onTap,
+  }) : super(scaleType: CLScaleType.tiny);
 }
