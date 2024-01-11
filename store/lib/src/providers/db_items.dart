@@ -2,16 +2,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/cluster.dart';
-import '../models/item.dart';
 import '../models/db.dart';
+import '../models/item.dart';
 import 'db_manager.dart';
 
 class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
-  DatabaseManager? databaseManager;
-  int? clusterID;
-  Ref ref;
-
-  bool isLoading = false;
   ItemNotifier({
     required this.ref,
     this.databaseManager,
@@ -19,8 +14,13 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   }) : super(const AsyncValue.loading()) {
     loadItems();
   }
+  DatabaseManager? databaseManager;
+  int? clusterID;
+  Ref ref;
 
-  loadItems() async {
+  bool isLoading = false;
+
+  Future<void> loadItems() async {
     if (databaseManager == null) return;
     final List<ItemInDB> items;
     final Cluster cluster;
@@ -32,20 +32,21 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     state = await AsyncValue.guard(() async {
       final dir = await FileHandler.getDocumentsDirectory(null);
       return Items(
-          cluster,
-          items
-              .map(
-                (e) => e.copyWith(
-                  path: FileHandler.getAbsoluteFilePathSync(e.path, dir: dir),
-                ),
-              )
-              .toList());
+        cluster,
+        items
+            .map(
+              (e) => e.copyWith(
+                path: FileHandler.getAbsoluteFilePathSync(e.path, dir: dir),
+              ),
+            )
+            .toList(),
+      );
     });
   }
 
   void upsertItem(ItemInDB item) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
 
     item.upsert(databaseManager!.db);
@@ -56,9 +57,9 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
   void upsertItems(List<ItemInDB> items) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
-    for (var item in items) {
+    for (final item in items) {
       upsertItem(item);
     }
     loadItems();
@@ -66,7 +67,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
   void deleteItem(ItemInDB item) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
 
     item.delete(databaseManager!.db);
@@ -75,9 +76,9 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
   void deleteItems(List<ItemInDB> items) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
-    for (var item in items) {
+    for (final item in items) {
       item.delete(databaseManager!.db);
     }
     loadItems();
@@ -90,7 +91,10 @@ final itemsProvider =
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) => ItemNotifier(
-        ref: ref, databaseManager: dbManager, clusterID: clusterID),
+      ref: ref,
+      databaseManager: dbManager,
+      clusterID: clusterID,
+    ),
     error: (_, __) => ItemNotifier(
       ref: ref,
     ),

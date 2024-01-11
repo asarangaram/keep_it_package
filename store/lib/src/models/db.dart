@@ -1,13 +1,11 @@
 import 'package:sqlite3/sqlite3.dart';
 
 export '../extensions/cluster.dart';
-export '../extensions/item.dart';
 export '../extensions/collections.dart';
+export '../extensions/item.dart';
 
 class DatabaseManager {
-  late Database db;
-
-  DatabaseManager({String? path, Function()? sqlite3LibOverrider}) {
+  DatabaseManager({String? path, void Function()? sqlite3LibOverrider}) {
     sqlite3LibOverrider?.call();
     db = switch (path) {
       null => sqlite3.openInMemory(),
@@ -16,25 +14,25 @@ class DatabaseManager {
 
     _createTables();
   }
+  late Database db;
 
   void _createTables() {
-    db.execute('''
+    db
+      ..execute('''
       CREATE TABLE IF NOT EXISTS Collections (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         label TEXT NOT NULL UNIQUE,
         description TEXT
       )
-    ''');
-
-    db.execute('''
+    ''')
+      ..execute('''
       CREATE TABLE IF NOT EXISTS Cluster (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         description TEXT,
         text TEXT
       )
-    ''');
-
-    db.execute('''
+    ''')
+      ..execute('''
       CREATE TABLE IF NOT EXISTS Item (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         path TEXT NOT NULL UNIQUE,
@@ -43,9 +41,8 @@ class DatabaseManager {
         type TEXT NOT NULL,
         FOREIGN KEY (cluster_id) REFERENCES Cluster(id)
       )
-    ''');
-
-    db.execute('''
+    ''')
+      ..execute('''
       CREATE TABLE IF NOT EXISTS CollectionCluster (
         collection_id INTEGER,
         cluster_id INTEGER,
@@ -61,22 +58,3 @@ class DatabaseManager {
     db.dispose();
   }
 }
-/*
-
-class DataNotifier {
-  // Create a stream controller
-  
-  // Create a stream for listening to changes
-  
-  // Function to trigger a data change
-  void notifyDataChanged() {
-    
-  }
-
-  // Close the stream controller when no longer needed
-  void dispose() {
-    
-  }
-}
-*/
-

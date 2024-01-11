@@ -1,12 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 import '../models/db.dart';
 
 final dbManagerProvider = FutureProvider<DatabaseManager>((ref) async {
-  final bool isDBPersist = ref.read(isDBPersistProvider);
+  final isDBPersist = ref.read(isDBPersistProvider);
   final DatabaseManager dbManager;
   if (isDBPersist) {
     final appDir = await getApplicationDocumentsDirectory();
@@ -15,7 +14,7 @@ final dbManagerProvider = FutureProvider<DatabaseManager>((ref) async {
   } else {
     dbManager = DatabaseManager();
   }
-  ref.onDispose(() => dbManager.close());
+  ref.onDispose(dbManager.close);
   return dbManager;
 });
 

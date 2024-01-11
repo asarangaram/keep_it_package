@@ -5,11 +5,6 @@ import '../models/db.dart';
 import 'db_manager.dart';
 
 class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
-  DatabaseManager? databaseManager;
-  int? collectionID;
-  Ref ref;
-
-  bool isLoading = false;
   ClustersNotifier({
     required this.ref,
     this.databaseManager,
@@ -17,8 +12,13 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
   }) : super(const AsyncValue.loading()) {
     loadClusters();
   }
+  DatabaseManager? databaseManager;
+  int? collectionID;
+  Ref ref;
 
-  loadClusters() async {
+  bool isLoading = false;
+
+  Future<void> loadClusters() async {
     if (databaseManager == null) return;
     final List<Cluster> clusters;
 
@@ -26,7 +26,9 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
       clusters = ClusterDB.getAll(databaseManager!.db);
     } else {
       clusters = ClusterDB.getClustersForCollection(
-          databaseManager!.db, collectionID!);
+        databaseManager!.db,
+        collectionID!,
+      );
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -36,7 +38,7 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
 
   Future<int> upsertCluster(Cluster cluster, List<int> collectionIds) async {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
 
     // Save Cluster and get Cluster ID.
@@ -45,11 +47,11 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
 
     final clusterId = cluster.upsert(databaseManager!.db);
 
-    for (var id in collectionIds) {
+    for (final id in collectionIds) {
       ClusterDB.addCollectionToCluster(databaseManager!.db, id, clusterId);
       //ref.read(clustersProvider(id));
       //ref.invalidate(clustersProvider(id));
-      ref.read(clustersProvider(id).notifier).loadClusters();
+      await ref.read(clustersProvider(id).notifier).loadClusters();
     }
 
     await loadClusters();
@@ -68,7 +70,7 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
 
   void deleteCluster(Cluster cluster) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
 
     cluster.delete(databaseManager!.db);
@@ -77,9 +79,9 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
 
   void deleteClusters(List<Cluster> clusters) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
-    for (var cluster in clusters) {
+    for (final cluster in clusters) {
       cluster.delete(databaseManager!.db);
     }
     loadClusters();
@@ -92,7 +94,10 @@ final clustersProvider =
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) => ClustersNotifier(
-        ref: ref, databaseManager: dbManager, collectionID: clusterID),
+      ref: ref,
+      databaseManager: dbManager,
+      collectionID: clusterID,
+    ),
     error: (_, __) => ClustersNotifier(
       ref: ref,
     ),

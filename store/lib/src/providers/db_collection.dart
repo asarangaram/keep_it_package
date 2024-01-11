@@ -5,19 +5,19 @@ import '../models/db.dart';
 import 'db_manager.dart';
 
 class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
-  DatabaseManager? databaseManager;
-  int? clusterId;
-
-  bool isLoading = false;
   CollectionNotifier({
     this.databaseManager,
     this.clusterId,
   }) : super(const AsyncValue.loading()) {
     loadCollections();
   }
+  DatabaseManager? databaseManager;
+  int? clusterId;
+
+  bool isLoading = false;
   // Some race condition might occuur if many collections are updated
   /// How to avoid more frequent update if many triggers occur one after other.
-  loadCollections() async {
+  Future<void> loadCollections() async {
     if (databaseManager == null) return;
     final List<Collection> collections;
 
@@ -25,7 +25,9 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
       collections = CollectionDB.getAll(databaseManager!.db);
     } else {
       collections = CollectionDB.getCollectionsForCluster(
-          databaseManager!.db, clusterId!);
+        databaseManager!.db,
+        clusterId!,
+      );
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -35,7 +37,7 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
 
   void upsertCollection(Collection collection) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
 
     collection.upsert(databaseManager!.db);
@@ -45,9 +47,9 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
 
   void upsertCollections(List<Collection> collections) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
-    for (var collection in collections) {
+    for (final collection in collections) {
       collection.upsert(databaseManager!.db);
     }
     loadCollections();
@@ -55,7 +57,7 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
 
   void deleteCollection(Collection collection) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
 
     collection.delete(databaseManager!.db);
@@ -64,9 +66,9 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
 
   void deleteCollections(List<Collection> collections) {
     if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
+      throw Exception('DB Manager is not ready');
     }
-    for (var collection in collections) {
+    for (final collection in collections) {
       collection.delete(databaseManager!.db);
     }
     loadCollections();
@@ -80,6 +82,6 @@ final collectionsProvider = StateNotifierProvider.family<CollectionNotifier,
     data: (DatabaseManager dbManager) =>
         CollectionNotifier(databaseManager: dbManager, clusterId: clusterId),
     error: (_, __) => CollectionNotifier(),
-    loading: () => CollectionNotifier(),
+    loading: CollectionNotifier.new,
   );
 });

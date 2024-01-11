@@ -1,12 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:flutter/material.dart';
+
+@immutable
 class Collection {
-  int? id;
-  String label;
-  String? description;
-  Collection({
-    this.id,
+  final int? id;
+  final String label;
+  final String? description;
+  const Collection({
     required this.label,
+    this.id,
     this.description,
   });
 

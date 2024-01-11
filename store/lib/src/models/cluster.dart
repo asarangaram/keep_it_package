@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class Cluster {
-  int? id;
-  String description;
-  Cluster({
-    this.id,
+  const Cluster({
     required this.description,
+    this.id,
   });
 
   factory Cluster.fromMap(Map<String, dynamic> map) {
@@ -12,6 +13,8 @@ class Cluster {
       description: map['description'] as String,
     );
   }
+  final int? id;
+  final String description;
 
   @override
   String toString() => 'Cluster(id: $id, description: $description)';
@@ -38,9 +41,8 @@ class Cluster {
 }
 
 class Clusters {
-  final List<Cluster> entries;
-
   Clusters(this.entries);
+  final List<Cluster> entries;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
