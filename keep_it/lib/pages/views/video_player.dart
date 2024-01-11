@@ -8,9 +8,10 @@ class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({
     super.key,
     required this.path,
+    this.aspectRatio,
   });
   final String path;
-
+  final double? aspectRatio;
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
 }
@@ -52,27 +53,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         if (snapshot.connectionState == ConnectionState.done) {
           // If the VideoPlayerController has finished initialization, use
           // the data it provides to limit the aspect ratio of the video.
-          return AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            // Use the VideoPlayer widget to display the video.
-            child: GestureDetector(
-              onTap: () {
-                // If the video is playing, pause it.
-                if (_controller.value.isPlaying) {
-                  _controller.pause();
-                } else {
-                  // If the video is paused, play it.
-                  _controller.setVolume(1.0);
-                  _controller.play();
-                }
-              },
-              child: Stack(
-                children: [
-                  VideoPlayer(_controller),
-                  Center(
-                    child: VideoController(controller: _controller),
-                  )
-                ],
+          return Center(
+            child: AspectRatio(
+              aspectRatio: widget.aspectRatio ?? _controller.value.aspectRatio,
+              // Use the VideoPlayer widget to display the video.
+              child: GestureDetector(
+                onTap: () {
+                  // If the video is playing, pause it.
+                  if (_controller.value.isPlaying) {
+                    _controller.pause();
+                  } else {
+                    // If the video is paused, play it.
+                    _controller.setVolume(1.0);
+                    _controller.play();
+                  }
+                },
+                child: Stack(
+                  children: [
+                    VideoPlayer(_controller),
+                    Center(
+                      child: VideoController(controller: _controller),
+                    )
+                  ],
+                ),
               ),
             ),
           );

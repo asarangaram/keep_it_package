@@ -55,7 +55,7 @@ class IncomingMedia {
   }
 
   Future<CLMediaInfoGroup> receiveFiles(CLMediaInfoGroup media) async {
-    List<CLMediaInfo> newMedia = [];
+    List<CLMedia> newMedia = [];
     for (var e in media.list) {
       switch (e.type) {
         case CLMediaType.url:
@@ -67,7 +67,7 @@ class IncomingMedia {
             case CLMediaType.file:
               final String? r = await URLHandler.downloadAndSaveImage(e.path);
               if (r != null) {
-                newMedia.add(CLMediaInfo(path: r, type: mimeType!));
+                newMedia.add(CLMediaImage(path: r, type: mimeType!));
               } else {
                 //retain as url
                 newMedia.add(e);
@@ -90,7 +90,7 @@ class IncomingMedia {
         case CLMediaType.audio:
         case CLMediaType.file:
           final newFile = await FileHandler.move(e.path, toDir: 'incoming');
-          newMedia.add(CLMediaInfo(path: newFile, type: e.type));
+          newMedia.add(CLMediaImage(path: newFile, type: e.type));
       }
     }
     return CLMediaInfoGroup(newMedia);
@@ -126,20 +126,20 @@ class IncomingMedia {
   }
 
   static CLMediaInfoGroup getMedia(SharedMedia sharedMedia) {
-    List<CLMediaInfo> newMedia = [];
+    List<CLMediaImage> newMedia = [];
     if (sharedMedia.content?.isNotEmpty ?? false) {
       final text = sharedMedia.content!;
-      newMedia.add(CLMediaInfo(
+      newMedia.add(CLMediaImage(
           path: text, type: text.isURL() ? CLMediaType.url : CLMediaType.text));
     }
     if (sharedMedia.imageFilePath != null) {
-      newMedia.add(CLMediaInfo(
+      newMedia.add(CLMediaImage(
           path: sharedMedia.imageFilePath!, type: CLMediaType.image));
     }
     if (sharedMedia.attachments?.isNotEmpty ?? false) {
       for (var e in sharedMedia.attachments!) {
         if (e != null) {
-          newMedia.add(CLMediaInfo(
+          newMedia.add(CLMediaImage(
               path: e.path,
               type: switch (e.type) {
                 SharedAttachmentType.image => CLMediaType.image,

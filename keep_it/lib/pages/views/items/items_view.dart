@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,33 +26,72 @@ class ItemsView extends ConsumerWidget {
               }
             : null,
         pageBuilder: (context, quickMenuScopeKey) {
-          return InfiniteCarousel.builder(
-            itemCount: items.entries.length,
-            itemExtent: MediaQuery.of(context).size.height / 2,
-            center: true,
-            anchor: 0.0,
-            velocityFactor: 0.2,
-            onIndexChanged: (index) {},
-            axisDirection: Axis.vertical,
-            loop: false,
-            itemBuilder: (context, itemIndex, realIndex) {
-              return switch (items.entries[realIndex].type) {
-                CLMediaType.image => LoadMediaImage(
-                    mediaInfo: CLMediaInfo(
-                      path: items.entries[realIndex].path,
-                      type: CLMediaType.image,
-                    ),
-                    onImageLoaded: (ui.Image mediaData) => CLImageViewer(
-                      image: mediaData,
-                      allowZoom: false,
-                    ),
-                  ),
-                CLMediaType.video => VideoPlayerScreen(
-                    path: items.entries[realIndex].path,
-                  ),
-                _ => throw UnimplementedError("Not yet implemented")
-              };
-            },
+          return Column(
+            children: [
+              Flexible(
+                flex: 2,
+                child: Align(
+                  child: InfiniteCarousel.builder(
+                      itemCount: items.entries.length,
+                      itemExtent: MediaQuery.of(context).size.width,
+                      center: false,
+                      anchor: 0.0,
+                      velocityFactor: 1,
+                      onIndexChanged: (index) {},
+                      axisDirection: Axis.horizontal,
+                      loop: false,
+                      itemBuilder: (context, itemIndex, realIndex) {
+                        return Container(
+                          alignment: Alignment.bottomCenter,
+                          padding: const EdgeInsets.all(1.0),
+                          child: LoadMedia(
+                            mediaInfo: CLMediaImage(
+                              path: items.entries[realIndex].path,
+                              type: items.entries[realIndex].type,
+                            ),
+                            onMediaLoaded: (mediaData) {
+                              return switch (mediaData) {
+                                (CLMediaImage image)
+                                    when mediaData.runtimeType ==
+                                        CLMediaImage =>
+                                  CLImageViewer(
+                                    image: image.data!,
+                                    allowZoom: false,
+                                  ),
+                                (CLMediaVideo video)
+                                    when mediaData.runtimeType ==
+                                        CLMediaVideo =>
+                                  VideoPlayerScreen(
+                                    path: video.path,
+                                    aspectRatio: mediaData.aspectRatio,
+                                  ),
+                                _ => throw UnimplementedError(
+                                    "Not yet implemented")
+                              };
+                            },
+                          ),
+                        );
+                      }),
+                ),
+              ),
+              Flexible(
+                  child: TextField(
+                maxLines: 100,
+                decoration: const InputDecoration(
+                    labelText: 'About',
+                    helperText: "Tab on the text to edit",
+                    enabled: false, // Disable editing
+                    suffixIcon: CLIcon.standard(Icons.edit_outlined)),
+                controller:
+                    TextEditingController(text: items.cluster.description),
+                onTap: () {
+                  print('TextField tapped');
+                },
+                onChanged: (value) {
+                  print('Value changed: $value');
+                }, // Set initial text
+              ))
+            ],
           );
         });
   }

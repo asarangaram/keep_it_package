@@ -56,9 +56,11 @@ class FileHandler {
     String mediaPath, {
     required String dir,
   }) {
+    /// prefix the directory if the path is not absolute
+    ///  if from assets, leave it as it is.
     return switch (mediaPath) {
-      (String s) when mediaPath.startsWith('/') => s,
       (String s) when mediaPath.startsWith('assets') => s,
+      (String s) when mediaPath.startsWith('/') => s,
       _ => path.join(dir, mediaPath),
     };
   }

@@ -16,14 +16,14 @@ class MediaPreview extends ConsumerWidget {
   });
 
   factory MediaPreview.fromItems(Items items, {List<Widget>? children}) {
-    List<CLMediaInfo> media = [];
+    List<CLMediaImage> media = [];
     for (var item in items.entries) {
-      media.add(CLMediaInfo(path: item.path, type: item.type));
+      media.add(CLMediaImage(path: item.path, type: item.type));
     }
     return MediaPreview(media: media, children: children);
   }
 
-  final List<CLMediaInfo> media;
+  final List<CLMedia> media;
   final List<Widget>? children;
   final int maxItems;
   final bool showAll;
@@ -52,13 +52,11 @@ class MediaPreview extends ConsumerWidget {
                     .map(
                       (e) => [
                         switch (e.type) {
-                          CLMediaType.image ||
-                          CLMediaType.video =>
-                            LoadMediaImage(
+                          CLMediaType.image || CLMediaType.video => LoadMedia(
                               mediaInfo: e,
-                              onImageLoaded: (image) {
+                              onMediaLoaded: (media) {
                                 return CLImageViewer(
-                                  image: image,
+                                  image: media.preview!,
                                   allowZoom: false,
                                   overlayWidget: switch (e.type) {
                                     CLMediaType.video => const VidoePlayIcon(),

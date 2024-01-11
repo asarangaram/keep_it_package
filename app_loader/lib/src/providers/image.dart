@@ -42,20 +42,30 @@ class VideoHandler {
   }
 }
 
-class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
-  CLMediaInfo mediaInfo;
-  ImageNotifier(this.mediaInfo) : super(const AsyncValue.loading()) {
+class MediaNotifier extends StateNotifier<AsyncValue<CLMedia>> {
+  CLMedia mediaInfo;
+  MediaNotifier(this.mediaInfo) : super(const AsyncValue.loading()) {
     _get();
   }
 
   Future<void> _get() async {
     state = await AsyncValue.guard(() async {
-      final String absPath =
-          await FileHandler.getAbsoluteFilePath(mediaInfo.path);
       try {
-        return switch (mediaInfo.type) {
-          CLMediaType.image => await tryAsImage(absPath),
-          CLMediaType.video => await tryAsVideo(absPath),
+        final String absPath =
+            await FileHandler.getAbsoluteFilePath(mediaInfo.path);
+        final media = mediaInfo.copyWith(path: absPath);
+        
+        final image = await loadImage(await switch (media.type) {
+          CLMediaType.image => tryAsImage(absPath),
+          CLMediaType.video => tryAsVideo(absPath),
+          _ => throw UnimplementedError()
+        });
+
+        return switch (media.type) {
+          CLMediaType.image => CLMediaImage(
+              path: absPath, type: media.type, preview: image, data: image),
+          CLMediaType.video =>
+            CLMediaVideo(path: absPath, type: media.type, preview: image),
           _ => throw UnimplementedError()
         };
       } catch (err) {
@@ -65,19 +75,24 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
     });
   }
 
-  Future<ui.Image> tryAsVideo(String mediaPath) async =>
-      await loadImage(await VideoHandler.loadVideoThumbnail(
-          await FileHandler.getAbsoluteFilePath(mediaPath),
-          regenerateIfNotExists: true));
+  Future<Uint8List> tryAsVideo(String mediaPath) async {
+    
+    return switch (mediaPath) {
+      (String s) when mediaPath.startsWith('/') =>
+        await VideoHandler.loadVideoThumbnail(s, regenerateIfNotExists: true),
+      (String s) when mediaPath.startsWith('assets') =>
+        throw Exception("Video from assets is not handled: $s"),
+      _ => throw Exception("Relative Path not supported."),
+    };
+  }
 
-  Future<ui.Image> tryAsImage(String mediaPath) async =>
-      await loadImage(switch (mediaPath) {
+  Future<Uint8List> tryAsImage(String mediaPath) async => switch (mediaPath) {
         (String s) when mediaPath.startsWith('/') =>
-          (await rootBundle.load(s)).buffer.asUint8List(),
-        (String s) when mediaPath.startsWith('assets') =>
           Uint8List.fromList(await File(s).readAsBytes()),
-        _ => await tryDocumentsDir(mediaPath),
-      });
+        (String s) when mediaPath.startsWith('assets') =>
+          (await rootBundle.load(s)).buffer.asUint8List(),
+        _ => throw Exception("Relative Path not supported."),
+      };
 
   Future<ui.Image> loadImage(Uint8List data) async {
     ui.Codec codec = await ui.instantiateImageCodec(data);
@@ -98,7 +113,8 @@ class ImageNotifier extends StateNotifier<AsyncValue<ui.Image>> {
   }
 }
 
-final imageProvider = StateNotifierProvider.family<ImageNotifier,
-    AsyncValue<ui.Image>, CLMediaInfo>((ref, mediaEntry) {
-  return ImageNotifier(mediaEntry);
+final mediaProvider =
+    StateNotifierProvider.family<MediaNotifier, AsyncValue<CLMedia>, CLMedia>(
+        (ref, mediaEntry) {
+  return MediaNotifier(mediaEntry);
 });
