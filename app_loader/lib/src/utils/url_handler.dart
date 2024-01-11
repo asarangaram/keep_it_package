@@ -13,13 +13,14 @@ class URLHandler {
 
       // Check if the Content-Type header is present in the response
       if (response.headers.containsKey('content-type')) {
-        final String contentType = response.headers['content-type']!;
+        final contentType = response.headers['content-type']!;
 
         return switch (contentType) {
-          (String c) when c.startsWith("image") => CLMediaType.image,
-          (String c) when c.startsWith("video") => CLMediaType.video,
-          (String c) when c.startsWith("audio") => CLMediaType.video,
-          (String c) when c.startsWith("application/pdf") => CLMediaType.file,
+          (final String c) when c.startsWith('image') => CLMediaType.image,
+          (final String c) when c.startsWith('video') => CLMediaType.video,
+          (final String c) when c.startsWith('audio') => CLMediaType.video,
+          (final String c) when c.startsWith('application/pdf') =>
+            CLMediaType.file,
           _ => CLMediaType.url
         };
       }
@@ -36,23 +37,23 @@ class URLHandler {
       // Check if the response contains image data
       if (response.statusCode == 200) {
         // Parse the Content-Type header to determine the file extension
-        MediaType mediaType =
+        final mediaType =
             MediaType.parse(response.headers['content-type'] ?? '');
-        String fileExtension = mediaType.subtype;
+        final fileExtension = mediaType.subtype;
 
-        String documentsDirectory =
-            await FileHandler.getDocumentsDirectory("downloaded");
+        final documentsDirectory =
+            await FileHandler.getDocumentsDirectory('downloaded');
 
         final timestamp = DateTime.now().millisecondsSinceEpoch;
         final uniqueFileName = '$timestamp.$fileExtension';
         final logFileName = '$timestamp.$fileExtension.url';
 
-        String filePath = path.join(documentsDirectory, uniqueFileName);
-        String logPath = path.join(documentsDirectory, logFileName);
+        final filePath = path.join(documentsDirectory, uniqueFileName);
+        final logPath = path.join(documentsDirectory, logFileName);
 
         await File(filePath).writeAsBytes(response.bodyBytes);
         await File(logPath).writeAsString(imageUrl);
-        debugPrint("Downloaded $imageUrl");
+        debugPrint('Downloaded $imageUrl');
         return filePath;
       }
     } catch (e) {

@@ -12,7 +12,7 @@ import '../utils/url_handler.dart';
 extension ColonExtensionOnString on String {
   bool isURL() {
     try {
-      Uri uri = Uri.parse(this);
+      final uri = Uri.parse(this);
       // Check if the scheme is non-empty to ensure it's a valid URL
       return uri.scheme.isNotEmpty;
     } catch (e) {
@@ -24,11 +24,6 @@ extension ColonExtensionOnString on String {
 @immutable
 class IncomingMedia {
   final List<CLMediaInfoGroup> data;
-  const IncomingMedia._({
-    required this.data,
-  });
-
-  bool get hasMedia => data.isNotEmpty;
 
   factory IncomingMedia(SharedMedia? sharedMedia) {
     if (sharedMedia == null) {
@@ -37,6 +32,11 @@ class IncomingMedia {
     final newMedia = getMedia(sharedMedia);
     return IncomingMedia._(data: [newMedia]);
   }
+  const IncomingMedia._({
+    required this.data,
+  });
+
+  bool get hasMedia => data.isNotEmpty;
 
   IncomingMedia copyWith({
     List<CLMediaInfoGroup>? data,
@@ -45,7 +45,7 @@ class IncomingMedia {
   }
 
   Future<IncomingMedia> append(SharedMedia sharedMedia) async {
-    final CLMediaInfoGroup media = getMedia(sharedMedia);
+    final media = getMedia(sharedMedia);
     final newMedia = await receiveFiles(media);
 
     if (newMedia.isNotEmpty) {
@@ -55,8 +55,8 @@ class IncomingMedia {
   }
 
   Future<CLMediaInfoGroup> receiveFiles(CLMediaInfoGroup media) async {
-    List<CLMedia> newMedia = [];
-    for (var e in media.list) {
+    final newMedia = <CLMedia>[];
+    for (final e in media.list) {
       switch (e.type) {
         case CLMediaType.url:
           final mimeType = await URLHandler.getMimeType(e.path);
@@ -65,14 +65,13 @@ class IncomingMedia {
             case CLMediaType.audio:
             case CLMediaType.video:
             case CLMediaType.file:
-              final String? r = await URLHandler.downloadAndSaveImage(e.path);
+              final r = await URLHandler.downloadAndSaveImage(e.path);
               if (r != null) {
                 newMedia.add(CLMediaImage(path: r, type: mimeType!));
               } else {
                 //retain as url
                 newMedia.add(e);
               }
-              break;
 
             case CLMediaType.url:
             case CLMediaType.text: // This shouldn't appear
@@ -80,10 +79,8 @@ class IncomingMedia {
             case null:
               newMedia.add(e);
           }
-          break;
         case CLMediaType.text:
           newMedia.add(e);
-          break;
 
         case CLMediaType.image:
         case CLMediaType.video:
@@ -96,19 +93,19 @@ class IncomingMedia {
     return CLMediaInfoGroup(newMedia);
   }
 
-  deleteIfExists(String fpath) async {
+  Future<void> deleteIfExists(String fpath) async {
     final file = File(fpath);
 
-    if (await file.exists()) {
-      debugPrint("Deleting $fpath");
+    if (file.existsSync()) {
+      debugPrint('Deleting $fpath');
       await file.delete();
     }
   }
 
   Future<IncomingMedia> pop() async {
-    final CLMediaInfoGroup item2Delete = data[0];
+    final item2Delete = data[0];
 
-    for (var e in item2Delete.list) {
+    for (final e in item2Delete.list) {
       switch (e.type) {
         case CLMediaType.text:
         case CLMediaType.url:
@@ -126,27 +123,38 @@ class IncomingMedia {
   }
 
   static CLMediaInfoGroup getMedia(SharedMedia sharedMedia) {
-    List<CLMediaImage> newMedia = [];
+    final newMedia = <CLMediaImage>[];
     if (sharedMedia.content?.isNotEmpty ?? false) {
       final text = sharedMedia.content!;
-      newMedia.add(CLMediaImage(
-          path: text, type: text.isURL() ? CLMediaType.url : CLMediaType.text));
+      newMedia.add(
+        CLMediaImage(
+          path: text,
+          type: text.isURL() ? CLMediaType.url : CLMediaType.text,
+        ),
+      );
     }
     if (sharedMedia.imageFilePath != null) {
-      newMedia.add(CLMediaImage(
-          path: sharedMedia.imageFilePath!, type: CLMediaType.image));
+      newMedia.add(
+        CLMediaImage(
+          path: sharedMedia.imageFilePath!,
+          type: CLMediaType.image,
+        ),
+      );
     }
     if (sharedMedia.attachments?.isNotEmpty ?? false) {
-      for (var e in sharedMedia.attachments!) {
+      for (final e in sharedMedia.attachments!) {
         if (e != null) {
-          newMedia.add(CLMediaImage(
+          newMedia.add(
+            CLMediaImage(
               path: e.path,
               type: switch (e.type) {
                 SharedAttachmentType.image => CLMediaType.image,
                 SharedAttachmentType.video => CLMediaType.video,
                 SharedAttachmentType.audio => CLMediaType.audio,
                 SharedAttachmentType.file => CLMediaType.file,
-              }));
+              },
+            ),
+          );
         }
       }
     }

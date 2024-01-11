@@ -13,25 +13,28 @@ class VideoHandler {
     final thumbnail = await VideoThumbnail.thumbnailData(
       video: videoPath,
       imageFormat: ImageFormat.JPEG,
-      maxWidth:
-          64, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      maxWidth: 64, // specify the width of the thumbnail, let the height
+      // auto-scaled to keep the source aspect ratio
       quality: 25,
     );
     return thumbnail!;
   }
 
   static Future<void> generateVideoThumbnail(String videoPath) async {
-    File thumbnailFile = File("$videoPath.tb");
+    final thumbnailFile = File('$videoPath.tb');
     final thumbnail = await createVideoThumbnail(videoPath);
     await thumbnailFile.writeAsBytes(thumbnail);
   }
 
-  static Future<Uint8List> loadVideoThumbnail(String videoPath,
-      {bool regenerateIfNotExists = false, bool regenerate = false}) async {
-    File thumbnailFile = File("$videoPath.tb");
+  static Future<Uint8List> loadVideoThumbnail(
+    String videoPath, {
+    bool regenerateIfNotExists = false,
+    bool regenerate = false,
+  }) async {
+    final thumbnailFile = File('$videoPath.tb');
     if (!regenerate) {
       if (thumbnailFile.existsSync()) {
-        return await thumbnailFile.readAsBytes();
+        return thumbnailFile.readAsBytes();
       }
     }
     final thumbnail = await createVideoThumbnail(videoPath);
@@ -51,64 +54,69 @@ class MediaNotifier extends StateNotifier<AsyncValue<CLMedia>> {
   Future<void> _get() async {
     state = await AsyncValue.guard(() async {
       try {
-        final String absPath =
-            await FileHandler.getAbsoluteFilePath(mediaInfo.path);
+        final absPath = await FileHandler.getAbsoluteFilePath(mediaInfo.path);
         final media = mediaInfo.copyWith(path: absPath);
-        
-        final image = await loadImage(await switch (media.type) {
-          CLMediaType.image => tryAsImage(absPath),
-          CLMediaType.video => tryAsVideo(absPath),
-          _ => throw UnimplementedError()
-        });
+
+        final image = await loadImage(
+          await switch (media.type) {
+            CLMediaType.image => tryAsImage(absPath),
+            CLMediaType.video => tryAsVideo(absPath),
+            _ => throw UnimplementedError()
+          },
+        );
 
         return switch (media.type) {
           CLMediaType.image => CLMediaImage(
-              path: absPath, type: media.type, preview: image, data: image),
+              path: absPath,
+              type: media.type,
+              preview: image,
+              data: image,
+            ),
           CLMediaType.video =>
             CLMediaVideo(path: absPath, type: media.type, preview: image),
           _ => throw UnimplementedError()
         };
       } catch (err) {
         throw Exception(
-            "Failed to load the media ${mediaInfo.path}, ${mediaInfo.type}");
+          'Failed to load the media ${mediaInfo.path}, ${mediaInfo.type}',
+        );
       }
     });
   }
 
   Future<Uint8List> tryAsVideo(String mediaPath) async {
-    
     return switch (mediaPath) {
-      (String s) when mediaPath.startsWith('/') =>
+      (final String s) when mediaPath.startsWith('/') =>
         await VideoHandler.loadVideoThumbnail(s, regenerateIfNotExists: true),
-      (String s) when mediaPath.startsWith('assets') =>
-        throw Exception("Video from assets is not handled: $s"),
-      _ => throw Exception("Relative Path not supported."),
+      (final String s) when mediaPath.startsWith('assets') =>
+        throw Exception('Video from assets is not handled: $s'),
+      _ => throw Exception('Relative Path not supported.'),
     };
   }
 
   Future<Uint8List> tryAsImage(String mediaPath) async => switch (mediaPath) {
-        (String s) when mediaPath.startsWith('/') =>
+        (final String s) when mediaPath.startsWith('/') =>
           Uint8List.fromList(await File(s).readAsBytes()),
-        (String s) when mediaPath.startsWith('assets') =>
+        (final String s) when mediaPath.startsWith('assets') =>
           (await rootBundle.load(s)).buffer.asUint8List(),
-        _ => throw Exception("Relative Path not supported."),
+        _ => throw Exception('Relative Path not supported.'),
       };
 
   Future<ui.Image> loadImage(Uint8List data) async {
-    ui.Codec codec = await ui.instantiateImageCodec(data);
-    ui.FrameInfo fi = await codec.getNextFrame();
-    ui.Image uiImage = fi.image;
+    final codec = await ui.instantiateImageCodec(data);
+    final fi = await codec.getNextFrame();
+    final uiImage = fi.image;
 
     return uiImage;
   }
 
   Future<Uint8List> tryDocumentsDir(String imagePath) async {
     final documentsDir = await FileHandler.getDocumentsDirectory(null);
-    File file = File(path.join(documentsDir, imagePath));
+    final file = File(path.join(documentsDir, imagePath));
     if (!file.existsSync()) {
       throw Exception("File doesn't exists");
     }
-    List<int> bytes = await file.readAsBytes();
+    final List<int> bytes = await file.readAsBytes();
     return Uint8List.fromList(bytes);
   }
 }

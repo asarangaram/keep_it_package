@@ -3,10 +3,10 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 class ImageGrid {
+  ImageGrid(this.images, {this.cellWidth = 64, this.cellHeight = 64});
   final List<ui.Image> images;
   final int cellWidth;
   final int cellHeight;
-  ImageGrid(this.images, {this.cellWidth = 64, this.cellHeight = 64});
 
   static Future<ui.Image> imageGrid4(
     ui.Image image0,
@@ -28,78 +28,90 @@ class ImageGrid {
     final bottom =
         await ImageGrid.concatenateImagesHorizontal(bottomLeft, bottomRight);
 
-    return await ImageGrid.concatenateImagesVertically(top, bottom);
+    return ImageGrid.concatenateImagesVertically(top, bottom);
   }
 
   static Future<ui.Image> createThumbnail(
-      ui.Image originalImage, int thumbnailWidth, int thumbnailHeight) async {
-    final ui.PictureRecorder recorder = ui.PictureRecorder();
-    final Canvas canvas = Canvas(
-        recorder,
-        Rect.fromPoints(const Offset(0.0, 0.0),
-            Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble())));
-    canvas.drawImageRect(
-        originalImage,
-        Rect.fromPoints(
-            const Offset(0.0, 0.0),
-            Offset(originalImage.width.toDouble(),
-                originalImage.height.toDouble())),
-        Rect.fromPoints(const Offset(0.0, 0.0),
-            Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble())),
-        Paint());
+    ui.Image originalImage,
+    int thumbnailWidth,
+    int thumbnailHeight,
+  ) async {
+    final recorder = ui.PictureRecorder();
+    Canvas(
+      recorder,
+      Rect.fromPoints(
+        Offset.zero,
+        Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble()),
+      ),
+    ).drawImageRect(
+      originalImage,
+      Rect.fromPoints(
+        Offset.zero,
+        Offset(
+          originalImage.width.toDouble(),
+          originalImage.height.toDouble(),
+        ),
+      ),
+      Rect.fromPoints(
+        Offset.zero,
+        Offset(thumbnailWidth.toDouble(), thumbnailHeight.toDouble()),
+      ),
+      Paint(),
+    );
 
-    final ui.Picture picture = recorder.endRecording();
-    final ui.Image thumbnailImage =
+    final picture = recorder.endRecording();
+    final thumbnailImage =
         await picture.toImage(thumbnailWidth, thumbnailHeight);
     return thumbnailImage;
   }
 
   static Future<ui.Image> concatenateImagesHorizontal(
-      ui.Image image1, ui.Image image2) async {
-    int width = image1.width + image2.width;
-    int height = image1.height; // Assuming both images have the same height
+    ui.Image image1,
+    ui.Image image2,
+  ) async {
+    final width = image1.width + image2.width;
+    final height = image1.height; // Assuming both images have the same height
 
     // Create a blank image to hold the concatenated images
-    final ui.PictureRecorder recorder = ui.PictureRecorder();
-    final Canvas canvas = Canvas(
-        recorder,
-        Rect.fromPoints(const Offset(0.0, 0.0),
-            Offset(width.toDouble(), height.toDouble())));
-
-    // Draw the first image on the canvas
-    canvas.drawImage(image1, const Offset(0.0, 0.0), Paint());
-
-    // Draw the second image next to the first one
-    canvas.drawImage(image2, Offset(image1.width.toDouble(), 0.0), Paint());
+    final recorder = ui.PictureRecorder();
+    Canvas(
+      recorder,
+      Rect.fromPoints(
+        Offset.zero,
+        Offset(width.toDouble(), height.toDouble()),
+      ),
+    )
+      ..drawImage(image1, Offset.zero, Paint())
+      ..drawImage(image2, Offset(image1.width.toDouble(), 0), Paint());
 
     // Finish recording the picture
-    final ui.Picture picture = recorder.endRecording();
+    final picture = recorder.endRecording();
 
     // Convert the picture to an image
 
-    return await picture.toImage(width, height);
+    return picture.toImage(width, height);
   }
 
   static Future<ui.Image> concatenateImagesVertically(
-      ui.Image image1, ui.Image image2) async {
-    int resultWidth = image1.width;
-    int resultHeight = image1.height + image2.height;
+    ui.Image image1,
+    ui.Image image2,
+  ) async {
+    final resultWidth = image1.width;
+    final resultHeight = image1.height + image2.height;
 
-    final ui.PictureRecorder recorder = ui.PictureRecorder();
-    final Canvas canvas = Canvas(
+    final recorder = ui.PictureRecorder();
+    Canvas(
       recorder,
       Rect.fromPoints(
-        const Offset(0.0, 0.0),
+        Offset.zero,
         Offset(resultWidth.toDouble(), resultHeight.toDouble()),
       ),
-    );
+    )
+      ..drawImage(image1, Offset.zero, Paint())
+      ..drawImage(image2, Offset(0, image1.height.toDouble()), Paint());
 
-    canvas.drawImage(image1, const Offset(0.0, 0.0), Paint());
-    canvas.drawImage(image2, Offset(0.0, image1.height.toDouble()), Paint());
-
-    final ui.Picture picture = recorder.endRecording();
-    final ui.Image resultImage =
-        await picture.toImage(resultWidth, resultHeight);
+    final picture = recorder.endRecording();
+    final resultImage = await picture.toImage(resultWidth, resultHeight);
     return resultImage;
   }
 }

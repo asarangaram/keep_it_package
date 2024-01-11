@@ -9,7 +9,7 @@ import 'package:share_handler/share_handler.dart';
 import '../models/incoming_media.dart';
 
 class IncomingMediaNotifier extends StateNotifier<IncomingMedia> {
-  late final StreamSubscription? intentDataStreamSubscription;
+  late final StreamSubscription<SharedMedia>? intentDataStreamSubscription;
   IncomingMediaNotifier(SharedMedia? initialSharedMedia)
       : super(IncomingMedia(initialSharedMedia)) {
     final handler = ShareHandler.instance;
@@ -25,7 +25,7 @@ class IncomingMediaNotifier extends StateNotifier<IncomingMedia> {
     state = await state.append(sharedMediaFiles);
   }
 
-  void pop() async {
+  Future<void> pop() async {
     state = await state.pop();
   }
 }
@@ -34,18 +34,17 @@ final boottimeSharedImagesProvider = FutureProvider<SharedMedia?>((ref) async {
   final handler = ShareHandler.instance;
 
   if (Platform.isAndroid || Platform.isIOS) {
-    return await handler.getInitialSharedMedia();
+    return handler.getInitialSharedMedia();
   }
   return null;
 });
 
 final incomingMediaProvider =
     StateNotifierProvider<IncomingMediaNotifier, IncomingMedia>((ref) {
-  IncomingMediaNotifier notifier =
-      ref.watch(boottimeSharedImagesProvider).maybeWhen(
-            orElse: () => IncomingMediaNotifier(null),
-            data: IncomingMediaNotifier.new,
-          );
+  final notifier = ref.watch(boottimeSharedImagesProvider).maybeWhen(
+        orElse: () => IncomingMediaNotifier(null),
+        data: IncomingMediaNotifier.new,
+      );
   ref.onDispose(() {
     // notifier.dispose();
   });

@@ -6,6 +6,7 @@
 /// replacing the FutureProvider by StreamProvider, we may also
 /// show the progress
 ///
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,8 +33,8 @@ final appInitProvider =
 
 class AppLoader extends ConsumerWidget {
   const AppLoader({
-    super.key,
     required this.appDescriptor,
+    super.key,
   });
   final AppDescriptor appDescriptor;
   @override
@@ -46,11 +47,14 @@ class AppLoader extends ConsumerWidget {
       error: (err, _) {
         _infoLogger(err.toString());
         return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: CLErrorView(errorMessage: err.toString()));
+          debugShowCheckedModeBanner: false,
+          home: CLErrorView(errorMessage: err.toString()),
+        );
       },
       loading: () => const MaterialApp(
-          debugShowCheckedModeBanner: false, home: CLLoadingView()),
+        debugShowCheckedModeBanner: false,
+        home: CLLoadingView(),
+      ),
     );
   }
 }

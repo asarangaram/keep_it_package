@@ -6,14 +6,14 @@ import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
 import 'app_logger.dart';
-import 'providers/incoming_media.dart';
 import 'pages/page_incoming_media.dart';
+import 'providers/incoming_media.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({
-    Key? key,
     required this.appDescriptor,
-  }) : super(key: key);
+    super.key,
+  });
   final AppDescriptor appDescriptor;
 
   @override
@@ -56,39 +56,44 @@ class _RaLRouterState extends ConsumerState<AppView> {
   @override
   Widget build(BuildContext context) {
     final app = widget.appDescriptor;
-    final List<GoRoute> routes = [];
+    final routes = <GoRoute>[];
 
-    app.screenBuilders.forEach((name, screenBuilder) => routes.add(getRoute(
+    app.screenBuilders.forEach(
+      (name, screenBuilder) => routes.add(
+        getRoute(
           name: name,
           builder: screenBuilder,
           transitionBuilder: app.transitionBuilder,
-        )));
+        ),
+      ),
+    );
 
     _infoLogger('RaLRouter.build');
     _router = GoRouter(
-        routes: [
-          ...routes,
-          GoRoute(
-            path: '/incoming',
-            name: "incoming",
-            pageBuilder: (context, state) => CustomTransitionPage<void>(
-              key: state.pageKey,
-              child: PageIncomingMedia(
-                builder: app.incomingMediaViewBuilder,
-              ), //const AppTheme(child: LogOutUserPage()),
-              transitionsBuilder: defaultTransitionBuilder,
-            ),
-          )
-        ],
-        redirect: (context, GoRouterState state) async {
-          final hasIncomingMedia = ref.watch(incomingMediaProvider).hasMedia;
-          if (hasIncomingMedia) {
-            if (state.matchedLocation == "/incoming") return null;
-            return "/incoming";
-          }
+      routes: [
+        ...routes,
+        GoRoute(
+          path: '/incoming',
+          name: 'incoming',
+          pageBuilder: (context, state) => CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: PageIncomingMedia(
+              builder: app.incomingMediaViewBuilder,
+            ), //const AppTheme(child: LogOutUserPage()),
+            transitionsBuilder: defaultTransitionBuilder,
+          ),
+        ),
+      ],
+      redirect: (context, GoRouterState state) async {
+        final hasIncomingMedia = ref.watch(incomingMediaProvider).hasMedia;
+        if (hasIncomingMedia) {
+          if (state.matchedLocation == '/incoming') return null;
+          return '/incoming';
+        }
 
-          return await app.redirector.call(state.uri.toString());
-        });
+        return app.redirector.call(state.uri.toString());
+      },
+    );
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
@@ -102,7 +107,7 @@ class _RaLRouterState extends ConsumerState<AppView> {
 
 void printGoRouterState(GoRouterState state) {
   _infoLogger(' state: ${state.extra} ${state.error} ${state.fullPath}'
-      ' ${state.uri.toString()} ${state.name} ${state.pageKey} ${state.pathParameters} '
+      ' ${state.uri} ${state.name} ${state.pageKey} ${state.pathParameters} '
       '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
 }
 

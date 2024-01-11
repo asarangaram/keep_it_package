@@ -2,8 +2,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class CLErrorView extends StatelessWidget {
-  const CLErrorView({Key? key, required this.errorMessage, this.errorDetails})
-      : super(key: key);
+  const CLErrorView({
+    required this.errorMessage,
+    super.key,
+    this.errorDetails,
+  });
 
   final String errorMessage;
   final String? errorDetails;
@@ -25,11 +28,15 @@ class CLErrorView extends StatelessWidget {
                     Icons.warning,
                     color: Theme.of(context).colorScheme.error,
                   ),
-                  CLText.veryLarge(errorMessage,
-                      color: Theme.of(context).colorScheme.error),
+                  CLText.veryLarge(
+                    errorMessage,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                   if (errorDetails != null)
-                    CLText.small(errorDetails!,
-                        color: Theme.of(context).colorScheme.error),
+                    CLText.small(
+                      errorDetails!,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                 ],
               ),
             ),
