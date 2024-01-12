@@ -25,10 +25,11 @@ class CLGridViewCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = showAll ? children : children.firstNItems(maxItems);
-    final hCount = min(
+    final hCount = maxCrossAxisCount;
+    /* final hCount = min(
       maxCrossAxisCount,
-      switch (items.length) { 1 => 1, < 4 => 2, < 9 => 3, < 16 => 4, _ => 4 },
-    );
+      //switch (items.length) { < 4 => 2, < 9 => 3, < 16 => 4, _ => 4 },
+    ); */
 
     final items2D = items.convertTo2D(hCount);
     return SingleChildScrollView(
