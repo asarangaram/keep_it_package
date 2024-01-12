@@ -8,11 +8,12 @@
 ///
 library;
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app_descriptor.dart';
-import 'app_logger.dart';
+
 import 'app_view.dart';
 import 'pages/views/cl_error_view.dart';
 import 'pages/views/cl_loading_view.dart';

@@ -131,8 +131,6 @@ class SupportedMediaPreview extends ConsumerWidget {
                         );
                       },
                     ),
-                  /* SupportedMediaType.video =>
-                    VideoPlayerScreen(path: e.key),*/
                   _ => throw Exception('Unexpected')
                 },
               ],

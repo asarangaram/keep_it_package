@@ -1,6 +1,7 @@
 /// Colan Widgets
 library colon_widgets;
 
+export 'src/app_logger.dart';
 export 'src/basics/cl_button.dart';
 export 'src/basics/cl_icon.dart';
 export 'src/basics/cl_list_tile.dart';
@@ -14,7 +15,6 @@ export 'src/extensions/ext_list.dart';
 export 'src/extensions/ext_shared_media.dart';
 export 'src/extensions/ext_string.dart';
 export 'src/extensions/ext_ui_image.dart';
-
 export 'src/models/cl_media_info.dart';
 export 'src/models/cl_media_type.dart';
 export 'src/models/cl_menu_item.dart';
