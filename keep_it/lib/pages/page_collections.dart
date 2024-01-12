@@ -12,7 +12,6 @@ class CollectionsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => const CLFullscreenBox(
         child: CLBackground(
-          brighnessFactor: 0.25,
           child: LoadCollections(
             buildOnData: CollectionsView.new,
           ),

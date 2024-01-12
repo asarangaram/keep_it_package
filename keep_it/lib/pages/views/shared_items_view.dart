@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:app_loader/app_loader.dart';
@@ -6,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
 import 'package:keep_it/pages/views/load_from_store/load_from_store.dart';
-import 'package:keep_it/pages/views/main/background.dart';
 import 'package:keep_it/pages/views/receive_shared/media_preview.dart';
 import 'package:keep_it/pages/views/receive_shared/save_or_cancel.dart';
+import 'package:path/path.dart' as path;
 import 'package:store/store.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
@@ -109,9 +110,12 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                                     isSaving = true;
                                   });
                                   await onSelectionDone(
-                                    context,
-                                    ref,
-                                    selectedCollections,
+                                    media: media,
+                                    descriptionText: descriptionController.text,
+                                    saveIntoCollectionsId: selectedCollections
+                                        .where((c) => c.id != null)
+                                        .map((c) => c.id!)
+                                        .toList(),
                                   );
                                   if (context.mounted) {
                                     CLButtonsGrid.showSnackBarAboveDialog(
@@ -150,9 +154,62 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     );
   }
 
-  Future<void> onSelectionDone(
-    BuildContext context,
-    WidgetRef ref,
-    List<Collection> collectionList,
-  ) async {}
+  Future<void> onSelectionDone({
+    required List<int> saveIntoCollectionsId,
+    required CLMediaInfoGroup media,
+    required String descriptionText,
+  }) async {
+    // No one might be reading this, read once
+    ref.read(clustersProvider(null));
+    final clusterId =
+        await ref.read(clustersProvider(null).notifier).upsertCluster(
+              Cluster(description: descriptionText),
+              saveIntoCollectionsId,
+            );
+
+    final items = <ItemInDB>[
+      for (final entry in media.list)
+        await entry.keepFile(clusterId: clusterId),
+    ];
+    print(items);
+    ref.read(itemsProvider(clusterId));
+    ref.read(itemsProvider(clusterId).notifier).upsertItems(items);
+  }
+}
+
+extension ExtItemInDB on CLMedia {
+  Future<ItemInDB> keepFile({
+    required int clusterId,
+  }) async {
+    if ([CLMediaType.text, CLMediaType.url].contains(type)) {
+      return ItemInDB(
+        clusterId: clusterId,
+        path: this.path,
+        type: type,
+      );
+    }
+    final newFile = await FileHandler.move(
+      this.path,
+      toDir: path.join('keep_it', 'cluster_$clusterId'),
+    );
+    // Log File
+    final logFileName = '${this.path}.url';
+    String? imageUrl;
+    if (File(logFileName).existsSync()) {
+      imageUrl = File(logFileName).readAsStringSync();
+      await File(logFileName).delete();
+    }
+
+    // Create Thumbnail
+    if (type == CLMediaType.video) {
+      await VideoHandler.generateVideoThumbnail(newFile);
+    }
+
+    return ItemInDB(
+      clusterId: clusterId,
+      path: await FileHandler.relativePath(newFile),
+      type: type,
+      ref: imageUrl,
+    );
+  }
 }

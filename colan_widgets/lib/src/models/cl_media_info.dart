@@ -48,6 +48,8 @@ sealed class CLMedia {
     return '$path, $type, $aspectRatio '
         ' ${(preview != null) ? "${preview?.width} x ${preview?.height}" : ""}';
   }
+
+  
 }
 
 @immutable

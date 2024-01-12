@@ -13,7 +13,6 @@ class ClustersPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => CLFullscreenBox(
         child: CLBackground(
-          brighnessFactor: 0.25,
           child: LoadClusters(
             collectionID: collectionId,
             buildOnData: (clusters) => ClustersView(clusters: clusters),

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
@@ -30,30 +29,58 @@ class URLHandler {
     return CLMediaType.url;
   }
 
-  static Future<String?> downloadAndSaveImage(String imageUrl) async {
+  static Future<String?> downloadAndSaveImage(
+    String imageUrl, {
+    String subDir = '',
+  }) async {
     try {
+      final noMediaFile = File(
+        path.join(
+          await FileHandler.getDocumentsDirectory(
+            'downloaded',
+          ),
+          '.nomedia',
+        ),
+      );
+      if (!noMediaFile.existsSync()) {
+        noMediaFile.createSync(recursive: true);
+      }
       final response = await http.get(Uri.parse(imageUrl));
 
       // Check if the response contains image data
       if (response.statusCode == 200) {
-        // Parse the Content-Type header to determine the file extension
-        final mediaType =
-            MediaType.parse(response.headers['content-type'] ?? '');
-        final fileExtension = mediaType.subtype;
+        String? filename;
+        // Check if we get file name
+        if (response.headers.containsKey('content-disposition')) {
+          final contentDispositionHeader =
+              response.headers['content-disposition'];
+          final match = RegExp('filename=(?:"([^"]+)"|(.*))')
+              .firstMatch(contentDispositionHeader!);
 
-        final documentsDirectory =
-            await FileHandler.getDocumentsDirectory('downloaded');
+          filename = match?[1] ?? match?[2];
+        }
+        filename = filename ?? 'unnamedfile';
 
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final uniqueFileName = '$timestamp.$fileExtension';
-        final logFileName = '$timestamp.$fileExtension.url';
+        if (path.extension(filename).isEmpty) {
+          // If no extension found, add extension if possible
+          // Parse the Content-Type header to determine the file extension
+          final mediaType =
+              MediaType.parse(response.headers['content-type'] ?? '');
 
-        final filePath = path.join(documentsDirectory, uniqueFileName);
-        final logPath = path.join(documentsDirectory, logFileName);
+          final fileExtension = mediaType.subtype;
+          filename = '$filename.$fileExtension';
+        }
+        // Create Directory if not exists:
 
-        await File(filePath).writeAsBytes(response.bodyBytes);
-        await File(logPath).writeAsString(imageUrl);
-        debugPrint('Downloaded $imageUrl');
+        final documentsDirectory = await FileHandler.getDocumentsDirectory(
+          path.join('downloaded', subDir),
+        );
+
+        final filePath = path.join(documentsDirectory, filename);
+        final logPath = '$filePath.url';
+
+        File(filePath).writeAsBytesSync(response.bodyBytes);
+        File(logPath).writeAsStringSync(imageUrl);
         return filePath;
       }
     } catch (e) {

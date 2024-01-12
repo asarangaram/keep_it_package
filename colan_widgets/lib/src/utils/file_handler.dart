@@ -39,7 +39,7 @@ class FileHandler {
 
   static Future<String> move(String filePath, {required String toDir}) async {
     // Get the file name from the path
-    final fileName = path.basename(filePath);
+    final fileName = '_${path.basename(filePath)}';
 
     // Set the destination directory in the documents folder
     final documentsDirectory = await FileHandler.getDocumentsDirectory(toDir);
@@ -48,6 +48,12 @@ class FileHandler {
         await FileHandler.copyAndDeleteFile(filePath, destinationPath);
     return newFile;
   }
+
+  static Future<String> relativePath(String absolutePath) async =>
+      absolutePath.replaceFirst(
+        '${await FileHandler.getDocumentsDirectory(null)}/',
+        '',
+      );
 
   static Future<String> getAbsoluteFilePath(String mediaPath) async {
     final dir = await FileHandler.getDocumentsDirectory(null);

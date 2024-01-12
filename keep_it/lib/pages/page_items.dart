@@ -15,7 +15,6 @@ class ItemsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CLFullscreenBox(
       child: CLBackground(
-        brighnessFactor: 0.25,
         child: LoadItems(
           clusterID: clusterID,
           buildOnData: (Items items) {

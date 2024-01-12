@@ -49,11 +49,9 @@ extension FromSharedMediaGroup on SharedMedia? {
       }
     }
     if (this!.imageFilePath != null) {
-      final newFile =
-          await FileHandler.move(this!.imageFilePath!, toDir: 'incoming');
       newMedia.add(
         CLMediaImage(
-          path: newFile,
+          path: this!.imageFilePath!,
           type: CLMediaType.image,
         ),
       );
@@ -61,10 +59,9 @@ extension FromSharedMediaGroup on SharedMedia? {
     if (this!.attachments?.isNotEmpty ?? false) {
       for (final e in this!.attachments!) {
         if (e != null) {
-          final newFile = await FileHandler.move(e.path, toDir: 'incoming');
           newMedia.add(
             CLMediaImage(
-              path: newFile,
+              path: e.path,
               type: switch (e.type) {
                 SharedAttachmentType.image => CLMediaType.image,
                 SharedAttachmentType.video => CLMediaType.video,
