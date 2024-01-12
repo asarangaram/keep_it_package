@@ -9,14 +9,18 @@ export 'src/basics/cl_text_field.dart';
 export 'src/demos/demo_main.dart' show DemoMain;
 export 'src/extensions/ext_color.dart';
 export 'src/extensions/ext_double.dart';
+export 'src/extensions/ext_io_file.dart';
 export 'src/extensions/ext_list.dart';
+export 'src/extensions/ext_string.dart';
 export 'src/extensions/ext_ui_image.dart';
+
 export 'src/models/cl_media_info.dart';
 export 'src/models/cl_media_type.dart';
 export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
 export 'src/utils/file_handler.dart';
 export 'src/utils/rand_image_generator.dart';
+export 'src/utils/url_handler.dart';
 export 'src/views/cl_fullscreen_box.dart';
 export 'src/views/cl_gridview.dart';
 export 'src/views/cl_gridview2.dart';
