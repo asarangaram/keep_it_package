@@ -5,7 +5,7 @@ class CLBackground extends StatelessWidget {
   const CLBackground({
     required this.child,
     super.key,
-    this.brighnessFactor = 0,
+    this.brighnessFactor = 0.25,
     this.hasBackground = true,
   });
   final Widget child;

@@ -20,7 +20,8 @@ class AppView extends ConsumerStatefulWidget {
   ConsumerState<AppView> createState() => _RaLRouterState();
 }
 
-class _RaLRouterState extends ConsumerState<AppView> {
+class _RaLRouterState extends ConsumerState<AppView>
+    with WidgetsBindingObserver {
   late GoRouter _router;
 
   static Widget defaultTransitionBuilder(
@@ -34,6 +35,13 @@ class _RaLRouterState extends ConsumerState<AppView> {
           Tween(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
       child: child,
     );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      FocusScope.of(context).unfocus();
+    }
   }
 
   GoRoute getRoute({
@@ -80,7 +88,14 @@ class _RaLRouterState extends ConsumerState<AppView> {
             child: PageIncomingMedia(
               builder: app.incomingMediaViewBuilder,
             ), //const AppTheme(child: LogOutUserPage()),
-            transitionsBuilder: defaultTransitionBuilder,
+            transitionsBuilder: (
+              BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+              Widget child,
+            ) {
+              return FadeTransition(opacity: animation, child: child);
+            },
           ),
         ),
       ],

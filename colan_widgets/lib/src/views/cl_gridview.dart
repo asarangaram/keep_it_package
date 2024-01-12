@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import '../basics/cl_text.dart';
 import '../extensions/ext_list.dart';

@@ -41,6 +41,17 @@ class CLSelectionWrapperState<T> extends State<CLSelectionWrapper<T>> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
+          alignment: Alignment.center,
+          margin: const EdgeInsets.only(bottom: 8),
+          child: CLText.veryLarge(
+            'Save Into ...',
+            color: Theme.of(context).colorScheme.onTertiary,
+          ),
+        ),
         Expanded(
           child: widget.listBuilder(
             selectableList: widget.selectableList,

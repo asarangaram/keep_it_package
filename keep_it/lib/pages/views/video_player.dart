@@ -131,3 +131,26 @@ class _VideoControllerState extends State<VideoController> {
 final isPlayingProvider = StateProvider<bool>((ref) {
   return false;
 });
+
+class VidoePlayIcon extends StatelessWidget {
+  const VidoePlayIcon({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Theme.of(context)
+            .colorScheme
+            .onBackground
+            .withAlpha(192), // Color for the circular container
+      ),
+      child: CLIcon.veryLarge(
+        Icons.play_arrow_sharp,
+        color: Theme.of(context).colorScheme.background.withAlpha(192),
+      ),
+    );
+  }
+}

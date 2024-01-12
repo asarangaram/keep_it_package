@@ -42,7 +42,6 @@ class KeepItDialogs {
     }
 
     return CLBackground(
-      brighnessFactor: collections.isNotEmpty ? 0.25 : 0,
       child: CLDialogWrapper(
         backgroundColor: Colors.transparent,
         onCancel: () {
@@ -82,25 +81,12 @@ class KeepItDialogs {
   static Future<void> selectCollections(
     BuildContext context, {
     required void Function(List<Collection>) onSelectionDone,
-    List<Collection>? collectionList,
     String? labelSelected,
     String? labelNoneSelected,
   }) =>
       showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          if (collectionList != null) {
-            return CLBackground(
-              brighnessFactor: 0.25,
-              child: _selectCollections(
-                context,
-                collectionList,
-                onSelectionDone: onSelectionDone,
-                labelSelected: labelSelected,
-                labelNoneSelected: labelNoneSelected,
-              ),
-            );
-          }
           return LoadCollections(
             buildOnData: (collectionFromDB) => _selectCollections(
               context,
@@ -116,14 +102,21 @@ class KeepItDialogs {
   static void onSuggestions(
     BuildContext context, {
     required dynamic Function(List<Collection>) onSelectionDone,
-    List<Collection>? availableSuggestions,
+    required List<Collection> availableSuggestions,
   }) {
-    selectCollections(
-      context,
-      collectionList: availableSuggestions,
-      onSelectionDone: onSelectionDone,
-      labelNoneSelected: 'Select from Suggestions',
-      labelSelected: 'Create Selected',
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return CLBackground(
+          child: _selectCollections(
+            context,
+            availableSuggestions,
+            onSelectionDone: onSelectionDone,
+            labelSelected: 'Create Selected',
+            labelNoneSelected: 'Select from Suggestions',
+          ),
+        );
+      },
     );
   }
 
