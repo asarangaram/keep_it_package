@@ -15,4 +15,12 @@ extension ExtDimension<T> on List<T> {
       return sublist(0, n); // Return the first N items
     }
   }
+
+  List<T> removeFirstItem() {
+    if (isNotEmpty) {
+      return List<T>.from(this)..removeAt(0);
+    } else {
+      return this;
+    }
+  }
 }

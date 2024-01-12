@@ -10,9 +10,12 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.9
+  http: ^1.1.2
+  http_parser: ^4.0.2
   path: ^1.8.3
   path_provider: ^2.1.2
   progress_indicators: ^1.0.0
+  share_handler: ^0.0.20
   very_good_analysis: ^5.1.0
 
 dev_dependencies:

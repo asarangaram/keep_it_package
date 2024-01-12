@@ -1,32 +1,27 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'dart:async';
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
-import '../models/incoming_media.dart';
-
-class IncomingMediaNotifier extends StateNotifier<IncomingMedia> {
-  late final StreamSubscription<SharedMedia>? intentDataStreamSubscription;
-  IncomingMediaNotifier(SharedMedia? initialSharedMedia)
-      : super(IncomingMedia(initialSharedMedia)) {
+class IncomingMediaNotifier extends StateNotifier<List<SharedMedia>> {
+  IncomingMediaNotifier(super.initialSharedMedia) {
     final handler = ShareHandler.instance;
-    intentDataStreamSubscription = handler.sharedMediaStream.listen(listen);
+    intentDataStreamSubscription =
+        handler.sharedMediaStream.listen((SharedMedia sharedMediaFiles) {
+      state = [...state, sharedMediaFiles];
+    });
   }
+  late final StreamSubscription<SharedMedia>? intentDataStreamSubscription;
   @override
   void dispose() {
     intentDataStreamSubscription?.cancel();
     super.dispose();
   }
 
-  Future<void> listen(SharedMedia sharedMediaFiles) async {
-    state = await state.append(sharedMediaFiles);
-  }
-
-  Future<void> pop() async {
-    state = await state.pop();
+  void pop() {
+    state = state.removeFirstItem();
   }
 }
 
@@ -40,13 +35,15 @@ final boottimeSharedImagesProvider = FutureProvider<SharedMedia?>((ref) async {
 });
 
 final incomingMediaProvider =
-    StateNotifierProvider<IncomingMediaNotifier, IncomingMedia>((ref) {
+    StateNotifierProvider<IncomingMediaNotifier, List<SharedMedia>>((ref) {
   final notifier = ref.watch(boottimeSharedImagesProvider).maybeWhen(
-        orElse: () => IncomingMediaNotifier(null),
-        data: IncomingMediaNotifier.new,
+        orElse: () => null,
+        data: (data) => data == null ? null : IncomingMediaNotifier([data]),
       );
-  ref.onDispose(() {
-    // notifier.dispose();
-  });
-  return notifier;
+  return notifier ?? IncomingMediaNotifier([]);
+});
+
+final sharedMediaInfoGroup = FutureProvider<CLMediaInfoGroup>((ref) async {
+  final incomingMedia = ref.watch(incomingMediaProvider);
+  return incomingMedia.firstOrNull.toCLMediaInfoGroup();
 });

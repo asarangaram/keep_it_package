@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_handler/share_handler.dart';
 
 typedef CLWidgetBuilder = Widget Function(
   BuildContext context,
@@ -19,9 +20,9 @@ typedef CLRedirector = Future<String?> Function(String location);
 typedef IncomingMediaViewBuilder = Widget Function(
   BuildContext context,
   WidgetRef ref, {
-  required CLMediaInfoGroup sharedMedia,
+  required AsyncValue<CLMediaInfoGroup> mediaAsync,
   required void Function() onDiscard,
-})?;
+});
 
 abstract class AppDescriptor {
   String get title;

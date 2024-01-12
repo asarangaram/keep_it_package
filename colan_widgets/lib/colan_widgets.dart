@@ -11,6 +11,7 @@ export 'src/extensions/ext_color.dart';
 export 'src/extensions/ext_double.dart';
 export 'src/extensions/ext_io_file.dart';
 export 'src/extensions/ext_list.dart';
+export 'src/extensions/ext_shared_media.dart';
 export 'src/extensions/ext_string.dart';
 export 'src/extensions/ext_ui_image.dart';
 

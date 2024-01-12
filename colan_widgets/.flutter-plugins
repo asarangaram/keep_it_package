@@ -4,3 +4,6 @@ path_provider_android=/Users/anandas/.pub-cache/hosted/pub.dev/path_provider_and
 path_provider_foundation=/Users/anandas/.pub-cache/hosted/pub.dev/path_provider_foundation-2.3.1/
 path_provider_linux=/Users/anandas/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
 path_provider_windows=/Users/anandas/.pub-cache/hosted/pub.dev/path_provider_windows-2.2.1/
+share_handler=/Users/anandas/.pub-cache/hosted/pub.dev/share_handler-0.0.20/
+share_handler_android=/Users/anandas/.pub-cache/hosted/pub.dev/share_handler_android-0.0.7/
+share_handler_ios=/Users/anandas/.pub-cache/hosted/pub.dev/share_handler_ios-0.0.13/

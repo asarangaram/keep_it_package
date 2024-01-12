@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../basics/cl_text_field.dart';
+
 class CLFullscreenBox extends StatelessWidget {
   const CLFullscreenBox({
     required Widget child,
@@ -38,29 +40,48 @@ class CLFullscreenBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Theme.of(context).copyWith(
+      inputDecorationTheme: InputDecorationTheme(
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        disabledBorder: CLTextField.buildOutlineInputBorder(context),
+        enabledBorder: CLTextField.buildOutlineInputBorder(context),
+        focusedBorder: CLTextField.buildOutlineInputBorder(context, width: 2),
+        errorBorder: CLTextField.buildOutlineInputBorder(context),
+        focusedErrorBorder:
+            CLTextField.buildOutlineInputBorder(context, width: 2),
+        errorStyle: CLTextField.buildTextStyle(context),
+        floatingLabelStyle: CLTextField.buildTextStyle(context),
+      ),
+    );
     if (isEnhanced) {
-      return CLFullscreenBoxEnhanced(
-        navMap: children!,
-        useSafeArea: useSafeArea,
-        backgroundColor: backgroundColor,
-        hasBorder: hasBorder,
-        currentIndex: currentIndex!,
-        onPageChange: onPageChange,
+      return Theme(
+        data: themeData,
+        child: CLFullscreenBoxEnhanced(
+          navMap: children!,
+          useSafeArea: useSafeArea,
+          backgroundColor: backgroundColor,
+          hasBorder: hasBorder,
+          currentIndex: currentIndex!,
+          onPageChange: onPageChange,
+        ),
       );
     }
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: SafeArea(
-        top: useSafeArea,
-        left: useSafeArea,
-        right: useSafeArea,
-        bottom: useSafeArea,
-        child: ClipRect(
-          clipBehavior: Clip.antiAlias,
-          child: ScaffoldBorder(
-            hasBorder: hasBorder,
-            child: LayoutBuilder(
-              builder: (context, constraints) => child!,
+    return Theme(
+      data: themeData,
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        body: SafeArea(
+          top: useSafeArea,
+          left: useSafeArea,
+          right: useSafeArea,
+          bottom: useSafeArea,
+          child: ClipRect(
+            clipBehavior: Clip.antiAlias,
+            child: ScaffoldBorder(
+              hasBorder: hasBorder,
+              child: LayoutBuilder(
+                builder: (context, constraints) => child!,
+              ),
             ),
           ),
         ),

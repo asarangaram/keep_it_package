@@ -137,4 +137,16 @@ class CLMediaInfoGroup {
 
   bool get isEmpty => list.isEmpty;
   bool get isNotEmpty => list.isNotEmpty;
+
+  
+}
+
+extension EXTCLMediaInfoGroupNullable on CLMediaInfoGroup? {
+  List<CLMediaInfoGroup> toList() {
+    if (this == null) {
+      return [];
+    } else {
+      return [this!];
+    }
+  }
 }

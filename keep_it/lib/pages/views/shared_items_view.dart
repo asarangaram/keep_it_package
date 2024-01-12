@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:app_loader/app_loader.dart';
@@ -13,12 +12,12 @@ import 'package:store/store.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
-    required this.media,
+    required this.mediaAsync,
     required this.onDiscard,
     super.key,
   });
 
-  final CLMediaInfoGroup media;
+  final AsyncValue<CLMediaInfoGroup> mediaAsync;
   final void Function() onDiscard;
 
   @override
@@ -27,16 +26,27 @@ class SharedItemsView extends ConsumerStatefulWidget {
 
 class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
   late TextEditingController descriptionController;
+  late FocusNode descriptionNode;
 
   @override
   void initState() {
     descriptionController = TextEditingController();
+    descriptionNode = FocusNode();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (descriptionNode.canRequestFocus) {
+      descriptionNode.requestFocus();
+    }
+    super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     descriptionController.dispose();
+    descriptionNode.dispose();
     super.dispose();
   }
 
@@ -44,23 +54,9 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
   Widget build(BuildContext context) {
     return CLFullscreenBox(
       child: LoadCollections(
-        buildOnData: (collections) {
-          return SafeArea(
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                inputDecorationTheme: InputDecorationTheme(
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  disabledBorder: CLTextField.buildOutlineInputBorder(context),
-                  enabledBorder: CLTextField.buildOutlineInputBorder(context),
-                  focusedBorder:
-                      CLTextField.buildOutlineInputBorder(context, width: 2),
-                  errorBorder: CLTextField.buildOutlineInputBorder(context),
-                  focusedErrorBorder:
-                      CLTextField.buildOutlineInputBorder(context, width: 2),
-                  errorStyle: CLTextField.buildTextStyle(context),
-                  floatingLabelStyle: CLTextField.buildTextStyle(context),
-                ),
-              ),
+        buildOnData: (collections) => widget.mediaAsync.when(
+          data: (media) {
+            return SafeArea(
               child: SizedBox(
                 width: min(MediaQuery.of(context).size.width, 450),
                 child: Column(
@@ -68,7 +64,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                   children: [
                     Flexible(
                       child: MediaPreview(
-                        media: widget.media.list,
+                        media: media.list,
                         showAll: true,
                       ),
                     ),
@@ -79,6 +75,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: CLTextField.multiLine(
                         descriptionController,
+                        focusNode: descriptionNode,
                         label: 'Tell Something',
                         hint: 'Tell Something',
                         maxLines: 5,
@@ -114,9 +111,12 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                   ],
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+          error: (err, _) => CLErrorView(errorMessage: err.toString()),
+          loading: () =>
+              const CLLoadingView(message: 'Looking for Shared Content'),
+        ),
       ),
     );
   }
@@ -125,57 +125,5 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     BuildContext context,
     WidgetRef ref,
     List<Collection> collectionList,
-  ) async {
-    final ids =
-        collectionList.where((c) => c.id != null).map((c) => c.id!).toList();
-
-    // No one might be reading this, read once
-    ref.read(clustersProvider(null));
-    final clusterId = await ref
-        .read(clustersProvider(null).notifier)
-        .upsertCluster(Cluster(description: descriptionController.text), ids);
-    debugPrint('Items in Cluster ${widget.media.list.length}');
-    final items = <ItemInDB>[];
-    for (final entry in widget.media.list) {
-      switch (entry.type) {
-        case CLMediaType.image:
-        case CLMediaType.video:
-          // Copy item to storage.
-          final newFile = await FileHandler.move(entry.path, toDir: 'keepIt');
-          // if URL is stored, read it and delete
-          final logFileName = '${entry.path}.url';
-          String? imageUrl;
-          if (File(logFileName).existsSync()) {
-            imageUrl = await File(logFileName).readAsString();
-            await File(logFileName).delete();
-          }
-          if (entry.type == CLMediaType.video) {
-            await VideoHandler.generateVideoThumbnail(newFile);
-          }
-          final item = ItemInDB(
-            type: entry.type,
-            path: newFile.replaceAll(
-              '${await FileHandler.getDocumentsDirectory(null)}/',
-              '',
-            ),
-            ref: imageUrl?.replaceAll(
-              '${await FileHandler.getDocumentsDirectory(null)}/',
-              '',
-            ),
-            clusterId: clusterId,
-          );
-          // Create thumbnail
-
-          items.add(item);
-
-        case CLMediaType.text:
-        case CLMediaType.url:
-        case CLMediaType.audio:
-        case CLMediaType.file:
-          throw UnimplementedError();
-      }
-    }
-    ref.read(itemsProvider(clusterId));
-    ref.read(itemsProvider(clusterId).notifier).upsertItems(items);
-  }
+  ) async {}
 }

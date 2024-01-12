@@ -1,8 +1,7 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../app_descriptor.dart';
 
 import '../providers/incoming_media.dart';
 
@@ -11,25 +10,21 @@ class PageIncomingMedia extends ConsumerWidget {
     required this.builder,
     super.key,
   });
-  final IncomingMediaViewBuilder? builder;
+  final IncomingMediaViewBuilder builder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final incomingMedia = ref.watch(incomingMediaProvider);
-    final sharedMedia = incomingMedia.data[0];
-    return builder?.call(
-          context,
-          ref,
-          sharedMedia: sharedMedia,
-          onDiscard: () {
-            ref.read(incomingMediaProvider.notifier).pop();
-          },
-        ) ??
-        IncomingMediaViewDefault(
-          media: sharedMedia,
-          onDiscard: () {
-            ref.read(incomingMediaProvider.notifier).pop();
-          },
-        );
+    final mediaAsync = ref.watch(
+      sharedMediaInfoGroup,
+    );
+
+    return builder(
+      context,
+      ref,
+      mediaAsync: mediaAsync,
+      onDiscard: () {
+        ref.read(incomingMediaProvider.notifier).pop();
+      },
+    );
   }
 }
 
