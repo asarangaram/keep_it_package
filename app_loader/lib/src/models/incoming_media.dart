@@ -7,20 +7,6 @@ import 'package:flutter/foundation.dart';
 
 import 'package:share_handler/share_handler.dart';
 
-import '../utils/url_handler.dart';
-
-extension ColonExtensionOnString on String {
-  bool isURL() {
-    try {
-      final uri = Uri.parse(this);
-      // Check if the scheme is non-empty to ensure it's a valid URL
-      return uri.scheme.isNotEmpty;
-    } catch (e) {
-      return false; // Parsing failed, not a valid URL
-    }
-  }
-}
-
 @immutable
 class IncomingMedia {
   final List<CLMediaInfoGroup> data;
