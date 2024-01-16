@@ -26,6 +26,7 @@ export 'src/views/cl_fullscreen_box.dart';
 export 'src/views/cl_gridview.dart';
 export 'src/views/cl_gridview2.dart';
 export 'src/views/cl_image_viewer.dart';
+export 'src/views/cl_matrix_2d.dart';
 export 'src/views/cl_page_view.dart';
 export 'src/views/cl_textfield_form.dart';
 export 'src/widgets/cl_buttons_grid.dart';
