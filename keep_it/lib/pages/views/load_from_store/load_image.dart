@@ -8,10 +8,14 @@ class LoadMedia extends ConsumerWidget {
   const LoadMedia({
     required this.mediaInfo,
     required this.onMediaLoaded,
+    this.onLoading,
+    this.onError,
     super.key,
   });
 
   final Widget Function(CLMedia media) onMediaLoaded;
+  final Widget Function()? onLoading;
+  final Widget Function(Object err, StackTrace stackTrace)? onError;
   final CLMedia mediaInfo;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,9 +23,9 @@ class LoadMedia extends ConsumerWidget {
 
     return mediaAsync.when(
       data: onMediaLoaded,
-      loading: () => const Center(child: CLLoadingView()),
-      error: (err, _) =>
-          Center(child: CLErrorView(errorMessage: err.toString())),
+      loading: onLoading ?? () => const Center(child: CLLoadingView()),
+      error: onError ??
+          (err, _) => Center(child: CLErrorView(errorMessage: err.toString())),
     );
   }
 }
