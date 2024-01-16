@@ -138,16 +138,13 @@ class SupportedMediaPreview extends ConsumerWidget {
                   ),
                 ),
                 onMediaLoaded: (media) {
-                  return AspectRatio(
-                    aspectRatio: media.aspectRatio,
-                    child: CLImageViewer(
-                      image: media.preview!,
-                      allowZoom: false,
-                      overlayWidget: switch (e.type) {
-                        CLMediaType.video => const VidoePlayIcon(),
-                        _ => null
-                      },
-                    ),
+                  return CLImageViewer(
+                    image: media.preview!,
+                    allowZoom: false,
+                    overlayWidget: switch (e.type) {
+                      CLMediaType.video => const VidoePlayIcon(),
+                      _ => null
+                    },
                   );
                 },
               ),
