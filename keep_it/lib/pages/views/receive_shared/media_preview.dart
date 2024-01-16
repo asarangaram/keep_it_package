@@ -97,46 +97,64 @@ class SupportedMediaPreview extends ConsumerWidget {
     this.maxCrossAxisCount = 2,
     this.maxItems = 9,
     this.showAll = false,
+    this.rows = 3,
+    this.columns = 3,
   });
   final List<CLMedia> media;
   final int maxCrossAxisCount;
   final int maxItems;
   final bool showAll;
+  final int rows;
+  final int columns;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Material(
-      elevation: 6,
-      color: Colors.transparent,
-      shadowColor: Colors.transparent,
-      child: CLGridViewCustom(
-        maxItems: maxItems,
-        showAll: showAll,
-        maxCrossAxisCount: maxCrossAxisCount,
+    final excess = media.length - rows * columns;
 
-        // backgroundColor: Colors.blue,
-        children: media
-            .map(
-              (e) => [
-                switch (e.type) {
-                  CLMediaType.image || CLMediaType.video => LoadMedia(
-                      mediaInfo: e,
-                      onMediaLoaded: (media) {
-                        return CLImageViewer(
-                          image: media.preview!,
-                          allowZoom: false,
-                          overlayWidget: switch (e.type) {
-                            CLMediaType.video => const VidoePlayIcon(),
-                            _ => null
-                          },
-                        );
+    return CLMatrix2D(
+      hCount: columns,
+      vCount: rows,
+      trailingRow:
+          (excess <= 0) ? null : Center(child: CLText.small('+$excess Items')),
+      itemBuilder: (context, r, c, l) {
+        if (l > 0) {
+          throw Exception('has only one layer!');
+        }
+        if ((r * 3 + c) >= media.length) {
+          return Container();
+        }
+        final e = media[r * 3 + c];
+
+        return Container(
+          //decoration: BoxDecoration(border: Border.all()),
+          padding: const EdgeInsets.all(2),
+          child: switch (e.type) {
+            CLMediaType.image || CLMediaType.video => LoadMedia(
+                mediaInfo: e,
+                onLoading: Container.new,
+                onError: (_, __) => Placeholder(
+                  child: CLIcon.standard(
+                    Icons.warning_amber,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+                onMediaLoaded: (media) {
+                  return AspectRatio(
+                    aspectRatio: media.aspectRatio,
+                    child: CLImageViewer(
+                      image: media.preview!,
+                      allowZoom: false,
+                      overlayWidget: switch (e.type) {
+                        CLMediaType.video => const VidoePlayIcon(),
+                        _ => null
                       },
                     ),
-                  _ => throw Exception('Unexpected')
+                  );
                 },
-              ],
-            )
-            .toList(),
-      ),
+              ),
+            _ => throw Exception('Unexpected')
+          },
+        );
+      },
     );
   }
 }
