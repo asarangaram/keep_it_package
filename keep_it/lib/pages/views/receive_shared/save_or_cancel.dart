@@ -36,7 +36,16 @@ class SaveOrCancel extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(), //incase of keyboard, implement this.
+              if (FocusScope.of(context).hasFocus)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: CLButtonIcon.small(
+                    Icons.keyboard_hide_outlined,
+                    onTap: () => FocusScope.of(context).unfocus(),
+                  ),
+                )
+              else
+                Container(), //incase of keyboard, implement this.
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: CLButtonText.small(
