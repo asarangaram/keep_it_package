@@ -1,3 +1,4 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
@@ -15,7 +16,13 @@ class PageShowImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    assert(
+    return const CLFullscreenBox(
+      child: Center(
+        child: CLErrorView(errorMessage: 'Unimplemented'),
+      ),
+    );
+
+    /* assert(
       false,
       'Untested',
     ); // CLMediaInfo in stack might affect the behaviour
@@ -28,6 +35,6 @@ class PageShowImage extends ConsumerWidget {
           );
         },
       ),
-    );
+    ); */
   }
 }
