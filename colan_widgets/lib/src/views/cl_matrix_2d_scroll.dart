@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../app_logger.dart';
 import 'compute_size_and_build.dart';
 
-class CLMatrix2D extends StatelessWidget {
-  const CLMatrix2D({
+class CLMatrix2DScrollable extends StatelessWidget {
+  const CLMatrix2DScrollable({
     required this.itemBuilder,
     required this.hCount,
     required this.vCount,
@@ -23,34 +23,24 @@ class CLMatrix2D extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ComputeSizeAndBuild(
-      builder: (context, size) {
-        return SizedBox.fromSize(
-          size: size,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (leadingRow != null) Flexible(child: leadingRow!),
-              for (var r = 0; r < vCount; r++)
-                for (var l = 0; l < lCount; l++)
-                  Flexible(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        for (var c = 0; c < hCount; c++)
-                          SizedBox(
-                            width: size.width / hCount,
-                            child: itemBuilder(context, r, c, l),
-                          ),
-                      ],
-                    ),
-                  ),
-              if (trailingRow != null)
-                Flexible(
-                  child: trailingRow!,
+    return ListView.builder(
+      itemCount: vCount,
+      itemBuilder: (context, r) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var l = 0; l < lCount; l++)
+              Flexible(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    for (var c = 0; c < hCount; c++)
+                      Flexible(child: itemBuilder(context, r, c, l)),
+                  ],
                 ),
-            ],
-          ),
+              ),
+          ],
         );
       },
     );
