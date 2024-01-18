@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../extensions/ext_string.dart';
 
 import '../file_handler.dart';
-import 'cl_dimension.dart';
 import 'cl_media_type.dart';
 
 @immutable
@@ -22,6 +21,7 @@ class CLMedia {
   final String path;
   final CLMediaType type;
   final String? url;
+  final previewWidth = 128;
 
   final String? previewPath;
 
@@ -41,7 +41,6 @@ class CLMedia {
 
   Future<CLMedia> withPreview({
     bool forceCreate = false,
-    int width = 64,
   }) async {
     return this;
   }

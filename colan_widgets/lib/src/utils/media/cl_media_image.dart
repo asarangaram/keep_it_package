@@ -4,10 +4,6 @@ import 'dart:typed_data';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:image/image.dart';
 
-import 'cl_dimension.dart';
-import 'cl_media.dart';
-import 'cl_media_type.dart';
-
 class CLMediaImage extends CLMedia {
   CLMediaImage({
     required super.path,
@@ -36,7 +32,6 @@ class CLMediaImage extends CLMedia {
   @override
   Future<CLMediaImage> withPreview({
     bool forceCreate = false,
-    int width = 64,
   }) async {
     // if previewPath is already set, and not asked to force create,
     if (previewPath != null && !forceCreate) {
@@ -52,8 +47,8 @@ class CLMediaImage extends CLMedia {
     }
     final aspectRatio = image.width / image.height;
 
-    final thumbnailWidth = width;
-    final thumbnailHeight = width ~/ aspectRatio;
+    final thumbnailWidth = previewWidth;
+    final thumbnailHeight = previewWidth ~/ aspectRatio;
     final thumbnail =
         copyResize(image, width: thumbnailWidth, height: thumbnailHeight);
     previewFile.writeAsBytesSync(encodeJpg(thumbnail));

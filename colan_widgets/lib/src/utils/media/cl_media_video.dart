@@ -31,7 +31,6 @@ class CLMediaVideo extends CLMedia {
   @override
   Future<CLMediaVideo> withPreview({
     bool forceCreate = false,
-    int width = 64,
   }) async {
     // if previewPath is already set, and not asked to force create,
     if (previewPath != null && !forceCreate) {
@@ -43,8 +42,7 @@ class CLMediaVideo extends CLMedia {
     final thumbnail = await VideoThumbnail.thumbnailData(
       video: path,
       imageFormat: ImageFormat.JPEG,
-      maxWidth:
-          128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      maxWidth: previewWidth,
       quality: 25,
     );
 
