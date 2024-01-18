@@ -20,7 +20,7 @@ class SharedItemsView extends ConsumerStatefulWidget {
   });
 
   final AsyncValue<CLMediaInfoGroup> mediaAsync;
-  final void Function() onDiscard;
+  final void Function(CLMediaInfoGroup media) onDiscard;
 
   @override
   ConsumerState<SharedItemsView> createState() => _SharedItemsViewState();
@@ -73,8 +73,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                         Flexible(
                           child: MediaPreview(
                             media: media.list,
-                            showAll: true,
-                            maxCrossAxisCount: switch (media.list.length) {
+                            columns: switch (media.list.length) {
                               < 2 => 1,
                               < 4 => 2,
                               _ => 3
@@ -98,7 +97,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                           SaveOrCancel(
                             saveLabel: 'Save into...',
                             cancelLabel: 'Discard',
-                            onDiscard: widget.onDiscard,
+                            onDiscard: () => widget.onDiscard(media),
                             onSave: () {
                               FocusScope.of(context).unfocus();
                               KeepItDialogs.selectCollections(
@@ -121,7 +120,8 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                                     CLButtonsGrid.showSnackBarAboveDialog(
                                       context,
                                       'Item(s) Saved',
-                                      onSnackBarRemoved: widget.onDiscard,
+                                      onSnackBarRemoved: () =>
+                                          widget.onDiscard(media),
                                     );
                                   }
 
@@ -139,8 +139,9 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                 );
               },
               error: (err, _) => CLErrorView(errorMessage: err.toString()),
-              loading: () =>
-                  const CLLoadingView(message: 'Looking for Shared Content'),
+              loading: () => const Center(
+                child: CLLoadingView(message: 'Looking for Shared Content'),
+              ),
             ),
           ),
           if (isSaving)
@@ -171,7 +172,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
       for (final entry in media.list)
         await entry.keepFile(clusterId: clusterId),
     ];
-    print(items);
+
     ref.read(itemsProvider(clusterId));
     ref.read(itemsProvider(clusterId).notifier).upsertItems(items);
   }
@@ -181,35 +182,21 @@ extension ExtItemInDB on CLMedia {
   Future<ItemInDB> keepFile({
     required int clusterId,
   }) async {
-    if ([CLMediaType.text, CLMediaType.url].contains(type)) {
+    if (![CLMediaType.video, CLMediaType.image].contains(type)) {
       return ItemInDB(
         clusterId: clusterId,
         path: this.path,
         type: type,
       );
     }
-    final newFile = await FileHandler.move(
-      this.path,
-      toDir: path.join('keep_it', 'cluster_$clusterId'),
-    );
-    // Log File
-    final logFileName = '${this.path}.url';
-    String? imageUrl;
-    if (File(logFileName).existsSync()) {
-      imageUrl = File(logFileName).readAsStringSync();
-      await File(logFileName).delete();
-    }
-
-    // Create Thumbnail
-    if (type == CLMediaType.video) {
-      await VideoHandler.generateVideoThumbnail(newFile);
-    }
 
     return ItemInDB(
       clusterId: clusterId,
-      path: await FileHandler.relativePath(newFile),
+      path:
+          await (await move(toDir: path.join('keep_it', 'cluster_$clusterId')))
+              .relativePathFuture,
       type: type,
-      ref: imageUrl,
+      ref: url,
     );
   }
 }

@@ -60,7 +60,7 @@ class KeepItApp implements AppDescriptor {
         BuildContext context,
         WidgetRef ref, {
         required AsyncValue<CLMediaInfoGroup> mediaAsync,
-        required void Function() onDiscard,
+        required void Function(CLMediaInfoGroup media) onDiscard,
       }) {
         return SharedItemsView(
           mediaAsync: mediaAsync,

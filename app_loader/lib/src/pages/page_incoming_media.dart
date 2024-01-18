@@ -21,7 +21,10 @@ class PageIncomingMedia extends ConsumerWidget {
       context,
       ref,
       mediaAsync: mediaAsync,
-      onDiscard: () {
+      onDiscard: (CLMediaInfoGroup media) {
+        for (final item in media.list) {
+          item.delete();
+        }
         ref.read(incomingMediaProvider.notifier).pop();
       },
     );

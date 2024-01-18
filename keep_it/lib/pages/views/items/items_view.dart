@@ -1,13 +1,10 @@
-import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:infinite_carousel/infinite_carousel.dart';
-import 'package:keep_it/pages/views/load_from_store/load_image.dart';
 import 'package:store/store.dart';
 
 import '../main/keep_it_main_view.dart';
-import '../video_player.dart';
 
 class ItemsView extends ConsumerWidget {
   const ItemsView({
@@ -26,7 +23,10 @@ class ItemsView extends ConsumerWidget {
             }
           : null,
       pageBuilder: (context, quickMenuScopeKey) {
-        return Column(
+        return const Center(
+          child: Text('Not implemented'),
+        );
+        /* return Column(
           children: [
             Flexible(
               flex: 2,
@@ -51,9 +51,8 @@ class ItemsView extends ConsumerWidget {
                           return switch (mediaData) {
                             (final CLMediaImage image)
                                 when mediaData.runtimeType == CLMediaImage =>
-                              CLImageViewer(
-                                image: image.data!,
-                                allowZoom: false,
+                              Image.file(
+                                File(image.previewPath!),
                               ),
                             (final CLMediaVideo video)
                                 when mediaData.runtimeType == CLMediaVideo =>
@@ -88,7 +87,7 @@ class ItemsView extends ConsumerWidget {
               ),
             ),
           ],
-        );
+        ); */
       },
     );
   }

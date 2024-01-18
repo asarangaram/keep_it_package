@@ -1,38 +1,41 @@
+// ignore: unused_import
+import 'dart:io';
+
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../load_from_store/load_image.dart';
-import '../video_player.dart';
-
 class MediaPreview extends ConsumerWidget {
   const MediaPreview({
     required this.media,
     super.key,
-    this.maxCrossAxisCount = 3,
-    this.maxItems = 9,
-    this.showAll = false,
+    this.columns = 3,
+    this.rows,
   });
 
   factory MediaPreview.fromItems(
-    Items items,
-  ) {
+    Items items, {
+    int columns = 1,
+    int? rows,
+  }) {
     final media = <CLMediaImage>[];
     for (final item in items.entries) {
       media.add(CLMediaImage(path: item.path, type: item.type));
     }
     return MediaPreview(
       media: media,
+      columns: columns,
+      rows: rows,
     );
   }
 
   final List<CLMedia> media;
-  final int maxCrossAxisCount;
-  final int maxItems;
-  final bool showAll;
+  final int columns;
+  final int? rows;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,15 +44,10 @@ class MediaPreview extends ConsumerWidget {
           [CLMediaType.image, CLMediaType.video].contains(element.type),
     );
     if (isAllSupportedMedia) {
-      final isLoading = ref.watch(isAnyMediaLoadingProvider(media));
-      if (isLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
       return SupportedMediaPreview(
         media: media,
-        maxItems: maxItems,
-        showAll: showAll,
-        maxCrossAxisCount: maxCrossAxisCount,
+        columns: columns,
+        rows: rows,
       );
     } else {
       return Column(
@@ -87,82 +85,77 @@ class ShowAsText extends ConsumerWidget {
   }
 }
 
-///
-/// SupportedMediaType.video => ,
-
 class SupportedMediaPreview extends ConsumerWidget {
   const SupportedMediaPreview({
     required this.media,
     super.key,
-    this.maxCrossAxisCount = 2,
-    this.maxItems = 9,
-    this.showAll = false,
-    this.rows = 3,
+    this.rows,
     this.columns = 3,
   });
   final List<CLMedia> media;
-  final int maxCrossAxisCount;
-  final int maxItems;
-  final bool showAll;
-  final int rows;
+
+  final int? rows;
   final int columns;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final excess = media.length - rows * columns;
-
+    final showAll = rows == null;
+    if (columns <= 0) {
+      return const CLErrorView(errorMessage: 'Atleast one coumn must present');
+    }
+    if (showAll) {
+      return CLMatrix2DScrollable(
+        hCount: columns,
+        vCount: (media.length + columns - 1) ~/ columns,
+        itemBuilder: itemBuilder,
+      );
+    }
+    final excess = media.length - rows! * columns;
     return CLMatrix2D(
       hCount: columns,
-      vCount: rows,
+      vCount: rows!,
       trailingRow:
           (excess <= 0) ? null : Center(child: CLText.small('+$excess Items')),
-      itemBuilder: (context, r, c, l) {
-        if (l > 0) {
-          throw Exception('has only one layer!');
-        }
-        if ((r * 3 + c) >= media.length) {
-          return Container();
-        }
-        final e = media[r * 3 + c];
-
-        return Container(
-          //decoration: BoxDecoration(border: Border.all()),
-          padding: const EdgeInsets.all(2),
-          child: switch (e.type) {
-            CLMediaType.image || CLMediaType.video => LoadMedia(
-                mediaInfo: e,
-                onLoading: Container.new,
-                onError: (_, __) => Placeholder(
-                  child: CLIcon.standard(
-                    Icons.warning_amber,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-                onMediaLoaded: (media) {
-                  return CLImageViewer(
-                    image: media.preview!,
-                    allowZoom: false,
-                    overlayWidget: switch (e.type) {
-                      CLMediaType.video => const VidoePlayIcon(),
-                      _ => null
-                    },
-                  );
-                },
-              ),
-            _ => throw Exception('Unexpected')
-          },
-        );
-      },
+      itemBuilder: itemBuilder,
     );
   }
-}
 
-final isAnyMediaLoadingProvider =
-    StateProvider.family<bool, List<CLMedia>>((ref, media) {
-  final isLoading = <bool>[];
-  for (final e in media) {
-    final m = ref.watch(mediaProvider(e));
-    isLoading.add(m.isLoading);
+  Widget itemBuilder(BuildContext context, int r, int c, int l) {
+    if (l > 0) {
+      throw Exception('has only one layer!');
+    }
+    if ((r * columns + c) >= media.length) {
+      return const Center(
+        child: Text('Empty'),
+      );
+    }
+    final e = media[r * columns + c];
+    final image = File(e.previewFileName);
+    if (image.existsSync()) {
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Image.file(image),
+        ),
+      );
+    }
+    return const Center(
+      child: Text('Preview Not Found'),
+    );
+    /* return FutureBuilder(
+      future: e.getImage(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CLIcon.small(Icons.timer));
+        }
+        if (snapshot.data == null) {
+          return const CLIcon.large(Icons.abc);
+        }
+        return Padding(
+          padding: const EdgeInsets.all(2),
+          child: Center(child: RawImage(image: snapshot.data)),
+        );
+      },
+    ); */
   }
-
-  return isLoading.any((element) => element);
-});
+}

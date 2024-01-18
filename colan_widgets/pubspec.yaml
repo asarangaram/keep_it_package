@@ -12,6 +12,7 @@ dependencies:
   flutter_riverpod: ^2.4.9
   http: ^1.1.2
   http_parser: ^4.0.2
+  image: ^4.1.4
   intl: ^0.19.0
   logger: ^2.0.2+1
   path: ^1.8.3
@@ -19,7 +20,8 @@ dependencies:
   progress_indicators: ^1.0.0
   share_handler: ^0.0.20
   very_good_analysis: ^5.1.0
-
+  video_thumbnail: ^0.5.3
+  
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

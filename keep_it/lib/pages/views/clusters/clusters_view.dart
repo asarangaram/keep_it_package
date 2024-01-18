@@ -35,6 +35,8 @@ class ClustersView extends ConsumerWidget {
                       buildOnData: (items) {
                         return MediaPreview.fromItems(
                           items,
+                          rows: 3,
+                          columns: 3,
                         );
                       },
                     ),

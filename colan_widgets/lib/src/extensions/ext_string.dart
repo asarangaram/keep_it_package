@@ -1,3 +1,5 @@
+import '../app_logger.dart';
+
 extension ColonExtensionOnString on String {
   bool isURL() {
     try {
@@ -7,5 +9,16 @@ extension ColonExtensionOnString on String {
     } catch (e) {
       return false; // Parsing failed, not a valid URL
     }
+  }
+
+  void printString() {
+    _infoLogger(this);
+  }
+}
+
+bool _disableInfoLogger = false;
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
   }
 }

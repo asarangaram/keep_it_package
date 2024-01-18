@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../app_logger.dart';
-import 'compute_size_and_build.dart';
 
 class CLMatrix2DScrollable extends StatelessWidget {
   const CLMatrix2DScrollable({
@@ -34,6 +32,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
               Flexible(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     for (var c = 0; c < hCount; c++)
                       Flexible(child: itemBuilder(context, r, c, l)),
@@ -120,12 +119,5 @@ class CLMatrix2DScrollable extends StatelessWidget {
         },
       ),
     ); */
-  }
-}
-
-bool _disableInfoLogger = true;
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
+
+import 'file_handler.dart';
+import 'media/cl_media_type.dart';
 
 class URLHandler {
   static Future<CLMediaType?> getMimeType(String url) async {
@@ -75,12 +77,12 @@ class URLHandler {
         final documentsDirectory = await FileHandler.getDocumentsDirectory(
           path.join('downloaded', subDir),
         );
-
-        final filePath = path.join(documentsDirectory, filename);
-        final logPath = '$filePath.url';
+        final uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
+        final filePath =
+            '${uniqueId}_${path.join(documentsDirectory, filename)}';
 
         File(filePath).writeAsBytesSync(response.bodyBytes);
-        File(logPath).writeAsStringSync(imageUrl);
+
         return filePath;
       }
     } catch (e) {

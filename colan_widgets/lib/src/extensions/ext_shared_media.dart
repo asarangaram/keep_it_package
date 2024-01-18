@@ -1,79 +1,102 @@
-import 'package:colan_widgets/colan_widgets.dart';
+/// Converts SharedMedia to CLMediaInfoGroup
+library;
 
 import 'package:share_handler/share_handler.dart';
 
+import '../utils/file_handler.dart';
+import '../utils/media/cl_media.dart';
+import '../utils/media/cl_media_image.dart';
+import '../utils/media/cl_media_type.dart';
+import '../utils/media/cl_media_video.dart';
+
+import '../utils/url_handler.dart';
+import 'ext_string.dart';
+
 extension FromSharedMediaGroup on SharedMedia? {
+  CLMediaType toCLMediaType(SharedAttachmentType type) {
+    return switch (type) {
+      SharedAttachmentType.image => CLMediaType.image,
+      SharedAttachmentType.video => CLMediaType.video,
+      SharedAttachmentType.audio => CLMediaType.audio,
+      SharedAttachmentType.file => CLMediaType.file,
+    };
+  }
+
   Future<CLMediaInfoGroup> toCLMediaInfoGroup() async {
     if (this == null) {
       throw Exception('No Shared Items found');
     }
-    final newMedia = <CLMediaImage>[];
+    final newMedia = <CLMedia>[];
     if (this!.content?.isNotEmpty ?? false) {
       final text = this!.content!;
       if (text.isURL()) {
         final mimeType = await URLHandler.getMimeType(text);
-        switch (mimeType) {
-          case CLMediaType.image:
-          case CLMediaType.audio:
-          case CLMediaType.video:
-          case CLMediaType.file:
-            final r = await URLHandler.downloadAndSaveImage(text);
-            if (r != null) {
-              newMedia.add(CLMediaImage(path: r, type: mimeType!));
-            } else {
-              //retain as url
-              newMedia.add(
-                CLMediaImage(
+
+        final r = switch (mimeType) {
+          CLMediaType.image ||
+          CLMediaType.audio ||
+          CLMediaType.video ||
+          CLMediaType.file =>
+            await URLHandler.downloadAndSaveImage(text),
+          _ => null
+        };
+        if (r == null) {
+          newMedia.add(CLMedia(path: text, type: CLMediaType.url));
+        } else {
+          newMedia.add(
+            switch (mimeType) {
+              CLMediaType.image => await CLMediaImage(
                   path: text,
-                  type: CLMediaType.url,
-                ),
-              );
-            }
-          case CLMediaType.url:
-          case CLMediaType.text: // This shouldn't appear
-          case null:
-            newMedia.add(
-              CLMediaImage(
-                path: text,
-                type: CLMediaType.url,
-              ),
-            );
+                  type: CLMediaType.image,
+                  url: text,
+                ).withPreview(),
+              null => throw Exception('Unexpected null'),
+              _ => CLMedia(
+                  path: r,
+                  type: mimeType,
+                )
+            },
+          );
         }
-      } else {
-        newMedia.add(
-          CLMediaImage(
-            path: text,
-            type: CLMediaType.text,
-          ),
-        );
       }
     }
     if (this!.imageFilePath != null) {
       newMedia.add(
-        CLMediaImage(
-          path: this!.imageFilePath!,
+        await CLMediaImage(
+          path: await FileHandler.move(
+            this!.imageFilePath!,
+            toDir: 'Incoming',
+          ),
           type: CLMediaType.image,
-        ),
+        ).withPreview(),
       );
     }
     if (this!.attachments?.isNotEmpty ?? false) {
       for (final e in this!.attachments!) {
         if (e != null) {
           newMedia.add(
-            CLMediaImage(
-              path: e.path,
-              type: switch (e.type) {
-                SharedAttachmentType.image => CLMediaType.image,
-                SharedAttachmentType.video => CLMediaType.video,
-                SharedAttachmentType.audio => CLMediaType.audio,
-                SharedAttachmentType.file => CLMediaType.file,
-              },
-            ),
+            switch (e.type) {
+              SharedAttachmentType.image => await CLMediaImage(
+                  path: await FileHandler.move(
+                    e.path,
+                    toDir: 'Incoming',
+                  ),
+                  type: CLMediaType.image,
+                ).withPreview(),
+              SharedAttachmentType.video => await CLMediaVideo(
+                  path: await FileHandler.move(
+                    e.path,
+                    toDir: 'Incoming',
+                  ),
+                  type: CLMediaType.image,
+                ).withPreview(),
+              _ => CLMedia(path: e.path, type: toCLMediaType(e.type)),
+            },
           );
         }
       }
     }
 
-    return CLMediaInfoGroup(newMedia);
+    return CLMediaInfoGroup(newMedia)..toString().printString();
   }
 }

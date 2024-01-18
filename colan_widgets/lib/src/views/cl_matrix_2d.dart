@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../app_logger.dart';
 import 'compute_size_and_build.dart';
 
 class CLMatrix2D extends StatelessWidget {
@@ -130,12 +129,5 @@ class CLMatrix2D extends StatelessWidget {
         },
       ),
     ); */
-  }
-}
-
-bool _disableInfoLogger = true;
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
   }
 }
