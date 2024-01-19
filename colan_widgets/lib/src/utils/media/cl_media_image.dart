@@ -41,6 +41,7 @@ class CLMediaImage extends CLMedia {
 
     final inputFile = File(path);
     final List<int> bytes = inputFile.readAsBytesSync();
+
     final image = decodeImage(Uint8List.fromList(bytes));
     if (image == null) {
       throw Exception('1Unable to read file $path');

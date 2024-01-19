@@ -129,6 +129,7 @@ class SupportedMediaPreview extends ConsumerWidget {
       );
     }
     final e = media[r * columns + c];
+
     final image = File(e.previewFileName);
     if (image.existsSync()) {
       return Align(

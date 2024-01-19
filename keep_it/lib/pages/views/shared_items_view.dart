@@ -4,12 +4,13 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
 import 'package:keep_it/pages/views/load_from_store/load_from_store.dart';
 import 'package:keep_it/pages/views/receive_shared/media_preview.dart';
-import 'package:keep_it/pages/views/receive_shared/save_or_cancel.dart';
 import 'package:path/path.dart' as path;
 import 'package:store/store.dart';
+
+import 'collections_page/keepit_dialogs.dart';
+import 'receive_shared/save_or_cancel.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -35,7 +36,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     descriptionController = TextEditingController();
     descriptionNode = FocusNode();
     if (descriptionNode.canRequestFocus) {
-      descriptionNode.requestFocus();
+      //TODO: descriptionNode.requestFocus();
     }
     descriptionController.selection = TextSelection.fromPosition(
       TextPosition(offset: descriptionController.text.length),
@@ -67,9 +68,55 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                   child: SizedBox(
                     width: min(MediaQuery.of(context).size.width, 450),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: MediaPreview(
+                            media: media.list,
+                            columns: switch (media.list.length) {
+                              < 2 => 1,
+                              < 4 => 2,
+                              _ => 3
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: kMinInteractiveDimension * 5,
+                          width: min(MediaQuery.of(context).size.width, 450),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: CLTextField.multiLine(
+                              descriptionController,
+                              focusNode: descriptionNode,
+                              label: 'What is the best thing,'
+                                  ' you can say about this?',
+                              hint: 'What is the best thing,'
+                                  ' you can say about this?',
+                              maxLines: 5,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: kMinInteractiveDimension * 2,
+                          width: min(MediaQuery.of(context).size.width, 450),
+                          child: isSaving
+                              ? const Center(
+                                  child: CLLoadingView(
+                                    message: 'Saving...',
+                                  ),
+                                )
+                              : SaveOrCancel(
+                                  saveLabel: 'Save into...',
+                                  cancelLabel: 'Discard',
+                                  onDiscard: () => widget.onDiscard(media),
+                                  onSave: () => onSave(media),
+                                ),
+                        ),
+                      ],
+                    ) /*  Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
+                        Expanded(
                           child: MediaPreview(
                             media: media.list,
                             columns: switch (media.list.length) {
@@ -97,43 +144,12 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                             saveLabel: 'Save into...',
                             cancelLabel: 'Discard',
                             onDiscard: () => widget.onDiscard(media),
-                            onSave: () {
-                              FocusScope.of(context).unfocus();
-                              KeepItDialogs.selectCollections(
-                                context,
-                                onSelectionDone: (
-                                  List<Collection> selectedCollections,
-                                ) async {
-                                  setState(() {
-                                    isSaving = true;
-                                  });
-                                  await onSelectionDone(
-                                    media: media,
-                                    descriptionText: descriptionController.text,
-                                    saveIntoCollectionsId: selectedCollections
-                                        .where((c) => c.id != null)
-                                        .map((c) => c.id!)
-                                        .toList(),
-                                  );
-                                  if (context.mounted) {
-                                    CLButtonsGrid.showSnackBarAboveDialog(
-                                      context,
-                                      'Item(s) Saved',
-                                      onSnackBarRemoved: () =>
-                                          widget.onDiscard(media),
-                                    );
-                                  }
-
-                                  // onDiscard();
-                                },
-                                labelNoneSelected: 'Select Tags',
-                                labelSelected: 'Save',
-                              );
-                            },
+                            onSave: onSave,
                           ),
                         ],
                       ],
-                    ),
+                    ), */
+                    ,
                   ),
                 );
               },
@@ -143,14 +159,34 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
               ),
             ),
           ),
-          if (isSaving)
-            const Center(
-              child: CLLoadingView(
-                message: 'Saving...',
-              ),
-            ),
         ],
       ),
+    );
+  }
+
+  void onSave(CLMediaInfoGroup media) {
+    FocusScope.of(context).unfocus();
+    KeepItDialogs.selectCollections(
+      context,
+      onSelectionDone: (
+        List<Collection> selectedCollections,
+      ) async {
+        setState(() {
+          isSaving = true;
+        });
+        await onSelectionDone(
+          media: media,
+          descriptionText: descriptionController.text,
+          saveIntoCollectionsId: selectedCollections
+              .where((c) => c.id != null)
+              .map((c) => c.id!)
+              .toList(),
+        );
+
+        widget.onDiscard(media);
+      },
+      labelNoneSelected: 'Select Tags',
+      labelSelected: 'Save',
     );
   }
 
@@ -159,6 +195,8 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     required CLMediaInfoGroup media,
     required String descriptionText,
   }) async {
+    _infoLogger('Start loading');
+    final stopwatch = Stopwatch()..start();
     // No one might be reading this, read once
     ref.read(clustersProvider(null));
     final clusterId =
@@ -174,6 +212,12 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
 
     ref.read(itemsProvider(clusterId));
     ref.read(itemsProvider(clusterId).notifier).upsertItems(items);
+    stopwatch.stop();
+
+    _infoLogger(
+      'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
+      ' [${stopwatch.elapsed}]',
+    );
   }
 }
 
@@ -192,10 +236,17 @@ extension ExtItemInDB on CLMedia {
     return ItemInDB(
       clusterId: clusterId,
       path:
-          await (await move(toDir: path.join('keep_it', 'cluster_$clusterId')))
+          await (await copy(toDir: path.join('keep_it', 'cluster_$clusterId')))
               .relativePathFuture,
       type: type,
       ref: url,
     );
+  }
+}
+
+bool _disableInfoLogger = false;
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
   }
 }

@@ -2,74 +2,57 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import '../extensions/ext_io_file.dart';
 
 class FileHandler {
-  static Future<String> getDocumentsDirectory(String? subFolder) async {
-    final String documentsDirectory;
-
-    if (subFolder != null) {
-      documentsDirectory =
-          path.join((await getApplicationDocumentsDirectory()).path, subFolder);
-    } else {
-      documentsDirectory = (await getApplicationDocumentsDirectory()).path;
-    }
-
-    if (!Directory(documentsDirectory).existsSync()) {
-      await Directory(documentsDirectory).create(recursive: true);
-    }
-    return documentsDirectory;
+  static Future<File> resolveDocPath(
+    String relativePath, {
+    String subFolder = '',
+  }) async {
+    return File(
+      path.join(
+        (await getApplicationDocumentsDirectory()).path,
+        subFolder,
+        relativePath,
+      ),
+    );
   }
 
-  static Future<String> copyAndDeleteFile(
-    String srcFilePath,
-    String destinationPath,
-  ) async {
-    try {
-      // Copy the file to the destination
-      await File(srcFilePath).copy(destinationPath);
+  static Future<String> resolveDocFilePath(
+    String relativePath, {
+    String subFolder = '',
+  }) async =>
+      (await resolveDocPath(relativePath, subFolder: subFolder)).path;
 
-      // Delete the original file
-      await File(srcFilePath).delete();
+  static Future<String> copy(
+    String filePath, {
+    required String toSubFolder,
+  }) async =>
+      File(filePath)
+          .copyToSync(
+            await resolveDocFilePath(
+              path.basename(filePath),
+              subFolder: toSubFolder,
+            ),
+          )
+          .path;
 
-      return destinationPath;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  static Future<String> move(String filePath, {required String toDir}) async {
-    // Get the file name from the path
-    final fileName = '_${path.basename(filePath)}';
-
-    // Set the destination directory in the documents folder
-    final documentsDirectory = await FileHandler.getDocumentsDirectory(toDir);
-    final destinationPath = path.join(documentsDirectory, fileName);
-    final newFile =
-        await FileHandler.copyAndDeleteFile(filePath, destinationPath);
-    return newFile;
-  }
+  static Future<String> move(
+    String filePath, {
+    required String toSubFolder,
+  }) async =>
+      File(filePath)
+          .moveToSync(
+            await resolveDocFilePath(
+              path.basename(filePath),
+              subFolder: toSubFolder,
+            ),
+          )
+          .path;
 
   static Future<String> relativePath(String absolutePath) async =>
       absolutePath.replaceFirst(
-        '${await FileHandler.getDocumentsDirectory(null)}/',
+        '${await getApplicationDocumentsDirectory()}/',
         '',
       );
-
-  static Future<String> getAbsoluteFilePath(String mediaPath) async {
-    final dir = await FileHandler.getDocumentsDirectory(null);
-    return getAbsoluteFilePathSync(mediaPath, dir: dir);
-  }
-
-  static String getAbsoluteFilePathSync(
-    String mediaPath, {
-    required String dir,
-  }) {
-    /// prefix the directory if the path is not absolute
-    ///  if from assets, leave it as it is.
-    return switch (mediaPath) {
-      (final String s) when mediaPath.startsWith('assets') => s,
-      (final String s) when mediaPath.startsWith('/') => s,
-      _ => path.join(dir, mediaPath),
-    };
-  }
 }

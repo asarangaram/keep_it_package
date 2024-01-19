@@ -1,8 +1,11 @@
 /// Converts SharedMedia to CLMediaInfoGroup
 library;
 
+import 'dart:io';
+
 import 'package:share_handler/share_handler.dart';
 
+import '../app_logger.dart';
 import '../utils/file_handler.dart';
 import '../utils/media/cl_media.dart';
 import '../utils/media/cl_media_image.dart';
@@ -23,8 +26,10 @@ extension FromSharedMediaGroup on SharedMedia? {
   }
 
   Future<CLMediaInfoGroup> toCLMediaInfoGroup() async {
+    _infoLogger('Start loading');
+    final stopwatch = Stopwatch()..start();
     if (this == null) {
-      throw Exception('No Shared Items found');
+      return CLMediaInfoGroup([]);
     }
     final newMedia = <CLMedia>[];
     if (this!.content?.isNotEmpty ?? false) {
@@ -61,42 +66,64 @@ extension FromSharedMediaGroup on SharedMedia? {
       }
     }
     if (this!.imageFilePath != null) {
-      newMedia.add(
-        await CLMediaImage(
-          path: await FileHandler.move(
-            this!.imageFilePath!,
-            toDir: 'Incoming',
-          ),
-          type: CLMediaType.image,
-        ).withPreview(),
-      );
+      if (!File(this!.imageFilePath!).existsSync()) {
+        _infoLogger("File ${this!.imageFilePath!} doesn't exists!");
+      } else {
+        newMedia.add(
+          await CLMediaImage(
+            path: await FileHandler.move(
+              this!.imageFilePath!,
+              toSubFolder: 'Incoming',
+            ),
+            type: CLMediaType.image,
+          ).withPreview(),
+        );
+      }
     }
     if (this!.attachments?.isNotEmpty ?? false) {
-      for (final e in this!.attachments!) {
+      // ignore: unused_local_variable
+      for (final (i, e) in this!.attachments!.indexed) {
         if (e != null) {
-          newMedia.add(
-            switch (e.type) {
-              SharedAttachmentType.image => await CLMediaImage(
-                  path: await FileHandler.move(
-                    e.path,
-                    toDir: 'Incoming',
-                  ),
-                  type: CLMediaType.image,
-                ).withPreview(),
-              SharedAttachmentType.video => await CLMediaVideo(
-                  path: await FileHandler.move(
-                    e.path,
-                    toDir: 'Incoming',
-                  ),
-                  type: CLMediaType.image,
-                ).withPreview(),
-              _ => CLMedia(path: e.path, type: toCLMediaType(e.type)),
-            },
-          );
+          if (!File(e.path).existsSync()) {
+            _infoLogger("File ${e.path} doesn't exists!");
+          } else {
+            newMedia.add(
+              switch (e.type) {
+                SharedAttachmentType.image => await CLMediaImage(
+                    path: await FileHandler.move(
+                      e.path,
+                      toSubFolder: 'Incoming',
+                    ),
+                    type: CLMediaType.image,
+                  ).withPreview(),
+                SharedAttachmentType.video => await CLMediaVideo(
+                    path: await FileHandler.move(
+                      e.path,
+                      toSubFolder: 'Incoming',
+                    ),
+                    type: CLMediaType.image,
+                  ).withPreview(),
+                _ => CLMedia(path: e.path, type: toCLMediaType(e.type)),
+              },
+            );
+          }
         }
       }
     }
+    stopwatch.stop();
 
-    return CLMediaInfoGroup(newMedia)..toString().printString();
+    _infoLogger(
+      'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
+      ' [${stopwatch.elapsed}]',
+    );
+
+    return CLMediaInfoGroup(newMedia)..toString() /* .printString() */;
+  }
+}
+
+bool _disableInfoLogger = false;
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
   }
 }

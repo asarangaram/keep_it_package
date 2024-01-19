@@ -33,20 +33,12 @@ class URLHandler {
 
   static Future<String?> downloadAndSaveImage(
     String imageUrl, {
-    String subDir = '',
+    String? prefix,
   }) async {
     try {
-      final noMediaFile = File(
-        path.join(
-          await FileHandler.getDocumentsDirectory(
-            'downloaded',
-          ),
-          '.nomedia',
-        ),
-      );
-      if (!noMediaFile.existsSync()) {
-        noMediaFile.createSync(recursive: true);
-      }
+      (await FileHandler.resolveDocPath('.nomedia', subFolder: 'downloaded'))
+          .createSync(recursive: true);
+
       final response = await http.get(Uri.parse(imageUrl));
 
       // Check if the response contains image data
@@ -74,16 +66,13 @@ class URLHandler {
         }
         // Create Directory if not exists:
 
-        final documentsDirectory = await FileHandler.getDocumentsDirectory(
-          path.join('downloaded', subDir),
-        );
-        final uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
-        final filePath =
-            '${uniqueId}_${path.join(documentsDirectory, filename)}';
-
-        File(filePath).writeAsBytesSync(response.bodyBytes);
-
-        return filePath;
+        return (await FileHandler.resolveDocPath(
+          '${prefix ?? DateTime.now().millisecondsSinceEpoch.toString()}_'
+          '$filename',
+          subFolder: 'downloaded',
+        )
+              ..writeAsBytesSync(response.bodyBytes))
+            .path;
       }
     } catch (e) {
       /* */

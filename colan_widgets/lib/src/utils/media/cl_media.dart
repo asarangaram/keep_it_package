@@ -21,7 +21,7 @@ class CLMedia {
   final String path;
   final CLMediaType type;
   final String? url;
-  final previewWidth = 128;
+  final previewWidth = 600;
 
   final String? previewPath;
 
@@ -61,13 +61,30 @@ class CLMedia {
     final String? newPreviewPath;
     final String newPath;
     if (previewPath != null && File(previewPath!).existsSync()) {
-      newPreviewPath = await FileHandler.move(previewPath!, toDir: toDir);
+      newPreviewPath = await FileHandler.move(previewPath!, toSubFolder: toDir);
     } else {
       newPreviewPath = previewPath;
     }
 
     if (File(path).existsSync()) {
-      newPath = await FileHandler.move(path, toDir: toDir);
+      newPath = await FileHandler.move(path, toSubFolder: toDir);
+    } else {
+      newPath = path;
+    }
+    return copyWith(path: newPath, previewPath: newPreviewPath);
+  }
+
+  Future<CLMedia> copy({required String toDir}) async {
+    final String? newPreviewPath;
+    final String newPath;
+    if (previewPath != null && File(previewPath!).existsSync()) {
+      newPreviewPath = await FileHandler.copy(previewPath!, toSubFolder: toDir);
+    } else {
+      newPreviewPath = previewPath;
+    }
+
+    if (File(path).existsSync()) {
+      newPath = await FileHandler.copy(path, toSubFolder: toDir);
     } else {
       newPath = path;
     }
@@ -118,116 +135,3 @@ extension EXTCLMediaInfoGroupNullable on CLMediaInfoGroup? {
     }
   }
 }
-
-/*
-extension ImageLoad on CLMedia {
-  Future<ui.Image?> getImage() async {
-    _infoLogger('getImage  ${this.path}');
-    final absPath = await FileHandler.getAbsoluteFilePath(this.path);
-    final img = switch (type) {
-      CLMediaType.image => await loadImage(await tryAsImage(absPath)),
-      _ => null
-    };
-    _infoLogger('getImage  ${this.path} - Done');
-    return img;
-  }
-
-  Future<CLMedia> load() async {
-    _infoLogger('loading  ${this.path}');
-    final CLMedia loadedMedia;
-    try {
-      final absPath = await FileHandler.getAbsoluteFilePath(this.path);
-      final media = copyWith(path: absPath);
-
-      final image = await loadImage(
-        await switch (media.type) {
-          CLMediaType.image => tryAsImage(absPath),
-          CLMediaType.video => tryAsVideo(absPath),
-          _ => throw UnimplementedError()
-        },
-      );
-
-      loadedMedia = switch (media.type) {
-        CLMediaType.image => CLMediaImage(
-            path: absPath,
-            type: media.type,
-            preview: image,
-            data: image,
-          ),
-        CLMediaType.video =>
-          CLMediaVideo(path: absPath, type: media.type, preview: image),
-        _ => throw UnimplementedError()
-      };
-    } catch (err) {
-      throw Exception(
-        'Failed to load the media ${this.path}, $type',
-      );
-    }
-    _infoLogger('loading  ${this.path} - Done');
-    return loadedMedia;
-  }
-
-  Future<Uint8List> tryAsVideo(String mediaPath) async {
-    return switch (mediaPath) {
-      (final String s) when mediaPath.startsWith('/') =>
-        await VideoHandler.loadVideoThumbnail(s),
-      (final String s) when mediaPath.startsWith('assets') =>
-        throw Exception('Video from assets is not handled: $s'),
-      _ => throw Exception('Relative Path not supported.'),
-    };
-  }
-
-  Future<Uint8List> tryAsImage(String mediaPath) async => switch (mediaPath) {
-        (final String s) when mediaPath.startsWith('/') =>
-          Uint8List.fromList(await File(s).readAsBytes()),
-        (final String s) when mediaPath.startsWith('assets') =>
-          (await rootBundle.load(s)).buffer.asUint8List(),
-        _ => throw Exception('Relative Path not supported.'),
-      };
-
-  Future<ui.Image> loadImage(Uint8List data) async {
-    final codec = await ui.instantiateImageCodec(data);
-    final fi = await codec.getNextFrame();
-    final uiImage = fi.image;
-
-    return uiImage;
-  }
-}
-
-class MediaNotifier extends StateNotifier<AsyncValue<CLMedia>> {
-  CLMedia mediaInfo;
-  MediaNotifier(this.mediaInfo) : super(const AsyncValue.loading()) {
-    _get();
-  }
-
-  Future<void> _get() async {
-    state = await AsyncValue.guard(
-      () async => mediaInfo.load(),
-    );
-  }
-
-  Future<Uint8List> tryDocumentsDir(String imagePath) async {
-    final documentsDir = await FileHandler.getDocumentsDirectory(null);
-    final file = File(path.join(documentsDir, imagePath));
-    if (!file.existsSync()) {
-      throw Exception("File doesn't exists");
-    }
-    final List<int> bytes = await file.readAsBytes();
-    return Uint8List.fromList(bytes);
-  }
-}
-
-final mediaProvider =
-    StateNotifierProvider.family<MediaNotifier, AsyncValue<CLMedia>, CLMedia>(
-        (ref, mediaEntry) {
-  return MediaNotifier(mediaEntry);
-});
-
-bool _disableInfoLogger = true;
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
-  }
-}
-
-*/

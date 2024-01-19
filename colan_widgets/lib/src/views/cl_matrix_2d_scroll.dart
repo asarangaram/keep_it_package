@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'compute_size_and_build.dart';
+
 class CLMatrix2DScrollable extends StatelessWidget {
   const CLMatrix2DScrollable({
     required this.itemBuilder,
@@ -21,25 +23,49 @@ class CLMatrix2DScrollable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: vCount,
-      itemBuilder: (context, r) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var l = 0; l < lCount; l++)
-              Flexible(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    for (var c = 0; c < hCount; c++)
-                      Flexible(child: itemBuilder(context, r, c, l)),
-                  ],
-                ),
+    return ComputeSizeAndBuild(
+      builder: (context, size) {
+        return ListView.builder(
+          itemCount: vCount,
+          prototypeItem: SizedBox(
+            height: (size.width / hCount) * 1.4,
+          ),
+          itemBuilder: (context, r) {
+            return SizedBox(
+              height: (size.width / hCount) * 1.4,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var l = 0; l < lCount; l++)
+                    Flexible(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          for (var c = 0; c < hCount; c++)
+                            Flexible(
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: size.width / hCount,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2),
+                                      child: FittedBox(
+                                        //fit: BoxFit.fitWidth,
+                                        child: itemBuilder(context, r, c, l),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ), //
+                        ],
+                      ),
+                    ),
+                ],
               ),
-          ],
+            );
+          },
         );
       },
     );
