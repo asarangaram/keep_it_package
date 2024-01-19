@@ -49,16 +49,23 @@ class ClustersView extends ConsumerWidget {
                       clusterID: e.id!,
                       hasBackground: false,
                       buildOnData: (Items items, {required String docDir}) {
+                        final (c, r) = switch (items.entries.length) {
+                          1 => (1, 1),
+                          2 => (1, 2),
+                          <= 4 => (2, 2),
+                          < 6 => (2, 3),
+                          _ => (3, 3)
+                        };
                         return MediaPreview(
                           media: items.entries
                               .map(
-                                (e) => CLMedia(
-                                  path: FileHandler.join(docDir, e.path),
-                                  type: e.type,
+                                (e) => e.toCLMedia(
+                                  pathPrefix: docDir,
                                 ),
                               )
                               .toList(),
-                          rows: 3,
+                          columns: c,
+                          rows: r,
                         );
                       },
                     ),

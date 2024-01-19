@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'compute_size_and_build.dart';
@@ -25,14 +27,18 @@ class CLMatrix2DScrollable extends StatelessWidget {
   Widget build(BuildContext context) {
     return ComputeSizeAndBuild(
       builder: (context, size) {
+        /* print(
+          ' Available Size $size, hCount = $hCount, vCount = $vCount, '
+          'lCount= $lCount',
+        ); */
         return ListView.builder(
           itemCount: vCount,
           prototypeItem: SizedBox(
-            height: (size.width / hCount) * 1.4,
+            height: min((size.width / hCount) * 1.4, size.height),
           ),
           itemBuilder: (context, r) {
             return SizedBox(
-              height: (size.width / hCount) * 1.4,
+              height: min((size.width / hCount) * 1.4, size.height),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -40,7 +46,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
                     Flexible(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        //crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           for (var c = 0; c < hCount; c++)
                             Flexible(
@@ -50,10 +56,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
                                     width: size.width / hCount,
                                     child: Padding(
                                       padding: const EdgeInsets.all(2),
-                                      child: FittedBox(
-                                        //fit: BoxFit.fitWidth,
-                                        child: itemBuilder(context, r, c, l),
-                                      ),
+                                      child: itemBuilder(context, r, c, l),
                                     ),
                                   ),
                                 ],

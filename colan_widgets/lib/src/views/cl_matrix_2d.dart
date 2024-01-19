@@ -1,8 +1,64 @@
 import 'package:flutter/material.dart';
+import 'cl_matrix_2d_scroll.dart';
 import 'compute_size_and_build.dart';
 
 class CLMatrix2D extends StatelessWidget {
   const CLMatrix2D({
+    required this.itemBuilder,
+    required this.itemCount,
+    this.rows,
+    this.columns = 3,
+    this.excessViewBuilder,
+    super.key,
+  });
+
+  final int? rows;
+  final int columns;
+  final int itemCount;
+  final Widget Function(BuildContext context, int index, int layer) itemBuilder;
+  final Widget Function(BuildContext context, int excessCount)?
+      excessViewBuilder;
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    final showAll = rows == null;
+    if (columns <= 0) {
+      throw Exception('Atleast one column must present');
+    }
+    if (showAll) {
+      return CLMatrix2DScrollable(
+        hCount: columns,
+        vCount: (itemCount + columns - 1) ~/ columns,
+        itemBuilder: builder,
+      );
+    }
+    final excess = itemCount - rows! * columns;
+
+    return CLMatrix2DNonScrollable(
+      hCount: columns,
+      vCount: rows!,
+      trailingRow:
+          (excess <= 0) ? null : excessViewBuilder?.call(context, excess),
+      itemBuilder: builder,
+    );
+  }
+
+  Widget builder(BuildContext context, int r, int c, int l) {
+    if (l > 0) {
+      throw Exception('has only one layer!');
+    }
+    if ((r * columns + c) >= itemCount) {
+      return const Center();
+    }
+
+    return itemBuilder(context, r * columns + c, l);
+  }
+}
+
+class CLMatrix2DNonScrollable extends StatelessWidget {
+  const CLMatrix2DNonScrollable({
     required this.itemBuilder,
     required this.hCount,
     required this.vCount,
@@ -46,7 +102,10 @@ class CLMatrix2D extends StatelessWidget {
                   ),
               if (trailingRow != null)
                 Flexible(
-                  child: trailingRow!,
+                  child: Container(
+                    decoration: BoxDecoration(border: Border.all()),
+                    child: trailingRow,
+                  ),
                 ),
             ],
           ),
