@@ -37,63 +37,64 @@ class ClustersView extends ConsumerWidget {
             }
           : null,
       pageBuilder: (context, quickMenuScopeKey) {
-        return CLGridViewCustom(
-          showAll: true,
-          maxCrossAxisCount: 2,
-          children: clusters.entries
-              .map(
-                (e) => [
-                  GestureDetector(
-                    onTap: () => context.push('/items/by_cluster_id/${e.id}'),
-                    child: LoadItems(
-                      clusterID: e.id!,
-                      hasBackground: false,
-                      buildOnData: (Items items, {required String docDir}) {
-                        final (c, r) = switch (items.entries.length) {
-                          1 => (1, 1),
-                          2 => (1, 2),
-                          <= 4 => (2, 2),
-                          < 6 => (2, 3),
-                          _ => (3, 3)
-                        };
-                        return MediaPreview(
-                          media: items.entries
-                              .map(
-                                (e) => e.toCLMedia(
-                                  pathPrefix: docDir,
-                                ),
-                              )
-                              .toList(),
-                          columns: c,
-                          rows: r,
-                        );
-                      },
-                    ),
-                  ),
-                  if (e.description.isNotEmpty)
-                    GestureDetector(
-                      onTap: () => context.push('/items/by_cluster_id/${e.id}'),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 8,
-                          right: 8,
-                          top: 8,
-                          bottom: 8,
-                        ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            e.description,
-                            textAlign: TextAlign.start,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              )
-              .toList(),
+        return CLMatrix2D(
+          itemCount: clusters.entries.length,
+          itemBuilder: itemBuilder,
+          columns: 2,
         );
       },
     );
+  }
+
+  Widget itemBuilder(BuildContext context, int index, int l) {
+    final e = clusters.entries[index];
+    if (l == 0) {
+      return GestureDetector(
+        onTap: () => context.push('/items/by_cluster_id/${e.id}'),
+        child: LoadItems(
+          clusterID: e.id!,
+          hasBackground: false,
+          buildOnData: (Items items, {required String docDir}) {
+            final (c, r) = switch (items.entries.length) {
+              1 => (1, 1),
+              2 => (1, 2),
+              <= 4 => (2, 2),
+              < 6 => (2, 3),
+              _ => (3, 3)
+            };
+            return MediaPreview(
+              media: items.entries
+                  .map(
+                    (e) => e.toCLMedia(
+                      pathPrefix: docDir,
+                    ),
+                  )
+                  .toList(),
+              columns: c,
+              rows: r,
+            );
+          },
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onTap: () => context.push('/items/by_cluster_id/${e.id}'),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 8,
+            right: 8,
+            top: 8,
+            bottom: 8,
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              (e.description.isEmpty) ? 'Empty' : e.description,
+              textAlign: TextAlign.start,
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
