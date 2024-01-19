@@ -1,4 +1,4 @@
-import 'dart:io';
+/* import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
@@ -62,3 +62,4 @@ class URLHandler {
     return null;
   }
 }
+ */

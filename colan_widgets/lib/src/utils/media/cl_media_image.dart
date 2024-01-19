@@ -7,26 +7,29 @@ import 'package:image/image.dart';
 class CLMediaImage extends CLMedia {
   CLMediaImage({
     required super.path,
-    required super.type,
     super.url,
     super.previewPath,
-  }) : super();
+  }) : super(type: CLMediaType.image);
 
   @override
   CLMediaImage copyWith({
     String? path,
-    CLMediaType? type,
     String? url,
     String? previewPath,
-    CLDimension? previewDim,
-    CLDimension? dimension,
   }) {
     return CLMediaImage(
       path: path ?? this.path,
-      type: type ?? this.type,
       url: url ?? this.url,
       previewPath: previewPath ?? this.previewPath,
     );
+  }
+
+  CLMediaImage attachPreviewIfExits() {
+    final previewFile = File(previewFileName);
+    if (previewFile.existsSync()) {
+      return copyWith(previewPath: previewFileName);
+    }
+    return this;
   }
 
   @override

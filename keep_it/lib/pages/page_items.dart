@@ -17,7 +17,7 @@ class ItemsPage extends ConsumerWidget {
       child: CLBackground(
         child: LoadItems(
           clusterID: clusterID,
-          buildOnData: (Items items) {
+          buildOnData: (Items items, {required String docDir}) {
             return ItemsView(items: items);
           },
         ),

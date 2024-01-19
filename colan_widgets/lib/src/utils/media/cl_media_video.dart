@@ -8,24 +8,29 @@ import 'cl_media_type.dart';
 class CLMediaVideo extends CLMedia {
   CLMediaVideo({
     required super.path,
-    required super.type,
     super.url,
     super.previewPath,
-  }) : super();
+  }) : super(type: CLMediaType.video);
 
   @override
   CLMediaVideo copyWith({
     String? path,
-    CLMediaType? type,
     String? url,
     String? previewPath,
   }) {
     return CLMediaVideo(
       path: path ?? this.path,
-      type: type ?? this.type,
       url: url ?? this.url,
       previewPath: previewPath ?? this.previewPath,
     );
+  }
+
+  CLMediaVideo attachPreviewIfExits() {
+    final previewFile = File(previewFileName);
+    if (previewFile.existsSync()) {
+      return copyWith(previewPath: previewFileName);
+    }
+    return this;
   }
 
   @override

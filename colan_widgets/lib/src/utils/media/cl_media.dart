@@ -27,13 +27,12 @@ class CLMedia {
 
   CLMedia copyWith({
     String? path,
-    CLMediaType? type,
     String? url,
     String? previewPath,
   }) {
     return CLMedia(
       path: path ?? this.path,
-      type: type ?? this.type,
+      type: type,
       url: url ?? this.url,
       previewPath: previewPath ?? this.previewPath,
     );

@@ -52,7 +52,10 @@ extension FromSharedMediaGroup on SharedMedia? {
             switch (mimeType) {
               CLMediaType.image => await CLMediaImage(
                   path: text,
-                  type: CLMediaType.image,
+                  url: text,
+                ).withPreview(),
+              CLMediaType.video => await CLMediaVideo(
+                  path: text,
                   url: text,
                 ).withPreview(),
               null => throw Exception('Unexpected null'),
@@ -75,7 +78,6 @@ extension FromSharedMediaGroup on SharedMedia? {
               this!.imageFilePath!,
               toSubFolder: 'Incoming',
             ),
-            type: CLMediaType.image,
           ).withPreview(),
         );
       }
@@ -94,14 +96,12 @@ extension FromSharedMediaGroup on SharedMedia? {
                       e.path,
                       toSubFolder: 'Incoming',
                     ),
-                    type: CLMediaType.image,
                   ).withPreview(),
                 SharedAttachmentType.video => await CLMediaVideo(
                     path: await FileHandler.move(
                       e.path,
                       toSubFolder: 'Incoming',
                     ),
-                    type: CLMediaType.image,
                   ).withPreview(),
                 _ => CLMedia(path: e.path, type: toCLMediaType(e.type)),
               },

@@ -6,6 +6,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:store/store.dart';
 
@@ -16,22 +17,6 @@ class MediaPreview extends ConsumerWidget {
     this.columns = 3,
     this.rows,
   });
-
-  factory MediaPreview.fromItems(
-    Items items, {
-    int columns = 1,
-    int? rows,
-  }) {
-    final media = <CLMediaImage>[];
-    for (final item in items.entries) {
-      media.add(CLMediaImage(path: item.path, type: item.type));
-    }
-    return MediaPreview(
-      media: media,
-      columns: columns,
-      rows: rows,
-    );
-  }
 
   final List<CLMedia> media;
   final int columns;
