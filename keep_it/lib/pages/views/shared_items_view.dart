@@ -36,7 +36,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     descriptionController = TextEditingController();
     descriptionNode = FocusNode();
     if (descriptionNode.canRequestFocus) {
-      //TODO: descriptionNode.requestFocus();
+      descriptionNode.requestFocus();
     }
     descriptionController.selection = TextSelection.fromPosition(
       TextPosition(offset: descriptionController.text.length),
