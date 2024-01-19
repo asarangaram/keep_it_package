@@ -9,9 +9,9 @@ class CLMatrix2DScrollable extends StatelessWidget {
     required this.itemBuilder,
     required this.hCount,
     required this.vCount,
+    required this.layers,
     this.leadingRow,
     this.trailingRow,
-    this.lCount = 1,
     super.key,
   });
 
@@ -21,7 +21,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
 
   final int hCount;
   final int vCount;
-  final int lCount;
+  final int layers;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  for (var l = 0; l < lCount; l++)
+                  for (var l = 0; l < layers; l++)
                     Flexible(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

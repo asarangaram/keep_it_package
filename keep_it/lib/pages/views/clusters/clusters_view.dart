@@ -41,6 +41,7 @@ class ClustersView extends ConsumerWidget {
           itemCount: clusters.entries.length,
           itemBuilder: itemBuilder,
           columns: 2,
+          layers: 2,
         );
       },
     );
@@ -48,6 +49,9 @@ class ClustersView extends ConsumerWidget {
 
   Widget itemBuilder(BuildContext context, int index, int l) {
     final e = clusters.entries[index];
+    if (l > 1) {
+      throw Exception('has only one layer!');
+    }
     if (l == 0) {
       return GestureDetector(
         onTap: () => context.push('/items/by_cluster_id/${e.id}'),
@@ -87,7 +91,7 @@ class ClustersView extends ConsumerWidget {
             bottom: 8,
           ),
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topCenter,
             child: Text(
               (e.description.isEmpty) ? 'Empty' : e.description,
               textAlign: TextAlign.start,

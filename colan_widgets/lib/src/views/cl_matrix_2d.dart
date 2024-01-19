@@ -10,11 +10,13 @@ class CLMatrix2D extends StatelessWidget {
     this.columns = 3,
     this.excessViewBuilder,
     super.key,
+    this.layers = 1,
   });
 
   final int? rows;
   final int columns;
   final int itemCount;
+  final int layers;
   final Widget Function(BuildContext context, int index, int layer) itemBuilder;
   final Widget Function(BuildContext context, int excessCount)?
       excessViewBuilder;
@@ -32,6 +34,7 @@ class CLMatrix2D extends StatelessWidget {
         hCount: columns,
         vCount: (itemCount + columns - 1) ~/ columns,
         itemBuilder: builder,
+        layers: layers,
       );
     }
     final excess = itemCount - rows! * columns;
@@ -42,13 +45,11 @@ class CLMatrix2D extends StatelessWidget {
       trailingRow:
           (excess <= 0) ? null : excessViewBuilder?.call(context, excess),
       itemBuilder: builder,
+      layers: layers,
     );
   }
 
   Widget builder(BuildContext context, int r, int c, int l) {
-    if (l > 0) {
-      throw Exception('has only one layer!');
-    }
     if ((r * columns + c) >= itemCount) {
       return const Center();
     }
@@ -62,9 +63,9 @@ class CLMatrix2DNonScrollable extends StatelessWidget {
     required this.itemBuilder,
     required this.hCount,
     required this.vCount,
+    required this.layers,
     this.leadingRow,
     this.trailingRow,
-    this.lCount = 1,
     super.key,
   });
 
@@ -74,7 +75,7 @@ class CLMatrix2DNonScrollable extends StatelessWidget {
 
   final int hCount;
   final int vCount;
-  final int lCount;
+  final int layers;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +88,7 @@ class CLMatrix2DNonScrollable extends StatelessWidget {
             children: [
               if (leadingRow != null) Flexible(child: leadingRow!),
               for (var r = 0; r < vCount; r++)
-                for (var l = 0; l < lCount; l++)
+                for (var l = 0; l < layers; l++)
                   Flexible(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -102,10 +103,7 @@ class CLMatrix2DNonScrollable extends StatelessWidget {
                   ),
               if (trailingRow != null)
                 Flexible(
-                  child: Container(
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: trailingRow,
-                  ),
+                  child: trailingRow!,
                 ),
             ],
           ),

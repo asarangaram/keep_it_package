@@ -1,7 +1,6 @@
 // ignore: unused_import
 import 'dart:io';
 
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
@@ -27,11 +26,23 @@ class MediaPreview extends ConsumerWidget {
       rows: rows,
       itemBuilder: itemBuilder,
       excessViewBuilder: (BuildContext context, int excessCount) =>
-          Center(child: CLText.small('+$excessCount Items')),
+          DecoratedBox(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.tertiaryContainer,
+          borderRadius: BorderRadius.circular(2),
+          boxShadow: [
+            BoxShadow(color: Theme.of(context).colorScheme.onTertiaryContainer),
+          ],
+        ),
+        child: Center(child: CLText.small('+$excessCount Items')),
+      ),
     );
   }
 
   Widget itemBuilder(BuildContext context, int index, int layer) {
+    if (layer > 0) {
+      throw Exception('has only one layer!');
+    }
     if (index > media.length) {
       throw Exception('index exceeded length');
     }
