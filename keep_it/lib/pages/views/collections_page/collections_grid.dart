@@ -10,14 +10,14 @@ import 'collections_grid_item.dart';
 class CollectionsGrid extends ConsumerWidget {
   const CollectionsGrid({
     required this.quickMenuScopeKey,
-    required this.collectionList,
+    required this.collections,
     this.onTapCollection,
     this.onEditCollection,
     this.onDeleteCollection,
     super.key,
   });
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-  final List<Collection> collectionList;
+  final Collections collections;
   final Future<bool?> Function(
     BuildContext context,
     Collection collection,
@@ -33,7 +33,7 @@ class CollectionsGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (collectionList.isEmpty) {
+    if (collections.entries.isEmpty) {
       throw Exception("This widget can't handle empty colections");
     }
 
@@ -49,20 +49,21 @@ class CollectionsGrid extends ConsumerWidget {
         );
 
         final random = Random(42);
-        final pages = (collectionList.length + (pageMatrix.totalCount - 1)) ~/
-            pageMatrix.totalCount;
+        final pages =
+            (collections.entries.length + (pageMatrix.totalCount - 1)) ~/
+                pageMatrix.totalCount;
         return CLMatrix3D(
           pages: pages,
           rows: pageMatrix.height,
           columns: pageMatrix.width,
-          itemCount: collectionList.length,
+          itemCount: collections.entries.length,
           layers: 2,
           itemBuilder: (context, index, layer) {
             final randomColor =
                 Colors.primaries[random.nextInt(Colors.primaries.length)];
             if (layer == 0) {
               return CollectionsGridItem(
-                collection: collectionList[index],
+                collection: collections.entries[index],
                 quickMenuScopeKey: quickMenuScopeKey,
                 size: childSize,
                 backgroundColor: randomColor,
@@ -72,7 +73,7 @@ class CollectionsGrid extends ConsumerWidget {
               );
             } else if (layer == 1) {
               return Text(
-                collectionList[index].label,
+                collections.entries[index].label,
                 maxLines: 2,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,

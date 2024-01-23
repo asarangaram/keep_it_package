@@ -103,7 +103,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
         if (isGridView) {
           return CollectionsGrid(
             quickMenuScopeKey: quickMenuScopeKey,
-            collectionList: widget.collections.entries,
+            collections: widget.collections,
             onTapCollection: (context, collection) async {
               unawaited(
                 context.push(
@@ -117,7 +117,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
           );
         }
         return CollectionsList(
-          collectionList: widget.collections.entries,
+          collections: widget.collections,
           onTapCollection: (context, collection) async {
             unawaited(
               context.push(

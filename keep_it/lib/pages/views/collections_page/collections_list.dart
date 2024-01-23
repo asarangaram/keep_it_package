@@ -11,7 +11,7 @@ import '../cl_blink.dart';
 
 class CollectionsList extends ConsumerStatefulWidget {
   const CollectionsList({
-    required this.collectionList,
+    required this.collections,
     super.key,
     this.onSelection,
     this.selectionMask,
@@ -20,7 +20,7 @@ class CollectionsList extends ConsumerStatefulWidget {
     this.onDeleteCollection,
   });
 
-  final List<Collection> collectionList;
+  final Collections collections;
   final void Function(int index)? onSelection;
   final List<bool>? selectionMask;
   final Future<bool?> Function(
@@ -59,11 +59,11 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
       controller.scrollToIndex(0);
     }); */
     if (widget.selectionMask != null) {
-      if (widget.selectionMask!.length != widget.collectionList.length) {
+      if (widget.selectionMask!.length != widget.collections.entries.length) {
         throw Exception('Selection is setup incorrectly');
       }
     }
-    if (widget.collectionList.isEmpty) {
+    if (widget.collections.entries.isEmpty) {
       throw Exception("This widget can't handle empty colections");
     }
 
@@ -71,7 +71,7 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
 
     return SizedBox.expand(
       child: ListView.builder(
-        itemCount: widget.collectionList.length,
+        itemCount: widget.collections.entries.length,
         controller: controller,
         itemBuilder: (context, index) {
           final randomColor =
@@ -88,13 +88,13 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
                 children: [
                   SlidableAction(
                     onPressed: (context) => widget.onEditCollection
-                        ?.call(context, widget.collectionList[index]),
+                        ?.call(context, widget.collections.entries[index]),
                     icon: Icons.edit,
                     label: 'Edit',
                   ),
                   SlidableAction(
                     onPressed: (context) => widget.onDeleteCollection
-                        ?.call(context, widget.collectionList[index]),
+                        ?.call(context, widget.collections.entries[index]),
                     icon: Icons.edit,
                     backgroundColor:
                         Theme.of(context).colorScheme.errorContainer,
@@ -107,12 +107,12 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
               child: CLHighlighted(
                 isHighlighed: index == 0,
                 child: CollectionsListItem(
-                  widget.collectionList[index],
+                  widget.collections.entries[index],
                   isSelected: widget.selectionMask?[index],
                   backgroundColor: randomColor,
                   onTap: (widget.onSelection == null)
                       ? () => widget.onTapCollection
-                          ?.call(context, widget.collectionList[index])
+                          ?.call(context, widget.collections.entries[index])
                       : () => widget.onSelection!.call(index),
                 ),
               ),

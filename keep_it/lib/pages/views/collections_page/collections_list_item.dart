@@ -11,6 +11,7 @@ class CollectionsListItem extends ConsumerWidget {
     super.key,
     this.isSelected,
     this.onTap,
+    this.previewSize = 128,
   });
 
   final bool? isSelected;
@@ -18,10 +19,10 @@ class CollectionsListItem extends ConsumerWidget {
 
   final void Function()? onTap;
   final Color backgroundColor;
+  final int previewSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const previewSize = 128; // TODO(asarangaram): should come from settings.
     final clustersAsync = ref.watch(clustersProvider(collection.id));
 
     return SizedBox(

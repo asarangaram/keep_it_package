@@ -63,7 +63,7 @@ class KeepItDialogs {
               throw Exception("CollectionList can't be empty!");
             }
             return CollectionsList(
-              collectionList: selectableList,
+              collections: Collections(selectableList),
               selectionMask: selectionMask,
               onSelection: onSelection,
             );
