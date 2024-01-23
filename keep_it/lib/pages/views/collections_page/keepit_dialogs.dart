@@ -114,28 +114,4 @@ class KeepItDialogs {
       },
     );
   }
-
-  // Not used
-  /* onCreateNewCollection(BuildContext context,
-          Function({Function()? onDone}) handleCreateNew) =>
-      showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return CLButtonsGrid.dialog(
-            onCancel: () {
-              Navigator.of(context).pop();
-            },
-            children2D: [
-              [
-                CLMenuItem("Suggested\nCollections", Icons.menu),
-                CLMenuItem("Create New", Icons.new_label, onTap: () {
-                  upsertCollection(context, onDone: () {
-                    Navigator.of(context).pop();
-                  });
-                }),
-              ],
-            ],
-          );
-        },
-      ); */
 }
