@@ -113,43 +113,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                                 ),
                         ),
                       ],
-                    ) /*  Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: MediaPreview(
-                            media: media.list,
-                            columns: switch (media.list.length) {
-                              < 2 => 1,
-                              < 4 => 2,
-                              _ => 3
-                            },
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        if (!isSaving) ...[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: CLTextField.multiLine(
-                              descriptionController,
-                              focusNode: descriptionNode,
-                              label: 'Tell Something',
-                              hint: 'Tell Something',
-                              maxLines: 5,
-                            ),
-                          ),
-                          SaveOrCancel(
-                            saveLabel: 'Save into...',
-                            cancelLabel: 'Discard',
-                            onDiscard: () => widget.onDiscard(media),
-                            onSave: onSave,
-                          ),
-                        ],
-                      ],
-                    ), */
-                    ,
+                    ),
                   ),
                 );
               },
