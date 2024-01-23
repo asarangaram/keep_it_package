@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:keep_it/pages/views/collections_page/collections_list_item.dart';
 import 'package:store/store.dart';
 

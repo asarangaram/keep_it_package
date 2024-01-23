@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import 'collections_grid_item.dart';
-import 'paginated_grid.dart';
 
 class CollectionsGrid extends ConsumerWidget {
   const CollectionsGrid({
