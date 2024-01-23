@@ -17,7 +17,7 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
   bool isLoading = false;
   // Some race condition might occuur if many collections are updated
   /// How to avoid more frequent update if many triggers occur one after other.
-  Future<void> loadCollections() async {
+  Future<void> loadCollections({int? lastupdatedID}) async {
     if (databaseManager == null) return;
     final List<Collection> collections;
 
@@ -31,8 +31,25 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Collections(collections);
+      final res = Collections(collections, lastupdatedID: lastupdatedID);
+      if (lastupdatedID != null) {
+        await Future.delayed(
+          const Duration(seconds: 1),
+          () => resetLastUpdated(res),
+        );
+      }
+      return res;
     });
+  }
+
+  Future<void> resetLastUpdated(Collections collections) async {
+    // If someone else has already updated, nothing to do
+    if (state.hasValue && state.value == collections) {
+      state = const AsyncValue.loading();
+      state = await AsyncValue.guard(() async {
+        return collections.clearLastUpdated();
+      });
+    }
   }
 
   void upsertCollection(Collection collection) {
@@ -40,9 +57,9 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
       throw Exception('DB Manager is not ready');
     }
 
-    collection.upsert(databaseManager!.db);
+    final lastupdatedID = collection.upsert(databaseManager!.db);
 
-    loadCollections();
+    loadCollections(lastupdatedID: lastupdatedID);
   }
 
   void upsertCollections(List<Collection> collections) {

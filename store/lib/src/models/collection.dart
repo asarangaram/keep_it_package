@@ -53,9 +53,23 @@ class Collection {
 
 class Collections {
   final List<Collection> entries;
-
-  Collections(this.entries);
+  final int? lastupdatedID;
+  Collections(this.entries, {this.lastupdatedID});
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
+
+  Collections copyWith({
+    List<Collection>? entries,
+    int? lastupdatedID,
+  }) {
+    return Collections(
+      entries ?? this.entries,
+      lastupdatedID: lastupdatedID ?? this.lastupdatedID,
+    );
+  }
+
+  Collections clearLastUpdated() {
+    return Collections(entries);
+  }
 }
