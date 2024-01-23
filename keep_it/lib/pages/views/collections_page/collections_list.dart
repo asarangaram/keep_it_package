@@ -1,7 +1,9 @@
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:keep_it/pages/views/collections_page/collections_list_item.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
@@ -54,9 +56,9 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    /* WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.scrollToIndex(0);
-    });
+    }); */
     if (widget.selectionMask != null) {
       if (widget.selectionMask!.length != widget.collectionList.length) {
         throw Exception('Selection is setup incorrectly');
@@ -80,16 +82,40 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
             controller: controller,
             index: index,
             highlightColor: Colors.black.withOpacity(0.1),
-            child: CLHighlighted(
-              isHighlighed: index == 0,
-              child: CollectionsListItem(
-                widget.collectionList[index],
-                isSelected: widget.selectionMask?[index],
-                backgroundColor: randomColor,
-                onTap: (widget.onSelection == null)
-                    ? () => widget.onTapCollection
-                        ?.call(context, widget.collectionList[index])
-                    : () => widget.onSelection!.call(index),
+            child: Slidable(
+              key: ValueKey('collectionslist_$index'),
+              endActionPane: ActionPane(
+                motion: const BehindMotion(),
+                children: [
+                  SlidableAction(
+                    onPressed: (context) => widget.onEditCollection
+                        ?.call(context, widget.collectionList[index]),
+                    icon: Icons.edit,
+                    label: 'Edit',
+                  ),
+                  SlidableAction(
+                    onPressed: (context) => widget.onDeleteCollection
+                        ?.call(context, widget.collectionList[index]),
+                    icon: Icons.edit,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.errorContainer,
+                    foregroundColor:
+                        Theme.of(context).colorScheme.onErrorContainer,
+                    label: 'Delete',
+                  ),
+                ],
+              ),
+              child: CLHighlighted(
+                isHighlighed: index == 0,
+                child: CollectionsListItem(
+                  widget.collectionList[index],
+                  isSelected: widget.selectionMask?[index],
+                  backgroundColor: randomColor,
+                  onTap: (widget.onSelection == null)
+                      ? () => widget.onTapCollection
+                          ?.call(context, widget.collectionList[index])
+                      : () => widget.onSelection!.call(index),
+                ),
               ),
             ),
           );
