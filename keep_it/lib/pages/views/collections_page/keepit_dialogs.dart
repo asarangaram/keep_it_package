@@ -7,24 +7,19 @@ import 'package:keep_it/pages/views/main/background.dart';
 import 'package:store/store.dart';
 
 class KeepItDialogs {
-  static Future<void> upsertCollection(
+  static Future<bool?> upsertCollection(
     BuildContext context, {
     Collection? collection,
-    void Function()? onDone,
-  }) =>
-      showDialog<void>(
+    //  void Function()? onDone,
+  }) async =>
+      showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return CLDialogWrapper(
-            onCancel: () {
-              Navigator.of(context).pop();
-            },
+            onCancel: () => Navigator.of(context).pop(false),
             child: UpsertCollectionForm(
               collection: collection,
-              onDone: () {
-                Navigator.of(context).pop();
-                onDone?.call();
-              },
+              onDone: () => Navigator.of(context).pop(true),
             ),
           );
         },

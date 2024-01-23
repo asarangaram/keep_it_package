@@ -1,6 +1,6 @@
 import 'package:store/store.dart';
 
-List<Collection> defaultCollections = [
+List<Collection> suggestedCollections = [
   const Collection(
     label: 'Memorabilia',
     description: 'Images of sentimental items or things with emotional value',

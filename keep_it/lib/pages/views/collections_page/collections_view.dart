@@ -1,13 +1,14 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/data/db_default_collections.dart';
-import 'package:keep_it/pages/views/collections_page/collections_empty.dart';
-import 'package:keep_it/pages/views/collections_page/collections_grid.dart';
-import 'package:keep_it/pages/views/collections_page/collections_list.dart';
-import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
-import 'package:keep_it/pages/views/main/keep_it_main_view.dart';
 import 'package:store/store.dart';
+
+import '../../../data/providers/suggested_collections.dart';
+import '../main/keep_it_main_view.dart';
+import 'collections_empty.dart';
+import 'collections_grid.dart';
+import 'collections_list.dart';
+import 'keepit_dialogs.dart';
 
 class CollectionsView extends ConsumerStatefulWidget {
   const CollectionsView(this.collections, {super.key});
@@ -26,7 +27,9 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
         ref.watch(availableSuggestionsProvider(widget.collections.entries));
     if (widget.collections.isEmpty) {
       return KeepItMainView(
-        pageBuilder: (context, quickMenuScopeKey) => const CollectionsEmpty(),
+        pageBuilder: (context, quickMenuScopeKey) => const CollectionsEmpty(
+          menuItems: [],
+        ),
       );
     }
     return KeepItMainView(
@@ -72,10 +75,14 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
                       CLMenuItem(
                         'Create New',
                         Icons.new_label,
-                        onTap: () => KeepItDialogs.upsertCollection(
-                          context,
-                          onDone: onDone,
-                        ),
+                        onTap: () async {
+                          final res = await KeepItDialogs.upsertCollection(
+                            context,
+                          );
+                          if (res ?? false) {
+                            onDone();
+                          }
+                        },
                       ),
                     ]
                   ],
@@ -110,13 +117,3 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
     );
   }
 }
-
-final availableSuggestionsProvider =
-    StateProvider.family<List<Collection>, List<Collection>?>(
-        (ref, existingCollections) {
-  if (existingCollections == null) return defaultCollections;
-
-  return defaultCollections.where((element) {
-    return !existingCollections.map((e) => e.label).contains(element.label);
-  }).toList();
-});

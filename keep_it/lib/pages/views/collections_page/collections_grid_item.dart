@@ -49,12 +49,15 @@ class CollectionsGridItem extends ConsumerWidget {
                         'Edit',
                         Icons.edit,
                         onTap: collectionsAsync.whenOrNull(
-                          data: (Collections collections) =>
-                              () => KeepItDialogs.upsertCollection(
-                                    context,
-                                    onDone: onDone,
-                                    collection: collection,
-                                  ),
+                          data: (Collections collections) => () async {
+                            final res = await KeepItDialogs.upsertCollection(
+                              context,
+                              collection: collection,
+                            );
+                            if (res ?? false) {
+                              onDone();
+                            }
+                          },
                         ),
                       ),
                       CLMenuItem(
