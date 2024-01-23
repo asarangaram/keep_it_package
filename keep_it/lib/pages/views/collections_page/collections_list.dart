@@ -12,11 +12,26 @@ class CollectionsList extends ConsumerWidget {
     super.key,
     this.onSelection,
     this.selectionMask,
+    this.onTapCollection,
+    this.onEditCollection,
+    this.onDeleteCollection,
   });
 
   final List<Collection> collectionList;
   final void Function(int index)? onSelection;
   final List<bool>? selectionMask;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection collection,
+  )? onEditCollection;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection collection,
+  )? onDeleteCollection;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection collection,
+  )? onTapCollection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,11 +55,7 @@ class CollectionsList extends ConsumerWidget {
             isSelected: selectionMask?[index],
             random: random,
             onTap: (onSelection == null)
-                ? () {
-                    context.push(
-                      '/clusters/by_collection_id/${collectionList[index].id}',
-                    );
-                  }
+                ? () => onTapCollection?.call(context, collectionList[index])
                 : () => onSelection!.call(index),
           );
         },

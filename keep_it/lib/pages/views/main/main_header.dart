@@ -69,8 +69,7 @@ class MainHeader extends ConsumerWidget {
                             kMinInteractiveDimension * 1.5,
                             kMinInteractiveDimension * 1.5,
                           ),
-                          children2D:
-                              insertOnDone(context, mainActionItems!, onDone),
+                          children2D: mainActionItems!.insertOnDone(onDone),
                         );
                       },
                       child: const CLIcon.small(
@@ -85,36 +84,4 @@ class MainHeader extends ConsumerWidget {
       ),
     );
   }
-
-  static List<List<CLMenuItem>> insertOnDone(
-    BuildContext context,
-    List<List<CLMenuItem>> items,
-    void Function() onDone,
-  ) {
-    return items.map((list) {
-      return list
-          .map(
-            (e) => CLMenuItem(
-              e.title,
-              e.icon,
-              onTap: () {
-                if (e.onTap != null) {
-                  e.onTap!.call();
-                } else {
-                  CLButtonsGrid.showSnackBarAboveDialog(context, e.title);
-                }
-                onDone();
-              },
-            ),
-          )
-          .toList();
-    }).toList();
-  }
 }
-/*
-[
-                    for (var i = 0; i < 1; i++) ...[
-                      
-                    ]
-                  ]
-*/

@@ -49,17 +49,16 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
                 quickMenuScopeKey: quickMenuScopeKey,
                 title: widget.title,
                 onPop: widget.onPop,
-                mainActionItems: [
+                mainActionItems: const [
                   [
                     CLMenuItem(
-                      'Paste',
-                      Icons.content_paste_go_outlined,
+                      title: 'Paste',
+                      icon: Icons.content_paste_go_outlined,
                     ),
                     CLMenuItem(
-                      'Settings',
-                      Icons.settings,
+                      title: 'Settings',
+                      icon: Icons.settings,
                       /*Icons.settings_applications_sharp,*/
-                      // TODO(asarangaram): For Dark Mode.
                     ),
                   ],
                 ],

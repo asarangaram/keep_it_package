@@ -21,4 +21,6 @@ class CLDimension {
 
   @override
   String toString() => 'Dimension(width: $width, height: $height)';
+
+  int get totalCount => width * height;
 }

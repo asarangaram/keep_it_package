@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:keep_it/pages/views/app_theme.dart';
 import 'package:keep_it/pages/views/collections_page/collection_preview.dart';
-import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
+
 import 'package:store/store.dart';
 
 class CollectionsGridItem extends ConsumerWidget {
@@ -16,12 +16,27 @@ class CollectionsGridItem extends ConsumerWidget {
     required this.random,
     super.key,
     this.collection,
+    this.onEditCollection,
+    this.onDeleteCollection,
+    this.onTapCollection,
   });
   final Collection? collection;
   final Random random;
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final Size size;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection collection,
+  )? onEditCollection;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection collection,
+  )? onDeleteCollection;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection collection,
+  )? onTapCollection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,28 +61,35 @@ class CollectionsGridItem extends ConsumerWidget {
                   children2D: [
                     [
                       CLMenuItem(
-                        'Edit',
-                        Icons.edit,
+                        title: 'Edit',
+                        icon: Icons.edit,
                         onTap: collectionsAsync.whenOrNull(
                           data: (Collections collections) => () async {
-                            final res = await KeepItDialogs.upsertCollection(
+                            final res = await onEditCollection?.call(
                               context,
-                              collection: collection,
+                              collection!,
                             );
+
                             if (res ?? false) {
                               onDone();
                             }
+                            return res;
                           },
                         ),
                       ),
                       CLMenuItem(
-                        'Delete',
-                        Icons.delete,
-                        onTap: () {
-                          onDone.call();
-                          ref
-                              .read(collectionsProvider(null).notifier)
-                              .deleteCollection(collection!);
+                        title: 'Delete',
+                        icon: Icons.delete,
+                        onTap: () async {
+                          final res = await onDeleteCollection?.call(
+                            context,
+                            collection!,
+                          );
+
+                          if (res ?? false) {
+                            onDone();
+                          }
+                          return res;
                         },
                       ),
                     ]
@@ -75,56 +97,21 @@ class CollectionsGridItem extends ConsumerWidget {
                 ),
               );
             },
-            child: CLRoundIconLabeled(label: collection!.label, random: random),
-          );
-  }
-}
-
-class CLRoundIconLabeled extends StatelessWidget {
-  const CLRoundIconLabeled({
-    required this.random,
-    super.key,
-    this.label,
-    this.child,
-    this.horizontalSpacing = 0,
-    this.verticalSpacing = 0,
-  });
-
-  final String? label;
-  final Widget? child;
-  final double horizontalSpacing;
-  final double verticalSpacing;
-  final Random random;
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: (label != null) ? 1.4 : 1.0,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: horizontalSpacing,
-          vertical: verticalSpacing,
-        ),
-        child: SizedBox.expand(
-          child: Column(
-            children: [
-              CollectionPreview(random: random, child: child),
-              if (label != null)
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Text(
-                      label!,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+            onTap: (collection == null)
+                ? null
+                : () => onTapCollection?.call(context, collection!),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(child: CollectionPreview(random: random)),
+                Text(
+                  collection!.label,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
+              ],
+            ),
+          );
   }
 }

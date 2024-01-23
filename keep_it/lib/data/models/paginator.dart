@@ -42,25 +42,9 @@ class PaginatedList {
     final pageSize = paginationInfo.pageSize;
     final itemSize = paginationInfo.itemSize;
     final items = paginationInfo.items;
-    try {
-      if (pageSize.width == double.infinity) {
-        throw Exception("Width is unbounded, can't handle");
-      }
-      if (pageSize.height == double.infinity) {
-        throw Exception("Width is unbounded, can't handle");
-      }
-      itemsInRow =
-          ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor();
-      itemsInColumn =
-          ((pageSize.height.nearest(itemSize.height)) / itemSize.height)
-              .floor();
-    } catch (e) {
-      rethrow;
-    }
-    itemsInRow = max(1, itemsInRow);
-    itemsInColumn = max(1, itemsInColumn);
+    final s = pageMatrix(pageSize: pageSize, itemSize: itemSize);
     pages = [];
-    for (final p in items.convertTo2D(itemsInRow * itemsInColumn)) {
+    for (final p in items.convertTo2D(s.width * s.height)) {
       pages.add(p.convertTo2D(itemsInRow));
     }
   }
@@ -78,6 +62,27 @@ class PaginatedList {
     if (pages[pageNum].length <= r) return null;
     if (pages[pageNum][r].length <= c) return null;
     return pages[pageNum][r][c];
+  }
+
+  CLDimension pageMatrix({required Size pageSize, required Size itemSize}) {
+    try {
+      if (pageSize.width == double.infinity) {
+        throw Exception("Width is unbounded, can't handle");
+      }
+      if (pageSize.height == double.infinity) {
+        throw Exception("Width is unbounded, can't handle");
+      }
+      itemsInRow =
+          ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor();
+      itemsInColumn =
+          ((pageSize.height.nearest(itemSize.height)) / itemSize.height)
+              .floor();
+    } catch (e) {
+      rethrow;
+    }
+    itemsInRow = max(1, itemsInRow);
+    itemsInColumn = max(1, itemsInColumn);
+    return CLDimension(width: itemsInRow, height: itemsInColumn);
   }
 }
 

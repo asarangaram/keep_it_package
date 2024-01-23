@@ -9,6 +9,7 @@ environment:
   sdk: '>=3.1.2 <4.0.0'
 
 dependencies:
+  adaptive_dialog: ^2.0.0
   app_loader:
     path: ../app_loader
   colan_widgets:
