@@ -1,3 +1,4 @@
+import 'package:colan_widgets/src/widgets/flexibile_optional.dart';
 import 'package:flutter/material.dart';
 import 'cl_matrix_2d_scroll.dart';
 import 'compute_size_and_build.dart';
@@ -89,7 +90,8 @@ class CLMatrix2DNonScrollable extends StatelessWidget {
               if (leadingRow != null) Flexible(child: leadingRow!),
               for (var r = 0; r < vCount; r++)
                 for (var l = 0; l < layers; l++)
-                  Flexible(
+                  FlexibileOptional(
+                    isFlexible: l == 0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/pages/views/collections_page/collections_list_item.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
-class CollectionsList extends ConsumerWidget {
+import '../cl_blink.dart';
+
+class CollectionsList extends ConsumerStatefulWidget {
   const CollectionsList({
     required this.collectionList,
     super.key,
@@ -33,13 +36,33 @@ class CollectionsList extends ConsumerWidget {
   )? onTapCollection;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (selectionMask != null) {
-      if (selectionMask!.length != collectionList.length) {
+  ConsumerState<CollectionsList> createState() => _CollectionsListState();
+}
+
+class _CollectionsListState extends ConsumerState<CollectionsList> {
+  late AutoScrollController controller;
+
+  @override
+  void initState() {
+    controller = AutoScrollController(
+      viewportBoundaryGetter: () =>
+          Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+      axis: Axis.vertical,
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.scrollToIndex(0);
+    });
+    if (widget.selectionMask != null) {
+      if (widget.selectionMask!.length != widget.collectionList.length) {
         throw Exception('Selection is setup incorrectly');
       }
     }
-    if (collectionList.isEmpty) {
+    if (widget.collectionList.isEmpty) {
       throw Exception("This widget can't handle empty colections");
     }
 
@@ -47,18 +70,71 @@ class CollectionsList extends ConsumerWidget {
 
     return SizedBox.expand(
       child: ListView.builder(
-        itemCount: collectionList.length,
+        itemCount: widget.collectionList.length,
+        controller: controller,
         itemBuilder: (context, index) {
-          return CollectionsListItem(
-            collectionList[index],
-            isSelected: selectionMask?[index],
-            random: random,
-            onTap: (onSelection == null)
-                ? () => onTapCollection?.call(context, collectionList[index])
-                : () => onSelection!.call(index),
+          final randomColor =
+              Colors.primaries[random.nextInt(Colors.primaries.length)];
+          return AutoScrollTag(
+            key: ValueKey(index),
+            controller: controller,
+            index: index,
+            highlightColor: Colors.black.withOpacity(0.1),
+            child: CLHighlighted(
+              isHighlighed: index == 0,
+              child: CollectionsListItem(
+                widget.collectionList[index],
+                isSelected: widget.selectionMask?[index],
+                backgroundColor: randomColor,
+                onTap: (widget.onSelection == null)
+                    ? () => widget.onTapCollection
+                        ?.call(context, widget.collectionList[index])
+                    : () => widget.onSelection!.call(index),
+              ),
+            ),
           );
         },
       ),
+    );
+  }
+}
+
+class CLHighlighted extends StatefulWidget {
+  const CLHighlighted({
+    required this.child,
+    super.key,
+    this.isHighlighed = false,
+  });
+  final Widget child;
+  final bool isHighlighed;
+
+  @override
+  State<CLHighlighted> createState() => _CLHighlightedState();
+}
+
+class _CLHighlightedState extends State<CLHighlighted> {
+  late bool timeout;
+  @override
+  void initState() {
+    timeout = false;
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          timeout = true;
+        });
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.isHighlighed || timeout) {
+      return widget.child;
+    }
+    return CLBlink(
+      blinkDuration: const Duration(milliseconds: 400),
+      child: widget.child,
     );
   }
 }

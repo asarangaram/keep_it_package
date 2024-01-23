@@ -19,19 +19,26 @@ class ComputeSizeAndBuildState extends State<ComputeSizeAndBuild> {
   Size? computedSize;
 
   @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final renderBox =
-          _containerKey.currentContext!.findRenderObject()! as RenderBox;
+  void didChangeDependencies() {
+    WidgetsBinding.instance.addPostFrameCallback(_computeSize);
+    super.didChangeDependencies();
+  }
+
+  void _computeSize(_) {
+    final renderBox =
+        _containerKey.currentContext?.findRenderObject()! as RenderBox?;
+    if (renderBox != null) {
       final widgetSize = renderBox.size;
       if (computedSize != widgetSize) {
         setState(() {
           computedSize = widgetSize;
-          /* print('Calculated Size = $computedSize'); */
         });
       }
-    });
+    }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       key: _containerKey,
       child: (computedSize == null)

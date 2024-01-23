@@ -1,16 +1,14 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class CollectionPreview extends StatelessWidget {
   const CollectionPreview({
-    required this.random,
+    required this.backgroundColor,
     super.key,
     this.child,
   });
 
-  final Random random;
   final Widget? child;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +20,7 @@ class CollectionPreview extends StatelessWidget {
           padding: const EdgeInsets.all(2),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.primaries[random.nextInt(Colors.primaries.length)],
+              color: backgroundColor,
               borderRadius: const BorderRadius.all(Radius.circular(12)),
             ),
             child: child,

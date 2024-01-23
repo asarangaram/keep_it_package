@@ -13,7 +13,7 @@ class CollectionsGridItem extends ConsumerWidget {
   const CollectionsGridItem({
     required this.quickMenuScopeKey,
     required this.size,
-    required this.random,
+    required this.backgroundColor,
     super.key,
     this.collection,
     this.onEditCollection,
@@ -21,7 +21,7 @@ class CollectionsGridItem extends ConsumerWidget {
     this.onTapCollection,
   });
   final Collection? collection;
-  final Random random;
+  final Color backgroundColor;
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final Size size;
@@ -100,18 +100,7 @@ class CollectionsGridItem extends ConsumerWidget {
             onTap: (collection == null)
                 ? null
                 : () => onTapCollection?.call(context, collection!),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(child: CollectionPreview(random: random)),
-                Text(
-                  collection!.label,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+            child: CollectionPreview(backgroundColor: backgroundColor),
           );
   }
 }

@@ -9,7 +9,7 @@ import 'package:store/store.dart';
 class CollectionsListItem extends ConsumerWidget {
   const CollectionsListItem(
     this.collection, {
-    required this.random,
+    required this.backgroundColor,
     super.key,
     this.isSelected,
     this.onTap,
@@ -17,8 +17,9 @@ class CollectionsListItem extends ConsumerWidget {
 
   final bool? isSelected;
   final Collection collection;
-  final Random random;
+
   final void Function()? onTap;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,7 +57,7 @@ class CollectionsListItem extends ConsumerWidget {
         ),
         leading: SizedBox.square(
           dimension: previewSize.toDouble(),
-          child: CollectionPreview(random: random),
+          child: CollectionPreview(backgroundColor: backgroundColor),
         ),
         onTap: onTap,
       ),

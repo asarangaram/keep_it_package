@@ -44,6 +44,7 @@ class CLMatrix3D extends ConsumerWidget {
           },
           rows: rows,
           columns: columns,
+          layers: layers,
         );
       },
       pageMax: pages,

@@ -56,16 +56,29 @@ class CollectionsGrid extends ConsumerWidget {
           rows: pageMatrix.height,
           columns: pageMatrix.width,
           itemCount: collectionList.length,
+          layers: 2,
           itemBuilder: (context, index, layer) {
-            return CollectionsGridItem(
-              collection: collectionList[index],
-              quickMenuScopeKey: quickMenuScopeKey,
-              size: childSize,
-              random: random,
-              onTapCollection: onTapCollection,
-              onEditCollection: onEditCollection,
-              onDeleteCollection: onDeleteCollection,
-            );
+            final randomColor =
+                Colors.primaries[random.nextInt(Colors.primaries.length)];
+            if (layer == 0) {
+              return CollectionsGridItem(
+                collection: collectionList[index],
+                quickMenuScopeKey: quickMenuScopeKey,
+                size: childSize,
+                backgroundColor: randomColor,
+                onTapCollection: onTapCollection,
+                onEditCollection: onEditCollection,
+                onDeleteCollection: onDeleteCollection,
+              );
+            } else if (layer == 1) {
+              return Text(
+                collectionList[index].label,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              );
+            }
+            throw Exception('Incorrect layer');
           },
         );
       },
