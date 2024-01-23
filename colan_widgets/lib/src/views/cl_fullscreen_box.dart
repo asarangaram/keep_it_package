@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../basics/cl_text.dart';
 import '../basics/cl_text_field.dart';
+import '../utils/notify.dart';
 
-class CLFullscreenBox extends StatelessWidget {
+class CLFullscreenBox extends ConsumerStatefulWidget {
   const CLFullscreenBox({
     required Widget child,
     super.key,
@@ -39,7 +42,22 @@ class CLFullscreenBox extends StatelessWidget {
   final void Function(int index)? onPageChange;
 
   @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CLFullscreenBoxState();
+}
+
+class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
+  // Create an overlay entry
+  OverlayEntry? entry;
+  @override
   Widget build(BuildContext context) {
+    final message = ref.watch(
+      notificationMessageProvider.select((value) => value.firstOrNull),
+    );
+    if (message != null) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _showSnackbar(context, ref, message));
+    }
     final themeData = Theme.of(context).copyWith(
       inputDecorationTheme: InputDecorationTheme(
         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -53,40 +71,94 @@ class CLFullscreenBox extends StatelessWidget {
         floatingLabelStyle: CLTextField.buildTextStyle(context),
       ),
     );
-    if (isEnhanced) {
+    if (widget.isEnhanced) {
       return Theme(
         data: themeData,
         child: CLFullscreenBoxEnhanced(
-          navMap: children!,
-          useSafeArea: useSafeArea,
-          backgroundColor: backgroundColor,
-          hasBorder: hasBorder,
-          currentIndex: currentIndex!,
-          onPageChange: onPageChange,
+          navMap: widget.children!,
+          useSafeArea: widget.useSafeArea,
+          backgroundColor: widget.backgroundColor,
+          hasBorder: widget.hasBorder,
+          currentIndex: widget.currentIndex!,
+          onPageChange: widget.onPageChange,
         ),
       );
     }
     return Theme(
       data: themeData,
       child: Scaffold(
-        backgroundColor: backgroundColor,
+        backgroundColor: widget.backgroundColor,
         body: SafeArea(
-          top: useSafeArea,
-          left: useSafeArea,
-          right: useSafeArea,
-          bottom: useSafeArea,
+          top: widget.useSafeArea,
+          left: widget.useSafeArea,
+          right: widget.useSafeArea,
+          bottom: widget.useSafeArea,
           child: ClipRect(
             clipBehavior: Clip.antiAlias,
             child: ScaffoldBorder(
-              hasBorder: hasBorder,
+              hasBorder: widget.hasBorder,
               child: LayoutBuilder(
-                builder: (context, constraints) => child!,
+                builder: (context, constraints) => widget.child!,
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _showSnackbar(
+    BuildContext context,
+    WidgetRef ref,
+    NotificationMessage notification,
+  ) {
+    if (entry != null) {
+      entry?.remove();
+      entry = null;
+      if (context.mounted) {
+        setState(() {});
+      }
+      return;
+    }
+    if (!context.mounted) {
+      return;
+    }
+
+    entry = OverlayEntry(
+      builder: (BuildContext context) => Positioned(
+        top: MediaQuery.of(context).size.height *
+            0.8, // Adjust position as needed
+        width: MediaQuery.of(context).size.width,
+        child: Material(
+          color: Colors.transparent,
+          child: SafeArea(
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration:
+                  BoxDecoration(color: Theme.of(context).colorScheme.onSurface),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: CLText.large(
+                  notification.message,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    setState(() {});
+
+    // Insert the overlay entry above the current overlay entries (dialogs)
+    Overlay.of(context).insert(entry!);
+    ref.read(notificationMessageProvider.notifier).pop();
+    // Remove the overlay entry after a certain duration
+    Future.delayed(const Duration(seconds: 2), () {
+      entry?.remove();
+      entry = null;
+      setState(() {});
+    });
   }
 }
 

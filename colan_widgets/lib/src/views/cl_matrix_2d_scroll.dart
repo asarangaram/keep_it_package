@@ -33,9 +33,9 @@ class CLMatrix2DScrollable extends StatelessWidget {
         ); */
         return ListView.builder(
           itemCount: vCount,
-          prototypeItem: SizedBox(
+          /* prototypeItem: SizedBox(
             height: min((size.width / hCount) * 1.4, size.height),
-          ),
+          ), */
           itemBuilder: (context, r) {
             return SizedBox(
               height: min((size.width / hCount) * 1.4, size.height),
@@ -43,7 +43,8 @@ class CLMatrix2DScrollable extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   for (var l = 0; l < layers; l++)
-                    Flexible(
+                    FlexibileOptional(
+                      isFlexible: l == 0,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         //crossAxisAlignment: CrossAxisAlignment.end,
@@ -148,5 +149,29 @@ class CLMatrix2DScrollable extends StatelessWidget {
         },
       ),
     ); */
+  }
+}
+
+class FlexibileOptional extends StatelessWidget {
+  const FlexibileOptional({
+    required this.child,
+    required this.isFlexible,
+    super.key,
+    this.flex = 1,
+    this.fit = FlexFit.loose,
+  });
+  final Widget child;
+  final bool isFlexible;
+  final int flex;
+  final FlexFit fit;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isFlexible) return child;
+    return Flexible(
+      flex: flex,
+      fit: fit,
+      child: child,
+    );
   }
 }

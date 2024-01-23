@@ -1,3 +1,4 @@
 .DS_Store
 .vscode/launch.json
 store/.flutter-plugins-dependencies
+keep_it/lib/core

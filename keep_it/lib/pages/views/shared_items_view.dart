@@ -214,6 +214,8 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     ref.read(itemsProvider(clusterId).notifier).upsertItems(items);
     stopwatch.stop();
 
+    await ref.read(notificationMessageProvider.notifier).push('Saved.');
+
     _infoLogger(
       'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
       ' [${stopwatch.elapsed}]',
