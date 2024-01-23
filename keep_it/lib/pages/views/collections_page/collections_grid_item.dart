@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/constants.dart';
+
 import 'package:keep_it/pages/views/app_theme.dart';
 import 'package:keep_it/pages/views/collections_page/collection_preview.dart';
 import 'package:keep_it/pages/views/collections_page/keepit_dialogs.dart';
@@ -96,7 +96,7 @@ class CLRoundIconLabeled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: (label != null) ? Constants.aspectRatio : 1.0,
+      aspectRatio: (label != null) ? 1.4 : 1.0,
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: horizontalSpacing,
