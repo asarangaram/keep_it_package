@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'collection.dart';
+
 @immutable
 class Cluster {
   const Cluster({
@@ -41,8 +43,9 @@ class Cluster {
 }
 
 class Clusters {
-  Clusters(this.entries);
+  Clusters(this.entries, {this.collection});
   final List<Cluster> entries;
+  final Collection? collection;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;

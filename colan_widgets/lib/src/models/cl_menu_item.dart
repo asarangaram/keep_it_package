@@ -29,7 +29,7 @@ class CLMenuItem {
   ) {
     return copyWith(
       onTap: () async {
-        final res = (await onTap!.call()) ?? false;
+        final res = (await onTap?.call()) ?? false;
 
         action();
         return res;
@@ -42,7 +42,7 @@ class CLMenuItem {
   ) {
     return copyWith(
       onTap: () async {
-        final res = (await onTap!.call()) ?? false;
+        final res = (await onTap?.call()) ?? false;
 
         if (res) {
           action();

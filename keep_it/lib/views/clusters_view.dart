@@ -30,6 +30,7 @@ class _ClustersView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
+      title: clusters.collection?.label ?? 'Showing All',
       onPop: context.canPop()
           ? () {
               context.pop();

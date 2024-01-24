@@ -23,6 +23,7 @@ class ItemsView extends ConsumerWidget {
           clusterID: clusterID,
           buildOnData: (Items items, {required String docDir}) {
             return KeepItMainView(
+              title: items.cluster.description,
               onPop: context.canPop()
                   ? () {
                       context.pop();
@@ -33,7 +34,7 @@ class ItemsView extends ConsumerWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: CLText.large(items.cluster.description),
+                      child: Text(items.cluster.description),
                     ),
                     const Divider(
                       thickness: 2,

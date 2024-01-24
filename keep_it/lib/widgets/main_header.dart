@@ -29,9 +29,12 @@ class MainHeader extends ConsumerWidget {
       child: Row(
         children: [
           if (onPop != null)
-            CLButtonIcon.small(
-              Icons.arrow_back,
-              onTap: onPop,
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: CLButtonIcon.small(
+                Icons.arrow_back,
+                onTap: onPop,
+              ),
             ),
           Flexible(
             child: Row(

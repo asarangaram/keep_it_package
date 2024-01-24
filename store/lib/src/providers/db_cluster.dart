@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/cluster.dart';
+import '../models/collection.dart';
 import '../models/db.dart';
 import 'db_manager.dart';
 
@@ -21,18 +22,20 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
   Future<void> loadClusters() async {
     if (databaseManager == null) return;
     final List<Cluster> clusters;
-
+    final Collection? collection;
     if (collectionID == null) {
       clusters = ClusterDB.getAll(databaseManager!.db);
+      collection = null;
     } else {
       clusters = ClusterDB.getClustersForCollection(
         databaseManager!.db,
         collectionID!,
       );
+      collection = CollectionDB.getById(databaseManager!.db, collectionID!);
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Clusters(clusters);
+      return Clusters(clusters, collection: collection);
     });
   }
 
