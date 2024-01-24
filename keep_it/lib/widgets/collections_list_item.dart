@@ -57,7 +57,7 @@ class CollectionsListItem extends ConsumerWidget {
         ),
         leading: SizedBox.square(
           dimension: previewSize.toDouble(),
-          child: CollectionPreview(backgroundColor: backgroundColor),
+          child: CLGridItemSquare(backgroundColor: backgroundColor),
         ),
         onTap: onTap,
       ),

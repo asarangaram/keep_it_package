@@ -98,7 +98,7 @@ class CollectionsGridItem extends ConsumerWidget {
             onTap: (collection == null)
                 ? null
                 : () => onTapCollection?.call(context, collection!),
-            child: CollectionPreview(backgroundColor: backgroundColor),
+            child: CLGridItemSquare(backgroundColor: backgroundColor),
           );
   }
 }
