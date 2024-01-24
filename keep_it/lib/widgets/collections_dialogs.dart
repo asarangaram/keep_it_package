@@ -8,7 +8,22 @@ import 'collections_list.dart';
 import 'load_from_store.dart';
 
 class CollectionsDialog {
-  static Future<bool?> upsertCollection(
+  static Future<bool?> newCollection(
+    BuildContext context,
+  ) {
+    return _upsertCollection(
+      context,
+    );
+  }
+
+  static Future<bool?> updateCollection(
+    BuildContext context,
+    Collection? collection,
+  ) {
+    return _upsertCollection(context, collection: collection);
+  }
+
+  static Future<bool?> _upsertCollection(
     BuildContext context, {
     Collection? collection,
     //  void Function()? onDone,
@@ -28,7 +43,7 @@ class CollectionsDialog {
 
   static Widget _selectCollections(
     BuildContext context,
-    List<Collection> collections, {
+    Collections collections, {
     required dynamic Function(List<Collection>) onSelectionDone,
     required String title,
     String? labelSelected,
@@ -46,11 +61,11 @@ class CollectionsDialog {
         },
         child: CLSelectionWrapper(
           title: title,
-          selectableList: collections,
+          selectableList: collections.entries,
           multiSelection: true,
           onSelectionDone: (selectedIndices) {
             onSelectionDone(
-              selectedIndices.map((e) => collections[e]).toList(),
+              selectedIndices.map((e) => collections.entries[e]).toList(),
             );
 
             Navigator.of(context).pop();
@@ -88,7 +103,7 @@ class CollectionsDialog {
           return LoadCollections(
             buildOnData: (collectionFromDB) => _selectCollections(
               context,
-              collectionFromDB.entries,
+              collectionFromDB,
               onSelectionDone: onSelectionDone,
               labelSelected: labelSelected,
               labelNoneSelected: labelNoneSelected,
@@ -101,7 +116,7 @@ class CollectionsDialog {
   static void onSuggestions(
     BuildContext context, {
     required dynamic Function(List<Collection>) onSelectionDone,
-    required List<Collection> availableSuggestions,
+    required Collections availableSuggestions,
   }) {
     showDialog<void>(
       context: context,

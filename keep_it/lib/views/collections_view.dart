@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:store/store.dart';
 
+import '../providers/state_providers.dart';
 import '../widgets/collections_dialogs.dart';
 import '../widgets/collections_empty.dart';
 import '../widgets/collections_grid.dart';
@@ -50,7 +51,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
           onTap: () async {
             CollectionsDialog.onSuggestions(
               context,
-              availableSuggestions: availableSuggestions.entries,
+              availableSuggestions: availableSuggestions,
               onSelectionDone: (List<Collection> selectedCollections) {
                 ref
                     .read(collectionsProvider(null).notifier)
@@ -64,11 +65,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
         CLMenuItem(
           title: 'Create New',
           icon: Icons.new_label,
-          onTap: () async {
-            return CollectionsDialog.upsertCollection(
-              context,
-            );
-          },
+          onTap: () async => CollectionsDialog.newCollection(context),
         ),
       ]
     ];
@@ -87,7 +84,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
           if (availableSuggestions.isEmpty) {
             return CLButtonIcon.standard(
               Icons.add,
-              onTap: () => CollectionsDialog.upsertCollection(context),
+              onTap: () => CollectionsDialog.newCollection(context),
             );
           } else {
             return CLQuickMenuAnchor(
@@ -126,7 +123,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
               );
               return true;
             },
-            onEditCollection: onEditCollection,
+            onEditCollection: CollectionsDialog.updateCollection,
             onDeleteCollection: onDeleteCollection,
           );
         }
@@ -140,7 +137,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
             );
             return true;
           },
-          onEditCollection: onEditCollection,
+          onEditCollection: CollectionsDialog.updateCollection,
           onDeleteCollection: onDeleteCollection,
         );
       },
@@ -157,16 +154,6 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
       onTap: () {
         ref.read(isGridProvider.notifier).state = !isGridView;
       },
-    );
-  }
-
-  Future<bool?> onEditCollection(
-    BuildContext context,
-    Collection collection,
-  ) async {
-    return CollectionsDialog.upsertCollection(
-      context,
-      collection: collection,
     );
   }
 
@@ -190,8 +177,3 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
     }
   }
 }
-
-// should be part of settings.
-final isGridProvider = StateProvider<bool>((ref) {
-  return true;
-});

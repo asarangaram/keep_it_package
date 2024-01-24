@@ -136,5 +136,3 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
     );
   }
 }
-
-
