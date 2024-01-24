@@ -4,14 +4,17 @@ import '../models/collection.dart';
 
 extension CollectionDB on Collection {
   static Collection getById(Database db, int collectionId) {
-    final map = db
-        .select('SELECT * FROM Collections WHERE id = ?', [collectionId]).first;
+    final map = db.select(
+      'SELECT * FROM Collections WHERE id = ? ' 'ORDER BY LOWER(label) ASC',
+      [collectionId],
+    ).first;
     return Collection.fromMap(map);
   }
 
   static List<Collection> getAll(Database db) {
-    final List<Map<String, dynamic>> maps =
-        db.select('SELECT * FROM Collections');
+    final List<Map<String, dynamic>> maps = db.select(
+      'SELECT * FROM Collections ' 'ORDER BY LOWER(label) ASC',
+    );
     return maps.map(Collection.fromMap).toList();
   }
 
@@ -19,13 +22,13 @@ extension CollectionDB on Collection {
     print('id updated $id');
     if (id != null) {
       db.execute(
-        'UPDATE Collections SET label = ?, description = ? WHERE id = ?',
+        'UPDATE Collections SET label = ?, description = ? WHERE id = ? ',
         [label, description, id],
       );
       return id!;
     } else {
       db.execute(
-        'INSERT INTO Collections (label, description) VALUES (?, ?)',
+        'INSERT INTO Collections (label, description) VALUES (?, ?) ',
         [label, description],
       );
       return db.lastInsertRowId;
