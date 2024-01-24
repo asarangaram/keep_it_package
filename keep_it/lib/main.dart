@@ -33,7 +33,7 @@ class KeepItApp implements AppDescriptor {
             await File(fullPath).delete();
           }
         }
-        
+
         return true;
       };
 

@@ -5,7 +5,7 @@ import '../models/collection.dart';
 extension CollectionDB on Collection {
   static Collection getById(Database db, int collectionId) {
     final map = db.select(
-      'SELECT * FROM Collections WHERE id = ? ' 'ORDER BY LOWER(label) ASC',
+      'SELECT * FROM Collection WHERE id = ? ' 'ORDER BY LOWER(label) ASC',
       [collectionId],
     ).first;
     return Collection.fromMap(map);
@@ -13,7 +13,7 @@ extension CollectionDB on Collection {
 
   static List<Collection> getAll(Database db) {
     final List<Map<String, dynamic>> maps = db.select(
-      'SELECT * FROM Collections ' 'ORDER BY LOWER(label) ASC',
+      'SELECT * FROM Collection ' 'ORDER BY LOWER(label) ASC',
     );
     return maps.map(Collection.fromMap).toList();
   }
@@ -22,13 +22,13 @@ extension CollectionDB on Collection {
     print('id updated $id');
     if (id != null) {
       db.execute(
-        'UPDATE Collections SET label = ?, description = ? WHERE id = ? ',
+        'UPDATE Collection SET label = ?, description = ? WHERE id = ? ',
         [label, description, id],
       );
       return id!;
     } else {
       db.execute(
-        'INSERT INTO Collections (label, description) VALUES (?, ?) ',
+        'INSERT INTO Collection (label, description) VALUES (?, ?) ',
         [label, description],
       );
       return db.lastInsertRowId;
@@ -67,14 +67,14 @@ WHERE collection_id = ?
       throw Exception('${id!} is still used! Check implementation');
     }
 
-    db.execute('DELETE FROM Collections WHERE id = ?', [id]);
+    db.execute('DELETE FROM Collection WHERE id = ?', [id]);
   }
 
   static List<Collection> getCollectionsForCluster(Database db, int clusterId) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
-      SELECT Collections.* FROM Collections
-      JOIN CollectionCluster ON Collections.id = CollectionCluster.collection_id
+      SELECT Collection.* FROM Collection
+      JOIN CollectionCluster ON Collection.id = CollectionCluster.collection_id
       WHERE CollectionCluster.cluster_id = ?
     ''',
       [clusterId],
@@ -85,8 +85,8 @@ WHERE collection_id = ?
   static List<Collection> getCollectionsForItem(Database db, int itemId) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
-      SELECT Collections.* FROM Collections
-      JOIN CollectionCluster ON Collections.id = CollectionCluster.collection_id
+      SELECT Collection.* FROM Collection
+      JOIN CollectionCluster ON Collection.id = CollectionCluster.collection_id
       JOIN Item ON CollectionCluster.cluster_id = Item.cluster_id
       WHERE Item.id = ?
     ''',
