@@ -49,6 +49,7 @@ class CLMatrix2D extends StatelessWidget {
         itemHeight: itemHeight,
         borderSide: borderSide,
         decoration: decoration,
+        itemCount: itemCount,
       );
     }
     final excess = itemCount - rows! * columns;

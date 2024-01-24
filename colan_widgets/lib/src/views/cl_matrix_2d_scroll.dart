@@ -12,6 +12,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
     required this.hCount,
     required this.vCount,
     required this.layers,
+    required this.itemCount,
     this.leadingRow,
     this.trailingRow,
     super.key,
@@ -32,6 +33,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
   final double? itemHeight;
   final BorderSide borderSide;
   final BoxDecoration? decoration;
+  final int itemCount;
 
   @override
   Widget build(BuildContext context) {
@@ -57,45 +59,49 @@ class CLMatrix2DScrollable extends StatelessWidget {
                     FlexibileOptional(
                       isFlexible: l == 0,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         //crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           for (var c = 0; c < hCount; c++)
-                            Flexible(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: (borderSide != BorderSide.none ||
-                                          decoration != null)
-                                      ? 2
-                                      : 0,
-                                ),
-                                width: size.width / hCount,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    left: borderSide,
-                                    right: borderSide,
-                                    top:
-                                        (l == 0) ? borderSide : BorderSide.none,
-                                    bottom: (l == (layers - 1))
-                                        ? borderSide
-                                        : BorderSide.none,
+                            if ((r * hCount + c) >= itemCount)
+                              const Center()
+                            else
+                              Flexible(
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal:
+                                        (borderSide != BorderSide.none ||
+                                                decoration != null)
+                                            ? 2
+                                            : 0,
                                   ),
-                                ),
-                                child: DecoratedBox(
-                                  decoration:
-                                      decoration ?? const BoxDecoration(),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      top: l == 0 ? 2 : 0,
-                                      left: 2,
-                                      right: 2,
-                                      bottom: l == (layers - 1) ? 2 : 0,
+                                  width: size.width / hCount,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      left: borderSide,
+                                      right: borderSide,
+                                      top: (l == 0)
+                                          ? borderSide
+                                          : BorderSide.none,
+                                      bottom: (l == (layers - 1))
+                                          ? borderSide
+                                          : BorderSide.none,
                                     ),
-                                    child: itemBuilder(context, r, c, l),
+                                  ),
+                                  child: DecoratedBox(
+                                    decoration:
+                                        decoration ?? const BoxDecoration(),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        top: l == 0 ? 2 : 0,
+                                        left: 2,
+                                        right: 2,
+                                        bottom: l == (layers - 1) ? 2 : 0,
+                                      ),
+                                      child: itemBuilder(context, r, c, l),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ), //
+                              ), //
                         ],
                       ),
                     ),
