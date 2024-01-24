@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CollectionPreview extends StatelessWidget {
-  const CollectionPreview({
+class CLGridItemSquare extends StatelessWidget {
+  const CLGridItemSquare({
     required this.backgroundColor,
     super.key,
     this.child,
