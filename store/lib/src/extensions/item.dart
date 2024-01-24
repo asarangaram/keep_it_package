@@ -1,8 +1,9 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../models/item.dart';
 
-extension ItemDB on ItemInDB {
+extension ExtItemDB on ItemInDB {
   static ItemInDB itemGetById(Database db, int itemId) {
     final Map<String, dynamic> map =
         db.select('SELECT * FROM Item WHERE id = ?', [itemId]).first;
@@ -42,5 +43,19 @@ extension ItemDB on ItemInDB {
         db.select('SELECT * FROM Item WHERE cluster_id = ?', [clusterId]);
 
     return maps.map(ItemInDB.fromMap).toList();
+  }
+
+  CLMedia toCLMedia({String pathPrefix = ''}) {
+    final p = FileHandler.join(pathPrefix, path);
+    return switch (type) {
+      CLMediaType.image =>
+        CLMediaImage(path: p, url: ref).attachPreviewIfExits(),
+      CLMediaType.video =>
+        CLMediaVideo(path: p, url: ref).attachPreviewIfExits(),
+      _ => CLMedia(
+          path: p,
+          type: type,
+        )
+    };
   }
 }

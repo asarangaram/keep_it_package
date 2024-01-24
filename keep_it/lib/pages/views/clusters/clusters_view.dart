@@ -9,22 +9,6 @@ import '../load_from_store/load_from_store.dart';
 import '../main/keep_it_main_view.dart';
 import '../receive_shared/media_preview.dart';
 
-extension ExtItems on ItemInDB {
-  CLMedia toCLMedia({String pathPrefix = ''}) {
-    final p = FileHandler.join(pathPrefix, path);
-    return switch (type) {
-      CLMediaType.image =>
-        CLMediaImage(path: p, url: ref).attachPreviewIfExits(),
-      CLMediaType.video =>
-        CLMediaImage(path: p, url: ref).attachPreviewIfExits(),
-      _ => CLMedia(
-          path: p,
-          type: type,
-        )
-    };
-  }
-}
-
 class ClustersView extends ConsumerWidget {
   const ClustersView({required this.clusters, super.key});
   final Clusters clusters;
@@ -69,7 +53,7 @@ class ClustersView extends ConsumerWidget {
             return MediaPreview(
               media: items.entries
                   .map(
-                    (e) => e.toCLMedia(
+                    (ItemInDB e) => e.toCLMedia(
                       pathPrefix: docDir,
                     ),
                   )

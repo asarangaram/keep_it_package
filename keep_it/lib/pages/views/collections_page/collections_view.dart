@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../../../data/providers/suggested_collections.dart';
+import '../../../data/lookups/suggested_collections.dart';
 import '../main/keep_it_main_view.dart';
 import 'collections_empty.dart';
 import 'collections_grid.dart';
@@ -25,8 +25,12 @@ class CollectionsView extends ConsumerStatefulWidget {
 class CollectionsViewState extends ConsumerState<CollectionsView> {
   @override
   Widget build(BuildContext context) {
-    final availableSuggestions =
-        ref.watch(availableSuggestionsProvider(widget.collections.entries));
+    final availableSuggestions = suggestedCollections.where((element) {
+      return !widget.collections.entries
+          .map((e) => e.label)
+          .contains(element.label);
+    }).toList();
+
     final menuItems = [
       [
         CLMenuItem(
