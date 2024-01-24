@@ -33,23 +33,13 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
     state = await AsyncValue.guard(() async {
       final res = Collections(collections, lastupdatedID: lastupdatedID);
       if (lastupdatedID != null) {
-        await Future.delayed(
-          const Duration(seconds: 1),
-          () => resetLastUpdated(res),
+        Future.delayed(
+          const Duration(seconds: 5),
+          loadCollections,
         );
       }
       return res;
     });
-  }
-
-  Future<void> resetLastUpdated(Collections collections) async {
-    // If someone else has already updated, nothing to do
-    if (state.hasValue && state.value == collections) {
-      state = const AsyncValue.loading();
-      state = await AsyncValue.guard(() async {
-        return collections.clearLastUpdated();
-      });
-    }
   }
 
   void upsertCollection(Collection collection) {
@@ -58,7 +48,7 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
     }
 
     final lastupdatedID = collection.upsert(databaseManager!.db);
-
+    print('upsertCollection lastupdatedID $lastupdatedID');
     loadCollections(lastupdatedID: lastupdatedID);
   }
 

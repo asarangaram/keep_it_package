@@ -16,18 +16,20 @@ extension CollectionDB on Collection {
   }
 
   int upsert(Database db) {
+    print('id updated $id');
     if (id != null) {
       db.execute(
         'UPDATE Collections SET label = ?, description = ? WHERE id = ?',
         [label, description, id],
       );
+      return id!;
     } else {
       db.execute(
         'INSERT INTO Collections (label, description) VALUES (?, ?)',
         [label, description],
       );
+      return db.lastInsertRowId;
     }
-    return db.lastInsertRowId;
   }
 
   void delete(Database db, {int? alternateCollectionId}) {

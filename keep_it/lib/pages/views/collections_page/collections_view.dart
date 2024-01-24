@@ -23,8 +23,6 @@ class CollectionsView extends ConsumerStatefulWidget {
 }
 
 class CollectionsViewState extends ConsumerState<CollectionsView> {
-  bool isGridView = true;
-
   @override
   Widget build(BuildContext context) {
     final availableSuggestions =
@@ -100,6 +98,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
         toggleGridView,
       ],
       pageBuilder: (context, quickMenuScopeKey) {
+        final isGridView = ref.watch(isGridProvider);
         if (isGridView) {
           return CollectionsGrid(
             quickMenuScopeKey: quickMenuScopeKey,
@@ -136,15 +135,16 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
   Widget toggleGridView(
     BuildContext context,
     GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
-  ) =>
-      CLButtonIcon.small(
-        isGridView ? Icons.view_list : Icons.widgets,
-        onTap: () {
-          setState(() {
-            isGridView = !isGridView;
-          });
-        },
-      );
+  ) {
+    final isGridView = ref.watch(isGridProvider);
+    return CLButtonIcon.small(
+      isGridView ? Icons.view_list : Icons.widgets,
+      onTap: () {
+        ref.read(isGridProvider.notifier).state = !isGridView;
+      },
+    );
+  }
+
   Future<bool?> onEditCollection(
     BuildContext context,
     Collection collection,
@@ -175,3 +175,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
     }
   }
 }
+// should be part of settings.
+final isGridProvider = StateProvider<bool>((ref) {
+  return false;
+});

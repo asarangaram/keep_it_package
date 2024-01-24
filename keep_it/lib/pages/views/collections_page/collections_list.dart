@@ -7,6 +7,7 @@ import 'package:keep_it/pages/views/collections_page/collections_list_item.dart'
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
+import '../../../cl_highlight.dart';
 import '../cl_blink.dart';
 
 class CollectionsList extends ConsumerStatefulWidget {
@@ -54,10 +55,32 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.scrollToIndex(0);
+      print('lastupdatedID ${widget.collections.lastupdatedID}');
+      if (widget.collections.lastupdatedID != null) {
+        controller.scrollToIndex(highLightIndex);
+      } else {
+        setState(() {
+          highLightIndex = -1;
+        });
+      }
+      print('highLightIndex $highLightIndex');
     }); */
+    print('didChangeDependencies called');
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final highLightIndex = widget.collections.entries
+        .indexWhere((e) => e.id == widget.collections.lastupdatedID);
+    if (highLightIndex > -1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.scrollToIndex(highLightIndex);
+      });
+    }
+    /*  */
     if (widget.selectionMask != null) {
       if (widget.selectionMask!.length != widget.collections.entries.length) {
         throw Exception('Selection is setup incorrectly');
@@ -105,7 +128,7 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
                 ],
               ),
               child: CLHighlighted(
-                isHighlighed: index == 0,
+                isHighlighed: index == highLightIndex,
                 child: CollectionsListItem(
                   widget.collections.entries[index],
                   isSelected: widget.selectionMask?[index],
@@ -138,28 +161,23 @@ class CLHighlighted extends StatefulWidget {
 }
 
 class _CLHighlightedState extends State<CLHighlighted> {
-  late bool timeout;
-  @override
-  void initState() {
-    timeout = false;
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          timeout = true;
-        });
-      }
-    });
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (!widget.isHighlighed || timeout) {
+    if (!widget.isHighlighed) {
       return widget.child;
     }
     return CLBlink(
-      blinkDuration: const Duration(milliseconds: 400),
-      child: widget.child,
+      blinkDuration: const Duration(milliseconds: 500),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            width: 2,
+            color: Theme.of(context).highlightColor,
+          ),
+        ),
+        child: widget.child,
+      ),
     );
   }
 }
