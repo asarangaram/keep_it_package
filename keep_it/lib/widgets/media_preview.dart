@@ -58,15 +58,15 @@ class MediaPreview extends ConsumerWidget {
       child: Align(
         child: Padding(
           padding: const EdgeInsets.all(2),
-          child: MediaItemView(mediaItem: e),
+          child: MediaItemPreview(mediaItem: e),
         ),
       ),
     );
   }
 }
 
-class MediaItemView extends ConsumerWidget {
-  const MediaItemView({required this.mediaItem, super.key});
+class MediaItemPreview extends ConsumerWidget {
+  const MediaItemPreview({required this.mediaItem, super.key});
   final CLMedia mediaItem;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
