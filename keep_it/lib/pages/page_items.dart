@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'views/items/items_view.dart';
-import 'views/load_from_store/load_from_store.dart';
-import 'views/main/background.dart';
+import '../widgets/load_from_store.dart';
+import '../views/items_view.dart';
 
 class ItemsPage extends ConsumerWidget {
   const ItemsPage({required this.clusterID, super.key});

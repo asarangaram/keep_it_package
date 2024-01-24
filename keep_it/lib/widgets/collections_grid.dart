@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/collections_page/collections_list.dart';
 import 'package:store/store.dart';
 
 import 'collections_grid_item.dart';

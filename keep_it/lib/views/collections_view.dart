@@ -5,14 +5,16 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:store/store.dart';
 
-import '../../../data/lookups/suggested_collections.dart';
-import '../main/keep_it_main_view.dart';
-import 'collections_empty.dart';
-import 'collections_grid.dart';
-import 'collections_list.dart';
-import 'keepit_dialogs.dart';
+import '../data/lookups/suggested_collections.dart';
+
+import '../widgets/collections_dialogs.dart';
+import '../widgets/collections_empty.dart';
+import '../widgets/collections_grid.dart';
+import '../widgets/collections_list.dart';
+import '../widgets/keep_it_main_view.dart';
 
 class CollectionsView extends ConsumerStatefulWidget {
   const CollectionsView(this.collections, {super.key});
@@ -37,7 +39,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
           title: 'Suggested\nCollections',
           icon: Icons.menu,
           onTap: () async {
-            KeepItDialogs.onSuggestions(
+            CollectionsDialog.onSuggestions(
               context,
               availableSuggestions: availableSuggestions,
               onSelectionDone: (List<Collection> selectedCollections) {
@@ -54,7 +56,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
           title: 'Create New',
           icon: Icons.new_label,
           onTap: () async {
-            return KeepItDialogs.upsertCollection(
+            return CollectionsDialog.upsertCollection(
               context,
             );
           },
@@ -76,7 +78,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
           if (availableSuggestions.isEmpty) {
             return CLButtonIcon.standard(
               Icons.add,
-              onTap: () => KeepItDialogs.upsertCollection(context),
+              onTap: () => CollectionsDialog.upsertCollection(context),
             );
           } else {
             return CLQuickMenuAnchor(
@@ -153,7 +155,7 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
     BuildContext context,
     Collection collection,
   ) async {
-    return KeepItDialogs.upsertCollection(
+    return CollectionsDialog.upsertCollection(
       context,
       collection: collection,
     );

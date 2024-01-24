@@ -1,12 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/pages/views/collections_page/add_collection_form.dart';
-import 'package:keep_it/pages/views/collections_page/collections_list.dart';
-import 'package:keep_it/pages/views/load_from_store/load_from_store.dart';
-import 'package:keep_it/pages/views/main/background.dart';
+
 import 'package:store/store.dart';
 
-class KeepItDialogs {
+import 'add_collection_form.dart';
+import 'collections_list.dart';
+import 'load_from_store.dart';
+
+class CollectionsDialog {
   static Future<bool?> upsertCollection(
     BuildContext context, {
     Collection? collection,

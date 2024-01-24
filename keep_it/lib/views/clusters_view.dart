@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../load_from_store/load_from_store.dart';
+import '../widgets/keep_it_main_view.dart';
+import '../widgets/load_from_store.dart';
 
-import '../main/keep_it_main_view.dart';
-import '../receive_shared/media_preview.dart';
+import '../widgets/media_preview.dart';
 
 class ClustersView extends ConsumerWidget {
   const ClustersView({required this.clusters, super.key});

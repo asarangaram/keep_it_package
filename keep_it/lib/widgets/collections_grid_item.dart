@@ -1,12 +1,11 @@
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:keep_it/pages/views/app_theme.dart';
-import 'package:keep_it/pages/views/collections_page/collection_preview.dart';
-
 import 'package:store/store.dart';
+
+import 'app_theme.dart';
+import 'collection_preview.dart';
 
 class CollectionsGridItem extends ConsumerWidget {
   const CollectionsGridItem({

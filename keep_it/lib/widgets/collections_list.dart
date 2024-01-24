@@ -1,13 +1,14 @@
 import 'dart:math';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:keep_it/pages/views/collections_page/collections_list_item.dart';
+
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
-import '../cl_blink.dart';
+import 'collections_list_item.dart';
 
 class CollectionsList extends ConsumerStatefulWidget {
   const CollectionsList({
@@ -136,37 +137,4 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
   }
 }
 
-class CLHighlighted extends StatefulWidget {
-  const CLHighlighted({
-    required this.child,
-    super.key,
-    this.isHighlighed = false,
-  });
-  final Widget child;
-  final bool isHighlighed;
 
-  @override
-  State<CLHighlighted> createState() => _CLHighlightedState();
-}
-
-class _CLHighlightedState extends State<CLHighlighted> {
-  @override
-  Widget build(BuildContext context) {
-    if (!widget.isHighlighed) {
-      return widget.child;
-    }
-    return CLBlink(
-      blinkDuration: const Duration(milliseconds: 500),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            width: 2,
-            color: Theme.of(context).highlightColor,
-          ),
-        ),
-        child: widget.child,
-      ),
-    );
-  }
-}

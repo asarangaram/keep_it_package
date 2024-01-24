@@ -7,10 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../pages/views/collections_page/keepit_dialogs.dart';
-import '../pages/views/load_from_store/load_from_store.dart';
-import '../pages/views/receive_shared/media_preview.dart';
-import '../pages/views/receive_shared/save_or_cancel.dart';
+import '../widgets/collections_dialogs.dart';
+import '../widgets/load_from_store.dart';
+import '../widgets/media_preview.dart';
+import '../widgets/save_or_cancel.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -130,7 +130,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
 
   void onSave(CLMediaInfoGroup media) {
     FocusScope.of(context).unfocus();
-    KeepItDialogs.selectCollections(
+    CollectionsDialog.selectCollections(
       context,
       onSelectionDone: (
         List<Collection> selectedCollections,

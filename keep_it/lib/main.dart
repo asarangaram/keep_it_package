@@ -14,7 +14,7 @@ import 'package:window_size/window_size.dart';
 import 'pages/page_clusters.dart';
 import 'pages/page_collections.dart';
 import 'pages/page_show_image.dart';
-import 'pages/views/app_theme.dart';
+import 'widgets/app_theme.dart';
 import 'views/shared_items_view.dart';
 
 class KeepItApp implements AppDescriptor {
