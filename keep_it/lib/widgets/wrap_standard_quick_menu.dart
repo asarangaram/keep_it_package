@@ -49,7 +49,7 @@ class WrapStandardQuickMenu extends StatelessWidget {
           ].insertOnDone(onDone),
         );
       },
-      onTap: () => onTap,
+      onTap: onTap,
       child: child,
     );
   }
