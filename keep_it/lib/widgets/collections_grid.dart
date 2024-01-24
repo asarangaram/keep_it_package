@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'collections_grid_item.dart';
+import 'collection_preview.dart';
+
+import 'wrap_standard_quick_menu.dart';
 
 class CollectionsGrid extends ConsumerStatefulWidget {
   const CollectionsGrid({
@@ -40,92 +42,52 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
   final PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
-    if (widget.collections.entries.isEmpty) {
-      throw Exception("This widget can't handle empty colections");
-    }
-
-    return LayoutBuilder(
-      builder: (context, BoxConstraints constraints) {
-        const childSize = Size(100, 120);
-        final pageMatrix = computePageMatrix(
-          pageSize: Size(
-            constraints.maxWidth,
-            constraints.maxHeight,
-          ),
-          itemSize: childSize,
-        );
-
-        final random = Random(42);
-        final pages =
-            (widget.collections.entries.length + (pageMatrix.totalCount - 1)) ~/
-                pageMatrix.totalCount;
-        final highLightIndex = widget.collections.entries
+    final random = Random(42);
+    final highLightIndex = widget.collections.lastupdatedID == null
+        ? -1
+        : widget.collections.entries
             .indexWhere((e) => e.id == widget.collections.lastupdatedID);
 
-        if (highLightIndex > -1) {
-          final highLightPage = highLightIndex ~/ pageMatrix.totalCount;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            pageController.jumpToPage(highLightPage);
-          });
+    return CLMatrix3DAutoFit(
+      pageController: pageController,
+      childSize: const Size(100, 120),
+      itemCount: widget.collections.entries.length,
+      layers: 2,
+      visibleItem: highLightIndex <= -1 ? null : highLightIndex,
+      itemBuilder: (context, index, layer) {
+        final randomColor =
+            Colors.primaries[random.nextInt(Colors.primaries.length)];
+        final collection = widget.collections.entries[index];
+        if (layer == 0) {
+          return CLHighlighted(
+            isHighlighed: index == highLightIndex,
+            child: WrapStandardQuickMenu(
+              quickMenuScopeKey: widget.quickMenuScopeKey,
+              onEdit: () async => widget.onEditCollection!.call(
+                context,
+                collection,
+              ),
+              onDelete: () async => widget.onDeleteCollection!.call(
+                context,
+                collection,
+              ),
+              onTap: () async => widget.onTapCollection!.call(
+                context,
+                collection,
+              ),
+              child: CLGridItemSquare(backgroundColor: randomColor),
+            ),
+          );
+        } else if (layer == 1) {
+          return Text(
+            widget.collections.entries[index].label,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          );
         }
-
-        return CLMatrix3D(
-          pageController: pageController,
-          pages: pages,
-          rows: pageMatrix.height,
-          columns: pageMatrix.width,
-          itemCount: widget.collections.entries.length,
-          layers: 2,
-          itemBuilder: (context, index, layer) {
-            final randomColor =
-                Colors.primaries[random.nextInt(Colors.primaries.length)];
-            if (layer == 0) {
-              return CLHighlighted(
-                isHighlighed: index == highLightIndex,
-                child: CollectionsGridItem(
-                  collection: widget.collections.entries[index],
-                  quickMenuScopeKey: widget.quickMenuScopeKey,
-                  size: childSize,
-                  backgroundColor: randomColor,
-                  onTapCollection: widget.onTapCollection,
-                  onEditCollection: widget.onEditCollection,
-                  onDeleteCollection: widget.onDeleteCollection,
-                ),
-              );
-            } else if (layer == 1) {
-              return Text(
-                widget.collections.entries[index].label,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              );
-            }
-            throw Exception('Incorrect layer');
-          },
-        );
+        throw Exception('Incorrect layer');
       },
     );
-  }
-
-  CLDimension computePageMatrix({
-    required Size pageSize,
-    required Size itemSize,
-  }) {
-    if (pageSize.width == double.infinity) {
-      throw Exception("Width is unbounded, can't handle");
-    }
-    if (pageSize.height == double.infinity) {
-      throw Exception("Width is unbounded, can't handle");
-    }
-    final itemsInRow = max(
-      1,
-      ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor(),
-    );
-    final itemsInColumn = max(
-      1,
-      ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor(),
-    );
-
-    return CLDimension(width: itemsInRow, height: itemsInColumn);
   }
 }

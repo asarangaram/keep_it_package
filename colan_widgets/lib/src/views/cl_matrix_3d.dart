@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../extensions/ext_double.dart';
+import '../utils/media/cl_dimension.dart';
 import 'cl_matrix_2d.dart';
 
-class CLMatrix3D extends ConsumerWidget {
+class CLMatrix3D extends StatelessWidget {
   const CLMatrix3D({
     required this.pages,
     required this.rows,
@@ -13,6 +17,7 @@ class CLMatrix3D extends ConsumerWidget {
     required this.pageController,
     super.key,
     this.layers = 1,
+    this.visibleItem,
   });
 
   final int pages;
@@ -22,8 +27,15 @@ class CLMatrix3D extends ConsumerWidget {
   final int layers;
   final Widget Function(BuildContext context, int index, int layer) itemBuilder;
   final PageController pageController;
+  final int? visibleItem;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    if (visibleItem != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final highLightPage = visibleItem! ~/ (rows * columns);
+        pageController.jumpToPage(highLightPage);
+      });
+    }
     return PageView.builder(
       controller: pageController,
       itemCount: pages,
@@ -50,5 +62,74 @@ class CLMatrix3D extends ConsumerWidget {
         );
       },
     );
+  }
+}
+
+class CLMatrix3DAutoFit extends ConsumerWidget {
+  const CLMatrix3DAutoFit({
+    required this.childSize,
+    required this.pageController,
+    required this.itemCount,
+    required this.itemBuilder,
+    super.key,
+    this.layers = 1,
+    this.visibleItem,
+  });
+
+  final Size childSize;
+  final PageController pageController;
+  final int itemCount;
+  final Widget Function(BuildContext, int, int) itemBuilder;
+  final int layers;
+  final int? visibleItem;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return LayoutBuilder(
+      builder: (context, BoxConstraints constraints) {
+        final pageMatrix = computePageMatrix(
+          pageSize: Size(
+            constraints.maxWidth,
+            constraints.maxHeight,
+          ),
+          itemSize: childSize,
+        );
+        final pages =
+            (itemCount + (pageMatrix.totalCount - 1)) ~/ pageMatrix.totalCount;
+
+        return CLMatrix3D(
+          pageController: pageController,
+          pages: pages,
+          rows: pageMatrix.height,
+          columns: pageMatrix.width,
+          itemCount: itemCount,
+          layers: 2,
+          itemBuilder: itemBuilder,
+          visibleItem: visibleItem,
+        );
+      },
+    );
+  }
+
+  CLDimension computePageMatrix({
+    required Size pageSize,
+    required Size itemSize,
+  }) {
+    if (pageSize.width == double.infinity) {
+      throw Exception("Width is unbounded, can't handle");
+    }
+    if (pageSize.height == double.infinity) {
+      throw Exception("Width is unbounded, can't handle");
+    }
+    final itemsInRow = max(
+      1,
+      ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor(),
+    );
+    final itemsInColumn = max(
+      1,
+      ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor(),
+    );
+
+    return CLDimension(width: itemsInRow, height: itemsInColumn);
   }
 }
