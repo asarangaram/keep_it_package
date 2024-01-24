@@ -68,7 +68,7 @@ class CLMatrix3D extends StatelessWidget {
 class CLMatrix3DAutoFit extends ConsumerWidget {
   const CLMatrix3DAutoFit({
     required this.childSize,
-    required this.pageController,
+    required this.controller,
     required this.itemCount,
     required this.itemBuilder,
     super.key,
@@ -77,7 +77,7 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
   });
 
   final Size childSize;
-  final PageController pageController;
+  final PageController controller;
   final int itemCount;
   final Widget Function(BuildContext, int, int) itemBuilder;
   final int layers;
@@ -98,7 +98,7 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
             (itemCount + (pageMatrix.totalCount - 1)) ~/ pageMatrix.totalCount;
 
         return CLMatrix3D(
-          pageController: pageController,
+          pageController: controller,
           pages: pages,
           rows: pageMatrix.height,
           columns: pageMatrix.width,

@@ -14,6 +14,8 @@ class CLMatrix2DScrollable extends StatelessWidget {
     this.leadingRow,
     this.trailingRow,
     super.key,
+    this.controller,
+    this.itemHeight,
   });
 
   final Widget Function(BuildContext context, int r, int c, int l) itemBuilder;
@@ -23,6 +25,8 @@ class CLMatrix2DScrollable extends StatelessWidget {
   final int hCount;
   final int vCount;
   final int layers;
+  final ScrollController? controller;
+  final double? itemHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,8 @@ class CLMatrix2DScrollable extends StatelessWidget {
           ), */
           itemBuilder: (context, r) {
             return SizedBox(
-              height: min((size.width / hCount) * 1.4, size.height),
+              height:
+                  itemHeight ?? min((size.width / hCount) * 1.4, size.height),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

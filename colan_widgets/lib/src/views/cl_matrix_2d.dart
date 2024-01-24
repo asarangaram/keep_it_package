@@ -1,5 +1,7 @@
 import 'package:colan_widgets/src/widgets/flexibile_optional.dart';
 import 'package:flutter/material.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
+
 import 'cl_matrix_2d_scroll.dart';
 import 'compute_size_and_build.dart';
 
@@ -12,6 +14,8 @@ class CLMatrix2D extends StatelessWidget {
     this.excessViewBuilder,
     super.key,
     this.layers = 1,
+    this.controller,
+    this.itemHeight,
   });
 
   final int? rows;
@@ -21,6 +25,8 @@ class CLMatrix2D extends StatelessWidget {
   final Widget Function(BuildContext context, int index, int layer) itemBuilder;
   final Widget Function(BuildContext context, int excessCount)?
       excessViewBuilder;
+  final AutoScrollController? controller;
+  final double? itemHeight;
 
   @override
   Widget build(
@@ -36,6 +42,8 @@ class CLMatrix2D extends StatelessWidget {
         vCount: (itemCount + columns - 1) ~/ columns,
         itemBuilder: builder,
         layers: layers,
+        controller: controller,
+        itemHeight: itemHeight,
       );
     }
     final excess = itemCount - rows! * columns;
@@ -54,8 +62,17 @@ class CLMatrix2D extends StatelessWidget {
     if ((r * columns + c) >= itemCount) {
       return const Center();
     }
+    if (controller == null) {
+      return itemBuilder(context, r * columns + c, l);
+    }
 
-    return itemBuilder(context, r * columns + c, l);
+    return AutoScrollTag(
+      key: ValueKey(' $r $c $l'),
+      controller: controller!,
+      index: r * layers + l,
+      highlightColor: Colors.black.withOpacity(0.1),
+      child: itemBuilder(context, r * columns + c, l),
+    );
   }
 }
 

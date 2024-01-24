@@ -82,57 +82,49 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
 
     final random = Random(42);
 
-    return SizedBox.expand(
-      child: ListView.builder(
-        itemCount: widget.collections.entries.length,
-        controller: controller,
-        itemBuilder: (context, index) {
-          final randomColor =
-              Colors.primaries[random.nextInt(Colors.primaries.length)];
-          return AutoScrollTag(
-            key: ValueKey(index),
-            controller: controller,
-            index: index,
-            highlightColor: Colors.black.withOpacity(0.1),
-            child: Slidable(
-              key: ValueKey('collectionslist_$index'),
-              endActionPane: ActionPane(
-                motion: const BehindMotion(),
-                children: [
-                  SlidableAction(
-                    onPressed: (context) => widget.onEditCollection
-                        ?.call(context, widget.collections.entries[index]),
-                    icon: Icons.edit,
-                    label: 'Edit',
-                  ),
-                  SlidableAction(
-                    onPressed: (context) => widget.onDeleteCollection
-                        ?.call(context, widget.collections.entries[index]),
-                    icon: Icons.edit,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.errorContainer,
-                    foregroundColor:
-                        Theme.of(context).colorScheme.onErrorContainer,
-                    label: 'Delete',
-                  ),
-                ],
+    return CLMatrix2D(
+      itemCount: widget.collections.entries.length,
+      controller: controller,
+      columns: 1,
+      itemHeight: 150,
+      itemBuilder: (context, index, l) {
+        final randomColor =
+            Colors.primaries[random.nextInt(Colors.primaries.length)];
+        return Slidable(
+          key: ValueKey('collectionslist_$index'),
+          endActionPane: ActionPane(
+            motion: const BehindMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (context) => widget.onEditCollection
+                    ?.call(context, widget.collections.entries[index]),
+                icon: Icons.edit,
+                label: 'Edit',
               ),
-              child: CLHighlighted(
-                isHighlighed: index == highLightIndex,
-                child: CollectionsListItem(
-                  widget.collections.entries[index],
-                  isSelected: widget.selectionMask?[index],
-                  backgroundColor: randomColor,
-                  onTap: (widget.onSelection == null)
-                      ? () => widget.onTapCollection
-                          ?.call(context, widget.collections.entries[index])
-                      : () => widget.onSelection!.call(index),
-                ),
+              SlidableAction(
+                onPressed: (context) => widget.onDeleteCollection
+                    ?.call(context, widget.collections.entries[index]),
+                icon: Icons.edit,
+                backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                label: 'Delete',
               ),
+            ],
+          ),
+          child: CLHighlighted(
+            isHighlighed: index == highLightIndex,
+            child: CollectionsListItem(
+              widget.collections.entries[index],
+              isSelected: widget.selectionMask?[index],
+              backgroundColor: randomColor,
+              onTap: (widget.onSelection == null)
+                  ? () => widget.onTapCollection
+                      ?.call(context, widget.collections.entries[index])
+                  : () => widget.onSelection!.call(index),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

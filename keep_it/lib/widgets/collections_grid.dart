@@ -49,7 +49,7 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
             .indexWhere((e) => e.id == widget.collections.lastupdatedID);
 
     return CLMatrix3DAutoFit(
-      pageController: pageController,
+      controller: pageController,
       childSize: const Size(100, 120),
       itemCount: widget.collections.entries.length,
       layers: 2,
