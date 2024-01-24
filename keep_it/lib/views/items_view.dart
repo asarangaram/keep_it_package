@@ -29,16 +29,31 @@ class ItemsView extends ConsumerWidget {
                     }
                   : null,
               pageBuilder: (context, quickMenuScopeKey) {
-                return CLMatrix2D(
-                  itemCount: items.entries.length,
-                  columns: 1,
-                  itemBuilder: (context, index, l) {
-                    final e = items.entries[index];
-                    if (l > 0) {
-                      throw Exception('has only one layer!');
-                    }
-                    return ItemView(media: e.toCLMedia(pathPrefix: docDir));
-                  },
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: CLText.large(items.cluster.description),
+                    ),
+                    const Divider(
+                      thickness: 2,
+                    ),
+                    Expanded(
+                      child: CLMatrix2D(
+                        itemCount: items.entries.length,
+                        columns: 1,
+                        itemBuilder: (context, index, l) {
+                          final e = items.entries[index];
+                          if (l > 0) {
+                            throw Exception('has only one layer!');
+                          }
+                          return ItemView(
+                            media: e.toCLMedia(pathPrefix: docDir),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 );
               },
             );
@@ -54,19 +69,23 @@ class ItemView extends ConsumerWidget {
   final CLMedia media;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return switch (media) {
-      (final CLMediaImage image) when media.runtimeType == CLMediaImage =>
-        Image.file(
-          File(image.path),
-        ),
-      (final CLMediaVideo video) when media.runtimeType == CLMediaVideo =>
-        VideoPlayerScreen(
-          path: video.path,
-        ),
-      _ => throw UnimplementedError(
-          'Not yet implemented',
-        )
-    };
+    return Card(
+      elevation: 8,
+      color: Colors.transparent,
+      child: switch (media) {
+        (final CLMediaImage image) when media.runtimeType == CLMediaImage =>
+          Image.file(
+            File(image.path),
+          ),
+        (final CLMediaVideo video) when media.runtimeType == CLMediaVideo =>
+          VideoPlayerScreen(
+            path: video.path,
+          ),
+        _ => throw UnimplementedError(
+            'Not yet implemented',
+          )
+      },
+    );
   }
 }
 

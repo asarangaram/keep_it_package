@@ -53,31 +53,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         if (snapshot.connectionState == ConnectionState.done) {
           // If the VideoPlayerController has finished initialization, use
           // the data it provides to limit the aspect ratio of the video.
-          return Center(
-            child: AspectRatio(
-              aspectRatio: widget.aspectRatio ?? _controller.value.aspectRatio,
-              // Use the VideoPlayer widget to display the video.
-              child: GestureDetector(
-                onTap: () {
-                  // If the video is playing, pause it.
-                  if (_controller.value.isPlaying) {
-                    _controller.pause();
-                  } else {
-                    // If the video is paused, play it.
-                    _controller
-                      ..setVolume(1)
-                      ..play();
-                  }
-                },
-                child: Stack(
-                  children: [
-                    VideoPlayer(_controller),
-                    Center(
-                      child: VideoController(controller: _controller),
-                    ),
-                  ],
+          return GestureDetector(
+            onTap: () {
+              // If the video is playing, pause it.
+              if (_controller.value.isPlaying) {
+                _controller.pause();
+              } else {
+                // If the video is paused, play it.
+                _controller
+                  ..setVolume(1)
+                  ..play();
+              }
+            },
+            child: Stack(
+              children: [
+                VideoPlayer(_controller),
+                Center(
+                  child: VideoController(controller: _controller),
                 ),
-              ),
+              ],
             ),
           );
         } else {
