@@ -6,6 +6,7 @@ class CLSelectionWrapper<T> extends StatefulWidget {
     required this.selectableList,
     required this.listBuilder,
     required this.onSelectionDone,
+    required this.title,
     super.key,
     this.multiSelection = false,
     this.labelSelected,
@@ -15,6 +16,7 @@ class CLSelectionWrapper<T> extends StatefulWidget {
   final bool multiSelection;
   final String? labelSelected;
   final String? labelNoneSelected;
+  final String title;
   final Widget Function({
     required List<T> selectableList,
     required void Function(int index) onSelection,
@@ -48,7 +50,7 @@ class CLSelectionWrapperState<T> extends State<CLSelectionWrapper<T>> {
           alignment: Alignment.center,
           margin: const EdgeInsets.only(bottom: 8),
           child: CLText.veryLarge(
-            'Save Into ...',
+            widget.title,
             color: Theme.of(context).colorScheme.onTertiary,
           ),
         ),

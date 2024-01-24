@@ -29,6 +29,7 @@ class KeepItDialogs {
     BuildContext context,
     List<Collection> collections, {
     required dynamic Function(List<Collection>) onSelectionDone,
+    required String title,
     String? labelSelected,
     String? labelNoneSelected,
   }) {
@@ -43,6 +44,7 @@ class KeepItDialogs {
           Navigator.of(context).pop();
         },
         child: CLSelectionWrapper(
+          title: title,
           selectableList: collections,
           multiSelection: true,
           onSelectionDone: (selectedIndices) {
@@ -89,6 +91,7 @@ class KeepItDialogs {
               onSelectionDone: onSelectionDone,
               labelSelected: labelSelected,
               labelNoneSelected: labelNoneSelected,
+              title: 'Save Into...',
             ),
           );
         },
@@ -109,6 +112,7 @@ class KeepItDialogs {
             onSelectionDone: onSelectionDone,
             labelSelected: 'Create Selected',
             labelNoneSelected: 'Select from Suggestions',
+            title: 'Suggestions',
           ),
         );
       },
