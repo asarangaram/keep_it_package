@@ -90,7 +90,7 @@ class FileHandler {
 
   static Future<String> relativePath(String absolutePath) async =>
       absolutePath.replaceFirst(
-        '${await getApplicationDocumentsDirectory()}/',
+        '${(await getApplicationDocumentsDirectory()).path}/',
         '',
       );
 }
