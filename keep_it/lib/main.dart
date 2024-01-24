@@ -13,9 +13,9 @@ import 'package:window_size/window_size.dart';
 
 import 'pages/page_clusters.dart';
 import 'pages/page_collections.dart';
-import 'pages/page_show_image.dart';
-import 'widgets/app_theme.dart';
+
 import 'views/shared_items_view.dart';
+import 'widgets/app_theme.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -40,9 +40,6 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
-      'home': (context, state) => const PageShowImage(
-            imagePath: 'assets/wallpaperflare.com_wallpaper-2.jpg',
-          ),
       'collections': (context, state) =>
           const AppTheme(child: CollectionsPage()),
       'demo': (context, state) => const DemoMain(),

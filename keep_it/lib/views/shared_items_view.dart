@@ -59,71 +59,73 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
   @override
   Widget build(BuildContext context) {
     return CLFullscreenBox(
-      child: Stack(
-        children: [
-          LoadCollections(
-            buildOnData: (collections) => widget.mediaAsync.when(
-              data: (media) {
-                return SafeArea(
-                  child: SizedBox(
-                    width: min(MediaQuery.of(context).size.width, 450),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: MediaPreview(
-                            media: media.list,
-                            columns: switch (media.list.length) {
-                              < 2 => 1,
-                              < 4 => 2,
-                              _ => 3
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          height: kMinInteractiveDimension * 5,
-                          width: min(MediaQuery.of(context).size.width, 450),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: CLTextField.multiLine(
-                              descriptionController,
-                              focusNode: descriptionNode,
-                              label: 'What is the best thing,'
-                                  ' you can say about this?',
-                              hint: 'What is the best thing,'
-                                  ' you can say about this?',
-                              maxLines: 5,
+      child: CLBackground(
+        child: Stack(
+          children: [
+            LoadCollections(
+              buildOnData: (collections) => widget.mediaAsync.when(
+                data: (media) {
+                  return SafeArea(
+                    child: SizedBox(
+                      width: min(MediaQuery.of(context).size.width, 450),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: MediaPreview(
+                              media: media.list,
+                              columns: switch (media.list.length) {
+                                < 2 => 1,
+                                < 4 => 2,
+                                _ => 3
+                              },
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: kMinInteractiveDimension * 2,
-                          width: min(MediaQuery.of(context).size.width, 450),
-                          child: isSaving
-                              ? const Center(
-                                  child: CLLoadingView(
-                                    message: 'Saving...',
+                          SizedBox(
+                            height: kMinInteractiveDimension * 5,
+                            width: min(MediaQuery.of(context).size.width, 450),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: CLTextField.multiLine(
+                                descriptionController,
+                                focusNode: descriptionNode,
+                                label: 'What is the best thing,'
+                                    ' you can say about this?',
+                                hint: 'What is the best thing,'
+                                    ' you can say about this?',
+                                maxLines: 5,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: kMinInteractiveDimension * 2,
+                            width: min(MediaQuery.of(context).size.width, 450),
+                            child: isSaving
+                                ? const Center(
+                                    child: CLLoadingView(
+                                      message: 'Saving...',
+                                    ),
+                                  )
+                                : SaveOrCancel(
+                                    saveLabel: 'Save into...',
+                                    cancelLabel: 'Discard',
+                                    onDiscard: () => widget.onDiscard(media),
+                                    onSave: () => onSave(media),
                                   ),
-                                )
-                              : SaveOrCancel(
-                                  saveLabel: 'Save into...',
-                                  cancelLabel: 'Discard',
-                                  onDiscard: () => widget.onDiscard(media),
-                                  onSave: () => onSave(media),
-                                ),
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-              error: (err, _) => CLErrorView(errorMessage: err.toString()),
-              loading: () => const Center(
-                child: CLLoadingView(message: 'Looking for Shared Content'),
+                  );
+                },
+                error: (err, _) => CLErrorView(errorMessage: err.toString()),
+                loading: () => const Center(
+                  child: CLLoadingView(message: 'Looking for Shared Content'),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
