@@ -10,7 +10,22 @@ import '../widgets/load_from_store.dart';
 import '../widgets/media_preview.dart';
 
 class ClustersView extends ConsumerWidget {
-  const ClustersView({required this.clusters, super.key});
+  const ClustersView({required this.collectionId, super.key});
+
+  final int? collectionId;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => CLFullscreenBox(
+        child: CLBackground(
+          child: LoadClusters(
+            collectionID: collectionId,
+            buildOnData: (clusters) => _ClustersView(clusters: clusters),
+          ),
+        ),
+      );
+}
+
+class _ClustersView extends ConsumerWidget {
+  const _ClustersView({required this.clusters});
   final Clusters clusters;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

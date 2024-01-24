@@ -15,16 +15,31 @@ import '../widgets/collections_empty.dart';
 import '../widgets/collections_grid.dart';
 import '../widgets/collections_list.dart';
 import '../widgets/keep_it_main_view.dart';
+import '../widgets/load_from_store.dart';
 
-class CollectionsView extends ConsumerStatefulWidget {
-  const CollectionsView(this.collections, {super.key});
+class CollectionsView extends ConsumerWidget {
+  const CollectionsView({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => const CLFullscreenBox(
+        child: CLBackground(
+          child: LoadCollections(
+            buildOnData: _CollectionsView.new,
+          ),
+        ),
+      );
+}
+
+class _CollectionsView extends ConsumerStatefulWidget {
+  const _CollectionsView(this.collections, {super.key});
   final Collections collections;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => CollectionsViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CollectionsViewState();
 }
 
-class CollectionsViewState extends ConsumerState<CollectionsView> {
+class _CollectionsViewState extends ConsumerState<_CollectionsView> {
   @override
   Widget build(BuildContext context) {
     final availableSuggestions = suggestedCollections.where((element) {

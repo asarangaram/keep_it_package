@@ -1,4 +1,4 @@
-
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,10 +6,30 @@ import 'package:store/store.dart';
 
 import '../widgets/keep_it_main_view.dart';
 
+import '../widgets/load_from_store.dart';
+
 class ItemsView extends ConsumerWidget {
-  const ItemsView({
+  const ItemsView({required this.clusterID, super.key});
+
+  final int clusterID;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CLFullscreenBox(
+      child: CLBackground(
+        child: LoadItems(
+          clusterID: clusterID,
+          buildOnData: (Items items, {required String docDir}) {
+            return _ItemsView(items: items);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _ItemsView extends ConsumerWidget {
+  const _ItemsView({
     required this.items,
-    super.key,
   });
 
   final Items items;

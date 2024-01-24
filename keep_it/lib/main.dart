@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:keep_it/pages/page_items.dart';
+
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
-import 'pages/page_clusters.dart';
-import 'pages/page_collections.dart';
-
+import 'views/clusters_view.dart';
+import 'views/collections_view.dart';
+import 'views/items_view.dart';
 import 'views/shared_items_view.dart';
 import 'widgets/app_theme.dart';
 
@@ -41,14 +41,14 @@ class KeepItApp implements AppDescriptor {
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
       'collections': (context, state) =>
-          const AppTheme(child: CollectionsPage()),
+          const AppTheme(child: CollectionsView()),
       'demo': (context, state) => const DemoMain(),
       'clusters': (context, GoRouterState state) =>
-          const ClustersPage(collectionId: null),
+          const ClustersView(collectionId: null),
       'clusters/by_collection_id/:id': (context, GoRouterState state) =>
-          ClustersPage(collectionId: int.parse(state.pathParameters['id']!)),
+          ClustersView(collectionId: int.parse(state.pathParameters['id']!)),
       'items/by_cluster_id/:id': (context, GoRouterState state) =>
-          ItemsPage(clusterID: int.parse(state.pathParameters['id']!)),
+          ItemsView(clusterID: int.parse(state.pathParameters['id']!)),
     };
   }
 
