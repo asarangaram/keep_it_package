@@ -71,14 +71,14 @@ class UpsertCollectionForm extends ConsumerWidget {
     if (name?.isEmpty ?? true) {
       return "Name can't be empty";
     }
-    if (name!.length > 16) {
+    /* if (name!.length > 16) {
       return 'Name should not exceed 15 letters';
-    }
+    } */
     if (collection?.label == name) {
       // Nothing changed.
       return null;
     }
-    if (collections.map((e) => e.label.trim()).contains(name.trim())) {
+    if (collections.map((e) => e.label.trim()).contains(name!.trim())) {
       return '$name already exists';
     }
     return null;
