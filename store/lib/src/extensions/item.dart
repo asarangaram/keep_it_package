@@ -1,9 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:path/path.dart' as path;
 import 'package:sqlite3/sqlite3.dart';
 
 import '../models/item.dart';
 
-extension ExtItemDB on ItemInDB {
+extension ExtItemInDB on ItemInDB {
   static ItemInDB itemGetById(Database db, int itemId) {
     final Map<String, dynamic> map =
         db.select('SELECT * FROM Item WHERE id = ?', [itemId]).first;
@@ -22,13 +23,13 @@ extension ExtItemDB on ItemInDB {
       db.execute(
         'UPDATE OR IGNORE Item SET path = ?, '
         'ref = ?, cluster_id = ? type=? WHERE id = ?',
-        [path, ref, clusterId, type, id],
+        [this.path, ref, clusterId, type, id],
       );
     }
     db.execute(
       'INSERT OR IGNORE INTO Item (path, '
       'ref, cluster_id, type) VALUES (?, ?, ?, ?)',
-      [path, ref, clusterId, type.name],
+      [this.path, ref, clusterId, type.name],
     );
     return db.lastInsertRowId;
   }
@@ -46,7 +47,7 @@ extension ExtItemDB on ItemInDB {
   }
 
   CLMedia toCLMedia({String pathPrefix = ''}) {
-    final p = FileHandler.join(pathPrefix, path);
+    final p = FileHandler.join(pathPrefix, this.path);
     return switch (type) {
       CLMediaType.image =>
         CLMediaImage(path: p, url: ref).attachPreviewIfExits(),
@@ -57,5 +58,28 @@ extension ExtItemDB on ItemInDB {
           type: type,
         )
     };
+  }
+
+  static Future<ItemInDB> fromCLMedia(
+    CLMedia media, {
+    required int clusterId,
+  }) async {
+    if (![CLMediaType.video, CLMediaType.image].contains(media.type)) {
+      return ItemInDB(
+        clusterId: clusterId,
+        path: media.path,
+        type: media.type,
+      );
+    }
+
+    return ItemInDB(
+      clusterId: clusterId,
+      path: await (await media.copy(
+        toDir: path.join('keep_it', 'cluster_$clusterId'),
+      ))
+          .relativePathFuture,
+      type: media.type,
+      ref: media.url,
+    );
   }
 }

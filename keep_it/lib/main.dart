@@ -15,7 +15,7 @@ import 'pages/page_clusters.dart';
 import 'pages/page_collections.dart';
 import 'pages/page_show_image.dart';
 import 'pages/views/app_theme.dart';
-import 'pages/views/shared_items_view.dart';
+import 'views/shared_items_view.dart';
 
 class KeepItApp implements AppDescriptor {
   @override

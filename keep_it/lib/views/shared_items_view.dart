@@ -4,13 +4,13 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/pages/views/load_from_store/load_from_store.dart';
-import 'package:keep_it/pages/views/receive_shared/media_preview.dart';
-import 'package:path/path.dart' as path;
+
 import 'package:store/store.dart';
 
-import 'collections_page/keepit_dialogs.dart';
-import 'receive_shared/save_or_cancel.dart';
+import '../pages/views/collections_page/keepit_dialogs.dart';
+import '../pages/views/load_from_store/load_from_store.dart';
+import '../pages/views/receive_shared/media_preview.dart';
+import '../pages/views/receive_shared/save_or_cancel.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -171,7 +171,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
 
     final items = <ItemInDB>[
       for (final entry in media.list)
-        await entry.keepFile(clusterId: clusterId),
+        await ExtItemInDB.fromCLMedia(entry, clusterId: clusterId),
     ];
 
     ref.read(itemsProvider(clusterId));
@@ -183,29 +183,6 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     _infoLogger(
       'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
       ' [${stopwatch.elapsed}]',
-    );
-  }
-}
-
-extension ExtItemInDB on CLMedia {
-  Future<ItemInDB> keepFile({
-    required int clusterId,
-  }) async {
-    if (![CLMediaType.video, CLMediaType.image].contains(type)) {
-      return ItemInDB(
-        clusterId: clusterId,
-        path: this.path,
-        type: type,
-      );
-    }
-
-    return ItemInDB(
-      clusterId: clusterId,
-      path:
-          await (await copy(toDir: path.join('keep_it', 'cluster_$clusterId')))
-              .relativePathFuture,
-      type: type,
-      ref: url,
     );
   }
 }

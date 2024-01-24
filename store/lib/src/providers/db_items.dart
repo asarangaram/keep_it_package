@@ -24,7 +24,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     final List<ItemInDB> items;
     final Cluster cluster;
 
-    items = ItemDB.getItemsForCluster(databaseManager!.db, clusterID!);
+    items = ExtItemInDB.getItemsForCluster(databaseManager!.db, clusterID!);
     cluster = ClusterDB.getById(databaseManager!.db, clusterID!);
 
     state = const AsyncValue.loading();
