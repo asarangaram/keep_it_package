@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../local_data/suggested_collections.dart';
+
 @immutable
 class Collection {
   final int? id;
@@ -71,5 +73,13 @@ class Collections {
 
   Collections clearLastUpdated() {
     return Collections(entries);
+  }
+
+  Collections get getSuggestions {
+    return Collections(
+      suggestedCollections.where((element) {
+        return !entries.map((e) => e.label).contains(element.label);
+      }).toList(),
+    );
   }
 }

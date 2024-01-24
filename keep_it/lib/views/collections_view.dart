@@ -8,8 +8,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:store/store.dart';
 
-import '../data/lookups/suggested_collections.dart';
-
 import '../widgets/collections_dialogs.dart';
 import '../widgets/collections_empty.dart';
 import '../widgets/collections_grid.dart';
@@ -42,11 +40,7 @@ class _CollectionsView extends ConsumerStatefulWidget {
 class _CollectionsViewState extends ConsumerState<_CollectionsView> {
   @override
   Widget build(BuildContext context) {
-    final availableSuggestions = suggestedCollections.where((element) {
-      return !widget.collections.entries
-          .map((e) => e.label)
-          .contains(element.label);
-    }).toList();
+    final availableSuggestions = widget.collections.getSuggestions;
 
     final menuItems = [
       [
@@ -56,7 +50,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
           onTap: () async {
             CollectionsDialog.onSuggestions(
               context,
-              availableSuggestions: availableSuggestions,
+              availableSuggestions: availableSuggestions.entries,
               onSelectionDone: (List<Collection> selectedCollections) {
                 ref
                     .read(collectionsProvider(null).notifier)
