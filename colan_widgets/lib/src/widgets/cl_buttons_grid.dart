@@ -69,13 +69,7 @@ class CLButtonsGrid extends ConsumerWidget {
                               CLButtonSquereElevated.verySmall,
                             CLScaleType.tiny => CLButtonSquereElevated.tiny,
                           }(
-                            onTap: clMenuItems1D[i].onTap ??
-                                () {
-                                  showSnackBarAboveDialog(
-                                    context,
-                                    clMenuItems1D[i].title,
-                                  );
-                                },
+                            onTap: clMenuItems1D[i].onTap,
                             child: switch (scaleType) {
                               CLScaleType.veryLarge => CLIconLabelled.veryLarge,
                               CLScaleType.large => CLIconLabelled.large,
@@ -99,49 +93,5 @@ class CLButtonsGrid extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  static void showSnackBarAboveDialog(
-    BuildContext context,
-    String message, {
-    Duration duration = const Duration(milliseconds: 400),
-    void Function()? onSnackBarRemoved,
-  }) {
-    // Create an overlay entry
-    OverlayEntry entry;
-
-    entry = OverlayEntry(
-      builder: (BuildContext context) => Positioned(
-        top: MediaQuery.of(context).size.height *
-            0.8, // Adjust position as needed
-        width: MediaQuery.of(context).size.width,
-        child: Material(
-          color: Colors.transparent,
-          child: SafeArea(
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              decoration:
-                  BoxDecoration(color: Theme.of(context).colorScheme.onSurface),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: CLText.large(
-                  message,
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    // Insert the overlay entry above the current overlay entries (dialogs)
-    Overlay.of(context).insert(entry);
-
-    // Remove the overlay entry after a certain duration
-    Future.delayed(const Duration(seconds: 2), () {
-      entry.remove();
-      onSnackBarRemoved?.call();
-    });
   }
 }
