@@ -19,7 +19,6 @@ extension CollectionDB on Collection {
   }
 
   int upsert(Database db) {
-    print('id updated $id');
     if (id != null) {
       db.execute(
         'UPDATE Collection SET label = ?, description = ? WHERE id = ? ',
@@ -41,16 +40,16 @@ extension CollectionDB on Collection {
     if (alternateCollectionId != null) {
       db.execute(
         '''
-INSERT OR REPLACE INTO CollectionCluster (collection_id, cluster_id)
-SELECT 
-    CASE 
-        WHEN collection_id = ? THEN ?
-        ELSE collection_id
-    END AS new_collection_id,
-    cluster_id
-FROM CollectionCluster
-WHERE collection_id = ?
-''',
+          INSERT OR REPLACE INTO CollectionCluster (collection_id, cluster_id)
+          SELECT 
+              CASE 
+                  WHEN collection_id = ? THEN ?
+                  ELSE collection_id
+              END AS new_collection_id,
+              cluster_id
+          FROM CollectionCluster
+          WHERE collection_id = ?
+        ''',
         [id, alternateCollectionId, id],
       );
     } else {

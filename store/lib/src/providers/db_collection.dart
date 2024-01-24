@@ -48,7 +48,7 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
     }
 
     final lastupdatedID = collection.upsert(databaseManager!.db);
-    print('upsertCollection lastupdatedID $lastupdatedID');
+
     loadCollections(lastupdatedID: lastupdatedID);
   }
 

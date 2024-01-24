@@ -55,18 +55,6 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
 
   @override
   void didChangeDependencies() {
-    /* WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('lastupdatedID ${widget.collections.lastupdatedID}');
-      if (widget.collections.lastupdatedID != null) {
-        controller.scrollToIndex(highLightIndex);
-      } else {
-        setState(() {
-          highLightIndex = -1;
-        });
-      }
-      print('highLightIndex $highLightIndex');
-    }); */
-    print('didChangeDependencies called');
     super.didChangeDependencies();
   }
 
