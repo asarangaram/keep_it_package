@@ -60,8 +60,10 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
 
   @override
   Widget build(BuildContext context) {
-    final highLightIndex = widget.collections.entries
-        .indexWhere((e) => e.id == widget.collections.lastupdatedID);
+    final highLightIndex = widget.collections.lastupdatedID == null
+        ? -1
+        : widget.collections.entries
+            .indexWhere((e) => e.id == widget.collections.lastupdatedID);
     if (highLightIndex > -1) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.scrollToIndex(highLightIndex);
