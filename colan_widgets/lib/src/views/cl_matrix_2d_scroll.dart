@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/flexibile_optional.dart';
@@ -16,6 +17,8 @@ class CLMatrix2DScrollable extends StatelessWidget {
     super.key,
     this.controller,
     this.itemHeight,
+    this.borderSide = BorderSide.none,
+    this.decoration,
   });
 
   final Widget Function(BuildContext context, int r, int c, int l) itemBuilder;
@@ -27,6 +30,8 @@ class CLMatrix2DScrollable extends StatelessWidget {
   final int layers;
   final ScrollController? controller;
   final double? itemHeight;
+  final BorderSide borderSide;
+  final BoxDecoration? decoration;
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +62,38 @@ class CLMatrix2DScrollable extends StatelessWidget {
                         children: [
                           for (var c = 0; c < hCount; c++)
                             Flexible(
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: size.width / hCount,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(2),
-                                      child: itemBuilder(context, r, c, l),
-                                    ),
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: (borderSide != BorderSide.none ||
+                                          decoration != null)
+                                      ? 2
+                                      : 0,
+                                ),
+                                width: size.width / hCount,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    left: borderSide,
+                                    right: borderSide,
+                                    top:
+                                        (l == 0) ? borderSide : BorderSide.none,
+                                    bottom: (l == (layers - 1))
+                                        ? borderSide
+                                        : BorderSide.none,
                                   ),
-                                ],
+                                ),
+                                child: DecoratedBox(
+                                  decoration:
+                                      decoration ?? const BoxDecoration(),
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      top: l == 0 ? 2 : 0,
+                                      left: 2,
+                                      right: 2,
+                                      bottom: l == (layers - 1) ? 2 : 0,
+                                    ),
+                                    child: itemBuilder(context, r, c, l),
+                                  ),
+                                ),
                               ),
                             ), //
                         ],

@@ -41,6 +41,19 @@ class _ClustersView extends ConsumerWidget {
           itemBuilder: itemBuilder,
           columns: 2,
           layers: 2,
+          decoration: BoxDecoration(
+            color: Theme.of(context)
+                .colorScheme
+                .tertiaryContainer
+                .reduceBrightness(0.05),
+            borderRadius: BorderRadius.circular(2),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+              ),
+            ],
+          ),
+          borderSide: const BorderSide(),
         );
       },
     );

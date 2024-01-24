@@ -16,6 +16,8 @@ class CLMatrix2D extends StatelessWidget {
     this.layers = 1,
     this.controller,
     this.itemHeight,
+    this.borderSide = BorderSide.none,
+    this.decoration,
   });
 
   final int? rows;
@@ -27,7 +29,8 @@ class CLMatrix2D extends StatelessWidget {
       excessViewBuilder;
   final AutoScrollController? controller;
   final double? itemHeight;
-
+  final BorderSide borderSide;
+  final BoxDecoration? decoration;
   @override
   Widget build(
     BuildContext context,
@@ -44,6 +47,8 @@ class CLMatrix2D extends StatelessWidget {
         layers: layers,
         controller: controller,
         itemHeight: itemHeight,
+        borderSide: borderSide,
+        decoration: decoration,
       );
     }
     final excess = itemCount - rows! * columns;

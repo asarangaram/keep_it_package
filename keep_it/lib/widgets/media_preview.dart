@@ -26,16 +26,7 @@ class MediaPreview extends ConsumerWidget {
       rows: rows,
       itemBuilder: itemBuilder,
       excessViewBuilder: (BuildContext context, int excessCount) =>
-          DecoratedBox(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.tertiaryContainer,
-          borderRadius: BorderRadius.circular(2),
-          boxShadow: [
-            BoxShadow(color: Theme.of(context).colorScheme.onTertiaryContainer),
-          ],
-        ),
-        child: Center(child: CLText.small('+$excessCount Items')),
-      ),
+          Center(child: CLText.small('+$excessCount Items')),
     );
   }
 
@@ -47,19 +38,10 @@ class MediaPreview extends ConsumerWidget {
       throw Exception('index exceeded length');
     }
     final e = media[index];
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.tertiaryContainer,
-        borderRadius: BorderRadius.circular(2),
-        boxShadow: [
-          BoxShadow(color: Theme.of(context).colorScheme.onTertiaryContainer),
-        ],
-      ),
-      child: Align(
-        child: Padding(
-          padding: const EdgeInsets.all(2),
-          child: MediaItemPreview(mediaItem: e),
-        ),
+    return Align(
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: MediaItemPreview(mediaItem: e),
       ),
     );
   }
