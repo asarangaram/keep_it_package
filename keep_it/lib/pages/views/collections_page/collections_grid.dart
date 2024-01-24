@@ -3,11 +3,12 @@ import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/pages/views/collections_page/collections_list.dart';
 import 'package:store/store.dart';
 
 import 'collections_grid_item.dart';
 
-class CollectionsGrid extends ConsumerWidget {
+class CollectionsGrid extends ConsumerStatefulWidget {
   const CollectionsGrid({
     required this.quickMenuScopeKey,
     required this.collections,
@@ -32,8 +33,15 @@ class CollectionsGrid extends ConsumerWidget {
   )? onTapCollection;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (collections.entries.isEmpty) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CollectionsGridState();
+}
+
+class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
+  final PageController pageController = PageController();
+  @override
+  Widget build(BuildContext context) {
+    if (widget.collections.entries.isEmpty) {
       throw Exception("This widget can't handle empty colections");
     }
 
@@ -50,30 +58,44 @@ class CollectionsGrid extends ConsumerWidget {
 
         final random = Random(42);
         final pages =
-            (collections.entries.length + (pageMatrix.totalCount - 1)) ~/
+            (widget.collections.entries.length + (pageMatrix.totalCount - 1)) ~/
                 pageMatrix.totalCount;
+        final highLightIndex = widget.collections.entries
+            .indexWhere((e) => e.id == widget.collections.lastupdatedID);
+
+        if (highLightIndex > -1) {
+          final highLightPage = highLightIndex ~/ pageMatrix.totalCount;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            pageController.jumpToPage(highLightPage);
+          });
+        }
+
         return CLMatrix3D(
+          pageController: pageController,
           pages: pages,
           rows: pageMatrix.height,
           columns: pageMatrix.width,
-          itemCount: collections.entries.length,
+          itemCount: widget.collections.entries.length,
           layers: 2,
           itemBuilder: (context, index, layer) {
             final randomColor =
                 Colors.primaries[random.nextInt(Colors.primaries.length)];
             if (layer == 0) {
-              return CollectionsGridItem(
-                collection: collections.entries[index],
-                quickMenuScopeKey: quickMenuScopeKey,
-                size: childSize,
-                backgroundColor: randomColor,
-                onTapCollection: onTapCollection,
-                onEditCollection: onEditCollection,
-                onDeleteCollection: onDeleteCollection,
+              return CLHighlighted(
+                isHighlighed: index == highLightIndex,
+                child: CollectionsGridItem(
+                  collection: widget.collections.entries[index],
+                  quickMenuScopeKey: widget.quickMenuScopeKey,
+                  size: childSize,
+                  backgroundColor: randomColor,
+                  onTapCollection: widget.onTapCollection,
+                  onEditCollection: widget.onEditCollection,
+                  onDeleteCollection: widget.onDeleteCollection,
+                ),
               );
             } else if (layer == 1) {
               return Text(
-                collections.entries[index].label,
+                widget.collections.entries[index].label,
                 maxLines: 2,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,

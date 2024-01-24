@@ -28,22 +28,9 @@ class CLPageViewState extends State<CLPageView> {
         });
       },
       itemBuilder: (context, index) {
-        return AnimatedBuilder(
-          animation: _pageController,
-          builder: (context, child) {
-            var value = 1.0;
-            if (_pageController.position.haveDimensions) {
-              value = _pageController.page! - index;
-              value = (1 - (value.abs() * 0.5)).clamp(0.0, 1.0);
-            }
-            return Center(
-              child: child,
-            );
-          },
-          child: widget.pageBuilder(
-            context,
-            _currentPage,
-          ), // Replace with your widgets
+        return widget.pageBuilder(
+          context,
+          _currentPage,
         );
       },
     );

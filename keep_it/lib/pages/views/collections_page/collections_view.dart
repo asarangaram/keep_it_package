@@ -175,7 +175,8 @@ class CollectionsViewState extends ConsumerState<CollectionsView> {
     }
   }
 }
+
 // should be part of settings.
 final isGridProvider = StateProvider<bool>((ref) {
-  return false;
+  return true;
 });

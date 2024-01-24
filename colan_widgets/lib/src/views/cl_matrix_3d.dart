@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'cl_matrix_2d.dart';
-import 'cl_page_view.dart';
 
 class CLMatrix3D extends ConsumerWidget {
   const CLMatrix3D({
@@ -11,6 +10,7 @@ class CLMatrix3D extends ConsumerWidget {
     required this.columns,
     required this.itemCount,
     required this.itemBuilder,
+    required this.pageController,
     super.key,
     this.layers = 1,
   });
@@ -21,11 +21,13 @@ class CLMatrix3D extends ConsumerWidget {
   final int itemCount;
   final int layers;
   final Widget Function(BuildContext context, int index, int layer) itemBuilder;
-
+  final PageController pageController;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CLPageView(
-      pageBuilder: (BuildContext context, int pageNum) {
+    return PageView.builder(
+      controller: pageController,
+      itemCount: pages,
+      itemBuilder: (context, pageNum) {
         final itemsInCurrentPage = ((pageNum * rows * columns) < itemCount)
             ? rows * columns
             : itemCount ~/ (rows * columns);
@@ -47,7 +49,6 @@ class CLMatrix3D extends ConsumerWidget {
           layers: layers,
         );
       },
-      pageMax: pages,
     );
   }
 }
