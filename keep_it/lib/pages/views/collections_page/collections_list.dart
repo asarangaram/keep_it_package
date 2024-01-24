@@ -7,7 +7,6 @@ import 'package:keep_it/pages/views/collections_page/collections_list_item.dart'
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
-import '../../../cl_highlight.dart';
 import '../cl_blink.dart';
 
 class CollectionsList extends ConsumerStatefulWidget {
