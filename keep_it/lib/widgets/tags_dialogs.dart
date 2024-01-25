@@ -47,6 +47,7 @@ class TagsDialog {
     required String title,
     String? labelSelected,
     String? labelNoneSelected,
+    bool showCount = true,
   }) {
     if (tags.isEmpty) {
       throw Exception("TagList can't be empty!");
@@ -83,6 +84,7 @@ class TagsDialog {
               tags: Tags(selectableList),
               selectionMask: selectionMask,
               onSelection: onSelection,
+              showCount: showCount,
             );
           },
         ),
@@ -128,6 +130,7 @@ class TagsDialog {
             labelSelected: 'Create Selected',
             labelNoneSelected: 'Select from Suggestions',
             title: 'Suggestions',
+            showCount: false,
           ),
         );
       },

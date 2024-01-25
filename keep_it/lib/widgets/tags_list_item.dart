@@ -14,6 +14,7 @@ class TagsListItem extends ConsumerWidget {
     this.isSelected,
     this.onTap,
     this.previewSize = 128,
+    this.showCount = true,
   });
 
   final bool? isSelected;
@@ -22,6 +23,7 @@ class TagsListItem extends ConsumerWidget {
   final void Function()? onTap;
   final Color backgroundColor;
   final int previewSize;
+  final bool showCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,17 +41,18 @@ class TagsListItem extends ConsumerWidget {
                 tag.description ?? '',
                 textAlign: TextAlign.start,
               ),
-              Positioned(
-                right: 8,
-                bottom: 8,
-                child: CollectionCount(
-                  tagId: tag.id,
-                  buildOnData: (count) => CLText.small(
-                    count.toString(),
-                    textAlign: TextAlign.end,
+              if (showCount)
+                Positioned(
+                  right: 8,
+                  bottom: 8,
+                  child: CollectionCount(
+                    tagId: tag.id,
+                    buildOnData: (count) => CLText.small(
+                      count.toString(),
+                      textAlign: TextAlign.end,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

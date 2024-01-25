@@ -19,6 +19,7 @@ class TagsList extends ConsumerStatefulWidget {
     this.onTapTag,
     this.onEditTag,
     this.onDeleteTag,
+    this.showCount = true,
   });
 
   final Tags tags;
@@ -36,6 +37,7 @@ class TagsList extends ConsumerStatefulWidget {
     BuildContext context,
     Tag tag,
   )? onTapTag;
+  final bool showCount;
 
   @override
   ConsumerState<TagsList> createState() => _TagsListState();
@@ -121,6 +123,7 @@ class _TagsListState extends ConsumerState<TagsList> {
                   ? () =>
                       widget.onTapTag?.call(context, widget.tags.entries[index])
                   : () => widget.onSelection!.call(index),
+              showCount: widget.showCount,
             ),
           ),
         );
