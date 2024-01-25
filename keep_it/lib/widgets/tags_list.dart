@@ -89,53 +89,52 @@ class _TagsListState extends ConsumerState<TagsList> {
               'selection Mask not provided, to handle OnSelection',
             );
           }
-          return GestureDetector(
+        }
+        final colorSelected =
+            (widget.selectionMask?[index] ?? false) ? null : Colors.transparent;
+
+        return AutoScrollTag(
+          key: ValueKey('tagsList $index'),
+          controller: controller,
+          index: index,
+          child: GestureDetector(
             onTap: (widget.onSelection == null)
                 ? () =>
                     widget.onTapTag?.call(context, widget.tags.entries[index])
                 : () => widget.onSelection!.call(index),
             child: Card(
               color: Colors.transparent,
-              shadowColor:
-                  widget.selectionMask![index] ? null : Colors.transparent,
-              surfaceTintColor:
-                  widget.selectionMask![index] ? null : Colors.transparent,
-              child: TagPreview.asTile(
-                tag: widget.tags.entries[index],
-              ),
-            ),
-          );
-        }
-        return Slidable(
-          key: ValueKey('tagslist_$index'),
-          endActionPane: ActionPane(
-            motion: const BehindMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (context) =>
-                    widget.onEditTag?.call(context, widget.tags.entries[index]),
-                icon: Icons.edit,
-                label: 'Edit',
-              ),
-              SlidableAction(
-                onPressed: (context) => widget.onDeleteTag
-                    ?.call(context, widget.tags.entries[index]),
-                icon: Icons.edit,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
-                label: 'Delete',
-              ),
-            ],
-          ),
-          child: CLHighlighted(
-            isHighlighed: index == highLightIndex,
-            child: GestureDetector(
-              onTap: (widget.onSelection == null)
-                  ? () =>
-                      widget.onTapTag?.call(context, widget.tags.entries[index])
-                  : () => widget.onSelection!.call(index),
-              child: TagPreview.asTile(
-                tag: widget.tags.entries[index],
+              shadowColor: colorSelected,
+              surfaceTintColor: colorSelected,
+              child: Slidable(
+                key: ValueKey('tagslist_$index'),
+                endActionPane: ActionPane(
+                  motion: const BehindMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (context) => widget.onEditTag
+                          ?.call(context, widget.tags.entries[index]),
+                      icon: Icons.edit,
+                      label: 'Edit',
+                    ),
+                    SlidableAction(
+                      onPressed: (context) => widget.onDeleteTag
+                          ?.call(context, widget.tags.entries[index]),
+                      icon: Icons.edit,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.errorContainer,
+                      foregroundColor:
+                          Theme.of(context).colorScheme.onErrorContainer,
+                      label: 'Delete',
+                    ),
+                  ],
+                ),
+                child: CLHighlighted(
+                  isHighlighed: index == highLightIndex,
+                  child: TagPreview.asTile(
+                    tag: widget.tags.entries[index],
+                  ),
+                ),
               ),
             ),
           ),

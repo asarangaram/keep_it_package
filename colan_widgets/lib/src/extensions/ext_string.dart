@@ -22,7 +22,7 @@ extension ColonExtensionOnString on String {
   }
 }
 
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);
