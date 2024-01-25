@@ -13,7 +13,7 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
-  int currentIndex = 0;
+  int currentIndex = 1;
   @override
   Widget build(BuildContext context) {
     return CLFullscreenBox.navBar(

@@ -4,3 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final isGridProvider = StateProvider<bool>((ref) {
   return true;
 });
+
+final isPreviewSquareProvider = StateProvider<bool>((ref) {
+  return true;
+});

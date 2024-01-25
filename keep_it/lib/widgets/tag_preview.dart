@@ -60,7 +60,7 @@ class CLGridItemSquare extends StatelessWidget {
           padding: const EdgeInsets.all(2),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: backgroundColor,
+              border: Border.all(),
               borderRadius: const BorderRadius.all(Radius.circular(12)),
             ),
             child: child,

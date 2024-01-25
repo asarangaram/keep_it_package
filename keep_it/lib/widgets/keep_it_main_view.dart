@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +49,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
               MainHeader(
                 actionsBuilders: widget.actionsBuilder,
                 quickMenuScopeKey: quickMenuScopeKey,
-                title: widget.title,
+                title: widget.title?.uptoLength(15),
                 onPop: widget.onPop,
                 mainActionItems: const [
                   [

@@ -23,6 +23,7 @@ dependencies:
   go_router: ^12.1.1
   infinite_carousel: ^1.0.3
   logger: ^2.0.2+1
+  material_design_icons_flutter: ^7.0.7296
   palette_generator: ^0.3.3+3
   path: ^1.8.3
   path_provider: ^2.1.1

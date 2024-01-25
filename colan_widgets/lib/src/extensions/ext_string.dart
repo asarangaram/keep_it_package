@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../app_logger.dart';
 
 extension ColonExtensionOnString on String {
@@ -13,6 +15,10 @@ extension ColonExtensionOnString on String {
 
   void printString() {
     _infoLogger(this);
+  }
+
+  String uptoLength(int N) {
+    return substring(0, min(length, N));
   }
 }
 

@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../providers/state_providers.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
 
@@ -37,6 +41,24 @@ class _CollectionsView extends ConsumerWidget {
               context.pop();
             }
           : null,
+      actionsBuilder: [
+        (
+          BuildContext context,
+          GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
+        ) {
+          final isPreviewSquare = ref.watch(isPreviewSquareProvider);
+          return Transform.rotate(
+            angle: pi / 2,
+            child: CLButtonIcon.small(
+              isPreviewSquare ? MdiIcons.cropSquare : MdiIcons.arrowExpandAll,
+              onTap: () {
+                ref.read(isPreviewSquareProvider.notifier).state =
+                    !isPreviewSquare;
+              },
+            ),
+          );
+        }
+      ],
       pageBuilder: (context, quickMenuScopeKey) {
         return CLMatrix2D(
           itemCount: collections.entries.length,

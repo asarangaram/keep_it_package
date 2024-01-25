@@ -6,6 +6,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/state_providers.dart';
+
 class MediaPreview extends ConsumerWidget {
   const MediaPreview({
     required this.media,
@@ -52,9 +54,16 @@ class MediaItemPreview extends ConsumerWidget {
   final CLMedia mediaItem;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isPreviewSquare = ref.watch(isPreviewSquareProvider);
     final imageFile = File(mediaItem.previewFileName);
     if (imageFile.existsSync()) {
-      return Image.file(imageFile);
+      return AspectRatio(
+        aspectRatio: 1,
+        child: Image.file(
+          imageFile,
+          fit: isPreviewSquare ? BoxFit.cover : BoxFit.contain,
+        ),
+      );
     }
     return const Center(
       child: Padding(
