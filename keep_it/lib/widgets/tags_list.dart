@@ -9,8 +9,6 @@ import 'package:keep_it/widgets/tag_preview.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
-import 'tags_list_item.dart';
-
 class TagsList extends ConsumerStatefulWidget {
   const TagsList({
     required this.tags,
