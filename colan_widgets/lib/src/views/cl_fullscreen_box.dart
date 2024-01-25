@@ -148,7 +148,6 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
         ),
       ),
     );
-    setState(() {});
 
     // Insert the overlay entry above the current overlay entries (dialogs)
     Overlay.of(context).insert(entry!);
@@ -157,7 +156,6 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
     Future.delayed(const Duration(seconds: 2), () {
       entry?.remove();
       entry = null;
-      setState(() {});
     });
   }
 }
