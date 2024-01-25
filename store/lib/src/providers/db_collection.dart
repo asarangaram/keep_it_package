@@ -54,12 +54,13 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
 
     for (final id in tagIds) {
       CollectionDB.addTagToCollection(databaseManager!.db, id, collectionId);
+      if (id != tagID) {
+        await ref.read(collectionsProvider(id).notifier).loadCollections();
+      } else {
+        await loadCollections();
+      }
 
-      //await ref.read(collectionsProvider(id).notifier).loadCollections();
-      ref
-        ..invalidate(collectionsProvider(null))
-        ..invalidate(collectionsProvider(id))
-        ..invalidate(itemsByTagIdProvider(DBQueries.byTagID(id)));
+      ref.invalidate(itemsByTagIdProvider(DBQueries.byTagID(id)));
     }
 
     await loadCollections();
