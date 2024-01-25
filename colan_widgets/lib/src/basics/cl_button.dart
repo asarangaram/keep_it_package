@@ -20,10 +20,10 @@ class _CLButton extends StatelessWidget {
     required this.scaleType,
     super.key,
     this.color,
-    this.disabledColor,
+    Color? disabledColor,
     this.onTap,
     this.boxDecoration,
-  });
+  }) : disabledColor = disabledColor ?? color;
 
   Color? get color_ => onTap == null ? disabledColor : color;
   @override
