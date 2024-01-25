@@ -33,6 +33,12 @@ class KeepItApp implements AppDescriptor {
           if (File(fullPath).existsSync()) {
             await File(fullPath).delete();
           }
+          for (final dir in ['keep_it', 'Incoming']) {
+            final folder = path.join(appDir.path, dir);
+            if (Directory(folder).existsSync()) {
+              Directory(folder).deleteSync(recursive: true);
+            }
+          }
         }
 
         return true;
