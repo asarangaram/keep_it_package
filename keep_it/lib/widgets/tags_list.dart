@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +80,6 @@ class _TagsListState extends ConsumerState<TagsList> {
       throw Exception("This widget can't handle empty colections");
     }
 
-    final random = Random(42);
 
     return CLMatrix2D(
       itemCount: widget.tags.entries.length,
@@ -89,8 +87,6 @@ class _TagsListState extends ConsumerState<TagsList> {
       columns: 1,
       itemHeight: 200,
       itemBuilder: (context, index, l) {
-        final randomColor =
-            Colors.primaries[random.nextInt(Colors.primaries.length)];
         return Slidable(
           key: ValueKey('tagslist_$index'),
           endActionPane: ActionPane(
