@@ -7,6 +7,7 @@ import 'package:store/store.dart';
 
 import 'collection_preview.dart';
 
+import 'from_store/cluster_count.dart';
 import 'wrap_standard_quick_menu.dart';
 
 class CollectionsGrid extends ConsumerStatefulWidget {
@@ -75,7 +76,23 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
                 context,
                 collection,
               ),
-              child: CLGridItemSquare(backgroundColor: randomColor),
+              child: ClusterCount(
+                collectionId: collection.id,
+                buildOnData: (count) => CLGridItemSquare(
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: CLText.small(
+                          count.toString(),
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         } else if (layer == 1) {

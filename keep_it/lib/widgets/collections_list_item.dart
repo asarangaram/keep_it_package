@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import 'collection_preview.dart';
+import 'from_store/cluster_count.dart';
 
 class CollectionsListItem extends ConsumerWidget {
   const CollectionsListItem(
@@ -24,8 +25,6 @@ class CollectionsListItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clustersAsync = ref.watch(clustersProvider(collection.id));
-
     return SizedBox(
       height: previewSize.toDouble() + 60,
       child: CLListTile(
@@ -43,15 +42,12 @@ class CollectionsListItem extends ConsumerWidget {
               Positioned(
                 right: 8,
                 bottom: 8,
-                child: clustersAsync.when(
-                  data: (clusters) {
-                    return CLText.small(
-                      clusters.entries.length.toString(),
-                      textAlign: TextAlign.end,
-                    );
-                  },
-                  error: (_, __) => const CLIcon.small(Icons.error),
-                  loading: () => const CLIcon.small(Icons.timer),
+                child: ClusterCount(
+                  collectionId: collection.id,
+                  buildOnData: (count) => CLText.small(
+                    count.toString(),
+                    textAlign: TextAlign.end,
+                  ),
                 ),
               ),
             ],
