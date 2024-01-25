@@ -25,7 +25,9 @@ extension FromSharedMediaGroup on SharedMedia? {
     };
   }
 
-  Future<CLMediaInfoGroup> toCLMediaInfoGroup() async {
+  Future<CLMediaInfoGroup> toCLMediaInfoGroup({
+    String folderName = 'incoming',
+  }) async {
     _infoLogger('Start loading');
     final stopwatch = Stopwatch()..start();
     if (this == null) {
@@ -76,7 +78,7 @@ extension FromSharedMediaGroup on SharedMedia? {
           await CLMediaImage(
             path: await FileHandler.move(
               this!.imageFilePath!,
-              toSubFolder: 'Incoming',
+              toSubFolder: folderName,
             ),
           ).withPreview(),
         );
@@ -94,13 +96,13 @@ extension FromSharedMediaGroup on SharedMedia? {
                 SharedAttachmentType.image => await CLMediaImage(
                     path: await FileHandler.move(
                       e.path,
-                      toSubFolder: 'Incoming',
+                      toSubFolder: folderName,
                     ),
                   ).withPreview(),
                 SharedAttachmentType.video => await CLMediaVideo(
                     path: await FileHandler.move(
                       e.path,
-                      toSubFolder: 'Incoming',
+                      toSubFolder: folderName,
                     ),
                   ).withPreview(),
                 _ => CLMedia(path: e.path, type: toCLMediaType(e.type)),
