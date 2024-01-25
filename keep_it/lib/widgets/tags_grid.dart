@@ -69,39 +69,18 @@ class _TagsGridState extends ConsumerState<TagsGrid> {
                 context,
                 tag,
               ),
-              child: CollectionCount(
-                tagId: tag.id,
-                buildOnData: (count) => CLGridItemSquare(
-                  backgroundColor: Theme.of(context).colorScheme.background,
-                  child: Stack(
-                    children: [
-                      if (count > 0) ...[
-                        TagPreview(
-                          tag: tag,
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: CLText.small(
-                            count.toString(),
-                            textAlign: TextAlign.end,
-                          ),
-                        ),
-                      ] else
-                        Center(
-                          child: CLText.veryLarge(tag.label.characters.first),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
+              child: TagPreview(tag: tag),
             ),
           );
         } else if (layer == 1) {
-          return Text(
-            widget.tags.entries[index].label,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              widget.tags.entries[index].label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
           );
         }
         throw Exception('Incorrect layer');
