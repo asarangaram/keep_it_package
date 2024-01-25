@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'cluster.dart';
+import 'collection.dart';
 
 @immutable
 class Item {
@@ -28,7 +28,7 @@ class Item {
 class ItemInDB extends Item {
   const ItemInDB({
     required super.path,
-    required this.clusterId,
+    required this.collectionId,
     required super.type,
     this.id,
     super.ref,
@@ -43,28 +43,28 @@ class ItemInDB extends Item {
       id: map['id'] != null ? map['id'] as int : null,
       path: map['path'] as String,
       ref: map['ref'] != null ? map['ref'] as String : null,
-      clusterId: map['cluster_id'] as int,
+      collectionId: map['collection_id'] as int,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
     );
     //map['type'] as String
   }
   final int? id;
 
-  final int clusterId;
+  final int collectionId;
 
   @override
   ItemInDB copyWith({
     int? id,
     String? path,
     String? ref,
-    int? clusterId,
+    int? collectionId,
     CLMediaType? type,
   }) {
     return ItemInDB(
       id: id ?? this.id,
       path: path ?? this.path,
       ref: ref ?? this.ref,
-      clusterId: clusterId ?? this.clusterId,
+      collectionId: collectionId ?? this.collectionId,
       type: type ?? this.type,
     );
   }
@@ -74,7 +74,7 @@ class ItemInDB extends Item {
       'id': id,
       'path': path,
       'ref': ref,
-      'clusterId': clusterId,
+      'collectionId': collectionId,
       'type': type,
     };
   }
@@ -87,7 +87,7 @@ class ItemInDB extends Item {
   @override
   String toString() {
     return 'Item(id: $id, path: $path, '
-        'ref: $ref, clusterId: $clusterId, type: $type)';
+        'ref: $ref, collectionId: $collectionId, type: $type)';
   }
 
   @override
@@ -97,7 +97,7 @@ class ItemInDB extends Item {
     return other.id == id &&
         other.path == path &&
         other.ref == ref &&
-        other.clusterId == clusterId &&
+        other.collectionId == collectionId &&
         other.type == type;
   }
 
@@ -106,15 +106,15 @@ class ItemInDB extends Item {
     return id.hashCode ^
         path.hashCode ^
         ref.hashCode ^
-        clusterId.hashCode ^
+        collectionId.hashCode ^
         type.hashCode;
   }
 }
 
 class Items {
-  Items(this.cluster, this.entries);
+  Items(this.collection, this.entries);
   final List<ItemInDB> entries;
-  final Cluster cluster;
+  final Collection collection;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;

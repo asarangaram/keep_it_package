@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/cluster.dart';
+import '../models/collection.dart';
 import '../models/db.dart';
 import '../models/item.dart';
 import 'db_manager.dart';
@@ -9,12 +9,12 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   ItemNotifier({
     required this.ref,
     this.databaseManager,
-    this.clusterID,
+    this.collectionID,
   }) : super(const AsyncValue.loading()) {
     loadItems();
   }
   DatabaseManager? databaseManager;
-  int? clusterID;
+  int? collectionID;
   Ref ref;
 
   bool isLoading = false;
@@ -22,14 +22,15 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   Future<void> loadItems() async {
     if (databaseManager == null) return;
     final List<ItemInDB> items;
-    final Cluster cluster;
+    final Collection collection;
 
-    items = ExtItemInDB.getItemsForCluster(databaseManager!.db, clusterID!);
-    cluster = ClusterDB.getById(databaseManager!.db, clusterID!);
+    items =
+        ExtItemInDB.getItemsForCollection(databaseManager!.db, collectionID!);
+    collection = CollectionDB.getById(databaseManager!.db, collectionID!);
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Items(cluster, items);
+      return Items(collection, items);
     });
   }
 
@@ -39,7 +40,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     }
 
     item.upsert(databaseManager!.db);
-    //ref.invalidate(itemsProvider(item.clusterId));
+    //ref.invalidate(itemsProvider(item.collectionId));
 
     loadItems();
   }
@@ -76,13 +77,13 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
 final itemsProvider =
     StateNotifierProvider.family<ItemNotifier, AsyncValue<Items>, int?>(
-        (ref, clusterID) {
+        (ref, collectionID) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) => ItemNotifier(
       ref: ref,
       databaseManager: dbManager,
-      clusterID: clusterID,
+      collectionID: collectionID,
     ),
     error: (_, __) => ItemNotifier(
       ref: ref,

@@ -9,28 +9,29 @@ import '../widgets/keep_it_main_view.dart';
 
 import '../widgets/media_preview.dart';
 
-class ClustersView extends ConsumerWidget {
-  const ClustersView({required this.tagId, super.key});
+class CollectionsView extends ConsumerWidget {
+  const CollectionsView({required this.tagId, super.key});
 
   final int? tagId;
   @override
   Widget build(BuildContext context, WidgetRef ref) => CLFullscreenBox(
         child: CLBackground(
-          child: LoadClusters(
+          child: LoadCollections(
             tagID: tagId,
-            buildOnData: (clusters) => _ClustersView(clusters: clusters),
+            buildOnData: (collections) =>
+                _CollectionsView(collections: collections),
           ),
         ),
       );
 }
 
-class _ClustersView extends ConsumerWidget {
-  const _ClustersView({required this.clusters});
-  final Clusters clusters;
+class _CollectionsView extends ConsumerWidget {
+  const _CollectionsView({required this.collections});
+  final Collections collections;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
-      title: clusters.tag?.label ?? 'Showing All',
+      title: collections.tag?.label ?? 'Showing All',
       onPop: context.canPop()
           ? () {
               context.pop();
@@ -38,7 +39,7 @@ class _ClustersView extends ConsumerWidget {
           : null,
       pageBuilder: (context, quickMenuScopeKey) {
         return CLMatrix2D(
-          itemCount: clusters.entries.length,
+          itemCount: collections.entries.length,
           itemBuilder: itemBuilder,
           columns: 2,
           layers: 2,
@@ -61,15 +62,15 @@ class _ClustersView extends ConsumerWidget {
   }
 
   Widget itemBuilder(BuildContext context, int index, int l) {
-    final e = clusters.entries[index];
+    final e = collections.entries[index];
     if (l > 1) {
       throw Exception('has only one layer!');
     }
     if (l == 0) {
       return GestureDetector(
-        onTap: () => context.push('/items/by_cluster_id/${e.id}'),
+        onTap: () => context.push('/items/by_collection_id/${e.id}'),
         child: LoadItems(
-          clusterID: e.id!,
+          collectionID: e.id!,
           hasBackground: false,
           buildOnData: (Items items, {required String docDir}) {
             final (c, r) = switch (items.entries.length) {
@@ -95,7 +96,7 @@ class _ClustersView extends ConsumerWidget {
       );
     } else {
       return GestureDetector(
-        onTap: () => context.push('/items/by_cluster_id/${e.id}'),
+        onTap: () => context.push('/items/by_collection_id/${e.id}'),
         child: Padding(
           padding: const EdgeInsets.only(
             left: 8,

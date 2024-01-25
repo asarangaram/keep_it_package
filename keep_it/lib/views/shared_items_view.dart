@@ -163,20 +163,20 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     _infoLogger('Start loading');
     final stopwatch = Stopwatch()..start();
     // No one might be reading this, read once
-    ref.read(clustersProvider(null));
-    final clusterId =
-        await ref.read(clustersProvider(null).notifier).upsertCluster(
-              Cluster(description: descriptionText),
+    ref.read(collectionsProvider(null));
+    final collectionId =
+        await ref.read(collectionsProvider(null).notifier).upsertCollection(
+              Collection(description: descriptionText),
               saveIntoTagsId,
             );
 
     final items = <ItemInDB>[
       for (final entry in media.list)
-        await ExtItemInDB.fromCLMedia(entry, clusterId: clusterId),
+        await ExtItemInDB.fromCLMedia(entry, collectionId: collectionId),
     ];
 
-    ref.read(itemsProvider(clusterId));
-    ref.read(itemsProvider(clusterId).notifier).upsertItems(items);
+    ref.read(itemsProvider(collectionId));
+    ref.read(itemsProvider(collectionId).notifier).upsertItems(items);
     stopwatch.stop();
 
     await ref.read(notificationMessageProvider.notifier).push('Saved.');

@@ -11,18 +11,18 @@ import '../widgets/keep_it_main_view.dart';
 import '../widgets/video_player.dart';
 
 class ItemsView extends ConsumerWidget {
-  const ItemsView({required this.clusterID, super.key});
+  const ItemsView({required this.collectionID, super.key});
 
-  final int clusterID;
+  final int collectionID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CLFullscreenBox(
       child: CLBackground(
         child: LoadItems(
-          clusterID: clusterID,
+          collectionID: collectionID,
           buildOnData: (Items items, {required String docDir}) {
             return KeepItMainView(
-              title: items.cluster.description,
+              title: items.collection.description,
               onPop: context.canPop()
                   ? () {
                       context.pop();
@@ -33,7 +33,7 @@ class ItemsView extends ConsumerWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: Text(items.cluster.description),
+                      child: Text(items.collection.description),
                     ),
                     const Divider(
                       thickness: 2,
@@ -146,7 +146,7 @@ Column(
                   suffixIcon: CLIcon.standard(Icons.edit_outlined),
                 ),
                 controller:
-                    TextEditingController(text: items.cluster.description),
+                    TextEditingController(text: items.collection.description),
                 onTap: () {},
                 onChanged: (value) {}, // Set initial text
               ),

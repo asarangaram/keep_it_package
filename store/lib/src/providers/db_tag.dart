@@ -7,12 +7,12 @@ import 'db_manager.dart';
 class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
   TagNotifier({
     this.databaseManager,
-    this.clusterId,
+    this.collectionId,
   }) : super(const AsyncValue.loading()) {
     loadTags();
   }
   DatabaseManager? databaseManager;
-  int? clusterId;
+  int? collectionId;
 
   bool isLoading = false;
   // Some race condition might occuur if many tags are updated
@@ -21,12 +21,12 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
     if (databaseManager == null) return;
     final List<Tag> tags;
 
-    if (clusterId == null) {
+    if (collectionId == null) {
       tags = TagDB.getAll(databaseManager!.db);
     } else {
-      tags = TagDB.getTagsForCluster(
+      tags = TagDB.getTagsForCollection(
         databaseManager!.db,
-        clusterId!,
+        collectionId!,
       );
     }
     state = const AsyncValue.loading();
@@ -84,11 +84,11 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
 
 final tagsProvider =
     StateNotifierProvider.family<TagNotifier, AsyncValue<Tags>, int?>(
-        (ref, clusterId) {
+        (ref, collectionId) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) =>
-        TagNotifier(databaseManager: dbManager, clusterId: clusterId),
+        TagNotifier(databaseManager: dbManager, collectionId: collectionId),
     error: (_, __) => TagNotifier(),
     loading: TagNotifier.new,
   );

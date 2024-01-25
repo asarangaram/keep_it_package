@@ -12,5 +12,6 @@ This app don;t read your gallery and dump all the photos into your collection.
 
 No data goes out of your device, hence its complete private.
 
-## TODO 
+## TODO
+
 Have a password system for tags. Use a system password to remove password.

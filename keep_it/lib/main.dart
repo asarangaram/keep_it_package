@@ -10,7 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
-import 'views/clusters_view.dart';
+import 'views/collections_view.dart';
 import 'views/items_view.dart';
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
@@ -41,12 +41,12 @@ class KeepItApp implements AppDescriptor {
     return {
       'tags': (context, state) => const AppTheme(child: TagsView()),
       'demo': (context, state) => const DemoMain(),
-      'clusters': (context, GoRouterState state) =>
-          const ClustersView(tagId: null),
-      'clusters/by_tag_id/:id': (context, GoRouterState state) =>
-          ClustersView(tagId: int.parse(state.pathParameters['id']!)),
-      'items/by_cluster_id/:id': (context, GoRouterState state) =>
-          ItemsView(clusterID: int.parse(state.pathParameters['id']!)),
+      'collections': (context, GoRouterState state) =>
+          const CollectionsView(tagId: null),
+      'collections/by_tag_id/:id': (context, GoRouterState state) =>
+          CollectionsView(tagId: int.parse(state.pathParameters['id']!)),
+      'items/by_collection_id/:id': (context, GoRouterState state) =>
+          ItemsView(collectionID: int.parse(state.pathParameters['id']!)),
     };
   }
 

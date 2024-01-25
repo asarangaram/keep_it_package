@@ -40,27 +40,27 @@ extension TagDB on Tag {
     if (alternateTagId != null) {
       db.execute(
         '''
-          INSERT OR REPLACE INTO TagCluster (tag_id, cluster_id)
+          INSERT OR REPLACE INTO TagCollection (tag_id, collection_id)
           SELECT 
               CASE 
                   WHEN tag_id = ? THEN ?
                   ELSE tag_id
               END AS new_tag_id,
-              cluster_id
-          FROM TagCluster
+              collection_id
+          FROM TagCollection
           WHERE tag_id = ?
         ''',
         [id, alternateTagId, id],
       );
     } else {
       db.execute(
-        'DELETE FROM TagCluster WHERE tag_id = ?;',
+        'DELETE FROM TagCollection WHERE tag_id = ?;',
         [id],
       );
     }
 
     if (db.select(
-      'SELECT * FROM TagCluster WHERE tag_id = ?;',
+      'SELECT * FROM TagCollection WHERE tag_id = ?;',
       [id],
     ).isNotEmpty) {
       throw Exception('${id!} is still used! Check implementation');
@@ -69,14 +69,14 @@ extension TagDB on Tag {
     db.execute('DELETE FROM Tag WHERE id = ?', [id]);
   }
 
-  static List<Tag> getTagsForCluster(Database db, int clusterId) {
+  static List<Tag> getTagsForCollection(Database db, int collectionId) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag
-      JOIN TagCluster ON Tag.id = TagCluster.tag_id
-      WHERE TagCluster.cluster_id = ?
+      JOIN TagCollection ON Tag.id = TagCollection.tag_id
+      WHERE TagCollection.collection_id = ?
     ''',
-      [clusterId],
+      [collectionId],
     );
     return maps.map(Tag.fromMap).toList();
   }
@@ -85,8 +85,8 @@ extension TagDB on Tag {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag
-      JOIN TagCluster ON Tag.id = TagCluster.tag_id
-      JOIN Item ON TagCluster.cluster_id = Item.cluster_id
+      JOIN TagCollection ON Tag.id = TagCollection.tag_id
+      JOIN Item ON TagCollection.collection_id = Item.collection_id
       WHERE Item.id = ?
     ''',
       [itemId],

@@ -14,9 +14,9 @@ extension ExtDBQuery on DBQueries {
       '''
       SELECT Item.*
       FROM Item
-      JOIN Cluster ON Item.cluster_id = Cluster.id
-      JOIN TagCluster ON Cluster.id = TagCluster.cluster_id
-      WHERE TagCluster.tag_id = $tagID
+      JOIN Collection ON Item.collection_id = Collection.id
+      JOIN TagCollection ON Collection.id = TagCollection.collection_id
+      WHERE TagCollection.tag_id = $tagID
       ORDER BY Item.UPDATED_DATE DESC
     ''',
     );

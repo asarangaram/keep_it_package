@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'from_store/cluster_count.dart';
+import 'from_store/collection_count.dart';
 import 'tag_preview.dart';
 
 class TagsListItem extends ConsumerWidget {
@@ -42,7 +42,7 @@ class TagsListItem extends ConsumerWidget {
               Positioned(
                 right: 8,
                 bottom: 8,
-                child: ClusterCount(
+                child: CollectionCount(
                   tagId: tag.id,
                   buildOnData: (count) => CLText.small(
                     count.toString(),

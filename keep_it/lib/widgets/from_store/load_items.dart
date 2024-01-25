@@ -8,17 +8,17 @@ import 'package:store/store.dart';
 
 class LoadItems extends ConsumerWidget {
   const LoadItems({
-    required this.clusterID,
+    required this.collectionID,
     required this.buildOnData,
     super.key,
     this.hasBackground = true,
   });
   final Widget Function(Items items, {required String docDir}) buildOnData;
-  final int clusterID;
+  final int collectionID;
   final bool hasBackground;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemsAsync = ref.watch(itemsProvider(clusterID));
+    final itemsAsync = ref.watch(itemsProvider(collectionID));
 
     return FutureBuilder(
       future: getApplicationDocumentsDirectory(),

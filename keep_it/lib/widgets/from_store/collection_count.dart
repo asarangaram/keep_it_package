@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'load_clusters.dart';
+import 'load_collections.dart';
 
-// TODO(anandas): Can we query ClusterCount from DB?
-class ClusterCount extends ConsumerWidget {
-  const ClusterCount({
+// TODO(anandas): Can we query CollectionCount from DB?
+class CollectionCount extends ConsumerWidget {
+  const CollectionCount({
     required this.tagId,
     required this.buildOnData,
     super.key,
@@ -15,10 +15,10 @@ class ClusterCount extends ConsumerWidget {
   final Widget Function(int count) buildOnData;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LoadClusters(
+    return LoadCollections(
       tagID: tagId,
-      buildOnData: (clusters) {
-        return buildOnData(clusters.entries.length);
+      buildOnData: (collections) {
+        return buildOnData(collections.entries.length);
       },
     );
   }

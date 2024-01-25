@@ -22,14 +22,14 @@ extension ExtItemInDB on ItemInDB {
     if (id != null) {
       db.execute(
         'UPDATE OR IGNORE Item SET path = ?, '
-        'ref = ?, cluster_id = ? type=? WHERE id = ?',
-        [this.path, ref, clusterId, type, id],
+        'ref = ?, collection_id = ? type=? WHERE id = ?',
+        [this.path, ref, collectionId, type, id],
       );
     }
     db.execute(
       'INSERT OR IGNORE INTO Item (path, '
-      'ref, cluster_id, type) VALUES (?, ?, ?, ?)',
-      [this.path, ref, clusterId, type.name],
+      'ref, collection_id, type) VALUES (?, ?, ?, ?)',
+      [this.path, ref, collectionId, type.name],
     );
     return db.lastInsertRowId;
   }
@@ -39,9 +39,9 @@ extension ExtItemInDB on ItemInDB {
     db.execute('DELETE FROM Item WHERE id = ?', [id]);
   }
 
-  static List<ItemInDB> getItemsForCluster(Database db, int clusterId) {
+  static List<ItemInDB> getItemsForCollection(Database db, int collectionId) {
     final List<Map<String, dynamic>> maps =
-        db.select('SELECT * FROM Item WHERE cluster_id = ?', [clusterId]);
+        db.select('SELECT * FROM Item WHERE collection_id = ?', [collectionId]);
 
     return maps.map(ItemInDB.fromMap).toList();
   }
@@ -62,20 +62,20 @@ extension ExtItemInDB on ItemInDB {
 
   static Future<ItemInDB> fromCLMedia(
     CLMedia media, {
-    required int clusterId,
+    required int collectionId,
   }) async {
     if (![CLMediaType.video, CLMediaType.image].contains(media.type)) {
       return ItemInDB(
-        clusterId: clusterId,
+        collectionId: collectionId,
         path: media.path,
         type: media.type,
       );
     }
 
     return ItemInDB(
-      clusterId: clusterId,
+      collectionId: collectionId,
       path: await (await media.copy(
-        toDir: path.join('keep_it', 'cluster_$clusterId'),
+        toDir: path.join('keep_it', 'collection_$collectionId'),
       ))
           .relativePathFuture,
       type: media.type,

@@ -51,9 +51,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
               context,
               availableSuggestions: availableSuggestions,
               onSelectionDone: (List<Tag> selectedTags) {
-                ref
-                    .read(tagsProvider(null).notifier)
-                    .upsertTags(selectedTags);
+                ref.read(tagsProvider(null).notifier).upsertTags(selectedTags);
               },
             );
 
@@ -116,7 +114,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
             onTapTag: (context, tag) async {
               unawaited(
                 context.push(
-                  '/clusters/by_tag_id/${tag.id}',
+                  '/collections/by_tag_id/${tag.id}',
                 ),
               );
               return true;
@@ -130,7 +128,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
           onTapTag: (context, tag) async {
             unawaited(
               context.push(
-                '/clusters/by_tag_id/${tag.id}',
+                '/collections/by_tag_id/${tag.id}',
               ),
             );
             return true;

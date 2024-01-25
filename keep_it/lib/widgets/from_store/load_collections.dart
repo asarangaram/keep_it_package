@@ -5,21 +5,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-class LoadClusters extends ConsumerWidget {
-  const LoadClusters({
+class LoadCollections extends ConsumerWidget {
+  const LoadCollections({
     required this.buildOnData,
     super.key,
     this.tagID,
     this.hasBackground = true,
   });
-  final Widget Function(Clusters clusters) buildOnData;
+  final Widget Function(Collections collections) buildOnData;
   final int? tagID;
   final bool hasBackground;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clustersAsync = ref.watch(clustersProvider(tagID));
+    final collectionsAsync = ref.watch(collectionsProvider(tagID));
 
-    return clustersAsync.when(
+    return collectionsAsync.when(
       loading: () => const CLLoadingView(),
       error: (err, _) => CLErrorView(errorMessage: err.toString()),
       data: buildOnData,
