@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +7,6 @@ import 'collection_preview.dart';
 
 import 'from_store/cluster_count.dart';
 import 'wrap_standard_quick_menu.dart';
-
-
 
 class CollectionsGrid extends ConsumerStatefulWidget {
   const CollectionsGrid({
@@ -45,7 +41,6 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
   final PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
-    final random = Random(42);
     final highLightIndex = widget.collections.lastupdatedID == null
         ? -1
         : widget.collections.entries

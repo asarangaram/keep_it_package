@@ -6,9 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/keep_it_main_view.dart';
-
 import '../widgets/from_store/from_store.dart';
+import '../widgets/keep_it_main_view.dart';
 import '../widgets/video_player.dart';
 
 class ItemsView extends ConsumerWidget {
