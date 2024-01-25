@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/flexibile_optional.dart';
@@ -57,9 +56,14 @@ class CLMatrix2DScrollable extends StatelessWidget {
                 children: [
                   for (var l = 0; l < layers; l++)
                     FlexibileOptional(
-                      isFlexible: l == 0,
+                      isFlexible: true,
+                      flex: l == 0 ? 10 : 4,
                       child: Row(
-                        //crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: l == 0
+                            ? CrossAxisAlignment.end
+                            : l == (layers - 1)
+                                ? CrossAxisAlignment.start
+                                : CrossAxisAlignment.center,
                         children: [
                           for (var c = 0; c < hCount; c++)
                             if ((r * hCount + c) >= itemCount)
