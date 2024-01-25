@@ -13,8 +13,8 @@ extension ColonExtensionOnString on String {
     }
   }
 
-  void printString() {
-    _infoLogger(this);
+  void printString({String prefix = ''}) {
+    _infoLogger('$prefix $this');
   }
 
   String uptoLength(int N) {
