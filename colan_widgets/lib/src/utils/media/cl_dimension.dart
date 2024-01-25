@@ -3,24 +3,25 @@ import 'package:flutter/material.dart';
 @immutable
 class CLDimension {
   const CLDimension({
-    required this.width,
-    required this.height,
+    required this.itemsInRow,
+    required this.itemsInColumn,
   });
-  final int width;
-  final int height;
+  final int itemsInRow;
+  final int itemsInColumn;
 
   @override
   bool operator ==(covariant CLDimension other) {
     if (identical(this, other)) return true;
 
-    return other.width == width && other.height == height;
+    return other.itemsInRow == itemsInRow &&
+        other.itemsInColumn == itemsInColumn;
   }
 
   @override
-  int get hashCode => width.hashCode ^ height.hashCode;
+  int get hashCode => itemsInRow.hashCode ^ itemsInColumn.hashCode;
 
   @override
-  String toString() => 'Dimension(width: $width, height: $height)';
+  String toString() => 'Dimension(width: $itemsInRow, height: $itemsInColumn)';
 
-  int get totalCount => width * height;
+  int get totalCount => itemsInRow * itemsInColumn;
 }

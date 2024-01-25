@@ -56,7 +56,7 @@ class CLButtonsGrid extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       for (var i = 0; i < clMenuItems1D.length; i++)
-                        Expanded(
+                        Flexible(
                           child: switch (scaleType) {
                             CLScaleType.veryLarge =>
                               CLButtonSquereElevated.veryLarge,

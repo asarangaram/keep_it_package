@@ -28,6 +28,7 @@ class CLMatrix3D extends StatelessWidget {
   final Widget Function(BuildContext context, int index, int layer) itemBuilder;
   final PageController pageController;
   final int? visibleItem;
+
   @override
   Widget build(BuildContext context) {
     if (visibleItem != null) {
@@ -74,6 +75,7 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
     super.key,
     this.layers = 1,
     this.visibleItem,
+    this.maxPageDimension = const CLDimension(itemsInRow: 6, itemsInColumn: 6),
   });
 
   final Size childSize;
@@ -82,6 +84,7 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
   final Widget Function(BuildContext, int, int) itemBuilder;
   final int layers;
   final int? visibleItem;
+  final CLDimension maxPageDimension;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -100,8 +103,8 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
         return CLMatrix3D(
           pageController: controller,
           pages: pages,
-          rows: pageMatrix.height,
-          columns: pageMatrix.width,
+          rows: pageMatrix.itemsInColumn,
+          columns: pageMatrix.itemsInRow,
           itemCount: itemCount,
           layers: 2,
           itemBuilder: itemBuilder,
@@ -121,15 +124,21 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
     if (pageSize.height == double.infinity) {
       throw Exception("Width is unbounded, can't handle");
     }
-    final itemsInRow = max(
-      1,
-      ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor(),
+    final itemsInRow = min(
+      maxPageDimension.itemsInRow,
+      max(
+        1,
+        ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor(),
+      ),
     );
-    final itemsInColumn = max(
-      1,
-      ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor(),
+    final itemsInColumn = min(
+      maxPageDimension.itemsInColumn,
+      max(
+        1,
+        ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor(),
+      ),
     );
 
-    return CLDimension(width: itemsInRow, height: itemsInColumn);
+    return CLDimension(itemsInRow: itemsInRow, itemsInColumn: itemsInColumn);
   }
 }

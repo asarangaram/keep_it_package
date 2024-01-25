@@ -86,7 +86,7 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
       itemCount: widget.collections.entries.length,
       controller: controller,
       columns: 1,
-      itemHeight: 150,
+      itemHeight: 200,
       itemBuilder: (context, index, l) {
         final randomColor =
             Colors.primaries[random.nextInt(Colors.primaries.length)];

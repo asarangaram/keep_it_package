@@ -27,33 +27,35 @@ class CollectionsListItem extends ConsumerWidget {
     final clustersAsync = ref.watch(clustersProvider(collection.id));
 
     return SizedBox(
-      height: previewSize.toDouble(),
+      height: previewSize.toDouble() + 60,
       child: CLListTile(
         isSelected: isSelected ?? false,
         title: CLText.large(collection.label),
-        subTitle: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: CLText.small(
+        subTitle: SizedBox(
+          height: previewSize.toDouble(),
+          width: double.infinity,
+          child: Stack(
+            children: [
+              CLText.small(
                 collection.description ?? '',
                 textAlign: TextAlign.start,
               ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: clustersAsync.when(
-                data: (clusters) {
-                  return CLText.small(
-                    clusters.entries.length.toString(),
-                    textAlign: TextAlign.end,
-                  );
-                },
-                error: (_, __) => const CLIcon.small(Icons.error),
-                loading: () => const CLIcon.small(Icons.timer),
+              Positioned(
+                right: 8,
+                bottom: 8,
+                child: clustersAsync.when(
+                  data: (clusters) {
+                    return CLText.small(
+                      clusters.entries.length.toString(),
+                      textAlign: TextAlign.end,
+                    );
+                  },
+                  error: (_, __) => const CLIcon.small(Icons.error),
+                  loading: () => const CLIcon.small(Icons.timer),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         leading: SizedBox.square(
           dimension: previewSize.toDouble(),
