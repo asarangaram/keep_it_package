@@ -83,6 +83,29 @@ class _TagsListState extends ConsumerState<TagsList> {
       itemCount: widget.tags.entries.length,
       controller: controller,
       itemBuilder: (context, index) {
+        if (widget.onSelection != null) {
+          if (widget.selectionMask == null) {
+            throw Exception(
+              'selection Mask not provided, to handle OnSelection',
+            );
+          }
+          return GestureDetector(
+            onTap: (widget.onSelection == null)
+                ? () =>
+                    widget.onTapTag?.call(context, widget.tags.entries[index])
+                : () => widget.onSelection!.call(index),
+            child: Card(
+              color: Colors.transparent,
+              shadowColor:
+                  widget.selectionMask![index] ? null : Colors.transparent,
+              surfaceTintColor:
+                  widget.selectionMask![index] ? null : Colors.transparent,
+              child: TagPreview.asTile(
+                tag: widget.tags.entries[index],
+              ),
+            ),
+          );
+        }
         return Slidable(
           key: ValueKey('tagslist_$index'),
           endActionPane: ActionPane(
