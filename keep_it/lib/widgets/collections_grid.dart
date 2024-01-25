@@ -77,6 +77,9 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
                   backgroundColor: Theme.of(context).colorScheme.background,
                   child: Stack(
                     children: [
+                      CollectionPreview(
+                        collection: collection,
+                      ),
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: CLText.small(
