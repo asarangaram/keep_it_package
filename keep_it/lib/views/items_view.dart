@@ -8,7 +8,7 @@ import 'package:store/store.dart';
 
 import '../widgets/keep_it_main_view.dart';
 
-import '../widgets/load_from_store.dart';
+import '../widgets/from_store/from_store.dart';
 import '../widgets/video_player.dart';
 
 class ItemsView extends ConsumerWidget {

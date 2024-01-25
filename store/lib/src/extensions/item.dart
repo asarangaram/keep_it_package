@@ -46,6 +46,28 @@ extension ExtItemInDB on ItemInDB {
     return maps.map(ItemInDB.fromMap).toList();
   }
 
+  static List<ItemInDB> getByCollectionID(
+    Database db,
+    int collectionId, {
+    int? maxCount,
+  }) {
+    final List<Map<String, dynamic>> maps = db.select(
+      '''
+      SELECT Item.*
+      FROM Item
+      JOIN Cluster ON Item.cluster_id = Cluster.id
+      JOIN CollectionCluster ON Cluster.id = CollectionCluster.cluster_id
+      WHERE CollectionCluster.collection_id = ?
+      ORDER BY Item.UPDATED_DATE DESC
+      LIMIT ?;
+
+    ''',
+      [collectionId, maxCount],
+    );
+
+    return maps.map(ItemInDB.fromMap).toList();
+  }
+
   CLMedia toCLMedia({String pathPrefix = ''}) {
     final p = FileHandler.join(pathPrefix, this.path);
     return switch (type) {

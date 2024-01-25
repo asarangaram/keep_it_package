@@ -5,7 +5,7 @@ import 'package:store/store.dart';
 
 import 'add_collection_form.dart';
 import 'collections_list.dart';
-import 'load_from_store.dart';
+import 'from_store/from_store.dart';
 
 class CollectionsDialog {
   static Future<bool?> newCollection(

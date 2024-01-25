@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../widgets/collections_dialogs.dart';
-import '../widgets/load_from_store.dart';
+import '../widgets/from_store/from_store.dart';
 import '../widgets/media_preview.dart';
 import '../widgets/save_or_cancel.dart';
 

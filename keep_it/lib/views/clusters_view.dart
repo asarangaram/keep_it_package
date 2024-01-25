@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/keep_it_main_view.dart';
-import '../widgets/load_from_store.dart';
+import '../widgets/from_store/from_store.dart';
 
 import '../widgets/media_preview.dart';
 

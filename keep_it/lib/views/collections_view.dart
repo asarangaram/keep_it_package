@@ -14,7 +14,7 @@ import '../widgets/collections_empty.dart';
 import '../widgets/collections_grid.dart';
 import '../widgets/collections_list.dart';
 import '../widgets/keep_it_main_view.dart';
-import '../widgets/load_from_store.dart';
+import '../widgets/from_store/from_store.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({super.key});
