@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'views/collections_view.dart';
+import 'views/home_view.dart';
 import 'views/items_view.dart';
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
@@ -39,6 +41,7 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
+      'home': (context, state) => const AppTheme(child: HomeView()),
       'tags': (context, state) => const AppTheme(child: TagsView()),
       'demo': (context, state) => const DemoMain(),
       'collections': (context, GoRouterState state) =>
@@ -79,7 +82,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location == '/') return '/tags';
+        if (location == '/') return '/home';
         return null;
       };
 }

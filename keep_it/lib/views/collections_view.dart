@@ -31,7 +31,7 @@ class _CollectionsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
-      title: collections.tag?.label ?? 'Showing All',
+      title: collections.tag?.label ?? 'Collections',
       onPop: context.canPop()
           ? () {
               context.pop();
@@ -43,7 +43,7 @@ class _CollectionsView extends ConsumerWidget {
           itemBuilder: itemBuilder,
           columns: 2,
           layers: 2,
-          decoration: BoxDecoration(
+          /* decoration: BoxDecoration(
             color: Theme.of(context)
                 .colorScheme
                 .tertiaryContainer
@@ -55,7 +55,7 @@ class _CollectionsView extends ConsumerWidget {
               ),
             ],
           ),
-          borderSide: const BorderSide(),
+          borderSide: const BorderSide(), */
         );
       },
     );
