@@ -10,6 +10,8 @@ import 'collection_preview.dart';
 import 'from_store/cluster_count.dart';
 import 'wrap_standard_quick_menu.dart';
 
+
+
 class CollectionsGrid extends ConsumerStatefulWidget {
   const CollectionsGrid({
     required this.quickMenuScopeKey,
@@ -56,8 +58,6 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
       layers: 2,
       visibleItem: highLightIndex <= -1 ? null : highLightIndex,
       itemBuilder: (context, index, layer) {
-        final randomColor =
-            Colors.primaries[random.nextInt(Colors.primaries.length)];
         final collection = widget.collections.entries[index];
         if (layer == 0) {
           return CLHighlighted(
