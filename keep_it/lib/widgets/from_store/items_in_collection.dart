@@ -22,7 +22,7 @@ class LoadItemsInCollection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final itemsAsync = ref.watch(
       itemsByCollectionIdProvider(
-        DBQueries.byCollectionID(id, limit: limit),
+        DBQueries.byCollectionID(id),
       ),
     );
     return FutureBuilder(

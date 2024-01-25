@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/media_preview.dart';
@@ -19,7 +20,8 @@ class CollectionPreview extends ConsumerWidget {
       buildOnData: (clMediaList) {
         final mediaWithPreview = clMediaList
             .where((e) => File(e.previewFileName).existsSync())
-            .toList();
+            .toList()
+            .firstNItems(4);
 
         final (c, r) = switch (mediaWithPreview.length) {
           1 => (1, 1),

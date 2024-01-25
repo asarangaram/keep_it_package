@@ -18,7 +18,6 @@ extension ExtDBQuery on DBQueries {
       JOIN CollectionCluster ON Cluster.id = CollectionCluster.cluster_id
       WHERE CollectionCluster.collection_id = $collectionID
       ORDER BY Item.UPDATED_DATE DESC
-      ${limit == null ? '' : " LIMIT $limit"}
     ''',
     );
 

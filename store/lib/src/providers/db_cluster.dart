@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../models/cluster.dart';
 import '../models/collection.dart';
 import '../models/db.dart';
 import 'db_manager.dart';
+import 'db_queries.dart';
 
 class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
   ClustersNotifier({
@@ -52,9 +54,12 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
 
     for (final id in collectionIds) {
       ClusterDB.addCollectionToCluster(databaseManager!.db, id, clusterId);
-      //ref.read(clustersProvider(id));
-      //ref.invalidate(clustersProvider(id));
-      await ref.read(clustersProvider(id).notifier).loadClusters();
+
+      //await ref.read(clustersProvider(id).notifier).loadClusters();
+      ref
+        ..invalidate(clustersProvider(null))
+        ..invalidate(clustersProvider(id))
+        ..invalidate(itemsByCollectionIdProvider(DBQueries.byCollectionID(id)));
     }
 
     await loadClusters();
