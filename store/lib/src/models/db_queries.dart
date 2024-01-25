@@ -4,32 +4,32 @@ import 'package:flutter/material.dart';
 @immutable
 class DBQueries {
   const DBQueries._({
-    this.collectionID,
+    this.tagID,
   });
 
   factory DBQueries.byTagID(int id) {
-    return DBQueries._(collectionID: id);
+    return DBQueries._(tagID: id);
   }
-  final int? collectionID;
+  final int? tagID;
 
   DBQueries copyWith({
-    int? collectionID,
+    int? tagID,
   }) {
     return DBQueries._(
-      collectionID: collectionID ?? this.collectionID,
+      tagID: tagID ?? this.tagID,
     );
   }
 
   @override
-  String toString() => 'DBQueries(collectionID: $collectionID)';
+  String toString() => 'DBQueries(tagID: $tagID)';
 
   @override
   bool operator ==(covariant DBQueries other) {
     if (identical(this, other)) return true;
 
-    return other.collectionID == collectionID;
+    return other.tagID == tagID;
   }
 
   @override
-  int get hashCode => collectionID.hashCode;
+  int get hashCode => tagID.hashCode;
 }

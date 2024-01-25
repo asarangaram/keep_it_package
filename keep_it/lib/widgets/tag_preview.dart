@@ -6,16 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/media_preview.dart';
 import 'package:store/store.dart';
 
-import 'from_store/items_in_collection.dart';
+import 'from_store/items_in_tag.dart';
 
 class TagPreview extends ConsumerWidget {
-  const TagPreview({required this.collection, super.key});
-  final Tag collection;
+  const TagPreview({required this.tag, super.key});
+  final Tag tag;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadItemsInTag(
-      id: collection.id!,
+      id: tag.id!,
       limit: 4,
       buildOnData: (clMediaList) {
         final mediaWithPreview = clMediaList

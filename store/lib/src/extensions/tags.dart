@@ -1,12 +1,12 @@
 import 'package:sqlite3/sqlite3.dart';
 
-import '../models/collection.dart';
+import '../models/tag.dart';
 
 extension TagDB on Tag {
-  static Tag getById(Database db, int collectionId) {
+  static Tag getById(Database db, int tagId) {
     final map = db.select(
       'SELECT * FROM Tag WHERE id = ? ' 'ORDER BY LOWER(label) ASC',
-      [collectionId],
+      [tagId],
     ).first;
     return Tag.fromMap(map);
   }
@@ -40,27 +40,27 @@ extension TagDB on Tag {
     if (alternateTagId != null) {
       db.execute(
         '''
-          INSERT OR REPLACE INTO TagCluster (collection_id, cluster_id)
+          INSERT OR REPLACE INTO TagCluster (tag_id, cluster_id)
           SELECT 
               CASE 
-                  WHEN collection_id = ? THEN ?
-                  ELSE collection_id
-              END AS new_collection_id,
+                  WHEN tag_id = ? THEN ?
+                  ELSE tag_id
+              END AS new_tag_id,
               cluster_id
           FROM TagCluster
-          WHERE collection_id = ?
+          WHERE tag_id = ?
         ''',
         [id, alternateTagId, id],
       );
     } else {
       db.execute(
-        'DELETE FROM TagCluster WHERE collection_id = ?;',
+        'DELETE FROM TagCluster WHERE tag_id = ?;',
         [id],
       );
     }
 
     if (db.select(
-      'SELECT * FROM TagCluster WHERE collection_id = ?;',
+      'SELECT * FROM TagCluster WHERE tag_id = ?;',
       [id],
     ).isNotEmpty) {
       throw Exception('${id!} is still used! Check implementation');
@@ -73,7 +73,7 @@ extension TagDB on Tag {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag
-      JOIN TagCluster ON Tag.id = TagCluster.collection_id
+      JOIN TagCluster ON Tag.id = TagCluster.tag_id
       WHERE TagCluster.cluster_id = ?
     ''',
       [clusterId],
@@ -85,7 +85,7 @@ extension TagDB on Tag {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag
-      JOIN TagCluster ON Tag.id = TagCluster.collection_id
+      JOIN TagCluster ON Tag.id = TagCluster.tag_id
       JOIN Item ON TagCluster.cluster_id = Item.cluster_id
       WHERE Item.id = ?
     ''',

@@ -7,39 +7,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 class UpsertTagForm extends ConsumerWidget {
-  const UpsertTagForm({super.key, this.collection, this.onDone});
+  const UpsertTagForm({super.key, this.tag, this.onDone});
 
-  final Tag? collection;
+  final Tag? tag;
   final void Function()? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(collectionsProvider(null));
+    final tagsAsync = ref.watch(tagsProvider(null));
 
-    return collectionsAsync.when(
+    return tagsAsync.when(
       loading: () => const CLLoadingView(),
       error: (err, _) => CLErrorView(
         errorMessage: err.toString(),
       ),
-      data: (collections) => SizedBox(
+      data: (tags) => SizedBox(
         width: min(MediaQuery.of(context).size.width, 450),
         child: CLTextFieldForm(
-          buttonLabel: (collection?.id == null) ? 'Create' : 'Update',
+          buttonLabel: (tag?.id == null) ? 'Create' : 'Update',
           clFormFields: [
             CLFormField(
               type: CLFormFieldTypes.textField,
               validator: (name) => validateName(
                 name,
-                collections.entries,
+                tags.entries,
               ),
               label: 'Name',
-              initialValue: collection?.label ?? '',
+              initialValue: tag?.label ?? '',
             ),
             CLFormField(
               type: CLFormFieldTypes.textFieldMultiLine,
               validator: validateDescription,
               label: 'Description',
-              initialValue: collection?.description ?? '',
+              initialValue: tag?.description ?? '',
             ),
           ],
           onSubmit: (List<String> values) {
@@ -48,9 +48,9 @@ class UpsertTagForm extends ConsumerWidget {
                 values[1].trim().isEmpty ? null : values[1].trim();
 
             try {
-              ref.read(collectionsProvider(null).notifier).upsertTag(
+              ref.read(tagsProvider(null).notifier).upsertTag(
                     Tag(
-                      id: collection?.id,
+                      id: tag?.id,
                       label: label.trim(),
                       description: description,
                     ),
@@ -67,18 +67,18 @@ class UpsertTagForm extends ConsumerWidget {
     );
   }
 
-  String? validateName(String? name, List<Tag> collections) {
+  String? validateName(String? name, List<Tag> tags) {
     if (name?.isEmpty ?? true) {
       return "Name can't be empty";
     }
     /* if (name!.length > 16) {
       return 'Name should not exceed 15 letters';
     } */
-    if (collection?.label == name) {
+    if (tag?.label == name) {
       // Nothing changed.
       return null;
     }
-    if (collections.map((e) => e.label.trim()).contains(name!.trim())) {
+    if (tags.map((e) => e.label.trim()).contains(name!.trim())) {
       return '$name already exists';
     }
     return null;

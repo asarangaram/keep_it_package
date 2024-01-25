@@ -4,13 +4,12 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:store/store.dart';
 
-import '../widgets/collections_dialogs.dart';
-import '../widgets/from_store/from_store.dart';
+import '../widgets/from_store/load_tags.dart';
 import '../widgets/media_preview.dart';
 import '../widgets/save_or_cancel.dart';
+import '../widgets/tags_dialogs.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -63,7 +62,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
         child: Stack(
           children: [
             LoadTags(
-              buildOnData: (collections) => widget.mediaAsync.when(
+              buildOnData: (tags) => widget.mediaAsync.when(
                 data: (media) {
                   return SafeArea(
                     child: SizedBox(

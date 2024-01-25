@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'cl_buttons_grid_demo.dart';
 
 Map<String, Widget Function(BuildContext context)> demos = {
-  'EmptyViewCollection': (BuildContext context) {
+  'EmptyViewtag': (BuildContext context) {
     return const CLButtonsGridDemo();
   },
 };
@@ -116,7 +116,7 @@ class TestButton extends ConsumerWidget {
 }
 
 /*
-CollectionListViewDialog.fromDBSelectable(
+tagListViewDialog.fromDBSelectable(
               clusterID: null,
               onSelectionDone: (l) {
                 debugPrint(l.map((e) => e.label).join(","));

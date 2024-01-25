@@ -9,15 +9,15 @@ class LoadClusters extends ConsumerWidget {
   const LoadClusters({
     required this.buildOnData,
     super.key,
-    this.collectionID,
+    this.tagID,
     this.hasBackground = true,
   });
   final Widget Function(Clusters clusters) buildOnData;
-  final int? collectionID;
+  final int? tagID;
   final bool hasBackground;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clustersAsync = ref.watch(clustersProvider(collectionID));
+    final clustersAsync = ref.watch(clustersProvider(tagID));
 
     return clustersAsync.when(
       loading: () => const CLLoadingView(),

@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
+
+
 
 import '../models/cluster.dart';
-import '../models/collection.dart';
 import '../models/db.dart';
+import '../models/db_queries.dart';
+import '../models/tag.dart';
 import 'db_manager.dart';
 import 'db_queries.dart';
 
@@ -11,12 +13,12 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
   ClustersNotifier({
     required this.ref,
     this.databaseManager,
-    this.collectionID,
+    this.tagID,
   }) : super(const AsyncValue.loading()) {
     loadClusters();
   }
   DatabaseManager? databaseManager;
-  int? collectionID;
+  int? tagID;
   Ref ref;
 
   bool isLoading = false;
@@ -24,24 +26,24 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
   Future<void> loadClusters() async {
     if (databaseManager == null) return;
     final List<Cluster> clusters;
-    final Tag? collection;
-    if (collectionID == null) {
+    final Tag? tag;
+    if (tagID == null) {
       clusters = ClusterDB.getAll(databaseManager!.db);
-      collection = null;
+      tag = null;
     } else {
       clusters = ClusterDB.getClustersForTag(
         databaseManager!.db,
-        collectionID!,
+        tagID!,
       );
-      collection = TagDB.getById(databaseManager!.db, collectionID!);
+      tag = TagDB.getById(databaseManager!.db, tagID!);
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Clusters(clusters, collection: collection);
+      return Clusters(clusters, tag: tag);
     });
   }
 
-  Future<int> upsertCluster(Cluster cluster, List<int> collectionIds) async {
+  Future<int> upsertCluster(Cluster cluster, List<int> tagIds) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
@@ -52,7 +54,7 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
 
     final clusterId = cluster.upsert(databaseManager!.db);
 
-    for (final id in collectionIds) {
+    for (final id in tagIds) {
       ClusterDB.addTagToCluster(databaseManager!.db, id, clusterId);
 
       //await ref.read(clustersProvider(id).notifier).loadClusters();
@@ -104,7 +106,7 @@ final clustersProvider =
     data: (DatabaseManager dbManager) => ClustersNotifier(
       ref: ref,
       databaseManager: dbManager,
-      collectionID: clusterID,
+      tagID: clusterID,
     ),
     error: (_, __) => ClustersNotifier(
       ref: ref,

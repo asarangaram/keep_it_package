@@ -8,11 +8,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
-import 'collections_list_item.dart';
+import 'tags_list_item.dart';
 
 class TagsList extends ConsumerStatefulWidget {
   const TagsList({
-    required this.collections,
+    required this.tags,
     super.key,
     this.onSelection,
     this.selectionMask,
@@ -21,20 +21,20 @@ class TagsList extends ConsumerStatefulWidget {
     this.onDeleteTag,
   });
 
-  final Tags collections;
+  final Tags tags;
   final void Function(int index)? onSelection;
   final List<bool>? selectionMask;
   final Future<bool?> Function(
     BuildContext context,
-    Tag collection,
+    Tag tag,
   )? onEditTag;
   final Future<bool?> Function(
     BuildContext context,
-    Tag collection,
+    Tag tag,
   )? onDeleteTag;
   final Future<bool?> Function(
     BuildContext context,
-    Tag collection,
+    Tag tag,
   )? onTapTag;
 
   @override
@@ -61,10 +61,10 @@ class _TagsListState extends ConsumerState<TagsList> {
 
   @override
   Widget build(BuildContext context) {
-    final highLightIndex = widget.collections.lastupdatedID == null
+    final highLightIndex = widget.tags.lastupdatedID == null
         ? -1
-        : widget.collections.entries
-            .indexWhere((e) => e.id == widget.collections.lastupdatedID);
+        : widget.tags.entries
+            .indexWhere((e) => e.id == widget.tags.lastupdatedID);
     if (highLightIndex > -1) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.scrollToIndex(highLightIndex);
@@ -72,18 +72,18 @@ class _TagsListState extends ConsumerState<TagsList> {
     }
     /*  */
     if (widget.selectionMask != null) {
-      if (widget.selectionMask!.length != widget.collections.entries.length) {
+      if (widget.selectionMask!.length != widget.tags.entries.length) {
         throw Exception('Selection is setup incorrectly');
       }
     }
-    if (widget.collections.entries.isEmpty) {
+    if (widget.tags.entries.isEmpty) {
       throw Exception("This widget can't handle empty colections");
     }
 
     final random = Random(42);
 
     return CLMatrix2D(
-      itemCount: widget.collections.entries.length,
+      itemCount: widget.tags.entries.length,
       controller: controller,
       columns: 1,
       itemHeight: 200,
@@ -91,19 +91,19 @@ class _TagsListState extends ConsumerState<TagsList> {
         final randomColor =
             Colors.primaries[random.nextInt(Colors.primaries.length)];
         return Slidable(
-          key: ValueKey('collectionslist_$index'),
+          key: ValueKey('tagslist_$index'),
           endActionPane: ActionPane(
             motion: const BehindMotion(),
             children: [
               SlidableAction(
-                onPressed: (context) => widget.onEditTag
-                    ?.call(context, widget.collections.entries[index]),
+                onPressed: (context) =>
+                    widget.onEditTag?.call(context, widget.tags.entries[index]),
                 icon: Icons.edit,
                 label: 'Edit',
               ),
               SlidableAction(
                 onPressed: (context) => widget.onDeleteTag
-                    ?.call(context, widget.collections.entries[index]),
+                    ?.call(context, widget.tags.entries[index]),
                 icon: Icons.edit,
                 backgroundColor: Theme.of(context).colorScheme.errorContainer,
                 foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
@@ -114,12 +114,12 @@ class _TagsListState extends ConsumerState<TagsList> {
           child: CLHighlighted(
             isHighlighed: index == highLightIndex,
             child: TagsListItem(
-              widget.collections.entries[index],
+              widget.tags.entries[index],
               isSelected: widget.selectionMask?[index],
               backgroundColor: randomColor,
               onTap: (widget.onSelection == null)
-                  ? () => widget.onTapTag
-                      ?.call(context, widget.collections.entries[index])
+                  ? () =>
+                      widget.onTapTag?.call(context, widget.tags.entries[index])
                   : () => widget.onSelection!.call(index),
             ),
           ),

@@ -7,8 +7,8 @@ extension ExtDBQuery on DBQueries {
   List<ItemInDB> getByTagID(
     Database db,
   ) {
-    if (collectionID == null) {
-      throw Exception('collectionID must be provided');
+    if (tagID == null) {
+      throw Exception('tagID must be provided');
     }
     final List<Map<String, dynamic>> maps = db.select(
       '''
@@ -16,7 +16,7 @@ extension ExtDBQuery on DBQueries {
       FROM Item
       JOIN Cluster ON Item.cluster_id = Cluster.id
       JOIN TagCluster ON Cluster.id = TagCluster.cluster_id
-      WHERE TagCluster.collection_id = $collectionID
+      WHERE TagCluster.tag_id = $tagID
       ORDER BY Item.UPDATED_DATE DESC
     ''',
     );

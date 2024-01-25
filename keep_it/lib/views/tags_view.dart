@@ -8,12 +8,12 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../providers/state_providers.dart';
-import '../widgets/collections_dialogs.dart';
-import '../widgets/collections_empty.dart';
-import '../widgets/collections_grid.dart';
-import '../widgets/collections_list.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
+import '../widgets/tags_dialogs.dart';
+import '../widgets/tags_empty.dart';
+import '../widgets/tags_grid.dart';
+import '../widgets/tags_list.dart';
 
 class TagsView extends ConsumerWidget {
   const TagsView({super.key});
@@ -29,8 +29,8 @@ class TagsView extends ConsumerWidget {
 }
 
 class _TagsView extends ConsumerStatefulWidget {
-  const _TagsView(this.collections, {super.key});
-  final Tags collections;
+  const _TagsView(this.tags, {super.key});
+  final Tags tags;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TagsViewState();
@@ -39,7 +39,7 @@ class _TagsView extends ConsumerStatefulWidget {
 class _TagsViewState extends ConsumerState<_TagsView> {
   @override
   Widget build(BuildContext context) {
-    final availableSuggestions = widget.collections.getSuggestions;
+    final availableSuggestions = widget.tags.getSuggestions;
 
     final menuItems = [
       [
@@ -52,7 +52,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
               availableSuggestions: availableSuggestions,
               onSelectionDone: (List<Tag> selectedTags) {
                 ref
-                    .read(collectionsProvider(null).notifier)
+                    .read(tagsProvider(null).notifier)
                     .upsertTags(selectedTags);
               },
             );
@@ -68,7 +68,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
       ]
     ];
 
-    if (widget.collections.isEmpty) {
+    if (widget.tags.isEmpty) {
       return KeepItMainView(
         pageBuilder: (context, quickMenuScopeKey) => TagsEmpty(
           menuItems: menuItems,
@@ -112,11 +112,11 @@ class _TagsViewState extends ConsumerState<_TagsView> {
         if (isGridView) {
           return TagsGrid(
             quickMenuScopeKey: quickMenuScopeKey,
-            collections: widget.collections,
-            onTapTag: (context, collection) async {
+            tags: widget.tags,
+            onTapTag: (context, tag) async {
               unawaited(
                 context.push(
-                  '/clusters/by_collection_id/${collection.id}',
+                  '/clusters/by_tag_id/${tag.id}',
                 ),
               );
               return true;
@@ -126,11 +126,11 @@ class _TagsViewState extends ConsumerState<_TagsView> {
           );
         }
         return TagsList(
-          collections: widget.collections,
-          onTapTag: (context, collection) async {
+          tags: widget.tags,
+          onTapTag: (context, tag) async {
             unawaited(
               context.push(
-                '/clusters/by_collection_id/${collection.id}',
+                '/clusters/by_tag_id/${tag.id}',
               ),
             );
             return true;
@@ -157,7 +157,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
 
   Future<bool?> onDeleteTag(
     BuildContext context,
-    Tag collection,
+    Tag tag,
   ) async {
     switch (await showOkCancelAlertDialog(
       context: context,
@@ -166,7 +166,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
       cancelLabel: 'No',
     )) {
       case OkCancelResult.ok:
-        ref.read(collectionsProvider(null).notifier).deleteTag(collection);
+        ref.read(tagsProvider(null).notifier).deleteTag(tag);
         return true;
       case OkCancelResult.cancel:
         return false;

@@ -1,11 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
 import 'package:store/store.dart';
 
-import 'add_collection_form.dart';
-import 'collections_list.dart';
+import 'add_tag_form.dart';
 import 'from_store/from_store.dart';
+import 'tags_list.dart';
 
 class TagsDialog {
   static Future<bool?> newTag(
@@ -18,14 +17,14 @@ class TagsDialog {
 
   static Future<bool?> updateTag(
     BuildContext context,
-    Tag? collection,
+    Tag? tag,
   ) {
-    return _upsertTag(context, collection: collection);
+    return _upsertTag(context, tag: tag);
   }
 
   static Future<bool?> _upsertTag(
     BuildContext context, {
-    Tag? collection,
+    Tag? tag,
     //  void Function()? onDone,
   }) async =>
       showDialog<bool>(
@@ -34,7 +33,7 @@ class TagsDialog {
           return CLDialogWrapper(
             onCancel: () => Navigator.of(context).pop(false),
             child: UpsertTagForm(
-              collection: collection,
+              tag: tag,
               onDone: () => Navigator.of(context).pop(true),
             ),
           );
@@ -43,13 +42,13 @@ class TagsDialog {
 
   static Widget _selectTags(
     BuildContext context,
-    Tags collections, {
+    Tags tags, {
     required dynamic Function(List<Tag>) onSelectionDone,
     required String title,
     String? labelSelected,
     String? labelNoneSelected,
   }) {
-    if (collections.isEmpty) {
+    if (tags.isEmpty) {
       throw Exception("TagList can't be empty!");
     }
 
@@ -61,11 +60,11 @@ class TagsDialog {
         },
         child: CLSelectionWrapper(
           title: title,
-          selectableList: collections.entries,
+          selectableList: tags.entries,
           multiSelection: true,
           onSelectionDone: (selectedIndices) {
             onSelectionDone(
-              selectedIndices.map((e) => collections.entries[e]).toList(),
+              selectedIndices.map((e) => tags.entries[e]).toList(),
             );
 
             Navigator.of(context).pop();
@@ -81,7 +80,7 @@ class TagsDialog {
               throw Exception("TagList can't be empty!");
             }
             return TagsList(
-              collections: Tags(selectableList),
+              tags: Tags(selectableList),
               selectionMask: selectionMask,
               onSelection: onSelection,
             );
@@ -101,9 +100,9 @@ class TagsDialog {
         context: context,
         builder: (BuildContext context) {
           return LoadTags(
-            buildOnData: (collectionFromDB) => _selectTags(
+            buildOnData: (tagFromDB) => _selectTags(
               context,
-              collectionFromDB,
+              tagFromDB,
               onSelectionDone: onSelectionDone,
               labelSelected: labelSelected,
               labelNoneSelected: labelNoneSelected,

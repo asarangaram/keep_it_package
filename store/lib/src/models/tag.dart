@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../local_data/suggested_collections.dart';
+import '../local_data/suggested_tags.dart';
 
 @immutable
 class Tag {

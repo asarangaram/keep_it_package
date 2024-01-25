@@ -1,8 +1,8 @@
 import 'package:sqlite3/sqlite3.dart';
 
 export '../extensions/cluster.dart';
-export '../extensions/collections.dart';
 export '../extensions/item.dart';
+export '../extensions/tags.dart';
 
 class DatabaseManager {
   DatabaseManager({String? path, void Function()? sqlite3LibOverrider}) {
@@ -28,7 +28,7 @@ class DatabaseManager {
       )
     ''')
       ..execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_collection
+      CREATE TRIGGER IF NOT EXISTS update_dates_on_tag
         AFTER UPDATE ON Tag
         BEGIN
             UPDATE Tag
@@ -77,11 +77,11 @@ class DatabaseManager {
     ''')
       ..execute('''
       CREATE TABLE IF NOT EXISTS TagCluster (
-        collection_id INTEGER,
+        tag_id INTEGER,
         cluster_id INTEGER,
-        FOREIGN KEY (collection_id) REFERENCES Tag(id),
+        FOREIGN KEY (tag_id) REFERENCES Tag(id),
         FOREIGN KEY (cluster_id) REFERENCES Cluster(id),
-        PRIMARY KEY (collection_id, cluster_id)
+        PRIMARY KEY (tag_id, cluster_id)
       )
     ''');
   }

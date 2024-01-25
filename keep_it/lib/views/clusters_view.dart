@@ -10,14 +10,14 @@ import '../widgets/keep_it_main_view.dart';
 import '../widgets/media_preview.dart';
 
 class ClustersView extends ConsumerWidget {
-  const ClustersView({required this.collectionId, super.key});
+  const ClustersView({required this.tagId, super.key});
 
-  final int? collectionId;
+  final int? tagId;
   @override
   Widget build(BuildContext context, WidgetRef ref) => CLFullscreenBox(
         child: CLBackground(
           child: LoadClusters(
-            collectionID: collectionId,
+            tagID: tagId,
             buildOnData: (clusters) => _ClustersView(clusters: clusters),
           ),
         ),
@@ -30,7 +30,7 @@ class _ClustersView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
-      title: clusters.collection?.label ?? 'Showing All',
+      title: clusters.tag?.label ?? 'Showing All',
       onPop: context.canPop()
           ? () {
               context.pop();

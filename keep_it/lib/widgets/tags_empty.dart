@@ -16,7 +16,7 @@ class TagsEmpty extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CLText.large('Create your first collection'),
+          const CLText.large('Create your first tag'),
           const SizedBox(
             height: 32,
           ),
