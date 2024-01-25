@@ -34,6 +34,7 @@ export 'src/views/cl_gridview.dart';
 export 'src/views/cl_gridview2.dart';
 export 'src/views/cl_image_viewer.dart';
 export 'src/views/cl_matrix_2d.dart';
+export 'src/views/cl_matrix_2d_fixed.dart';
 export 'src/views/cl_matrix_2d_scroll.dart';
 export 'src/views/cl_matrix_3d.dart';
 export 'src/views/cl_page_view.dart';
