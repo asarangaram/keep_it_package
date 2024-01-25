@@ -28,42 +28,52 @@ class TagPreview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadItemsInTag(
-      id: tag.id!,
+      id: tag.id,
       limit: 4,
       buildOnData: (clMediaList) {
-        final mediaWithPreview = clMediaList
-            .where((e) => File(e.previewFileName).existsSync())
-            .toList()
-            .firstNItems(4);
+        final Widget? icon;
+        if (clMediaList != null) {
+          final mediaWithPreview = clMediaList
+              .where((e) => File(e.previewFileName).existsSync())
+              .toList()
+              .firstNItems(4);
 
-        final Widget icon;
-        if (mediaWithPreview.isEmpty) {
+          if (mediaWithPreview.isEmpty) {
+            icon = CLGridItemSquare(
+              hasBorder: true,
+              child: Center(
+                child: CLText.veryLarge(tag.label.characters.first),
+              ),
+            );
+          } else {
+            final (c, r) = switch (mediaWithPreview.length) {
+              1 => (1, 1),
+              2 => (2, 1),
+              _ => (2, 2)
+            };
+            icon = CLGridItemSquare(
+              child: Matrix2DFixed(
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(1),
+                    child: MediaItemPreview(mediaItem: mediaWithPreview[index]),
+                  );
+                },
+                hCount: c,
+                vCount: r,
+                itemCount: min(r * c, mediaWithPreview.length),
+              ),
+            );
+          }
+        } else {
           icon = CLGridItemSquare(
             hasBorder: true,
             child: Center(
               child: CLText.veryLarge(tag.label.characters.first),
             ),
           );
-        } else {
-          final (c, r) = switch (mediaWithPreview.length) {
-            1 => (1, 1),
-            2 => (2, 1),
-            _ => (2, 2)
-          };
-          icon = CLGridItemSquare(
-            child: Matrix2DFixed(
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.all(1),
-                  child: MediaItemPreview(mediaItem: mediaWithPreview[index]),
-                );
-              },
-              hCount: c,
-              vCount: r,
-              itemCount: min(r * c, mediaWithPreview.length),
-            ),
-          );
         }
+
         if (!isTile) {
           return icon;
         }

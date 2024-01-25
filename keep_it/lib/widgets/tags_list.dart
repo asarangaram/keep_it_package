@@ -1,4 +1,3 @@
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,13 +79,10 @@ class _TagsListState extends ConsumerState<TagsList> {
       throw Exception("This widget can't handle empty colections");
     }
 
-
-    return CLMatrix2D(
+    return ListView.builder(
       itemCount: widget.tags.entries.length,
       controller: controller,
-      columns: 1,
-      itemHeight: 200,
-      itemBuilder: (context, index, l) {
+      itemBuilder: (context, index) {
         return Slidable(
           key: ValueKey('tagslist_$index'),
           endActionPane: ActionPane(

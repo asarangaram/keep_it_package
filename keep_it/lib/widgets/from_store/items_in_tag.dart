@@ -9,20 +9,24 @@ import 'package:store/store.dart';
 
 class LoadItemsInTag extends ConsumerWidget {
   const LoadItemsInTag({
-    required this.id,
     required this.buildOnData,
+    this.id,
     super.key,
     this.limit,
   });
-  final Widget Function(List<CLMedia> items) buildOnData;
-  final int id;
+  final Widget Function(List<CLMedia>? items) buildOnData;
+  final int? id;
   final int? limit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (id == null) {
+      return buildOnData(null);
+    }
+    final collectionID = id!;
     final itemsAsync = ref.watch(
       itemsByTagIdProvider(
-        DBQueries.byTagID(id),
+        DBQueries.byTagID(collectionID),
       ),
     );
     return FutureBuilder(
