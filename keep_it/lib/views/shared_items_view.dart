@@ -62,7 +62,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
       child: CLBackground(
         child: Stack(
           children: [
-            LoadCollections(
+            LoadTags(
               buildOnData: (collections) => widget.mediaAsync.when(
                 data: (media) {
                   return SafeArea(
@@ -132,10 +132,10 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
 
   void onSave(CLMediaInfoGroup media) {
     FocusScope.of(context).unfocus();
-    CollectionsDialog.selectCollections(
+    TagsDialog.selectTags(
       context,
       onSelectionDone: (
-        List<Collection> selectedCollections,
+        List<Tag> selectedTags,
       ) async {
         setState(() {
           isSaving = true;
@@ -143,7 +143,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
         await onSelectionDone(
           media: media,
           descriptionText: descriptionController.text,
-          saveIntoCollectionsId: selectedCollections
+          saveIntoTagsId: selectedTags
               .where((c) => c.id != null)
               .map((c) => c.id!)
               .toList(),
@@ -157,7 +157,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
   }
 
   Future<void> onSelectionDone({
-    required List<int> saveIntoCollectionsId,
+    required List<int> saveIntoTagsId,
     required CLMediaInfoGroup media,
     required String descriptionText,
   }) async {
@@ -168,7 +168,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     final clusterId =
         await ref.read(clustersProvider(null).notifier).upsertCluster(
               Cluster(description: descriptionText),
-              saveIntoCollectionsId,
+              saveIntoTagsId,
             );
 
     final items = <ItemInDB>[

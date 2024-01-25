@@ -34,29 +34,29 @@ extension ClusterDB on Cluster {
     if (id == null) return;
     db
       ..execute('DELETE FROM Item WHERE cluster_id = ?', [id])
-      ..execute('DELETE FROM CollectionCluster WHERE cluster_id = ?', [id])
+      ..execute('DELETE FROM TagCluster WHERE cluster_id = ?', [id])
       ..execute('DELETE FROM Cluster WHERE id = ?', [id]);
   }
 
-  static List<Cluster> getClustersForCollection(Database db, int collectionId) {
+  static List<Cluster> getClustersForTag(Database db, int collectionId) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Cluster.* FROM Cluster
-      JOIN CollectionCluster ON Cluster.id = CollectionCluster.cluster_id
-      WHERE CollectionCluster.collection_id = ?
+      JOIN TagCluster ON Cluster.id = TagCluster.cluster_id
+      WHERE TagCluster.collection_id = ?
     ''',
       [collectionId],
     );
     return maps.map(Cluster.fromMap).toList();
   }
 
-  static void addCollectionToCluster(
+  static void addTagToCluster(
     Database db,
     int collectionId,
     int clusterId,
   ) {
     db.execute(
-      'INSERT OR IGNORE INTO CollectionCluster '
+      'INSERT OR IGNORE INTO TagCluster '
       '(collection_id, cluster_id) VALUES (?, ?)',
       [collectionId, clusterId],
     );

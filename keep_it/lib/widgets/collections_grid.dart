@@ -8,36 +8,35 @@ import 'collection_preview.dart';
 import 'from_store/cluster_count.dart';
 import 'wrap_standard_quick_menu.dart';
 
-class CollectionsGrid extends ConsumerStatefulWidget {
-  const CollectionsGrid({
+class TagsGrid extends ConsumerStatefulWidget {
+  const TagsGrid({
     required this.quickMenuScopeKey,
     required this.collections,
-    this.onTapCollection,
-    this.onEditCollection,
-    this.onDeleteCollection,
+    this.onTapTag,
+    this.onEditTag,
+    this.onDeleteTag,
     super.key,
   });
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-  final Collections collections;
+  final Tags collections;
   final Future<bool?> Function(
     BuildContext context,
-    Collection collection,
-  )? onEditCollection;
+    Tag collection,
+  )? onEditTag;
   final Future<bool?> Function(
     BuildContext context,
-    Collection collection,
-  )? onDeleteCollection;
+    Tag collection,
+  )? onDeleteTag;
   final Future<bool?> Function(
     BuildContext context,
-    Collection collection,
-  )? onTapCollection;
+    Tag collection,
+  )? onTapTag;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CollectionsGridState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _TagsGridState();
 }
 
-class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
+class _TagsGridState extends ConsumerState<TagsGrid> {
   final PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
@@ -59,15 +58,15 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
             isHighlighed: index == highLightIndex,
             child: WrapStandardQuickMenu(
               quickMenuScopeKey: widget.quickMenuScopeKey,
-              onEdit: () async => widget.onEditCollection!.call(
+              onEdit: () async => widget.onEditTag!.call(
                 context,
                 collection,
               ),
-              onDelete: () async => widget.onDeleteCollection!.call(
+              onDelete: () async => widget.onDeleteTag!.call(
                 context,
                 collection,
               ),
-              onTap: () async => widget.onTapCollection!.call(
+              onTap: () async => widget.onTapTag!.call(
                 context,
                 collection,
               ),
@@ -77,7 +76,7 @@ class _CollectionsGridState extends ConsumerState<CollectionsGrid> {
                   backgroundColor: Theme.of(context).colorScheme.background,
                   child: Stack(
                     children: [
-                      CollectionPreview(
+                      TagPreview(
                         collection: collection,
                       ),
                       Align(

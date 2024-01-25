@@ -7,25 +7,25 @@ import 'add_collection_form.dart';
 import 'collections_list.dart';
 import 'from_store/from_store.dart';
 
-class CollectionsDialog {
-  static Future<bool?> newCollection(
+class TagsDialog {
+  static Future<bool?> newTag(
     BuildContext context,
   ) {
-    return _upsertCollection(
+    return _upsertTag(
       context,
     );
   }
 
-  static Future<bool?> updateCollection(
+  static Future<bool?> updateTag(
     BuildContext context,
-    Collection? collection,
+    Tag? collection,
   ) {
-    return _upsertCollection(context, collection: collection);
+    return _upsertTag(context, collection: collection);
   }
 
-  static Future<bool?> _upsertCollection(
+  static Future<bool?> _upsertTag(
     BuildContext context, {
-    Collection? collection,
+    Tag? collection,
     //  void Function()? onDone,
   }) async =>
       showDialog<bool>(
@@ -33,7 +33,7 @@ class CollectionsDialog {
         builder: (BuildContext context) {
           return CLDialogWrapper(
             onCancel: () => Navigator.of(context).pop(false),
-            child: UpsertCollectionForm(
+            child: UpsertTagForm(
               collection: collection,
               onDone: () => Navigator.of(context).pop(true),
             ),
@@ -41,16 +41,16 @@ class CollectionsDialog {
         },
       );
 
-  static Widget _selectCollections(
+  static Widget _selectTags(
     BuildContext context,
-    Collections collections, {
-    required dynamic Function(List<Collection>) onSelectionDone,
+    Tags collections, {
+    required dynamic Function(List<Tag>) onSelectionDone,
     required String title,
     String? labelSelected,
     String? labelNoneSelected,
   }) {
     if (collections.isEmpty) {
-      throw Exception("CollectionList can't be empty!");
+      throw Exception("TagList can't be empty!");
     }
 
     return CLBackground(
@@ -78,10 +78,10 @@ class CollectionsDialog {
             required selectionMask,
           }) {
             if (selectableList.isEmpty) {
-              throw Exception("CollectionList can't be empty!");
+              throw Exception("TagList can't be empty!");
             }
-            return CollectionsList(
-              collections: Collections(selectableList),
+            return TagsList(
+              collections: Tags(selectableList),
               selectionMask: selectionMask,
               onSelection: onSelection,
             );
@@ -91,17 +91,17 @@ class CollectionsDialog {
     );
   }
 
-  static Future<void> selectCollections(
+  static Future<void> selectTags(
     BuildContext context, {
-    required void Function(List<Collection>) onSelectionDone,
+    required void Function(List<Tag>) onSelectionDone,
     String? labelSelected,
     String? labelNoneSelected,
   }) =>
       showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return LoadCollections(
-            buildOnData: (collectionFromDB) => _selectCollections(
+          return LoadTags(
+            buildOnData: (collectionFromDB) => _selectTags(
               context,
               collectionFromDB,
               onSelectionDone: onSelectionDone,
@@ -115,14 +115,14 @@ class CollectionsDialog {
 
   static void onSuggestions(
     BuildContext context, {
-    required dynamic Function(List<Collection>) onSelectionDone,
-    required Collections availableSuggestions,
+    required dynamic Function(List<Tag>) onSelectionDone,
+    required Tags availableSuggestions,
   }) {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return CLBackground(
-          child: _selectCollections(
+          child: _selectTags(
             context,
             availableSuggestions,
             onSelectionDone: onSelectionDone,

@@ -45,7 +45,7 @@ class Cluster {
 class Clusters {
   Clusters(this.entries, {this.collection});
   final List<Cluster> entries;
-  final Collection? collection;
+  final Tag? collection;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;

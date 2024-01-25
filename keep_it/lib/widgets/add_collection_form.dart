@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class UpsertCollectionForm extends ConsumerWidget {
-  const UpsertCollectionForm({super.key, this.collection, this.onDone});
+class UpsertTagForm extends ConsumerWidget {
+  const UpsertTagForm({super.key, this.collection, this.onDone});
 
-  final Collection? collection;
+  final Tag? collection;
   final void Function()? onDone;
 
   @override
@@ -48,8 +48,8 @@ class UpsertCollectionForm extends ConsumerWidget {
                 values[1].trim().isEmpty ? null : values[1].trim();
 
             try {
-              ref.read(collectionsProvider(null).notifier).upsertCollection(
-                    Collection(
+              ref.read(collectionsProvider(null).notifier).upsertTag(
+                    Tag(
                       id: collection?.id,
                       label: label.trim(),
                       description: description,
@@ -67,7 +67,7 @@ class UpsertCollectionForm extends ConsumerWidget {
     );
   }
 
-  String? validateName(String? name, List<Collection> collections) {
+  String? validateName(String? name, List<Tag> collections) {
     if (name?.isEmpty ?? true) {
       return "Name can't be empty";
     }

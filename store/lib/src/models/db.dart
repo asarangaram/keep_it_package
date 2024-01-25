@@ -19,7 +19,7 @@ class DatabaseManager {
   void _createTables() {
     db
       ..execute('''
-      CREATE TABLE IF NOT EXISTS Collection (
+      CREATE TABLE IF NOT EXISTS Tag (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         label TEXT NOT NULL UNIQUE,
         description TEXT,
@@ -29,9 +29,9 @@ class DatabaseManager {
     ''')
       ..execute('''
       CREATE TRIGGER IF NOT EXISTS update_dates_on_collection
-        AFTER UPDATE ON Collection
+        AFTER UPDATE ON Tag
         BEGIN
-            UPDATE Collection
+            UPDATE Tag
             SET UPDATED_DATE = CURRENT_TIMESTAMP
             WHERE id = NEW.id;
         END;
@@ -49,7 +49,7 @@ class DatabaseManager {
       CREATE TRIGGER IF NOT EXISTS update_dates_on_cluster
         AFTER UPDATE ON Cluster
         BEGIN
-            UPDATE Collection
+            UPDATE Tag
             SET UPDATED_DATE = CURRENT_TIMESTAMP
             WHERE id = NEW.id;
         END;
@@ -70,16 +70,16 @@ class DatabaseManager {
       CREATE TRIGGER IF NOT EXISTS update_dates_on_item
         AFTER UPDATE ON Cluster
         BEGIN
-            UPDATE Collection
+            UPDATE Tag
             SET UPDATED_DATE = CURRENT_TIMESTAMP
             WHERE id = NEW.id;
         END;
     ''')
       ..execute('''
-      CREATE TABLE IF NOT EXISTS CollectionCluster (
+      CREATE TABLE IF NOT EXISTS TagCluster (
         collection_id INTEGER,
         cluster_id INTEGER,
-        FOREIGN KEY (collection_id) REFERENCES Collection(id),
+        FOREIGN KEY (collection_id) REFERENCES Tag(id),
         FOREIGN KEY (cluster_id) REFERENCES Cluster(id),
         PRIMARY KEY (collection_id, cluster_id)
       )

@@ -2,8 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CollectionsEmpty extends ConsumerWidget {
-  const CollectionsEmpty({
+class TagsEmpty extends ConsumerWidget {
+  const TagsEmpty({
     required this.menuItems,
     super.key,
   });

@@ -7,8 +7,8 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:store/store.dart';
 
-class LoadItemsInCollection extends ConsumerWidget {
-  const LoadItemsInCollection({
+class LoadItemsInTag extends ConsumerWidget {
+  const LoadItemsInTag({
     required this.id,
     required this.buildOnData,
     super.key,
@@ -21,8 +21,8 @@ class LoadItemsInCollection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final itemsAsync = ref.watch(
-      itemsByCollectionIdProvider(
-        DBQueries.byCollectionID(id),
+      itemsByTagIdProvider(
+        DBQueries.byTagID(id),
       ),
     );
     return FutureBuilder(

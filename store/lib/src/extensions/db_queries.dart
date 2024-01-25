@@ -4,7 +4,7 @@ import '../models/db_queries.dart';
 import '../models/item.dart';
 
 extension ExtDBQuery on DBQueries {
-  List<ItemInDB> getByCollectionID(
+  List<ItemInDB> getByTagID(
     Database db,
   ) {
     if (collectionID == null) {
@@ -15,8 +15,8 @@ extension ExtDBQuery on DBQueries {
       SELECT Item.*
       FROM Item
       JOIN Cluster ON Item.cluster_id = Cluster.id
-      JOIN CollectionCluster ON Cluster.id = CollectionCluster.cluster_id
-      WHERE CollectionCluster.collection_id = $collectionID
+      JOIN TagCluster ON Cluster.id = TagCluster.cluster_id
+      WHERE TagCluster.collection_id = $collectionID
       ORDER BY Item.UPDATED_DATE DESC
     ''',
     );

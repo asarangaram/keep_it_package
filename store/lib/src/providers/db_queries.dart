@@ -5,8 +5,8 @@ import '../models/db_queries.dart';
 import '../models/item.dart';
 import 'db_manager.dart';
 
-final itemsByCollectionIdProvider =
+final itemsByTagIdProvider =
     FutureProvider.family<List<ItemInDB>, DBQueries>((ref, dbQuery) async {
   final databaseManager = await ref.watch(dbManagerProvider.future);
-  return dbQuery.getByCollectionID(databaseManager.db);
+  return dbQuery.getByTagID(databaseManager.db);
 });

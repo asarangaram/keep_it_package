@@ -4,12 +4,12 @@ import '../models/collection.dart';
 import '../models/db.dart';
 import 'db_manager.dart';
 
-class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
-  CollectionNotifier({
+class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
+  TagNotifier({
     this.databaseManager,
     this.clusterId,
   }) : super(const AsyncValue.loading()) {
-    loadCollections();
+    loadTags();
   }
   DatabaseManager? databaseManager;
   int? clusterId;
@@ -17,78 +17,79 @@ class CollectionNotifier extends StateNotifier<AsyncValue<Collections>> {
   bool isLoading = false;
   // Some race condition might occuur if many collections are updated
   /// How to avoid more frequent update if many triggers occur one after other.
-  Future<void> loadCollections({int? lastupdatedID}) async {
+  Future<void> loadTags({int? lastupdatedID}) async {
     if (databaseManager == null) return;
-    final List<Collection> collections;
+    final List<Tag> collections;
 
     if (clusterId == null) {
-      collections = CollectionDB.getAll(databaseManager!.db);
+      collections = TagDB.getAll(databaseManager!.db);
     } else {
-      collections = CollectionDB.getCollectionsForCluster(
+      collections = TagDB.getTagsForCluster(
         databaseManager!.db,
         clusterId!,
       );
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final res = Collections(collections, lastupdatedID: lastupdatedID);
+      final res = Tags(collections, lastupdatedID: lastupdatedID);
       if (lastupdatedID != null) {
         Future.delayed(
           const Duration(seconds: 5),
-          loadCollections,
+          loadTags,
         );
       }
       return res;
     });
   }
 
-  void upsertCollection(Collection collection) {
+  void upsertTag(Tag collection) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
 
     final lastupdatedID = collection.upsert(databaseManager!.db);
 
-    loadCollections(lastupdatedID: lastupdatedID);
+    loadTags(lastupdatedID: lastupdatedID);
   }
 
-  void upsertCollections(List<Collection> collections) {
+  void upsertTags(List<Tag> collections) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
     for (final collection in collections) {
       collection.upsert(databaseManager!.db);
     }
-    loadCollections();
+    loadTags();
   }
 
-  void deleteCollection(Collection collection) {
+  void deleteTag(Tag collection) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
 
     collection.delete(databaseManager!.db);
-    loadCollections();
+    loadTags();
   }
 
-  void deleteCollections(List<Collection> collections) {
+  void deleteTags(List<Tag> collections) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
     for (final collection in collections) {
       collection.delete(databaseManager!.db);
     }
-    loadCollections();
+    loadTags();
   }
 }
 
-final collectionsProvider = StateNotifierProvider.family<CollectionNotifier,
-    AsyncValue<Collections>, int?>((ref, clusterId) {
+final collectionsProvider =
+    StateNotifierProvider.family<TagNotifier, AsyncValue<Tags>, int?>(
+        (ref, clusterId) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) =>
-        CollectionNotifier(databaseManager: dbManager, clusterId: clusterId),
-    error: (_, __) => CollectionNotifier(),
-    loading: CollectionNotifier.new,
+        TagNotifier(databaseManager: dbManager, clusterId: clusterId),
+    error: (_, __) => TagNotifier(),
+    loading: TagNotifier.new,
   );
 });

@@ -40,8 +40,7 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
-      'collections': (context, state) =>
-          const AppTheme(child: CollectionsView()),
+      'collections': (context, state) => const AppTheme(child: TagsView()),
       'demo': (context, state) => const DemoMain(),
       'clusters': (context, GoRouterState state) =>
           const ClustersView(collectionId: null),

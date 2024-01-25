@@ -5,13 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-class LoadCollections extends ConsumerWidget {
-  const LoadCollections({
+class LoadTags extends ConsumerWidget {
+  const LoadTags({
     required this.buildOnData,
     super.key,
     this.clusterID,
   });
-  final Widget Function(Collections collections) buildOnData;
+  final Widget Function(Tags collections) buildOnData;
   final int? clusterID;
 
   @override

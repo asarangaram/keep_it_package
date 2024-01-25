@@ -8,13 +8,13 @@ import 'package:store/store.dart';
 
 import 'from_store/items_in_collection.dart';
 
-class CollectionPreview extends ConsumerWidget {
-  const CollectionPreview({required this.collection, super.key});
-  final Collection collection;
+class TagPreview extends ConsumerWidget {
+  const TagPreview({required this.collection, super.key});
+  final Tag collection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LoadItemsInCollection(
+    return LoadItemsInTag(
       id: collection.id!,
       limit: 4,
       buildOnData: (clMediaList) {

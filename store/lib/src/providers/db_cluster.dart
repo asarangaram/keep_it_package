@@ -24,16 +24,16 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
   Future<void> loadClusters() async {
     if (databaseManager == null) return;
     final List<Cluster> clusters;
-    final Collection? collection;
+    final Tag? collection;
     if (collectionID == null) {
       clusters = ClusterDB.getAll(databaseManager!.db);
       collection = null;
     } else {
-      clusters = ClusterDB.getClustersForCollection(
+      clusters = ClusterDB.getClustersForTag(
         databaseManager!.db,
         collectionID!,
       );
-      collection = CollectionDB.getById(databaseManager!.db, collectionID!);
+      collection = TagDB.getById(databaseManager!.db, collectionID!);
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -47,19 +47,19 @@ class ClustersNotifier extends StateNotifier<AsyncValue<Clusters>> {
     }
 
     // Save Cluster and get Cluster ID.
-    // Associate it wtih all the CollectionIds
-    // invalidate the clusters queries by Collection id for all CollectionIds
+    // Associate it wtih all the TagIds
+    // invalidate the clusters queries by Tag id for all TagIds
 
     final clusterId = cluster.upsert(databaseManager!.db);
 
     for (final id in collectionIds) {
-      ClusterDB.addCollectionToCluster(databaseManager!.db, id, clusterId);
+      ClusterDB.addTagToCluster(databaseManager!.db, id, clusterId);
 
       //await ref.read(clustersProvider(id).notifier).loadClusters();
       ref
         ..invalidate(clustersProvider(null))
         ..invalidate(clustersProvider(id))
-        ..invalidate(itemsByCollectionIdProvider(DBQueries.byCollectionID(id)));
+        ..invalidate(itemsByTagIdProvider(DBQueries.byTagID(id)));
     }
 
     await loadClusters();

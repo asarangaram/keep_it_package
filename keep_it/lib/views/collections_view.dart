@@ -15,29 +15,28 @@ import '../widgets/collections_list.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
 
-class CollectionsView extends ConsumerWidget {
-  const CollectionsView({super.key});
+class TagsView extends ConsumerWidget {
+  const TagsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => const CLFullscreenBox(
         child: CLBackground(
-          child: LoadCollections(
-            buildOnData: _CollectionsView.new,
+          child: LoadTags(
+            buildOnData: _TagsView.new,
           ),
         ),
       );
 }
 
-class _CollectionsView extends ConsumerStatefulWidget {
-  const _CollectionsView(this.collections, {super.key});
-  final Collections collections;
+class _TagsView extends ConsumerStatefulWidget {
+  const _TagsView(this.collections, {super.key});
+  final Tags collections;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CollectionsViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _TagsViewState();
 }
 
-class _CollectionsViewState extends ConsumerState<_CollectionsView> {
+class _TagsViewState extends ConsumerState<_TagsView> {
   @override
   Widget build(BuildContext context) {
     final availableSuggestions = widget.collections.getSuggestions;
@@ -45,16 +44,16 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
     final menuItems = [
       [
         CLMenuItem(
-          title: 'Suggested\nCollections',
+          title: 'Suggested\nTags',
           icon: Icons.menu,
           onTap: () async {
-            CollectionsDialog.onSuggestions(
+            TagsDialog.onSuggestions(
               context,
               availableSuggestions: availableSuggestions,
-              onSelectionDone: (List<Collection> selectedCollections) {
+              onSelectionDone: (List<Tag> selectedTags) {
                 ref
                     .read(collectionsProvider(null).notifier)
-                    .upsertCollections(selectedCollections);
+                    .upsertTags(selectedTags);
               },
             );
 
@@ -64,26 +63,26 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
         CLMenuItem(
           title: 'Create New',
           icon: Icons.new_label,
-          onTap: () async => CollectionsDialog.newCollection(context),
+          onTap: () async => TagsDialog.newTag(context),
         ),
       ]
     ];
 
     if (widget.collections.isEmpty) {
       return KeepItMainView(
-        pageBuilder: (context, quickMenuScopeKey) => CollectionsEmpty(
+        pageBuilder: (context, quickMenuScopeKey) => TagsEmpty(
           menuItems: menuItems,
         ),
       );
     }
     return KeepItMainView(
-      title: 'Collections',
+      title: 'Tags',
       actionsBuilder: [
         (context, quickMenuScopeKey) {
           if (availableSuggestions.isEmpty) {
             return CLButtonIcon.standard(
               Icons.add,
-              onTap: () => CollectionsDialog.newCollection(context),
+              onTap: () => TagsDialog.newTag(context),
             );
           } else {
             return CLQuickMenuAnchor(
@@ -111,10 +110,10 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
       pageBuilder: (context, quickMenuScopeKey) {
         final isGridView = ref.watch(isGridProvider);
         if (isGridView) {
-          return CollectionsGrid(
+          return TagsGrid(
             quickMenuScopeKey: quickMenuScopeKey,
             collections: widget.collections,
-            onTapCollection: (context, collection) async {
+            onTapTag: (context, collection) async {
               unawaited(
                 context.push(
                   '/clusters/by_collection_id/${collection.id}',
@@ -122,13 +121,13 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
               );
               return true;
             },
-            onEditCollection: CollectionsDialog.updateCollection,
-            onDeleteCollection: onDeleteCollection,
+            onEditTag: TagsDialog.updateTag,
+            onDeleteTag: onDeleteTag,
           );
         }
-        return CollectionsList(
+        return TagsList(
           collections: widget.collections,
-          onTapCollection: (context, collection) async {
+          onTapTag: (context, collection) async {
             unawaited(
               context.push(
                 '/clusters/by_collection_id/${collection.id}',
@@ -136,8 +135,8 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
             );
             return true;
           },
-          onEditCollection: CollectionsDialog.updateCollection,
-          onDeleteCollection: onDeleteCollection,
+          onEditTag: TagsDialog.updateTag,
+          onDeleteTag: onDeleteTag,
         );
       },
     );
@@ -156,9 +155,9 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
     );
   }
 
-  Future<bool?> onDeleteCollection(
+  Future<bool?> onDeleteTag(
     BuildContext context,
-    Collection collection,
+    Tag collection,
   ) async {
     switch (await showOkCancelAlertDialog(
       context: context,
@@ -167,9 +166,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
       cancelLabel: 'No',
     )) {
       case OkCancelResult.ok:
-        ref
-            .read(collectionsProvider(null).notifier)
-            .deleteCollection(collection);
+        ref.read(collectionsProvider(null).notifier).deleteTag(collection);
         return true;
       case OkCancelResult.cancel:
         return false;

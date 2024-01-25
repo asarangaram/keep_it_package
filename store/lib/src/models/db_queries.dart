@@ -7,7 +7,7 @@ class DBQueries {
     this.collectionID,
   });
 
-  factory DBQueries.byCollectionID(int id) {
+  factory DBQueries.byTagID(int id) {
     return DBQueries._(collectionID: id);
   }
   final int? collectionID;

@@ -6,8 +6,8 @@ import 'package:store/store.dart';
 import 'collection_preview.dart';
 import 'from_store/cluster_count.dart';
 
-class CollectionsListItem extends ConsumerWidget {
-  const CollectionsListItem(
+class TagsListItem extends ConsumerWidget {
+  const TagsListItem(
     this.collection, {
     required this.backgroundColor,
     super.key,
@@ -17,7 +17,7 @@ class CollectionsListItem extends ConsumerWidget {
   });
 
   final bool? isSelected;
-  final Collection collection;
+  final Tag collection;
 
   final void Function()? onTap;
   final Color backgroundColor;

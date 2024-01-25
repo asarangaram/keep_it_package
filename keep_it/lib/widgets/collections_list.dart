@@ -10,38 +10,38 @@ import 'package:store/store.dart';
 
 import 'collections_list_item.dart';
 
-class CollectionsList extends ConsumerStatefulWidget {
-  const CollectionsList({
+class TagsList extends ConsumerStatefulWidget {
+  const TagsList({
     required this.collections,
     super.key,
     this.onSelection,
     this.selectionMask,
-    this.onTapCollection,
-    this.onEditCollection,
-    this.onDeleteCollection,
+    this.onTapTag,
+    this.onEditTag,
+    this.onDeleteTag,
   });
 
-  final Collections collections;
+  final Tags collections;
   final void Function(int index)? onSelection;
   final List<bool>? selectionMask;
   final Future<bool?> Function(
     BuildContext context,
-    Collection collection,
-  )? onEditCollection;
+    Tag collection,
+  )? onEditTag;
   final Future<bool?> Function(
     BuildContext context,
-    Collection collection,
-  )? onDeleteCollection;
+    Tag collection,
+  )? onDeleteTag;
   final Future<bool?> Function(
     BuildContext context,
-    Collection collection,
-  )? onTapCollection;
+    Tag collection,
+  )? onTapTag;
 
   @override
-  ConsumerState<CollectionsList> createState() => _CollectionsListState();
+  ConsumerState<TagsList> createState() => _TagsListState();
 }
 
-class _CollectionsListState extends ConsumerState<CollectionsList> {
+class _TagsListState extends ConsumerState<TagsList> {
   late AutoScrollController controller;
 
   @override
@@ -96,13 +96,13 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
             motion: const BehindMotion(),
             children: [
               SlidableAction(
-                onPressed: (context) => widget.onEditCollection
+                onPressed: (context) => widget.onEditTag
                     ?.call(context, widget.collections.entries[index]),
                 icon: Icons.edit,
                 label: 'Edit',
               ),
               SlidableAction(
-                onPressed: (context) => widget.onDeleteCollection
+                onPressed: (context) => widget.onDeleteTag
                     ?.call(context, widget.collections.entries[index]),
                 icon: Icons.edit,
                 backgroundColor: Theme.of(context).colorScheme.errorContainer,
@@ -113,12 +113,12 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
           ),
           child: CLHighlighted(
             isHighlighed: index == highLightIndex,
-            child: CollectionsListItem(
+            child: TagsListItem(
               widget.collections.entries[index],
               isSelected: widget.selectionMask?[index],
               backgroundColor: randomColor,
               onTap: (widget.onSelection == null)
-                  ? () => widget.onTapCollection
+                  ? () => widget.onTapTag
                       ?.call(context, widget.collections.entries[index])
                   : () => widget.onSelection!.call(index),
             ),
