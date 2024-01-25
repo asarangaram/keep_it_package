@@ -19,7 +19,15 @@ class NotificationMessageNotifier
   }
 
   void pop() {
-    state = state.sublist(1);
+    switch (state.length) {
+      case 0:
+        return;
+      case 1:
+        state = [];
+        return;
+      default:
+        state = state.sublist(1);
+    }
   }
 }
 
