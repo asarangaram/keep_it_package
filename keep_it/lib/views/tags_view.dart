@@ -59,7 +59,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
           },
         ),
         CLMenuItem(
-          title: 'Create New',
+          title: 'Create Tag',
           icon: Icons.new_label,
           onTap: () async => TagsDialog.newTag(context),
         ),

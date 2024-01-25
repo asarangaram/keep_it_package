@@ -75,16 +75,21 @@ class _TagsGridState extends ConsumerState<TagsGrid> {
                   backgroundColor: Theme.of(context).colorScheme.background,
                   child: Stack(
                     children: [
-                      TagPreview(
-                        tag: tag,
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: CLText.small(
-                          count.toString(),
-                          textAlign: TextAlign.end,
+                      if (count > 0) ...[
+                        TagPreview(
+                          tag: tag,
                         ),
-                      ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: CLText.small(
+                            count.toString(),
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                      ] else
+                        Center(
+                          child: CLText.veryLarge(tag.label.characters.first),
+                        ),
                     ],
                   ),
                 ),
