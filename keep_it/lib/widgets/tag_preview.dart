@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import 'from_store/items_in_tag.dart';
-import 'media_preview.dart';
 
 class TagPreview extends ConsumerWidget {
   const TagPreview({
@@ -46,23 +44,15 @@ class TagPreview extends ConsumerWidget {
               ),
             );
           } else {
-            final (c, r) = switch (mediaWithPreview.length) {
+            final (hCount, vCount) = switch (mediaWithPreview.length) {
               1 => (1, 1),
               2 => (2, 1),
               _ => (2, 2)
             };
-            icon = CLGridItemSquare(
-              child: Matrix2DFixed(
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(1),
-                    child: MediaItemPreview(mediaItem: mediaWithPreview[index]),
-                  );
-                },
-                hCount: c,
-                vCount: r,
-                itemCount: min(r * c, mediaWithPreview.length),
-              ),
+            icon = CLMediaGridViewFixed(
+              mediaList: mediaWithPreview,
+              hCount: hCount,
+              vCount: vCount,
             );
           }
         } else {
@@ -100,40 +90,6 @@ class TagPreview extends ConsumerWidget {
           ],
         );
       },
-    );
-  }
-}
-
-class CLGridItemSquare extends StatelessWidget {
-  const CLGridItemSquare({
-    super.key,
-    this.child,
-    this.hasBorder = false,
-  });
-
-  final Widget? child;
-  final bool hasBorder;
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
-      child: SizedBox.square(
-        dimension: 128,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: hasBorder ? Border.all() : null,
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: child,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

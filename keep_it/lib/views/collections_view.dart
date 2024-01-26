@@ -4,14 +4,13 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import '../providers/state_providers.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
-
-import '../widgets/media_preview.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({required this.tagId, super.key});
@@ -95,23 +94,23 @@ class _CollectionsView extends ConsumerWidget {
           collectionID: e.id!,
           hasBackground: false,
           buildOnData: (Items items, {required String docDir}) {
-            final (c, r) = switch (items.entries.length) {
+            final (hCount, vCount) = switch (items.entries.length) {
               1 => (1, 1),
               2 => (1, 2),
               <= 4 => (2, 2),
               < 6 => (2, 3),
               _ => (3, 3)
             };
-            return MediaPreview(
-              media: items.entries
+            return CLMediaGridViewFixed(
+              mediaList: items.entries
                   .map(
                     (ItemInDB e) => e.toCLMedia(
                       pathPrefix: docDir,
                     ),
                   )
                   .toList(),
-              columns: c,
-              rows: r,
+              hCount: hCount,
+              vCount: vCount,
             );
           },
         ),
