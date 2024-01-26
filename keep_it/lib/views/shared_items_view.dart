@@ -2,6 +2,7 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/load_tags.dart';
@@ -26,6 +27,8 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
   late TextEditingController descriptionController;
   late FocusNode descriptionNode;
   bool isSaving = false;
+  bool haveLabel = false;
+  bool editLabel = false;
 
   @override
   void initState() {
@@ -75,23 +78,153 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                             },
                           ),
                         ),
+                        const Divider(
+                          thickness: 2,
+                        ),
+                        if (haveLabel)
+                          if (editLabel)
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: TextField(),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: kMinInteractiveDimension * 3,
+                                    child: Align(
+                                      child: CLButtonIcon.large(
+                                        Icons.check,
+                                        onTap: () {
+                                          setState(() {
+                                            editLabel = false;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Row(
+                              mainAxisAlignment: editLabel
+                                  ? MainAxisAlignment.start
+                                  : MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'This is your label',
+                                  style: TextStyle(
+                                    fontSize: CLScaleType.large.fontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                CLButtonIcon.large(
+                                  Icons.edit,
+                                  onTap: () {
+                                    setState(() {
+                                      editLabel = !editLabel;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                         SizedBox(
                           height: kMinInteractiveDimension * 5,
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(8),
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(16),
+                                bottomRight: Radius.circular(16),
+                                topLeft: Radius.circular(16),
+                                bottomLeft: Radius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(),
+                                          left: BorderSide(),
+                                          bottom: BorderSide(),
+                                        ),
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                          bottomLeft: Radius.circular(16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                    ),
+                                    width: kMinInteractiveDimension * 3,
+                                    child: Center(
+                                      child: CLButtonIconLabelled.large(
+                                        MdiIcons.arrowRight,
+                                        haveLabel ? 'Select Tags' : 'Next',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        onTap: () {
+                                          if (!haveLabel) {
+                                            setState(() {
+                                              haveLabel = true;
+                                            });
+                                          } else {
+                                            onSave(media);
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          /* Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             child: CLTextField.multiLine(
                               descriptionController,
                               focusNode: descriptionNode,
+                              hint: 'Write here...',
                               label: 'What is the best thing,'
                                   ' you can say about this?',
-                              hint: 'What is the best thing,'
-                                  ' you can say about this?',
                               maxLines: 5,
+                              suffix: Container(
+                                height: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ), // Adjust the padding as needed
+
+                                color:
+                                    Colors.yellow, // Set the background color
+                                child: CLButtonIconLabelled.large(
+                                  MdiIcons.arrowRight,
+                                  'Next',
+                                ),
+                              ),
                             ),
-                          ),
+                          ) */
                         ),
                         SizedBox(
-                          height: kMinInteractiveDimension * 3,
+                          height: kMinInteractiveDimension * 2,
                           child: isSaving
                               ? const Center(
                                   child: CLLoadingView(
@@ -99,6 +232,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                                   ),
                                 )
                               : SaveOrCancel(
+                                  canSave: false,
                                   saveLabel: 'Save into...',
                                   cancelLabel: 'Discard',
                                   onDiscard: () => widget.onDiscard(media),
