@@ -24,22 +24,21 @@ class CLMediaView extends StatelessWidget {
         ),
       );
     }
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(2),
-        child: FittedBox(
-          child: SizedBox(
-            width: 50 + 16,
-            height: 50 + 16,
-            child: Card(
-              margin: EdgeInsets.zero,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Center(
-                  child: Text(
-                    'Preview Not Found',
-                    textAlign: TextAlign.center,
-                  ),
+    return AspectRatio(
+      aspectRatio: 1,
+      child: FittedBox(
+        fit: BoxFit.fill,
+        child: SizedBox.square(
+          dimension: 60 + 16,
+          child: Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.all(1),
+              child: Center(
+                child: Text(
+                  'Preview Not Found',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ),
