@@ -3,46 +3,82 @@ import 'package:flutter/material.dart';
 
 import 'compute_size_and_build.dart';
 
-class Matrix2DFixed extends StatelessWidget {
-  const Matrix2DFixed({
+class Matrix2DNew extends StatelessWidget {
+  const Matrix2DNew({
     required this.itemBuilder,
     required this.hCount,
-    required this.vCount,
+    required int vCount,
     required this.itemCount,
     this.strictMartrix = true,
     super.key,
-  });
+  }) : vCount_ = vCount;
+  const Matrix2DNew.scrollable({
+    required this.itemBuilder,
+    required this.hCount,
+    required this.itemCount,
+    this.strictMartrix = true,
+    super.key,
+  }) : vCount_ = null;
 
   final Widget Function(BuildContext context, int index) itemBuilder;
 
   final int hCount;
-  final int vCount;
+  final int? vCount_;
   final int itemCount;
   final bool strictMartrix;
 
   @override
   Widget build(BuildContext context) {
-    itemCount.toString().printString(prefix: 'itemCount = ');
-    hCount.toString().printString(prefix: 'hCount = ');
-    vCount.toString().printString(prefix: 'vCount = ');
+    final numRows = vCount_ ?? (itemCount + hCount - 1) ~/ hCount;
+    final lastCount = (strictMartrix
+        ? hCount
+        : (hCount * numRows > itemCount)
+            ? itemCount - hCount * (numRows - 1)
+            : hCount);
+    if (vCount_ == null) {
+      const aspectRatio = 1.0;
+      return ComputeSizeAndBuild(
+        builder: (context, size) {
+          return ListView.builder(
+            itemCount: numRows,
+            itemBuilder: (context, r) {
+              final width = size.width / hCount;
+              final height = width / aspectRatio;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var c = 0;
+                      c < (r == (numRows - 1) ? lastCount : hCount);
+                      c++)
+                    SizedBox(
+                      width: width,
+                      height: height,
+                      child: ((r * hCount + c) >= itemCount)
+                          ? strictMartrix
+                              ? Container()
+                              : throw Exception('Unexpected')
+                          : itembuilderWrapper(context, r * hCount + c),
+                    ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    }
     return ComputeSizeAndBuild(
       builder: (context, size) {
         final width = size.width / hCount;
-        final height = size.height / vCount;
-        final lastCount = (strictMartrix
-            ? hCount
-            : (hCount * vCount > itemCount)
-                ? itemCount - hCount * (vCount - 1)
-                : hCount);
-        lastCount.toString().printString(prefix: 'lastCount = ');
+        final height = size.height / numRows;
+
         return Column(
           children: [
-            for (var r = 0; r < vCount; r++)
+            for (var r = 0; r < numRows; r++)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   for (var c = 0;
-                      c < (r == (vCount - 1) ? lastCount : hCount);
+                      c < (r == (numRows - 1) ? lastCount : hCount);
                       c++)
                     SizedBox(
                       width: width,

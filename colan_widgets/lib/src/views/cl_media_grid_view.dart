@@ -20,7 +20,7 @@ class CLMediaGridViewFixed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (vCount == null) {
-      return CLMatrix2DScrollable2(
+      return Matrix2DNew.scrollable(
         itemCount: mediaList.length,
         hCount: hCount,
         itemBuilder: (context, index) => CLGridItemSquare(
@@ -32,7 +32,7 @@ class CLMediaGridViewFixed extends StatelessWidget {
       );
     }
     return CLGridItemSquare(
-      child: Matrix2DFixed(
+      child: Matrix2DNew(
         itemBuilder: (BuildContext context, int index) {
           return CLGridItemSquare(
             child: CLMediaView(
