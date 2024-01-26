@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../utils/media/cl_media.dart';
 import 'cl_matrix_2d_fixed.dart';
-import 'cl_matrix_2d_scroll.dart';
 import 'cl_media_view.dart';
 
 class CLMediaGridViewFixed extends StatelessWidget {
