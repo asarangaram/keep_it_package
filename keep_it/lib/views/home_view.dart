@@ -32,6 +32,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         setState(() {
           currentIndex = val;
         });
+        CLQuickMenuAnchor.clearQuickMenu(context, ref);
       },
     );
   }

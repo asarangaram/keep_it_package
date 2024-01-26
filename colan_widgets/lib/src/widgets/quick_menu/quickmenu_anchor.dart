@@ -37,6 +37,12 @@ class CLQuickMenuAnchor extends ConsumerStatefulWidget {
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       CLQuickMenuAnchorState();
+
+  static void clearQuickMenu(BuildContext context, WidgetRef ref) {
+    if (context.mounted) {
+      ref.read(quickMenuControllerNotifierProvider.notifier).hideMenu();
+    }
+  }
 }
 
 class CLQuickMenuAnchorState extends ConsumerState<CLQuickMenuAnchor> {
