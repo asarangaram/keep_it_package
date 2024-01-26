@@ -7,14 +7,13 @@ import '../extensions/ext_double.dart';
 import '../utils/media/cl_dimension.dart';
 import 'cl_matrix_2d.dart';
 
-class CLMatrix3D extends StatelessWidget {
+class CLMatrix3D extends StatefulWidget {
   const CLMatrix3D({
     required this.pages,
     required this.rows,
     required this.columns,
     required this.itemCount,
     required this.itemBuilder,
-    required this.pageController,
     super.key,
     this.layers = 1,
     this.visibleItem,
@@ -26,40 +25,49 @@ class CLMatrix3D extends StatelessWidget {
   final int itemCount;
   final int layers;
   final Widget Function(BuildContext context, int index, int layer) itemBuilder;
-  final PageController pageController;
+
   final int? visibleItem;
 
   @override
+  State<CLMatrix3D> createState() => _CLMatrix3DState();
+}
+
+class _CLMatrix3DState extends State<CLMatrix3D> {
+  final PageController pageController = PageController();
+  @override
   Widget build(BuildContext context) {
-    if (visibleItem != null) {
+    if (widget.visibleItem != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final highLightPage = visibleItem! ~/ (rows * columns);
+        final highLightPage =
+            widget.visibleItem! ~/ (widget.rows * widget.columns);
         pageController.jumpToPage(highLightPage);
       });
     }
     return PageView.builder(
       controller: pageController,
-      itemCount: pages,
+      itemCount: widget.pages,
       itemBuilder: (context, pageNum) {
-        final itemsInCurrentPage = ((pageNum * rows * columns) < itemCount)
-            ? rows * columns
-            : itemCount ~/ (rows * columns);
+        final itemsInCurrentPage =
+            ((pageNum * widget.rows * widget.columns) < widget.itemCount)
+                ? widget.rows * widget.columns
+                : widget.itemCount ~/ (widget.rows * widget.columns);
 
         return CLMatrix2D(
           itemCount: itemsInCurrentPage,
           itemBuilder: (context, index, layer) {
-            if (pageNum * rows * columns + index >= itemCount) {
+            if (pageNum * widget.rows * widget.columns + index >=
+                widget.itemCount) {
               return Container();
             }
-            return itemBuilder(
+            return widget.itemBuilder(
               context,
-              pageNum * rows * columns + index,
+              pageNum * widget.rows * widget.columns + index,
               layer,
             );
           },
-          rows: rows,
-          columns: columns,
-          layers: layers,
+          rows: widget.rows,
+          columns: widget.columns,
+          layers: widget.layers,
         );
       },
     );
@@ -69,7 +77,6 @@ class CLMatrix3D extends StatelessWidget {
 class CLMatrix3DAutoFit extends ConsumerWidget {
   const CLMatrix3DAutoFit({
     required this.childSize,
-    required this.controller,
     required this.itemCount,
     required this.itemBuilder,
     super.key,
@@ -79,7 +86,7 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
   });
 
   final Size childSize;
-  final PageController controller;
+
   final int itemCount;
   final Widget Function(BuildContext, int, int) itemBuilder;
   final int layers;
@@ -101,7 +108,6 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
             (itemCount + (pageMatrix.totalCount - 1)) ~/ pageMatrix.totalCount;
 
         return CLMatrix3D(
-          pageController: controller,
           pages: pages,
           rows: pageMatrix.itemsInColumn,
           columns: pageMatrix.itemsInRow,

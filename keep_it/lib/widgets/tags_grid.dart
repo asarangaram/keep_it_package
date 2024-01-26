@@ -6,7 +6,7 @@ import 'package:store/store.dart';
 import 'tag_preview.dart';
 import 'wrap_standard_quick_menu.dart';
 
-class TagsGrid extends ConsumerStatefulWidget {
+class TagsGrid extends ConsumerWidget {
   const TagsGrid({
     required this.quickMenuScopeKey,
     required this.tags,
@@ -31,40 +31,32 @@ class TagsGrid extends ConsumerStatefulWidget {
   )? onTapTag;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TagsGridState();
-}
-
-class _TagsGridState extends ConsumerState<TagsGrid> {
-  final PageController pageController = PageController();
-  @override
-  Widget build(BuildContext context) {
-    final highLightIndex = widget.tags.lastupdatedID == null
+  Widget build(BuildContext context, WidgetRef ref) {
+    final highLightIndex = tags.lastupdatedID == null
         ? -1
-        : widget.tags.entries
-            .indexWhere((e) => e.id == widget.tags.lastupdatedID);
+        : tags.entries.indexWhere((e) => e.id == tags.lastupdatedID);
 
     return CLMatrix3DAutoFit(
-      controller: pageController,
       childSize: const Size(100, 120),
-      itemCount: widget.tags.entries.length,
+      itemCount: tags.entries.length,
       layers: 2,
       visibleItem: highLightIndex <= -1 ? null : highLightIndex,
       itemBuilder: (context, index, layer) {
-        final tag = widget.tags.entries[index];
+        final tag = tags.entries[index];
         if (layer == 0) {
           return CLHighlighted(
             isHighlighed: index == highLightIndex,
             child: WrapStandardQuickMenu(
-              quickMenuScopeKey: widget.quickMenuScopeKey,
-              onEdit: () async => widget.onEditTag!.call(
+              quickMenuScopeKey: quickMenuScopeKey,
+              onEdit: () async => onEditTag!.call(
                 context,
                 tag,
               ),
-              onDelete: () async => widget.onDeleteTag!.call(
+              onDelete: () async => onDeleteTag!.call(
                 context,
                 tag,
               ),
-              onTap: () async => widget.onTapTag!.call(
+              onTap: () async => onTapTag!.call(
                 context,
                 tag,
               ),
@@ -75,7 +67,7 @@ class _TagsGridState extends ConsumerState<TagsGrid> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              widget.tags.entries[index].label,
+              tags.entries[index].label,
               maxLines: 2,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
