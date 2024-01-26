@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
+import '../providers/state_providers.dart';
 import 'from_store/items_in_tag.dart';
 
 class TagPreview extends ConsumerWidget {
@@ -25,6 +26,7 @@ class TagPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isPreviewSquare = ref.watch(isPreviewSquareProvider);
     return LoadItemsInTag(
       id: tag.id,
       limit: 4,
@@ -53,6 +55,7 @@ class TagPreview extends ConsumerWidget {
               mediaList: mediaWithPreview,
               hCount: hCount,
               vCount: vCount,
+              keepAspectRatio: !isPreviewSquare,
             );
           }
         } else {
