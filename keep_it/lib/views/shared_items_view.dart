@@ -66,23 +66,23 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                 data: (media) {
                   return SafeArea(
                     child: SizedBox(
-                      width: min(MediaQuery.of(context).size.width, 450),
+                      // width: min(MediaQuery.of(context).size.width, 450),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Expanded(
-                            child: MediaPreview(
-                              media: media.list,
-                              columns: switch (media.list.length) {
+                            child: CLMediaGridViewFixed(
+                              mediaList: media.list,
+                              hCount: switch (media.list.length) {
                                 < 2 => 1,
                                 < 4 => 2,
-                                _ => 3
+                                _ => 3,
                               },
                             ),
                           ),
                           SizedBox(
                             height: kMinInteractiveDimension * 5,
-                            width: min(MediaQuery.of(context).size.width, 450),
+                            //width: min(MediaQuery.of(context).size.width, 450),
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: CLTextField.multiLine(
@@ -97,8 +97,8 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                             ),
                           ),
                           SizedBox(
-                            height: kMinInteractiveDimension * 2,
-                            width: min(MediaQuery.of(context).size.width, 450),
+                            height: kMinInteractiveDimension * 3,
+                            // width: min(MediaQuery.of(context).size.width, 450),
                             child: isSaving
                                 ? const Center(
                                     child: CLLoadingView(

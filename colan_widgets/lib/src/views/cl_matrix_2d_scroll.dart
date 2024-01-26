@@ -118,3 +118,37 @@ class CLMatrix2DScrollable extends StatelessWidget {
     );
   }
 }
+
+class CLMatrix2DScrollable2 extends StatelessWidget {
+  const CLMatrix2DScrollable2({
+    required this.itemBuilder,
+    required this.hCount,
+    required this.itemCount,
+    super.key,
+  });
+
+  final Widget Function(BuildContext context, int index) itemBuilder;
+  final int hCount;
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: (itemCount + hCount - 1) ~/ hCount,
+      itemBuilder: (context, r) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            for (var c = 0; c < hCount; c++)
+              if ((r * hCount + c) >= itemCount)
+                Expanded(child: Container())
+              else
+                Expanded(
+                  child: itemBuilder(context, r * hCount + c),
+                ), //
+          ],
+        );
+      },
+    );
+  }
+}
