@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/load_tags.dart';
-import '../widgets/media_preview.dart';
 import '../widgets/save_or_cancel.dart';
 import '../widgets/tags_dialogs.dart';
 
@@ -65,55 +62,50 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
               buildOnData: (tags) => widget.mediaAsync.when(
                 data: (media) {
                   return SafeArea(
-                    child: SizedBox(
-                      // width: min(MediaQuery.of(context).size.width, 450),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: CLMediaGridViewFixed(
-                              mediaList: media.list,
-                              hCount: switch (media.list.length) {
-                                < 2 => 1,
-                                < 4 => 2,
-                                _ => 3,
-                              },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: CLMediaGridViewFixed(
+                            mediaList: media.list,
+                            hCount: switch (media.list.length) {
+                              < 2 => 1,
+                              < 4 => 2,
+                              _ => 3,
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: kMinInteractiveDimension * 5,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: CLTextField.multiLine(
+                              descriptionController,
+                              focusNode: descriptionNode,
+                              label: 'What is the best thing,'
+                                  ' you can say about this?',
+                              hint: 'What is the best thing,'
+                                  ' you can say about this?',
+                              maxLines: 5,
                             ),
                           ),
-                          SizedBox(
-                            height: kMinInteractiveDimension * 5,
-                            //width: min(MediaQuery.of(context).size.width, 450),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: CLTextField.multiLine(
-                                descriptionController,
-                                focusNode: descriptionNode,
-                                label: 'What is the best thing,'
-                                    ' you can say about this?',
-                                hint: 'What is the best thing,'
-                                    ' you can say about this?',
-                                maxLines: 5,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: kMinInteractiveDimension * 3,
-                            // width: min(MediaQuery.of(context).size.width, 450),
-                            child: isSaving
-                                ? const Center(
-                                    child: CLLoadingView(
-                                      message: 'Saving...',
-                                    ),
-                                  )
-                                : SaveOrCancel(
-                                    saveLabel: 'Save into...',
-                                    cancelLabel: 'Discard',
-                                    onDiscard: () => widget.onDiscard(media),
-                                    onSave: () => onSave(media),
+                        ),
+                        SizedBox(
+                          height: kMinInteractiveDimension * 3,
+                          child: isSaving
+                              ? const Center(
+                                  child: CLLoadingView(
+                                    message: 'Saving...',
                                   ),
-                          ),
-                        ],
-                      ),
+                                )
+                              : SaveOrCancel(
+                                  saveLabel: 'Save into...',
+                                  cancelLabel: 'Discard',
+                                  onDiscard: () => widget.onDiscard(media),
+                                  onSave: () => onSave(media),
+                                ),
+                        ),
+                      ],
                     ),
                   );
                 },
