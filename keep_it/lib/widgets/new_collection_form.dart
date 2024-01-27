@@ -2,17 +2,28 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:store/store.dart';
 
 import 'app_theme.dart';
+import 'create_or_select.dart';
 
-class UpdateCollection extends ConsumerStatefulWidget {
-  const UpdateCollection({super.key});
+class PickCollectionBase extends ConsumerStatefulWidget {
+  const PickCollectionBase({
+    required this.suggestedCollections,
+    required this.onDone,
+    super.key,
+    this.allowUpdateDescription = true,
+  });
 
+  final void Function(CollectionBase collection) onDone;
+  final List<CollectionBase> suggestedCollections;
+  final bool allowUpdateDescription;
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _NewCollectionState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      PickCollectionBaseState();
 }
 
-class _NewCollectionState extends ConsumerState<UpdateCollection> {
+class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
   final PageController pageController = PageController();
   late SearchController labelController;
   late TextEditingController descriptionController;
@@ -20,6 +31,8 @@ class _NewCollectionState extends ConsumerState<UpdateCollection> {
   late FocusNode descriptionNode;
 
   bool onEditLabel = true;
+  CollectionBase? collection;
+
   @override
   void initState() {
     labelController = SearchController();
@@ -39,8 +52,14 @@ class _NewCollectionState extends ConsumerState<UpdateCollection> {
     super.dispose();
   }
 
-  String? label;
-  String? description;
+  void changePage(int i) {
+    pageController.animateToPage(
+      i,
+      duration: const Duration(microseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return UpsertCollectionFormTheme(
@@ -50,317 +69,183 @@ class _NewCollectionState extends ConsumerState<UpdateCollection> {
         itemCount: 2,
         itemBuilder: (context, pageNum) {
           return [
-            getLabel(),
-            if (!onEditLabel)
-              getDescription()
+            CreateOrSelect(
+              suggestedCollections: widget.suggestedCollections,
+              controller: labelController,
+              focusNode: labelNode,
+              onDone: (CollectionBase collection) {
+                setState(() {
+                  onEditLabel = false;
+                  this.collection = collection;
+                });
+                changePage(1);
+              },
+            ),
+            if (!onEditLabel && collection != null)
+              Column(
+                children: [
+                  ShowLabel(
+                    label: collection!.label,
+                    onEditLabel: () {
+                      pageController.animateToPage(
+                        0,
+                        duration: const Duration(microseconds: 200),
+                        curve: Curves.easeOut,
+                      );
+                      setState(() {
+                        onEditLabel = true;
+                      });
+                    },
+                  ),
+                  Flexible(
+                    child: UpdateDescription(
+                      collection!,
+                      controller: descriptionController,
+                      focusNode: descriptionNode,
+                      onDone: () {
+                        setState(() {
+                          collection = collection!.copyWith(
+                            description: descriptionController.text,
+                          );
+                          widget.onDone(collection!);
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              )
             else
-              const Text('Label not found'),
+              const Text('Item not found'),
           ][pageNum];
         },
       ),
     );
   }
-
-  Widget getDescription() {
-    return GetDescription(
-      label: label!,
-      controller: descriptionController,
-      focusNode: descriptionNode,
-      onEditLabel: () {
-        pageController.animateToPage(
-          0,
-          duration: const Duration(microseconds: 200),
-          curve: Curves.easeOut,
-        );
-        setState(() {
-          onEditLabel = true;
-        });
-      },
-    );
-  }
-
-  Widget getLabel() {
-    return GetLabel(
-      controller: labelController,
-      focusNode: labelNode,
-      onLabel: (text) {
-        setState(
-          () {
-            label = text.isEmpty ? null : text;
-            label.toString().printString(prefix: 'label is :');
-            if (label != null) {
-              pageController.animateToPage(
-                1,
-                duration: const Duration(microseconds: 200),
-                curve: Curves.easeOut,
-              );
-              setState(() {
-                onEditLabel = false;
-              });
-            }
-          },
-        );
-      },
-    );
-  }
 }
 
-class GetDescription extends StatefulWidget {
-  const GetDescription({
-    required this.label,
+class UpdateDescription extends StatefulWidget {
+  const UpdateDescription(
+    this.item, {
     required this.controller,
-    required this.onEditLabel,
-    this.focusNode,
+    required this.onDone,
+    required this.focusNode,
     super.key,
   });
-  final String label;
+  final CollectionBase item;
   final TextEditingController controller;
-  final FocusNode? focusNode;
-  final void Function() onEditLabel;
+  final FocusNode focusNode;
+  final void Function() onDone;
 
   @override
-  State<GetDescription> createState() => _GetDescriptionState();
+  State<UpdateDescription> createState() => _UpdateDescriptionState();
 }
 
-class _GetDescriptionState extends State<GetDescription> {
-  late String label;
-
+class _UpdateDescriptionState extends State<UpdateDescription> {
   @override
   void initState() {
-    label = widget.label;
-    if (!(widget.focusNode?.hasFocus ?? false)) {
-      widget.focusNode?.requestFocus();
-    }
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          height: kMinInteractiveDimension * 1,
-          child: GestureDetector(
-            onTap: widget.onEditLabel,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: CLScaleType.large.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                Transform.translate(
-                  offset: const Offset(0, -4),
-                  child: const CLIcon.small(
-                    Icons.edit,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          height: kMinInteractiveDimension * 3,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Flexible(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        top: BorderSide(),
-                        left: BorderSide(),
-                        bottom: BorderSide(),
-                      ),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        bottomLeft: Radius.circular(16),
-                      ),
-                    ),
-                    child: CLTextField.multiLine(
-                      widget.controller,
-                      focusNode: widget.focusNode,
-                      hint: 'What is the best thing,'
-                          ' you can say about this?',
-                      maxLines: 5,
-                    ),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(16),
-                      bottomRight: Radius.circular(16),
-                    ),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: CLButtonIconLabelled.large(
-                        MdiIcons.arrowRight,
-                        'Select Tags',
-                        color: Theme.of(context).colorScheme.surface,
-                        onTap: () {},
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class GetLabel extends StatefulWidget {
-  const GetLabel({
-    required this.onLabel,
-    this.controller,
-    this.focusNode,
-    super.key,
-  });
-  final void Function(String text) onLabel;
-  final SearchController? controller;
-  final FocusNode? focusNode;
-
-  @override
-  State<GetLabel> createState() => _GetLabelState();
-}
-
-class _GetLabelState extends State<GetLabel> {
-  @override
-  void initState() {
-    if (!(widget.focusNode?.hasFocus ?? false)) {
-      widget.focusNode?.requestFocus();
-    }
-
+    widget.focusNode.requestFocus();
     super.initState();
   }
 
   @override
   void dispose() {
+    widget.focusNode.unfocus();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: kMinInteractiveDimension * 2,
-          child: Row(
-            children: [
-              Flexible(
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: SearchAnchor(
-                    searchController: widget.controller,
-                    isFullScreen: false,
-                    viewBackgroundColor: Theme.of(context).colorScheme.surface,
-                    dividerColor: Colors.blue,
-                    headerTextStyle: const TextStyle(color: Colors.blue),
-                    headerHintStyle: const TextStyle(color: Colors.blue),
-                    builder: (
-                      BuildContext context,
-                      SearchController controller,
-                    ) {
-                      return SearchBar(
-                        focusNode: widget.focusNode,
-                        controller: controller,
-                        padding: const MaterialStatePropertyAll<EdgeInsets>(
-                          EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                        onTap: () {
-                          controller.openView();
-                        },
-                        onChanged: (_) {
-                          controller.openView();
-                        },
-                        onSubmitted: (val) {
-                          widget.focusNode?.unfocus();
-                          widget.onLabel(val);
-                        },
-                        leading: const CLIcon.small(Icons.search),
-                        hintText: 'Collection Name',
-                      );
-                    },
-                    viewHintText: 'Enter Collection Name',
-                    suggestionsBuilder: (
-                      BuildContext context,
-                      SearchController controller,
-                    ) {
-                      final list = suggestedCollections.where(
-                        (element) {
-                          if (controller.text.isEmpty) return true;
-                          return element.toLowerCase().contains(
-                                controller.text.toLowerCase(),
-                              );
-                        },
-                      ).map((e) {
-                        return ListTile(
-                          title: Text(e),
-                          onTap: () {
-                            setState(() {
-                              widget.focusNode?.unfocus();
-                              controller.closeView(e);
-                            });
-                            widget.onLabel(e);
-                          },
-                        );
-                      }).toList();
-                      if (list.isEmpty) {
-                        list.add(
-                          ListTile(
-                            title: Text('Create "${controller.text}"'),
-                            onTap: () {
-                              setState(() {
-                                controller.closeView(controller.text);
-                              });
-                            },
-                          ),
-                        );
-                      }
-                      return list
-                        ..add(
-                          ListTile(
-                            title: SizedBox(
-                              height: MediaQuery.of(context).viewInsets.bottom,
-                            ),
-                          ),
-                        );
-                    },
-                  ),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        children: [
+          Flexible(
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(),
+                  left: BorderSide(),
+                  bottom: BorderSide(),
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
                 ),
               ),
-            ],
+              child: CLTextField.multiLine(
+                widget.controller,
+                focusNode: widget.focusNode,
+                hint: 'What is the best thing,'
+                    ' you can say about this?',
+                maxLines: 5,
+              ),
+            ),
           ),
-        ),
-        const CLText.large(
-          'Select a most appropriate collection or create one to proceed',
-        ),
-      ],
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onSurface,
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: CLButtonIconLabelled.large(
+                  widget.item.id == null
+                      ? MdiIcons.arrowRight
+                      : MdiIcons.floppy,
+                  widget.item.id == null ? 'Select Tags' : 'Save',
+                  color: Theme.of(context).colorScheme.surface,
+                  onTap: widget.onDone,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-const List<String> suggestedCollections = [
-  'Aki 11th Birthday',
-  'Ami Birthday',
-  'Republic day',
-  'Diwali',
-];
+class ShowLabel extends StatelessWidget {
+  const ShowLabel({
+    required this.label,
+    required this.onEditLabel,
+    super.key,
+  });
+
+  final void Function()? onEditLabel;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onEditLabel,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: CLScaleType.large.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          if (onEditLabel != null) ...[
+            const SizedBox(
+              width: 8,
+            ),
+            Transform.translate(
+              offset: const Offset(0, -4),
+              child: const CLIcon.verySmall(
+                Icons.edit,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}

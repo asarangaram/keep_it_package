@@ -26,26 +26,22 @@ class UpsertCollectionFormTheme extends ConsumerWidget {
   final Widget child;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final color = MaterialStateProperty.all(
+      const Color.fromARGB(0, 0, 0, 0),
+    );
     final themeData = Theme.of(context).copyWith(
       searchBarTheme: SearchBarThemeData(
         textStyle: MaterialStateProperty.all(
           const TextStyle(color: Colors.blue),
         ),
         textCapitalization: TextCapitalization.words,
-        backgroundColor: MaterialStateProperty.all(
-          const Color.fromARGB(0, 238, 228, 182),
-        ),
-        shadowColor: MaterialStateProperty.all(
-          const Color.fromARGB(0, 238, 228, 182),
-        ),
-        surfaceTintColor: MaterialStateProperty.all(
-          const Color.fromARGB(0, 238, 228, 182),
-        ),
-        overlayColor: MaterialStateProperty.all(
-          const Color.fromARGB(0, 238, 228, 182),
-        ),
+        backgroundColor: color,
+        shadowColor: color,
+        surfaceTintColor: color,
+        overlayColor: color,
         shape: MaterialStateProperty.all(
           const ContinuousRectangleBorder(
+            side: BorderSide(),
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
         ),

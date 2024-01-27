@@ -41,7 +41,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     });
   }
 
-  Future<int> upsertCollection(Collection collection, List<int> tagIds) async {
+  Future<int> upsertCollection(Collection collection, List<int>? tagIds) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
@@ -52,15 +52,17 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
 
     final collectionId = collection.upsert(databaseManager!.db);
 
-    for (final id in tagIds) {
-      CollectionDB.addTagToCollection(databaseManager!.db, id, collectionId);
-      if (id != tagID) {
-        await ref.read(collectionsProvider(id).notifier).loadCollections();
-      } else {
-        await loadCollections();
-      }
+    if (tagIds != null) {
+      for (final id in tagIds) {
+        CollectionDB.addTagToCollection(databaseManager!.db, id, collectionId);
+        if (id != tagID) {
+          await ref.read(collectionsProvider(id).notifier).loadCollections();
+        } else {
+          await loadCollections();
+        }
 
-      ref.invalidate(itemsByTagIdProvider(DBQueries.byTagID(id)));
+        ref.invalidate(itemsByTagIdProvider(DBQueries.byTagID(id)));
+      }
     }
 
     await loadCollections();

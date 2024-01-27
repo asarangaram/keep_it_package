@@ -2,9 +2,12 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/widgets/from_store/from_store.dart';
+import 'package:store/store.dart';
 
 import '../widgets/from_store/load_tags.dart';
 import '../widgets/new_collection_form.dart';
+import '../widgets/tags_dialogs.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -21,37 +24,6 @@ class SharedItemsView extends ConsumerStatefulWidget {
 }
 
 class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
-  late TextEditingController descriptionController;
-  late FocusNode descriptionNode;
-  bool isSaving = false;
-  bool haveLabel = false;
-  bool editLabel = false;
-
-  @override
-  void initState() {
-    descriptionController = TextEditingController();
-    descriptionNode = FocusNode();
-    if (descriptionNode.canRequestFocus) {
-      descriptionNode.requestFocus();
-    }
-    descriptionController.selection = TextSelection.fromPosition(
-      TextPosition(offset: descriptionController.text.length),
-    );
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    descriptionController.dispose();
-    descriptionNode.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return CLFullscreenBox(
@@ -78,26 +50,22 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                         const Divider(
                           thickness: 4,
                         ),
-                        const SizedBox(
+                        SizedBox(
                           height: kMinInteractiveDimension * 4,
-                          child: UpdateCollection(),
+                          child: LoadCollections(
+                            buildOnData: (collections) {
+                              return PickCollectionBase(
+                                suggestedCollections: collections.entries,
+                                onDone: (c) {
+                                  onSave(
+                                    media: media,
+                                    collection: Collection.fromBase(c),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
-                        /* SizedBox(
-                          height: kMinInteractiveDimension * 2,
-                          child: isSaving
-                              ? const Center(
-                                  child: CLLoadingView(
-                                    message: 'Saving...',
-                                  ),
-                                )
-                              : SaveOrCancel(
-                                  canSave: false,
-                                  saveLabel: 'Save into...',
-                                  cancelLabel: 'Discard',
-                                  onDiscard: () => widget.onDiscard(media),
-                                  onSave: () => onSave(media),
-                                ),
-                        ), */
                       ],
                     ),
                   );
@@ -114,36 +82,41 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     );
   }
 
-  /* void onSave(CLMediaInfoGroup media) {
-    FocusScope.of(context).unfocus();
-    TagsDialog.selectTags(
-      context,
-      onSelectionDone: (
-        List<Tag> selectedTags,
-      ) async {
-        setState(() {
-          isSaving = true;
-        });
-        await onSelectionDone(
-          media: media,
-          descriptionText: descriptionController.text,
-          saveIntoTagsId: selectedTags
-              .where((c) => c.id != null)
-              .map((c) => c.id!)
-              .toList(),
-        );
+  void onSave({
+    required CLMediaInfoGroup media,
+    required Collection collection,
+  }) {
+    if (collection.id != null) {
+      // Existing id, no need to select Tags
+      onSelectionDone(media: media, collection: collection);
+    } else {
+      FocusScope.of(context).unfocus();
+      TagsDialog.selectTags(
+        context,
+        onSelectionDone: (
+          List<Tag> selectedTags,
+        ) async {
+          await onSelectionDone(
+            media: media,
+            collection: collection,
+            saveIntoTagsId: selectedTags
+                .where((c) => c.id != null)
+                .map((c) => c.id!)
+                .toList(),
+          );
 
-        widget.onDiscard(media);
-      },
-      labelNoneSelected: 'Select Tags',
-      labelSelected: 'Save',
-    );
+          widget.onDiscard(media);
+        },
+        labelNoneSelected: 'Select Tags',
+        labelSelected: 'Save',
+      );
+    }
   }
 
   Future<void> onSelectionDone({
-    required List<int> saveIntoTagsId,
     required CLMediaInfoGroup media,
-    required String descriptionText,
+    required Collection collection,
+    List<int>? saveIntoTagsId,
   }) async {
     _infoLogger('Start loading');
     final stopwatch = Stopwatch()..start();
@@ -151,7 +124,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     ref.read(collectionsProvider(null));
     final collectionId =
         await ref.read(collectionsProvider(null).notifier).upsertCollection(
-              Collection(description: descriptionText),
+              collection,
               saveIntoTagsId,
             );
 
@@ -170,7 +143,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
       'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
       ' [${stopwatch.elapsed}]',
     );
-  } */
+  }
 }
 
 bool _disableInfoLogger = false;

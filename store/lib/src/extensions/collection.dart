@@ -21,13 +21,13 @@ extension CollectionDB on Collection {
   int upsert(Database db) {
     if (id != null) {
       db.execute(
-        'UPDATE Collection SET description = ?, WHERE id = ?',
-        [description, id],
+        'UPDATE Collection SET label = ? , description = ?  WHERE id = ?',
+        [label, description, id],
       );
     } else {
       db.execute(
-        'INSERT INTO Collection (description) VALUES (?)',
-        [description],
+        'INSERT INTO Collection (label, description) VALUES (?, ?) ',
+        [label, description],
       );
     }
     return db.lastInsertRowId;
