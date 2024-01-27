@@ -23,8 +23,8 @@ class DatabaseManager {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         label TEXT NOT NULL UNIQUE,
         description TEXT,
-        CREATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UPDATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP
+        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     ''')
       ..execute('''
@@ -32,7 +32,7 @@ class DatabaseManager {
         AFTER UPDATE ON Tag
         BEGIN
             UPDATE Tag
-            SET UPDATED_DATE = CURRENT_TIMESTAMP
+            SET updatedDate = CURRENT_TIMESTAMP
             WHERE id = NEW.id;
         END;
     ''')
@@ -41,16 +41,16 @@ class DatabaseManager {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         description TEXT,
         label TEXT NOT NULL UNIQUE,
-        CREATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UPDATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP
+        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     ''')
       ..execute('''
       CREATE TRIGGER IF NOT EXISTS update_dates_on_collection
         AFTER UPDATE ON Collection
         BEGIN
-            UPDATE Tag
-            SET UPDATED_DATE = CURRENT_TIMESTAMP
+            UPDATE Collection
+            SET updatedDate = CURRENT_TIMESTAMP
             WHERE id = NEW.id;
         END;
     ''')
@@ -61,8 +61,8 @@ class DatabaseManager {
         ref TEXT,
         collection_id INTEGER,
         type TEXT NOT NULL,
-         CREATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UPDATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP,
+        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (collection_id) REFERENCES Collection(id)
       )
     ''')
@@ -70,8 +70,8 @@ class DatabaseManager {
       CREATE TRIGGER IF NOT EXISTS update_dates_on_item
         AFTER UPDATE ON Collection
         BEGIN
-            UPDATE Tag
-            SET UPDATED_DATE = CURRENT_TIMESTAMP
+            UPDATE Item
+            SET updatedDate = CURRENT_TIMESTAMP
             WHERE id = NEW.id;
         END;
     ''')
