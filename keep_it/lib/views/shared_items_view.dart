@@ -118,7 +118,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     );
   }
 
-  void onSave(CLMediaInfoGroup media) {
+  /* void onSave(CLMediaInfoGroup media) {
     FocusScope.of(context).unfocus();
     TagsDialog.selectTags(
       context,
@@ -174,7 +174,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
       'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
       ' [${stopwatch.elapsed}]',
     );
-  }
+  } */
 }
 
 bool _disableInfoLogger = false;

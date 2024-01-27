@@ -33,7 +33,7 @@ class ItemsView extends ConsumerWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: Text(items.collection.description),
+                      child: Text(items.collection.label),
                     ),
                     const Divider(
                       thickness: 2,

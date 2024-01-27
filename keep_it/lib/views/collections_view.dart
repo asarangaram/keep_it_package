@@ -117,7 +117,7 @@ class _CollectionsView extends ConsumerWidget {
           child: Align(
             alignment: Alignment.topCenter,
             child: Text(
-              (e.description.isEmpty) ? 'Empty' : e.description,
+              e.label,
               textAlign: TextAlign.start,
             ),
           ),
