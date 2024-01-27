@@ -64,7 +64,10 @@ class CreateOrSelectState extends State<CreateOrSelect> {
               },
               onSubmitted: (val) {
                 widget.focusNode?.unfocus();
-                widget.onDone(CollectionBase(label: val));
+                final c = widget.suggestedCollections
+                    ?.where((element) => element.label == val)
+                    .firstOrNull;
+                widget.onDone(c ?? CollectionBase(label: val));
               },
               leading: const CLIcon.small(Icons.search),
               hintText: 'Collection Name',
@@ -77,8 +80,18 @@ class CreateOrSelectState extends State<CreateOrSelect> {
           ) {
             final list = <Widget>[];
             if (widget.suggestedCollections != null) {
+              final List<CollectionBase> availableSuggestions;
+              if (controller.text.isEmpty) {
+                availableSuggestions = widget.suggestedCollections!;
+              } else {
+                availableSuggestions = widget.suggestedCollections!
+                    .where(
+                      (element) => element.label.contains(controller.text),
+                    )
+                    .toList();
+              }
               list.addAll(
-                widget.suggestedCollections!.map((e) {
+                availableSuggestions.map((e) {
                   return ListTile(
                     title: Text(e.label),
                     onTap: () {

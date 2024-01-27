@@ -24,13 +24,14 @@ extension CollectionDB on Collection {
         'UPDATE Collection SET label = ? , description = ?  WHERE id = ?',
         [label, description, id],
       );
+      return id!;
     } else {
       db.execute(
         'INSERT INTO Collection (label, description) VALUES (?, ?) ',
         [label, description],
       );
+      return db.lastInsertRowId;
     }
-    return db.lastInsertRowId;
   }
 
   void delete(Database db) {

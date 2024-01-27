@@ -2,9 +2,10 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/widgets/from_store/from_store.dart';
+
 import 'package:store/store.dart';
 
+import '../widgets/from_store/load_collections.dart';
 import '../widgets/from_store/load_tags.dart';
 import '../widgets/new_collection_form.dart';
 import '../widgets/tags_dialogs.dart';
@@ -82,16 +83,17 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     );
   }
 
-  void onSave({
+  Future<void> onSave({
     required CLMediaInfoGroup media,
     required Collection collection,
-  }) {
+  }) async {
     if (collection.id != null) {
       // Existing id, no need to select Tags
-      onSelectionDone(media: media, collection: collection);
+      await onSelectionDone(media: media, collection: collection);
+      widget.onDiscard(media);
     } else {
       FocusScope.of(context).unfocus();
-      TagsDialog.selectTags(
+      await TagsDialog.selectTags(
         context,
         onSelectionDone: (
           List<Tag> selectedTags,
