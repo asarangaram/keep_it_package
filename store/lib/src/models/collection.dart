@@ -1,56 +1,35 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
+import 'collection_base.dart';
 import 'tag.dart';
 
 @immutable
-class Collection {
-  final int? id;
-  final String label;
-  final String? description;
+class Collection extends CollectionBase {
   const Collection({
-    required this.label,
-    this.id,
-    this.description,
+    required super.label,
+    super.id,
+    super.description,
+    super.createdDate,
+    super.updatedDate,
   });
+  Collection.fromBase(CollectionBase base)
+      : super(
+          label: base.label,
+          id: base.id,
+          description: base.description,
+          createdDate: base.createdDate,
+          updatedDate: base.updatedDate,
+        );
 
-  factory Collection.fromMap(Map<String, dynamic> map) {
-    return Collection(
-      id: map['id'] != null ? map['id'] as int : null,
-      label: map['label'] as String,
-      description:
-          map['description'] != null ? map['description'] as String : null,
-    );
-  }
+  factory Collection.fromMap(Map<String, dynamic> map) =>
+      Collection.fromBase(CollectionBase.fromMap(map));
 
-  Collection copyWith({
-    int? id,
-    String? label,
-    String? description,
-  }) {
-    return Collection(
-      id: id ?? this.id,
-      label: label ?? this.label,
-      description: description ?? this.description,
-    );
-  }
-
-  @override
-  String toString() =>
-      'Collection(id: $id, label: $label, description: $description)';
-
-  @override
-  bool operator ==(covariant Collection other) {
-    if (identical(this, other)) return true;
-
-    return other.id == id &&
-        other.label == label &&
-        other.description == description;
-  }
-
-  @override
-  int get hashCode => id.hashCode ^ label.hashCode ^ description.hashCode;
+  factory Collection.fromJson(String source) =>
+      Collection.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 class Collections {

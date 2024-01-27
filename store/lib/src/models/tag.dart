@@ -1,55 +1,35 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../local_data/suggested_tags.dart';
+import 'collection_base.dart';
 
 @immutable
-class Tag {
-  final int? id;
-  final String label;
-  final String? description;
+class Tag extends CollectionBase {
   const Tag({
-    required this.label,
-    this.id,
-    this.description,
+    required super.label,
+    super.id,
+    super.description,
+    super.createdDate,
+    super.updatedDate,
   });
+  Tag.fromBase(CollectionBase base)
+      : super(
+          label: base.label,
+          id: base.id,
+          description: base.description,
+          createdDate: base.createdDate,
+          updatedDate: base.updatedDate,
+        );
 
-  factory Tag.fromMap(Map<String, dynamic> map) {
-    return Tag(
-      id: map['id'] != null ? map['id'] as int : null,
-      label: map['label'] as String,
-      description:
-          map['description'] != null ? map['description'] as String : null,
-    );
-  }
+  factory Tag.fromMap(Map<String, dynamic> map) =>
+      Tag.fromBase(CollectionBase.fromMap(map));
 
-  Tag copyWith({
-    int? id,
-    String? label,
-    String? description,
-  }) {
-    return Tag(
-      id: id ?? this.id,
-      label: label ?? this.label,
-      description: description ?? this.description,
-    );
-  }
-
-  @override
-  String toString() => 'Tag(id: $id, label: $label, description: $description)';
-
-  @override
-  bool operator ==(covariant Tag other) {
-    if (identical(this, other)) return true;
-
-    return other.id == id &&
-        other.label == label &&
-        other.description == description;
-  }
-
-  @override
-  int get hashCode => id.hashCode ^ label.hashCode ^ description.hashCode;
+  factory Tag.fromJson(String source) =>
+      Tag.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 class Tags {
