@@ -2,6 +2,7 @@
 library store;
 
 export 'src/extensions/item.dart' show ExtItemInDB;
+export 'src/local_data/suggested_tags.dart' show suggestedTags;
 export 'src/models/collection.dart' show Collection, Collections;
 export 'src/models/db_queries.dart' show DBQueries;
 export 'src/models/item.dart' show Item, ItemInDB, Items;

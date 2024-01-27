@@ -37,10 +37,9 @@ class _TagsView extends ConsumerStatefulWidget {
 }
 
 class _TagsViewState extends ConsumerState<_TagsView> {
+  final availableSuggestions = Tags(suggestedTags);
   @override
   Widget build(BuildContext context) {
-    final availableSuggestions = widget.tags.getSuggestions;
-
     final menuItems = [
       [
         CLMenuItem(
@@ -77,7 +76,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
       title: 'Tags',
       actionsBuilder: [
         (context, quickMenuScopeKey) {
-          if (availableSuggestions.isEmpty) {
+          if (availableSuggestions.entries.isEmpty) {
             return CLButtonIcon.standard(
               Icons.add,
               onTap: () => TagsDialog.newTag(context),
