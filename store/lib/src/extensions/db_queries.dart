@@ -17,7 +17,7 @@ extension ExtDBQuery on DBQueries {
       JOIN Collection ON Item.collection_id = Collection.id
       JOIN TagCollection ON Collection.id = TagCollection.collection_id
       WHERE TagCollection.tag_id = $tagID
-      ORDER BY Item.UPDATED_DATE DESC
+      ORDER BY Item.updatedDate DESC
     ''',
     );
 

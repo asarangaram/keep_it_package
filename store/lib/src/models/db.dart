@@ -68,7 +68,7 @@ class DatabaseManager {
     ''')
       ..execute('''
       CREATE TRIGGER IF NOT EXISTS update_dates_on_item
-        AFTER UPDATE ON Collection
+        AFTER UPDATE ON Item
         BEGIN
             UPDATE Item
             SET updatedDate = CURRENT_TIMESTAMP
