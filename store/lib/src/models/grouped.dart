@@ -12,6 +12,7 @@ class Grouped<GroupType, RefType> {
   final RefType? referrer;
   final int? lastupdatedID;
 
+  //Similar to CopyWith, but to force lastupdatedID as null
   Grouped<GroupType, RefType> clearLastUpdated() {
     return Grouped(
       entries: entries,
