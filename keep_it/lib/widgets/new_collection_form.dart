@@ -239,19 +239,6 @@ class GetLabel extends StatefulWidget {
 }
 
 class _GetLabelState extends State<GetLabel> {
-  void _listener() {
-    /* if (widget.focusNode?.hasFocus ?? false) {
-      if (!(widget.controller?.isOpen ?? false)) {
-        widget.controller?.openView();
-      }
-    } else {
-      if (widget.controller?.isOpen ?? false) {
-        widget.controller?.closeView(null);
-      }
-    } */
-    print('focus node lisnter');
-  }
-
   @override
   void initState() {
     if (!(widget.focusNode?.hasFocus ?? false)) {
@@ -263,7 +250,6 @@ class _GetLabelState extends State<GetLabel> {
 
   @override
   void dispose() {
-    widget.focusNode?.removeListener(_listener);
     super.dispose();
   }
 

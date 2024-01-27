@@ -2,13 +2,9 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:store/store.dart';
 
 import '../widgets/from_store/load_tags.dart';
 import '../widgets/new_collection_form.dart';
-import '../widgets/save_or_cancel.dart';
-import '../widgets/tags_dialogs.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -178,6 +174,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
 }
 
 bool _disableInfoLogger = false;
+// ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);

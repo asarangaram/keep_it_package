@@ -32,8 +32,8 @@ class Grouped<GroupType, RefType> {
   }
 
   @override
-  String toString() =>
-      'Grouped(entries: $entries, ref: $referrer, lastupdatedID: $lastupdatedID)';
+  String toString() => 'Grouped(entries: $entries, ref: $referrer,'
+      ' lastupdatedID: $lastupdatedID)';
 
   @override
   bool operator ==(covariant Grouped<GroupType, RefType> other) {
