@@ -1,52 +1,88 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:flutter/material.dart';
 
 import 'tag.dart';
 
 @immutable
 class Collection {
+  final int? id;
+  final String label;
+  final String? description;
   const Collection({
-    required this.description,
+    required this.label,
     this.id,
+    this.description,
   });
 
   factory Collection.fromMap(Map<String, dynamic> map) {
     return Collection(
-      id: map['id'] as int?,
-      description: map['description'] as String,
+      id: map['id'] != null ? map['id'] as int : null,
+      label: map['label'] as String,
+      description:
+          map['description'] != null ? map['description'] as String : null,
     );
   }
-  final int? id;
-  final String description;
+
+  Collection copyWith({
+    int? id,
+    String? label,
+    String? description,
+  }) {
+    return Collection(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      description: description ?? this.description,
+    );
+  }
 
   @override
-  String toString() => 'Collection(id: $id, description: $description)';
+  String toString() =>
+      'Collection(id: $id, label: $label, description: $description)';
 
   @override
   bool operator ==(covariant Collection other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.description == description;
+    return other.id == id &&
+        other.label == label &&
+        other.description == description;
   }
 
   @override
-  int get hashCode => id.hashCode ^ description.hashCode;
-
-  Collection copyWith({
-    int? id,
-    String? description,
-  }) {
-    return Collection(
-      id: id ?? this.id,
-      description: description ?? this.description,
-    );
-  }
+  int get hashCode => id.hashCode ^ label.hashCode ^ description.hashCode;
 }
 
 class Collections {
-  Collections(this.entries, {this.tag});
   final List<Collection> entries;
   final Tag? tag;
+  final int? lastupdatedID;
+  Collections(this.entries, {this.lastupdatedID, this.tag});
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
+
+  Collections copyWith({
+    List<Collection>? entries,
+    int? lastupdatedID,
+    Tag? tag,
+  }) {
+    return Collections(
+      entries ?? this.entries,
+      lastupdatedID: lastupdatedID ?? this.lastupdatedID,
+      tag: tag ?? this.tag,
+    );
+  }
+
+  Collections clearLastUpdated() {
+    return Collections(entries);
+  }
+
+  /* Collections get getSuggestions {
+    return Collections(
+      suggestedCollections.where((element) {
+        return !entries.map((e) => e.label).contains(element.label);
+      }).toList(),
+    );
+  } */
 }

@@ -40,7 +40,7 @@ class DatabaseManager {
       CREATE TABLE IF NOT EXISTS Collection (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         description TEXT,
-        text TEXT
+        label TEXT NOT NULL UNIQUE,
         CREATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP,
         UPDATED_DATE DATETIME DEFAULT CURRENT_TIMESTAMP
       )
