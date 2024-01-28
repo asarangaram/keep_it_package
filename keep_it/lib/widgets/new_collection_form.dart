@@ -121,7 +121,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        LabelViewer(label: collection!.label),
+        LabelViewer(label: 'Collection: ${collection!.label}'),
         Flexible(
           child: TagSelector(
             onDone: (selectedTags) {},
@@ -136,37 +136,41 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
     required void Function() onNext,
     required void Function() onPrevious,
   }) {
-    return WizardItem(
-      child: CreateOrSelect(
-        suggestedCollections: widget.suggestedCollections,
-        controller: labelController,
-        focusNode: labelNode,
-        onDone: (CollectionBase collection) async {
-          setState(() {
-            onEditLabel = false;
-            this.collection = collection;
-            descriptionController.text = collection.description ?? '';
-          });
-          labelNode.unfocus();
+    return Align(
+      child: SizedBox(
+        height: kMinInteractiveDimension * 2,
+        child: WizardItem(
+          child: CreateOrSelect(
+            suggestedCollections: widget.suggestedCollections,
+            controller: labelController,
+            onDone: (CollectionBase collection) async {
+              setState(() {
+                onEditLabel = false;
+                this.collection = collection;
+                descriptionController.text = collection.description ?? '';
+              });
+              labelNode.unfocus();
 
-          onNext();
-        },
-        anchorBuilder: (
-          BuildContext context,
-          SearchController controller, {
-          required void Function(CollectionBase) onDone,
-        }) {
-          return CLSearchBarWrap(
-            controller: controller,
-            focusNode: descriptionNode,
-            onDone: (val) {
-              final c = widget.suggestedCollections
-                  .where((element) => element.label == val)
-                  .firstOrNull;
-              onDone(c ?? CollectionBase(label: val));
+              onNext();
             },
-          );
-        },
+            anchorBuilder: (
+              BuildContext context,
+              SearchController controller, {
+              required void Function(CollectionBase) onDone,
+            }) {
+              return CLSearchBarWrap(
+                controller: controller,
+                focusNode: labelNode,
+                onDone: (val) {
+                  final c = widget.suggestedCollections
+                      .where((element) => element.label == val)
+                      .firstOrNull;
+                  onDone(c ?? CollectionBase(label: val));
+                },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -198,31 +202,36 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
               return null;
             },
           );
-    return Column(
-      children: [
-        LabelViewer(
-          label: collection?.label ?? '',
-          icon: MdiIcons.pencil,
-          onTap: () {
-            setState(() {
-              onEditLabel = true;
-            });
-            descriptionNode.unfocus();
-            onPrevious?.call();
-          },
-        ),
-        Flexible(
-          child: WizardItem(
-            action: menuItem,
-            child: DescriptionEditor(
-              collection!,
-              controller: descriptionController,
-              focusNode: descriptionNode,
-              enabled: widget.allowUpdateDescription,
+    return Center(
+      child: SizedBox(
+        height: kMinInteractiveDimension * 4,
+        child: Column(
+          children: [
+            LabelViewer(
+              label: 'Collection: ${collection!.label}',
+              icon: MdiIcons.pencil,
+              onTap: () {
+                setState(() {
+                  onEditLabel = true;
+                });
+                descriptionNode.unfocus();
+                onPrevious?.call();
+              },
             ),
-          ),
+            Flexible(
+              child: WizardItem(
+                action: menuItem,
+                child: DescriptionEditor(
+                  collection!,
+                  controller: descriptionController,
+                  focusNode: descriptionNode,
+                  enabled: widget.allowUpdateDescription,
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

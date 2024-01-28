@@ -26,17 +26,12 @@ class _DescriptionEditorState extends State<DescriptionEditor> {
   @override
   void initState() {
     enabled = widget.controller.text.isEmpty && widget.enabled;
-    if (enabled) {
-      widget.focusNode.requestFocus();
-    } else {
-      FocusManager.instance.primaryFocus?.unfocus();
-    }
+
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.focusNode.unfocus();
     super.dispose();
   }
 

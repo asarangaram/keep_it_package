@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-class CLSearchBarWrap extends StatelessWidget {
+class CLSearchBarWrap extends StatefulWidget {
   const CLSearchBarWrap({
     required this.controller,
     required this.onDone,
@@ -14,21 +14,38 @@ class CLSearchBarWrap extends StatelessWidget {
   final void Function(String val) onDone;
 
   @override
+  State<CLSearchBarWrap> createState() => _CLSearchBarWrapState();
+}
+
+class _CLSearchBarWrapState extends State<CLSearchBarWrap> {
+  @override
+  void initState() {
+    widget.focusNode?.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode?.unfocus();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SearchBar(
-      focusNode: focusNode,
-      controller: controller,
+      focusNode: widget.focusNode,
+      controller: widget.controller,
       padding: const MaterialStatePropertyAll<EdgeInsets>(
         EdgeInsets.symmetric(horizontal: 16),
       ),
-      onTap: controller.openView,
+      onTap: widget.controller.openView,
       onChanged: (_) {
-        controller.openView();
+        widget.controller.openView();
       },
       onSubmitted: (val) {
         if (val.isNotEmpty) {
-          focusNode?.unfocus();
-          onDone(val);
+          widget.focusNode?.unfocus();
+          widget.onDone(val);
         }
       },
       leading: const CLIcon.small(Icons.search),
