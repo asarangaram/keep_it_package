@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../extensions/ext_double.dart';
+import '../utils/media/cl_dimension.dart';
 import '../widgets/flexibile_optional.dart';
+import 'cl_matrix_2d_fixed.dart';
 import 'compute_size_and_build.dart';
 
 class CLMatrix2DScrollable extends StatelessWidget {
@@ -150,5 +153,74 @@ class CLMatrix2DScrollable2 extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class CLMatrix2DAutoFit extends StatelessWidget {
+  const CLMatrix2DAutoFit({
+    required this.childSize,
+    required this.itemCount,
+    required this.itemBuilder,
+    super.key,
+    this.layers = 1,
+    this.visibleItem,
+    this.maxPageDimension = const CLDimension(itemsInRow: 6, itemsInColumn: 6),
+  });
+
+  final Size childSize;
+
+  final int itemCount;
+  final Widget Function(BuildContext, int) itemBuilder;
+  final int layers;
+  final int? visibleItem;
+  final CLDimension maxPageDimension;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, BoxConstraints constraints) {
+        final pageMatrix = computePageMatrix(
+          pageSize: Size(
+            constraints.maxWidth,
+            constraints.maxHeight,
+          ),
+          itemSize: childSize,
+        );
+
+        return Matrix2DNew.scrollable(
+          hCount: pageMatrix.itemsInRow,
+          itemCount: itemCount,
+          itemBuilder: itemBuilder,
+        );
+      },
+    );
+  }
+
+  CLDimension computePageMatrix({
+    required Size pageSize,
+    required Size itemSize,
+  }) {
+    if (pageSize.width == double.infinity) {
+      throw Exception("Width is unbounded, can't handle");
+    }
+    if (pageSize.height == double.infinity) {
+      throw Exception("Width is unbounded, can't handle");
+    }
+    final itemsInRow = min(
+      maxPageDimension.itemsInRow,
+      max(
+        1,
+        ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor(),
+      ),
+    );
+    final itemsInColumn = min(
+      maxPageDimension.itemsInColumn,
+      max(
+        1,
+        ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor(),
+      ),
+    );
+
+    return CLDimension(itemsInRow: itemsInRow, itemsInColumn: itemsInColumn);
   }
 }

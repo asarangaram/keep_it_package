@@ -34,11 +34,29 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: SizedBox(
+                            height: 32 + 20,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 8,
+                                right: 16,
+                                bottom: 8,
+                              ),
+                              child: CLButtonIcon.small(
+                                Icons.close,
+                                onTap: () {
+                                  widget.onDiscard(media);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
                         Flexible(
                           child: CLMediaGridViewFixed(
                             mediaList: media.list,
                             hCount: switch (media.list.length) {
-                              < 2 => 1,
                               < 4 => 2,
                               _ => 3,
                             },

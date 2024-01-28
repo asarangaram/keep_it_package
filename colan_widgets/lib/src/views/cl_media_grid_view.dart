@@ -1,8 +1,5 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
-import '../utils/media/cl_media.dart';
-import 'cl_matrix_2d_fixed.dart';
-import 'cl_media_view.dart';
 
 class CLMediaGridViewFixed extends StatelessWidget {
   const CLMediaGridViewFixed({
@@ -33,7 +30,8 @@ class CLMediaGridViewFixed extends StatelessWidget {
     }
     return CLGridItemSquare(
       borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
-      child: Matrix2DNew(
+      child: CLMatrix2DAutoFit(
+        childSize: const Size(200, 200),
         itemBuilder: (BuildContext context, int index) {
           return CLGridItemSquare(
             borderRadius: BorderRadius.circular(0),
@@ -43,8 +41,6 @@ class CLMediaGridViewFixed extends StatelessWidget {
             ),
           );
         },
-        hCount: hCount,
-        vCount: vCount!,
         itemCount: mediaList.length,
       ),
     );

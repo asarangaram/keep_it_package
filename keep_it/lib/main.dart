@@ -27,7 +27,7 @@ class KeepItApp implements AppDescriptor {
         // TODO(asarangaram): Delete only if saved preference is set to reset.
 
         // ignore: dead_code, literal_only_boolean_expressions
-        if (true) {
+        if (false) {
           final appDir = await getApplicationDocumentsDirectory();
           final fullPath = path.join(appDir.path, 'keepIt.db');
           if (File(fullPath).existsSync()) {
