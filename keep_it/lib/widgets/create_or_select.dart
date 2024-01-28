@@ -76,6 +76,7 @@ class CreateOrSelectState extends State<CreateOrSelect> {
         availableSuggestions.map((c) {
           return ListTile(
             title: Text(c.label),
+            subtitle: c.description == null ? null : Text(c.description!),
             onTap: () {
               setState(() {
                 widget.focusNode?.unfocus();
@@ -87,24 +88,29 @@ class CreateOrSelectState extends State<CreateOrSelect> {
         }),
       );
     }
+    if (controller.text.isNotEmpty) {
+      final c = widget.suggestedCollections
+          ?.where((element) => element.label == controller.text)
+          .firstOrNull;
 
-    if (list.isEmpty && controller.text.isNotEmpty) {
-      list.add(
-        ListTile(
-          title: Text('Create "${controller.text}"'),
-          onTap: () {
-            if (controller.text.isNotEmpty) {
-              controller.closeView(controller.text);
+      if (c == null) {
+        list.add(
+          ListTile(
+            title: Text('Create "${controller.text}"'),
+            onTap: () {
+              if (controller.text.isNotEmpty) {
+                controller.closeView(controller.text);
 
-              widget.focusNode?.unfocus();
-              final c = widget.suggestedCollections
-                  ?.where((element) => element.label == controller.text)
-                  .firstOrNull;
-              widget.onDone(c ?? CollectionBase(label: controller.text));
-            }
-          },
-        ),
-      );
+                widget.focusNode?.unfocus();
+                final c = widget.suggestedCollections
+                    ?.where((element) => element.label == controller.text)
+                    .firstOrNull;
+                widget.onDone(c ?? CollectionBase(label: controller.text));
+              }
+            },
+          ),
+        );
+      }
     }
     return list
       ..add(

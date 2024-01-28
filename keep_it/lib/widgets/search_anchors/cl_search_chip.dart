@@ -6,17 +6,21 @@ class SearchAnchorChip extends StatelessWidget {
     required this.onDone,
     super.key,
     this.focusNode,
+    this.label,
+    this.avatar,
   });
 
   final SearchController controller;
   final FocusNode? focusNode;
   final void Function(String val) onDone;
+  final Icon? avatar;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
     return ActionChip(
-      //avatar: Icon(MdiIcons.plus),
-      label: const Text('Add Tag'),
+      avatar: avatar,
+      label: Text(label ?? 'Label'),
       onPressed: controller.openView,
     );
   }

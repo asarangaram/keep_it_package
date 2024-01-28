@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/widgets/from_store/from_store.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
@@ -8,13 +9,15 @@ import 'app_theme.dart';
 import 'create_or_select.dart';
 import 'search_anchors/cl_search_chip.dart';
 import 'search_anchors/cl_searchbar.dart';
+import 'tag_selector.dart';
+import 'wizard_item.dart';
 
 extension EXTListindex<T> on List<T> {
   int? previous(int index) {
     return switch (index) {
       (final int val) when val <= 0 => null,
       (final int val) when val >= length => null,
-      _ => index + 1
+      _ => index - 1
     };
   }
 
@@ -90,7 +93,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = <PageBuilder>[page0, page1];
+    final pages = <PageBuilder>[page0, page1, page2];
     return UpsertCollectionFormTheme(
       child: PageView.builder(
         physics: const NeverScrollableScrollPhysics(),
@@ -112,7 +115,17 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
     required void Function() onNext,
     required void Function() onPrevious,
   }) {
-    return const Center(child: Text('Select Tags'));
+    if (collection == null) {
+      return const Text('Error in previous page');
+    }
+    return Column(
+      children: [
+        ShowLabel(
+          menuItem: CLMenuItem(title: collection!.label, icon: Icons.abc),
+        ),
+        const Flexible(child: TagSelector()),
+      ],
+    );
   }
 
   Widget page0(
@@ -159,7 +172,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
     void Function()? onNext,
   }) {
     if (onEditLabel || collection == null) {
-      const Text('Error in previous page');
+      return const Text('Error in previous page');
     }
     final menuItem = (collection!.id == null)
         ? CLMenuItem(
@@ -205,63 +218,6 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class WizardItem extends StatelessWidget {
-  const WizardItem({
-    required this.child,
-    required this.action,
-    super.key,
-  });
-  final Widget child;
-  final CLMenuItem action;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        children: [
-          Flexible(
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(),
-                  left: BorderSide(),
-                  bottom: BorderSide(),
-                ),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
-                ),
-              ),
-              child: child,
-            ),
-          ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurface,
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
-            ),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: CLButtonIconLabelled.large(
-                  action.icon,
-                  action.title,
-                  onTap: action.onTap,
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -334,10 +290,14 @@ class _DescriptionEditorState extends ConsumerState<DescriptionEditor> {
 class ShowLabel extends StatelessWidget {
   const ShowLabel({
     required this.menuItem,
+    this.prefix,
+    this.suffix,
     super.key,
   });
 
   final CLMenuItem menuItem;
+  final String? prefix;
+  final String? suffix;
 
   @override
   Widget build(BuildContext context) {
