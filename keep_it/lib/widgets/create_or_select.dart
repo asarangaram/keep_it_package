@@ -1,10 +1,11 @@
-import 'package:colan_widgets/colan_widgets.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 class CreateOrSelect extends StatefulWidget {
   const CreateOrSelect({
     required this.onDone,
+    required this.anchorBuilder,
     this.suggestedCollections,
     this.controller,
     this.focusNode,
@@ -15,6 +16,10 @@ class CreateOrSelect extends StatefulWidget {
   final void Function(CollectionBase item) onDone;
   final SearchController? controller;
   final FocusNode? focusNode;
+  final Widget Function(
+    BuildContext context,
+    SearchController controller,
+  ) anchorBuilder;
 
   @override
   State<CreateOrSelect> createState() => CreateOrSelectState();
@@ -43,110 +48,71 @@ class CreateOrSelectState extends State<CreateOrSelect> {
           searchController: widget.controller,
           isFullScreen: false,
           viewBackgroundColor: Theme.of(context).colorScheme.surface,
-          dividerColor: Colors.blue,
-          headerTextStyle: const TextStyle(color: Colors.blue),
-          headerHintStyle: const TextStyle(color: Colors.blue),
-          builder: (
-            BuildContext context,
-            SearchController controller,
-          ) {
-            return SearchBar(
-              focusNode: widget.focusNode,
-              controller: controller,
-              padding: const MaterialStatePropertyAll<EdgeInsets>(
-                EdgeInsets.symmetric(horizontal: 16),
-              ),
-              onTap: () {
-                controller.openView();
-              },
-              onChanged: (_) {
-                controller.openView();
-              },
-              onSubmitted: (val) {
-                if (val.isNotEmpty) {
-                  widget.focusNode?.unfocus();
-                  final c = widget.suggestedCollections
-                      ?.where((element) => element.label == val)
-                      .firstOrNull;
-                  widget.onDone(c ?? CollectionBase(label: val));
-                }
-              },
-              leading: const CLIcon.small(Icons.search),
-              hintText: 'Collection Name',
-            );
-          },
+          builder: widget.anchorBuilder,
           viewHintText: 'Enter Collection Name',
-          suggestionsBuilder: (
-            BuildContext context,
-            SearchController controller,
-          ) {
-            final list = <Widget>[];
-            if (widget.suggestedCollections != null) {
-              final List<CollectionBase> availableSuggestions;
-              if (controller.text.isEmpty) {
-                availableSuggestions = widget.suggestedCollections!;
-              } else {
-                availableSuggestions = widget.suggestedCollections!
-                    .where(
-                      (element) => element.label.contains(controller.text),
-                    )
-                    .toList();
-              }
-              list.addAll(
-                availableSuggestions.map((e) {
-                  return ListTile(
-                    title: Text(e.label),
-                    onTap: () {
-                      setState(() {
-                        widget.focusNode?.unfocus();
-                        controller.closeView(e.label);
-                      });
-                      widget.onDone(e);
-                    },
-                  );
-                }),
-              );
-            }
-            /* final list = suggestedCollections.where(
-              (element) {
-                if (controller.text.isEmpty) return true;
-                return element.toLowerCase().contains(
-                      controller.text.toLowerCase(),
-                    );
-              },
-            ).map((e) {
-              
-            }).toList(); */
-            if (list.isEmpty && controller.text.isNotEmpty) {
-              list.add(
-                ListTile(
-                  title: Text('Create "${controller.text}"'),
-                  onTap: () {
-                    if (controller.text.isNotEmpty) {
-                      controller.closeView(controller.text);
-
-                      widget.focusNode?.unfocus();
-                      final c = widget.suggestedCollections
-                          ?.where((element) => element.label == controller.text)
-                          .firstOrNull;
-                      widget
-                          .onDone(c ?? CollectionBase(label: controller.text));
-                    }
-                  },
-                ),
-              );
-            }
-            return list
-              ..add(
-                ListTile(
-                  title: SizedBox(
-                    height: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                ),
-              );
-          },
+          suggestionsBuilder: suggestionsBuilder,
         ),
       ),
     );
+  }
+
+  FutureOr<Iterable<Widget>> suggestionsBuilder(
+    BuildContext context,
+    SearchController controller,
+  ) {
+    final list = <Widget>[];
+    if (widget.suggestedCollections != null) {
+      final List<CollectionBase> availableSuggestions;
+      if (controller.text.isEmpty) {
+        availableSuggestions = widget.suggestedCollections!;
+      } else {
+        availableSuggestions = widget.suggestedCollections!
+            .where(
+              (element) => element.label.contains(controller.text),
+            )
+            .toList();
+      }
+      list.addAll(
+        availableSuggestions.map((c) {
+          return ListTile(
+            title: Text(c.label),
+            onTap: () {
+              setState(() {
+                widget.focusNode?.unfocus();
+                controller.closeView(c.label);
+              });
+              widget.onDone(c);
+            },
+          );
+        }),
+      );
+    }
+
+    if (list.isEmpty && controller.text.isNotEmpty) {
+      list.add(
+        ListTile(
+          title: Text('Create "${controller.text}"'),
+          onTap: () {
+            if (controller.text.isNotEmpty) {
+              controller.closeView(controller.text);
+
+              widget.focusNode?.unfocus();
+              final c = widget.suggestedCollections
+                  ?.where((element) => element.label == controller.text)
+                  .firstOrNull;
+              widget.onDone(c ?? CollectionBase(label: controller.text));
+            }
+          },
+        ),
+      );
+    }
+    return list
+      ..add(
+        ListTile(
+          title: SizedBox(
+            height: MediaQuery.of(context).viewInsets.bottom,
+          ),
+        ),
+      );
   }
 }
