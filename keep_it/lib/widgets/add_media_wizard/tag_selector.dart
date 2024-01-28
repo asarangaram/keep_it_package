@@ -5,6 +5,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:store/store.dart';
 
 import '../create_or_select.dart';
+import '../tags_dialogs.dart';
 import '../wizard_item.dart';
 
 class TagSelector extends StatefulWidget {
@@ -48,16 +49,18 @@ class _TagSelectorState extends State<TagSelector> {
   }
 
   Future<void> onDone(CollectionBase c) async {
-    setState(() {
-      if (c.id != null) {
-        //need to popup to create
-        selectedTags.add(Tag.fromBase(c));
-      } else {
-        selectedTags.add(
-          Tag.fromBase(c),
-        );
+    if (c.id == null) {
+      final tagWithId = await TagsDialog.updateTag(context, Tag.fromBase(c));
+      if (tagWithId == null) {
+        return;
       }
-
+      selectedTags.add(tagWithId);
+    } else {
+      selectedTags.add(
+        Tag.fromBase(c),
+      );
+    }
+    setState(() {
       controller.text = '';
     });
     Future.delayed(const Duration(milliseconds: 200), scrollToEnd);
@@ -70,7 +73,16 @@ class _TagSelectorState extends State<TagSelector> {
         return WizardItem(
           action: selectedTags.isEmpty
               ? null
-              : CLMenuItem(title: 'Save', icon: MdiIcons.floppy),
+              : CLMenuItem(
+                  title: 'Save',
+                  icon: MdiIcons.floppy,
+                  onTap: () async {
+                    if (selectedTags.isNotEmpty) {
+                      widget.onDone(selectedTags);
+                    }
+                    return selectedTags.isNotEmpty;
+                  },
+                ),
           child: SizedBox.expand(
             child: SingleChildScrollView(
               controller: scrollController,

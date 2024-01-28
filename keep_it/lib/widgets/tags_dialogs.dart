@@ -7,7 +7,7 @@ import 'from_store/from_store.dart';
 import 'tags_list.dart';
 
 class TagsDialog {
-  static Future<bool?> newTag(
+  static Future<Tag?> newTag(
     BuildContext context,
   ) {
     return _upsertTag(
@@ -15,26 +15,26 @@ class TagsDialog {
     );
   }
 
-  static Future<bool?> updateTag(
+  static Future<Tag?> updateTag(
     BuildContext context,
     Tag? tag,
   ) {
     return _upsertTag(context, tag: tag);
   }
 
-  static Future<bool?> _upsertTag(
+  static Future<Tag?> _upsertTag(
     BuildContext context, {
     Tag? tag,
     //  void Function()? onDone,
   }) async =>
-      showDialog<bool>(
+      showDialog<Tag>(
         context: context,
         builder: (BuildContext context) {
           return CLDialogWrapper(
-            onCancel: () => Navigator.of(context).pop(false),
+            onCancel: () => Navigator.of(context).pop(),
             child: UpsertTagForm(
               tag: tag,
-              onDone: () => Navigator.of(context).pop(true),
+              onDone: (Tag tag) => Navigator.of(context).pop(tag),
             ),
           );
         },

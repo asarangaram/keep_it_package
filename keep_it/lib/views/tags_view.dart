@@ -71,7 +71,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
         CLMenuItem(
           title: 'Create Tag',
           icon: Icons.new_label,
-          onTap: () async => TagsDialog.newTag(context),
+          onTap: () async => await TagsDialog.newTag(context) != null,
         ),
       ]
     ];
@@ -129,7 +129,8 @@ class _TagsViewState extends ConsumerState<_TagsView> {
               );
               return true;
             },
-            onEditTag: TagsDialog.updateTag,
+            onEditTag: (context, tag) async =>
+                await TagsDialog.updateTag(context, tag) != null,
             onDeleteTag: onDeleteTag,
           );
         }
@@ -143,7 +144,8 @@ class _TagsViewState extends ConsumerState<_TagsView> {
             );
             return true;
           },
-          onEditTag: TagsDialog.updateTag,
+          onEditTag: (context, tag) async =>
+              await TagsDialog.updateTag(context, tag) != null,
           onDeleteTag: onDeleteTag,
         );
       },

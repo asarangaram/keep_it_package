@@ -42,7 +42,7 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
     });
   }
 
-  void upsertTag(Tag tag) {
+  Tag upsertTag(Tag tag) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
@@ -50,6 +50,9 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
     final lastupdatedID = tag.upsert(databaseManager!.db);
 
     loadTags(lastupdatedID: lastupdatedID);
+    final tagWithID = TagDB.getById(databaseManager!.db, lastupdatedID);
+    print(tagWithID);
+    return tagWithID;
   }
 
   void upsertTags(List<Tag> tags) {

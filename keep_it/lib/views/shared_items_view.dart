@@ -8,7 +8,6 @@ import 'package:store/store.dart';
 import '../widgets/from_store/load_collections.dart';
 import '../widgets/from_store/load_tags.dart';
 import '../widgets/new_collection_form.dart';
-import '../widgets/tags_dialogs.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -57,11 +56,18 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                             buildOnData: (collections) {
                               return PickCollectionBase(
                                 suggestedCollections: collections.entries,
-                                onDone: (c) {
-                                  onSave(
+                                onDone: ({
+                                  required CollectionBase collection,
+                                  List<CollectionBase>? selectedTags,
+                                }) async {
+                                  await onSelectionDone(
                                     media: media,
-                                    collection: Collection.fromBase(c),
+                                    collection: Collection.fromBase(collection),
+                                    saveIntoTagsId: selectedTags
+                                        ?.map((e) => e.id!)
+                                        .toList(),
                                   );
+                                  widget.onDiscard(media);
                                 },
                               );
                             },
@@ -83,7 +89,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
     );
   }
 
-  Future<void> onSave({
+  /* Future<void> onSave({
     required CLMediaInfoGroup media,
     required Collection collection,
   }) async {
@@ -113,7 +119,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
         labelSelected: 'Save',
       );
     }
-  }
+  } */
 
   Future<void> onSelectionDone({
     required CLMediaInfoGroup media,

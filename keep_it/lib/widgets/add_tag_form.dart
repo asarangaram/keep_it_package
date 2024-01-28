@@ -10,7 +10,7 @@ class UpsertTagForm extends ConsumerWidget {
   const UpsertTagForm({super.key, this.tag, this.onDone});
 
   final Tag? tag;
-  final void Function()? onDone;
+  final void Function(Tag tag)? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,18 +48,18 @@ class UpsertTagForm extends ConsumerWidget {
                 values[1].trim().isEmpty ? null : values[1].trim();
 
             try {
-              ref.read(tagsProvider(null).notifier).upsertTag(
+              final tagWithID = ref.read(tagsProvider(null).notifier).upsertTag(
                     Tag(
                       id: tag?.id,
                       label: label.trim(),
                       description: description,
                     ),
                   );
+              onDone?.call(tagWithID);
             } catch (e) {
-              return e.toString();
+              return null;
             }
 
-            onDone?.call();
             return null;
           },
         ),
