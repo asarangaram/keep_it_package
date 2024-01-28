@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import 'add_media_wizard/description_editor.dart';
+import 'add_media_wizard/label_viewer.dart';
 import 'app_theme.dart';
 import 'create_or_select.dart';
 import 'search_anchors/cl_searchbar.dart';
-import 'tag_selector.dart';
+import 'add_media_wizard/tag_selector.dart';
 import 'wizard_item.dart';
 
 extension EXTListindex<T> on List<T> {
@@ -117,11 +119,14 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
       return const Text('Error in previous page');
     }
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        ShowLabel(
-          menuItem: CLMenuItem(title: collection!.label, icon: Icons.abc),
+        LabelViewer(label: collection!.label),
+        Flexible(
+          child: TagSelector(
+            onDone: (selectedTags) {},
+          ),
         ),
-        const Flexible(child: TagSelector()),
       ],
     );
   }
@@ -131,36 +136,38 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
     required void Function() onNext,
     required void Function() onPrevious,
   }) {
-    void onDone(CollectionBase collection) {
-      setState(() {
-        onEditLabel = false;
-        this.collection = collection;
-        descriptionController.text = collection.description ?? '';
-      });
+    return WizardItem(
+      child: CreateOrSelect(
+        suggestedCollections: widget.suggestedCollections,
+        controller: labelController,
+        focusNode: labelNode,
+        onDone: (CollectionBase collection) async {
+          setState(() {
+            onEditLabel = false;
+            this.collection = collection;
+            descriptionController.text = collection.description ?? '';
+          });
+          labelNode.unfocus();
 
-      onNext();
-    }
-
-    return CreateOrSelect(
-      suggestedCollections: widget.suggestedCollections,
-      controller: labelController,
-      focusNode: labelNode,
-      onDone: onDone,
-      anchorBuilder: (
-        BuildContext context,
-        SearchController searchController,
-      ) {
-        return CLSearchBarWrap(
-          controller: searchController,
-          focusNode: descriptionNode,
-          onDone: (val) {
-            final c = widget.suggestedCollections
-                .where((element) => element.label == val)
-                .firstOrNull;
-            onDone(c ?? CollectionBase(label: val));
-          },
-        );
-      },
+          onNext();
+        },
+        anchorBuilder: (
+          BuildContext context,
+          SearchController controller, {
+          required void Function(CollectionBase) onDone,
+        }) {
+          return CLSearchBarWrap(
+            controller: controller,
+            focusNode: descriptionNode,
+            onDone: (val) {
+              final c = widget.suggestedCollections
+                  .where((element) => element.label == val)
+                  .firstOrNull;
+              onDone(c ?? CollectionBase(label: val));
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -177,6 +184,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
             title: 'Select Tags',
             icon: MdiIcons.arrowRight,
             onTap: () async {
+              descriptionNode.unfocus();
               onNext?.call();
               return null;
             },
@@ -185,24 +193,23 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
             title: 'Save',
             icon: MdiIcons.floppyVariant,
             onTap: () async {
+              descriptionNode.unfocus();
               widget.onDone(collection!);
               return null;
             },
           );
     return Column(
       children: [
-        ShowLabel(
-          menuItem: CLMenuItem(
-            title: collection?.label ?? '',
-            icon: MdiIcons.pencil,
-            onTap: () async {
-              setState(() {
-                onEditLabel = true;
-              });
-              onPrevious?.call();
-              return null;
-            },
-          ),
+        LabelViewer(
+          label: collection?.label ?? '',
+          icon: MdiIcons.pencil,
+          onTap: () {
+            setState(() {
+              onEditLabel = true;
+            });
+            descriptionNode.unfocus();
+            onPrevious?.call();
+          },
         ),
         Flexible(
           child: WizardItem(
@@ -216,114 +223,6 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class DescriptionEditor extends ConsumerStatefulWidget {
-  const DescriptionEditor(
-    this.item, {
-    required this.controller,
-    required this.focusNode,
-    required this.enabled,
-    super.key,
-  });
-  final CollectionBase item;
-  final TextEditingController controller;
-  final FocusNode focusNode;
-
-  final bool enabled;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _DescriptionEditorState();
-}
-
-class _DescriptionEditorState extends ConsumerState<DescriptionEditor> {
-  late bool enabled;
-  @override
-  void initState() {
-    enabled = widget.controller.text.isEmpty && widget.enabled;
-    if (enabled) {
-      widget.focusNode.requestFocus();
-    } else {
-      FocusManager.instance.primaryFocus?.unfocus();
-    }
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.unfocus();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.enabled && enabled && !widget.focusNode.hasFocus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.focusNode.requestFocus();
-      });
-    }
-    return GestureDetector(
-      onTap: widget.enabled && !enabled
-          ? () async {
-              setState(() {
-                enabled = true;
-              });
-            }
-          : null,
-      child: CLTextField.multiLine(
-        widget.controller,
-        focusNode: widget.focusNode,
-        hint: 'What is the best thing,'
-            ' you can say about this?',
-        maxLines: 5,
-        enabled: enabled,
-      ),
-    );
-  }
-}
-
-class ShowLabel extends StatelessWidget {
-  const ShowLabel({
-    required this.menuItem,
-    this.prefix,
-    this.suffix,
-    super.key,
-  });
-
-  final CLMenuItem menuItem;
-  final String? prefix;
-  final String? suffix;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: menuItem.onTap,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            menuItem.title,
-            style: TextStyle(
-              fontSize: CLScaleType.large.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if (menuItem.onTap != null) ...[
-            const SizedBox(
-              width: 8,
-            ),
-            Transform.translate(
-              offset: const Offset(0, -4),
-              child: CLIcon.verySmall(
-                menuItem.icon,
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }

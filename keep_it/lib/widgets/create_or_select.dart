@@ -18,8 +18,9 @@ class CreateOrSelect extends StatefulWidget {
   final FocusNode? focusNode;
   final Widget Function(
     BuildContext context,
-    SearchController controller,
-  ) anchorBuilder;
+    SearchController controller, {
+    required void Function(CollectionBase) onDone,
+  }) anchorBuilder;
 
   @override
   State<CreateOrSelect> createState() => CreateOrSelectState();
@@ -41,18 +42,20 @@ class CreateOrSelectState extends State<CreateOrSelect> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: SearchAnchor(
-          searchController: widget.controller,
-          isFullScreen: false,
-          viewBackgroundColor: Theme.of(context).colorScheme.surface,
-          builder: widget.anchorBuilder,
-          viewHintText: 'Enter Collection Name',
-          suggestionsBuilder: suggestionsBuilder,
-        ),
-      ),
+    
+    return SearchAnchor(
+      searchController: widget.controller,
+      isFullScreen: false,
+      viewBackgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (context, controller) {
+        return widget.anchorBuilder(
+          context,
+          controller,
+          onDone: widget.onDone,
+        );
+      },
+      viewHintText: 'Enter Collection Name',
+      suggestionsBuilder: suggestionsBuilder,
     );
   }
 

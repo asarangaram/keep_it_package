@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,6 +30,7 @@ class UpsertCollectionFormTheme extends ConsumerWidget {
     final color = MaterialStateProperty.all(
       const Color.fromARGB(0, 0, 0, 0),
     );
+
     final themeData = Theme.of(context).copyWith(
       searchBarTheme: SearchBarThemeData(
         textStyle: MaterialStateProperty.all(
@@ -40,10 +42,7 @@ class UpsertCollectionFormTheme extends ConsumerWidget {
         surfaceTintColor: color,
         overlayColor: color,
         shape: MaterialStateProperty.all(
-          const ContinuousRectangleBorder(
-            side: BorderSide(),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
+          const ContinuousRectangleBorder(),
         ),
       ),
       inputDecorationTheme: const InputDecorationTheme(

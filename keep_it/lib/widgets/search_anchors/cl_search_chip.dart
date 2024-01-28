@@ -5,13 +5,12 @@ class SearchAnchorChip extends StatelessWidget {
     required this.controller,
     required this.onDone,
     super.key,
-    this.focusNode,
     this.label,
     this.avatar,
   });
 
   final SearchController controller;
-  final FocusNode? focusNode;
+
   final void Function(String val) onDone;
   final Icon? avatar;
   final String? label;
