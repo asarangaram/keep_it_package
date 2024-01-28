@@ -3,11 +3,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:store/store.dart';
-
-import '../widgets/from_store/load_collections.dart';
-import '../widgets/from_store/load_tags.dart';
-import '../widgets/new_collection_form.dart';
+import '../widgets/from_store/from_store.dart';
+import '../widgets/keep_media_wizard/keep_media_wizard.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -52,25 +49,9 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                         ),
                         SizedBox(
                           height: kMinInteractiveDimension * 4,
-                          child: LoadCollections(
-                            buildOnData: (collections) {
-                              return PickCollectionBase(
-                                suggestedCollections: collections.entries,
-                                onDone: ({
-                                  required CollectionBase collection,
-                                  List<CollectionBase>? selectedTags,
-                                }) async {
-                                  await onSelectionDone(
-                                    media: media,
-                                    collection: Collection.fromBase(collection),
-                                    saveIntoTagsId: selectedTags
-                                        ?.map((e) => e.id!)
-                                        .toList(),
-                                  );
-                                  widget.onDiscard(media);
-                                },
-                              );
-                            },
+                          child: KeepMediaWizard(
+                            media: media,
+                            onDone: widget.onDiscard,
                           ),
                         ),
                       ],
@@ -87,77 +68,5 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
         ),
       ),
     );
-  }
-
-  /* Future<void> onSave({
-    required CLMediaInfoGroup media,
-    required Collection collection,
-  }) async {
-    if (collection.id != null) {
-      // Existing id, no need to select Tags
-      await onSelectionDone(media: media, collection: collection);
-      widget.onDiscard(media);
-    } else {
-      FocusScope.of(context).unfocus();
-      await TagsDialog.selectTags(
-        context,
-        onSelectionDone: (
-          List<Tag> selectedTags,
-        ) async {
-          await onSelectionDone(
-            media: media,
-            collection: collection,
-            saveIntoTagsId: selectedTags
-                .where((c) => c.id != null)
-                .map((c) => c.id!)
-                .toList(),
-          );
-
-          widget.onDiscard(media);
-        },
-        labelNoneSelected: 'Select Tags',
-        labelSelected: 'Save',
-      );
-    }
-  } */
-
-  Future<void> onSelectionDone({
-    required CLMediaInfoGroup media,
-    required Collection collection,
-    List<int>? saveIntoTagsId,
-  }) async {
-    _infoLogger('Start loading');
-    final stopwatch = Stopwatch()..start();
-    // No one might be reading this, read once
-    ref.read(collectionsProvider(null));
-    final collectionId =
-        await ref.read(collectionsProvider(null).notifier).upsertCollection(
-              collection,
-              saveIntoTagsId,
-            );
-
-    final items = <ItemInDB>[
-      for (final entry in media.list)
-        await ExtItemInDB.fromCLMedia(entry, collectionId: collectionId),
-    ];
-
-    ref.read(itemsProvider(collectionId));
-    ref.read(itemsProvider(collectionId).notifier).upsertItems(items);
-    stopwatch.stop();
-
-    await ref.read(notificationMessageProvider.notifier).push('Saved.');
-
-    _infoLogger(
-      'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
-      ' [${stopwatch.elapsed}]',
-    );
-  }
-}
-
-bool _disableInfoLogger = false;
-// ignore: unused_element
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
   }
 }

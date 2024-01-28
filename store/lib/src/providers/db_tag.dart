@@ -51,7 +51,7 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
 
     loadTags(lastupdatedID: lastupdatedID);
     final tagWithID = TagDB.getById(databaseManager!.db, lastupdatedID);
-    print(tagWithID);
+
     return tagWithID;
   }
 

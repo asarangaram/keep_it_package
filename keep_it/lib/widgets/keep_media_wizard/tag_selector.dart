@@ -4,9 +4,9 @@ import 'package:keep_it/widgets/from_store/from_store.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../create_or_select.dart';
 import '../tags_dialogs.dart';
 import '../wizard_item.dart';
+import 'create_or_select.dart';
 
 class TagSelector extends StatefulWidget {
   const TagSelector({

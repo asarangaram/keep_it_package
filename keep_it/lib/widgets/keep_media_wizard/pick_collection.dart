@@ -5,13 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import 'add_media_wizard/description_editor.dart';
-import 'add_media_wizard/label_viewer.dart';
-import 'add_media_wizard/tag_selector.dart';
-import 'app_theme.dart';
+import '../app_theme.dart';
+import '../search_anchors/cl_searchbar.dart';
+import '../wizard_item.dart';
 import 'create_or_select.dart';
-import 'search_anchors/cl_searchbar.dart';
-import 'wizard_item.dart';
+import 'description_editor.dart';
+import 'label_viewer.dart';
+import 'tag_selector.dart';
 
 extension EXTListindex<T> on List<T> {
   int? previous(int index) {
