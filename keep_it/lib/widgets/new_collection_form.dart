@@ -1,13 +1,11 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/widgets/from_store/from_store.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import 'app_theme.dart';
 import 'create_or_select.dart';
-import 'search_anchors/cl_search_chip.dart';
 import 'search_anchors/cl_searchbar.dart';
 import 'tag_selector.dart';
 import 'wizard_item.dart';
