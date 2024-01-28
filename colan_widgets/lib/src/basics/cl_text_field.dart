@@ -16,6 +16,7 @@ class CLTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.textInputAction = TextInputAction.done,
     this.keyboardType = TextInputType.text,
+    this.enabled = true,
   })  : validator = null,
         multiLine = false,
         maxLines = 1;
@@ -32,6 +33,7 @@ class CLTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.maxLines = 3,
     this.keyboardType = TextInputType.multiline,
+    this.enabled = true,
   })  : validator = null,
         multiLine = true,
         textInputAction = TextInputAction.newline;
@@ -49,6 +51,7 @@ class CLTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.textInputAction = TextInputAction.next,
     this.keyboardType = TextInputType.text,
+    this.enabled = true,
   })  
   // ignore: prefer_initializing_formals
   : validator = validator,
@@ -68,6 +71,7 @@ class CLTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.maxLines = 3,
     this.keyboardType = TextInputType.multiline,
+    this.enabled = true,
     // ignore: prefer_initializing_formals
   })  : validator = validator,
         multiLine = true,
@@ -87,6 +91,7 @@ class CLTextField extends StatelessWidget {
   final void Function(String)? onFieldSubmitted;
 
   final FocusNode? focusNode;
+  final bool enabled;
 
   // Internally Managed
   final bool multiLine;
@@ -98,6 +103,7 @@ class CLTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
+        enabled: enabled,
         showCursor: true,
         inputFormatters: switch (multiLine) {
           false => [FilteringTextInputFormatter.deny(RegExp(r'\n'))],

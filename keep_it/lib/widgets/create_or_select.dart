@@ -63,11 +63,13 @@ class CreateOrSelectState extends State<CreateOrSelect> {
                 controller.openView();
               },
               onSubmitted: (val) {
-                widget.focusNode?.unfocus();
-                final c = widget.suggestedCollections
-                    ?.where((element) => element.label == val)
-                    .firstOrNull;
-                widget.onDone(c ?? CollectionBase(label: val));
+                if (val.isNotEmpty) {
+                  widget.focusNode?.unfocus();
+                  final c = widget.suggestedCollections
+                      ?.where((element) => element.label == val)
+                      .firstOrNull;
+                  widget.onDone(c ?? CollectionBase(label: val));
+                }
               },
               leading: const CLIcon.small(Icons.search),
               hintText: 'Collection Name',
@@ -120,9 +122,16 @@ class CreateOrSelectState extends State<CreateOrSelect> {
                 ListTile(
                   title: Text('Create "${controller.text}"'),
                   onTap: () {
-                    setState(() {
+                    if (controller.text.isNotEmpty) {
                       controller.closeView(controller.text);
-                    });
+
+                      widget.focusNode?.unfocus();
+                      final c = widget.suggestedCollections
+                          ?.where((element) => element.label == controller.text)
+                          .firstOrNull;
+                      widget
+                          .onDone(c ?? CollectionBase(label: controller.text));
+                    }
                   },
                 ),
               );

@@ -55,7 +55,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
   void changePage(int i) {
     pageController.animateToPage(
       i,
-      duration: const Duration(microseconds: 200),
+      duration: const Duration(microseconds: 500),
       curve: Curves.easeOut,
     );
   }
@@ -77,6 +77,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
                 setState(() {
                   onEditLabel = false;
                   this.collection = collection;
+                  descriptionController.text = collection.description ?? '';
                 });
                 changePage(1);
               },
@@ -87,11 +88,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
                   ShowLabel(
                     label: collection!.label,
                     onEditLabel: () {
-                      pageController.animateToPage(
-                        0,
-                        duration: const Duration(microseconds: 200),
-                        curve: Curves.easeOut,
-                      );
+                      changePage(0);
                       setState(() {
                         onEditLabel = true;
                       });
@@ -110,6 +107,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
                           widget.onDone(collection!);
                         });
                       },
+                      enabled: widget.allowUpdateDescription,
                     ),
                   ),
                 ],
@@ -129,21 +127,29 @@ class UpdateDescription extends StatefulWidget {
     required this.controller,
     required this.onDone,
     required this.focusNode,
+    required this.enabled,
     super.key,
   });
   final CollectionBase item;
   final TextEditingController controller;
   final FocusNode focusNode;
   final void Function() onDone;
+  final bool enabled;
 
   @override
   State<UpdateDescription> createState() => _UpdateDescriptionState();
 }
 
 class _UpdateDescriptionState extends State<UpdateDescription> {
+  late bool enabled;
   @override
   void initState() {
-    widget.focusNode.requestFocus();
+    enabled = widget.controller.text.isEmpty && widget.enabled;
+    if (enabled) {
+      widget.focusNode.requestFocus();
+    } else {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     super.initState();
   }
 
@@ -155,6 +161,11 @@ class _UpdateDescriptionState extends State<UpdateDescription> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.enabled && enabled && !widget.focusNode.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.focusNode.requestFocus();
+      });
+    }
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -172,12 +183,22 @@ class _UpdateDescriptionState extends State<UpdateDescription> {
                   bottomLeft: Radius.circular(16),
                 ),
               ),
-              child: CLTextField.multiLine(
-                widget.controller,
-                focusNode: widget.focusNode,
-                hint: 'What is the best thing,'
-                    ' you can say about this?',
-                maxLines: 5,
+              child: GestureDetector(
+                onTap: widget.enabled && !enabled
+                    ? () async {
+                        setState(() {
+                          enabled = true;
+                        });
+                      }
+                    : null,
+                child: CLTextField.multiLine(
+                  widget.controller,
+                  focusNode: widget.focusNode,
+                  hint: 'What is the best thing,'
+                      ' you can say about this?',
+                  maxLines: 5,
+                  enabled: enabled,
+                ),
               ),
             ),
           ),

@@ -54,11 +54,6 @@ class _TagsListState extends ConsumerState<TagsList> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final highLightIndex = widget.tags.lastupdatedID == null
         ? -1

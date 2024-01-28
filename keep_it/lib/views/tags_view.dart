@@ -37,7 +37,18 @@ class _TagsView extends ConsumerStatefulWidget {
 }
 
 class _TagsViewState extends ConsumerState<_TagsView> {
-  final availableSuggestions = Tags(suggestedTags);
+  late final Tags availableSuggestions;
+
+  @override
+  void initState() {
+    availableSuggestions = Tags(
+      suggestedTags.where((element) {
+        return !widget.tags.entries.map((e) => e.label).contains(element.label);
+      }).toList(),
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final menuItems = [
