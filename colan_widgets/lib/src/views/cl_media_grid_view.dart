@@ -28,7 +28,7 @@ class CLMediaGridView extends StatelessWidget {
       key: key,
       hCount: hCount,
       vCount: vCount,
-      keepAspectRatio: keepAspectRatio ?? true,
+      keepAspectRatio: keepAspectRatio ?? false,
       canScroll: vCount == null,
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
@@ -46,7 +46,7 @@ class CLMediaGridView extends StatelessWidget {
       mediaList: mediaList,
       childSize: childSize,
       key: key,
-      keepAspectRatio: keepAspectRatio ?? true,
+      keepAspectRatio: keepAspectRatio ?? false,
       canScroll: canScroll,
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
