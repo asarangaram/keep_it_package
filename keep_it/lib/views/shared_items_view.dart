@@ -54,7 +54,7 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                           ),
                         ),
                         Flexible(
-                          child: ProviderWrapCLMediaGridView.byMatrixSize(
+                          child: CLMediaGridView.byMatrixSize(
                             media.list,
                             hCount: switch (media.list.length) { _ => 2 },
                           ),
