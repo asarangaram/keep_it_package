@@ -6,12 +6,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:store/store.dart';
 
 import '../app_theme.dart';
-import '../search_anchors/cl_searchbar.dart';
-import 'wizard_item.dart';
 import 'create_or_select.dart';
 import 'description_editor.dart';
 import 'label_viewer.dart';
 import 'tag_selector.dart';
+import 'wizard_item.dart';
 
 extension EXTListindex<T> on List<T> {
   int? previous(int index) {
@@ -73,6 +72,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
     descriptionController = TextEditingController();
     labelNode = FocusNode();
     descriptionNode = FocusNode();
+    labelNode.requestFocus();
     super.initState();
   }
 
@@ -180,15 +180,27 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
               SearchController controller, {
               required void Function(CollectionBase) onDone,
             }) {
-              return CLSearchBarWrap(
-                controller: controller,
+              return SearchBar(
                 focusNode: labelNode,
-                onDone: (val) {
-                  final c = widget.suggestedCollections
-                      .where((element) => element.label == val)
-                      .firstOrNull;
-                  onDone(c ?? CollectionBase(label: val));
+                controller: labelController,
+                padding: const MaterialStatePropertyAll<EdgeInsets>(
+                  EdgeInsets.symmetric(horizontal: 16),
+                ),
+                onTap: labelController.openView,
+                onChanged: (_) {
+                  labelController.openView();
                 },
+                onSubmitted: (val) {
+                  if (val.isNotEmpty) {
+                    labelNode.unfocus();
+                    final c = widget.suggestedCollections
+                        .where((element) => element.label == val)
+                        .firstOrNull;
+                    onDone(c ?? CollectionBase(label: val));
+                  }
+                },
+                leading: const CLIcon.small(Icons.search),
+                hintText: 'Collection Name',
               );
             },
           ),
