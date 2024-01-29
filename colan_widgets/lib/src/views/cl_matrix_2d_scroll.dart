@@ -46,74 +46,59 @@ class CLMatrix2DScrollable extends StatelessWidget {
           'lCount= $lCount',
         ); */
         return ListView.builder(
-          itemCount: vCount,
+          itemCount: vCount * layers,
           /* prototypeItem: SizedBox(
             height: min((size.width / hCount) * 1.4, size.height),
           ), */
-          itemBuilder: (context, r) {
-            return SizedBox(
-              height:
-                  itemHeight ?? min((size.width / hCount) * 1.4, size.height),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (var l = 0; l < layers; l++)
-                    FlexibileOptional(
-                      isFlexible: true,
-                      flex: l == 0 ? 10 : 4,
-                      child: Row(
-                        crossAxisAlignment: l == 0
-                            ? CrossAxisAlignment.end
-                            : l == (layers - 1)
-                                ? CrossAxisAlignment.start
-                                : CrossAxisAlignment.center,
-                        children: [
-                          for (var c = 0; c < hCount; c++)
-                            if ((r * hCount + c) >= itemCount)
-                              const Center()
-                            else
-                              Flexible(
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(
-                                    horizontal:
-                                        (borderSide != BorderSide.none ||
-                                                decoration != null)
-                                            ? 2
-                                            : 0,
-                                  ),
-                                  width: size.width / hCount,
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      left: borderSide,
-                                      right: borderSide,
-                                      top: (l == 0)
-                                          ? borderSide
-                                          : BorderSide.none,
-                                      bottom: (l == (layers - 1))
-                                          ? borderSide
-                                          : BorderSide.none,
-                                    ),
-                                  ),
-                                  child: DecoratedBox(
-                                    decoration:
-                                        decoration ?? const BoxDecoration(),
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        top: l == 0 ? 2 : 0,
-                                        left: 2,
-                                        right: 2,
-                                        bottom: l == (layers - 1) ? 2 : 0,
-                                      ),
-                                      child: itemBuilder(context, r, c, l),
-                                    ),
-                                  ),
-                                ),
-                              ), //
-                        ],
+          itemBuilder: (context, index) {
+            final r = index ~/ layers;
+            final l = index - r * layers;
+
+            return Row(
+              crossAxisAlignment: l == 0
+                  ? CrossAxisAlignment.end
+                  : l == (layers - 1)
+                      ? CrossAxisAlignment.start
+                      : CrossAxisAlignment.center,
+              children: [
+                for (var c = 0; c < hCount; c++)
+                  if ((r * hCount + c) >= itemCount)
+                    const Center()
+                  else
+                    Flexible(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: (borderSide != BorderSide.none ||
+                                  decoration != null)
+                              ? 2
+                              : 0,
+                        ),
+                        width: size.width / hCount,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: borderSide,
+                            right: borderSide,
+                            top: (l == 0) ? borderSide : BorderSide.none,
+                            bottom: (l == (layers - 1))
+                                ? borderSide
+                                : BorderSide.none,
+                          ),
+                        ),
+                        child: DecoratedBox(
+                          decoration: decoration ?? const BoxDecoration(),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: l == 0 ? 2 : 0,
+                              left: 2,
+                              right: 2,
+                              bottom: l == (layers - 1) ? 2 : 0,
+                            ),
+                            child: itemBuilder(context, r, c, l),
+                          ),
+                        ),
                       ),
-                    ),
-                ],
-              ),
+                    ), //
+              ],
             );
           },
         );

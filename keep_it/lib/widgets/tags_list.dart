@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:keep_it/widgets/tag_preview.dart';
 
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';

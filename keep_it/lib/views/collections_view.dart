@@ -8,8 +8,6 @@ import 'package:store/store.dart';
 import '../controls/is_preview_square.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
-import '../widgets/provider_wraps/cl_media_gridview.dart';
-import '../widgets/tag_preview.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({required this.tagId, super.key});
@@ -72,13 +70,12 @@ class _CollectionsView extends ConsumerWidget {
           buildOnData: (Items items, {required String docDir}) {
             final (hCount, vCount) = switch (items.entries.length) {
               1 => (1, 1),
-              2 => (1, 2),
+              2 => (2, 2),
               <= 4 => (2, 2),
               < 6 => (2, 3),
               _ => (3, 3)
             };
-            return CollectionBasePreview(
-              item: e,
+            return CLMediaListPreview(
               mediaList: items.entries
                   .map(
                     (ItemInDB e) => e.toCLMedia(
@@ -88,6 +85,7 @@ class _CollectionsView extends ConsumerWidget {
                   .toList(),
               mediaCountInPreview:
                   CLDimension(itemsInRow: hCount, itemsInColumn: vCount),
+              whenNopreview: CLText.veryLarge(e.label.characters.first),
             );
           },
         ),

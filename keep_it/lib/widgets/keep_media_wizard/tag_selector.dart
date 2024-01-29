@@ -5,7 +5,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:store/store.dart';
 
 import '../tags_dialogs.dart';
-import '../wizard_item.dart';
+import 'wizard_item.dart';
 import 'create_or_select.dart';
 
 class TagSelector extends StatefulWidget {

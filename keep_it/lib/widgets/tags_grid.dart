@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import 'from_store/items_in_tag.dart';
-import 'tag_preview.dart';
+
 import 'wrap_standard_quick_menu.dart';
 
 class TagsGrid extends ConsumerWidget {
@@ -65,11 +65,11 @@ class TagsGrid extends ConsumerWidget {
                 id: tag.id,
                 limit: 4,
                 buildOnData: (clMediaList) {
-                  return CollectionBasePreview(
-                    item: tag,
-                    mediaList: clMediaList,
+                  return CLMediaListPreview(
+                    mediaList: clMediaList ?? [],
                     mediaCountInPreview:
                         const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+                    whenNopreview: CLText.veryLarge(tag.label.characters.first),
                   );
                 },
               ),

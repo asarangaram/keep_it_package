@@ -7,7 +7,7 @@ import 'package:store/store.dart';
 
 import '../app_theme.dart';
 import '../search_anchors/cl_searchbar.dart';
-import '../wizard_item.dart';
+import 'wizard_item.dart';
 import 'create_or_select.dart';
 import 'description_editor.dart';
 import 'label_viewer.dart';
