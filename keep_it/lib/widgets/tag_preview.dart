@@ -30,56 +30,51 @@ class TagPreview extends ConsumerWidget {
       id: tag.id,
       limit: 4,
       buildOnData: (clMediaList) {
-        final Widget? icon;
+        Widget? icon;
+        List<CLMedia>? mediaWithPreview;
         if (clMediaList != null) {
-          final mediaWithPreview = clMediaList
+          mediaWithPreview = clMediaList
               .where((e) => File(e.previewFileName).existsSync())
               .toList()
               .firstNItems(4);
+        }
 
-          if (mediaWithPreview.isEmpty) {
-            icon = CLDecorateSquare(
-              hasBorder: true,
-              child: Center(
-                child: CLText.veryLarge(tag.label.characters.first),
-              ),
-            );
-          } else {
-            final (hCount, vCount) = switch (mediaWithPreview.length) {
-              1 => (1, 1),
-              2 => (2, 1),
-              _ => (2, 2)
-            };
-            icon = CLDecorateSquare(
-              child: CLMediaGridView.byMatrixSize(
-                mediaWithPreview,
-                hCount: hCount,
-                vCount: vCount,
-                keepAspectRatio: false,
-              ),
-            );
-          }
-        } else {
-          icon = CLDecorateSquare(
-            hasBorder: true,
-            child: Center(
-              child: CLText.veryLarge(tag.label.characters.first),
+        if (mediaWithPreview?.isNotEmpty ?? false) {
+          final (hCount, vCount) = switch (mediaWithPreview!.length) {
+            1 => (1, 1),
+            2 => (2, 1),
+            _ => (2, 2)
+          };
+
+          icon = icon = CLDecorateSquare(
+            child: CLMediaGridView.byMatrixSize(
+              mediaWithPreview,
+              hCount: hCount,
+              vCount: vCount,
+              keepAspectRatio: false,
             ),
           );
         }
-
         if (!isTile) {
-          return icon;
+          return icon ??
+              CLDecorateSquare(
+                hasBorder: true,
+                child: Center(
+                  child: CLText.veryLarge(tag.label.characters.first),
+                ),
+              );
         }
         return SizedBox(
-          height: 128,
+          height: icon != null ? 128 : null,
           child: ListTile(
-            title: CLText.large(tag.label),
+            title: CLText.large(
+              tag.label,
+              textAlign: TextAlign.start,
+            ),
             subtitle: CLText.small(
               tag.description ?? '',
               textAlign: TextAlign.start,
             ),
-            leading: Padding(padding: const EdgeInsets.all(4), child: icon),
           ),
         );
       },
