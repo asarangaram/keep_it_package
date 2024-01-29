@@ -196,7 +196,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
                     final c = widget.suggestedCollections
                         .where((element) => element.label == val)
                         .firstOrNull;
-                    onDone(c ?? CollectionBase(label: val));
+                    onDone(c ?? Collection(label: val));
                   }
                 },
                 leading: const CLIcon.small(Icons.search),

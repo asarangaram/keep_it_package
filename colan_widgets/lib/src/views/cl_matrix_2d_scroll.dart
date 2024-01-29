@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../extensions/ext_double.dart';
 import '../utils/media/cl_dimension.dart';
-import '../widgets/flexibile_optional.dart';
 import 'cl_matrix_2d_fixed.dart';
 import 'compute_size_and_build.dart';
 

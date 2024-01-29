@@ -25,11 +25,39 @@ class Tag extends CollectionBase {
           updatedDate: base.updatedDate,
         );
 
-  factory Tag.fromMap(Map<String, dynamic> map) =>
-      Tag.fromBase(CollectionBase.fromMap(map));
-
+  factory Tag.fromMap(Map<String, dynamic> map) {
+    return Tag(
+      id: map['id'] != null ? map['id'] as int : null,
+      label: map['label'] as String,
+      description:
+          map['description'] != null ? map['description'] as String : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.parse(map['createdDate'] as String).toLocal()
+          : null,
+      updatedDate: map['updatedDate'] != null
+          ? DateTime.parse(map['updatedDate'] as String).toLocal()
+          : null,
+    );
+  }
   factory Tag.fromJson(String source) =>
       Tag.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  Tag copyWith({
+    int? id,
+    String? label,
+    String? description,
+    DateTime? createdDate,
+    DateTime? updatedDate,
+  }) {
+    return Tag(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      description: description ?? this.description,
+      createdDate: createdDate ?? this.createdDate,
+      updatedDate: updatedDate ?? this.updatedDate,
+    );
+  }
 }
 
 class Tags {

@@ -25,11 +25,39 @@ class Collection extends CollectionBase {
           updatedDate: base.updatedDate,
         );
 
-  factory Collection.fromMap(Map<String, dynamic> map) =>
-      Collection.fromBase(CollectionBase.fromMap(map));
-
+  factory Collection.fromMap(Map<String, dynamic> map) {
+    return Collection(
+      id: map['id'] != null ? map['id'] as int : null,
+      label: map['label'] as String,
+      description:
+          map['description'] != null ? map['description'] as String : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.parse(map['createdDate'] as String).toLocal()
+          : null,
+      updatedDate: map['updatedDate'] != null
+          ? DateTime.parse(map['updatedDate'] as String).toLocal()
+          : null,
+    );
+  }
   factory Collection.fromJson(String source) =>
       Collection.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  Collection copyWith({
+    int? id,
+    String? label,
+    String? description,
+    DateTime? createdDate,
+    DateTime? updatedDate,
+  }) {
+    return Collection(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      description: description ?? this.description,
+      createdDate: createdDate ?? this.createdDate,
+      updatedDate: updatedDate ?? this.updatedDate,
+    );
+  }
 }
 
 class Collections {
