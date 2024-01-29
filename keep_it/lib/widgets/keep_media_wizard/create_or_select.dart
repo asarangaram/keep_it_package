@@ -85,7 +85,7 @@ class CreateOrSelect extends StatelessWidget {
                 final c = suggestedCollections
                     ?.where((element) => element.label == controller.text)
                     .firstOrNull;
-                onDone(c ?? CollectionBase(label: controller.text));
+                onDone(c ?? Collection(label: controller.text));
               }
             },
           ),
