@@ -51,7 +51,6 @@ class TagPreview extends ConsumerWidget {
               _ => (2, 2)
             };
             icon = CLDecorateSquare(
-              hasBorder: true,
               child: CLMediaGridView.byMatrixSize(
                 mediaWithPreview,
                 hCount: hCount,
@@ -62,6 +61,7 @@ class TagPreview extends ConsumerWidget {
           }
         } else {
           icon = CLDecorateSquare(
+            hasBorder: true,
             child: Center(
               child: CLText.veryLarge(tag.label.characters.first),
             ),
