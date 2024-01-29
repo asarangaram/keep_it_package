@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_media_wizard/keep_media_wizard.dart';
-import '../widgets/provider_wraps/cl_media_gridview.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
