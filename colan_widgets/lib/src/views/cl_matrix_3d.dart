@@ -104,17 +104,12 @@ class CLMatrix3DAutoFit extends ConsumerWidget {
           ),
           itemSize: childSize,
         );
-        final pages =
-            (itemCount + (pageMatrix.totalCount - 1)) ~/ pageMatrix.totalCount;
 
-        return CLMatrix3D(
-          pages: pages,
-          rows: pageMatrix.itemsInColumn,
+        return CLMatrix2D(
           columns: pageMatrix.itemsInRow,
           itemCount: itemCount,
           layers: 2,
           itemBuilder: itemBuilder,
-          visibleItem: visibleItem,
         );
       },
     );

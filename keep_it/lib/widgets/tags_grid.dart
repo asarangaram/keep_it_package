@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import 'from_store/items_in_tag.dart';
 import 'tag_preview.dart';
 import 'wrap_standard_quick_menu.dart';
 
@@ -60,7 +61,18 @@ class TagsGrid extends ConsumerWidget {
                 context,
                 tag,
               ),
-              child: TagPreview(tag: tag),
+              child: LoadItemsInTag(
+                id: tag.id,
+                limit: 4,
+                buildOnData: (clMediaList) {
+                  return CollectionBasePreview(
+                    item: tag,
+                    mediaList: clMediaList,
+                    mediaCountInPreview:
+                        const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+                  );
+                },
+              ),
             ),
           );
         } else if (layer == 1) {

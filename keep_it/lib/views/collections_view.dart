@@ -9,6 +9,7 @@ import '../controls/is_preview_square.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
 import '../widgets/provider_wraps/cl_media_gridview.dart';
+import '../widgets/tag_preview.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({required this.tagId, super.key});
@@ -47,24 +48,11 @@ class _CollectionsView extends ConsumerWidget {
         }
       ],
       pageBuilder: (context, quickMenuScopeKey) {
-        return CLMatrix2D(
+        return CLMatrix3DAutoFit(
           itemCount: collections.entries.length,
           itemBuilder: itemBuilder,
-          columns: 2,
+          childSize: const Size(180, 300),
           layers: 2,
-          /* decoration: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .tertiaryContainer
-                .reduceBrightness(0.05),
-            borderRadius: BorderRadius.circular(2),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).colorScheme.onTertiaryContainer,
-              ),
-            ],
-          ),
-          borderSide: const BorderSide(), */
         );
       },
     );
@@ -89,17 +77,17 @@ class _CollectionsView extends ConsumerWidget {
               < 6 => (2, 3),
               _ => (3, 3)
             };
-
-            return ProviderWrapCLMediaGridView.byMatrixSize(
-              items.entries
+            return CollectionBasePreview(
+              item: e,
+              mediaList: items.entries
                   .map(
                     (ItemInDB e) => e.toCLMedia(
                       pathPrefix: docDir,
                     ),
                   )
                   .toList(),
-              hCount: hCount,
-              vCount: vCount,
+              mediaCountInPreview:
+                  CLDimension(itemsInRow: hCount, itemsInColumn: vCount),
             );
           },
         ),
@@ -108,18 +96,12 @@ class _CollectionsView extends ConsumerWidget {
       return GestureDetector(
         onTap: () => context.push('/items/by_collection_id/${e.id}'),
         child: Padding(
-          padding: const EdgeInsets.only(
-            left: 8,
-            right: 8,
-            top: 8,
-            bottom: 8,
-          ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Text(
-              e.label,
-              textAlign: TextAlign.start,
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            e.label,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       );

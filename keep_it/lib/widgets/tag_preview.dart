@@ -7,77 +7,61 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import 'from_store/items_in_tag.dart';
-
-class TagPreview extends ConsumerWidget {
-  const TagPreview({
-    required this.tag,
+class CollectionBasePreview extends ConsumerWidget {
+  const CollectionBasePreview({
+    required this.item,
+    required this.mediaList,
+    required this.mediaCountInPreview,
     super.key,
-    this.isSelected,
-  }) : isTile = false;
-  const TagPreview.asTile({
-    required this.tag,
-    super.key,
-    this.isSelected,
-  }) : isTile = true;
-  final Tag tag;
-  final bool isTile;
-  final bool? isSelected;
+    this.keepAspectRatio = false,
+  });
+  final CollectionBase item;
+  final List<CLMedia>? mediaList;
+  final bool keepAspectRatio;
 
+  final CLDimension mediaCountInPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LoadItemsInTag(
-      id: tag.id,
-      limit: 4,
-      buildOnData: (clMediaList) {
-        Widget? icon;
-        List<CLMedia>? mediaWithPreview;
-        if (clMediaList != null) {
-          mediaWithPreview = clMediaList
-              .where((e) => File(e.previewFileName).existsSync())
-              .toList()
-              .firstNItems(4);
-        }
+    List<CLMedia>? mediaWithPreview;
+    if (mediaList?.isNotEmpty ?? false) {
+      mediaWithPreview = mediaList!
+          .where((e) => File(e.previewFileName).existsSync())
+          .toList()
+          .firstNItems(mediaCountInPreview.totalCount);
+    }
+    if (mediaWithPreview?.isEmpty ?? true) {
+      return CLDecorateSquare(
+        hasBorder: true,
+        child: Center(
+          child: CLText.veryLarge(item.label.characters.first),
+        ),
+      );
+    }
+    final CLDimension d;
 
-        if (mediaWithPreview?.isNotEmpty ?? false) {
-          final (hCount, vCount) = switch (mediaWithPreview!.length) {
-            1 => (1, 1),
-            2 => (2, 1),
-            _ => (2, 2)
-          };
-
-          icon = icon = CLDecorateSquare(
-            child: CLMediaGridView.byMatrixSize(
-              mediaWithPreview,
-              hCount: hCount,
-              vCount: vCount,
-              keepAspectRatio: false,
-            ),
-          );
-        }
-        if (!isTile) {
-          return icon ??
-              CLDecorateSquare(
-                hasBorder: true,
-                child: Center(
-                  child: CLText.veryLarge(tag.label.characters.first),
-                ),
-              );
-        }
-        return SizedBox(
-          height: icon != null ? 128 : null,
-          child: ListTile(
-            title: CLText.large(
-              tag.label,
-              textAlign: TextAlign.start,
-            ),
-            subtitle: CLText.small(
-              tag.description ?? '',
-              textAlign: TextAlign.start,
-            ),
-          ),
+    if (mediaWithPreview!.length < mediaCountInPreview.totalCount) {
+      if (mediaWithPreview.length < mediaCountInPreview.itemsInRow) {
+        d = CLDimension(itemsInRow: mediaWithPreview.length, itemsInColumn: 1);
+      } else {
+        d = CLDimension(
+          itemsInRow: mediaCountInPreview.itemsInRow,
+          itemsInColumn:
+              (mediaWithPreview.length + mediaCountInPreview.itemsInRow - 1) ~/
+                  mediaCountInPreview.itemsInRow,
         );
-      },
+      }
+    } else {
+      d = mediaCountInPreview;
+    }
+
+    return CLDecorateSquare(
+      hasBorder: keepAspectRatio,
+      child: CLMediaGridView.byMatrixSize(
+        mediaWithPreview,
+        hCount: d.itemsInRow,
+        vCount: d.itemsInColumn,
+        keepAspectRatio: keepAspectRatio,
+      ),
     );
   }
 }

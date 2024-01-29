@@ -126,8 +126,15 @@ class _TagsListState extends ConsumerState<TagsList> {
                 ),
                 child: CLHighlighted(
                   isHighlighed: index == highLightIndex,
-                  child: TagPreview.asTile(
-                    tag: widget.tags.entries[index],
+                  child: ListTile(
+                    title: CLText.large(
+                      widget.tags.entries[index].label,
+                      textAlign: TextAlign.start,
+                    ),
+                    subtitle: CLText.small(
+                      widget.tags.entries[index].description ?? '',
+                      textAlign: TextAlign.start,
+                    ),
                   ),
                 ),
               ),
