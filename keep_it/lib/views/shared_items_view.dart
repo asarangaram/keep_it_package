@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_media_wizard/keep_media_wizard.dart';
+import '../widgets/provider_wraps/cl_media_gridview.dart';
 
 class SharedItemsView extends ConsumerStatefulWidget {
   const SharedItemsView({
@@ -32,7 +33,6 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                 data: (media) {
                   return SafeArea(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Align(
                           alignment: Alignment.topRight,
@@ -54,12 +54,9 @@ class _SharedItemsViewState extends ConsumerState<SharedItemsView> {
                           ),
                         ),
                         Flexible(
-                          child: CLMediaGridViewFixed(
-                            mediaList: media.list,
-                            hCount: switch (media.list.length) {
-                              < 4 => 2,
-                              _ => 3,
-                            },
+                          child: ProviderWrapCLMediaGridView.byMatrixSize(
+                            media.list,
+                            hCount: switch (media.list.length) { _ => 2 },
                           ),
                         ),
                         const Divider(

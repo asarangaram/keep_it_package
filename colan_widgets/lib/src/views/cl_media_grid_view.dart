@@ -1,83 +1,146 @@
+import 'dart:math';
+
 import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 
-class CLMediaGridViewFixed extends StatelessWidget {
-  const CLMediaGridViewFixed({
+class CLMediaGridView extends StatelessWidget {
+  const CLMediaGridView._({
     required this.mediaList,
-    required this.hCount,
+    required this.canScroll,
+    required this.keepAspectRatio,
+    required this.maxPageDimension,
+    this.hCount,
     this.vCount,
-    this.keepAspectRatio = true,
+    this.childSize,
     super.key,
   });
+  factory CLMediaGridView.byMatrixSize(
+    List<CLMedia> mediaList, {
+    required int hCount,
+    int? vCount,
+    Key? key,
+    bool? keepAspectRatio,
+    CLDimension? maxPageDimension,
+  }) {
+    return CLMediaGridView._(
+      mediaList: mediaList,
+      key: key,
+      hCount: hCount,
+      vCount: vCount,
+      keepAspectRatio: keepAspectRatio ?? true,
+      canScroll: vCount == null,
+      maxPageDimension: maxPageDimension ??
+          const CLDimension(itemsInRow: 6, itemsInColumn: 6),
+    );
+  }
+  factory CLMediaGridView.byChildSize(
+    List<CLMedia> mediaList, {
+    required Size childSize,
+    Key? key,
+    bool? keepAspectRatio,
+    bool canScroll = false,
+    CLDimension? maxPageDimension,
+  }) {
+    return CLMediaGridView._(
+      mediaList: mediaList,
+      childSize: childSize,
+      key: key,
+      keepAspectRatio: keepAspectRatio ?? true,
+      canScroll: canScroll,
+      maxPageDimension: maxPageDimension ??
+          const CLDimension(itemsInRow: 6, itemsInColumn: 6),
+    );
+  }
+
   final List<CLMedia> mediaList;
-  final int hCount;
+  final int? hCount;
   final int? vCount;
   final bool keepAspectRatio;
+  final Size? childSize;
+  final bool canScroll;
+  final CLDimension maxPageDimension;
+
   @override
   Widget build(BuildContext context) {
-    if (vCount == null) {
-      return Matrix2DNew.scrollable(
-        itemCount: mediaList.length,
-        hCount: hCount,
-        itemBuilder: (context, index) => CLGridItemSquare(
-          borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
-          child: CLMediaView(
-            media: mediaList[index],
-            keepAspectRatio: keepAspectRatio,
-          ),
-        ),
-      );
-    }
-    return CLGridItemSquare(
-      borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
-      child: CLMatrix2DAutoFit(
-        childSize: const Size(200, 200),
-        itemBuilder: (BuildContext context, int index) {
-          return CLGridItemSquare(
-            borderRadius: BorderRadius.circular(0),
-            child: CLMediaView(
-              media: mediaList[index],
-              keepAspectRatio: keepAspectRatio,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final int x;
+        final int? y;
+        if (childSize == null) {
+          x = hCount!;
+          y = vCount;
+        } else {
+          final pageMatrix = computePageMatrix(
+            pageSize: Size(
+              constraints.maxWidth,
+              constraints.maxHeight,
             ),
+            itemSize: childSize!,
           );
-        },
-        itemCount: mediaList.length,
+          x = pageMatrix.itemsInRow;
+          y = canScroll ? null : pageMatrix.itemsInColumn;
+        }
+        return switch (y) {
+          null => Matrix2DNew.scrollable(
+              itemCount: mediaList.length,
+              hCount: x,
+              itemBuilder: itemBuilder,
+            ),
+          _ => Matrix2DNew(
+              itemCount: mediaList.length,
+              hCount: x,
+              vCount: y,
+              itemBuilder: (context, index) {
+                return SizedBox.fromSize(
+                  size: childSize,
+                  child: CLMediaView(
+                    media: mediaList[index],
+                    keepAspectRatio: keepAspectRatio,
+                  ),
+                );
+              },
+            )
+        };
+      },
+    );
+  }
+
+  Widget itemBuilder(BuildContext context, int index) {
+    return CLDecorateSquare(
+      borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
+      child: CLMediaView(
+        media: mediaList[index],
+        keepAspectRatio: keepAspectRatio,
       ),
     );
   }
-}
 
-class CLGridItemSquare extends StatelessWidget {
-  const CLGridItemSquare({
-    super.key,
-    this.child,
-    this.hasBorder = false,
-    this.borderRadius,
-  });
-
-  final Widget? child;
-  final bool hasBorder;
-  final BorderRadiusGeometry? borderRadius;
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(1),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: hasBorder ? Border.all() : null,
-            borderRadius:
-                borderRadius ?? const BorderRadius.all(Radius.circular(12)),
-          ),
-          child: ClipRRect(
-            borderRadius:
-                borderRadius ?? const BorderRadius.all(Radius.circular(12)),
-            child: child,
-          ),
-        ),
+  CLDimension computePageMatrix({
+    required Size pageSize,
+    required Size itemSize,
+  }) {
+    if (pageSize.width == double.infinity) {
+      throw Exception("Width is unbounded, can't handle");
+    }
+    if (pageSize.height == double.infinity) {
+      throw Exception("Width is unbounded, can't handle");
+    }
+    final itemsInRow = min(
+      maxPageDimension.itemsInRow,
+      max(
+        1,
+        ((pageSize.width.nearest(itemSize.width)) / itemSize.width).floor(),
       ),
     );
+    final itemsInColumn = min(
+      maxPageDimension.itemsInColumn,
+      max(
+        1,
+        ((pageSize.height.nearest(itemSize.height)) / itemSize.height).floor(),
+      ),
+    );
+
+    return CLDimension(itemsInRow: itemsInRow, itemsInColumn: itemsInColumn);
   }
 }

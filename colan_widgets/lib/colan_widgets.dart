@@ -29,8 +29,8 @@ export 'src/utils/media/cl_media_video.dart';
 export 'src/utils/notify.dart';
 export 'src/utils/rand_image_generator.dart';
 export 'src/utils/url_handler.dart';
+export 'src/views/cl_decorate_square.dart';
 export 'src/views/cl_fullscreen_box.dart';
-
 export 'src/views/cl_image_viewer.dart';
 export 'src/views/cl_matrix_2d.dart';
 export 'src/views/cl_matrix_2d_fixed.dart';

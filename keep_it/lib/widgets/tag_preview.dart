@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../providers/state_providers.dart';
 import 'from_store/items_in_tag.dart';
 
 class TagPreview extends ConsumerWidget {
@@ -26,7 +26,6 @@ class TagPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isPreviewSquare = ref.watch(isPreviewSquareProvider);
     return LoadItemsInTag(
       id: tag.id,
       limit: 4,
@@ -39,7 +38,7 @@ class TagPreview extends ConsumerWidget {
               .firstNItems(4);
 
           if (mediaWithPreview.isEmpty) {
-            icon = CLGridItemSquare(
+            icon = CLDecorateSquare(
               hasBorder: true,
               child: Center(
                 child: CLText.veryLarge(tag.label.characters.first),
@@ -51,16 +50,18 @@ class TagPreview extends ConsumerWidget {
               2 => (2, 1),
               _ => (2, 2)
             };
-            icon = CLMediaGridViewFixed(
-              mediaList: mediaWithPreview,
-              hCount: hCount,
-              vCount: vCount,
-              keepAspectRatio: !isPreviewSquare,
+            icon = CLDecorateSquare(
+              hasBorder: true,
+              child: CLMediaGridView.byMatrixSize(
+                mediaWithPreview,
+                hCount: hCount,
+                vCount: vCount,
+                keepAspectRatio: false,
+              ),
             );
           }
         } else {
-          icon = CLGridItemSquare(
-            hasBorder: true,
+          icon = CLDecorateSquare(
             child: Center(
               child: CLText.veryLarge(tag.label.characters.first),
             ),
@@ -70,27 +71,16 @@ class TagPreview extends ConsumerWidget {
         if (!isTile) {
           return icon;
         }
-        return Row(
-          children: [
-            SizedBox.square(dimension: 128, child: icon),
-            Flexible(
-              child: SizedBox(
-                height: 128,
-                width: double.infinity,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CLText.large(tag.label),
-                    CLText.small(
-                      tag.description ?? '',
-                      textAlign: TextAlign.start,
-                    ),
-                  ],
-                ),
-              ),
+        return SizedBox(
+          height: 128,
+          child: ListTile(
+            title: CLText.large(tag.label),
+            subtitle: CLText.small(
+              tag.description ?? '',
+              textAlign: TextAlign.start,
             ),
-          ],
+            leading: Padding(padding: const EdgeInsets.all(4), child: icon),
+          ),
         );
       },
     );

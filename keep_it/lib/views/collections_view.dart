@@ -6,9 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../controls/is_preview_square.dart';
-import '../providers/state_providers.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
+import '../widgets/provider_wraps/cl_media_gridview.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({required this.tagId, super.key});
@@ -90,8 +90,8 @@ class _CollectionsView extends ConsumerWidget {
               _ => (3, 3)
             };
 
-            return CLMediaGridViewFixedWrap(
-              mediaList: items.entries
+            return ProviderWrapCLMediaGridView.byMatrixSize(
+              items.entries
                   .map(
                     (ItemInDB e) => e.toCLMedia(
                       pathPrefix: docDir,
@@ -124,31 +124,5 @@ class _CollectionsView extends ConsumerWidget {
         ),
       );
     }
-  }
-}
-
-//
-/*
-
-*/
-class CLMediaGridViewFixedWrap extends ConsumerWidget {
-  const CLMediaGridViewFixedWrap({
-    required this.mediaList,
-    required this.hCount,
-    super.key,
-    this.vCount,
-  });
-  final List<CLMedia> mediaList;
-  final int hCount;
-  final int? vCount;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isPreviewSquare = ref.watch(isPreviewSquareProvider);
-    return CLMediaGridViewFixed(
-      mediaList: mediaList,
-      hCount: hCount,
-      vCount: vCount,
-      keepAspectRatio: !isPreviewSquare,
-    );
   }
 }
