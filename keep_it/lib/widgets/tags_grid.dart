@@ -11,25 +11,25 @@ class TagsGrid extends ConsumerWidget {
   const TagsGrid({
     required this.quickMenuScopeKey,
     required this.tags,
-    this.onTapTag,
-    this.onEditTag,
-    this.onDeleteTag,
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
     super.key,
   });
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final Tags tags;
   final Future<bool?> Function(
     BuildContext context,
-    Tag tag,
-  )? onEditTag;
+    CollectionBase tag,
+  )? onEdit;
   final Future<bool?> Function(
     BuildContext context,
-    Tag tag,
-  )? onDeleteTag;
+    CollectionBase tag,
+  )? onDelete;
   final Future<bool?> Function(
     BuildContext context,
-    Tag tag,
-  )? onTapTag;
+    CollectionBase tag,
+  )? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,15 +49,15 @@ class TagsGrid extends ConsumerWidget {
             isHighlighed: index == highLightIndex,
             child: WrapStandardQuickMenu(
               quickMenuScopeKey: quickMenuScopeKey,
-              onEdit: () async => onEditTag!.call(
+              onEdit: () async => onEdit!.call(
                 context,
                 tag,
               ),
-              onDelete: () async => onDeleteTag!.call(
+              onDelete: () async => onDelete!.call(
                 context,
                 tag,
               ),
-              onTap: () async => onTapTag!.call(
+              onTap: () async => onTap!.call(
                 context,
                 tag,
               ),

@@ -19,36 +19,51 @@ class TagsView extends ConsumerWidget {
   const TagsView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => const CLFullscreenBox(
+  Widget build(BuildContext context, WidgetRef ref) => CLFullscreenBox(
         child: CLBackground(
           child: LoadTags(
-            buildOnData: _TagsView.new,
+            buildOnData: (tags) => CollectionBaseView(
+              tags: tags,
+              availableSuggestions: Tags(
+                suggestedTags.where((element) {
+                  return !tags.entries
+                      .map((e) => e.label)
+                      .contains(element.label);
+                }).toList(),
+              ),
+              onUpdate: (List<Tag> selectedTags) {
+                ref.read(tagsProvider(null).notifier).upsertTags(selectedTags);
+              },
+              onDelete: (List<Tag> selectedTags) {
+                ref.read(tagsProvider(null).notifier).deleteTags(selectedTags);
+              },
+              onCreate: (context) async =>
+                  (await TagsDialog.newTag(context)) != null,
+              onEdit: (context, tag) async =>
+                  await TagsDialog.updateTag(context, Tag.fromBase(tag)) !=
+                  null,
+            ),
           ),
         ),
       );
 }
 
-class _TagsView extends ConsumerStatefulWidget {
-  const _TagsView(this.tags, {super.key});
+class CollectionBaseView extends StatelessWidget {
+  const CollectionBaseView({
+    required this.tags,
+    required this.availableSuggestions,
+    required this.onUpdate,
+    required this.onDelete,
+    required this.onCreate,
+    required this.onEdit,
+    super.key,
+  });
   final Tags tags;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TagsViewState();
-}
-
-class _TagsViewState extends ConsumerState<_TagsView> {
-  late final Tags availableSuggestions;
-
-  @override
-  void initState() {
-    availableSuggestions = Tags(
-      suggestedTags.where((element) {
-        return !widget.tags.entries.map((e) => e.label).contains(element.label);
-      }).toList(),
-    );
-    super.initState();
-  }
-
+  final Tags availableSuggestions;
+  final void Function(List<Tag> selectedTags) onUpdate;
+  final Future<bool> Function(BuildContext context) onCreate;
+  final Future<bool> Function(BuildContext context, CollectionBase tag) onEdit;
+  final void Function(List<Tag> selectedTags) onDelete;
   @override
   Widget build(BuildContext context) {
     final menuItems = [
@@ -60,9 +75,7 @@ class _TagsViewState extends ConsumerState<_TagsView> {
             TagsDialog.onSuggestions(
               context,
               availableSuggestions: availableSuggestions,
-              onSelectionDone: (List<Tag> selectedTags) {
-                ref.read(tagsProvider(null).notifier).upsertTags(selectedTags);
-              },
+              onSelectionDone: onUpdate,
             );
 
             return true;
@@ -71,12 +84,12 @@ class _TagsViewState extends ConsumerState<_TagsView> {
         CLMenuItem(
           title: 'Create Tag',
           icon: Icons.new_label,
-          onTap: () async => await TagsDialog.newTag(context) != null,
+          onTap: () => onCreate(context),
         ),
       ]
     ];
 
-    if (widget.tags.isEmpty) {
+    if (tags.isEmpty) {
       return KeepItMainView(
         pageBuilder: (context, quickMenuScopeKey) => TagsEmpty(
           menuItems: menuItems,
@@ -113,30 +126,12 @@ class _TagsViewState extends ConsumerState<_TagsView> {
             );
           }
         },
-        toggleGridView,
       ],
       pageBuilder: (context, quickMenuScopeKey) {
-        final isGridView = ref.watch(isGridProvider);
-        if (isGridView) {
-          return TagsGrid(
-            quickMenuScopeKey: quickMenuScopeKey,
-            tags: widget.tags,
-            onTapTag: (context, tag) async {
-              unawaited(
-                context.push(
-                  '/collections/by_tag_id/${tag.id}',
-                ),
-              );
-              return true;
-            },
-            onEditTag: (context, tag) async =>
-                await TagsDialog.updateTag(context, tag) != null,
-            onDeleteTag: onDeleteTag,
-          );
-        }
-        return TagsList(
-          tags: widget.tags,
-          onTapTag: (context, tag) async {
+        return TagsGrid(
+          quickMenuScopeKey: quickMenuScopeKey,
+          tags: tags,
+          onTap: (context, tag) async {
             unawaited(
               context.push(
                 '/collections/by_tag_id/${tag.id}',
@@ -144,30 +139,16 @@ class _TagsViewState extends ConsumerState<_TagsView> {
             );
             return true;
           },
-          onEditTag: (context, tag) async =>
-              await TagsDialog.updateTag(context, tag) != null,
-          onDeleteTag: onDeleteTag,
+          onEdit: onEdit,
+          onDelete: onDeleteTag,
         );
-      },
-    );
-  }
-
-  Widget toggleGridView(
-    BuildContext context,
-    GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
-  ) {
-    final isGridView = ref.watch(isGridProvider);
-    return CLButtonIcon.small(
-      isGridView ? Icons.view_list : Icons.widgets,
-      onTap: () {
-        ref.read(isGridProvider.notifier).state = !isGridView;
       },
     );
   }
 
   Future<bool?> onDeleteTag(
     BuildContext context,
-    Tag tag,
+    CollectionBase tag,
   ) async {
     switch (await showOkCancelAlertDialog(
       context: context,
@@ -176,7 +157,8 @@ class _TagsViewState extends ConsumerState<_TagsView> {
       cancelLabel: 'No',
     )) {
       case OkCancelResult.ok:
-        ref.read(tagsProvider(null).notifier).deleteTag(tag);
+        onDelete([Tag.fromBase(tag)]);
+
         return true;
       case OkCancelResult.cancel:
         return false;
