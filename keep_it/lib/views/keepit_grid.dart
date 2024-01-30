@@ -4,12 +4,13 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:store/store.dart';
 
 import '../widgets/keep_it_main_view.dart';
+import '../widgets/keepit_grid_item.dart';
 import '../widgets/tags_dialogs.dart';
 import '../widgets/tags_empty.dart';
-import '../widgets/keepit_grid_item.dart';
 
 class KeepItGrid extends StatelessWidget {
   const KeepItGrid({
