@@ -9,8 +9,8 @@ import 'package:store/store.dart';
 import '../app_theme.dart';
 import 'create_or_select.dart';
 import 'description_editor.dart';
-import 'label_viewer.dart';
 import 'keepit_selector.dart';
+import 'label_viewer.dart';
 import 'wizard_item.dart';
 
 extension EXTListindex<T> on List<T> {
