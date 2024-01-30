@@ -17,6 +17,7 @@ class KeepItGrid extends StatelessWidget {
     required this.label,
     required this.entities,
     required this.availableSuggestions,
+    required this.onSelect,
     required this.onUpdate,
     required this.onDelete,
     required this.onCreate,
@@ -27,12 +28,15 @@ class KeepItGrid extends StatelessWidget {
   final String label;
   final List<CollectionBase> entities;
   final List<CollectionBase> availableSuggestions;
+  final Future<bool> Function(BuildContext context, CollectionBase entity)
+      onSelect;
   final void Function(List<CollectionBase> selectedTags) onUpdate;
   final Future<bool> Function(BuildContext context) onCreate;
   final Future<bool> Function(BuildContext context, CollectionBase tag) onEdit;
   final void Function(List<CollectionBase> selectedTags) onDelete;
   final Widget Function(BuildContext context, CollectionBase tag)
       previewGenerator;
+
   @override
   Widget build(BuildContext context) {
     final menuItems = [
@@ -101,14 +105,7 @@ class KeepItGrid extends StatelessWidget {
         return KeepItGridItem(
           quickMenuScopeKey: quickMenuScopeKey,
           entities: entities,
-          onTap: (context, tag) async {
-            unawaited(
-              context.push(
-                '/collections/by_tag_id/${tag.id}',
-              ),
-            );
-            return true;
-          },
+          onTap: onSelect,
           onEdit: onEdit,
           onDelete: onDeleteTag,
           previewGenerator: previewGenerator,

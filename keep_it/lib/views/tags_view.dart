@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
@@ -23,6 +26,14 @@ class TagsView extends ConsumerWidget {
                     .map((e) => e.label)
                     .contains(element.label);
               }).toList(),
+              onSelect: (BuildContext context, CollectionBase entity) async {
+                unawaited(
+                  context.push(
+                    '/collections/by_tag_id/${entity.id}',
+                  ),
+                );
+                return true;
+              },
               onUpdate: (List<CollectionBase> selectedTags) {
                 ref
                     .read(tagsProvider(null).notifier)
