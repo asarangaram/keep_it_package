@@ -24,6 +24,20 @@ class AppView extends ConsumerStatefulWidget {
 class _RaLRouterState extends ConsumerState<AppView>
     with WidgetsBindingObserver {
   late GoRouter _router;
+  static final GlobalKey<NavigatorState> parentNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final List<GlobalKey<NavigatorState>> navigatorPageKeys = [
+    for (var i = 0; i < 3; i++) GlobalKey<NavigatorState>(),
+  ];
+  static Page<dynamic> getPage({
+    required Widget child,
+    required GoRouterState state,
+  }) {
+    return MaterialPage(
+      key: state.pageKey,
+      child: child,
+    );
+  }
 
   static Widget defaultTransitionBuilder(
     BuildContext context,
@@ -77,10 +91,46 @@ class _RaLRouterState extends ConsumerState<AppView>
       ),
     );
 
-    _infoLogger('RaLRouter.build');
+    _infoLogger('RaLRouter.build ${app.screenBuilders.length}');
+    final routePaths = app.screenBuilders.keys.map((e) => '/$e').toList();
+    final routeName = app.screenBuilders.keys.map((e) => e).toList();
     _router = GoRouter(
+      navigatorKey: parentNavigatorKey,
       routes: [
-        ...routes,
+        StatefulShellRoute.indexedStack(
+          parentNavigatorKey: parentNavigatorKey,
+          branches: [
+            for (int i = 0; i < 3; i++)
+              StatefulShellBranch(
+                navigatorKey: navigatorPageKeys[i],
+                routes: [
+                  GoRoute(
+                    path: routePaths[i],
+                    pageBuilder: (context, GoRouterState state) {
+                      return getPage(
+                        child:
+                            app.screenBuilders[routeName[i]]!(context, state),
+                        state: state,
+                      );
+                    },
+                  ),
+                ],
+              ),
+          ],
+          pageBuilder: (
+            BuildContext context,
+            GoRouterState state,
+            StatefulNavigationShell navigationShell,
+          ) {
+            return MaterialPage(
+              key: state.pageKey,
+              child: BottomNavigationPage(
+                child: navigationShell,
+              ),
+            );
+          },
+        ),
+        ...routes.sublist(2),
         GoRoute(
           path: '/incoming',
           name: 'incoming',
@@ -127,9 +177,59 @@ void printGoRouterState(GoRouterState state) {
       '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
 }
 
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);
+  }
+}
+
+class BottomNavigationPage extends StatefulWidget {
+  const BottomNavigationPage({
+    required this.child,
+    super.key,
+  });
+
+  final StatefulNavigationShell child;
+
+  @override
+  State<BottomNavigationPage> createState() => _BottomNavigationPageState();
+}
+
+class _BottomNavigationPageState extends State<BottomNavigationPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CLBackground(
+        child: SafeArea(
+          child: widget.child,
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: widget.child.currentIndex,
+        onTap: (index) {
+          widget.child.goBranch(
+            index,
+            initialLocation: index == widget.child.currentIndex,
+          );
+          setState(() {});
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'settings',
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -47,10 +47,17 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
-      'home': (context, state) => const AppTheme(child: HomeView()),
-      'tags': (context, state) => const AppTheme(child: TagsView()),
-      'demo': (context, state) => const DemoMain(),
       'collections': (context, GoRouterState state) => const CollectionsView(),
+
+      //'home': (context, state) => const AppTheme(child: HomeView()),
+      'tags': (context, state) => const AppTheme(child: TagsView()),
+      'settings': (context, state) => const AppTheme(
+            child: Center(
+              child: Text('Settings'),
+            ),
+          ),
+      //'demo': (context, state) => const DemoMain(),
+
       'collections/by_tag_id/:id': (context, GoRouterState state) =>
           CollectionsView(tagId: int.parse(state.pathParameters['id']!)),
       'items/by_collection_id/:id': (context, GoRouterState state) =>
@@ -78,16 +85,40 @@ class KeepItApp implements AppDescriptor {
         Animation<double> secondaryAnimation,
         Widget child,
       ) {
-        return SlideTransition(
-          position: Tween(begin: const Offset(1, 0), end: Offset.zero)
-              .animate(animation),
-          child: child,
-        );
+        const scheme = 'fade';
+        switch (scheme) {
+          case 'slide':
+            return SlideTransition(
+              position: Tween(begin: const Offset(1, 0), end: Offset.zero)
+                  .animate(animation),
+              child: child,
+            );
+          case 'scale':
+            return ScaleTransition(
+              scale: animation,
+              child: child,
+            );
+          case 'size':
+            return Align(
+              child: SizeTransition(
+                sizeFactor: animation,
+                child: child,
+              ),
+            );
+          case 'rotation':
+            return RotationTransition(
+              turns: animation,
+              child: child,
+            );
+          case 'fade':
+          default:
+            return FadeTransition(opacity: animation, child: child);
+        }
       };
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location == '/') return '/home';
+        if (location == '/') return '/collections';
         return null;
       };
 }
