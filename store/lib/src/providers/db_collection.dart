@@ -41,7 +41,10 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     });
   }
 
-  Future<int> upsertCollection(Collection collection, List<int>? tagIds) async {
+  Future<int> upsertCollection(
+    Collection collection,
+    List<int>? tagIds,
+  ) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
@@ -66,36 +69,21 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     }
 
     await loadCollections();
+
     return collectionId;
   }
 
-  /*  void upsertCollections(List<Collection> collections) {
-    if (databaseManager == null) {
-      throw Exception("DB Manager is not ready");
-    }
-    for (var collection in collections) {
-      collection.upsert(databaseManager!.db);
-    }
-    loadCollections();
-  } */
-
-  void deleteCollection(Collection collection) {
+  Future<int> deleteCollection(
+    Collection collection,
+  ) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
-
-    collection.delete(databaseManager!.db);
-    loadCollections();
-  }
-
-  void deleteCollections(List<Collection> collections) {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    for (final collection in collections) {
+    if (collection.id != null) {
       collection.delete(databaseManager!.db);
+      return collection.id!;
     }
-    loadCollections();
+    return -1;
   }
 }
 

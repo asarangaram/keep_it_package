@@ -9,15 +9,15 @@ class LoadCollections extends ConsumerWidget {
   const LoadCollections({
     required this.buildOnData,
     super.key,
-    this.tagID,
+    this.tagId,
     this.hasBackground = true,
   });
   final Widget Function(Collections collections) buildOnData;
-  final int? tagID;
+  final int? tagId;
   final bool hasBackground;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(collectionsProvider(tagID));
+    final collectionsAsync = ref.watch(collectionsProvider(tagId));
 
     return collectionsAsync.when(
       loading: () => const CLLoadingView(),

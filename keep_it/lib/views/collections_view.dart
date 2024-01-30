@@ -1,108 +1,84 @@
+import 'dart:async';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:store/store.dart';
 
-import '../controls/is_preview_square.dart';
 import '../widgets/from_store/from_store.dart';
-import '../widgets/keep_it_main_view.dart';
+import '../widgets/from_store/items_in_tag.dart';
+import 'keepit_grid/keepit_grid.dart';
 
 class CollectionsView extends ConsumerWidget {
-  const CollectionsView({required this.tagId, super.key});
-
+  const CollectionsView({super.key, this.tagId});
   final int? tagId;
   @override
   Widget build(BuildContext context, WidgetRef ref) => CLFullscreenBox(
         child: CLBackground(
           child: LoadCollections(
-            tagID: tagId,
-            buildOnData: (collections) =>
-                _CollectionsView(collections: collections),
+            tagId: tagId,
+            buildOnData: (tags) => KeepItGrid(
+              label: 'Collections',
+              entities: tags.entries,
+              availableSuggestions: const [],
+              onSelect: (BuildContext context, CollectionBase entity) async {
+                unawaited(
+                  context.push(
+                    '/collections/by_collection_id/${entity.id}',
+                  ),
+                );
+                return true;
+              },
+              onUpdate: (List<CollectionBase> selectedEntities) {
+                if (selectedEntities.length != 1) {
+                  throw Exception(
+                    "Unexected: Collections can't be added in bulk",
+                  );
+                }
+                for (final entity in selectedEntities) {
+                  ref
+                      .read(collectionsProvider(null).notifier)
+                      .upsertCollection(Collection.fromBase(entity), null);
+                }
+              },
+              onDelete: (List<CollectionBase> selectedEntities) {
+                if (selectedEntities.length != 1) {
+                  throw Exception(
+                    "Unexected: Collections can't be added in bulk",
+                  );
+                }
+                for (final entity in selectedEntities) {
+                  ref
+                      .read(collectionsProvider(null).notifier)
+                      .deleteCollection(Collection.fromBase(entity));
+                }
+              },
+              previewGenerator: (BuildContext context, CollectionBase entity) {
+                if (entity.id == null) {
+                  throw Exception("Unexpected, id can't be null");
+                }
+                return LoadItems(
+                  collectionID: entity.id!,
+                  buildOnData: (Items items, {required String docDir}) {
+                    final List<CLMedia> mediaList;
+                    mediaList = items.entries.map(
+                      (e) {
+                        return e.toCLMedia(pathPrefix: docDir);
+                      },
+                    ).toList();
+                    return CLMediaListPreview(
+                      mediaList: mediaList,
+                      mediaCountInPreview:
+                          const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+                      whenNopreview: CLText.veryLarge(
+                          items.collection.label.characters.first),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       );
-}
-
-class _CollectionsView extends ConsumerWidget {
-  const _CollectionsView({required this.collections});
-  final Collections collections;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return KeepItMainView(
-      title: collections.tag?.label ?? 'Collections',
-      onPop: context.canPop()
-          ? () {
-              context.pop();
-            }
-          : null,
-      actionsBuilder: [
-        (
-          BuildContext context,
-          GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
-        ) {
-          return const PreviewSquareControlButton();
-        }
-      ],
-      pageBuilder: (context, quickMenuScopeKey) {
-        return CLMatrix3DAutoFit(
-          itemCount: collections.entries.length,
-          itemBuilder: itemBuilder,
-          childSize: const Size(180, 300),
-          layers: 2,
-        );
-      },
-    );
-  }
-
-  Widget itemBuilder(BuildContext context, int index, int l) {
-    final e = collections.entries[index];
-    if (l > 1) {
-      throw Exception('has only one layer!');
-    }
-    if (l == 0) {
-      return GestureDetector(
-        onTap: () => context.push('/items/by_collection_id/${e.id}'),
-        child: LoadItems(
-          collectionID: e.id!,
-          hasBackground: false,
-          buildOnData: (Items items, {required String docDir}) {
-            final (hCount, vCount) = switch (items.entries.length) {
-              1 => (1, 1),
-              2 => (2, 2),
-              <= 4 => (2, 2),
-              < 6 => (2, 3),
-              _ => (3, 3)
-            };
-            return CLMediaListPreview(
-              mediaList: items.entries
-                  .map(
-                    (ItemInDB e) => e.toCLMedia(
-                      pathPrefix: docDir,
-                    ),
-                  )
-                  .toList(),
-              mediaCountInPreview:
-                  CLDimension(itemsInRow: hCount, itemsInColumn: vCount),
-              whenNopreview: CLText.veryLarge(e.label.characters.first),
-            );
-          },
-        ),
-      );
-    } else {
-      return GestureDetector(
-        onTap: () => context.push('/items/by_collection_id/${e.id}'),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            e.label,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      );
-    }
-  }
 }

@@ -50,8 +50,7 @@ class KeepItApp implements AppDescriptor {
       'home': (context, state) => const AppTheme(child: HomeView()),
       'tags': (context, state) => const AppTheme(child: TagsView()),
       'demo': (context, state) => const DemoMain(),
-      'collections': (context, GoRouterState state) =>
-          const CollectionsView(tagId: null),
+      'collections': (context, GoRouterState state) => const CollectionsView(),
       'collections/by_tag_id/:id': (context, GoRouterState state) =>
           CollectionsView(tagId: int.parse(state.pathParameters['id']!)),
       'items/by_collection_id/:id': (context, GoRouterState state) =>

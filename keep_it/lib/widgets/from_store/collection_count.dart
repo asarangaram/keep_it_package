@@ -16,7 +16,7 @@ class CollectionCount extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadCollections(
-      tagID: tagId,
+      tagId: tagId,
       buildOnData: (collections) {
         return buildOnData(collections.entries.length);
       },

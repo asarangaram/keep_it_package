@@ -25,7 +25,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         BottomNavigationBarItem(
           icon: Icon(Icons.menu),
           label: 'Collections',
-        ): CollectionsView(tagId: null),
+        ): CollectionsView(),
       },
       currentIndex: currentIndex,
       onPageChange: (int val) {
