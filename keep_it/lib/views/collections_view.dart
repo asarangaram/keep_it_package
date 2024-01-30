@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
-import '../widgets/from_store/items_in_tag.dart';
 import 'keepit_grid/keepit_grid.dart';
 
 class CollectionsView extends ConsumerWidget {
@@ -18,41 +17,44 @@ class CollectionsView extends ConsumerWidget {
         child: CLBackground(
           child: LoadCollections(
             tagId: tagId,
-            buildOnData: (tags) => KeepItGrid(
-              label: 'Collections',
-              entities: tags.entries,
+            buildOnData: (collections) => KeepItGrid(
+              label: collections.tag?.label ?? 'Collections',
+              entities: collections.entries,
               availableSuggestions: const [],
+              itemSize: const Size(180, 300),
               onSelect: (BuildContext context, CollectionBase entity) async {
                 unawaited(
                   context.push(
-                    '/collections/by_collection_id/${entity.id}',
+                    '/items/by_collection_id/${entity.id}',
                   ),
                 );
                 return true;
               },
-              onUpdate: (List<CollectionBase> selectedEntities) {
+              onUpdate: (List<CollectionBase> selectedEntities) async {
                 if (selectedEntities.length != 1) {
                   throw Exception(
                     "Unexected: Collections can't be added in bulk",
                   );
                 }
                 for (final entity in selectedEntities) {
-                  ref
+                  await ref
                       .read(collectionsProvider(null).notifier)
                       .upsertCollection(Collection.fromBase(entity), null);
                 }
+                return true;
               },
-              onDelete: (List<CollectionBase> selectedEntities) {
+              onDelete: (List<CollectionBase> selectedEntities) async {
                 if (selectedEntities.length != 1) {
                   throw Exception(
                     "Unexected: Collections can't be added in bulk",
                   );
                 }
                 for (final entity in selectedEntities) {
-                  ref
+                  await ref
                       .read(collectionsProvider(null).notifier)
                       .deleteCollection(Collection.fromBase(entity));
                 }
+                return true;
               },
               previewGenerator: (BuildContext context, CollectionBase entity) {
                 if (entity.id == null) {
@@ -72,7 +74,8 @@ class CollectionsView extends ConsumerWidget {
                       mediaCountInPreview:
                           const CLDimension(itemsInRow: 2, itemsInColumn: 2),
                       whenNopreview: CLText.veryLarge(
-                          items.collection.label.characters.first),
+                        items.collection.label.characters.first,
+                      ),
                     );
                   },
                 );

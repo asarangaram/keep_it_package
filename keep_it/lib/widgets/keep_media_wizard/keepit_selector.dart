@@ -7,22 +7,24 @@ import '../tags_dialogs.dart';
 import 'create_or_select.dart';
 import 'wizard_item.dart';
 
-class KeepITItemSelector extends StatefulWidget {
-  const KeepITItemSelector({
+class KeepItItemSelector extends StatefulWidget {
+  const KeepItItemSelector({
     required this.entities,
     required this.availableSuggestions,
     required this.onDone,
+    required this.onCreateNew,
     super.key,
   });
   final List<CollectionBase> entities;
   final List<CollectionBase> availableSuggestions;
   final void Function(List<CollectionBase> selectedTags) onDone;
+  final CollectionBase Function(CollectionBase entity) onCreateNew;
 
   @override
-  State<KeepITItemSelector> createState() => _KeepITItemSelectorState();
+  State<KeepItItemSelector> createState() => _KeepItItemSelectorState();
 }
 
-class _KeepITItemSelectorState extends State<KeepITItemSelector> {
+class _KeepItItemSelectorState extends State<KeepItItemSelector> {
   late ScrollController scrollController;
   final GlobalKey wrapKey = GlobalKey();
 
@@ -57,7 +59,7 @@ class _KeepITItemSelectorState extends State<KeepITItemSelector> {
       if (res == null) {
         return;
       }
-      entityUpdated = res;
+      entityUpdated = widget.onCreateNew(res);
       // TODO(anandas): add to DB
     } else {
       entityUpdated = c;

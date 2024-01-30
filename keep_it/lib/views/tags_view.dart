@@ -25,6 +25,7 @@ class TagsView extends ConsumerWidget {
                     .map((e) => e.label)
                     .contains(element.label);
               }).toList(),
+              itemSize: const Size(100, 120),
               onSelect: (BuildContext context, CollectionBase entity) async {
                 unawaited(
                   context.push(
@@ -33,17 +34,18 @@ class TagsView extends ConsumerWidget {
                 );
                 return true;
               },
-              onUpdate: (List<CollectionBase> selectedTags) {
+              onUpdate: (List<CollectionBase> selectedTags) async {
                 ref
                     .read(tagsProvider(null).notifier)
                     .upsertTags(selectedTags.map(Tag.fromBase).toList());
+                return true;
               },
-              onDelete: (List<CollectionBase> selectedTags) {
+              onDelete: (List<CollectionBase> selectedTags) async {
                 ref
                     .read(tagsProvider(null).notifier)
                     .deleteTags(selectedTags.map(Tag.fromBase).toList());
+                return true;
               },
-              
               previewGenerator: (BuildContext context, CollectionBase tag) {
                 return LoadItemsInTag(
                   id: tag.id,

@@ -10,7 +10,7 @@ import '../app_theme.dart';
 import 'create_or_select.dart';
 import 'description_editor.dart';
 import 'label_viewer.dart';
-import 'tag_selector.dart';
+import 'keepit_selector.dart';
 import 'wizard_item.dart';
 
 extension EXTListindex<T> on List<T> {
@@ -139,7 +139,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
         Flexible(
           child: LoadTags(
             buildOnData: (tags) {
-              return KeepITItemSelector(
+              return KeepItItemSelector(
                 entities: tags.entries,
                 availableSuggestions: suggestedTags,
                 onDone: (selectedTags) {
@@ -151,6 +151,11 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
                     );
                   });
                   onNext();
+                },
+                onCreateNew: (entity) {
+                  return ref
+                      .read(tagsProvider(null).notifier)
+                      .upsertTag(Tag.fromBase(entity));
                 },
               );
             },

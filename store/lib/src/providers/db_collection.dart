@@ -81,6 +81,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     }
     if (collection.id != null) {
       collection.delete(databaseManager!.db);
+      await loadCollections();
       return collection.id!;
     }
     return -1;

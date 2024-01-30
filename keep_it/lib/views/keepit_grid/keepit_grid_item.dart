@@ -10,6 +10,7 @@ class KeepItGridItem extends ConsumerWidget {
     required this.quickMenuScopeKey,
     required this.entities,
     required this.previewGenerator,
+    required this.itemSize,
     this.onTap,
     this.onEdit,
     this.onDelete,
@@ -33,6 +34,7 @@ class KeepItGridItem extends ConsumerWidget {
   final int? lastupdatedID;
   final Widget Function(BuildContext context, CollectionBase entity)
       previewGenerator;
+  final Size itemSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,7 +43,7 @@ class KeepItGridItem extends ConsumerWidget {
         : entities.indexWhere((e) => e.id == lastupdatedID);
 
     return CLMatrix3DAutoFit(
-      childSize: const Size(100, 120),
+      childSize: itemSize,
       itemCount: entities.length,
       layers: 2,
       visibleItem: highLightIndex <= -1 ? null : highLightIndex,

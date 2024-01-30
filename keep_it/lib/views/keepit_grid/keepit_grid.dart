@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../../widgets/keep_it_main_view.dart';
@@ -18,6 +19,7 @@ class KeepItGrid extends StatelessWidget {
     required this.onUpdate,
     required this.onDelete,
     required this.previewGenerator,
+    required this.itemSize,
     super.key,
   });
   final String label;
@@ -25,11 +27,12 @@ class KeepItGrid extends StatelessWidget {
   final List<CollectionBase> availableSuggestions;
   final Future<bool> Function(BuildContext context, CollectionBase entity)
       onSelect;
-  final void Function(List<CollectionBase> selectedTags) onUpdate;
+  final Future<bool> Function(List<CollectionBase> selectedTags) onUpdate;
 
-  final void Function(List<CollectionBase> selectedTags) onDelete;
+  final Future<bool> Function(List<CollectionBase> selectedTags) onDelete;
   final Widget Function(BuildContext context, CollectionBase entity)
       previewGenerator;
+  final Size itemSize;
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +59,9 @@ class KeepItGrid extends StatelessWidget {
           onTap: () async {
             final tag = await KeepItDialogs.upsert(context);
             if (tag != null) {
-              onUpdate([tag]);
+              return onUpdate([tag]);
             }
-            return null;
+            return false;
           },
         ),
       ]
@@ -77,6 +80,11 @@ class KeepItGrid extends StatelessWidget {
     }
     return KeepItMainView(
       title: label,
+      onPop: context.canPop()
+          ? () {
+              context.pop();
+            }
+          : null,
       actionsBuilder: [
         (context, quickMenuScopeKey) {
           if (availableSuggestions.isEmpty) {
@@ -85,7 +93,7 @@ class KeepItGrid extends StatelessWidget {
               onTap: () async {
                 final tag = await KeepItDialogs.upsert(context);
                 if (tag != null) {
-                  onUpdate([tag]);
+                  await onUpdate([tag]);
                 }
               },
             );
@@ -119,12 +127,13 @@ class KeepItGrid extends StatelessWidget {
           onEdit: (context, entity) async {
             final tag = await KeepItDialogs.upsert(context, entity: entity);
             if (tag != null) {
-              onUpdate([tag]);
+              await onUpdate([tag]);
             }
-            return null;
+            return true;
           },
           onDelete: onDeleteTag,
           previewGenerator: previewGenerator,
+          itemSize: itemSize,
         );
       },
     );
@@ -141,9 +150,8 @@ class KeepItGrid extends StatelessWidget {
       cancelLabel: 'No',
     )) {
       case OkCancelResult.ok:
-        onDelete([entity]);
+        return onDelete([entity]);
 
-        return true;
       case OkCancelResult.cancel:
         return false;
     }
