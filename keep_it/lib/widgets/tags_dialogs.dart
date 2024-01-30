@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import 'add_tag_form.dart';
-import 'from_store/from_store.dart';
 import 'tags_list.dart';
 
 class KeepItDialogs {
@@ -27,80 +26,6 @@ class KeepItDialogs {
         },
       );
 
-  static Widget _selectTags(
-    BuildContext context,
-    Tags tags, {
-    required dynamic Function(List<Tag>) onSelectionDone,
-    required String title,
-    String? labelSelected,
-    String? labelNoneSelected,
-    bool showCount = true,
-  }) {
-    if (tags.isEmpty) {
-      throw Exception("TagList can't be empty!");
-    }
-
-    return CLBackground(
-      child: CLDialogWrapper(
-        backgroundColor: Colors.transparent,
-        onCancel: () {
-          Navigator.of(context).pop();
-        },
-        child: CLSelectionWrapper(
-          title: title,
-          selectableList: tags.entries,
-          multiSelection: true,
-          onSelectionDone: (selectedIndices) {
-            onSelectionDone(
-              selectedIndices.map((e) => tags.entries[e]).toList(),
-            );
-
-            Navigator.of(context).pop();
-          },
-          labelNoneSelected: labelNoneSelected,
-          labelSelected: labelSelected,
-          listBuilder: ({
-            required onSelection,
-            required selectableList,
-            required selectionMask,
-          }) {
-            if (selectableList.isEmpty) {
-              throw Exception("TagList can't be empty!");
-            }
-            return TagsList(
-              tags: Tags(selectableList),
-              selectionMask: selectionMask,
-              onSelection: onSelection,
-              showCount: showCount,
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  static Future<void> selectTags(
-    BuildContext context, {
-    required void Function(List<Tag>) onSelectionDone,
-    String? labelSelected,
-    String? labelNoneSelected,
-  }) =>
-      showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return LoadTags(
-            buildOnData: (tagFromDB) => _selectTags(
-              context,
-              tagFromDB,
-              onSelectionDone: onSelectionDone,
-              labelSelected: labelSelected,
-              labelNoneSelected: labelNoneSelected,
-              title: 'Save Into...',
-            ),
-          );
-        },
-      );
-
   static void onSuggestions(
     BuildContext context, {
     required dynamic Function(List<Tag>) onSelectionDone,
@@ -110,7 +35,52 @@ class KeepItDialogs {
       context: context,
       builder: (BuildContext context) {
         return CLBackground(
-          child: _selectTags(
+          child: CLBackground(
+            child: CLDialogWrapper(
+              backgroundColor: Colors.transparent,
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              child: CLSelectionWrapper(
+                title: 'Suggestions',
+                selectableList: availableSuggestions.entries,
+                multiSelection: true,
+                onSelectionDone: (selectedIndices) {
+                  onSelectionDone(
+                    selectedIndices
+                        .map((e) => availableSuggestions.entries[e])
+                        .toList(),
+                  );
+
+                  Navigator.of(context).pop();
+                },
+                labelNoneSelected: 'Select from Suggestions',
+                labelSelected: 'Create Selected',
+                listBuilder: ({
+                  required onSelection,
+                  required selectableList,
+                  required selectionMask,
+                }) {
+                  if (selectableList.isEmpty) {
+                    throw Exception("TagList can't be empty!");
+                  }
+                  return TagsList(
+                    tags: Tags(selectableList),
+                    selectionMask: selectionMask,
+                    onSelection: onSelection,
+                    showCount: false,
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+/*
+_selectTags(
             context,
             availableSuggestions,
             onSelectionDone: onSelectionDone,
@@ -119,8 +89,4 @@ class KeepItDialogs {
             title: 'Suggestions',
             showCount: false,
           ),
-        );
-      },
-    );
-  }
-}
+*/
