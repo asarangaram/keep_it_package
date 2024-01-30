@@ -130,16 +130,14 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
                     },
                   ),
                 ),
-                if (isMobilePlatform)
+                if (isMobilePlatform && FocusScope.of(context).hasFocus)
                   Align(
                     alignment: Alignment.centerLeft,
                     child: CLButtonIcon.small(
                       Icons.keyboard_hide,
                       color: widget.foregroundColor,
                       disabledColor: widget.disabledColor,
-                      onTap: MediaQuery.of(context).viewInsets.bottom > 0
-                          ? () {}
-                          : null,
+                      onTap: () => FocusScope.of(context).unfocus(),
                     ),
                   ),
               ],
