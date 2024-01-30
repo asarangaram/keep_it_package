@@ -24,7 +24,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLAppInitializer get appInitializer => (ref) async {
-        // TODO(asarangaram): Delete only if saved preference is set to reset.
+        // TODO(anandas): Delete only if saved preference is set to reset.
 
         // ignore: dead_code, literal_only_boolean_expressions
         if (false) {

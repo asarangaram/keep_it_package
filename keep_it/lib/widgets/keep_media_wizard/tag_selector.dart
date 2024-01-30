@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/widgets/from_store/from_store.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
@@ -8,23 +7,26 @@ import '../tags_dialogs.dart';
 import 'create_or_select.dart';
 import 'wizard_item.dart';
 
-class TagSelector extends StatefulWidget {
-  const TagSelector({
+class KeepITItemSelector extends StatefulWidget {
+  const KeepITItemSelector({
+    required this.entities,
+    required this.availableSuggestions,
     required this.onDone,
     super.key,
   });
-
-  final void Function(List<Tag> selectedTags) onDone;
+  final List<CollectionBase> entities;
+  final List<CollectionBase> availableSuggestions;
+  final void Function(List<CollectionBase> selectedTags) onDone;
 
   @override
-  State<TagSelector> createState() => _TagSelectorState();
+  State<KeepITItemSelector> createState() => _KeepITItemSelectorState();
 }
 
-class _TagSelectorState extends State<TagSelector> {
+class _KeepITItemSelectorState extends State<KeepITItemSelector> {
   late ScrollController scrollController;
   final GlobalKey wrapKey = GlobalKey();
 
-  List<Tag> selectedTags = [];
+  List<CollectionBase> selectedEntities = [];
   late SearchController controller;
   @override
   void initState() {
@@ -49,18 +51,20 @@ class _TagSelectorState extends State<TagSelector> {
   }
 
   Future<void> onDone(CollectionBase c) async {
+    final CollectionBase entityUpdated;
     if (c.id == null) {
-      final tagWithId = await TagsDialog.updateTag(context, Tag.fromBase(c));
-      if (tagWithId == null) {
+      final res = await KeepItDialogs.upsert(context, entity: c);
+      if (res == null) {
         return;
       }
-      selectedTags.add(tagWithId);
+      entityUpdated = res;
+      // TODO(anandas): add to DB
     } else {
-      selectedTags.add(
-        Tag.fromBase(c),
-      );
+      entityUpdated = c;
+      selectedEntities.add(c);
     }
     setState(() {
+      selectedEntities.add(entityUpdated);
       controller.text = '';
     });
     Future.delayed(const Duration(milliseconds: 200), scrollToEnd);
@@ -68,102 +72,97 @@ class _TagSelectorState extends State<TagSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return LoadTags(
-      buildOnData: (tags) {
-        return WizardItem(
-          action: selectedTags.isEmpty
-              ? null
-              : CLMenuItem(
-                  title: 'Save',
-                  icon: MdiIcons.floppy,
-                  onTap: () async {
-                    if (selectedTags.isNotEmpty) {
-                      widget.onDone(selectedTags);
-                    }
-                    return selectedTags.isNotEmpty;
-                  },
-                ),
-          child: SizedBox.expand(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Wrap(
-                    key: wrapKey,
-                    spacing: 1,
-                    runSpacing: 1,
-                    children: [
-                      ...selectedTags.map(
-                        (e) => Theme(
-                          data: Theme.of(context).copyWith(
-                            chipTheme: const ChipThemeData(
-                              side: BorderSide.none,
-                            ),
-                            canvasColor: Colors.transparent,
-                          ),
-                          child: Chip(
-                            label: Text(e.label),
-                            onDeleted: () {
-                              setState(() {
-                                selectedTags.remove(e);
-                              });
-                            },
-                          ),
+    return WizardItem(
+      action: selectedEntities.isEmpty
+          ? null
+          : CLMenuItem(
+              title: 'Save',
+              icon: MdiIcons.floppy,
+              onTap: () async {
+                if (selectedEntities.isNotEmpty) {
+                  widget.onDone(selectedEntities);
+                }
+                return selectedEntities.isNotEmpty;
+              },
+            ),
+      child: SizedBox.expand(
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                key: wrapKey,
+                spacing: 1,
+                runSpacing: 1,
+                children: [
+                  ...selectedEntities.map(
+                    (e) => Theme(
+                      data: Theme.of(context).copyWith(
+                        chipTheme: const ChipThemeData(
+                          side: BorderSide.none,
                         ),
+                        canvasColor: Colors.transparent,
                       ),
-                      CreateOrSelect(
-                        controller: controller,
-                        onDone: onDone,
-                        suggestedCollections: [
-                          ...tags.entries,
-                          ...suggestedTags.where((element) {
-                            return !tags.entries
-                                .map((e) => e.label)
-                                .contains(element.label);
-                          }),
-                        ]
-                            .where(
-                              (element) => !selectedTags
-                                  .map((e) => e.label)
-                                  .contains(element.label),
-                            )
-                            .toList(),
-                        anchorBuilder: (
-                          BuildContext context,
-                          SearchController controller, {
-                          required void Function(CollectionBase) onDone,
-                        }) {
-                          return Theme(
-                            data: Theme.of(context).copyWith(
-                              canvasColor: Colors.transparent,
-                            ),
-                            child: ActionChip(
-                              avatar: Icon(MdiIcons.plus),
-                              label: Text(
-                                selectedTags.isEmpty
-                                    ? 'Add Tag'
-                                    : 'Add Another Tag',
-                              ),
-                              onPressed: controller.openView,
-                              shape: const ContinuousRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(16)),
-                              ),
-                            ),
-                          );
+                      child: Chip(
+                        label: Text(e.label),
+                        onDeleted: () {
+                          setState(() {
+                            selectedEntities.remove(e);
+                          });
                         },
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  CreateOrSelect(
+                    controller: controller,
+                    onDone: onDone,
+                    suggestedCollections: [
+                      ...widget.entities,
+                      ...widget.availableSuggestions.where((element) {
+                        return !widget.entities
+                            .map((e) => e.label)
+                            .contains(element.label);
+                      }),
+                    ]
+                        .where(
+                          (element) => !selectedEntities
+                              .map((e) => e.label)
+                              .contains(element.label),
+                        )
+                        .toList(),
+                    anchorBuilder: (
+                      BuildContext context,
+                      SearchController controller, {
+                      required void Function(CollectionBase) onDone,
+                    }) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          canvasColor: Colors.transparent,
+                        ),
+                        child: ActionChip(
+                          avatar: Icon(MdiIcons.plus),
+                          label: Text(
+                            selectedEntities.isEmpty
+                                ? 'Add Tag'
+                                : 'Add Another Tag',
+                          ),
+                          onPressed: controller.openView,
+                          shape: const ContinuousRectangleBorder(
+                            side: BorderSide(),
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

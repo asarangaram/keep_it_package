@@ -6,35 +6,22 @@ import 'add_tag_form.dart';
 import 'from_store/from_store.dart';
 import 'tags_list.dart';
 
-class TagsDialog {
-  static Future<Tag?> newTag(
-    BuildContext context,
-  ) {
-    return _upsertTag(
-      context,
-    );
-  }
-
-  static Future<Tag?> updateTag(
-    BuildContext context,
-    Tag? tag,
-  ) {
-    return _upsertTag(context, tag: tag);
-  }
-
-  static Future<Tag?> _upsertTag(
+class KeepItDialogs {
+  static Future<CollectionBase?> upsert(
     BuildContext context, {
-    Tag? tag,
+    CollectionBase? entity,
     //  void Function()? onDone,
   }) async =>
-      showDialog<Tag>(
+      showDialog<CollectionBase>(
         context: context,
         builder: (BuildContext context) {
           return CLDialogWrapper(
             onCancel: () => Navigator.of(context).pop(),
-            child: UpsertTagForm(
-              tag: tag,
-              onDone: (Tag tag) => Navigator.of(context).pop(tag),
+            child: UpsertEntityForm(
+              entity: entity,
+              onDone: (CollectionBase entity) {
+                Navigator.of(context).pop(entity);
+              },
             ),
           );
         },

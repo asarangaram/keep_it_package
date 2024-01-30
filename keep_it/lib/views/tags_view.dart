@@ -8,8 +8,7 @@ import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
 import '../widgets/from_store/items_in_tag.dart';
-import '../widgets/tags_dialogs.dart';
-import 'keepit_grid.dart';
+import 'keepit_grid/keepit_grid.dart';
 
 class TagsView extends ConsumerWidget {
   const TagsView({super.key});
@@ -44,11 +43,7 @@ class TagsView extends ConsumerWidget {
                     .read(tagsProvider(null).notifier)
                     .deleteTags(selectedTags.map(Tag.fromBase).toList());
               },
-              onCreate: (context) async =>
-                  (await TagsDialog.newTag(context)) != null,
-              onEdit: (context, tag) async =>
-                  await TagsDialog.updateTag(context, Tag.fromBase(tag)) !=
-                  null,
+              
               previewGenerator: (BuildContext context, CollectionBase tag) {
                 return LoadItemsInTag(
                   id: tag.id,

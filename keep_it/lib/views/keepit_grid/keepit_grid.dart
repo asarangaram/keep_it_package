@@ -3,14 +3,11 @@ import 'dart:async';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:store/store.dart';
 
-import '../widgets/keep_it_main_view.dart';
-import '../widgets/keepit_grid_item.dart';
-import '../widgets/tags_dialogs.dart';
-import '../widgets/tags_empty.dart';
+import '../../widgets/keep_it_main_view.dart';
+import '../../widgets/tags_dialogs.dart';
+import 'keepit_grid_item.dart';
 
 class KeepItGrid extends StatelessWidget {
   const KeepItGrid({
@@ -20,8 +17,6 @@ class KeepItGrid extends StatelessWidget {
     required this.onSelect,
     required this.onUpdate,
     required this.onDelete,
-    required this.onCreate,
-    required this.onEdit,
     required this.previewGenerator,
     super.key,
   });
@@ -31,42 +26,52 @@ class KeepItGrid extends StatelessWidget {
   final Future<bool> Function(BuildContext context, CollectionBase entity)
       onSelect;
   final void Function(List<CollectionBase> selectedTags) onUpdate;
-  final Future<bool> Function(BuildContext context) onCreate;
-  final Future<bool> Function(BuildContext context, CollectionBase tag) onEdit;
+
   final void Function(List<CollectionBase> selectedTags) onDelete;
-  final Widget Function(BuildContext context, CollectionBase tag)
+  final Widget Function(BuildContext context, CollectionBase entity)
       previewGenerator;
 
   @override
   Widget build(BuildContext context) {
     final menuItems = [
       [
-        CLMenuItem(
-          title: 'Suggestions',
-          icon: Icons.menu,
-          onTap: () async {
-            TagsDialog.onSuggestions(
-              context,
-              availableSuggestions:
-                  Tags(availableSuggestions.map(Tag.fromBase).toList()),
-              onSelectionDone: onUpdate,
-            );
+        if (availableSuggestions.isNotEmpty)
+          CLMenuItem(
+            title: 'Suggestions',
+            icon: Icons.menu,
+            onTap: () async {
+              KeepItDialogs.onSuggestions(
+                context,
+                availableSuggestions:
+                    Tags(availableSuggestions.map(Tag.fromBase).toList()),
+                onSelectionDone: onUpdate,
+              );
 
-            return true;
-          },
-        ),
+              return true;
+            },
+          ),
         CLMenuItem(
           title: 'Create New',
           icon: Icons.new_label,
-          onTap: () => onCreate(context),
+          onTap: () async {
+            final tag = await KeepItDialogs.upsert(context);
+            if (tag != null) {
+              onUpdate([tag]);
+            }
+            return null;
+          },
         ),
       ]
     ];
 
     if (entities.isEmpty) {
       return KeepItMainView(
-        pageBuilder: (context, quickMenuScopeKey) => TagsEmpty(
-          menuItems: menuItems,
+        pageBuilder: (context, quickMenuScopeKey) => Center(
+          child: Center(
+            child: CLButtonsGrid(
+              children2D: menuItems,
+            ),
+          ),
         ),
       );
     }
@@ -77,7 +82,12 @@ class KeepItGrid extends StatelessWidget {
           if (availableSuggestions.isEmpty) {
             return CLButtonIcon.standard(
               Icons.add,
-              onTap: () => TagsDialog.newTag(context),
+              onTap: () async {
+                final tag = await KeepItDialogs.upsert(context);
+                if (tag != null) {
+                  onUpdate([tag]);
+                }
+              },
             );
           } else {
             return CLQuickMenuAnchor(
@@ -106,7 +116,13 @@ class KeepItGrid extends StatelessWidget {
           quickMenuScopeKey: quickMenuScopeKey,
           entities: entities,
           onTap: onSelect,
-          onEdit: onEdit,
+          onEdit: (context, entity) async {
+            final tag = await KeepItDialogs.upsert(context, entity: entity);
+            if (tag != null) {
+              onUpdate([tag]);
+            }
+            return null;
+          },
           onDelete: onDeleteTag,
           previewGenerator: previewGenerator,
         );
@@ -116,7 +132,7 @@ class KeepItGrid extends StatelessWidget {
 
   Future<bool?> onDeleteTag(
     BuildContext context,
-    CollectionBase tag,
+    CollectionBase entity,
   ) async {
     switch (await showOkCancelAlertDialog(
       context: context,
@@ -125,7 +141,7 @@ class KeepItGrid extends StatelessWidget {
       cancelLabel: 'No',
     )) {
       case OkCancelResult.ok:
-        onDelete([Tag.fromBase(tag)]);
+        onDelete([entity]);
 
         return true;
       case OkCancelResult.cancel:

@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class UpsertTagForm extends ConsumerWidget {
-  const UpsertTagForm({super.key, this.tag, this.onDone});
+class UpsertEntityForm extends ConsumerWidget {
+  const UpsertEntityForm({super.key, this.entity, this.onDone});
 
-  final Tag? tag;
-  final void Function(Tag tag)? onDone;
+  final CollectionBase? entity;
+  final void Function(CollectionBase tag)? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +24,7 @@ class UpsertTagForm extends ConsumerWidget {
       data: (tags) => SizedBox(
         width: min(MediaQuery.of(context).size.width, 450),
         child: CLTextFieldForm(
-          buttonLabel: (tag?.id == null) ? 'Create' : 'Update',
+          buttonLabel: (entity?.id == null) ? 'Create' : 'Update',
           clFormFields: [
             CLFormField(
               type: CLFormFieldTypes.textField,
@@ -33,13 +33,13 @@ class UpsertTagForm extends ConsumerWidget {
                 tags.entries,
               ),
               label: 'Name',
-              initialValue: tag?.label ?? '',
+              initialValue: entity?.label ?? '',
             ),
             CLFormField(
               type: CLFormFieldTypes.textFieldMultiLine,
               validator: validateDescription,
               label: 'Description',
-              initialValue: tag?.description ?? '',
+              initialValue: entity?.description ?? '',
             ),
           ],
           onSubmit: (List<String> values) {
@@ -48,14 +48,13 @@ class UpsertTagForm extends ConsumerWidget {
                 values[1].trim().isEmpty ? null : values[1].trim();
 
             try {
-              final tagWithID = ref.read(tagsProvider(null).notifier).upsertTag(
-                    Tag(
-                      id: tag?.id,
-                      label: label.trim(),
-                      description: description,
-                    ),
-                  );
-              onDone?.call(tagWithID);
+              onDone?.call(
+                Tag(
+                  id: entity?.id,
+                  label: label.trim(),
+                  description: description,
+                ),
+              );
             } catch (e) {
               return null;
             }
@@ -74,7 +73,7 @@ class UpsertTagForm extends ConsumerWidget {
     /* if (name!.length > 16) {
       return 'Name should not exceed 15 letters';
     } */
-    if (tag?.label == name) {
+    if (entity?.label == name) {
       // Nothing changed.
       return null;
     }

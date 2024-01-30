@@ -2,6 +2,7 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/widgets/from_store/from_store.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
@@ -136,16 +137,22 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
       children: [
         LabelViewer(label: 'Collection: ${collection!.label}'),
         Flexible(
-          child: TagSelector(
-            onDone: (selectedTags) {
-              setState(() {
-                this.selectedTags = selectedTags;
-                widget.onDone(
-                  collection: collection!,
-                  selectedTags: selectedTags,
-                );
-              });
-              onNext();
+          child: LoadTags(
+            buildOnData: (tags) {
+              return KeepITItemSelector(
+                entities: tags.entries,
+                availableSuggestions: suggestedTags,
+                onDone: (selectedTags) {
+                  setState(() {
+                    this.selectedTags = selectedTags;
+                    widget.onDone(
+                      collection: collection!,
+                      selectedTags: selectedTags,
+                    );
+                  });
+                  onNext();
+                },
+              );
             },
           ),
         ),
