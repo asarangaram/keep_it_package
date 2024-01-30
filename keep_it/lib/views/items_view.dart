@@ -16,50 +16,46 @@ class ItemsView extends ConsumerWidget {
   final int collectionID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CLFullscreenBox(
-      child: CLBackground(
-        child: LoadItems(
-          collectionID: collectionID,
-          buildOnData: (Items items, {required String docDir}) {
-            return KeepItMainView(
-              title: items.collection.description,
-              onPop: context.canPop()
-                  ? () {
-                      context.pop();
-                    }
-                  : null,
-              pageBuilder: (context, quickMenuScopeKey) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Text(items.collection.label),
-                    ),
-                    const Divider(
-                      thickness: 2,
-                    ),
-                    Expanded(
-                      child: CLMatrix2D(
-                        itemCount: items.entries.length,
-                        columns: 1,
-                        itemBuilder: (context, index, l) {
-                          final e = items.entries[index];
-                          if (l > 0) {
-                            throw Exception('has only one layer!');
-                          }
-                          return ItemView(
-                            media: e.toCLMedia(pathPrefix: docDir),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              },
+    return LoadItems(
+      collectionID: collectionID,
+      buildOnData: (Items items, {required String docDir}) {
+        return KeepItMainView(
+          title: items.collection.description,
+          onPop: context.canPop()
+              ? () {
+                  context.pop();
+                }
+              : null,
+          pageBuilder: (context, quickMenuScopeKey) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(items.collection.label),
+                ),
+                const Divider(
+                  thickness: 2,
+                ),
+                Expanded(
+                  child: CLMatrix2D(
+                    itemCount: items.entries.length,
+                    columns: 1,
+                    itemBuilder: (context, index, l) {
+                      final e = items.entries[index];
+                      if (l > 0) {
+                        throw Exception('has only one layer!');
+                      }
+                      return ItemView(
+                        media: e.toCLMedia(pathPrefix: docDir),
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
           },
-        ),
-      ),
+        );
+      },
     );
   }
 }

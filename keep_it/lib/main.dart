@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'views/collections_view.dart';
-import 'views/home_view.dart';
+
 import 'views/items_view.dart';
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
