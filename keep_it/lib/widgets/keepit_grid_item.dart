@@ -3,47 +3,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'from_store/items_in_tag.dart';
-
 import 'wrap_standard_quick_menu.dart';
 
-class TagsGrid extends ConsumerWidget {
-  const TagsGrid({
+class KeepItGridItem extends ConsumerWidget {
+  const KeepItGridItem({
     required this.quickMenuScopeKey,
-    required this.tags,
+    required this.entities,
+    required this.previewGenerator,
     this.onTap,
     this.onEdit,
     this.onDelete,
+    this.lastupdatedID, // Must avoid to item !
     super.key,
   });
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-  final Tags tags;
+  final List<CollectionBase> entities;
   final Future<bool?> Function(
     BuildContext context,
-    CollectionBase tag,
+    CollectionBase entity,
   )? onEdit;
   final Future<bool?> Function(
     BuildContext context,
-    CollectionBase tag,
+    CollectionBase entity,
   )? onDelete;
   final Future<bool?> Function(
     BuildContext context,
-    CollectionBase tag,
+    CollectionBase entity,
   )? onTap;
+  final int? lastupdatedID;
+  final Widget Function(BuildContext context, CollectionBase entity)
+      previewGenerator;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final highLightIndex = tags.lastupdatedID == null
+    final highLightIndex = lastupdatedID == null
         ? -1
-        : tags.entries.indexWhere((e) => e.id == tags.lastupdatedID);
+        : entities.indexWhere((e) => e.id == lastupdatedID);
 
     return CLMatrix3DAutoFit(
       childSize: const Size(100, 120),
-      itemCount: tags.entries.length,
+      itemCount: entities.length,
       layers: 2,
       visibleItem: highLightIndex <= -1 ? null : highLightIndex,
       itemBuilder: (context, index, layer) {
-        final tag = tags.entries[index];
+        final entity = entities[index];
         if (layer == 0) {
           return CLHighlighted(
             isHighlighed: index == highLightIndex,
@@ -51,35 +54,24 @@ class TagsGrid extends ConsumerWidget {
               quickMenuScopeKey: quickMenuScopeKey,
               onEdit: () async => onEdit!.call(
                 context,
-                tag,
+                entity,
               ),
               onDelete: () async => onDelete!.call(
                 context,
-                tag,
+                entity,
               ),
               onTap: () async => onTap!.call(
                 context,
-                tag,
+                entity,
               ),
-              child: LoadItemsInTag(
-                id: tag.id,
-                limit: 4,
-                buildOnData: (clMediaList) {
-                  return CLMediaListPreview(
-                    mediaList: clMediaList ?? [],
-                    mediaCountInPreview:
-                        const CLDimension(itemsInRow: 2, itemsInColumn: 2),
-                    whenNopreview: CLText.veryLarge(tag.label.characters.first),
-                  );
-                },
-              ),
+              child: previewGenerator(context, entity),
             ),
           );
         } else if (layer == 1) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              tags.entries[index].label,
+              entities[index].label,
               maxLines: 2,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
