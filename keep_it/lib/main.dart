@@ -45,7 +45,7 @@ class KeepItApp implements AppDescriptor {
       };
 
   @override
-  Map<String, CLWidgetBuilder> get screenBuilders {
+  Map<String, CLWidgetBuilder> get shellRoutes {
     return {
       'collections': (context, GoRouterState state) => const CollectionsView(),
 
@@ -56,8 +56,12 @@ class KeepItApp implements AppDescriptor {
               child: Text('Settings'),
             ),
           ),
-      //'demo': (context, state) => const DemoMain(),
+    };
+  }
 
+  @override
+  Map<String, CLWidgetBuilder> get screenBuilders {
+    return {
       'collections/by_tag_id/:id': (context, GoRouterState state) =>
           CollectionsView(tagId: int.parse(state.pathParameters['id']!)),
       'items/by_collection_id/:id': (context, GoRouterState state) =>

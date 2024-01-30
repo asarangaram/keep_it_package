@@ -20,7 +20,7 @@ class ItemsView extends ConsumerWidget {
       collectionID: collectionID,
       buildOnData: (Items items, {required String docDir}) {
         return KeepItMainView(
-          title: items.collection.description,
+          title: items.collection.label,
           onPop: context.canPop()
               ? () {
                   context.pop();
@@ -29,13 +29,18 @@ class ItemsView extends ConsumerWidget {
           pageBuilder: (context, quickMenuScopeKey) {
             return Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(items.collection.label),
-                ),
-                const Divider(
-                  thickness: 2,
-                ),
+                if (items.collection.description != null) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: CLText.standard(items.collection.description!),
+                  ),
+                  const Divider(
+                    thickness: 2,
+                  ),
+                ] else
+                  const SizedBox(
+                    height: 16,
+                  ),
                 Expanded(
                   child: CLMatrix2D(
                     itemCount: items.entries.length,

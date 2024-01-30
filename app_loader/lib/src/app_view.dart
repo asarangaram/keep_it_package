@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+// Reference : https://gist.github.com/onatcipli/aed0372c987b4ae32311fe32bb4c1209
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -26,18 +27,7 @@ class _RaLRouterState extends ConsumerState<AppView>
   late GoRouter _router;
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
-  static final List<GlobalKey<NavigatorState>> navigatorPageKeys = [
-    for (var i = 0; i < 3; i++) GlobalKey<NavigatorState>(),
-  ];
-  static Page<dynamic> getPage({
-    required Widget child,
-    required GoRouterState state,
-  }) {
-    return MaterialPage(
-      key: state.pageKey,
-      child: child,
-    );
-  }
+  final List<GlobalKey<NavigatorState>> navigatorPageKeys = [];
 
   static Widget defaultTransitionBuilder(
     BuildContext context,
@@ -50,6 +40,14 @@ class _RaLRouterState extends ConsumerState<AppView>
           Tween(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
       child: child,
     );
+  }
+
+  @override
+  void initState() {
+    widget.appDescriptor.shellRoutes
+        .forEach((_, __) => navigatorPageKeys.add(GlobalKey<NavigatorState>()));
+
+    super.initState();
   }
 
   @override
@@ -90,33 +88,34 @@ class _RaLRouterState extends ConsumerState<AppView>
         ),
       ),
     );
+    final shellRoutes = app.shellRoutes.entries.indexed.map((e) {
+      final (index, routes) = e;
+      return StatefulShellBranch(
+        navigatorKey: navigatorPageKeys[index],
+        routes: [
+          GoRoute(
+            path: '/${routes.key}',
+            pageBuilder: (context, GoRouterState state) {
+              return MaterialPage(
+                key: state.pageKey,
+                child: CLFullscreenBox(
+                  child: CLBackground(child: routes.value(context, state)),
+                ),
+              );
+            },
+          ),
+        ],
+      );
+    }).toList();
 
     _infoLogger('RaLRouter.build ${app.screenBuilders.length}');
-    final routePaths = app.screenBuilders.keys.map((e) => '/$e').toList();
-    final routeName = app.screenBuilders.keys.map((e) => e).toList();
+
     _router = GoRouter(
       navigatorKey: parentNavigatorKey,
       routes: [
         StatefulShellRoute.indexedStack(
           parentNavigatorKey: parentNavigatorKey,
-          branches: [
-            for (int i = 0; i < 3; i++)
-              StatefulShellBranch(
-                navigatorKey: navigatorPageKeys[i],
-                routes: [
-                  GoRoute(
-                    path: routePaths[i],
-                    pageBuilder: (context, GoRouterState state) {
-                      return getPage(
-                        child:
-                            app.screenBuilders[routeName[i]]!(context, state),
-                        state: state,
-                      );
-                    },
-                  ),
-                ],
-              ),
-          ],
+          branches: shellRoutes,
           pageBuilder: (
             BuildContext context,
             GoRouterState state,
@@ -130,7 +129,7 @@ class _RaLRouterState extends ConsumerState<AppView>
             );
           },
         ),
-        ...routes.sublist(2),
+        ...routes,
         GoRoute(
           path: '/incoming',
           name: 'incoming',
@@ -184,6 +183,19 @@ void _infoLogger(String msg) {
   }
 }
 
+class StandalonePage extends ConsumerWidget {
+  const StandalonePage({required this.child, super.key});
+
+  final StatefulNavigationShell child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      body: CLBackground(child: child),
+    );
+  }
+}
+
 class BottomNavigationPage extends StatefulWidget {
   const BottomNavigationPage({
     required this.child,
@@ -217,8 +229,8 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'home',
+            icon: Icon(Icons.folder_special_rounded),
+            label: 'Collections',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
