@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
-import 'keepit_grid/keepit_grid.dart';
+import '../widgets/keepit_grid/keepit_grid.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({super.key, this.tagId});
