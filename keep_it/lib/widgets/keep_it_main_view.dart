@@ -1,4 +1,3 @@
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +49,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
                 quickMenuScopeKey: quickMenuScopeKey,
                 title: widget.title?.uptoLength(15),
                 onPop: widget.onPop,
-                mainActionItems: const [
+                /* mainActionItems: const [
                   [
                     CLMenuItem(
                       title: 'Paste',
@@ -62,7 +61,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
                       /*Icons.settings_applications_sharp,*/
                     ),
                   ],
-                ],
+                ], */
               ),
               Expanded(child: widget.pageBuilder(context, quickMenuScopeKey)),
             ],

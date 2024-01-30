@@ -241,7 +241,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
           )
         : CLMenuItem(
             title: 'Save',
-            icon: MdiIcons.floppyVariant,
+            icon: Icons.save_rounded,
             onTap: () async {
               descriptionNode.unfocus();
               widget.onDone(collection: collection!);
