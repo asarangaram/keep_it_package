@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keepit_grid/keepit_grid.dart';
 import '../widgets/pickers/image_picker.dart';
@@ -48,24 +47,8 @@ class CollectionsView extends ConsumerWidget {
             if (entity.id == null) {
               throw Exception("Unexpected, id can't be null");
             }
-            return LoadItems(
-              collectionID: entity.id!,
-              buildOnData: (Items items, {required String docDir}) {
-                final List<CLMedia> mediaList;
-                mediaList = items.entries.map(
-                  (e) {
-                    return e.toCLMedia(pathPrefix: docDir);
-                  },
-                ).toList();
-                return CLMediaListPreview(
-                  mediaList: mediaList,
-                  mediaCountInPreview:
-                      const CLDimension(itemsInRow: 2, itemsInColumn: 2),
-                  whenNopreview: CLText.veryLarge(
-                    items.collection.label.characters.first,
-                  ),
-                );
-              },
+            return PreviewGenerator(
+              collectgionID: entity.id!,
             );
           },
           onCreateNew: onPickImages,
@@ -87,5 +70,36 @@ class CollectionsView extends ConsumerWidget {
           .upsertCollection(Collection.fromBase(entity), null);
     }
     return true;
+  }
+}
+
+class PreviewGenerator extends StatelessWidget {
+  const PreviewGenerator({
+    required this.collectgionID,
+    super.key,
+  });
+  final int collectgionID;
+
+  @override
+  Widget build(BuildContext context) {
+    return LoadItems(
+      collectionID: collectgionID,
+      buildOnData: (Items items, {required String docDir}) {
+        final List<CLMedia> mediaList;
+        mediaList = items.entries.map(
+          (e) {
+            return e.toCLMedia(pathPrefix: docDir);
+          },
+        ).toList();
+        return CLMediaListPreview(
+          mediaList: mediaList,
+          mediaCountInPreview:
+              const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+          whenNopreview: CLText.veryLarge(
+            items.collection.label.characters.first,
+          ),
+        );
+      },
+    );
   }
 }
