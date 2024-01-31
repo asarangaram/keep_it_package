@@ -13,6 +13,7 @@ class KeepMediaWizard extends ConsumerWidget {
     super.key,
   });
   final CLMediaInfoGroup media;
+
   final void Function(CLMediaInfoGroup media) onDone;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,6 +21,11 @@ class KeepMediaWizard extends ConsumerWidget {
       buildOnData: (collections) {
         return PickCollectionBase(
           suggestedCollections: collections.entries,
+          preSelectedCollection: media.targetID == null
+              ? null
+              : collections.entries
+                  .where((element) => element.id == media.targetID)
+                  .firstOrNull,
           onDone: ({
             required CollectionBase collection,
             List<CollectionBase>? selectedTags,

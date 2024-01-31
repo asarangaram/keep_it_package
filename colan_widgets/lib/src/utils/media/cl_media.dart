@@ -115,8 +115,9 @@ class CLMedia {
 }
 
 class CLMediaInfoGroup {
-  CLMediaInfoGroup(this.list);
+  CLMediaInfoGroup(this.list, {this.targetID});
   final List<CLMedia> list;
+  final int? targetID;
 
   bool get isEmpty => list.isEmpty;
   bool get isNotEmpty => list.isNotEmpty;

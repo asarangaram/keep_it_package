@@ -47,7 +47,7 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get shellRoutes {
     return {
-      'collections': (context, GoRouterState state) => const CollectionsView(),
+      '': (context, GoRouterState state) => const CollectionsView(),
 
       //'home': (context, state) => const AppTheme(child: HomeView()),
       'tags': (context, state) => const AppTheme(child: TagsView()),
@@ -122,7 +122,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location == '/') return '/collections';
+        //if (location == '/') return '/collections';
         return null;
       };
 }

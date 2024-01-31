@@ -8,6 +8,7 @@ import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
+import '../widgets/pickers/image_picker.dart';
 import '../widgets/video_player.dart';
 
 class ItemsView extends ConsumerWidget {
@@ -26,6 +27,12 @@ class ItemsView extends ConsumerWidget {
                   context.pop();
                 }
               : null,
+          actionsBuilder: [
+            (context, quickMenuScopeKey) => CLButtonIcon.standard(
+                  Icons.add,
+                  onTap: () => onAddItems(context, ref, items.collection),
+                ),
+          ],
           pageBuilder: (context, quickMenuScopeKey) {
             return Column(
               children: [
@@ -66,6 +73,14 @@ class ItemsView extends ConsumerWidget {
       },
     );
   }
+}
+
+Future<bool> onAddItems(
+  BuildContext context,
+  WidgetRef ref,
+  Collection collection,
+) async {
+  return onPickImages(context, ref, collectionId: collection.id);
 }
 
 class ItemView extends ConsumerWidget {

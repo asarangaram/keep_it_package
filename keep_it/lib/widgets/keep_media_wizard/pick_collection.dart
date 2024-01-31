@@ -43,6 +43,7 @@ class PickCollectionBase extends ConsumerStatefulWidget {
     required this.onDone,
     super.key,
     this.allowUpdateDescription = true,
+    this.preSelectedCollection,
   });
 
   final void Function({
@@ -50,6 +51,7 @@ class PickCollectionBase extends ConsumerStatefulWidget {
     List<CollectionBase>? selectedTags,
   }) onDone;
   final List<CollectionBase> suggestedCollections;
+  final CollectionBase? preSelectedCollection;
   final bool allowUpdateDescription;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -57,11 +59,11 @@ class PickCollectionBase extends ConsumerStatefulWidget {
 }
 
 class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
-  final PageController pageController = PageController();
-  late SearchController labelController;
-  late TextEditingController descriptionController;
-  late FocusNode labelNode;
-  late FocusNode descriptionNode;
+  late final PageController pageController;
+  late final SearchController labelController;
+  late final TextEditingController descriptionController;
+  late final FocusNode labelNode;
+  late final FocusNode descriptionNode;
 
   bool onEditLabel = true;
   CollectionBase? collection;
@@ -69,6 +71,10 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
 
   @override
   void initState() {
+    collection = widget.preSelectedCollection;
+    pageController = PageController(initialPage: collection == null ? 0 : 1);
+
+    onEditLabel = collection == null;
     labelController = SearchController();
     descriptionController = TextEditingController();
     labelNode = FocusNode();

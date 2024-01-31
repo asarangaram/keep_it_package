@@ -112,6 +112,7 @@ class _RaLRouterState extends ConsumerState<AppView>
 
     _router = GoRouter(
       navigatorKey: parentNavigatorKey,
+      initialLocation: '/${app.shellRoutes.keys.first}',
       routes: [
         StatefulShellRoute.indexedStack(
           parentNavigatorKey: parentNavigatorKey,
@@ -124,12 +125,31 @@ class _RaLRouterState extends ConsumerState<AppView>
             return MaterialPage(
               key: state.pageKey,
               child: BottomNavigationPage(
+                incomingMediaViewBuilder: app.incomingMediaViewBuilder,
                 child: navigationShell,
               ),
             );
           },
         ),
         ...routes,
+        GoRoute(
+          path: '/',
+          name: 'Root',
+          pageBuilder: (context, state) => CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: const Scaffold(
+              body: Center(child: Text('Home')),
+            ), //const AppTheme(child: LogOutUserPage()),
+            transitionsBuilder: (
+              BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+              Widget child,
+            ) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        ),
         GoRoute(
           path: '/incoming',
           name: 'incoming',
@@ -150,14 +170,16 @@ class _RaLRouterState extends ConsumerState<AppView>
         ),
       ],
       redirect: (context, GoRouterState state) async {
-        final hasIncomingMedia = ref.watch(incomingMediaProvider).isNotEmpty;
+        _infoLogger(state.uri.toString());
+        /* final hasIncomingMedia = ref.watch(incomingMediaProvider).isNotEmpty;
 
         if (hasIncomingMedia) {
           if (state.matchedLocation == '/incoming') return null;
           return '/incoming';
-        }
+        } */
+        // if (state.uri.toString() == '/') return '/collections';
 
-        return app.redirector.call(state.uri.toString());
+        return null;
       },
     );
 
@@ -197,21 +219,29 @@ class StandalonePage extends ConsumerWidget {
   }
 }
 
-class BottomNavigationPage extends StatefulWidget {
+class BottomNavigationPage extends ConsumerStatefulWidget {
   const BottomNavigationPage({
     required this.child,
+    required this.incomingMediaViewBuilder,
     super.key,
   });
 
   final StatefulNavigationShell child;
-
+  final IncomingMediaViewBuilder incomingMediaViewBuilder;
   @override
-  State<BottomNavigationPage> createState() => _BottomNavigationPageState();
+  ConsumerState<BottomNavigationPage> createState() =>
+      _BottomNavigationPageState();
 }
 
-class _BottomNavigationPageState extends State<BottomNavigationPage> {
+class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
+    final hasIncomingMedia = ref.watch(incomingMediaProvider).isNotEmpty;
+    if (hasIncomingMedia) {
+      return PageIncomingMedia(
+        builder: widget.incomingMediaViewBuilder,
+      );
+    }
     return Scaffold(
       body: CLBackground(
         child: SafeArea(

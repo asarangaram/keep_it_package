@@ -5,7 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 
-Future<bool> onPickImages(BuildContext context, WidgetRef ref) async {
+Future<bool> onPickImages(
+  BuildContext context,
+  WidgetRef ref, {
+  int? collectionId,
+}) async {
   try {
     final picker = ImagePicker();
 
@@ -27,7 +31,7 @@ Future<bool> onPickImages(BuildContext context, WidgetRef ref) async {
               .withPreview(forceCreate: true),
         );
       }
-      final infoGroup = CLMediaInfoGroup(media);
+      final infoGroup = CLMediaInfoGroup(media, targetID: collectionId);
       ref.read(incomingMediaProvider.notifier).push(infoGroup);
     }
 
