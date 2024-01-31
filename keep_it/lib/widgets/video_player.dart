@@ -112,8 +112,8 @@ class _VideoControllerState extends State<VideoController> {
     if (!widget._controller.value.isPlaying) {
       return CLIcon.veryLarge(
         widget._controller.value.isPlaying
-            ? Icons.pause_circle
-            : Icons.play_arrow_sharp,
+            ? Icons.pause_circle_rounded
+            : Icons.play_arrow_rounded,
         color: Colors.white,
       );
     } else {

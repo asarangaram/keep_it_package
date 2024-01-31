@@ -37,12 +37,12 @@ class WrapStandardQuickMenu extends StatelessWidget {
             [
               CLMenuItem(
                 title: 'Edit',
-                icon: Icons.edit,
+                icon: Icons.edit_rounded,
                 onTap: onEdit,
               ),
               CLMenuItem(
                 title: 'Delete',
-                icon: Icons.delete,
+                icon: Icons.delete_rounded,
                 onTap: onDelete,
               ),
             ]

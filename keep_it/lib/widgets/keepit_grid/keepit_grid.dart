@@ -118,6 +118,38 @@ class KeepItGrid extends StatelessWidget {
             );
           }
         },
+        (context, quickMenuScopeKey) {
+          if (availableSuggestions.isEmpty) {
+            return CLButtonIcon.small(
+              Icons.admin_panel_settings,
+              onTap: () async {
+                final tag = await KeepItDialogs.upsert(context);
+                if (tag != null) {
+                  await onUpdate([tag]);
+                }
+              },
+            );
+          } else {
+            return CLQuickMenuAnchor(
+              parentKey: quickMenuScopeKey,
+              menuBuilder: (
+                context,
+                boxconstraints, {
+                required void Function() onDone,
+              }) {
+                return CLButtonsGrid(
+                  scaleType: CLScaleType.veryLarge,
+                  size: const Size(
+                    kMinInteractiveDimension * 1.5,
+                    kMinInteractiveDimension * 1.5,
+                  ),
+                  children2D: menuItems.insertOnDone(onDone),
+                );
+              },
+              child: const CLIcon.standard(Icons.content_paste),
+            );
+          }
+        },
       ],
       pageBuilder: (context, quickMenuScopeKey) {
         return KeepItGridItem(
