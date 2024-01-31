@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/from_store/items_in_tag.dart';
 import '../widgets/keepit_grid/keepit_grid.dart';
@@ -30,12 +31,7 @@ class TagsView extends ConsumerWidget {
             );
             return true;
           },
-          onUpdate: (List<CollectionBase> selectedTags) async {
-            ref
-                .read(tagsProvider(null).notifier)
-                .upsertTags(selectedTags.map(Tag.fromBase).toList());
-            return true;
-          },
+          onUpdate: (tags) => onUpdate(context, ref, tags),
           onDelete: (List<CollectionBase> selectedTags) async {
             ref
                 .read(tagsProvider(null).notifier)
@@ -56,6 +52,23 @@ class TagsView extends ConsumerWidget {
               },
             );
           },
+          onCreateNew: (BuildContext context, WidgetRef ref) async {
+            final tag = await KeepItDialogs.upsert(context);
+            if (tag != null && context.mounted) {
+              return onUpdate(context, ref, [tag]);
+            }
+            return false;
+          },
         ),
       );
+  Future<bool> onUpdate(
+    BuildContext context,
+    WidgetRef ref,
+    List<CollectionBase> selectedTags,
+  ) async {
+    ref
+        .read(tagsProvider(null).notifier)
+        .upsertTags(selectedTags.map(Tag.fromBase).toList());
+    return true;
+  }
 }

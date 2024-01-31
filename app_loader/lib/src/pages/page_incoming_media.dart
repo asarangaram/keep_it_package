@@ -13,14 +13,14 @@ class PageIncomingMedia extends ConsumerWidget {
   final IncomingMediaViewBuilder builder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaAsync = ref.watch(
+    final media = ref.watch(
       sharedMediaInfoGroup,
     );
 
     return builder(
       context,
       ref,
-      mediaAsync: mediaAsync,
+      media: media,
       onDiscard: (CLMediaInfoGroup media) {
         for (final item in media.list) {
           item.delete();

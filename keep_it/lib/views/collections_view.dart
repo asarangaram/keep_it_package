@@ -6,8 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keepit_grid/keepit_grid.dart';
+import '../widgets/pickers/image_picker.dart';
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({super.key, this.tagId});
@@ -28,19 +30,7 @@ class CollectionsView extends ConsumerWidget {
             );
             return true;
           },
-          onUpdate: (List<CollectionBase> selectedEntities) async {
-            if (selectedEntities.length != 1) {
-              throw Exception(
-                "Unexected: Collections can't be added in bulk",
-              );
-            }
-            for (final entity in selectedEntities) {
-              await ref
-                  .read(collectionsProvider(null).notifier)
-                  .upsertCollection(Collection.fromBase(entity), null);
-            }
-            return true;
-          },
+          onUpdate: (items) => onUpdate(context, ref, items),
           onDelete: (List<CollectionBase> selectedEntities) async {
             if (selectedEntities.length != 1) {
               throw Exception(
@@ -78,6 +68,24 @@ class CollectionsView extends ConsumerWidget {
               },
             );
           },
+          onCreateNew: onPickImages,
         ),
       );
+  Future<bool> onUpdate(
+    BuildContext context,
+    WidgetRef ref,
+    List<CollectionBase> selectedEntities,
+  ) async {
+    if (selectedEntities.length != 1) {
+      throw Exception(
+        "Unexected: Collections can't be added in bulk",
+      );
+    }
+    for (final entity in selectedEntities) {
+      await ref
+          .read(collectionsProvider(null).notifier)
+          .upsertCollection(Collection.fromBase(entity), null);
+    }
+    return true;
+  }
 }

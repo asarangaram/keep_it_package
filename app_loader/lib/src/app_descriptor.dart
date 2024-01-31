@@ -19,7 +19,7 @@ typedef CLRedirector = Future<String?> Function(String location);
 typedef IncomingMediaViewBuilder = Widget Function(
   BuildContext context,
   WidgetRef ref, {
-  required AsyncValue<CLMediaInfoGroup> mediaAsync,
+  required CLMediaInfoGroup? media,
   required void Function(CLMediaInfoGroup media) onDiscard,
 });
 

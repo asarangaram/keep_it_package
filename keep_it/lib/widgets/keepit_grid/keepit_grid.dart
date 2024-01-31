@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
@@ -10,7 +11,7 @@ import '../dialogs.dart';
 import '../keep_it_main_view.dart';
 import 'keepit_grid_item.dart';
 
-class KeepItGrid extends StatelessWidget {
+class KeepItGrid extends ConsumerWidget {
   const KeepItGrid({
     required this.label,
     required this.entities,
@@ -20,6 +21,7 @@ class KeepItGrid extends StatelessWidget {
     required this.onDelete,
     required this.previewGenerator,
     required this.itemSize,
+    required this.onCreateNew,
     super.key,
   });
   final String label;
@@ -34,8 +36,10 @@ class KeepItGrid extends StatelessWidget {
       previewGenerator;
   final Size itemSize;
 
+  final Future<bool> Function(BuildContext context, WidgetRef ref) onCreateNew;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final menuItems = [
       [
         if (availableSuggestions.isNotEmpty)
@@ -56,13 +60,7 @@ class KeepItGrid extends StatelessWidget {
         CLMenuItem(
           title: 'Create New',
           icon: Icons.new_label,
-          onTap: () async {
-            final tag = await KeepItDialogs.upsert(context);
-            if (tag != null) {
-              return onUpdate([tag]);
-            }
-            return false;
-          },
+          onTap: () => onCreateNew(context, ref),
         ),
       ]
     ];
@@ -90,12 +88,7 @@ class KeepItGrid extends StatelessWidget {
           if (availableSuggestions.isEmpty) {
             return CLButtonIcon.standard(
               Icons.add,
-              onTap: () async {
-                final tag = await KeepItDialogs.upsert(context);
-                if (tag != null) {
-                  await onUpdate([tag]);
-                }
-              },
+              onTap: () => onCreateNew(context, ref),
             );
           } else {
             return CLQuickMenuAnchor(
