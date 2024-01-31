@@ -39,7 +39,7 @@ class CLMatrix2D extends StatelessWidget {
     if (columns <= 0) {
       throw Exception('Atleast one column must present');
     }
-    if (showAll) {
+    if (showAll && itemCount > 1) {
       return CLMatrix2DScrollable(
         hCount: columns,
         vCount: (itemCount + columns - 1) ~/ columns,
@@ -52,11 +52,12 @@ class CLMatrix2D extends StatelessWidget {
         itemCount: itemCount,
       );
     }
-    final excess = itemCount - rows! * columns;
+
+    final excess = itemCount - (rows ?? itemCount) * columns;
 
     return CLMatrix2DNonScrollable(
       hCount: columns,
-      vCount: rows!,
+      vCount: rows ?? itemCount,
       trailingRow:
           (excess <= 0) ? null : excessViewBuilder?.call(context, excess),
       itemBuilder: builder,

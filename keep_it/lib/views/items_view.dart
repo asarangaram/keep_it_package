@@ -50,8 +50,11 @@ class ItemsView extends ConsumerWidget {
                       if (l > 0) {
                         throw Exception('has only one layer!');
                       }
-                      return ItemView(
-                        media: e.toCLMedia(pathPrefix: docDir),
+                      return Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: ItemView(
+                          media: e.toCLMedia(pathPrefix: docDir),
+                        ),
                       );
                     },
                   ),
@@ -79,6 +82,9 @@ class ItemView extends ConsumerWidget {
             File(image.path),
           ),
         (final CLMediaVideo video) when media.runtimeType == CLMediaVideo =>
+          /* Image.file(
+            File(video.previewFileName),
+          ), */
           VideoPlayerScreen(
             path: video.path,
           ),

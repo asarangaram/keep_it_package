@@ -65,13 +65,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   ..play();
               }
             },
-            child: Stack(
-              children: [
-                VideoPlayer(_controller),
-                Center(
-                  child: VideoController(controller: _controller),
-                ),
-              ],
+            child: AspectRatio(
+              aspectRatio: widget.aspectRatio ?? _controller.value.aspectRatio,
+              child: Stack(
+                children: [
+                  VideoPlayer(_controller),
+                  Center(
+                    child: VideoController(controller: _controller),
+                  ),
+                ],
+              ),
             ),
           );
         } else {

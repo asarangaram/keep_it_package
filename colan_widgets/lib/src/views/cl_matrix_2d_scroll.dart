@@ -45,6 +45,7 @@ class CLMatrix2DScrollable extends StatelessWidget {
           'lCount= $lCount',
         ); */
         return ListView.builder(
+          physics: const ClampingScrollPhysics(),
           itemCount: vCount * layers,
           /* prototypeItem: SizedBox(
             height: min((size.width / hCount) * 1.4, size.height),
