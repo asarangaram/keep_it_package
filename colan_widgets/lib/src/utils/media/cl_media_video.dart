@@ -9,7 +9,7 @@ class CLMediaVideo extends CLMedia {
   CLMediaVideo({
     required super.path,
     super.ref,
-    super.previewPath,
+//    super.previewPath,
   }) : super(type: CLMediaType.video);
 
   @override
@@ -21,7 +21,7 @@ class CLMediaVideo extends CLMedia {
     return CLMediaVideo(
       path: path ?? this.path,
       ref: ref ?? this.ref,
-      previewPath: previewPath ?? this.previewPath,
+      //   previewPath: previewPath ?? this.previewPath,
     );
   }
 
@@ -38,7 +38,7 @@ class CLMediaVideo extends CLMedia {
     bool forceCreate = false,
   }) async {
     // if previewPath is already set, and not asked to force create,
-    if (previewPath != null && !forceCreate) {
+    if (/* previewPath != null && */ !forceCreate) {
       return this;
     }
 
@@ -62,9 +62,10 @@ class CLMediaVideo extends CLMedia {
             .asUint8List(thumbnail.offsetInBytes, thumbnail.lengthInBytes),
       );
 
-    return copyWith(
+    return this;
+    /*  copyWith(
       previewPath: previewPath ?? '$path.jpg',
-    );
+    ); */
   }
 }
 

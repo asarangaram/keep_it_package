@@ -8,36 +8,36 @@ class CLMediaImage extends CLMedia {
   CLMediaImage({
     required super.path,
     super.ref,
-    super.previewPath,
+    // super.previewPath,
   }) : super(type: CLMediaType.image);
 
   @override
   CLMediaImage copyWith({
     String? path,
     String? ref,
-    String? previewPath,
+    //   String? previewPath,
   }) {
     return CLMediaImage(
       path: path ?? this.path,
       ref: ref ?? this.ref,
-      previewPath: previewPath ?? this.previewPath,
+      // previewPath: previewPath ?? this.previewPath,
     );
   }
 
-  CLMediaImage attachPreviewIfExits() {
+  /* CLMediaImage attachPreviewIfExits() {
     final previewFile = File(previewFileName);
     if (previewFile.existsSync()) {
       return copyWith(previewPath: previewFileName);
     }
     return this;
-  }
+  } */
 
   @override
   Future<CLMediaImage> withPreview({
     bool forceCreate = false,
   }) async {
     // if previewPath is already set, and not asked to force create,
-    if (previewPath != null && !forceCreate) {
+    if (/* previewPath != null && */ !forceCreate) {
       return this;
     }
     final previewFile = File(previewFileName);
@@ -57,8 +57,9 @@ class CLMediaImage extends CLMedia {
         copyResize(image, width: thumbnailWidth, height: thumbnailHeight);
     previewFile.writeAsBytesSync(encodeJpg(thumbnail));
 
-    return copyWith(
+    return this;
+    /* copyWith(
       previewPath: previewPath ?? '$path.jpg',
-    );
+    ) */
   }
 }

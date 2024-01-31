@@ -54,9 +54,9 @@ extension ExtItemInDB on ItemInDB {
     final p = FileHandler.join(pathPrefix, this.path);
     return switch (type) {
       CLMediaType.image =>
-        CLMediaImage(path: p, ref: ref).attachPreviewIfExits(),
+        CLMediaImage(path: p, ref: ref),
       CLMediaType.video =>
-        CLMediaVideo(path: p, ref: ref).attachPreviewIfExits(),
+        CLMediaVideo(path: p, ref: ref),
       _ => CLMedia(
           path: p,
           type: type,

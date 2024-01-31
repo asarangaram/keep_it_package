@@ -11,7 +11,7 @@ class CLMedia {
     required this.path,
     required this.type,
     this.ref,
-    this.previewPath,
+    //this.previewPath,
   }) {
     if (!path.startsWith('/')) {
       path.printString();
@@ -23,18 +23,18 @@ class CLMedia {
   final String? ref;
   final previewWidth = 600;
 
-  final String? previewPath;
+  //final String? previewPath;
 
   CLMedia copyWith({
     String? path,
     String? ref,
-    String? previewPath,
+    // String? previewPath,
   }) {
     return CLMedia(
       path: path ?? this.path,
       type: type,
       ref: ref ?? this.ref,
-      previewPath: previewPath ?? this.previewPath,
+      // previewPath: previewPath ?? this.previewPath,
     );
   }
 
@@ -45,11 +45,9 @@ class CLMedia {
   }
 
   void delete() {
-    for (final f in [path, previewPath]) {
-      if (f != null) {
-        if (File(f).existsSync()) {
-          File(f).deleteSync();
-        }
+    for (final f in [path /* , previewPath */]) {
+      if (File(f).existsSync()) {
+        File(f).deleteSync();
       }
     }
   }
@@ -57,12 +55,10 @@ class CLMedia {
   Future<String> get relativePathFuture async => FileHandler.relativePath(path);
 
   Future<CLMedia> move({required String toDir}) async {
-    final String? newPreviewPath;
+    // final String? newPreviewPath;
     final String newPath;
-    if (previewPath != null && File(previewPath!).existsSync()) {
-      newPreviewPath = await FileHandler.move(previewPath!, toSubFolder: toDir);
-    } else {
-      newPreviewPath = previewPath;
+    if (File(previewFileName).existsSync()) {
+      await FileHandler.move(previewFileName, toSubFolder: toDir);
     }
 
     if (File(path).existsSync()) {
@@ -70,16 +66,15 @@ class CLMedia {
     } else {
       newPath = path;
     }
-    return copyWith(path: newPath, previewPath: newPreviewPath);
+    return copyWith(
+      path: newPath, /*  previewPath: newPreviewPath */
+    );
   }
 
   Future<CLMedia> copy({required String toDir}) async {
-    final String? newPreviewPath;
     final String newPath;
-    if (previewPath != null && File(previewPath!).existsSync()) {
-      newPreviewPath = await FileHandler.copy(previewPath!, toSubFolder: toDir);
-    } else {
-      newPreviewPath = previewPath;
+    if (File(previewFileName).existsSync()) {
+      await FileHandler.copy(previewFileName, toSubFolder: toDir);
     }
 
     if (File(path).existsSync()) {
@@ -87,14 +82,14 @@ class CLMedia {
     } else {
       newPath = path;
     }
-    return copyWith(path: newPath, previewPath: newPreviewPath);
+    return copyWith(path: newPath /* , previewPath: newPreviewPath */);
   }
 
-  String get previewFileName => previewPath ?? '$path.jpg';
+  String get previewFileName => /* previewPath ??  */ '$path.jpg';
 
   @override
   String toString() {
-    return 'CLMedia(path: $path, type: $type, previewPath: $previewPath, ';
+    return 'CLMedia(path: $path, type: $type ';
   }
 
   @override
@@ -102,16 +97,17 @@ class CLMedia {
     if (identical(this, other)) return true;
 
     return other.path == path &&
-        other.type == type &&
-        other.previewPath == previewPath;
+            other.type == type /* &&
+        other.previewPath == previewPath */
+        ;
   }
 
   @override
   int get hashCode {
-    return path.hashCode ^ type.hashCode ^ previewPath.hashCode;
+    return path.hashCode ^ type.hashCode /* ^ previewPath.hashCode */;
   }
 
-  bool get hasPreview => previewPath != null;
+  bool get hasPreview => File(previewFileName).existsSync();
 }
 
 class CLMediaInfoGroup {
