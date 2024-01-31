@@ -43,22 +43,25 @@ class _DescriptionEditorState extends State<DescriptionEditor> {
         widget.focusNode.requestFocus();
       });
     }
-    return GestureDetector(
-      onTap: widget.enabled && !enabled
-          ? () async {
-              setState(() {
-                enabled = true;
-              });
-            }
-          : null,
-      child: CLTextField.multiLine(
-        widget.controller,
-        focusNode: widget.focusNode,
-        hint: 'What is the best thing,'
-            ' you can say about this?',
-        maxLines: 5,
-        enabled: enabled,
-      ),
+    if (!enabled) {
+      return GestureDetector(
+        onTap: widget.enabled && !enabled
+            ? () async {
+                setState(() {
+                  enabled = true;
+                });
+              }
+            : null,
+        child:
+            CLText.large(widget.item.description ?? 'Tap to add description'),
+      );
+    }
+    return CLTextField.multiLine(
+      widget.controller,
+      focusNode: widget.focusNode,
+      hint: 'What is the best thing,'
+          ' you can say about this?',
+      maxLines: 5,
     );
   }
 }
