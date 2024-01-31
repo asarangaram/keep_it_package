@@ -151,7 +151,7 @@ class _RaLRouterState extends ConsumerState<AppView>
       ],
       redirect: (context, GoRouterState state) async {
         final hasIncomingMedia = ref.watch(incomingMediaProvider).isNotEmpty;
-        print(ref.watch(incomingMediaProvider));
+
         if (hasIncomingMedia) {
           if (state.matchedLocation == '/incoming') return null;
           return '/incoming';

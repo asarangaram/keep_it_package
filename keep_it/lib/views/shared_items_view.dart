@@ -1,7 +1,5 @@
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_media_wizard/keep_media_wizard.dart';
