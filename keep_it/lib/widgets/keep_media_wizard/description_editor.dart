@@ -25,7 +25,8 @@ class _DescriptionEditorState extends State<DescriptionEditor> {
   late bool enabled;
   @override
   void initState() {
-    enabled = widget.controller.text.isEmpty && widget.enabled;
+    widget.controller.text = widget.item.description ?? '';
+    enabled = widget.item.id == null && widget.enabled;
 
     super.initState();
   }

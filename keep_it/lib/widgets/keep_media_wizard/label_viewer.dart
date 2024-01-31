@@ -21,13 +21,7 @@ class LabelViewer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: CLScaleType.large.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          CLText.large(label),
           if (onTap != null && icon != null) ...[
             const SizedBox(
               width: 8,
