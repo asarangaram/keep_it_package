@@ -6,27 +6,35 @@ import 'package:store/store.dart';
 class DescriptionEditor extends StatefulWidget {
   const DescriptionEditor(
     this.item, {
-    required this.controller,
-    required this.focusNode,
-    required this.enabled,
+    this.enabled = true,
+    this.controller,
+    this.focusNode,
     super.key,
+    this.onDone,
   });
   final CollectionBase item;
-  final TextEditingController controller;
-  final FocusNode focusNode;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
 
   final bool enabled;
+  final Future<bool> Function(Collection collection)? onDone;
 
   @override
   State<StatefulWidget> createState() => _DescriptionEditorState();
 }
 
 class _DescriptionEditorState extends State<DescriptionEditor> {
+  late final TextEditingController controller;
+  final TextEditingController dummyController = TextEditingController();
+  late final FocusNode focusNode;
   late bool enabled;
   @override
   void initState() {
-    widget.controller.text = widget.item.description ?? '';
+    controller = widget.controller ?? TextEditingController();
+    focusNode = widget.focusNode ?? FocusNode();
     enabled = widget.item.id == null && widget.enabled;
+    controller.text =
+        widget.item.description ?? (enabled ? '' : 'Tap to add description');
 
     super.initState();
   }
@@ -38,30 +46,51 @@ class _DescriptionEditorState extends State<DescriptionEditor> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.enabled && enabled && !widget.focusNode.hasFocus) {
+    if (widget.enabled && enabled && !focusNode.hasFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.focusNode.requestFocus();
+        focusNode.requestFocus();
       });
     }
-    if (!enabled) {
-      return GestureDetector(
-        onTap: widget.enabled && !enabled
-            ? () async {
-                setState(() {
-                  enabled = true;
-                });
-              }
-            : null,
-        child:
-            CLText.large(widget.item.description ?? 'Tap to add description'),
-      );
-    }
-    return CLTextField.multiLine(
-      widget.controller,
-      focusNode: widget.focusNode,
-      hint: 'What is the best thing,'
-          ' you can say about this?',
-      maxLines: 5,
+
+    return GestureDetector(
+      onTap: enabled
+          ? null
+          : () {
+              setState(() {
+                enabled = widget.enabled;
+              });
+            },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CLTextField.multiLine(
+            controller,
+            focusNode: focusNode,
+            hint: enabled
+                ? 'What is the best thing,'
+                    ' you can say about this?'
+                : 'Tap to add description',
+            maxLines: 5,
+            enabled: enabled,
+          ),
+          if (enabled)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                CLButtonText.large(
+                  'Discard',
+                  onTap: () {
+                    setState(() {
+                      controller.text = widget.item.description ?? '';
+                      enabled = false;
+                    });
+                  },
+                ),
+                const CLButtonText.large('Update'),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

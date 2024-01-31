@@ -8,6 +8,7 @@ import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
+import '../widgets/keep_media_wizard/description_editor.dart';
 import '../widgets/pickers/image_picker.dart';
 import '../widgets/video_player.dart';
 
@@ -39,7 +40,9 @@ class ItemsView extends ConsumerWidget {
                 if (items.collection.description != null) ...[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: CLText.standard(items.collection.description!),
+                    child: DescriptionEditor(
+                      items.collection,
+                    ),
                   ),
                   const Divider(
                     thickness: 2,
