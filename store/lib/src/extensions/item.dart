@@ -12,7 +12,8 @@ extension ExtItemInDB on ItemInDB {
   }
 
   static List<ItemInDB> getAll(Database db) {
-    final List<Map<String, dynamic>> maps = db.select('SELECT * FROM Item');
+    final List<Map<String, dynamic>> maps = db.select('SELECT * FROM Item '
+        ' ORDER BY Item.updatedDate DESC');
     return maps.map(ItemInDB.fromMap).toList();
   }
 
@@ -28,7 +29,7 @@ extension ExtItemInDB on ItemInDB {
     }
     db.execute(
       'INSERT OR IGNORE INTO Item (path, '
-      'ref, collection_id, type) VALUES (?, ?, ?, ?)',
+      'ref, collection_id, type) VALUES (?, ?, ?, ?) ',
       [this.path, ref, collectionId, type.name],
     );
     return db.lastInsertRowId;
@@ -40,8 +41,11 @@ extension ExtItemInDB on ItemInDB {
   }
 
   static List<ItemInDB> getItemsForCollection(Database db, int collectionId) {
-    final List<Map<String, dynamic>> maps =
-        db.select('SELECT * FROM Item WHERE collection_id = ?', [collectionId]);
+    final List<Map<String, dynamic>> maps = db.select(
+      'SELECT * FROM Item WHERE collection_id = ?'
+      ' ORDER BY Item.updatedDate DESC',
+      [collectionId],
+    );
 
     return maps.map(ItemInDB.fromMap).toList();
   }
