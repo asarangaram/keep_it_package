@@ -72,14 +72,22 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
   @override
   void initState() {
     collection = widget.preSelectedCollection;
-    pageController = PageController(initialPage: collection == null ? 0 : 1);
-
-    onEditLabel = collection == null;
     labelController = SearchController();
-    descriptionController = TextEditingController();
     labelNode = FocusNode();
     descriptionNode = FocusNode();
-    labelNode.requestFocus();
+    if (collection == null) {
+      onEditLabel = true;
+      pageController = PageController();
+      descriptionController = TextEditingController();
+      labelNode.requestFocus();
+    } else {
+      onEditLabel = false;
+      pageController = PageController(initialPage: 1);
+      descriptionController =
+          TextEditingController(text: collection!.description);
+      descriptionNode.requestFocus();
+    }
+
     super.initState();
   }
 
@@ -241,6 +249,15 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
             icon: MdiIcons.arrowRight,
             onTap: () async {
               descriptionNode.unfocus();
+              if (descriptionController.text.isNotEmpty) {
+                if (collection?.description != descriptionController.text) {
+                  setState(() {
+                    collection = collection?.copyWith(
+                      description: descriptionController.text,
+                    );
+                  });
+                }
+              }
               onNext?.call();
               return null;
             },
@@ -250,6 +267,15 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
             icon: Icons.save_rounded,
             onTap: () async {
               descriptionNode.unfocus();
+              if (descriptionController.text.isNotEmpty) {
+                if (collection?.description != descriptionController.text) {
+                  setState(() {
+                    collection = collection?.copyWith(
+                      description: descriptionController.text,
+                    );
+                  });
+                }
+              }
               widget.onDone(collection: collection!);
               return null;
             },
