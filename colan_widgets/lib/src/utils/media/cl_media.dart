@@ -10,7 +10,7 @@ class CLMedia {
   CLMedia({
     required this.path,
     required this.type,
-    this.url,
+    this.ref,
     this.previewPath,
   }) {
     if (!path.startsWith('/')) {
@@ -20,20 +20,20 @@ class CLMedia {
   }
   final String path;
   final CLMediaType type;
-  final String? url;
+  final String? ref;
   final previewWidth = 600;
 
   final String? previewPath;
 
   CLMedia copyWith({
     String? path,
-    String? url,
+    String? ref,
     String? previewPath,
   }) {
     return CLMedia(
       path: path ?? this.path,
       type: type,
-      url: url ?? this.url,
+      ref: ref ?? this.ref,
       previewPath: previewPath ?? this.previewPath,
     );
   }

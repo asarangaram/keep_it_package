@@ -8,19 +8,19 @@ import 'cl_media_type.dart';
 class CLMediaVideo extends CLMedia {
   CLMediaVideo({
     required super.path,
-    super.url,
+    super.ref,
     super.previewPath,
   }) : super(type: CLMediaType.video);
 
   @override
   CLMediaVideo copyWith({
     String? path,
-    String? url,
+    String? ref,
     String? previewPath,
   }) {
     return CLMediaVideo(
       path: path ?? this.path,
-      url: url ?? this.url,
+      ref: ref ?? this.ref,
       previewPath: previewPath ?? this.previewPath,
     );
   }

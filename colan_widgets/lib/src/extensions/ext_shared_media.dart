@@ -54,11 +54,11 @@ extension FromSharedMediaGroup on SharedMedia? {
             switch (mimeType) {
               CLMediaType.image => await CLMediaImage(
                   path: text,
-                  url: text,
+                  ref: text,
                 ).withPreview(),
               CLMediaType.video => await CLMediaVideo(
                   path: text,
-                  url: text,
+                  ref: text,
                 ).withPreview(),
               null => throw Exception('Unexpected null'),
               _ => CLMedia(
