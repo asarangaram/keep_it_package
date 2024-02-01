@@ -41,6 +41,11 @@ class AppLoader extends ConsumerWidget {
     final appInitAsync = ref.watch(appInitProvider(appDescriptor));
     return appInitAsync.when(
       data: (success) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+        });
         return AppView(appDescriptor: appDescriptor);
       },
       error: (err, _) {

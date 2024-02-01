@@ -10,48 +10,81 @@ import 'package:store/store.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keepit_grid/keepit_grid.dart';
 
-class CollectionsView extends ConsumerWidget {
+class CollectionsView extends ConsumerStatefulWidget {
   const CollectionsView({super.key, this.tagId});
   final int? tagId;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) => LoadCollections(
-        tagId: tagId,
-        buildOnData: (collections) => KeepItGrid(
-          label: collections.tag?.label ?? 'Collections',
-          entities: collections.entries,
-          availableSuggestions: const [],
-          itemSize: const Size(180, 300),
-          onSelect: (BuildContext context, CollectionBase entity) async {
-            unawaited(
-              context.push(
-                '/items/by_collection_id/${entity.id}',
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CollectionsViewState();
+}
+
+class _CollectionsViewState extends ConsumerState<CollectionsView> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) => LoadCollections(
+        tagId: widget.tagId,
+        buildOnData: (collections) => Stack(
+          children: [
+            KeepItGrid(
+              label: collections.tag?.label ?? 'Collections',
+              entities: collections.entries,
+              availableSuggestions: const [],
+              itemSize: const Size(180, 300),
+              onSelect: (BuildContext context, CollectionBase entity) async {
+                unawaited(
+                  context.push(
+                    '/items/by_collection_id/${entity.id}',
+                  ),
+                );
+                return true;
+              },
+              onUpdate: (items) => onUpdate(context, ref, items),
+              onDelete: (List<CollectionBase> selectedEntities) async {
+                if (selectedEntities.length != 1) {
+                  throw Exception(
+                    "Unexected: Collections can't be added in bulk",
+                  );
+                }
+                for (final entity in selectedEntities) {
+                  await ref
+                      .read(collectionsProvider(null).notifier)
+                      .deleteCollection(Collection.fromBase(entity));
+                }
+                return true;
+              },
+              previewGenerator: (BuildContext context, CollectionBase entity) {
+                if (entity.id == null) {
+                  throw Exception("Unexpected, id can't be null");
+                }
+                return PreviewGenerator(
+                  collectgionID: entity.id!,
+                );
+              },
+              onCreateNew: (context, ref) async {
+                var res = false;
+                setState(() {
+                  isLoading = true;
+                });
+                if (mounted) {
+                  res = await onPickImages(context, ref);
+                }
+                if (mounted) {
+                  setState(() {
+                    isLoading = false;
+                  });
+                }
+                return res;
+              },
+            ),
+            if (isLoading)
+              Container(
+                color: Colors.grey.shade400.withAlpha(128),
+                alignment: Alignment.center,
+                child: const CircularProgressIndicator(),
               ),
-            );
-            return true;
-          },
-          onUpdate: (items) => onUpdate(context, ref, items),
-          onDelete: (List<CollectionBase> selectedEntities) async {
-            if (selectedEntities.length != 1) {
-              throw Exception(
-                "Unexected: Collections can't be added in bulk",
-              );
-            }
-            for (final entity in selectedEntities) {
-              await ref
-                  .read(collectionsProvider(null).notifier)
-                  .deleteCollection(Collection.fromBase(entity));
-            }
-            return true;
-          },
-          previewGenerator: (BuildContext context, CollectionBase entity) {
-            if (entity.id == null) {
-              throw Exception("Unexpected, id can't be null");
-            }
-            return PreviewGenerator(
-              collectgionID: entity.id!,
-            );
-          },
-          onCreateNew: onPickImages,
+          ],
         ),
       );
   Future<bool> onUpdate(

@@ -139,7 +139,8 @@ void main() {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-  return runApp(
+
+  runApp(
     ProviderScope(
       child: AppLoader(
         appDescriptor: KeepItApp(),

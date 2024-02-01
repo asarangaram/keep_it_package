@@ -7,9 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
-
-import 'models/incoming_media_stream.dart';
 import 'providers/incoming_media.dart';
+
+
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({
@@ -185,65 +185,65 @@ class BottomNavigationPage extends ConsumerStatefulWidget {
 class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
-    print(ref.watch(incomingMediaStreamProvider));
-    return ref.watch(incomingMediaStreamProvider).when(
-          data: (media) {
-            if (media != null) {
-              return StandalonePage(
-                child: widget.incomingMediaViewBuilder(
-                  context,
-                  ref,
-                  media: media,
-                  onDiscard: (media) {
-                    for (final m in media.list) {
-                      m.deleteFile();
-                    }
-                    ref.read(incomingMediaStreamProvider.notifier).onDone();
-                  },
-                ),
-              );
-            }
-            return Scaffold(
-              body: CLBackground(
-                child: SafeArea(
-                  child: widget.child,
-                ),
-              ),
-              bottomNavigationBar: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: widget.child.currentIndex,
-                onTap: (index) {
-                  widget.child.goBranch(
-                    index,
-                    initialLocation: index == widget.child.currentIndex,
-                  );
-                  setState(() {});
-                },
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.folder_special_rounded),
-                    label: 'Collections',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.search),
-                    label: 'search',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.settings),
-                    label: 'settings',
-                  ),
-                ],
-              ),
-            );
-          },
-          error: (err, __) => Scaffold(
-            body: CLBackground(
-              child: CLErrorView(errorMessage: err.toString()),
+    final incomingMedia = ref.watch(incomingMediaStreamProvider);
+    return incomingMedia.status.when(
+      data: (status) {
+        if (incomingMedia.items.isNotEmpty) {
+          return StandalonePage(
+            child: widget.incomingMediaViewBuilder(
+              context,
+              ref,
+              media: incomingMedia.items[0],
+              onDiscard: (media) {
+                for (final m in media.list) {
+                  m.deleteFile();
+                }
+                ref.read(incomingMediaStreamProvider.notifier).onDone();
+              },
+            ),
+          );
+        }
+        return Scaffold(
+          body: CLBackground(
+            child: SafeArea(
+              child: widget.child,
             ),
           ),
-          loading: () {
-            return const Scaffold(body: CLBackground(child: CLLoadingView()));
-          },
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: widget.child.currentIndex,
+            onTap: (index) {
+              widget.child.goBranch(
+                index,
+                initialLocation: index == widget.child.currentIndex,
+              );
+              setState(() {});
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.folder_special_rounded),
+                label: 'Collections',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                label: 'search',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'settings',
+              ),
+            ],
+          ),
         );
+      },
+      error: (err, __) => Scaffold(
+        body: CLBackground(
+          child: CLErrorView(errorMessage: err.toString()),
+        ),
+      ),
+      loading: () {
+        return const Scaffold(body: CLBackground(child: CLLoadingView()));
+      },
+    );
   }
 }

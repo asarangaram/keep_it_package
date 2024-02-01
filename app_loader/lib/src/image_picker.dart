@@ -1,7 +1,7 @@
-import 'package:app_loader/src/models/incoming_media_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'providers/incoming_media.dart';
 
 Future<bool> onPickImages(
   BuildContext context,
@@ -10,7 +10,6 @@ Future<bool> onPickImages(
 }) async {
   try {
     final picker = ImagePicker();
-
     final pickedFileList = await picker.pickMultipleMedia();
 
     await ref.read(incomingMediaStreamProvider.notifier).onInsertFiles(
