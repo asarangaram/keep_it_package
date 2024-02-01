@@ -5,6 +5,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
+import '../models/incoming_media_stream.dart';
+
 // Convert this to Future!
 class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
   IncomingMediaNotifier(super.initialSharedMedia) {
@@ -57,6 +59,15 @@ final incomingMediaProvider =
   final notifier = ref.watch(boottimeSharedImagesProvider).maybeWhen(
         orElse: () => null,
         data: (data) => data == null ? null : IncomingMediaNotifier([data]),
+      );
+  ref.watch(incomingMediaStreamProvider).when(
+        data: (data) {
+          print(data);
+        },
+        error: (_, __) {
+          print('error: $_');
+        },
+        loading: () {},
       );
   return notifier ?? IncomingMediaNotifier([]);
 });

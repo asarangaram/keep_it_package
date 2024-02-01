@@ -1,10 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
+import 'package:app_loader/src/models/incoming_media_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
-
-import 'providers/incoming_media.dart';
 
 Future<bool> onPickImages(
   BuildContext context,
@@ -16,37 +13,10 @@ Future<bool> onPickImages(
 
     final pickedFileList = await picker.pickMultipleMedia();
 
-    if (pickedFileList.isNotEmpty) {
-      final stopwatch = Stopwatch()..start();
-      final media = <CLMedia>[];
-      for (final item in pickedFileList) {
-        final clMedia = switch (lookupMimeType(item.path)) {
-          (final String mime) when mime.startsWith('image') =>
-            await ExtCLMediaFile.clMediaWithPreview(
-              path: item.path,
-              type: CLMediaType.image,
-            ),
-          (final String mime) when mime.startsWith('video') =>
-            await ExtCLMediaFile.clMediaWithPreview(
-              path: item.path,
-              type: CLMediaType.video,
-            ),
-          (final String mime) when mime.startsWith('audio') =>
-            CLMedia(path: item.path, type: CLMediaType.audio),
-          _ => CLMedia(path: item.path, type: CLMediaType.file),
-        };
-
-        media.add(clMedia);
-      }
-      final infoGroup = CLMediaInfoGroup(media, targetID: collectionId);
-      ref.read(incomingMediaProvider.notifier).push(infoGroup);
-      stopwatch.stop();
-
-      _infoLogger(
-        'Picker Processing time: ${stopwatch.elapsedMilliseconds} milliseconds'
-        ' [${stopwatch.elapsed}]',
-      );
-    }
+    await ref.read(incomingMediaStreamProvider.notifier).onInsertFiles(
+          pickedFileList.map((e) => e.path).toList(),
+          collectionId: collectionId,
+        );
 
     return pickedFileList.isNotEmpty;
   } catch (e) {
@@ -54,12 +24,5 @@ Future<bool> onPickImages(
     // Will it come here when use cancels?
     // if so, we can simply ignore this.
     throw Exception('gPickImage Unexpected Failure');
-  }
-}
-
-bool _disableInfoLogger = false;
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
   }
 }

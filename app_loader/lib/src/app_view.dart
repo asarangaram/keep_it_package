@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
 
+import 'models/incoming_media_stream.dart';
 import 'providers/incoming_media.dart';
 
 class AppView extends ConsumerStatefulWidget {
@@ -24,15 +25,14 @@ class AppView extends ConsumerStatefulWidget {
 class _RaLRouterState extends ConsumerState<AppView>
     with WidgetsBindingObserver {
   late GoRouter _router;
-  static final GlobalKey<NavigatorState> parentNavigatorKey =
+  final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
-  final List<GlobalKey<NavigatorState>> navigatorPageKeys = [];
+  static final List<GlobalKey<NavigatorState>> navigatorPageKeys = [];
 
   @override
   void initState() {
     widget.appDescriptor.shellRoutes
         .forEach((_, __) => navigatorPageKeys.add(GlobalKey<NavigatorState>()));
-
     super.initState();
   }
 
@@ -65,10 +65,7 @@ class _RaLRouterState extends ConsumerState<AppView>
             path: '/${routes.key}',
             pageBuilder: (context, GoRouterState state) {
               return MaterialPage(
-                key: state.pageKey,
-                child: CLFullscreenBox(
-                  child: CLBackground(child: routes.value(context, state)),
-                ),
+                child: routes.value(context, state),
               );
             },
           ),
@@ -90,8 +87,9 @@ class _RaLRouterState extends ConsumerState<AppView>
             GoRouterState state,
             StatefulNavigationShell navigationShell,
           ) {
+            print('Key state.pageKey = ${state.pageKey}');
             return MaterialPage(
-              key: state.pageKey,
+              // key: state.pageKey,
               child: BottomNavigationPage(
                 incomingMediaViewBuilder: app.incomingMediaViewBuilder,
                 child: navigationShell,
@@ -121,7 +119,7 @@ class _RaLRouterState extends ConsumerState<AppView>
       path: '/$name',
       name: name,
       pageBuilder: (context, state) => CustomTransitionPage<void>(
-        key: state.pageKey,
+        // key: state.pageKey,
         child:
             builder(context, state), //const AppTheme(child: LogOutUserPage()),
         transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
@@ -164,8 +162,8 @@ class StandalonePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: CLBackground(child: child),
+    return CLFullscreenBox(
+      child: CLBackground(child: child),
     );
   }
 }
@@ -187,50 +185,65 @@ class BottomNavigationPage extends ConsumerStatefulWidget {
 class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
-    final mediaList = ref.watch(incomingMediaProvider);
-    if (mediaList.isNotEmpty) {
-      return StandalonePage(
-        child: widget.incomingMediaViewBuilder(
-          context,
-          ref,
-          media: mediaList[0],
-          onDiscard: (media) {
-            ref.read(incomingMediaProvider.notifier).pop();
+    print(ref.watch(incomingMediaStreamProvider));
+    return ref.watch(incomingMediaStreamProvider).when(
+          data: (media) {
+            if (media != null) {
+              return StandalonePage(
+                child: widget.incomingMediaViewBuilder(
+                  context,
+                  ref,
+                  media: media,
+                  onDiscard: (media) {
+                    for (final m in media.list) {
+                      m.deleteFile();
+                    }
+                    ref.read(incomingMediaStreamProvider.notifier).onDone();
+                  },
+                ),
+              );
+            }
+            return Scaffold(
+              body: CLBackground(
+                child: SafeArea(
+                  child: widget.child,
+                ),
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                currentIndex: widget.child.currentIndex,
+                onTap: (index) {
+                  widget.child.goBranch(
+                    index,
+                    initialLocation: index == widget.child.currentIndex,
+                  );
+                  setState(() {});
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.folder_special_rounded),
+                    label: 'Collections',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.search),
+                    label: 'search',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings),
+                    label: 'settings',
+                  ),
+                ],
+              ),
+            );
           },
-        ),
-      );
-    }
-    return Scaffold(
-      body: CLBackground(
-        child: SafeArea(
-          child: widget.child,
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: widget.child.currentIndex,
-        onTap: (index) {
-          widget.child.goBranch(
-            index,
-            initialLocation: index == widget.child.currentIndex,
-          );
-          setState(() {});
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder_special_rounded),
-            label: 'Collections',
+          error: (err, __) => Scaffold(
+            body: CLBackground(
+              child: CLErrorView(errorMessage: err.toString()),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'settings',
-          ),
-        ],
-      ),
-    );
+          loading: () {
+            return const Scaffold(body: CLBackground(child: CLLoadingView()));
+          },
+        );
   }
 }
