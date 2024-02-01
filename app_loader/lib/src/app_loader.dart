@@ -15,8 +15,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_descriptor.dart';
 
 import 'app_view.dart';
-import 'pages/views/cl_error_view.dart';
-import 'pages/views/cl_loading_view.dart';
 
 final appInitProvider =
     FutureProvider.family<void, AppDescriptor>((ref, appDescriptor) async {
