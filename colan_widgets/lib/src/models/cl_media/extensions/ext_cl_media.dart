@@ -86,8 +86,8 @@ extension ExtCLMediaFile on CLMedia {
       }
       final aspectRatio = image.width / image.height;
 
-      final thumbnailWidth = previewWidth;
-      final thumbnailHeight = previewWidth ~/ aspectRatio;
+      final thumbnailWidth = previewWidth ?? 600;
+      final thumbnailHeight = thumbnailWidth ~/ aspectRatio;
       final thumbnail =
           copyResize(image, width: thumbnailWidth, height: thumbnailHeight);
       previewFile.writeAsBytesSync(encodeJpg(thumbnail));
@@ -107,7 +107,7 @@ extension ExtCLMediaFile on CLMedia {
       final thumbnail = await VideoThumbnail.thumbnailData(
         video: path,
         imageFormat: ImageFormat.JPEG,
-        maxWidth: previewWidth,
+        maxWidth: previewWidth ?? 256,
         quality: 25,
       );
 

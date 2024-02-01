@@ -13,7 +13,7 @@ class CLMedia {
     this.ref,
     this.id,
     this.collectionId,
-    this.previewWidth = 600,
+    this.previewWidth,
   }) {
     if (!path.startsWith('/')) {
       throw Exception('CLMedia must have absolute path');
@@ -24,7 +24,7 @@ class CLMedia {
   final String? ref;
   final int? id;
   final int? collectionId;
-  final int previewWidth;
+  final int? previewWidth;
 
   CLMedia copyWith({
     String? path,
@@ -99,7 +99,8 @@ class CLMedia {
       id: map['id'] != null ? map['id'] as int : null,
       collectionId:
           map['collectionId'] != null ? map['collectionId'] as int : null,
-      previewWidth: map['previewWidth'] as int,
+      previewWidth:
+          map['previewWidth'] != null ? map['previewWidth'] as int : null,
     );
   }
 
