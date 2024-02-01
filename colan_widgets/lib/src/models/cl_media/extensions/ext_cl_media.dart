@@ -62,7 +62,6 @@ extension ExtCLMediaFile on CLMedia {
 
   String get previewFileName => '$path.jpg';
   bool get hasPreview => File(previewFileName).existsSync();
-  Future<String> get relativePathFuture async => FileHandler.relativePath(path);
 
   String? get previewPath {
     if (hasPreview) return previewFileName;
