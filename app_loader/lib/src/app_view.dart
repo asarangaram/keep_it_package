@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
 
-import 'pages/page_incoming_media.dart';
 import 'providers/incoming_media.dart';
 
 class AppView extends ConsumerStatefulWidget {
@@ -150,24 +149,6 @@ class _RaLRouterState extends ConsumerState<AppView>
             },
           ),
         ),
-        GoRoute(
-          path: '/incoming',
-          name: 'incoming',
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
-            child: PageIncomingMedia(
-              builder: app.incomingMediaViewBuilder,
-            ), //const AppTheme(child: LogOutUserPage()),
-            transitionsBuilder: (
-              BuildContext context,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-              Widget child,
-            ) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        ),
       ],
       redirect: (context, GoRouterState state) async {
         _infoLogger(state.uri.toString());
@@ -236,10 +217,15 @@ class BottomNavigationPage extends ConsumerStatefulWidget {
 class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
-    final hasIncomingMedia = ref.watch(incomingMediaProvider).isNotEmpty;
-    if (hasIncomingMedia) {
-      return PageIncomingMedia(
-        builder: widget.incomingMediaViewBuilder,
+    final mediaList = ref.watch(incomingMediaProvider);
+    if (mediaList.isNotEmpty) {
+      return widget.incomingMediaViewBuilder(
+        context,
+        ref,
+        media: mediaList[0],
+        onDiscard: (media) {
+          ref.read(incomingMediaProvider.notifier).pop();
+        },
       );
     }
     return Scaffold(
