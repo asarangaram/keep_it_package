@@ -28,19 +28,6 @@ class _RaLRouterState extends ConsumerState<AppView>
       GlobalKey<NavigatorState>();
   final List<GlobalKey<NavigatorState>> navigatorPageKeys = [];
 
-  static Widget defaultTransitionBuilder(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return SlideTransition(
-      position:
-          Tween(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
-      child: child,
-    );
-  }
-
   @override
   void initState() {
     widget.appDescriptor.shellRoutes
@@ -51,42 +38,24 @@ class _RaLRouterState extends ConsumerState<AppView>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    //Does this work?
     if (state == AppLifecycleState.resumed) {
       FocusScope.of(context).unfocus();
     }
   }
 
-  GoRoute getRoute({
-    required String name,
-    required CLWidgetBuilder builder,
-    CLTransitionBuilder? transitionBuilder,
-  }) {
-    return GoRoute(
-      path: '/$name',
-      name: name,
-      pageBuilder: (context, state) => CustomTransitionPage<void>(
-        key: state.pageKey,
-        child:
-            builder(context, state), //const AppTheme(child: LogOutUserPage()),
-        transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final app = widget.appDescriptor;
-    final routes = <GoRoute>[];
 
-    app.screenBuilders.forEach(
-      (name, screenBuilder) => routes.add(
-        getRoute(
-          name: name,
-          builder: screenBuilder,
-          transitionBuilder: app.transitionBuilder,
-        ),
+    final routes = app.screenBuilders.entries.map(
+      (e) => getRoute(
+        name: e.key,
+        builder: e.value,
+        transitionBuilder: app.transitionBuilder,
       ),
     );
+
     final shellRoutes = app.shellRoutes.entries.indexed.map((e) {
       final (index, routes) = e;
       return StatefulShellBranch(
@@ -131,37 +100,7 @@ class _RaLRouterState extends ConsumerState<AppView>
           },
         ),
         ...routes,
-        GoRoute(
-          path: '/',
-          name: 'Root',
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
-            child: const Scaffold(
-              body: Center(child: Text('Home')),
-            ), //const AppTheme(child: LogOutUserPage()),
-            transitionsBuilder: (
-              BuildContext context,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-              Widget child,
-            ) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        ),
       ],
-      redirect: (context, GoRouterState state) async {
-        _infoLogger(state.uri.toString());
-        /* final hasIncomingMedia = ref.watch(incomingMediaProvider).isNotEmpty;
-
-        if (hasIncomingMedia) {
-          if (state.matchedLocation == '/incoming') return null;
-          return '/incoming';
-        } */
-        // if (state.uri.toString() == '/') return '/collections';
-
-        return null;
-      },
     );
 
     return MaterialApp.router(
@@ -170,6 +109,36 @@ class _RaLRouterState extends ConsumerState<AppView>
       //routeInformationParser: _router.routeInformationParser,
       routerConfig: _router,
       title: app.title,
+    );
+  }
+
+  GoRoute getRoute({
+    required String name,
+    required CLWidgetBuilder builder,
+    CLTransitionBuilder? transitionBuilder,
+  }) {
+    return GoRoute(
+      path: '/$name',
+      name: name,
+      pageBuilder: (context, state) => CustomTransitionPage<void>(
+        key: state.pageKey,
+        child:
+            builder(context, state), //const AppTheme(child: LogOutUserPage()),
+        transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
+      ),
+    );
+  }
+
+  static Widget defaultTransitionBuilder(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return SlideTransition(
+      position:
+          Tween(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+      child: child,
     );
   }
 }
@@ -187,10 +156,11 @@ void _infoLogger(String msg) {
   }
 }
 
+// TODO(anandas): an we avoid this?
 class StandalonePage extends ConsumerWidget {
   const StandalonePage({required this.child, super.key});
 
-  final StatefulNavigationShell child;
+  final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -219,13 +189,15 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
   Widget build(BuildContext context) {
     final mediaList = ref.watch(incomingMediaProvider);
     if (mediaList.isNotEmpty) {
-      return widget.incomingMediaViewBuilder(
-        context,
-        ref,
-        media: mediaList[0],
-        onDiscard: (media) {
-          ref.read(incomingMediaProvider.notifier).pop();
-        },
+      return StandalonePage(
+        child: widget.incomingMediaViewBuilder(
+          context,
+          ref,
+          media: mediaList[0],
+          onDiscard: (media) {
+            ref.read(incomingMediaProvider.notifier).pop();
+          },
+        ),
       );
     }
     return Scaffold(
