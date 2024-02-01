@@ -17,6 +17,7 @@ Future<bool> onPickImages(
     final pickedFileList = await picker.pickMultipleMedia();
 
     if (pickedFileList.isNotEmpty) {
+      final stopwatch = Stopwatch()..start();
       final media = <CLMedia>[];
       for (final item in pickedFileList) {
         final clMedia = switch (lookupMimeType(item.path)) {
@@ -39,6 +40,12 @@ Future<bool> onPickImages(
       }
       final infoGroup = CLMediaInfoGroup(media, targetID: collectionId);
       ref.read(incomingMediaProvider.notifier).push(infoGroup);
+      stopwatch.stop();
+
+      _infoLogger(
+        'Picker Processing time: ${stopwatch.elapsedMilliseconds} milliseconds'
+        ' [${stopwatch.elapsed}]',
+      );
     }
 
     return pickedFileList.isNotEmpty;
@@ -47,5 +54,12 @@ Future<bool> onPickImages(
     // Will it come here when use cancels?
     // if so, we can simply ignore this.
     throw Exception('gPickImage Unexpected Failure');
+  }
+}
+
+bool _disableInfoLogger = false;
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
   }
 }

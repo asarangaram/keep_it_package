@@ -171,10 +171,11 @@ extension ExtCLMediaInfoGroup on CLMediaInfoGroup {
     String folderName = 'incoming',
   }) async {
     _infoLogger('Start loading');
-    final stopwatch = Stopwatch()..start();
+
     if (sharedMedia == null) {
       return null;
     }
+    final stopwatch = Stopwatch()..start();
     final newMedia = <CLMedia>[];
     if (sharedMedia.content?.isNotEmpty ?? false) {
       final text = sharedMedia.content!;
