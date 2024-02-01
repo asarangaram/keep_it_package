@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../models/collection.dart';
 import '../models/db.dart';
@@ -12,11 +13,15 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     this.databaseManager,
     this.collectionID,
   }) : super(const AsyncValue.loading()) {
-    loadItems();
+    getApplicationDocumentsDirectory().then((dir) {
+      pathPrefix = dir.path;
+      loadItems();
+    });
   }
   DatabaseManager? databaseManager;
   int? collectionID;
   Ref ref;
+  late final String? pathPrefix;
 
   bool isLoading = false;
 
@@ -25,7 +30,11 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     final List<CLMedia> items;
     final Collection collection;
 
-    items = ExtItemInDB.dbGetByCollectionId(databaseManager!.db, collectionID!);
+    items = ExtItemInDB.dbGetByCollectionId(
+      databaseManager!.db,
+      collectionID!,
+      pathPrefix: pathPrefix,
+    );
     collection = CollectionDB.getById(databaseManager!.db, collectionID!);
 
     state = const AsyncValue.loading();
@@ -39,7 +48,10 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
       throw Exception('DB Manager is not ready');
     }
 
-    item.dbUpsert(databaseManager!.db);
+    item.dbUpsert(
+      databaseManager!.db,
+      pathPrefix: pathPrefix,
+    );
     //ref.invalidate(itemsProvider(item.collectionId));
 
     loadItems();

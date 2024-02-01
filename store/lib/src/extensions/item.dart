@@ -2,32 +2,39 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 extension ExtItemInDB on CLMedia {
-  static CLMedia getByID(Database db, int itemId, {String prefix = ''}) {
+  static CLMedia getByID(
+    Database db,
+    int itemId, {
+    required String? pathPrefix,
+  }) {
     final Map<String, dynamic> map =
         db.select('SELECT * FROM Item WHERE id = ?', [itemId]).first;
-    return CLMedia.fromMap(map);
+    return CLMedia.fromMap(map, pathPrefix: pathPrefix);
   }
 
-  static List<CLMedia> getAll(Database db) {
+  static List<CLMedia> getAll(Database db, {String pathPrefix = ''}) {
     final List<Map<String, dynamic>> maps = db.select('SELECT * FROM Item '
         ' ORDER BY Item.updatedDate DESC');
-    return maps.map(CLMedia.fromMap).toList();
+    return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
   }
 
   int dbUpsert(
-    Database db,
-  ) {
+    Database db, {
+    required String? pathPrefix,
+  }) {
+    final updatedPath =
+        pathPrefix != null ? path.replaceFirst(pathPrefix, '') : path;
     if (id != null) {
       db.execute(
         'UPDATE OR IGNORE Item SET path = ?, '
         'ref = ?, collection_id = ? type=? WHERE id = ?',
-        [path, ref, collectionId, type, id],
+        [updatedPath, ref, collectionId, type, id],
       );
     }
     db.execute(
       'INSERT OR IGNORE INTO Item (path, '
       'ref, collection_id, type) VALUES (?, ?, ?, ?) ',
-      [path, ref, collectionId, type.name],
+      [updatedPath, ref, collectionId, type.name],
     );
     return db.lastInsertRowId;
   }
@@ -37,14 +44,18 @@ extension ExtItemInDB on CLMedia {
     db.execute('DELETE FROM Item WHERE id = ?', [id]);
   }
 
-  static List<CLMedia> dbGetByCollectionId(Database db, int collectionId) {
+  static List<CLMedia> dbGetByCollectionId(
+    Database db,
+    int collectionId, {
+    required String? pathPrefix,
+  }) {
     final List<Map<String, dynamic>> maps = db.select(
       'SELECT * FROM Item WHERE collection_id = ?'
       ' ORDER BY Item.updatedDate DESC',
       [collectionId],
     );
 
-    return maps.map(CLMedia.fromMap).toList();
+    return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
   }
 
   /* CLMedia toCLMedia({String pathPrefix = ''}) {

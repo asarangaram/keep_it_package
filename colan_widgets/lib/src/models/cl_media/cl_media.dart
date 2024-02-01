@@ -68,9 +68,14 @@ class CLMedia {
         'collectionId: $collectionId)';
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({
+    required String? pathPrefix,
+  }) {
+    final updatedPath =
+        pathPrefix != null ? path.replaceFirst(pathPrefix, '') : path;
+
     return <String, dynamic>{
-      'path': path,
+      'path': updatedPath,
       'type': type.name,
       'ref': ref,
       'id': id,
@@ -79,12 +84,16 @@ class CLMedia {
     };
   }
 
-  factory CLMedia.fromMap(Map<String, dynamic> map) {
+  factory CLMedia.fromMap(
+    Map<String, dynamic> map, {
+    required String? pathPrefix,
+  }) {
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
     }
+    final prefix = pathPrefix ?? '';
     return CLMedia(
-      path: map['path'] as String,
+      path: "$prefix/${map['path'] as String}".replaceAll('//', '/'),
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       ref: map['ref'] != null ? map['ref'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
@@ -94,10 +103,19 @@ class CLMedia {
     );
   }
 
-  String toJson() => json.encode(toMap());
+  String toJson({
+    required String? pathPrefix,
+  }) =>
+      json.encode(toMap(pathPrefix: pathPrefix));
 
-  factory CLMedia.fromJson(String source) =>
-      CLMedia.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory CLMedia.fromJson(
+    String source, {
+    required String? pathPrefix,
+  }) =>
+      CLMedia.fromMap(
+        json.decode(source) as Map<String, dynamic>,
+        pathPrefix: pathPrefix,
+      );
 }
 
 class CLMediaInfoGroup {

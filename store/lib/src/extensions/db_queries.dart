@@ -5,8 +5,9 @@ import '../models/db_queries.dart';
 
 extension ExtDBQuery on DBQueries {
   List<CLMedia> getByTagID(
-    Database db,
-  ) {
+    Database db, {
+    required String? pathPrefix,
+  }) {
     if (tagID == null) {
       throw Exception('tagID must be provided');
     }
@@ -21,6 +22,6 @@ extension ExtDBQuery on DBQueries {
     ''',
     );
 
-    return maps.map(CLMedia.fromMap).toList();
+    return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
   }
 }
