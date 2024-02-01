@@ -7,15 +7,15 @@ extension ColonExtension on File {
     }
   }
 
-  File copyToSync(String target) {
+  File copyTo(String target) {
     if (!existsSync()) {
       throw Exception('src file is missing $absolute');
     }
     return copySync((File(target)..createSync(recursive: true)).path);
   }
 
-  File moveToSync(String target) {
-    final file = copyToSync(target);
+  File moveTo(String target) {
+    final file = copyTo(target);
     deleteSync();
     return file;
   }

@@ -1,8 +1,13 @@
 import 'dart:math';
 
-import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
+
+import '../extensions/ext_double.dart';
+import '../models/cl_media.dart';
+import '../utils/media/cl_dimension.dart';
+import 'cl_decorate_square.dart';
+import 'cl_matrix_2d_fixed.dart';
+import 'cl_media_view.dart';
 
 class CLMediaGridView extends StatelessWidget {
   const CLMediaGridView._({

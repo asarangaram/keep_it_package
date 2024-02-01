@@ -40,7 +40,7 @@ class TagsView extends ConsumerWidget {
           },
           previewGenerator: (BuildContext context, CollectionBase tag) {
             return LoadItemsInTag(
-              id: tag.id,
+              id: tag.id!,
               limit: 4,
               buildOnData: (clMediaList) {
                 return CLMediaListPreview(

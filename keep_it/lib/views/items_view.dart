@@ -62,9 +62,7 @@ class ItemsView extends ConsumerWidget {
                       }
                       return Padding(
                         padding: const EdgeInsets.all(16),
-                        child: ItemView(
-                          media: e.toCLMedia(pathPrefix: docDir),
-                        ),
+                        child: ItemView(media: e),
                       );
                     },
                   ),
@@ -95,15 +93,10 @@ class ItemView extends ConsumerWidget {
       elevation: 8,
       color: Colors.transparent,
       child: switch (media) {
-        (final CLMediaImage image) when media.runtimeType == CLMediaImage =>
-          Image.file(
+        (final image) when media.type == CLMediaType.image => Image.file(
             File(image.path),
           ),
-        (final CLMediaVideo video) when media.runtimeType == CLMediaVideo =>
-          /* Image.file(
-            File(video.previewFileName),
-          ), */
-          VideoPlayerScreen(
+        (final video) when media.type == CLMediaType.image => VideoPlayerScreen(
             path: video.path,
           ),
         _ => throw UnimplementedError(

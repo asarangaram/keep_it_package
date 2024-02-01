@@ -18,18 +18,23 @@ Future<bool> onPickImages(
     if (pickedFileList.isNotEmpty) {
       final media = <CLMedia>[];
       for (final item in pickedFileList) {
-        media.add(
-          await switch (lookupMimeType(item.path)) {
-            (final String mime) when mime.startsWith('image') =>
-              CLMediaImage(path: item.path),
-            (final String mime) when mime.startsWith('video') =>
-              CLMediaVideo(path: item.path),
-            (final String mime) when mime.startsWith('audio') =>
-              CLMedia(path: item.path, type: CLMediaType.audio),
-            _ => CLMedia(path: item.path, type: CLMediaType.file),
-          }
-              .withPreview(forceCreate: true),
-        );
+        final clMedia = switch (lookupMimeType(item.path)) {
+          (final String mime) when mime.startsWith('image') =>
+            await ExtCLMediaFile.clMediaWithPreview(
+              path: item.path,
+              type: CLMediaType.image,
+            ),
+          (final String mime) when mime.startsWith('video') =>
+            await ExtCLMediaFile.clMediaWithPreview(
+              path: item.path,
+              type: CLMediaType.video,
+            ),
+          (final String mime) when mime.startsWith('audio') =>
+            CLMedia(path: item.path, type: CLMediaType.audio),
+          _ => CLMedia(path: item.path, type: CLMediaType.file),
+        };
+
+        media.add(clMedia);
       }
       final infoGroup = CLMediaInfoGroup(media, targetID: collectionId);
       ref.read(incomingMediaProvider.notifier).push(infoGroup);

@@ -59,9 +59,9 @@ class KeepMediaWizard extends ConsumerWidget {
               saveIntoTagsId,
             );
 
-    final items = <ItemInDB>[
+    final items = <CLMedia>[
       for (final entry in media.list)
-        await ExtItemInDB.fromCLMedia(entry, collectionId: collectionId),
+        entry.copyWith(collectionId: collectionId),
     ];
 
     ref.read(itemsProvider(collectionId));

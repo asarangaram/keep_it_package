@@ -1,10 +1,10 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../models/db_queries.dart';
-import '../models/item.dart';
 
 extension ExtDBQuery on DBQueries {
-  List<ItemInDB> getByTagID(
+  List<CLMedia> getByTagID(
     Database db,
   ) {
     if (tagID == null) {
@@ -21,6 +21,6 @@ extension ExtDBQuery on DBQueries {
     ''',
     );
 
-    return maps.map(ItemInDB.fromMap).toList();
+    return maps.map(CLMedia.fromMap).toList();
   }
 }

@@ -1,6 +1,6 @@
 name: store
-description: "A new Flutter package project."
-version: 0.0.1
+description: "An futter project that allow you to store images & video and more formating. Allows you to arrange the collection or tags!"
+version: 0.2.1
 publish_to: none
 
 environment:

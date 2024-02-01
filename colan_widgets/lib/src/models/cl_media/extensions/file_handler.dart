@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import '../extensions/ext_io_file.dart';
+import '../../../extensions/ext_io_file.dart';
 
 class FileHandler {
   static String join(
@@ -67,7 +67,7 @@ class FileHandler {
     required String toSubFolder,
   }) async =>
       File(filePath)
-          .copyToSync(
+          .copyTo(
             await resolveDocFilePath(
               path.basename(filePath),
               subFolder: toSubFolder,
@@ -80,7 +80,7 @@ class FileHandler {
     required String toSubFolder,
   }) async =>
       File(filePath)
-          .moveToSync(
+          .moveTo(
             await resolveDocFilePath(
               path.basename(filePath),
               subFolder: toSubFolder,

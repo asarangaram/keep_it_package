@@ -23,14 +23,14 @@ class Item {
     );
   }
 }
-
+/* 
 @immutable
-class ItemInDB extends Item {
-  const ItemInDB({
+class ItemInDB extends CLMedia {
+  ItemInDB({
     required super.path,
-    required this.collectionId,
     required super.type,
-    this.id,
+    super.collectionId,
+    super.id,
     super.ref,
   });
 
@@ -46,11 +46,7 @@ class ItemInDB extends Item {
       collectionId: map['collection_id'] as int,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
     );
-    //map['type'] as String
   }
-  final int? id;
-
-  final int collectionId;
 
   @override
   ItemInDB copyWith({
@@ -109,11 +105,11 @@ class ItemInDB extends Item {
         collectionId.hashCode ^
         type.hashCode;
   }
-}
+} */
 
 class Items {
   Items(this.collection, this.entries);
-  final List<ItemInDB> entries;
+  final List<CLMedia> entries;
   final Collection collection;
 
   bool get isEmpty => entries.isEmpty;

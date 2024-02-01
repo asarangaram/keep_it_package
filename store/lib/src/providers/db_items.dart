@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/collection.dart';
@@ -21,11 +22,10 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
   Future<void> loadItems() async {
     if (databaseManager == null) return;
-    final List<ItemInDB> items;
+    final List<CLMedia> items;
     final Collection collection;
 
-    items =
-        ExtItemInDB.getItemsForCollection(databaseManager!.db, collectionID!);
+    items = ExtItemInDB.dbGetByCollectionId(databaseManager!.db, collectionID!);
     collection = CollectionDB.getById(databaseManager!.db, collectionID!);
 
     state = const AsyncValue.loading();
@@ -34,18 +34,18 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     });
   }
 
-  void upsertItem(ItemInDB item) {
+  void upsertItem(CLMedia item) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
 
-    item.upsert(databaseManager!.db);
+    item.dbUpsert(databaseManager!.db);
     //ref.invalidate(itemsProvider(item.collectionId));
 
     loadItems();
   }
 
-  void upsertItems(List<ItemInDB> items) {
+  void upsertItems(List<CLMedia> items) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
@@ -55,21 +55,26 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     loadItems();
   }
 
-  void deleteItem(ItemInDB item) {
+  void deleteItem(CLMedia item) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
 
-    item.delete(databaseManager!.db);
+    item
+      ..deleteFile()
+      ..dbDelete(databaseManager!.db);
+
     loadItems();
   }
 
-  void deleteItems(List<ItemInDB> items) {
+  void deleteItems(List<CLMedia> items) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
     for (final item in items) {
-      item.delete(databaseManager!.db);
+      item
+        ..deleteFile()
+        ..dbDelete(databaseManager!.db);
     }
     loadItems();
   }

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../utils/media/cl_media.dart';
+import '../models/cl_media.dart';
 
 class CLMediaView extends StatelessWidget {
   const CLMediaView({

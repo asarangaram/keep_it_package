@@ -85,14 +85,8 @@ class PreviewGenerator extends StatelessWidget {
     return LoadItems(
       collectionID: collectgionID,
       buildOnData: (Items items, {required String docDir}) {
-        final List<CLMedia> mediaList;
-        mediaList = items.entries.map(
-          (e) {
-            return e.toCLMedia(pathPrefix: docDir);
-          },
-        ).toList();
         return CLMediaListPreview(
-          mediaList: mediaList,
+          mediaList: items.entries,
           mediaCountInPreview:
               const CLDimension(itemsInRow: 2, itemsInColumn: 2),
           whenNopreview: CLText.veryLarge(
