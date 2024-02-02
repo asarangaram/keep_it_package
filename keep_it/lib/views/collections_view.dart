@@ -117,7 +117,7 @@ class PreviewGenerator extends StatelessWidget {
   Widget build(BuildContext context) {
     return LoadItems(
       collectionID: collectgionID,
-      buildOnData: (Items items, {required String docDir}) {
+      buildOnData: (Items items) {
         return CLMediaListPreview(
           mediaList: items.entries,
           mediaCountInPreview:

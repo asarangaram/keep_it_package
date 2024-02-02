@@ -22,102 +22,87 @@ class CLMediaPreview extends StatelessWidget {
     }
     return AspectRatio(
       aspectRatio: 1,
-      child: Stack(
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: switch (media.type) {
-              CLMediaType.image => Image.file(
-                  File(media.previewPath!),
-                  fit: BoxFit.cover,
+      child: switch (media.type) {
+        CLMediaType.image => Image.file(
+            File(media.previewPath!),
+            fit: BoxFit.cover,
+          ),
+        CLMediaType.video => (media.previewPath != null)
+            ? Image.file(
+                File(media.previewPath!),
+                fit: BoxFit.cover,
+              )
+            : FutureBuilder(
+                future: VideoThumbnail.thumbnailData(
+                  video: media.path,
+                  imageFormat: ImageFormat.JPEG,
+                  maxHeight: 128,
+                  maxWidth: 128, // specify the width of the thumbnail, let the
+                  ///  height auto-scaled to keep the source aspect ratio
+                  quality: 25,
                 ),
-              CLMediaType.video => (media.previewPath != null)
-                  ? Image.file(
-                      File(media.previewPath!),
-                      fit: BoxFit.cover,
-                    )
-                  : FutureBuilder(
-                      future: VideoThumbnail.thumbnailData(
-                        video: media.path,
-                        imageFormat: ImageFormat.JPEG,
-                        maxHeight: 128,
-                        maxWidth:
-                            128, // specify the width of the thumbnail, let the
-                        ///  height auto-scaled to keep the source aspect ratio
-                        quality: 25,
-                      ),
-                      builder: (context, snapShot) {
-                        return snapShot.hasData
-                            ? Image.memory(
-                                snapShot.data!,
-                                fit: BoxFit.cover,
-                              )
-                            : Container(
-                                decoration: BoxDecoration(border: Border.all()),
-                                child: Center(
-                                  child: Text(path.basename(media.path)),
-                                ),
-                              );
-                      },
-                    ),
-              CLMediaType.url => FutureBuilder(
-                  future: URLHandler.getMimeType(media.path),
-                  builder: (context, snapShot) {
-                    if (snapShot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    return switch (snapShot.data) {
-                      (final mimeType) when mimeType == CLMediaType.image =>
-                        Image.network(
-                          media.path,
+                builder: (context, snapShot) {
+                  return snapShot.hasData
+                      ? Image.memory(
+                          snapShot.data!,
                           fit: BoxFit.cover,
-                        ),
-                      (final mimeType) when mimeType == CLMediaType.video =>
-                        FutureBuilder(
-                          future: VideoThumbnail.thumbnailData(
-                            video: media.path,
-                            imageFormat: ImageFormat.JPEG,
-                            maxHeight: 128,
-                            maxWidth:
-                                128, 
-                            quality: 25,
+                        )
+                      : Container(
+                          decoration: BoxDecoration(border: Border.all()),
+                          child: Center(
+                            child: Text(path.basename(media.path)),
                           ),
-                          builder: (context, snapShot) {
-                            if (snapShot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            return snapShot.hasData
-                                ? Image.memory(
-                                    snapShot.data!,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Container(
-                                    decoration:
-                                        BoxDecoration(border: Border.all()),
-                                    child: Center(
-                                      child: Text(path.basename(media.path)),
-                                    ),
-                                  );
-                          },
-                        ),
-                      _ => MediaPlaceHolder(media: media)
-                    };
-                  },
-                ),
-              _ => MediaPlaceHolder(media: media)
+                        );
+                },
+              ),
+        CLMediaType.url => FutureBuilder(
+            future: URLHandler.getMimeType(media.path),
+            builder: (context, snapShot) {
+              if (snapShot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return switch (snapShot.data) {
+                (final mimeType) when mimeType == CLMediaType.image =>
+                  Image.network(
+                    media.path,
+                    fit: BoxFit.cover,
+                  ),
+                (final mimeType) when mimeType == CLMediaType.video =>
+                  FutureBuilder(
+                    future: VideoThumbnail.thumbnailData(
+                      video: media.path,
+                      imageFormat: ImageFormat.JPEG,
+                      maxHeight: 128,
+                      maxWidth: 128,
+                      quality: 25,
+                    ),
+                    builder: (context, snapShot) {
+                      if (snapShot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      return snapShot.hasData
+                          ? Image.memory(
+                              snapShot.data!,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(border: Border.all()),
+                              child: Center(
+                                child: Text(path.basename(media.path)),
+                              ),
+                            );
+                    },
+                  ),
+                _ => MediaPlaceHolder(media: media)
+              };
             },
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Text(media.type.name),
-          ),
-        ],
-      ),
+        _ => MediaPlaceHolder(media: media)
+      },
     );
   }
 }

@@ -1,11 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../models/collection.dart';
 import '../models/db.dart';
-import '../models/db_queries.dart';
-import '../models/tag.dart';
 import 'db_manager.dart';
-import 'db_queries.dart';
 
 class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
   CollectionsNotifier({
@@ -54,7 +51,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     // invalidate the collections queries by Tag id for all TagIds
 
     final collectionId = collection.upsert(databaseManager!.db);
-
+    
     if (tagIds != null) {
       for (final id in tagIds) {
         CollectionDB.addTagToCollection(databaseManager!.db, id, collectionId);

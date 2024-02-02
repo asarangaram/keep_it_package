@@ -21,7 +21,7 @@ class ItemsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadItems(
       collectionID: collectionID,
-      buildOnData: (Items items, {required String docDir}) {
+      buildOnData: (Items items) {
         return KeepItMainView(
           title: items.collection.label,
           onPop: context.canPop()

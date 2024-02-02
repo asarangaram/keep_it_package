@@ -19,8 +19,9 @@ class CLMediaListPreview extends ConsumerWidget {
   final CLDimension mediaCountInPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaWithPreview =
-        mediaList.where((e) => File(e.previewFileName).existsSync()).toList();
+    final mediaWithPreview = mediaList.where((e) {
+      return File(e.path).existsSync();
+    }).toList();
     if (mediaWithPreview.isEmpty) {
       return CLDecorateSquare(
         hasBorder: true,
