@@ -2,13 +2,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:app_loader/src/models/cl_shared_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
-class IncomingMediaNotifier extends StateNotifier<List<CLIncomingMedia>> {
+class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
   IncomingMediaNotifier()
       : intentDataStreamSubscription = null,
         super([]) {
@@ -33,37 +32,54 @@ class IncomingMediaNotifier extends StateNotifier<List<CLIncomingMedia>> {
     super.dispose();
   }
 
+  static CLMediaType toCLMediaType(SharedAttachmentType type) {
+    return switch (type) {
+      SharedAttachmentType.image => CLMediaType.image,
+      SharedAttachmentType.video => CLMediaType.video,
+      SharedAttachmentType.audio => CLMediaType.audio,
+      SharedAttachmentType.file => CLMediaType.file,
+    };
+  }
+
   void receiveSharedMedia(SharedMedia? media) {
     if (media == null) return;
     final attachements = [
-      if (media.content != null)
-        CLIncomingItem(content: media.content!, type: CLMediaType.text),
+      /* if (media.content != null)
+        CLMedia(path: media.content!, type: CLMediaType.text), */
       if (media.imageFilePath != null)
-        CLIncomingItem(
-          content: media.imageFilePath!,
+        CLMedia(
+          path: media.imageFilePath!,
           type: CLMediaType.image,
         ),
       if (media.attachments != null)
-        ...media.attachments!.map(
+        ...media.attachments!.where((e) => e != null).map(
           (e) {
-            return CLIncomingItem.fromSharedAttachment(e!);
+            return CLMedia(path: e!.path, type: toCLMediaType(e.type));
           },
         ),
     ];
 
     if (attachements.isNotEmpty) {
       push(
-        CLIncomingMedia(
+        CLMediaInfoGroup(
           attachements,
         ),
       );
     }
   }
 
-  void push(CLIncomingMedia item) => state = [...state, item];
+  void push(CLMediaInfoGroup item) {
+    state = [...state, item];
+    print('length = ${item.list.length}');
+  }
+
   void pop() {
     final media = state.firstOrNull;
-    media?.destroy();
+    if (media?.isNotEmpty ?? false) {
+      for (final item in media!.list) {
+        item.deleteFile();
+      }
+    }
     state = state.removeFirstItem();
   }
 
@@ -71,7 +87,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLIncomingMedia>> {
 }
 
 final incomingMediaStreamProvider =
-    StateNotifierProvider<IncomingMediaNotifier, List<CLIncomingMedia>>((ref) {
+    StateNotifierProvider<IncomingMediaNotifier, List<CLMediaInfoGroup>>((ref) {
   final notifier = IncomingMediaNotifier();
   ref.onDispose(notifier.dispose);
   return notifier;

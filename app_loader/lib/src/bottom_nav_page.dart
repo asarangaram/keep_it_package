@@ -41,7 +41,14 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
     final incomingMedia = ref.watch(incomingMediaStreamProvider);
 
     if (incomingMedia.isNotEmpty) {
-      return const StandalonePage(child: IncomingProgress());
+      return StandalonePage(
+        child: IncomingProgress(
+          incomingMediaViewBuilder: widget.incomingMediaViewBuilder,
+          onDone: () {
+            ref.read(incomingMediaStreamProvider.notifier).pop();
+          },
+        ),
+      );
     }
 
     return Scaffold(

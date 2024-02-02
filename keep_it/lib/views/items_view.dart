@@ -94,10 +94,10 @@ class ItemView extends ConsumerWidget {
       elevation: 8,
       color: Colors.transparent,
       child: switch (media) {
-        (final image) when media.type == CLMediaType.image => Image.file(
+        (final image) when image.type == CLMediaType.image => Image.file(
             File(image.path),
           ),
-        (final video) when media.type == CLMediaType.image => VideoPlayerScreen(
+        (final video) when video.type == CLMediaType.video => VideoPlayerScreen(
             path: video.path,
           ),
         _ => throw UnimplementedError(

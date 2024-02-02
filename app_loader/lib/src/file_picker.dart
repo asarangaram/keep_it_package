@@ -17,12 +17,14 @@ Future<bool> onPickFiles(
   );
 
   if (result != null) {
+    print('found ${result.paths.length} items');
     final items = result.paths
         .map(
-          (path) => CLIncomingItem(content: path!, type: CLMediaType.file),
+          (path) => CLMedia(path: path!, type: CLMediaType.file),
         )
         .toList();
-    final sharedMedia = CLIncomingMedia(items, targetId: collectionId);
+    final sharedMedia = CLMediaInfoGroup(items, targetID: collectionId);
+    print(items.length);
     if (items.isNotEmpty) {
       ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);
     }

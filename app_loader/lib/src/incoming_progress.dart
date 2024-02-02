@@ -2,18 +2,43 @@ import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mime/mime.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-class IncomingProgress extends StatefulWidget {
-  const IncomingProgress({super.key});
+import 'app_descriptor.dart';
+import 'providers/incoming_media.dart';
+
+class IncomingProgress extends ConsumerStatefulWidget {
+  const IncomingProgress({
+    required this.incomingMediaViewBuilder,
+    super.key,
+    this.onDone,
+  });
+  final void Function()? onDone;
+  final IncomingMediaViewBuilder incomingMediaViewBuilder;
 
   @override
-  State<StatefulWidget> createState() => _IncomingProgressState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _IncomingProgressState();
 }
 
-class _IncomingProgressState extends State<IncomingProgress> {
+class _IncomingProgressState extends ConsumerState<IncomingProgress> {
+  CLMediaInfoGroup? clMediaInfoGroup;
+
   @override
   Widget build(BuildContext context) {
+    final incomingMedia = ref.watch(incomingMediaStreamProvider);
+    if (clMediaInfoGroup != null) {
+      print('clMediaInfoGroup: ${clMediaInfoGroup!.list.length}');
+      return widget.incomingMediaViewBuilder(
+        context,
+        ref,
+        media: clMediaInfoGroup!,
+        onDiscard: (_) => widget.onDone?.call(),
+      );
+    }
+    print('incomingMedia[0] = ${incomingMedia[0].list.length}');
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -22,13 +47,13 @@ class _IncomingProgressState extends State<IncomingProgress> {
             child: Stack(
               children: [
                 Center(
-                  child: StreamBuilder<int>(
-                    stream: getNumberStream(),
+                  child: StreamBuilder<double>(
+                    stream: analyseMedia(incomingMedia[0]),
                     builder:
-                        (BuildContext context, AsyncSnapshot<int> snapshot) {
+                        (BuildContext context, AsyncSnapshot<double> snapshot) {
                       final double? percent;
                       if (snapshot.hasData) {
-                        percent = min(100, snapshot.data!.toDouble() / 100.0);
+                        percent = min(1, snapshot.data!);
                         return CircularPercentIndicator(
                           radius: 100,
                           lineWidth: 13,
@@ -60,9 +85,26 @@ class _IncomingProgressState extends State<IncomingProgress> {
                 Positioned(
                   bottom: 0,
                   right: 0,
-                  child: CLButtonText.large(
-                    'Discard',
-                    color: Theme.of(context).colorScheme.secondary,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8),
+                      /* boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ], */
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: CLButtonText.large(
+                        'Discard',
+                        onTap: widget.onDone,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -73,9 +115,44 @@ class _IncomingProgressState extends State<IncomingProgress> {
     );
   }
 
-  Stream<int> getNumberStream() {
-    return Stream.periodic(const Duration(seconds: 1), (int count) {
-      return count;
+  Stream<double> analyseMedia(CLMediaInfoGroup media) async* {
+    final updated = <CLMedia>[];
+
+    // ignore: unused_local_variable
+    for (final (i, item) in media.list.indexed) {
+      switch (item.type) {
+        case CLMediaType.file:
+          {
+            print(item.type);
+            final clMedia = switch (lookupMimeType(item.path)) {
+              (final String mime) when mime.startsWith('image') => CLMedia(
+                  path: item.path,
+                  type: CLMediaType.image,
+                ),
+              (final String mime) when mime.startsWith('video') =>
+                await ExtCLMediaFile.clMediaWithPreview(
+                  path: item.path,
+                  type: CLMediaType.video,
+                ),
+              _ => CLMedia(path: item.path, type: CLMediaType.file),
+            };
+
+            updated.add(clMedia);
+          }
+        case CLMediaType.image:
+        case CLMediaType.video:
+          updated.add(item);
+        case CLMediaType.audio:
+        case CLMediaType.text:
+        case CLMediaType.url:
+          break;
+      }
+      //await Future.delayed(const Duration(milliseconds: 200), () {});
+
+      yield (i + 1) / media.list.length;
+    }
+    setState(() {
+      clMediaInfoGroup = CLMediaInfoGroup(updated, targetID: media.targetID);
     });
   }
 }
