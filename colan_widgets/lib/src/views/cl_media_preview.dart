@@ -38,8 +38,8 @@ class CLMediaPreview extends StatelessWidget {
                         imageFormat: ImageFormat.JPEG,
                         maxHeight: 128,
                         maxWidth:
-                            128, // specify the width of the thumbnail, let
-                        /// the height auto-scaled to keep the source aspect ratio
+                            128, // specify the width of the thumbnail, let the
+                        ///  height auto-scaled to keep the source aspect ratio
                         quality: 25,
                       ),
                       builder: (context, snapShot) {
