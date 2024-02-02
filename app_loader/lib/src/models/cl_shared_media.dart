@@ -1,7 +1,3 @@
-import 'dart:io';
-
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:share_handler/share_handler.dart';
 
 /* class CLIncomingItem {
   CLIncomingItem({

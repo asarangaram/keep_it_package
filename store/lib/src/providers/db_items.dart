@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:path_provider/path_provider.dart';
 
 import '../models/collection.dart';
@@ -10,8 +11,8 @@ import 'db_manager.dart';
 class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   ItemNotifier({
     required this.ref,
+    required this.collectionID,
     this.databaseManager,
-    this.collectionID,
   }) : super(const AsyncValue.loading()) {
     getApplicationDocumentsDirectory().then((dir) {
       pathPrefix = dir.path;
@@ -19,9 +20,9 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     });
   }
   DatabaseManager? databaseManager;
-  int? collectionID;
+  int collectionID;
   Ref ref;
-  late final String? pathPrefix;
+  late final String pathPrefix;
 
   bool isLoading = false;
 
@@ -32,10 +33,10 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
     items = ExtItemInDB.dbGetByCollectionId(
       databaseManager!.db,
-      collectionID!,
+      collectionID,
       pathPrefix: pathPrefix,
     );
-    collection = CollectionDB.getById(databaseManager!.db, collectionID!);
+    collection = CollectionDB.getById(databaseManager!.db, collectionID);
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -48,11 +49,14 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
       throw Exception('DB Manager is not ready');
     }
 
-    item.dbUpsert(
-      databaseManager!.db,
-      pathPrefix: pathPrefix,
-    );
-    //ref.invalidate(itemsProvider(item.collectionId));
+    item
+        .copyFile(
+          pathPrefix: pathPrefix,
+        )
+        .dbUpsert(
+          databaseManager!.db,
+          pathPrefix: pathPrefix,
+        );
 
     loadItems();
   }
@@ -62,7 +66,14 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
       throw Exception('DB Manager is not ready');
     }
     for (final item in items) {
-      upsertItem(item);
+      item
+          .copyFile(
+            pathPrefix: pathPrefix,
+          )
+          .dbUpsert(
+            databaseManager!.db,
+            pathPrefix: pathPrefix,
+          );
     }
     loadItems();
   }
@@ -93,7 +104,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 }
 
 final itemsProvider =
-    StateNotifierProvider.family<ItemNotifier, AsyncValue<Items>, int?>(
+    StateNotifierProvider.family<ItemNotifier, AsyncValue<Items>, int>(
         (ref, collectionID) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
@@ -103,10 +114,10 @@ final itemsProvider =
       collectionID: collectionID,
     ),
     error: (_, __) => ItemNotifier(
-      ref: ref,
+      ref: ref, collectionID: -1,
     ),
     loading: () => ItemNotifier(
-      ref: ref,
+      ref: ref,collectionID: -1,
     ),
   );
 });

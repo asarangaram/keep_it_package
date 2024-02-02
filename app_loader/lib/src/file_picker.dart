@@ -1,4 +1,3 @@
-import 'package:app_loader/src/models/cl_shared_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -17,14 +16,13 @@ Future<bool> onPickFiles(
   );
 
   if (result != null) {
-    print('found ${result.paths.length} items');
     final items = result.paths
         .map(
           (path) => CLMedia(path: path!, type: CLMediaType.file),
         )
         .toList();
     final sharedMedia = CLMediaInfoGroup(items, targetID: collectionId);
-    print(items.length);
+
     if (items.isNotEmpty) {
       ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);
     }

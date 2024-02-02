@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:image/image.dart';
+import 'package:path/path.dart' as path_handler;
 import 'package:share_handler/share_handler.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -19,6 +20,40 @@ extension ExtCLMediaFile on CLMedia {
     File(path).deleteIfExists();
   }
 
+  CLMedia copyFile({required String pathPrefix}) {
+    if (collectionId == null) {
+      throw Exception("Item can't be stored without collectionId");
+    }
+    final targetDir = path_handler.join(
+      pathPrefix,
+      'keep_it',
+      'cluster_${collectionId!}',
+    );
+    if (File(previewFileName).existsSync()) {
+      {
+        final targetFile = path_handler.join(
+          targetDir,
+          path_handler.basename(previewFileName),
+        );
+        File(previewFileName).copySync(targetFile);
+      }
+    }
+    if (!File(path).existsSync()) {
+      throw Exception('Incoming file not found!');
+    }
+
+    final targetFile =
+        path_handler.join(targetDir, path_handler.basename(path));
+    File(path).copySync(targetFile);
+
+    return copyWith(path: targetFile);
+  }
+
+  /*  /**
+   * 
+   
+   */
+
   Future<CLMedia> move({required String toDir}) async {
     final String newPath;
     if (File(previewFileName).existsSync()) {
@@ -34,6 +69,7 @@ extension ExtCLMediaFile on CLMedia {
 
   Future<CLMedia> copy({required String toDir}) async {
     final String newPath;
+
     if (File(previewFileName).existsSync()) {
       await FileHandler.copy(previewFileName, toSubFolder: toDir);
     }
@@ -43,7 +79,7 @@ extension ExtCLMediaFile on CLMedia {
       newPath = path;
     }
     return copyWith(path: newPath /* , previewPath: newPreviewPath */);
-  }
+  } */
 
   Future<bool> generatePreview({
     bool regenerate = false,
@@ -166,7 +202,7 @@ extension ExtCLMediaInfoGroup on CLMediaInfoGroup {
     };
   }
 
-  static Future<CLMediaInfoGroup?> fromSharedMedia(
+  /* static Future<CLMediaInfoGroup?> fromSharedMedia(
     SharedMedia? sharedMedia, {
     String folderName = 'incoming',
   }) async {
@@ -238,7 +274,7 @@ extension ExtCLMediaInfoGroup on CLMediaInfoGroup {
     );
     if (newMedia.isEmpty) return null;
     return CLMediaInfoGroup(newMedia)..toString() /* .printString() */;
-  }
+  } */
 }
 
 bool _disableInfoLogger = false;

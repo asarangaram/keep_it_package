@@ -1,4 +1,4 @@
-import 'package:http/http.dart' as http;
+/* import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 
@@ -32,6 +32,7 @@ class URLHandler {
   static Future<String?> downloadAndSaveImage(
     String imageUrl, {
     String? prefix,
+    String docDir,
   }) async {
     try {
       (await FileHandler.resolveDocPath('.nomedia', subFolder: 'downloaded'))
@@ -78,3 +79,4 @@ class URLHandler {
     return null;
   }
 }
+ */

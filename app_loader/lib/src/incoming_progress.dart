@@ -7,7 +7,6 @@ import 'package:mime/mime.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'app_descriptor.dart';
-import 'providers/incoming_media.dart';
 
 class IncomingProgress extends ConsumerStatefulWidget {
   const IncomingProgress({
@@ -31,7 +30,6 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
   @override
   Widget build(BuildContext context) {
     if (clMediaInfoGroup != null) {
-      print('clMediaInfoGroup: ${clMediaInfoGroup!.list.length}');
       return widget.incomingMediaViewBuilder(
         context,
         ref,
@@ -39,7 +37,7 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
         onDiscard: (_) => widget.onDone?.call(),
       );
     }
-    print('incomingMedia[0] = ${widget.incomingMedia.list.length}');
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -124,7 +122,6 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
       switch (item.type) {
         case CLMediaType.file:
           {
-            print(item.type);
             final clMedia = switch (lookupMimeType(item.path)) {
               (final String mime) when mime.startsWith('image') => CLMedia(
                   path: item.path,

@@ -32,15 +32,11 @@ class CLMediaView extends StatelessWidget {
           future: VideoThumbnail.thumbnailData(
             video: media.path,
             imageFormat: ImageFormat.JPEG,
-            maxWidth:
-                128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+            maxWidth: 128, // specify the width of the thumbnail,
+            ///let the height auto-scaled to keep the source aspect ratio
             quality: 25,
           ),
           builder: (context, snapShot) {
-            print('Building for Video ${snapShot.connectionState}');
-            if (snapShot.hasData) {
-              print('datalength= ${snapShot.data!.length}');
-            }
             return AspectRatio(
               aspectRatio: 1,
               child: snapShot.hasData

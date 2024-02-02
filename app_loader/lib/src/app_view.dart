@@ -86,7 +86,7 @@ class _RaLRouterState extends ConsumerState<AppView>
             StatefulNavigationShell navigationShell,
           ) {
             return MaterialPage(
-              // key: state.pageKey, // TODO(anandas): This seems causing issues!
+              // key: state.pageKey, // This seems causing issues!
               child: BottomNavigationPage(
                 incomingMediaViewBuilder: app.incomingMediaViewBuilder,
                 child: navigationShell,

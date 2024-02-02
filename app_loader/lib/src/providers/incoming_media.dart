@@ -70,7 +70,6 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
 
   void push(CLMediaInfoGroup item) {
     state = [...state, item];
-    print('length = ${item.list.length}');
   }
 
   void pop() {
