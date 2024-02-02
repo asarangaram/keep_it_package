@@ -8,11 +8,8 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../../app_logger.dart';
 import '../../../extensions/ext_io_file.dart';
-import '../../../extensions/ext_string.dart';
 import '../cl_media.dart';
 import '../cl_media_type.dart';
-import 'file_handler.dart';
-import 'url_handler.dart';
 
 extension ExtCLMediaFile on CLMedia {
   void deleteFile() {
@@ -278,6 +275,7 @@ extension ExtCLMediaInfoGroup on CLMediaInfoGroup {
 }
 
 bool _disableInfoLogger = false;
+// ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);
