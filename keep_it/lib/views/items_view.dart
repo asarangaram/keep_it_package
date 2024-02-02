@@ -82,7 +82,7 @@ Future<bool> onAddItems(
   WidgetRef ref,
   Collection collection,
 ) async {
-  return onPickImages(context, ref, collectionId: collection.id);
+  return onPickFiles(context, ref, collectionId: collection.id);
 }
 
 class ItemView extends ConsumerWidget {

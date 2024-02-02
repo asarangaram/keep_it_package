@@ -7,9 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
-import 'providers/incoming_media.dart';
-
-
+import 'bottom_nav_page.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({
@@ -87,9 +85,8 @@ class _RaLRouterState extends ConsumerState<AppView>
             GoRouterState state,
             StatefulNavigationShell navigationShell,
           ) {
-            print('Key state.pageKey = ${state.pageKey}');
             return MaterialPage(
-              // key: state.pageKey,
+              key: state.pageKey, // TODO(anandas): This seems causing issues!
               child: BottomNavigationPage(
                 incomingMediaViewBuilder: app.incomingMediaViewBuilder,
                 child: navigationShell,
@@ -151,99 +148,5 @@ bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);
-  }
-}
-
-// TODO(anandas): an we avoid this?
-class StandalonePage extends ConsumerWidget {
-  const StandalonePage({required this.child, super.key});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return CLFullscreenBox(
-      child: CLBackground(child: child),
-    );
-  }
-}
-
-class BottomNavigationPage extends ConsumerStatefulWidget {
-  const BottomNavigationPage({
-    required this.child,
-    required this.incomingMediaViewBuilder,
-    super.key,
-  });
-
-  final StatefulNavigationShell child;
-  final IncomingMediaViewBuilder incomingMediaViewBuilder;
-  @override
-  ConsumerState<BottomNavigationPage> createState() =>
-      _BottomNavigationPageState();
-}
-
-class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
-  @override
-  Widget build(BuildContext context) {
-    final incomingMedia = ref.watch(incomingMediaStreamProvider);
-    return incomingMedia.status.when(
-      data: (status) {
-        if (incomingMedia.items.isNotEmpty) {
-          return StandalonePage(
-            child: widget.incomingMediaViewBuilder(
-              context,
-              ref,
-              media: incomingMedia.items[0],
-              onDiscard: (media) {
-                for (final m in media.list) {
-                  m.deleteFile();
-                }
-                ref.read(incomingMediaStreamProvider.notifier).onDone();
-              },
-            ),
-          );
-        }
-        return Scaffold(
-          body: CLBackground(
-            child: SafeArea(
-              child: widget.child,
-            ),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: widget.child.currentIndex,
-            onTap: (index) {
-              widget.child.goBranch(
-                index,
-                initialLocation: index == widget.child.currentIndex,
-              );
-              setState(() {});
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.folder_special_rounded),
-                label: 'Collections',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'search',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: 'settings',
-              ),
-            ],
-          ),
-        );
-      },
-      error: (err, __) => Scaffold(
-        body: CLBackground(
-          child: CLErrorView(errorMessage: err.toString()),
-        ),
-      ),
-      loading: () {
-        return const Scaffold(body: CLBackground(child: CLLoadingView()));
-      },
-    );
   }
 }

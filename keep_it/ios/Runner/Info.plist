@@ -92,5 +92,9 @@
 			<key>NSAllowsArbitraryLoads</key>
 			<true></true>
 		</dict>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>To view and edit Photos and Videos</string>
+		<key>LSSupportsOpeningDocumentsInPlace</key>
+		<true></true>
 	</dict>
 </plist>

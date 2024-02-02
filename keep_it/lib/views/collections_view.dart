@@ -68,7 +68,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsView> {
                   isLoading = true;
                 });
                 if (mounted) {
-                  res = await onPickImages(context, ref);
+                  res = await onPickFiles(context, ref);
                 }
                 if (mounted) {
                   setState(() {
