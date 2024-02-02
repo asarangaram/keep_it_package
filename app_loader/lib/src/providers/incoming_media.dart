@@ -44,8 +44,11 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
   void receiveSharedMedia(SharedMedia? media) {
     if (media == null) return;
     final attachements = [
-      /* if (media.content != null)
-        CLMedia(path: media.content!, type: CLMediaType.text), */
+      if (media.content != null)
+        if (media.content!.isURL())
+          CLMedia(path: media.content!, type: CLMediaType.url)
+        else
+          CLMedia(path: 'text:${media.content!}', type: CLMediaType.text),
       if (media.imageFilePath != null)
         CLMedia(
           path: media.imageFilePath!,

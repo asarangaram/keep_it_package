@@ -1,8 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../extensions/ext_string.dart';
 import 'cl_media_type.dart';
 
 @immutable
@@ -15,10 +15,53 @@ class CLMedia {
     this.collectionId,
     this.previewWidth,
   }) {
-    if (!path.startsWith('/')) {
-      throw Exception('CLMedia must have absolute path');
+    switch (type) {
+      case CLMediaType.text:
+        if (!path.startsWith('text:')) {
+          throw Exception('text should be prefixed with text:');
+        }
+      case CLMediaType.url:
+        if (path.isURL()) {
+          throw Exception('invalid URL');
+        }
+      case CLMediaType.image:
+      case CLMediaType.video:
+      case CLMediaType.audio:
+      case CLMediaType.file:
+        if (!path.startsWith('/')) {
+          throw Exception('Invalid path');
+        }
     }
   }
+
+  factory CLMedia.fromMap(
+    Map<String, dynamic> map, {
+    required String? pathPrefix,
+  }) {
+    if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
+      throw Exception('Incorrect type');
+    }
+    final prefix = pathPrefix ?? '';
+    return CLMedia(
+      path: "$prefix/${map['path'] as String}".replaceAll('//', '/'),
+      type: CLMediaType.values.asNameMap()[map['type'] as String]!,
+      ref: map['ref'] != null ? map['ref'] as String : null,
+      id: map['id'] != null ? map['id'] as int : null,
+      collectionId:
+          map['collectionId'] != null ? map['collectionId'] as int : null,
+      previewWidth:
+          map['previewWidth'] != null ? map['previewWidth'] as int : null,
+    );
+  }
+
+  factory CLMedia.fromJson(
+    String source, {
+    required String? pathPrefix,
+  }) =>
+      CLMedia.fromMap(
+        json.decode(source) as Map<String, dynamic>,
+        pathPrefix: pathPrefix,
+      );
   final String path;
   final CLMediaType type;
   final String? ref;
@@ -84,39 +127,10 @@ class CLMedia {
     };
   }
 
-  factory CLMedia.fromMap(
-    Map<String, dynamic> map, {
-    required String? pathPrefix,
-  }) {
-    if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
-      throw Exception('Incorrect type');
-    }
-    final prefix = pathPrefix ?? '';
-    return CLMedia(
-      path: "$prefix/${map['path'] as String}".replaceAll('//', '/'),
-      type: CLMediaType.values.asNameMap()[map['type'] as String]!,
-      ref: map['ref'] != null ? map['ref'] as String : null,
-      id: map['id'] != null ? map['id'] as int : null,
-      collectionId:
-          map['collectionId'] != null ? map['collectionId'] as int : null,
-      previewWidth:
-          map['previewWidth'] != null ? map['previewWidth'] as int : null,
-    );
-  }
-
   String toJson({
     required String? pathPrefix,
   }) =>
       json.encode(toMap(pathPrefix: pathPrefix));
-
-  factory CLMedia.fromJson(
-    String source, {
-    required String? pathPrefix,
-  }) =>
-      CLMedia.fromMap(
-        json.decode(source) as Map<String, dynamic>,
-        pathPrefix: pathPrefix,
-      );
 }
 
 class CLMediaInfoGroup {

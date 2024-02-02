@@ -15,6 +15,9 @@ class CLMediaView extends StatelessWidget {
   final bool keepAspectRatio;
   @override
   Widget build(BuildContext context) {
+    if (media.id == null) {
+      print('generating preveiw for ${media.path}');
+    }
     if (File(media.path).existsSync()) {
       if (media.previewPath != null || (media.type == CLMediaType.image)) {
         final imageFile = File(media.previewPath ?? media.path);
