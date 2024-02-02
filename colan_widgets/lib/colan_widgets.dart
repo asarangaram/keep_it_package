@@ -32,7 +32,7 @@ export 'src/views/cl_matrix_2d_scroll.dart';
 export 'src/views/cl_matrix_3d.dart';
 export 'src/views/cl_media_grid_view.dart';
 export 'src/views/cl_media_list_preview.dart';
-export 'src/views/cl_media_view.dart';
+export 'src/views/cl_media_preview.dart';
 export 'src/views/cl_page_view.dart';
 export 'src/views/cl_textfield_form.dart';
 export 'src/widgets/cl_background.dart';

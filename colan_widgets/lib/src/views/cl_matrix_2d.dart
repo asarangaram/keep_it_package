@@ -52,13 +52,6 @@ class CLMatrix2D extends StatelessWidget {
         itemCount: itemCount,
       );
     }
-    if (itemCount == 1) {
-      return Column(
-        children: [
-          for (var l = 0; l < layers; l++) builder(context, 0, 0, l),
-        ],
-      );
-    }
 
     final excess = itemCount - (rows ?? itemCount) * columns;
 
@@ -116,7 +109,6 @@ class CLMatrix2DNonScrollable extends StatelessWidget {
         return SizedBox.fromSize(
           size: size,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (leadingRow != null) Flexible(child: leadingRow!),
               for (var r = 0; r < vCount; r++)

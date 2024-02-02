@@ -7,7 +7,7 @@ import '../models/cl_media.dart';
 import '../utils/media/cl_dimension.dart';
 import 'cl_decorate_square.dart';
 import 'cl_matrix_2d_fixed.dart';
-import 'cl_media_view.dart';
+import 'cl_media_preview.dart';
 
 class CLMediaGridView extends StatelessWidget {
   const CLMediaGridView._({
@@ -99,7 +99,7 @@ class CLMediaGridView extends StatelessWidget {
               itemBuilder: (context, index) {
                 return SizedBox.fromSize(
                   size: childSize,
-                  child: CLMediaView(
+                  child: CLMediaPreview(
                     media: mediaList[index],
                     keepAspectRatio: keepAspectRatio,
                   ),
@@ -114,7 +114,7 @@ class CLMediaGridView extends StatelessWidget {
   Widget itemBuilder(BuildContext context, int index) {
     return CLDecorateSquare(
       borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
-      child: CLMediaView(
+      child: CLMediaPreview(
         media: mediaList[index],
         keepAspectRatio: keepAspectRatio,
       ),
