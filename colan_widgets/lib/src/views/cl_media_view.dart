@@ -15,47 +15,49 @@ class CLMediaView extends StatelessWidget {
   final bool keepAspectRatio;
   @override
   Widget build(BuildContext context) {
-    if (media.previewPath != null || (media.type == CLMediaType.image)) {
-      final imageFile = File(media.previewPath ?? media.path);
-      if (imageFile.existsSync()) {
-        return AspectRatio(
-          aspectRatio: 1,
-          child: Image.file(
-            imageFile,
-            fit: !keepAspectRatio ? BoxFit.cover : null,
-          ),
-        );
-      }
-    } else if (media.type == CLMediaType.video) {
-      return FutureBuilder(
-        future: VideoThumbnail.thumbnailData(
-          video: media.path,
-          imageFormat: ImageFormat.JPEG,
-          maxWidth:
-              128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-          quality: 25,
-        ),
-        builder: (context, snapShot) {
-          print('Building for Video ${snapShot.connectionState}');
-          if (snapShot.hasData) {
-            print('datalength= ${snapShot.data!.length}');
-          }
+    if (File(media.path).existsSync()) {
+      if (media.previewPath != null || (media.type == CLMediaType.image)) {
+        final imageFile = File(media.previewPath ?? media.path);
+        if (imageFile.existsSync()) {
           return AspectRatio(
             aspectRatio: 1,
-            child: snapShot.hasData
-                ? Image.memory(
-                    snapShot.data!,
-                    fit: !keepAspectRatio ? BoxFit.cover : null,
-                  )
-                : Container(
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: Center(
-                      child: Text(media.path),
-                    ),
-                  ),
+            child: Image.file(
+              imageFile,
+              fit: !keepAspectRatio ? BoxFit.cover : null,
+            ),
           );
-        },
-      );
+        }
+      } else if (media.type == CLMediaType.video) {
+        return FutureBuilder(
+          future: VideoThumbnail.thumbnailData(
+            video: media.path,
+            imageFormat: ImageFormat.JPEG,
+            maxWidth:
+                128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+            quality: 25,
+          ),
+          builder: (context, snapShot) {
+            print('Building for Video ${snapShot.connectionState}');
+            if (snapShot.hasData) {
+              print('datalength= ${snapShot.data!.length}');
+            }
+            return AspectRatio(
+              aspectRatio: 1,
+              child: snapShot.hasData
+                  ? Image.memory(
+                      snapShot.data!,
+                      fit: !keepAspectRatio ? BoxFit.cover : null,
+                    )
+                  : Container(
+                      decoration: BoxDecoration(border: Border.all()),
+                      child: Center(
+                        child: Text(media.path),
+                      ),
+                    ),
+            );
+          },
+        );
+      }
     }
 
     return AspectRatio(

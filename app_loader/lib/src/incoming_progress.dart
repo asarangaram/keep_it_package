@@ -11,10 +11,12 @@ import 'providers/incoming_media.dart';
 
 class IncomingProgress extends ConsumerStatefulWidget {
   const IncomingProgress({
+    required this.incomingMedia,
     required this.incomingMediaViewBuilder,
     super.key,
     this.onDone,
   });
+  final CLMediaInfoGroup incomingMedia;
   final void Function()? onDone;
   final IncomingMediaViewBuilder incomingMediaViewBuilder;
 
@@ -28,7 +30,6 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
 
   @override
   Widget build(BuildContext context) {
-    final incomingMedia = ref.watch(incomingMediaStreamProvider);
     if (clMediaInfoGroup != null) {
       print('clMediaInfoGroup: ${clMediaInfoGroup!.list.length}');
       return widget.incomingMediaViewBuilder(
@@ -38,7 +39,7 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
         onDiscard: (_) => widget.onDone?.call(),
       );
     }
-    print('incomingMedia[0] = ${incomingMedia[0].list.length}');
+    print('incomingMedia[0] = ${widget.incomingMedia.list.length}');
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -48,7 +49,7 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
               children: [
                 Center(
                   child: StreamBuilder<double>(
-                    stream: analyseMedia(incomingMedia[0]),
+                    stream: analyseMedia(widget.incomingMedia),
                     builder:
                         (BuildContext context, AsyncSnapshot<double> snapshot) {
                       final double? percent;
@@ -147,7 +148,7 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
         case CLMediaType.url:
           break;
       }
-      //await Future.delayed(const Duration(milliseconds: 200), () {});
+      await Future.delayed(const Duration(milliseconds: 200), () {});
 
       yield (i + 1) / media.list.length;
     }
