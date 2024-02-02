@@ -139,10 +139,10 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
           }
         case CLMediaType.image:
         case CLMediaType.video:
+        case CLMediaType.url:
           updated.add(item);
         case CLMediaType.audio:
         case CLMediaType.text:
-        case CLMediaType.url:
           break;
       }
       await Future.delayed(const Duration(milliseconds: 200), () {});

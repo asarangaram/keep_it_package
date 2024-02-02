@@ -22,8 +22,23 @@ extension ExtItemInDB on CLMedia {
     Database db, {
     required String? pathPrefix,
   }) {
-    final updatedPath =
-        pathPrefix != null ? path.replaceFirst(pathPrefix, '') : path;
+    final String updatedPath;
+    if (type.isFile) {
+      final String removeString;
+      if (pathPrefix?.endsWith('/') ?? true) {
+        removeString = pathPrefix ?? '';
+      } else {
+        removeString = '$pathPrefix/';
+      }
+      updatedPath =
+          pathPrefix != null ? path.replaceFirst(removeString, '') : path;
+      if (!updatedPath.startsWith('keep_it/')) {
+        throw Exception('Media must be keep under keep_it dir ');
+      }
+    } else {
+      updatedPath = path;
+    }
+
     if (id != null) {
       db.execute(
         'UPDATE OR IGNORE Item SET path = ?, '

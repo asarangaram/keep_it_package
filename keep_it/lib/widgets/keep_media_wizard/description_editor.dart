@@ -11,6 +11,7 @@ class DescriptionEditor extends StatefulWidget {
     this.focusNode,
     super.key,
     this.onDone,
+    this.onDiscard,
   });
   final CollectionBase item;
   final TextEditingController? controller;
@@ -18,6 +19,7 @@ class DescriptionEditor extends StatefulWidget {
 
   final bool enabled;
   final Future<bool> Function(Collection collection)? onDone;
+  final Future<bool> Function()? onDiscard;
 
   @override
   State<StatefulWidget> createState() => _DescriptionEditorState();
@@ -63,17 +65,19 @@ class _DescriptionEditorState extends State<DescriptionEditor> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CLTextField.multiLine(
-            controller,
-            focusNode: focusNode,
-            hint: enabled
-                ? 'What is the best thing,'
-                    ' you can say about this?'
-                : 'Tap to add description',
-            maxLines: 5,
-            enabled: enabled,
+          Flexible(
+            child: CLTextField.multiLine(
+              controller,
+              focusNode: focusNode,
+              hint: enabled
+                  ? 'What is the best thing,'
+                      ' you can say about this?'
+                  : 'Tap to add description',
+              maxLines: 5,
+              enabled: enabled,
+            ),
           ),
-          if (enabled)
+          if (enabled && (widget.onDiscard != null || widget.onDone != null))
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -84,9 +88,13 @@ class _DescriptionEditorState extends State<DescriptionEditor> {
                       controller.text = widget.item.description ?? '';
                       enabled = false;
                     });
+                    widget.onDiscard?.call();
                   },
                 ),
-                const CLButtonText.large('Update'),
+                if (widget.onDone != null)
+                  const CLButtonText.large('Update')
+                else
+                  Container(),
               ],
             ),
         ],

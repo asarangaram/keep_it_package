@@ -17,6 +17,7 @@ class KeepMediaWizard extends ConsumerWidget {
   final void Function(CLMediaInfoGroup media) onDone;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
     return LoadCollections(
       buildOnData: (collections) {
         return PickCollectionBase(
@@ -65,7 +66,7 @@ class KeepMediaWizard extends ConsumerWidget {
     ];
 
     ref.read(itemsProvider(collectionId));
-    ref.read(itemsProvider(collectionId).notifier).upsertItems(items);
+    await ref.read(itemsProvider(collectionId).notifier).upsertItems(items);
     stopwatch.stop();
 
     await ref.read(notificationMessageProvider.notifier).push('Saved.');

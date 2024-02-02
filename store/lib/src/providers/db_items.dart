@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,17 +14,15 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   ItemNotifier({
     required this.ref,
     required this.collectionID,
+    required this.pathPrefix,
     this.databaseManager,
   }) : super(const AsyncValue.loading()) {
-    getApplicationDocumentsDirectory().then((dir) {
-      pathPrefix = dir.path;
-      loadItems();
-    });
+    loadItems();
   }
   DatabaseManager? databaseManager;
   int collectionID;
   Ref ref;
-  late final String pathPrefix;
+  final String pathPrefix;
 
   bool isLoading = false;
 
@@ -44,38 +44,36 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     });
   }
 
-  void upsertItem(CLMedia item) {
+  Future<void> upsertItem(CLMedia item) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
 
-    item
-        .copyFile(
-          pathPrefix: pathPrefix,
-        )
+    (await item.copyFile(
+      pathPrefix: pathPrefix,
+    ))
         .dbUpsert(
-          databaseManager!.db,
-          pathPrefix: pathPrefix,
-        );
+      databaseManager!.db,
+      pathPrefix: pathPrefix,
+    );
 
-    loadItems();
+    await loadItems();
   }
 
-  void upsertItems(List<CLMedia> items) {
+  Future<void> upsertItems(List<CLMedia> items) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
     for (final item in items) {
-      item
-          .copyFile(
-            pathPrefix: pathPrefix,
-          )
+      (await item.copyFile(
+        pathPrefix: pathPrefix,
+      ))
           .dbUpsert(
-            databaseManager!.db,
-            pathPrefix: pathPrefix,
-          );
+        databaseManager!.db,
+        pathPrefix: pathPrefix,
+      );
     }
-    loadItems();
+    await loadItems();
   }
 
   void deleteItem(CLMedia item) {
@@ -107,17 +105,41 @@ final itemsProvider =
     StateNotifierProvider.family<ItemNotifier, AsyncValue<Items>, int>(
         (ref, collectionID) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
-  return dbManagerAsync.when(
-    data: (DatabaseManager dbManager) => ItemNotifier(
-      ref: ref,
-      databaseManager: dbManager,
-      collectionID: collectionID,
-    ),
+  final docDir = ref.watch(docDirProvider);
+  return docDir.when(
+    data: (pathPrefix) {
+      return dbManagerAsync.when(
+        data: (DatabaseManager dbManager) => ItemNotifier(
+          ref: ref,
+          databaseManager: dbManager,
+          collectionID: collectionID,
+          pathPrefix: pathPrefix.path,
+        ),
+        error: (_, __) => ItemNotifier(
+          ref: ref,
+          collectionID: collectionID,
+          pathPrefix: '',
+        ),
+        loading: () => ItemNotifier(
+          ref: ref,
+          collectionID: collectionID,
+          pathPrefix: '',
+        ),
+      );
+    },
     error: (_, __) => ItemNotifier(
-      ref: ref, collectionID: -1,
+      ref: ref,
+      collectionID: collectionID,
+      pathPrefix: '',
     ),
     loading: () => ItemNotifier(
-      ref: ref,collectionID: -1,
+      ref: ref,
+      collectionID: collectionID,
+      pathPrefix: '',
     ),
   );
+});
+
+final docDirProvider = FutureProvider<Directory>((ref) async {
+  return getApplicationDocumentsDirectory();
 });

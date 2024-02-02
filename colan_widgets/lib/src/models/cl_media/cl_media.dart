@@ -21,7 +21,7 @@ class CLMedia {
           throw Exception('text should be prefixed with text:');
         }
       case CLMediaType.url:
-        if (path.isURL()) {
+        if (!path.isURL()) {
           throw Exception('invalid URL');
         }
       case CLMediaType.image:

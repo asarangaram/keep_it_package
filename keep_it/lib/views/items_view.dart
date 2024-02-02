@@ -90,6 +90,9 @@ class ItemView extends ConsumerWidget {
   final CLMedia media;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (media.type.isFile && !File(media.path).existsSync()) {
+      throw Exception('File not found ${media.path}');
+    }
     return Card(
       elevation: 8,
       color: Colors.transparent,

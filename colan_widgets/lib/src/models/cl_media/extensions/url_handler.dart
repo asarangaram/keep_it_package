@@ -1,4 +1,32 @@
-/* import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
+
+import '../cl_media_type.dart';
+
+class URLHandler {
+  static Future<CLMediaType?> getMimeType(String url) async {
+    try {
+      final response = await http.head(Uri.parse(url));
+
+      // Check if the Content-Type header is present in the response
+      if (response.headers.containsKey('content-type')) {
+        final contentType = response.headers['content-type']!;
+
+        return switch (contentType) {
+          (final String c) when c.startsWith('image') => CLMediaType.image,
+          (final String c) when c.startsWith('video') => CLMediaType.video,
+          (final String c) when c.startsWith('audio') => CLMediaType.video,
+          (final String c) when c.startsWith('application/pdf') =>
+            CLMediaType.file,
+          _ => CLMediaType.url
+        };
+      }
+    } catch (e) {
+      /** */
+    }
+    return CLMediaType.url;
+  }
+}
+/* 
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 

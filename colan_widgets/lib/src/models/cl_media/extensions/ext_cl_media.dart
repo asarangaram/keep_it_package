@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:share_handler/share_handler.dart';
@@ -10,6 +11,7 @@ import '../../../app_logger.dart';
 import '../../../extensions/ext_io_file.dart';
 import '../cl_media.dart';
 import '../cl_media_type.dart';
+import 'url_handler.dart';
 
 extension ExtCLMediaFile on CLMedia {
   void deleteFile() {
@@ -17,7 +19,46 @@ extension ExtCLMediaFile on CLMedia {
     File(path).deleteIfExists();
   }
 
-  CLMedia copyFile({required String pathPrefix}) {
+  String generateFileName(http.Response response) {
+    String? filename;
+    // Check if we get file name
+    if (response.headers.containsKey('content-disposition')) {
+      final contentDispositionHeader = response.headers['content-disposition'];
+      final match = RegExp('filename=(?:"([^"]+)"|(.*))')
+          .firstMatch(contentDispositionHeader!);
+
+      filename = match?[1] ?? match?[2];
+    }
+    filename = filename ?? 'unnamedfile';
+    /* if (path_handler.extension(filename).isEmpty) {
+          // If no extension found, add extension if possible
+          // Parse the Content-Type header to determine the file extension
+          final mediaType =
+              MediaType.parse(response.headers['content-type'] ?? '');
+
+          final fileExtension = mediaType.subtype;
+          filename = '$filename.$fileExtension';
+        } */
+
+    return '${DateTime.now().millisecondsSinceEpoch}_filename';
+  }
+
+  Future<CLMedia> download(
+    String url,
+    CLMediaType type, {
+    required String targetDir,
+  }) async {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode != 200) return this;
+
+    final targetFile = path_handler.join(targetDir, generateFileName(response));
+    File(targetFile)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(response.bodyBytes);
+    return copyWith(path: targetFile, type: type);
+  }
+
+  Future<CLMedia> copyFile({required String pathPrefix}) async {
     if (collectionId == null) {
       throw Exception("Item can't be stored without collectionId");
     }
@@ -26,24 +67,48 @@ extension ExtCLMediaFile on CLMedia {
       'keep_it',
       'cluster_${collectionId!}',
     );
-    if (File(previewFileName).existsSync()) {
-      {
-        final targetFile = path_handler.join(
-          targetDir,
-          path_handler.basename(previewFileName),
-        );
-        File(previewFileName).copySync(targetFile);
-      }
-    }
-    if (!File(path).existsSync()) {
-      throw Exception('Incoming file not found!');
-    }
+    switch (type) {
+      case CLMediaType.image:
+      case CLMediaType.video:
+      case CLMediaType.audio:
+      case CLMediaType.file:
+        if (File(previewFileName).existsSync()) {
+          {
+            final targetFile = path_handler.join(
+              targetDir,
+              path_handler.basename(previewFileName),
+            );
+            File(previewFileName).copySync(targetFile);
+          }
+        }
+        if (!File(path).existsSync()) {
+          throw Exception('Incoming file not found!');
+        }
 
-    final targetFile =
-        path_handler.join(targetDir, path_handler.basename(path));
-    File(path).copySync(targetFile);
+        final targetFile =
+            path_handler.join(targetDir, path_handler.basename(path));
+        File(targetFile).createSync(recursive: true);
+        File(path).copySync(targetFile);
 
-    return copyWith(path: targetFile);
+        return copyWith(path: targetFile);
+
+      case CLMediaType.url:
+        final mime = await URLHandler.getMimeType(path);
+        switch (mime) {
+          case CLMediaType.image:
+          case CLMediaType.video:
+            return download(path, mime!, targetDir: targetDir);
+          case null:
+          case CLMediaType.text:
+          case CLMediaType.url:
+          case CLMediaType.audio:
+          case CLMediaType.file:
+            return this;
+        }
+
+      case CLMediaType.text:
+        return this;
+    }
   }
 
   /*  /**
