@@ -13,6 +13,7 @@ import 'package:window_size/window_size.dart';
 
 import 'views/collections_view.dart';
 
+import 'views/item_view.dart';
 import 'views/items_view.dart';
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
@@ -62,10 +63,18 @@ class KeepItApp implements AppDescriptor {
   @override
   Map<String, CLWidgetBuilder> get screenBuilders {
     return {
-      'collections/by_tag_id/:id': (context, GoRouterState state) =>
-          CollectionsView(tagId: int.parse(state.pathParameters['id']!)),
-      'items/by_collection_id/:id': (context, GoRouterState state) =>
-          ItemsView(collectionID: int.parse(state.pathParameters['id']!)),
+      'collections/:tag_id': (context, GoRouterState state) =>
+          CollectionsView(tagId: int.parse(state.pathParameters['tag_id']!)),
+      'items/:collection_id': (context, GoRouterState state) => ItemsView(
+            collectionID: int.parse(state.pathParameters['collection_id']!),
+          ),
+      'item/:collection_id/:item_id': (context, GoRouterState state) {
+        print(state.pathParameters);
+        return ItemViewByID(
+          collectionId: int.parse(state.pathParameters['collection_id']!),
+          id: int.parse(state.pathParameters['item_id']!),
+        );
+      },
     };
   }
 

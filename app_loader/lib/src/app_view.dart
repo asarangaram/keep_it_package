@@ -96,6 +96,10 @@ class _RaLRouterState extends ConsumerState<AppView>
         ),
         ...routes,
       ],
+      redirect: (context, state) {
+        print(state.fullPath);
+        return null;
+      },
     );
 
     return MaterialApp.router(
@@ -112,11 +116,12 @@ class _RaLRouterState extends ConsumerState<AppView>
     required CLWidgetBuilder builder,
     CLTransitionBuilder? transitionBuilder,
   }) {
+    print('Roting page $name');
     return GoRoute(
       path: '/$name',
       name: name,
       pageBuilder: (context, state) => CustomTransitionPage<void>(
-        // key: state.pageKey,
+        key: state.pageKey,
         child:
             builder(context, state), //const AppTheme(child: LogOutUserPage()),
         transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,

@@ -40,7 +40,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Items(collection, items);
+      return Items(collection: collection, entries: items);
     });
   }
 

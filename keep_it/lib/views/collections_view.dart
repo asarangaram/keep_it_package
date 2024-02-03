@@ -35,7 +35,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsView> {
               onSelect: (BuildContext context, CollectionBase entity) async {
                 unawaited(
                   context.push(
-                    '/items/by_collection_id/${entity.id}',
+                    '/items/${entity.id}',
                   ),
                 );
                 return true;

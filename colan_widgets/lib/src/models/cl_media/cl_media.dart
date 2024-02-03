@@ -48,7 +48,7 @@ class CLMedia {
       ref: map['ref'] != null ? map['ref'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
       collectionId:
-          map['collectionId'] != null ? map['collectionId'] as int : null,
+          map['collection_id'] != null ? map['collection_id'] as int : null,
       previewWidth:
           map['previewWidth'] != null ? map['previewWidth'] as int : null,
     );
@@ -122,7 +122,7 @@ class CLMedia {
       'type': type.name,
       'ref': ref,
       'id': id,
-      'collectionId': collectionId,
+      'collection_id': collectionId,
       'previewWidth': previewWidth,
     };
   }

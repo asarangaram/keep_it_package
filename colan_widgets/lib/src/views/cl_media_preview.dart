@@ -20,17 +20,18 @@ class CLMediaPreview extends StatelessWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
+    final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
     return AspectRatio(
       aspectRatio: 1,
       child: switch (media.type) {
         CLMediaType.image => Image.file(
             File(media.previewPath!),
-            fit: BoxFit.cover,
+            fit: fit,
           ),
         CLMediaType.video => (media.previewPath != null)
             ? Image.file(
                 File(media.previewPath!),
-                fit: BoxFit.cover,
+                fit: fit,
               )
             : FutureBuilder(
                 future: VideoThumbnail.thumbnailData(
@@ -45,7 +46,7 @@ class CLMediaPreview extends StatelessWidget {
                   return snapShot.hasData
                       ? Image.memory(
                           snapShot.data!,
-                          fit: BoxFit.cover,
+                          fit: fit,
                         )
                       : Container(
                           decoration: BoxDecoration(border: Border.all()),
@@ -67,7 +68,7 @@ class CLMediaPreview extends StatelessWidget {
                 (final mimeType) when mimeType == CLMediaType.image =>
                   Image.network(
                     media.path,
-                    fit: BoxFit.cover,
+                    fit: fit,
                   ),
                 (final mimeType) when mimeType == CLMediaType.video =>
                   FutureBuilder(
@@ -87,7 +88,7 @@ class CLMediaPreview extends StatelessWidget {
                       return snapShot.hasData
                           ? Image.memory(
                               snapShot.data!,
-                              fit: BoxFit.cover,
+                              fit: fit,
                             )
                           : Container(
                               decoration: BoxDecoration(border: Border.all()),
