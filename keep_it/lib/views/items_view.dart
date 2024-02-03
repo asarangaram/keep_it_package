@@ -62,10 +62,8 @@ class ItemsView extends ConsumerWidget {
                         throw Exception('has only one layer!');
                       }
                       return GestureDetector(
-                        onTap: () {
-                          print(e);
-                          context.push('/item/${e.collectionId}/${e.id}');
-                        },
+                        onTap: () =>
+                            context.push('/item/${e.collectionId}/${e.id}'),
                         child: Hero(
                           tag: '/item/${e.collectionId}/${e.id}',
                           child: Padding(

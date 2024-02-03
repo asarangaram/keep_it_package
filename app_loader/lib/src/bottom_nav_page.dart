@@ -1,4 +1,3 @@
-// TODO(anandas): an we avoid this?
 import 'package:app_loader/src/app_descriptor.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';

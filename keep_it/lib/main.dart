@@ -68,13 +68,11 @@ class KeepItApp implements AppDescriptor {
       'items/:collection_id': (context, GoRouterState state) => ItemsView(
             collectionID: int.parse(state.pathParameters['collection_id']!),
           ),
-      'item/:collection_id/:item_id': (context, GoRouterState state) {
-        print(state.pathParameters);
-        return ItemViewByID(
-          collectionId: int.parse(state.pathParameters['collection_id']!),
-          id: int.parse(state.pathParameters['item_id']!),
-        );
-      },
+      'item/:collection_id/:item_id': (context, GoRouterState state) =>
+          ItemViewByID(
+            collectionId: int.parse(state.pathParameters['collection_id']!),
+            id: int.parse(state.pathParameters['item_id']!),
+          ),
     };
   }
 

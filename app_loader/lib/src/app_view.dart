@@ -71,8 +71,6 @@ class _RaLRouterState extends ConsumerState<AppView>
       );
     }).toList();
 
-    _infoLogger('RaLRouter.build ${app.screenBuilders.length}');
-
     _router = GoRouter(
       navigatorKey: parentNavigatorKey,
       initialLocation: '/${app.shellRoutes.keys.first}',
@@ -86,7 +84,6 @@ class _RaLRouterState extends ConsumerState<AppView>
             StatefulNavigationShell navigationShell,
           ) {
             return MaterialPage(
-              // key: state.pageKey, // This seems causing issues!
               child: BottomNavigationPage(
                 incomingMediaViewBuilder: app.incomingMediaViewBuilder,
                 child: navigationShell,
@@ -97,7 +94,6 @@ class _RaLRouterState extends ConsumerState<AppView>
         ...routes,
       ],
       redirect: (context, state) {
-        print(state.fullPath);
         return null;
       },
     );
@@ -116,14 +112,12 @@ class _RaLRouterState extends ConsumerState<AppView>
     required CLWidgetBuilder builder,
     CLTransitionBuilder? transitionBuilder,
   }) {
-    print('Roting page $name');
     return GoRoute(
       path: '/$name',
       name: name,
       pageBuilder: (context, state) => CustomTransitionPage<void>(
         key: state.pageKey,
-        child:
-            builder(context, state), //const AppTheme(child: LogOutUserPage()),
+        child: builder(context, state),
         transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
       ),
     );
