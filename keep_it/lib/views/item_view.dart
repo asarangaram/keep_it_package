@@ -33,23 +33,27 @@ class ItemView extends ConsumerWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
-    return Card(
-      elevation: 8,
-      color: Colors.transparent,
-      child: File(media.path).existsSync()
-          ? switch (media) {
-              (final image) when image.type == CLMediaType.image => Image.file(
-                  File(image.path),
-                ),
-              (final video) when video.type == CLMediaType.video =>
-                VideoPlayerScreen(
-                  path: video.path,
-                ),
-              _ => throw UnimplementedError(
-                  'Not yet implemented',
-                )
-            }
-          : const Text('Media not found'),
+    return Hero(
+      tag: '/item/${media.collectionId}/${media.id}',
+      child: Card(
+        elevation: 8,
+        color: Colors.transparent,
+        child: File(media.path).existsSync()
+            ? switch (media) {
+                (final image) when image.type == CLMediaType.image =>
+                  Image.file(
+                    File(image.path),
+                  ),
+                (final video) when video.type == CLMediaType.video =>
+                  VideoPlayerScreen(
+                    path: video.path,
+                  ),
+                _ => throw UnimplementedError(
+                    'Not yet implemented',
+                  )
+              }
+            : const Text('Media not found'),
+      ),
     );
   }
 }

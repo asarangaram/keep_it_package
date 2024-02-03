@@ -66,10 +66,13 @@ class ItemsView extends ConsumerWidget {
                           print(e);
                           context.push('/item/${e.collectionId}/${e.id}');
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: CLMediaPreview(
-                            media: e,
+                        child: Hero(
+                          tag: '/item/${e.collectionId}/${e.id}',
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: CLMediaPreview(
+                              media: e,
+                            ),
                           ),
                         ),
                       );
