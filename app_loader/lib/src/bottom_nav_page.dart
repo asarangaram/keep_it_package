@@ -54,8 +54,44 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
 
     return Scaffold(
       body: CLBackground(
-        child: SafeArea(
-          child: widget.child,
+        child: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity == null) return;
+            // pop on Swipe
+            if (details.primaryVelocity! > 0) {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                if (widget.child.currentIndex == 1) {
+                  widget.child.goBranch(
+                    0,
+                  );
+                }
+                if (widget.child.currentIndex == 2) {
+                  widget.child.goBranch(
+                    1,
+                  );
+                }
+              }
+            }
+
+            // Swiping in left direction.
+            if (details.primaryVelocity! < 0) {
+              if (widget.child.currentIndex == 0) {
+                widget.child.goBranch(
+                  1,
+                );
+              }
+              if (widget.child.currentIndex == 1) {
+                widget.child.goBranch(
+                  2,
+                );
+              }
+            }
+          },
+          child: SafeArea(
+            child: widget.child,
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
