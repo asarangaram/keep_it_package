@@ -26,7 +26,7 @@ class TagsView extends ConsumerWidget {
           onSelect: (BuildContext context, CollectionBase entity) async {
             unawaited(
               context.push(
-                '/collections/by_tag_id/${entity.id}',
+                '/collections/${entity.id}',
               ),
             );
             return true;
