@@ -26,7 +26,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
       collections = CollectionDB.getAll(databaseManager!.db);
       tag = null;
     } else {
-      collections = CollectionDB.getCollectionsForTag(
+      collections = CollectionDB.getCollectionsByTagID(
         databaseManager!.db,
         tagID!,
       );
@@ -51,7 +51,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     // invalidate the collections queries by Tag id for all TagIds
 
     final collectionId = collection.upsert(databaseManager!.db);
-    
+
     if (tagIds != null) {
       for (final id in tagIds) {
         CollectionDB.addTagToCollection(databaseManager!.db, id, collectionId);

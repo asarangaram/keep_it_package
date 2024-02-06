@@ -3,16 +3,16 @@ import 'package:sqlite3/sqlite3.dart';
 import '../models/tag.dart';
 
 extension TagDB on Tag {
-  static Tag getById(Database db, int tagId) {
+  static Tag getById(Database db, int id) {
     final map = db.select(
       'SELECT * FROM Tag WHERE id = ? ' 'ORDER BY LOWER(label) ASC',
-      [tagId],
+      [id],
     ).first;
     return Tag.fromMap(map);
   }
 
   static List<Tag> getAll(Database db) {
-    final List<Map<String, dynamic>> maps = db.select(
+    final maps = db.select(
       'SELECT * FROM Tag ' 'ORDER BY LOWER(label) ASC',
     );
     return maps.map(Tag.fromMap).toList();
@@ -34,12 +34,10 @@ extension TagDB on Tag {
     }
   }
 
-  void delete(Database db, {int? alternateTagId}) {
+  void transfer(Database db, int toTag) {
     if (id == null) return;
-
-    if (alternateTagId != null) {
-      db.execute(
-        '''
+    db.execute(
+      '''
           INSERT OR REPLACE INTO TagCollection (tag_id, collection_id)
           SELECT 
               CASE 
@@ -50,33 +48,31 @@ extension TagDB on Tag {
           FROM TagCollection
           WHERE tag_id = ?
         ''',
-        [id, alternateTagId, id],
-      );
-    } else {
-      db.execute(
-        'DELETE FROM TagCollection WHERE tag_id = ?;',
-        [id],
-      );
-    }
-
-    if (db.select(
-      'SELECT * FROM TagCollection WHERE tag_id = ?;',
-      [id],
-    ).isNotEmpty) {
-      throw Exception('${id!} is still used! Check implementation');
-    }
-
-    db.execute('DELETE FROM Tag WHERE id = ?', [id]);
+      [id, toTag, id],
+    );
   }
 
-  static List<Tag> getTagsForCollection(Database db, int collectionId) {
+  void delete(Database db) {
+    if (id == null) return;
+    db
+      ..execute(
+        'DELETE FROM TagCollection WHERE tag_id = ?;',
+        [id],
+      )
+      ..execute(
+        'DELETE FROM Tag WHERE id = ?',
+        [id],
+      );
+  }
+
+  static List<Tag> getTagsByCollectionID(Database db, int id) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag
       JOIN TagCollection ON Tag.id = TagCollection.tag_id
       WHERE TagCollection.collection_id = ?
     ''',
-      [collectionId],
+      [id],
     );
     return maps.map(Tag.fromMap).toList();
   }
