@@ -1,10 +1,12 @@
-import 'dart:io';
 import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+
+import '../models/video_player_state.dart';
+import '../providers/video_player_state.dart';
 
 class VideoPlayerScreen extends ConsumerWidget {
   const VideoPlayerScreen({
@@ -21,51 +23,57 @@ class VideoPlayerScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(videoControllerProvider(path)).when(
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
+    return ref.watch(videoPlayerStateProvider(path)).when(
+          loading: () => const SizedBox(
+            height: 128,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
           ),
-          error: (_, __) => CLErrorView(errorMessage: _.toString()),
-          data: (controller) {
+          error: (_, __) {
+            return SizedBox(
+              height: 128,
+              child: CLErrorView(errorMessage: _.toString()),
+            );
+          },
+          data: (VideoPlayerState playerState) {
+            final controller = playerState.controller;
             return VisibilityDetector(
-              key: ValueKey(controller),
+              key: ValueKey(path),
               onVisibilityChanged: (info) {
-                if (info.visibleFraction == 0.0) {
-                  if (controller.value.isPlaying) {
-                    controller.pause();
-                  }
-                } else {
-                  if (!controller.value.isPlaying) {
-                    controller.play();
+                if (context.mounted) {
+                  if (info.visibleFraction == 0.0) {
+                    ref
+                        .read(videoPlayerStateProvider(path).notifier)
+                        .inactive();
+                  } else {
+                    ref.read(videoPlayerStateProvider(path).notifier).active();
                   }
                 }
               },
-              child: GestureDetector(
-                onTap: () {
-                  // If the video is playing, pause it.
-                  if (controller.value.isPlaying) {
-                    controller.pause();
-                  } else {
-                    // If the video is paused, play it.
-                    controller
-                      ..setVolume(0.1)
-                      ..play();
-                  }
-                },
-                child: SizedBox(
-                  height: isPlayingFullScreen
-                      ? null
-                      : min(
-                          controller.value.size.height,
-                          MediaQuery.of(context).size.height * 0.7,
-                        ),
+              child: SizedBox(
+                height: isPlayingFullScreen
+                    ? null
+                    : min(
+                        playerState.controller!.value.size.height,
+                        MediaQuery.of(context).size.height * 0.7,
+                      ),
+                child: GestureDetector(
+                  onTap: () {
+                    // If the video is playing, pause it.
+                    if (playerState.paused) {
+                      ref.read(videoPlayerStateProvider(path).notifier).play();
+                    } else {
+                      ref.read(videoPlayerStateProvider(path).notifier).pause();
+                    }
+                  },
                   child: AspectRatio(
-                    aspectRatio: aspectRatio ?? controller.value.aspectRatio,
+                    aspectRatio: aspectRatio ?? controller!.value.aspectRatio,
                     child: Stack(
                       children: [
-                        VideoPlayer(controller),
+                        VideoPlayer(controller!),
                         Center(
-                          child: VideoController(controller: controller),
+                          child: VideoController(playerState: playerState),
                         ),
                         if (fullScreenControl != null)
                           Positioned(
@@ -84,6 +92,23 @@ class VideoPlayerScreen extends ConsumerWidget {
   }
 }
 
+class VideoController extends ConsumerWidget {
+  const VideoController({required this.playerState, super.key});
+  final VideoPlayerState playerState;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (playerState.paused) {
+      return const CLIcon.veryLarge(
+        Icons.play_arrow_rounded,
+        color: Colors.white,
+      );
+    } else {
+      return Container();
+    }
+  }
+}
+/* 
 class VideoController extends StatefulWidget {
   const VideoController({
     required VideoPlayerController controller,
@@ -132,7 +157,7 @@ class _VideoControllerState extends State<VideoController> {
 
 final isPlayingProvider = StateProvider<bool>((ref) {
   return false;
-});
+}); */
 
 class VidoePlayIcon extends StatelessWidget {
   const VidoePlayIcon({
@@ -156,19 +181,3 @@ class VidoePlayIcon extends StatelessWidget {
     );
   }
 }
-
-final videoControllerProvider = FutureProvider.family
-    .autoDispose<VideoPlayerController, String>((ref, path) async {
-  final controller = VideoPlayerController.file(
-    File(path),
-  );
-  await controller.initialize();
-
-  ref.onDispose(() {
-    controller
-      ..pause()
-      ..dispose();
-  });
-
-  return controller;
-});
