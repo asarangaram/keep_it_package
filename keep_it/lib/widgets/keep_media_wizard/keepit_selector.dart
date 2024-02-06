@@ -60,10 +60,9 @@ class _KeepItItemSelectorState extends State<KeepItItemSelector> {
         return;
       }
       entityUpdated = widget.onCreateNew(res);
-      // TODO(anandas): add to DB
+      
     } else {
       entityUpdated = c;
-      selectedEntities.add(c);
     }
     setState(() {
       selectedEntities.add(entityUpdated);
