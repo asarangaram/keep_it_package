@@ -38,43 +38,42 @@ class ItemsView extends ConsumerWidget {
           pageBuilder: (context, quickMenuScopeKey) {
             return Column(
               children: [
-                if (items.collection.description != null) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: DescriptionEditor(
-                      items.collection,
-                    ),
-                  ),
-                  const Divider(
-                    thickness: 2,
-                  ),
-                ] else
-                  const SizedBox(
-                    height: 16,
-                  ),
+                SizedBox(
+                  height: 32,
+                  child: CLText.standard(items.collection.description ?? ''),
+                ),
+                const Divider(
+                  height: 1,
+                ),
                 Expanded(
-                  child: CLMatrix2D(
-                    itemCount: items.entries.length,
-                    columns: 1,
-                    itemBuilder: (context, index, l) {
-                      final e = items.entries[index];
-                      if (l > 0) {
-                        throw Exception('has only one layer!');
-                      }
-                      return GestureDetector(
-                        onTap: () =>
-                            context.push('/item/${e.collectionId}/${e.id}'),
-                        child: Hero(
-                          tag: '/item/${e.collectionId}/${e.id}',
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: CLMediaPreview(
-                              media: e,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: CLMatrix2D(
+                      itemCount: items.entries.length,
+                      columns: 1,
+                      itemBuilder: (context, index, l) {
+                        final e = items.entries[index];
+                        if (l > 0) {
+                          throw Exception('has only one layer!');
+                        }
+                        return GestureDetector(
+                          onTap: () =>
+                              context.push('/item/${e.collectionId}/${e.id}'),
+                          child: Hero(
+                            tag: '/item/${e.collectionId}/${e.id}',
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Container(
+                                decoration: BoxDecoration(border: Border.all()),
+                                child: CLMediaPreview(
+                                  media: e,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

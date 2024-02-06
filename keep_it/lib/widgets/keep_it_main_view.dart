@@ -37,7 +37,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(7.9),
+        padding: const EdgeInsets.all(2),
         child: CLQuickMenuScope(
           key: quickMenuScopeKey,
           child: Column(

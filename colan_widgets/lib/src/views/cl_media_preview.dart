@@ -21,8 +21,8 @@ class CLMediaPreview extends StatelessWidget {
       throw Exception('File not found ${media.path}');
     }
     final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
-    return AspectRatio(
-      aspectRatio: 1,
+    return KeepAspectRatio(
+      keepAspectRatio: keepAspectRatio,
       child: switch (media.type) {
         CLMediaType.image => Image.file(
             File(media.previewPath!),
@@ -37,9 +37,8 @@ class CLMediaPreview extends StatelessWidget {
                 future: VideoThumbnail.thumbnailData(
                   video: media.path,
                   imageFormat: ImageFormat.JPEG,
-                  maxHeight: 128,
-                  maxWidth: 128, // specify the width of the thumbnail, let the
-                  ///  height auto-scaled to keep the source aspect ratio
+                  maxHeight: 640,
+                  maxWidth: 640,
                   quality: 25,
                 ),
                 builder: (context, snapShot) {
@@ -104,6 +103,24 @@ class CLMediaPreview extends StatelessWidget {
           ),
         _ => MediaPlaceHolder(media: media)
       },
+    );
+  }
+}
+
+class KeepAspectRatio extends StatelessWidget {
+  const KeepAspectRatio({
+    required this.child,
+    super.key,
+    this.keepAspectRatio = true,
+  });
+  final bool keepAspectRatio;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    if (keepAspectRatio) return child;
+    return AspectRatio(
+      aspectRatio: 1,
+      child: child,
     );
   }
 }

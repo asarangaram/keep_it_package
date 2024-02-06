@@ -205,7 +205,7 @@ extension ExtCLMediaFile on CLMedia {
       final thumbnail = await VideoThumbnail.thumbnailData(
         video: path,
         imageFormat: ImageFormat.JPEG,
-        maxWidth: previewWidth ?? 256,
+        maxWidth: previewWidth ?? 640,
         quality: 25,
       );
 
