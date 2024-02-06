@@ -42,7 +42,7 @@ class KeepItGridItem extends ConsumerWidget {
         ? -1
         : entities.indexWhere((e) => e.id == lastupdatedID);
 
-    return CLMatrix3DAutoFit(
+    return CLCustomGridAutoFit(
       childSize: itemSize,
       itemCount: entities.length,
       layers: 2,

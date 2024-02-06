@@ -48,7 +48,7 @@ class ItemsView extends ConsumerWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: CLMatrix2D(
+                    child: CLCustomGrid(
                       itemCount: items.entries.length,
                       columns: 1,
                       itemBuilder: (context, index, l) {

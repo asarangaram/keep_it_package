@@ -5,8 +5,8 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'cl_matrix_2d_scroll.dart';
 import 'compute_size_and_build.dart';
 
-class CLMatrix2D extends StatelessWidget {
-  const CLMatrix2D({
+class CLCustomGrid extends StatelessWidget {
+  const CLCustomGrid({
     required this.itemBuilder,
     required this.itemCount,
     this.rows,
@@ -135,81 +135,5 @@ class CLMatrix2DNonScrollable extends StatelessWidget {
         );
       },
     );
-
-    /* return Padding(
-      padding: const EdgeInsets.all(2),
-      child: ListView.builder(
-        physics: showAll ? null : const NeverScrollableScrollPhysics(),
-        itemCount:
-            items2D.length + ((!showAll && items2D.length > maxItems) ? 1 : 0),
-        itemBuilder: (context, index) {
-          _infoLogger('itemBuilder: index:$index');
-          if (index == items2D.length) {
-            if (!showAll && children.length > maxItems) {
-              CLText.small(
-                ' + ${children.length - maxItems} items',
-                color: textColor ?? Theme.of(context).colorScheme.onPrimary,
-              );
-            }
-          }
-
-          final r = items2D[index];
-          return AspectRatio(
-            aspectRatio: 1.4,
-            child: Column(
-              children: [
-                Flexible(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      for (var index = 0; index < r.length; index++)
-                        Flexible(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              top: 1,
-                              bottom: 1,
-                              left: (index == 0) ? 1.0 : 8.0,
-                              right: 1,
-                            ),
-                            child: r[index][0],
-                          ),
-                        ),
-                      for (var index = r.length; index < hCount; index++)
-                        Flexible(child: Container()),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (var index = 0; index < r.length; index++)
-                        if (r[index].length > 1)
-                          Flexible(
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                top: 1,
-                                bottom: 1,
-                                left: (index == 0) ? 1.0 : 8.0,
-                                right: 1,
-                              ),
-                              child: r[index][1],
-                            ),
-                          )
-                        else
-                          Flexible(child: Container()),
-                      for (var index = r.length; index < hCount; index++)
-                        Flexible(child: Container()),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    ); */
   }
 }
