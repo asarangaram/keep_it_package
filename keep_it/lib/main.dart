@@ -46,48 +46,55 @@ class KeepItApp implements AppDescriptor {
       };
 
   @override
-  Map<String, CLWidgetBuilder> get shellRoutes {
-    return {
-      '': (context, GoRouterState state) => const CollectionsView(),
-
-      //'home': (context, state) => const AppTheme(child: HomeView()),
-      'tags': (context, state) => const AppTheme(child: TagsView()),
-      'settings': (context, state) => const AppTheme(
+  List<CLShellRouteDescriptor> get shellRoutes => [
+        CLShellRouteDescriptor(
+          name: '',
+          builder: (context, GoRouterState state) => const CollectionsView(),
+          iconData: Icons.home,
+          label: 'Collections',
+        ),
+        CLShellRouteDescriptor(
+          name: 'tags',
+          builder: (context, state) => const AppTheme(child: TagsView()),
+          iconData: Icons.search,
+          label: 'Search',
+        ),
+        CLShellRouteDescriptor(
+          name: 'settings',
+          builder: (context, state) => const AppTheme(
             child: Center(
               child: Text('Settings'),
             ),
           ),
-      'itemView': (context, state) => const AppTheme(
-            child: Center(
-              child: Text('ItemView'),
-            ),
-          ),
-    };
-  }
-
-  void printGoRouterState(GoRouterState state) {
-    _infoLogger(' state: ${state.extra} ${state.error} ${state.fullPath}'
-        ' ${state.uri} ${state.name} ${state.pageKey} ${state.pathParameters} '
-        '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
-  }
+          iconData: Icons.settings,
+          label: 'Settings',
+        ),
+      ];
 
   @override
-  Map<String, CLWidgetBuilder> get screenBuilders {
-    return {
-      'collections/:tag_id': (context, GoRouterState state) =>
-          CollectionsView(tagId: int.parse(state.pathParameters['tag_id']!)),
-      'items/:collection_id': (context, GoRouterState state) => ItemsView(
+  List<CLRouteDescriptor> get screenBuilders => [
+        CLRouteDescriptor(
+          name: 'collections/:tag_id',
+          builder: (context, GoRouterState state) => CollectionsView(
+            tagId: int.parse(state.pathParameters['tag_id']!),
+          ),
+        ),
+        CLRouteDescriptor(
+          name: 'items/:collection_id',
+          builder: (context, GoRouterState state) => ItemsView(
             collectionID: int.parse(state.pathParameters['collection_id']!),
           ),
-      'item/:collection_id/:item_id': (context, GoRouterState state) {
-        printGoRouterState(state);
-        return ItemViewByID(
-          collectionId: int.parse(state.pathParameters['collection_id']!),
-          id: int.parse(state.pathParameters['item_id']!),
-        );
-      },
-    };
-  }
+        ),
+        CLRouteDescriptor(
+          name: 'item/:collection_id/:item_id',
+          builder: (context, GoRouterState state) {
+            return ItemViewByID(
+              collectionId: int.parse(state.pathParameters['collection_id']!),
+              id: int.parse(state.pathParameters['item_id']!),
+            );
+          },
+        ),
+      ];
 
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
@@ -167,6 +174,12 @@ void main() {
       ),
     ),
   );
+}
+
+void printGoRouterState(GoRouterState state) {
+  _infoLogger(' state: ${state.extra} ${state.error} ${state.fullPath}'
+      ' ${state.uri} ${state.name} ${state.pageKey} ${state.pathParameters} '
+      '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
 }
 
 bool _disableInfoLogger = false;

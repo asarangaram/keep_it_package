@@ -21,12 +21,11 @@ class CLRouteDescriptor {
 class CLShellRouteDescriptor extends CLRouteDescriptor {
   final IconData iconData;
   final String? label;
-  final bool isFullScreen;
+
   const CLShellRouteDescriptor({
     required super.name,
     required super.builder,
     required this.iconData,
-    required this.isFullScreen,
     this.label,
   });
 }

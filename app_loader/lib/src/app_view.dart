@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
 import 'bottom_nav_page.dart';
+import 'cl_route_descriptor.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({
@@ -29,8 +30,9 @@ class _RaLRouterState extends ConsumerState<AppView>
 
   @override
   void initState() {
-    widget.appDescriptor.shellRoutes
-        .forEach((_, __) => navigatorPageKeys.add(GlobalKey<NavigatorState>()));
+    for (final _ in widget.appDescriptor.shellRoutes) {
+      navigatorPageKeys.add(GlobalKey<NavigatorState>());
+    }
     super.initState();
   }
 
@@ -46,24 +48,24 @@ class _RaLRouterState extends ConsumerState<AppView>
   Widget build(BuildContext context) {
     final app = widget.appDescriptor;
 
-    final routes = app.screenBuilders.entries.map(
+    final routes = app.screenBuilders.map(
       (e) => getRoute(
-        name: e.key,
-        builder: e.value,
+        name: e.name,
+        builder: e.builder,
         transitionBuilder: app.transitionBuilder,
       ),
     );
 
-    final shellRoutes = app.shellRoutes.entries.indexed.map((e) {
-      final (index, routes) = e;
+    final shellRoutes = app.shellRoutes.indexed.map((e) {
+      final (index, route) = e;
       return StatefulShellBranch(
         navigatorKey: navigatorPageKeys[index],
         routes: [
           GoRoute(
-            path: '/${routes.key}',
+            path: '/${route.name}',
             pageBuilder: (context, GoRouterState state) {
               return MaterialPage(
-                child: routes.value(context, state),
+                child: route.builder(context, state),
               );
             },
           ),
@@ -73,7 +75,7 @@ class _RaLRouterState extends ConsumerState<AppView>
 
     _router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: '/${app.shellRoutes.keys.first}',
+      initialLocation: '/${app.shellRoutes.first.name}',
       routes: [
         StatefulShellRoute.indexedStack(
           parentNavigatorKey: parentNavigatorKey,

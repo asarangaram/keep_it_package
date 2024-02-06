@@ -1,12 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-typedef CLWidgetBuilder = Widget Function(
-  BuildContext context,
-  GoRouterState state,
-);
+import 'cl_route_descriptor.dart';
+
 typedef CLAppInitializer = Future<bool> Function(Ref ref);
 typedef CLTransitionBuilder = Widget Function(
   BuildContext context,
@@ -25,8 +22,8 @@ typedef IncomingMediaViewBuilder = Widget Function(
 
 abstract class AppDescriptor {
   String get title;
-  Map<String, CLWidgetBuilder> get screenBuilders;
-  Map<String, CLWidgetBuilder> get shellRoutes;
+  List<CLRouteDescriptor> get screenBuilders;
+  List<CLShellRouteDescriptor> get shellRoutes;
   CLAppInitializer get appInitializer;
   CLTransitionBuilder get transitionBuilder;
   CLRedirector get redirector;
