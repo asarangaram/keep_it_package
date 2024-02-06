@@ -7,7 +7,7 @@ import 'package:store/store.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
-import '../widgets/keep_media_wizard/description_editor.dart';
+import '../widgets/video_player.dart';
 
 class ItemsView extends ConsumerWidget {
   const ItemsView({required this.collectionID, super.key});
@@ -57,17 +57,30 @@ class ItemsView extends ConsumerWidget {
                           throw Exception('has only one layer!');
                         }
                         return GestureDetector(
-                          onTap: () =>
-                              context.push('/item/${e.collectionId}/${e.id}'),
+                          /*  onTap: () => context.push(
+                            '/item/${e.collectionId}/${e.id}?isFullScreen=1',
+                          ), */
                           child: Hero(
                             tag: '/item/${e.collectionId}/${e.id}',
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Container(
                                 decoration: BoxDecoration(border: Border.all()),
-                                child: CLMediaPreview(
-                                  media: e,
-                                ),
+                                child: switch (e.type) {
+                                  CLMediaType.video => VideoPlayerScreen(
+                                      path: e.path,
+                                      isPlayingFullScreen: false,
+                                      fullScreenControl: CLButtonIcon.large(
+                                        Icons.fullscreen,
+                                        onTap: () => context.push(
+                                          '/item/${e.collectionId}/${e.id}?isFullScreen=1',
+                                        ),
+                                      ),
+                                    ),
+                                  _ => CLMediaPreview(
+                                      media: e,
+                                    ),
+                                },
                               ),
                             ),
                           ),

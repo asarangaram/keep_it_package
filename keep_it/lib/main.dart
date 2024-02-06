@@ -57,7 +57,18 @@ class KeepItApp implements AppDescriptor {
               child: Text('Settings'),
             ),
           ),
+      'itemView': (context, state) => const AppTheme(
+            child: Center(
+              child: Text('ItemView'),
+            ),
+          ),
     };
+  }
+
+  void printGoRouterState(GoRouterState state) {
+    _infoLogger(' state: ${state.extra} ${state.error} ${state.fullPath}'
+        ' ${state.uri} ${state.name} ${state.pageKey} ${state.pathParameters} '
+        '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
   }
 
   @override
@@ -68,11 +79,13 @@ class KeepItApp implements AppDescriptor {
       'items/:collection_id': (context, GoRouterState state) => ItemsView(
             collectionID: int.parse(state.pathParameters['collection_id']!),
           ),
-      'item/:collection_id/:item_id': (context, GoRouterState state) =>
-          ItemViewByID(
-            collectionId: int.parse(state.pathParameters['collection_id']!),
-            id: int.parse(state.pathParameters['item_id']!),
-          ),
+      'item/:collection_id/:item_id': (context, GoRouterState state) {
+        printGoRouterState(state);
+        return ItemViewByID(
+          collectionId: int.parse(state.pathParameters['collection_id']!),
+          id: int.parse(state.pathParameters['item_id']!),
+        );
+      },
     };
   }
 
@@ -154,4 +167,11 @@ void main() {
       ),
     ),
   );
+}
+
+bool _disableInfoLogger = false;
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
+  }
 }

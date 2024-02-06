@@ -1,91 +1,71 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPlayerScreen extends StatefulWidget {
+class VideoPlayerScreen extends ConsumerWidget {
   const VideoPlayerScreen({
     required this.path,
+    required this.isPlayingFullScreen,
     super.key,
     this.aspectRatio,
+    this.fullScreenControl,
   });
   final String path;
   final double? aspectRatio;
-  @override
-  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
-}
-
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _controller;
-  late Future<void> Function() _initializeVideoPlayerFuture;
+  final Widget? fullScreenControl;
+  final bool isPlayingFullScreen;
 
   @override
-  void initState() {
-    super.initState();
-
-    // Create and store the VideoPlayerController. The VideoPlayerController
-    // offers several different constructors to play videos from assets, files,
-    // or the internet.
-    _controller = VideoPlayerController.file(
-      File(widget.path),
-    );
-
-    _initializeVideoPlayerFuture = () async => _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    // Ensure disposing of the VideoPlayerController to free up resources.
-    _controller.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Complete the code in the next step.
-    // Use a FutureBuilder to display a loading spinner while
-    // waiting for the  VideoPlayerController to finish initializing.
-    return FutureBuilder(
-      future: _initializeVideoPlayerFuture(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          // If the VideoPlayerController has finished initialization, use
-          // the data it provides to limit the aspect ratio of the video.
-          return GestureDetector(
-            onTap: () {
-              // If the video is playing, pause it.
-              if (_controller.value.isPlaying) {
-                _controller.pause();
-              } else {
-                // If the video is paused, play it.
-                _controller
-                  ..setVolume(1)
-                  ..play();
-              }
-            },
-            child: AspectRatio(
-              aspectRatio: widget.aspectRatio ?? _controller.value.aspectRatio,
-              child: Stack(
-                children: [
-                  VideoPlayer(_controller),
-                  Center(
-                    child: VideoController(controller: _controller),
-                  ),
-                ],
-              ),
-            ),
-          );
-        } else {
-          // If the VideoPlayerController is still initializing, show a
-          // loading spinner.
-          return const Center(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(videoControllerProvider(path)).when(
+          loading: () => const Center(
             child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+          ),
+          error: (_, __) => CLErrorView(errorMessage: _.toString()),
+          data: (controller) {
+            return GestureDetector(
+              onTap: () {
+                // If the video is playing, pause it.
+                if (controller.value.isPlaying) {
+                  controller.pause();
+                } else {
+                  // If the video is paused, play it.
+                  controller
+                    ..setVolume(0.1)
+                    ..play();
+                }
+              },
+              child: SizedBox(
+                height: isPlayingFullScreen
+                    ? null
+                    : min(
+                        controller.value.size.height,
+                        MediaQuery.of(context).size.height * 0.7,
+                      ),
+                child: AspectRatio(
+                  aspectRatio: aspectRatio ?? controller.value.aspectRatio,
+                  child: Stack(
+                    children: [
+                      VideoPlayer(controller),
+                      Center(
+                        child: VideoController(controller: controller),
+                      ),
+                      if (fullScreenControl != null)
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: fullScreenControl!,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
   }
 }
 
@@ -104,10 +84,20 @@ class VideoController extends StatefulWidget {
 class _VideoControllerState extends State<VideoController> {
   @override
   void initState() {
-    widget._controller.addListener(() {
-      setState(() {});
-    });
+    widget._controller.addListener(listener);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget._controller.removeListener(listener);
+    super.dispose();
+  }
+
+  void listener() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -151,3 +141,19 @@ class VidoePlayIcon extends StatelessWidget {
     );
   }
 }
+
+final videoControllerProvider = FutureProvider.family
+    .autoDispose<VideoPlayerController, String>((ref, path) async {
+  final controller = VideoPlayerController.file(
+    File(path),
+  );
+  await controller.initialize();
+
+  ref.onDispose(() {
+    controller
+      ..pause()
+      ..dispose();
+  });
+
+  return controller;
+});

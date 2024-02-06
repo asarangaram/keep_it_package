@@ -34,9 +34,21 @@ class ItemView extends ConsumerWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
+    if (media.type != CLMediaType.video) {
+      return Center(
+        child: VideoPlayerScreen(
+          path: media.path,
+          isPlayingFullScreen: true,
+          fullScreenControl: CLButtonIcon.large(
+            Icons.fullscreen,
+            onTap: context.pop,
+          ),
+        ),
+      );
+    }
     return Column(
       children: [
-        if (context.canPop())
+        if (context.canPop() && media.type != CLMediaType.video)
           Align(
             alignment: Alignment.topRight,
             child: SizedBox(
@@ -61,7 +73,12 @@ class ItemView extends ConsumerWidget {
                       ),
                     (final video) when video.type == CLMediaType.video =>
                       VideoPlayerScreen(
+                        isPlayingFullScreen: true,
                         path: video.path,
+                        fullScreenControl: CLButtonIcon.large(
+                          Icons.fullscreen,
+                          onTap: context.pop,
+                        ),
                       ),
                     _ => throw UnimplementedError(
                         'Not yet implemented',
