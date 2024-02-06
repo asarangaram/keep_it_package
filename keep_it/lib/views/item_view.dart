@@ -34,14 +34,20 @@ class ItemView extends ConsumerWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
-    if (media.type != CLMediaType.video) {
+    if (media.type == CLMediaType.video) {
       return Center(
         child: VideoPlayerScreen(
           path: media.path,
           isPlayingFullScreen: true,
-          fullScreenControl: CLButtonIcon.large(
-            Icons.fullscreen,
-            onTap: context.pop,
+          fullScreenControl: Container(
+            decoration: BoxDecoration(
+              color:
+                  Theme.of(context).colorScheme.primaryContainer.withAlpha(80),
+            ),
+            child: CLButtonIcon.large(
+              Icons.fullscreen,
+              onTap: context.pop,
+            ),
           ),
         ),
       );

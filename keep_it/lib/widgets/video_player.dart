@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class VideoPlayerScreen extends ConsumerWidget {
   const VideoPlayerScreen({
@@ -26,40 +27,54 @@ class VideoPlayerScreen extends ConsumerWidget {
           ),
           error: (_, __) => CLErrorView(errorMessage: _.toString()),
           data: (controller) {
-            return GestureDetector(
-              onTap: () {
-                // If the video is playing, pause it.
-                if (controller.value.isPlaying) {
-                  controller.pause();
+            return VisibilityDetector(
+              key: ValueKey(controller),
+              onVisibilityChanged: (info) {
+                if (info.visibleFraction == 0.0) {
+                  if (controller.value.isPlaying) {
+                    controller.pause();
+                  }
                 } else {
-                  // If the video is paused, play it.
-                  controller
-                    ..setVolume(0.1)
-                    ..play();
+                  if (!controller.value.isPlaying) {
+                    controller.play();
+                  }
                 }
               },
-              child: SizedBox(
-                height: isPlayingFullScreen
-                    ? null
-                    : min(
-                        controller.value.size.height,
-                        MediaQuery.of(context).size.height * 0.7,
-                      ),
-                child: AspectRatio(
-                  aspectRatio: aspectRatio ?? controller.value.aspectRatio,
-                  child: Stack(
-                    children: [
-                      VideoPlayer(controller),
-                      Center(
-                        child: VideoController(controller: controller),
-                      ),
-                      if (fullScreenControl != null)
-                        Positioned(
-                          bottom: 8,
-                          right: 8,
-                          child: fullScreenControl!,
+              child: GestureDetector(
+                onTap: () {
+                  // If the video is playing, pause it.
+                  if (controller.value.isPlaying) {
+                    controller.pause();
+                  } else {
+                    // If the video is paused, play it.
+                    controller
+                      ..setVolume(0.1)
+                      ..play();
+                  }
+                },
+                child: SizedBox(
+                  height: isPlayingFullScreen
+                      ? null
+                      : min(
+                          controller.value.size.height,
+                          MediaQuery.of(context).size.height * 0.7,
                         ),
-                    ],
+                  child: AspectRatio(
+                    aspectRatio: aspectRatio ?? controller.value.aspectRatio,
+                    child: Stack(
+                      children: [
+                        VideoPlayer(controller),
+                        Center(
+                          child: VideoController(controller: controller),
+                        ),
+                        if (fullScreenControl != null)
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: fullScreenControl!,
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),

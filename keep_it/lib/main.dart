@@ -72,6 +72,19 @@ class KeepItApp implements AppDescriptor {
       ];
 
   @override
+  List<CLRouteDescriptor> get fullscreenBuilders => [
+        CLRouteDescriptor(
+          name: 'item/:collection_id/:item_id',
+          builder: (context, GoRouterState state) {
+            return ItemViewByID(
+              collectionId: int.parse(state.pathParameters['collection_id']!),
+              id: int.parse(state.pathParameters['item_id']!),
+            );
+          },
+        ),
+      ];
+
+  @override
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
           name: 'collections/:tag_id',
@@ -84,15 +97,6 @@ class KeepItApp implements AppDescriptor {
           builder: (context, GoRouterState state) => ItemsView(
             collectionID: int.parse(state.pathParameters['collection_id']!),
           ),
-        ),
-        CLRouteDescriptor(
-          name: 'item/:collection_id/:item_id',
-          builder: (context, GoRouterState state) {
-            return ItemViewByID(
-              collectionId: int.parse(state.pathParameters['collection_id']!),
-              id: int.parse(state.pathParameters['item_id']!),
-            );
-          },
         ),
       ];
 

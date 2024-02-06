@@ -49,10 +49,26 @@ class _RaLRouterState extends ConsumerState<AppView>
     final app = widget.appDescriptor;
 
     final routes = app.screenBuilders.map(
-      (e) => getRoute(
+      (e) => GoRoute(
+        path: '/${e.name}',
         name: e.name,
-        builder: e.builder,
-        transitionBuilder: app.transitionBuilder,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: e.builder(context, state),
+          transitionsBuilder: app.transitionBuilder,
+        ),
+      ),
+    );
+    final fullScreenRoutes = app.fullscreenBuilders.map(
+      (e) => GoRoute(
+        path: '/${e.name}',
+        name: e.name,
+        parentNavigatorKey: parentNavigatorKey,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: e.builder(context, state),
+          transitionsBuilder: app.transitionBuilder,
+        ),
       ),
     );
 
@@ -94,6 +110,7 @@ class _RaLRouterState extends ConsumerState<AppView>
           },
         ),
         ...routes,
+        ...fullScreenRoutes,
       ],
       redirect: (context, state) {
         return null;
