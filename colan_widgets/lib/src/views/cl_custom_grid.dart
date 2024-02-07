@@ -120,9 +120,13 @@ class _CLCustomGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (controller == null) {
+      print('scroller used');
+    }
     return ComputeSizeAndBuild(
       builder: (context, size) => ListView.builder(
         physics: const ClampingScrollPhysics(),
+        controller: controller,
         itemCount: numRows * layers,
         itemBuilder: (context, index) {
           final r = index ~/ layers;
@@ -143,7 +147,7 @@ class _CLCustomGrid extends StatelessWidget {
                       : (controller == null)
                           ? itemBuilder(context, r * crossAxisCount + c, l)
                           : AutoScrollTag(
-                              key: ValueKey(' $r $c $l'),
+                              key: ValueKey('$r $c $l'),
                               controller: controller!,
                               index: r * layers + l,
                               highlightColor: Colors.black.withOpacity(0.1),

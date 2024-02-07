@@ -2,20 +2,41 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
 import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
 
-class ItemsView extends ConsumerWidget {
+class ItemsView extends ConsumerStatefulWidget {
   const ItemsView({required this.collectionID, super.key});
 
   final int collectionID;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _ItemsViewState();
+}
+
+class _ItemsViewState extends ConsumerState<ItemsView> {
+  late final AutoScrollController controller;
+
+  @override
+  void initState() {
+    controller = AutoScrollController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return LoadItems(
-      collectionID: collectionID,
+      collectionID: widget.collectionID,
       buildOnData: (Items items) {
         return KeepItMainView(
           title: items.collection.label,
@@ -51,38 +72,38 @@ class ItemsView extends ConsumerWidget {
                       itemCount: items.entries.length,
                       crossAxisCount: 1,
                       layers: 1,
-                      controller: null,
+                      controller: controller,
                       itemBuilder: (context, index, l) {
                         final e = items.entries[index];
                         if (l > 0) {
                           throw Exception('has only one layer!');
                         }
-                        return GestureDetector(
-                          /*  onTap: () => context.push(
-                            '/item/${e.collectionId}/${e.id}?isFullScreen=1',
-                          ), */
-                          child: Hero(
-                            tag: '/item/${e.collectionId}/${e.id}',
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Container(
-                                decoration: BoxDecoration(border: Border.all()),
-                                child: switch (e.type) {
-                                  CLMediaType.video => CLVideoPlayer(
-                                      path: e.path,
-                                      isPlayingFullScreen: false,
-                                      onTapFullScreen: () => context.push(
-                                        '/item/${e.collectionId}/${e.id}?isFullScreen=1',
-                                      ),
-                                      maxHeight:
-                                          MediaQuery.of(context).size.height *
-                                              0.6,
+                        return Hero(
+                          tag: '/item/${e.collectionId}/${e.id}',
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Container(
+                              decoration: BoxDecoration(border: Border.all()),
+                              child: switch (e.type) {
+                                CLMediaType.video => CLVideoPlayer(
+                                    path: e.path,
+                                    isPlayingFullScreen: false,
+                                    onTapFullScreen: () => context.push(
+                                      '/item/${e.collectionId}/${e.id}?isFullScreen=1',
                                     ),
-                                  _ => CLMediaPreview(
-                                      media: e,
-                                    ),
-                                },
-                              ),
+                                    maxHeight:
+                                        MediaQuery.of(context).size.height *
+                                            0.6,
+                                    onFocus: () async {
+                                      await controller.scrollToIndex(index,
+                                          preferPosition:
+                                              AutoScrollPosition.begin);
+                                    },
+                                  ),
+                                _ => CLMediaPreview(
+                                    media: e,
+                                  ),
+                              },
                             ),
                           ),
                         );

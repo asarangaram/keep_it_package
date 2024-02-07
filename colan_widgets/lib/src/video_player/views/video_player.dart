@@ -18,12 +18,14 @@ class CLVideoPlayer extends ConsumerStatefulWidget {
     required this.onTapFullScreen,
     super.key,
     this.maxHeight,
+    this.onFocus,
   });
   final String path;
 
   final void Function()? onTapFullScreen;
   final bool isPlayingFullScreen;
   final double? maxHeight;
+  final void Function()? onFocus;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => CLVideoPlayerState();
@@ -33,6 +35,7 @@ class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
   bool isHovering = false;
 
   Timer? disableControls;
+  bool isFocussed = false;
 
   @override
   void dispose() {
@@ -81,13 +84,26 @@ class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
                             MediaQuery.of(context).size.height * 0.7,
                       ),
                 child: GestureDetector(
-                  onDoubleTap: () {
+                  onTap: () {
                     if (playerState.paused) {
                       ref
                           .read(
                             videoPlayerStateProvider(playerState.path).notifier,
                           )
                           .play();
+                      // Call only once
+                      if (!isFocussed) {
+                        setState(() {
+                          isFocussed = true;
+                        });
+                        widget.onFocus?.call();
+                      }
+                    } else {
+                      ref
+                          .read(
+                            videoPlayerStateProvider(playerState.path).notifier,
+                          )
+                          .pause();
                     }
                   },
                   child: Listener(
