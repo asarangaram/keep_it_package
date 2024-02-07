@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
+import 'app_theme.dart';
 import 'bottom_nav_page.dart';
 import 'cl_route_descriptor.dart';
 
@@ -54,7 +55,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         name: e.name,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: e.builder(context, state),
+          child: AppTheme(child: e.builder(context, state)),
           transitionsBuilder: app.transitionBuilder,
         ),
       ),
@@ -66,7 +67,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         parentNavigatorKey: parentNavigatorKey,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: e.builder(context, state),
+          child: AppTheme(child: e.builder(context, state)),
           transitionsBuilder: app.transitionBuilder,
         ),
       ),
@@ -102,9 +103,11 @@ class _RaLRouterState extends ConsumerState<AppView>
             StatefulNavigationShell navigationShell,
           ) {
             return MaterialPage(
-              child: BottomNavigationPage(
-                incomingMediaViewBuilder: app.incomingMediaViewBuilder,
-                child: navigationShell,
+              child: AppTheme(
+                child: BottomNavigationPage(
+                  incomingMediaViewBuilder: app.incomingMediaViewBuilder,
+                  child: navigationShell,
+                ),
               ),
             );
           },

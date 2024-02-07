@@ -17,7 +17,6 @@ import 'views/item_view.dart';
 import 'views/items_view.dart';
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
-import 'widgets/app_theme.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -34,7 +33,7 @@ class KeepItApp implements AppDescriptor {
           if (File(fullPath).existsSync()) {
             await File(fullPath).delete();
           }
-          for (final dir in ['keep_it', 'Incoming']) {
+          for (final dir in ['keep_it']) {
             final folder = path.join(appDir.path, dir);
             if (Directory(folder).existsSync()) {
               Directory(folder).deleteSync(recursive: true);
@@ -55,16 +54,14 @@ class KeepItApp implements AppDescriptor {
         ),
         CLShellRouteDescriptor(
           name: 'tags',
-          builder: (context, state) => const AppTheme(child: TagsView()),
+          builder: (context, state) => const TagsView(),
           iconData: Icons.search,
           label: 'Search',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
-          builder: (context, state) => const AppTheme(
-            child: Center(
-              child: Text('Settings'),
-            ),
+          builder: (context, state) => const Center(
+            child: Text('Settings'),
           ),
           iconData: Icons.settings,
           label: 'Settings',

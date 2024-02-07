@@ -5,7 +5,6 @@ import 'package:keep_it/widgets/from_store/from_store.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../app_theme.dart';
 import 'create_or_select.dart';
 import 'description_editor.dart';
 import 'keepit_selector.dart';
@@ -309,6 +308,41 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UpsertCollectionFormTheme extends ConsumerWidget {
+  const UpsertCollectionFormTheme({required this.child, super.key});
+  final Widget child;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final color = MaterialStateProperty.all(
+      const Color.fromARGB(0, 0, 0, 0),
+    );
+
+    final themeData = Theme.of(context).copyWith(
+      searchBarTheme: SearchBarThemeData(
+        textStyle: MaterialStateProperty.all(
+          const TextStyle(color: Colors.blue),
+        ),
+        textCapitalization: TextCapitalization.words,
+        backgroundColor: color,
+        shadowColor: color,
+        surfaceTintColor: color,
+        overlayColor: color,
+        shape: MaterialStateProperty.all(
+          const ContinuousRectangleBorder(),
+        ),
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.all(4),
+      ),
+    );
+    return Theme(
+      data: themeData,
+      child: child,
     );
   }
 }
