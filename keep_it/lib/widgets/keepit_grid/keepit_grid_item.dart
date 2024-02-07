@@ -41,12 +41,11 @@ class KeepItGridItem extends ConsumerWidget {
     final highLightIndex = lastupdatedID == null
         ? -1
         : entities.indexWhere((e) => e.id == lastupdatedID);
-
-    return CLCustomGridAutoFit(
+    return CLCustomGrid.fit(
       childSize: itemSize,
       itemCount: entities.length,
       layers: 2,
-      visibleItem: highLightIndex <= -1 ? null : highLightIndex,
+      controller: null,
       itemBuilder: (context, index, layer) {
         final entity = entities[index];
         if (layer == 0) {

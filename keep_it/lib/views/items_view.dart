@@ -50,7 +50,9 @@ class ItemsView extends ConsumerWidget {
                     padding: const EdgeInsets.only(top: 8),
                     child: CLCustomGrid(
                       itemCount: items.entries.length,
-                      columns: 1,
+                      crossAxisCount: 1,
+                      layers: 1,
+                      controller: null,
                       itemBuilder: (context, index, l) {
                         final e = items.entries[index];
                         if (l > 0) {
