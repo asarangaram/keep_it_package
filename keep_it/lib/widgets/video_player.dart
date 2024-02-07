@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:math';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,22 +9,40 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import '../models/video_player_state.dart';
 import '../providers/video_player_state.dart';
+import 'video_controls.dart';
 
-class VideoPlayerScreen extends ConsumerWidget {
+class VideoPlayerScreen extends ConsumerStatefulWidget {
   const VideoPlayerScreen({
     required this.path,
     required this.isPlayingFullScreen,
+    required this.onTapFullScreen,
     super.key,
-    this.aspectRatio,
-    this.fullScreenControl,
   });
   final String path;
-  final double? aspectRatio;
-  final Widget? fullScreenControl;
+
+  final void Function()? onTapFullScreen;
   final bool isPlayingFullScreen;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _VideoPlayerScreenState();
+}
+
+class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
+  bool isHovering = false;
+
+  Timer? disableControls;
+
+  @override
+  void dispose() {
+    disableControls?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final path = widget.path;
+
     return ref.watch(videoPlayerStateProvider(path)).when(
           loading: () => const SizedBox(
             height: 128,
@@ -37,6 +57,8 @@ class VideoPlayerScreen extends ConsumerWidget {
             );
           },
           data: (VideoPlayerState playerState) {
+            print('isHovering = $isHovering');
+            print('paused: ${playerState.paused}');
             final controller = playerState.controller;
             return VisibilityDetector(
               key: ValueKey(path),
@@ -52,36 +74,71 @@ class VideoPlayerScreen extends ConsumerWidget {
                 }
               },
               child: SizedBox(
-                height: isPlayingFullScreen
+                height: widget.isPlayingFullScreen
                     ? null
                     : min(
                         playerState.controller!.value.size.height,
                         MediaQuery.of(context).size.height * 0.7,
                       ),
                 child: GestureDetector(
-                  onTap: () {
-                    // If the video is playing, pause it.
+                  onDoubleTap: () {
                     if (playerState.paused) {
-                      ref.read(videoPlayerStateProvider(path).notifier).play();
-                    } else {
-                      ref.read(videoPlayerStateProvider(path).notifier).pause();
+                      ref
+                          .read(
+                            videoPlayerStateProvider(playerState.path).notifier,
+                          )
+                          .play();
                     }
                   },
-                  child: AspectRatio(
-                    aspectRatio: aspectRatio ?? controller!.value.aspectRatio,
-                    child: Stack(
-                      children: [
-                        VideoPlayer(controller!),
-                        Center(
-                          child: VideoController(playerState: playerState),
-                        ),
-                        if (fullScreenControl != null)
-                          Positioned(
-                            bottom: 8,
-                            right: 8,
-                            child: fullScreenControl!,
+                  child: Listener(
+                    behavior: HitTestBehavior.translucent,
+                    onPointerDown: (_) {
+                      disableControls?.cancel();
+                      setState(() {
+                        isHovering = true;
+                      });
+                    },
+                    onPointerUp: (_) {
+                      // If the video is playing, pause it.
+
+                      disableControls = Timer(
+                        const Duration(seconds: 3),
+                        () => setState(() => isHovering = false),
+                      );
+                    },
+                    onPointerHover: (_) {
+                      setState(() => isHovering = true);
+                      disableControls?.cancel();
+                      disableControls = Timer(
+                        const Duration(seconds: 2),
+                        () => setState(() => isHovering = false),
+                      );
+                    },
+                    child: AspectRatio(
+                      aspectRatio: controller!.value.aspectRatio,
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomCenter,
+                        children: [
+                          VideoPlayer(controller),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            child: (isHovering || playerState.paused)
+                                ? VideoControls(
+                                    playerState: playerState,
+                                    onTapFullScreen: widget.onTapFullScreen,
+                                    isPlayingFullScreen:
+                                        widget.isPlayingFullScreen,
+                                  )
+                                : Container(),
                           ),
-                      ],
+                          /* if (widget.fullScreenControl != null)
+                            Positioned(
+                              bottom: 8,
+                              right: 8,
+                              child: widget.fullScreenControl!,
+                            ), */
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -98,14 +155,22 @@ class VideoController extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (playerState.paused) {
-      return const CLIcon.veryLarge(
-        Icons.play_arrow_rounded,
-        color: Colors.white,
-      );
-    } else {
-      return Container();
-    }
+    return GestureDetector(
+      onTap: () {
+        // If the video is playing, pause it.
+        if (playerState.paused) {
+          ref.read(videoPlayerStateProvider(playerState.path).notifier).play();
+        } else {
+          ref.read(videoPlayerStateProvider(playerState.path).notifier).pause();
+        }
+      },
+      child: const Center(
+        child: CLIcon.veryLarge(
+          Icons.play_arrow_rounded,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 }
 /* 

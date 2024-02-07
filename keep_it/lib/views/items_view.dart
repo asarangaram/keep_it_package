@@ -72,11 +72,8 @@ class ItemsView extends ConsumerWidget {
                                   CLMediaType.video => VideoPlayerScreen(
                                       path: e.path,
                                       isPlayingFullScreen: false,
-                                      fullScreenControl: CLButtonIcon.large(
-                                        Icons.fullscreen,
-                                        onTap: () => context.push(
-                                          '/item/${e.collectionId}/${e.id}?isFullScreen=1',
-                                        ),
+                                      onTapFullScreen: () => context.push(
+                                        '/item/${e.collectionId}/${e.id}?isFullScreen=1',
                                       ),
                                     ),
                                   _ => CLMediaPreview(

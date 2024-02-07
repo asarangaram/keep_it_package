@@ -39,16 +39,7 @@ class ItemView extends ConsumerWidget {
         child: VideoPlayerScreen(
           path: media.path,
           isPlayingFullScreen: true,
-          fullScreenControl: Container(
-            decoration: BoxDecoration(
-              color:
-                  Theme.of(context).colorScheme.primaryContainer.withAlpha(80),
-            ),
-            child: CLButtonIcon.large(
-              Icons.fullscreen,
-              onTap: context.pop,
-            ),
-          ),
+          onTapFullScreen: context.pop,
         ),
       );
     }
@@ -76,15 +67,6 @@ class ItemView extends ConsumerWidget {
                     (final image) when image.type == CLMediaType.image =>
                       Image.file(
                         File(image.path),
-                      ),
-                    (final video) when video.type == CLMediaType.video =>
-                      VideoPlayerScreen(
-                        isPlayingFullScreen: true,
-                        path: video.path,
-                        fullScreenControl: CLButtonIcon.large(
-                          Icons.fullscreen,
-                          onTap: context.pop,
-                        ),
                       ),
                     _ => throw UnimplementedError(
                         'Not yet implemented',
