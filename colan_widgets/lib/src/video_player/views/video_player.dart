@@ -17,18 +17,19 @@ class CLVideoPlayer extends ConsumerStatefulWidget {
     required this.isPlayingFullScreen,
     required this.onTapFullScreen,
     super.key,
+    this.maxHeight,
   });
   final String path;
 
   final void Function()? onTapFullScreen;
   final bool isPlayingFullScreen;
+  final double? maxHeight;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _VideoPlayerScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => CLVideoPlayerState();
 }
 
-class _VideoPlayerScreenState extends ConsumerState<CLVideoPlayer> {
+class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
   bool isHovering = false;
 
   Timer? disableControls;
@@ -76,7 +77,8 @@ class _VideoPlayerScreenState extends ConsumerState<CLVideoPlayer> {
                     ? null
                     : min(
                         playerState.controller!.value.size.height,
-                        MediaQuery.of(context).size.height * 0.7,
+                        widget.maxHeight ??
+                            MediaQuery.of(context).size.height * 0.7,
                       ),
                 child: GestureDetector(
                   onDoubleTap: () {
@@ -129,12 +131,6 @@ class _VideoPlayerScreenState extends ConsumerState<CLVideoPlayer> {
                                   )
                                 : Container(),
                           ),
-                          /* if (widget.fullScreenControl != null)
-                            Positioned(
-                              bottom: 8,
-                              right: 8,
-                              child: widget.fullScreenControl!,
-                            ), */
                         ],
                       ),
                     ),
@@ -144,103 +140,5 @@ class _VideoPlayerScreenState extends ConsumerState<CLVideoPlayer> {
             );
           },
         );
-  }
-}
-
-class VideoController extends ConsumerWidget {
-  const VideoController({required this.playerState, super.key});
-  final VideoPlayerState playerState;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () {
-        // If the video is playing, pause it.
-        if (playerState.paused) {
-          ref.read(videoPlayerStateProvider(playerState.path).notifier).play();
-        } else {
-          ref.read(videoPlayerStateProvider(playerState.path).notifier).pause();
-        }
-      },
-      child: const Center(
-        child: CLIcon.veryLarge(
-          Icons.play_arrow_rounded,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-}
-/* 
-class VideoController extends StatefulWidget {
-  const VideoController({
-    required VideoPlayerController controller,
-    super.key,
-  }) : _controller = controller;
-
-  final VideoPlayerController _controller;
-
-  @override
-  State<VideoController> createState() => _VideoControllerState();
-}
-
-class _VideoControllerState extends State<VideoController> {
-  @override
-  void initState() {
-    widget._controller.addListener(listener);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    widget._controller.removeListener(listener);
-    super.dispose();
-  }
-
-  void listener() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!widget._controller.value.isPlaying) {
-      return CLIcon.veryLarge(
-        widget._controller.value.isPlaying
-            ? Icons.pause_circle_rounded
-            : Icons.play_arrow_rounded,
-        color: Colors.white,
-      );
-    } else {
-      return Container();
-    }
-  }
-}
-
-final isPlayingProvider = StateProvider<bool>((ref) {
-  return false;
-}); */
-
-class VidoePlayIcon extends StatelessWidget {
-  const VidoePlayIcon({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Theme.of(context)
-            .colorScheme
-            .onBackground
-            .withAlpha(192), // Color for the circular container
-      ),
-      child: CLIcon.veryLarge(
-        Icons.play_arrow_sharp,
-        color: Theme.of(context).colorScheme.background.withAlpha(192),
-      ),
-    );
   }
 }

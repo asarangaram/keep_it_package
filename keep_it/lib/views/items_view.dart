@@ -74,6 +74,9 @@ class ItemsView extends ConsumerWidget {
                                       onTapFullScreen: () => context.push(
                                         '/item/${e.collectionId}/${e.id}?isFullScreen=1',
                                       ),
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                              0.6,
                                     ),
                                   _ => CLMediaPreview(
                                       media: e,

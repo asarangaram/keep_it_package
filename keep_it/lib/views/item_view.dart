@@ -8,7 +8,6 @@ import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
 
-
 class ItemViewByID extends ConsumerWidget {
   const ItemViewByID({required this.id, required this.collectionId, super.key});
   final int collectionId;
@@ -35,11 +34,22 @@ class ItemView extends ConsumerWidget {
       throw Exception('File not found ${media.path}');
     }
     if (media.type == CLMediaType.video) {
-      return Center(
-        child: CLVideoPlayer(
-          path: media.path,
-          isPlayingFullScreen: true,
-          onTapFullScreen: context.pop,
+      return GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.primaryVelocity == null) return;
+          // pop on Swipe
+          if (details.primaryVelocity! > 0) {
+            if (context.canPop()) {
+              context.pop();
+            }
+          }
+        },
+        child: Center(
+          child: CLVideoPlayer(
+            path: media.path,
+            isPlayingFullScreen: true,
+            onTapFullScreen: context.pop,
+          ),
         ),
       );
     }
