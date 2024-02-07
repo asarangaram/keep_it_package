@@ -7,7 +7,6 @@ import 'package:store/store.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
-import '../widgets/video_player.dart';
 
 class ItemsView extends ConsumerWidget {
   const ItemsView({required this.collectionID, super.key});
@@ -69,7 +68,7 @@ class ItemsView extends ConsumerWidget {
                               child: Container(
                                 decoration: BoxDecoration(border: Border.all()),
                                 child: switch (e.type) {
-                                  CLMediaType.video => VideoPlayerScreen(
+                                  CLMediaType.video => CLVideoPlayer(
                                       path: e.path,
                                       isPlayingFullScreen: false,
                                       onTapFullScreen: () => context.push(

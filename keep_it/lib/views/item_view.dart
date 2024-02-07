@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
-import '../widgets/video_player.dart';
+
 
 class ItemViewByID extends ConsumerWidget {
   const ItemViewByID({required this.id, required this.collectionId, super.key});
@@ -36,7 +36,7 @@ class ItemView extends ConsumerWidget {
     }
     if (media.type == CLMediaType.video) {
       return Center(
-        child: VideoPlayerScreen(
+        child: CLVideoPlayer(
           path: media.path,
           isPlayingFullScreen: true,
           onTapFullScreen: context.pop,

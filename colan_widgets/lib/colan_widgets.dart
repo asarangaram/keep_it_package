@@ -21,6 +21,7 @@ export 'src/models/cl_scale_type.dart';
 export 'src/utils/media/cl_dimension.dart';
 export 'src/utils/notify.dart';
 export 'src/utils/rand_image_generator.dart';
+export 'src/video_player/views/video_player.dart' show CLVideoPlayer;
 export 'src/views/cl_custom_grid.dart' show CLCustomGrid;
 export 'src/views/cl_decorate_square.dart';
 export 'src/views/cl_error_view.dart';

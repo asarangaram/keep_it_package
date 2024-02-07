@@ -11,8 +11,8 @@ import '../models/video_player_state.dart';
 import '../providers/video_player_state.dart';
 import 'video_controls.dart';
 
-class VideoPlayerScreen extends ConsumerStatefulWidget {
-  const VideoPlayerScreen({
+class CLVideoPlayer extends ConsumerStatefulWidget {
+  const CLVideoPlayer({
     required this.path,
     required this.isPlayingFullScreen,
     required this.onTapFullScreen,
@@ -28,7 +28,7 @@ class VideoPlayerScreen extends ConsumerStatefulWidget {
       _VideoPlayerScreenState();
 }
 
-class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
+class _VideoPlayerScreenState extends ConsumerState<CLVideoPlayer> {
   bool isHovering = false;
 
   Timer? disableControls;
@@ -57,8 +57,6 @@ class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
             );
           },
           data: (VideoPlayerState playerState) {
-            print('isHovering = $isHovering');
-            print('paused: ${playerState.paused}');
             final controller = playerState.controller;
             return VisibilityDetector(
               key: ValueKey(path),

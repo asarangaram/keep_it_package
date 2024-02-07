@@ -1,3 +1,7 @@
+/// Referenced from https://pub.dev/packages/video_controls
+///
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
