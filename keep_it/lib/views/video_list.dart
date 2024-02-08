@@ -65,11 +65,13 @@ class VideoPreview extends ConsumerWidget {
                   alignment: AlignmentDirectional.topCenter,
                   children: [
                     child,
-                    const Center(
-                      child: FractionallySizedBox(
-                        widthFactor: 1,
-                        heightFactor: 1,
-                        child: CLIcon.large(Icons.play_circle),
+                    const Positioned.fill(
+                      child: Center(
+                        child: FractionallySizedBox(
+                          widthFactor: 0.2,
+                          heightFactor: 0.2,
+                          child: FittedBox(child: VidoePlayIcon()),
+                        ),
                       ),
                     ),
                   ],
@@ -120,3 +122,26 @@ final thumbnailProvider =
   }
   return File(thumbnailPath);
 });
+
+class VidoePlayIcon extends StatelessWidget {
+  const VidoePlayIcon({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Theme.of(context)
+            .colorScheme
+            .onBackground
+            .withAlpha(192), // Color for the circular container
+      ),
+      child: CLIcon.veryLarge(
+        Icons.play_arrow_sharp,
+        color: Theme.of(context).colorScheme.background.withAlpha(192),
+      ),
+    );
+  }
+}
