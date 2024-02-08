@@ -26,11 +26,12 @@ class _ItemsViewState extends ConsumerState<ItemsView> {
       buildOnData: (Items items) {
         return KeepItMainView(
           title: items.collection.label,
-          onPop: context.canPop()
-              ? () {
-                  context.pop();
-                }
-              : null,
+          onPop: () {
+            if (context.canPop()) {
+              ref.read(videoPlayerProvider.notifier).stopVideo(null);
+              context.pop();
+            }
+          },
           actionsBuilder: [
             (context, quickMenuScopeKey) => CLButtonIcon.standard(
                   Icons.add,

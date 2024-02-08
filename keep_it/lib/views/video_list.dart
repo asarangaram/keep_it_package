@@ -31,7 +31,7 @@ class _VideoListState extends ConsumerState<VideoList> {
   @override
   void dispose() {
     controller.dispose();
-
+     
     super.dispose();
   }
 
@@ -107,17 +107,8 @@ class VideoViewer extends ConsumerWidget {
                         }
                       }
                     },
-                    child: GestureDetector(
-                      onTap: () {
-                        if (controller.value.isPlaying) {
-                          controller.pause();
-                        } else {
-                          controller.play();
-                        }
-                      },
-                      child: CLVideoPlayer(
-                        controller: controller,
-                      ),
+                    child: CLVideoPlayer(
+                      controller: controller,
                     ),
                   ),
                 ),
@@ -310,8 +301,8 @@ class VideoPlayerNotifier extends StateNotifier<VideoPlayState> {
     }
   }
 
-  Future<void> stopVideo(String path) async {
-    if (path == state.path) {
+  Future<void> stopVideo(String? path) async {
+    if (path == state.path || path == null) {
       if (controller != null) {
         await controller!.pause();
         state = const VideoPlayState();
