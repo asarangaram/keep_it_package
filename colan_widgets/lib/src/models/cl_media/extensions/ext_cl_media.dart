@@ -72,6 +72,14 @@ extension ExtCLMediaFile on CLMedia {
       case CLMediaType.video:
       case CLMediaType.audio:
       case CLMediaType.file:
+        if (!File(path).existsSync()) {
+          throw Exception('Incoming file not found!');
+        }
+
+        final targetFile =
+            path_handler.join(targetDir, path_handler.basename(path));
+        File(targetFile).createSync(recursive: true);
+        File(path).copySync(targetFile);
         if (File(previewFileName).existsSync()) {
           {
             final targetFile = path_handler.join(
@@ -81,14 +89,6 @@ extension ExtCLMediaFile on CLMedia {
             File(previewFileName).copySync(targetFile);
           }
         }
-        if (!File(path).existsSync()) {
-          throw Exception('Incoming file not found!');
-        }
-
-        final targetFile =
-            path_handler.join(targetDir, path_handler.basename(path));
-        File(targetFile).createSync(recursive: true);
-        File(path).copySync(targetFile);
 
         return copyWith(path: targetFile);
 
