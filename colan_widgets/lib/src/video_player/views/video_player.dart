@@ -49,55 +49,66 @@ class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
               controller.value.size.height,
               widget.maxHeight ?? MediaQuery.of(context).size.height * 0.7,
             ),
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (_) {
-          disableControls?.cancel();
-          setState(() {
-            isHovering = true;
-          });
-        },
-        onPointerUp: (_) {
-          // If the video is playing, pause it.
+      child: GestureDetector(
+        onTap: isHovering
+            ? null
+            : () {
+                if (controller.value.isPlaying) {
+                  controller.pause();
+                } else {
+                  controller.play();
+                }
+              },
+        child: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (_) {
+            disableControls?.cancel();
+            setState(() {
+              isHovering = true;
+            });
+          },
+          onPointerUp: (_) {
+            // If the video is playing, pause it.
 
-          disableControls = Timer(
-            const Duration(seconds: 3),
-            () {
-              if (mounted) {
-                setState(() => isHovering = false);
-              }
-            },
-          );
-        },
-        onPointerHover: (_) {
-          setState(() => isHovering = true);
-          disableControls?.cancel();
-          disableControls = Timer(
-            const Duration(seconds: 2),
-            () {
-              if (mounted) {
-                setState(() => isHovering = false);
-              }
-            },
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: Stack(
-            alignment: AlignmentDirectional.bottomCenter,
-            children: [
-              VideoPlayer(controller),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: (isHovering || !controller.value.isPlaying)
-                    ? VideoControls(
-                        controller: controller,
-                        onTapFullScreen: widget.onTapFullScreen,
-                        isPlayingFullScreen: widget.isPlayingFullScreen,
-                      )
-                    : Container(),
-              ),
-            ],
+            disableControls = Timer(
+              const Duration(seconds: 3),
+              () {
+                if (mounted) {
+                  setState(() => isHovering = false);
+                }
+              },
+            );
+          },
+          onPointerHover: (_) {
+            setState(() => isHovering = true);
+            disableControls?.cancel();
+            disableControls = Timer(
+              const Duration(seconds: 2),
+              () {
+                if (mounted) {
+                  setState(() => isHovering = false);
+                }
+              },
+            );
+          },
+          child: AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: Stack(
+              alignment: AlignmentDirectional.bottomCenter,
+              children: [
+                VideoPlayer(controller),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child: (isHovering || !controller.value.isPlaying)
+                      ? VideoControls(
+                          controller: controller,
+                          onTapFullScreen: widget.onTapFullScreen,
+                          isPlayingFullScreen: widget.isPlayingFullScreen,
+                        )
+                      : Container(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
