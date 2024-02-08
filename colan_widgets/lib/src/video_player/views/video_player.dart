@@ -1,14 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
-import '../models/video_player_state.dart';
-import '../providers/video_player_state.dart';
 import 'video_controls.dart';
 
 class CLVideoPlayer extends ConsumerStatefulWidget {

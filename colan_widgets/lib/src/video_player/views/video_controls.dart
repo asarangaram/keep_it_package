@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import '../models/video_player_state.dart';
-import '../providers/video_player_state.dart';
 
 extension on Duration {
   String get timestamp => "${inMinutes.toString().padLeft(2, '0')}:"
