@@ -38,4 +38,13 @@ class Items {
 
   @override
   int get hashCode => entries.hashCode ^ collection.hashCode;
+
+  List<CLMedia> itemsByType(CLMediaType type) =>
+      entries.where((e) => e.type == type).toList();
+
+  List<CLMedia> get videos => itemsByType(CLMediaType.video);
+  List<CLMedia> get images => itemsByType(CLMediaType.video);
+
+  List<CLMediaType> get contentTypes =>
+      Set<CLMediaType>.from(entries.map((e) => e.type)).toList();
 }

@@ -119,7 +119,11 @@ class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
 
                       disableControls = Timer(
                         const Duration(seconds: 3),
-                        () => setState(() => isHovering = false),
+                        () {
+                          if (mounted) {
+                            setState(() => isHovering = false);
+                          }
+                        },
                       );
                     },
                     onPointerHover: (_) {
@@ -127,7 +131,11 @@ class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
                       disableControls?.cancel();
                       disableControls = Timer(
                         const Duration(seconds: 2),
-                        () => setState(() => isHovering = false),
+                        () {
+                          if (mounted) {
+                            setState(() => isHovering = false);
+                          }
+                        },
                       );
                     },
                     child: AspectRatio(

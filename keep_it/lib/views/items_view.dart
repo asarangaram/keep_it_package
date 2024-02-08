@@ -2,12 +2,12 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:store/store.dart';
 
 import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
+import 'video_list.dart';
 
 class ItemsView extends ConsumerStatefulWidget {
   const ItemsView({required this.collectionID, super.key});
@@ -19,20 +19,6 @@ class ItemsView extends ConsumerStatefulWidget {
 }
 
 class _ItemsViewState extends ConsumerState<ItemsView> {
-  late final AutoScrollController controller;
-
-  @override
-  void initState() {
-    controller = AutoScrollController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return LoadItems(
@@ -68,46 +54,8 @@ class _ItemsViewState extends ConsumerState<ItemsView> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: CLCustomGrid(
-                      itemCount: items.entries.length,
-                      crossAxisCount: 1,
-                      layers: 1,
-                      controller: controller,
-                      itemBuilder: (context, index, l) {
-                        final e = items.entries[index];
-                        if (l > 0) {
-                          throw Exception('has only one layer!');
-                        }
-                        return Hero(
-                          tag: '/item/${e.collectionId}/${e.id}',
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Container(
-                              decoration: BoxDecoration(border: Border.all()),
-                              child: switch (e.type) {
-                                CLMediaType.video => CLVideoPlayer(
-                                    path: e.path,
-                                    isPlayingFullScreen: false,
-                                    onTapFullScreen: () => context.push(
-                                      '/item/${e.collectionId}/${e.id}?isFullScreen=1',
-                                    ),
-                                    maxHeight:
-                                        MediaQuery.of(context).size.height *
-                                            0.6,
-                                    onFocus: () async {
-                                      await controller.scrollToIndex(index,
-                                          preferPosition:
-                                              AutoScrollPosition.begin);
-                                    },
-                                  ),
-                                _ => CLMediaPreview(
-                                    media: e,
-                                  ),
-                              },
-                            ),
-                          ),
-                        );
-                      },
+                    child: VideoList(
+                      media: items.videos,
                     ),
                   ),
                 ),
@@ -119,6 +67,50 @@ class _ItemsViewState extends ConsumerState<ItemsView> {
     );
   }
 }
+/* 
+class BuildItem extends StatelessWidget {
+  const BuildItem({
+    required this.media,
+    required this.isScrolling,
+    required this.onFocus,
+    super.key,
+  });
+
+  final CLMedia media;
+  final bool isScrolling;
+
+  final void Function()? onFocus;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!context.mounted) return Container();
+    return Hero(
+      tag: '/item/${media.collectionId}/${media.id}',
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Container(
+          decoration: BoxDecoration(border: Border.all()),
+          child: isScrolling
+              ? null
+              : switch (media.type) {
+                  CLMediaType.video => CLVideoPlayer(
+                      path: media.path,
+                      isPlayingFullScreen: false,
+                      onTapFullScreen: () => context.push(
+                        '/item/${media.collectionId}/${media.id}?isFullScreen=1',
+                      ),
+                      maxHeight: MediaQuery.of(context).size.height * 0.6,
+                      onFocus: onFocus,
+                    ),
+                  _ => CLMediaPreview(
+                      media: media,
+                    ),
+                },
+        ),
+      ),
+    );
+  }
+} */
 
 /* class ItemView extends ConsumerWidget {
   const ItemView({required this.media, super.key});
