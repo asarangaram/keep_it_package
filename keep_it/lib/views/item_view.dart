@@ -44,13 +44,13 @@ class ItemView extends ConsumerWidget {
             }
           }
         },
-        child: Center(
-          child: CLVideoPlayer(
+        child: const Center(
+            /* child: CLVideoPlayer(
             path: media.path,
             isPlayingFullScreen: true,
             onTapFullScreen: context.pop,
-          ),
-        ),
+          ), */
+            ),
       );
     }
     return Column(

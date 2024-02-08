@@ -16,13 +16,13 @@ extension on Duration {
 
 class VideoControls extends ConsumerStatefulWidget {
   const VideoControls({
-    required this.playerState,
+    required this.controller,
     required this.isPlayingFullScreen,
     super.key,
     this.onTapFullScreen,
   });
 
-  final VideoPlayerState playerState;
+  final VideoPlayerController controller;
   final void Function()? onTapFullScreen;
   final bool isPlayingFullScreen;
 
@@ -31,7 +31,7 @@ class VideoControls extends ConsumerStatefulWidget {
 }
 
 class VideoControlsState extends ConsumerState<VideoControls> {
-  VideoPlayerValue get video => widget.playerState.controller!.value;
+  VideoPlayerValue get video => widget.controller.value;
   double? seekValue;
   double volume = 1;
 
@@ -52,12 +52,12 @@ class VideoControlsState extends ConsumerState<VideoControls> {
   @override
   void initState() {
     super.initState();
-    widget.playerState.controller!.addListener(listener);
+    widget.controller.addListener(listener);
   }
 
   @override
   void dispose() {
-    widget.playerState.controller!.removeListener(listener);
+    widget.controller.removeListener(listener);
     super.dispose();
   }
 
@@ -100,8 +100,7 @@ class VideoControlsState extends ConsumerState<VideoControls> {
                         setState(() => seekValue = value),
                     onChangeEnd: (double value) {
                       setState(() => seekValue = null);
-                      widget.playerState.controller!
-                          .seekTo(doubleToDuration(value));
+                      widget.controller.seekTo(doubleToDuration(value));
                     },
                   ),
                 ],
@@ -111,29 +110,17 @@ class VideoControlsState extends ConsumerState<VideoControls> {
                   IconButton(
                     icon:
                         Icon(video.isPlaying ? Icons.pause : Icons.play_arrow),
-                    onPressed: () =>
-                        onPlayPause(context, ref, widget.playerState),
+                    onPressed: onPlayPause,
                   ),
                   IconButton(
                     icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
-                    onPressed: () =>
-                        onMuteToggle(context, ref, widget.playerState),
+                    onPressed: onMuteToggle,
                   ),
                   Flexible(
                     child: Slider(
-                      value: widget.playerState.controller!.value.volume,
-                      onChanged: (value) => onAdjustVolume(
-                        context,
-                        ref,
-                        widget.playerState,
-                        value,
-                      ),
-                      onChangeEnd: (value) => onAdjustVolume(
-                        context,
-                        ref,
-                        widget.playerState,
-                        value,
-                      ),
+                      value: widget.controller.value.volume,
+                      onChanged: onAdjustVolume,
+                      onChangeEnd: onAdjustVolume,
                     ),
                   ),
                   Text(
@@ -159,41 +146,21 @@ class VideoControlsState extends ConsumerState<VideoControls> {
       );
 
   void onAdjustVolume(
-    BuildContext context,
-    WidgetRef ref,
-    VideoPlayerState playerState,
     double value,
   ) {
-    playerState.controller!.setVolume(value);
+    widget.controller.setVolume(value);
     volume = value;
     setState(() {});
   }
 
-  void onMuteToggle(
-    BuildContext context,
-    WidgetRef ref,
-    VideoPlayerState playerState,
-  ) =>
-      playerState.controller!.setVolume(isMuted ? volume : 0);
+  void onMuteToggle() => widget.controller.setVolume(isMuted ? volume : 0);
 
-  void onPlayPause(
-    BuildContext context,
-    WidgetRef ref,
-    VideoPlayerState playerState,
-  ) {
+  void onPlayPause() {
     // If the video is playing, pause it.
-    if (playerState.paused) {
-      ref
-          .read(
-            videoPlayerStateProvider(playerState.path).notifier,
-          )
-          .play();
+    if (widget.controller.value.isPlaying) {
+      widget.controller.pause();
     } else {
-      ref
-          .read(
-            videoPlayerStateProvider(playerState.path).notifier,
-          )
-          .pause();
+      widget.controller.play();
     }
   }
 }
