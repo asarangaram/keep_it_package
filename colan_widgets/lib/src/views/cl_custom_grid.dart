@@ -120,9 +120,6 @@ class _CLCustomGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller == null) {
-      print('scroller used');
-    }
     return ComputeSizeAndBuild(
       builder: (context, size) => ListView.builder(
         physics: const ClampingScrollPhysics(),
