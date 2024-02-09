@@ -30,6 +30,7 @@ export 'src/views/cl_error_view.dart';
 export 'src/views/cl_fullscreen_box.dart';
 export 'src/views/cl_image_viewer.dart';
 export 'src/views/cl_loading_view.dart';
+export 'src/views/cl_matrix_2d_fixed.dart';
 export 'src/views/cl_media_grid_view.dart';
 export 'src/views/cl_media_list_preview.dart';
 export 'src/views/cl_media_preview.dart';

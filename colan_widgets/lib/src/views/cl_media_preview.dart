@@ -38,7 +38,11 @@ class CLMediaPreview extends StatelessWidget {
                 fit: fit,
               )
             :  */
-          VideoPreview(media: media, videoOverlayChild: videoOverlayChild),
+          VideoPreview(
+            media: media,
+            videoOverlayChild: videoOverlayChild,
+            keepAspectRatio: keepAspectRatio,
+          ),
         CLMediaType.url => FutureBuilder(
             future: URLHandler.getMimeType(media.path),
             builder: (context, snapShot) {
@@ -73,15 +77,16 @@ class VideoPreview extends StatelessWidget {
     required this.media,
     this.videoOverlayChild,
     super.key,
-    this.fit,
+    this.keepAspectRatio = true,
   });
 
   final CLMedia media;
   final Widget? videoOverlayChild;
-  final BoxFit? fit;
+  final bool keepAspectRatio;
 
   @override
   Widget build(BuildContext context) {
+    final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
     return FutureBuilder(
       future: VideoThumbnail.thumbnailData(
         video: media.path,
@@ -93,7 +98,7 @@ class VideoPreview extends StatelessWidget {
                   Positioned.fill(
                     child: Image.memory(
                       snapShot.data!,
-                      fit: fit ?? BoxFit.cover,
+                      fit: fit,
                       filterQuality: FilterQuality.none,
                     ),
                   ),

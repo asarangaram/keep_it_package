@@ -36,23 +36,32 @@ class Matrix2DNew extends StatelessWidget {
             ? itemCount - hCount * (numRows - 1)
             : hCount);
     if (vCount_ == null) {
-      return ListView.builder(
-        itemCount: numRows,
-        itemBuilder: (context, r) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (var c = 0;
-                  c < (r == (numRows - 1) ? lastCount : hCount);
-                  c++)
-                Flexible(
-                  child: ((r * hCount + c) >= itemCount)
-                      ? strictMartrix
-                          ? Container()
-                          : throw Exception('Unexpected')
-                      : itembuilderWrapper(context, r * hCount + c),
+      return ComputeSizeAndBuild(
+        builder: (context, size) {
+          return ListView.builder(
+            itemCount: numRows,
+            itemBuilder: (context, r) {
+              return SizedBox(
+                height: size.width / hCount,
+                width: size.width / hCount,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (var c = 0;
+                        c < (r == (numRows - 1) ? lastCount : hCount);
+                        c++)
+                      SizedBox.square(
+                        dimension: size.width / hCount,
+                        child: ((r * hCount + c) >= itemCount)
+                            ? strictMartrix
+                                ? Container()
+                                : throw Exception('Unexpected')
+                            : itembuilderWrapper(context, r * hCount + c),
+                      ),
+                  ],
                 ),
-            ],
+              );
+            },
           );
         },
       );

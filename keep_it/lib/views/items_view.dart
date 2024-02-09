@@ -38,31 +38,24 @@ class ItemsViewState extends ConsumerState<ItemsView> {
         );
       }
     });
-    return CLCustomGrid(
+    return Matrix2DNew.scrollable(
       itemCount: widget.media.length,
-      crossAxisCount: 1,
-      layers: 1,
-      controller: scrollController,
-      itemBuilder: (context, index, l) {
+      hCount: 3,
+      itemBuilder: (context, index) {
         final media = widget.media[index];
         return switch (media.type) {
-          CLMediaType.video => Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * .65,
-              ),
-              child: GestureDetector(
-                onTap: () =>
-                    context.push('/item/${media.collectionId}/${media.id}'),
-                child: VideoPreview(
-                  media: widget.media[index],
-                  fit: BoxFit.contain,
+          CLMediaType.video => GestureDetector(
+              onTap: () =>
+                  context.push('/item/${media.collectionId}/${media.id}'),
+              child: VideoPreview(
+                media: widget.media[index],
 
-                  //onTap: onTap,
-                ),
+                //onTap: onTap,
               ),
             ),
           _ => CLMediaPreview(
               media: widget.media[index],
+              keepAspectRatio: false,
             )
         };
       },

@@ -138,8 +138,7 @@ class VideoViewer extends ConsumerWidget {
           onTap: onTap,
           child: VideoPreview(
             media: media,
-            fit: BoxFit.contain,
-
+ 
             //onTap: onTap,
           ),
         )
