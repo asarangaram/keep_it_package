@@ -14,7 +14,7 @@ import 'package:window_size/window_size.dart';
 import 'views/collections_view.dart';
 
 import 'views/item_view.dart';
-import 'views/items_view.dart';
+import 'views/items_page.dart';
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
 
@@ -91,7 +91,7 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'items/:collection_id',
-          builder: (context, GoRouterState state) => ItemsView(
+          builder: (context, GoRouterState state) => ItemsPage(
             collectionID: int.parse(state.pathParameters['collection_id']!),
           ),
         ),

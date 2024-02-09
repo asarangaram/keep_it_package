@@ -4,7 +4,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../models/cl_media.dart';
+import '../../views/cl_media_preview.dart';
+import '../providers/video_player_state.dart';
 import 'video_controls.dart';
 
 class CLVideoPlayer extends ConsumerStatefulWidget {
@@ -110,6 +114,78 @@ class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class VideoViewer extends ConsumerWidget {
+  const VideoViewer({required this.media, super.key, this.onSelect});
+  final CLMedia media;
+  final void Function()? onSelect;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(videoPlayerProvider);
+    Future<void> onTap() async {
+      await ref.read(videoPlayerProvider.notifier).playVideo(media.path);
+      onSelect?.call();
+    }
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * .65,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+        child: Stack(
+          alignment: AlignmentDirectional.topCenter,
+          children: [
+            if (state.path == media.path)
+              state.controllerAsync.when(
+                data: (controller) => Container(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * .65,
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+                    child: AspectRatio(
+                      aspectRatio: controller.value.aspectRatio,
+                      child: VisibilityDetector(
+                        key: ValueKey(controller),
+                        onVisibilityChanged: (info) {
+                          if (context.mounted) {
+                            if (info.visibleFraction == 0.0) {
+                              if (state.path == media.path) {
+                                ref
+                                    .read(videoPlayerProvider.notifier)
+                                    .stopVideo(media.path);
+                              }
+                            }
+                          }
+                        },
+                        child: CLVideoPlayer(
+                          controller: controller,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                error: (_, __) => Container(),
+                loading: () => VideoPreview(
+                  media: media,
+                  onTap: onTap,
+                  overlayChild: const CircularProgressIndicator(),
+                ),
+              )
+            else
+              VideoPreview(
+                media: media,
+                onTap: onTap,
+              ),
+          ],
         ),
       ),
     );
