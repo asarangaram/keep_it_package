@@ -33,8 +33,20 @@ class ItemView extends ConsumerWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(videoPlayerStateProvider.notifier).playVideo(media.path);
+    });
     if (media.type == CLMediaType.video) {
       return GestureDetector(
+        onVerticalDragEnd: (details) {
+          if (details.primaryVelocity == null) return;
+          // pop on Swipe
+          if (details.primaryVelocity! > 0) {
+            if (context.canPop()) {
+              context.pop();
+            }
+          }
+        },
         onHorizontalDragEnd: (details) {
           if (details.primaryVelocity == null) return;
           // pop on Swipe
@@ -44,13 +56,11 @@ class ItemView extends ConsumerWidget {
             }
           }
         },
-        child: const Center(
-            /* child: CLVideoPlayer(
-            path: media.path,
-            isPlayingFullScreen: true,
-            onTapFullScreen: context.pop,
-          ), */
-            ),
+        child: SafeArea(
+          child: VideoViewer(
+            media: media,
+          ),
+        ),
       );
     }
     return Column(

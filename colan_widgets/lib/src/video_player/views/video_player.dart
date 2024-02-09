@@ -43,17 +43,13 @@ class CLVideoPlayerState extends ConsumerState<CLVideoPlayer> {
   Widget build(BuildContext context) {
     final controller = widget.controller;
     return GestureDetector(
-      onTap: isHovering
-          ? () {
-              controller.setVolume(0);
-            }
-          : () {
-              if (controller.value.isPlaying) {
-                controller.pause();
-              } else {
-                controller.play();
-              }
-            },
+      onTap: () {
+        if (controller.value.isPlaying) {
+          controller.pause();
+        } else {
+          controller.play();
+        }
+      },
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: (_) {
@@ -118,40 +114,35 @@ class VideoViewer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(videoPlayerProvider);
+    final state = ref.watch(videoPlayerStateProvider);
     Future<void> onTap() async {
-      await ref.read(videoPlayerProvider.notifier).playVideo(media.path);
+      await ref.read(videoPlayerStateProvider.notifier).playVideo(media.path);
       onSelect?.call();
     }
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * .65,
-      ),
-      child: switch (state.path == media.path) {
-        true => state.controllerAsync.when(
-            data: (controller) => CLVideoPlayer(
-              controller: controller,
-              fit: BoxFit.contain,
-            ),
-            error: (_, __) => Container(),
-            loading: () => VideoPreview(
-              media: media,
-              videoOverlayChild: const CircularProgressIndicator(),
-              /* onTap: onTap,
-                overlayChild: , */
-            ),
+    return switch (state.path == media.path) {
+      true => state.controllerAsync.when(
+          data: (controller) => CLVideoPlayer(
+            controller: controller,
+            fit: BoxFit.contain,
           ),
-        false => GestureDetector(
-            onTap: onTap,
-            child: VideoPreview(
-              media: media,
-              fit: BoxFit.contain,
+          error: (_, __) => Container(),
+          loading: () => VideoPreview(
+            media: media,
+            videoOverlayChild: const CircularProgressIndicator(),
+            /* onTap: onTap,
+              overlayChild: , */
+          ),
+        ),
+      false => GestureDetector(
+          onTap: onTap,
+          child: VideoPreview(
+            media: media,
+            fit: BoxFit.contain,
 
-              //onTap: onTap,
-            ),
-          )
-      },
-    );
+            //onTap: onTap,
+          ),
+        )
+    };
   }
 }

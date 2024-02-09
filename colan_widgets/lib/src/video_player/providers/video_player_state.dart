@@ -10,6 +10,7 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
   VideoPlayerController? controller;
 
   Future<void> playVideo(String path) async {
+    if (state.path == path) return;
     state = VideoPlayerState(path: path);
     try {
       if (!File(path).existsSync()) {
@@ -59,7 +60,7 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
   }
 }
 
-final videoPlayerProvider = StateNotifierProvider.autoDispose<
+final videoPlayerStateProvider = StateNotifierProvider.autoDispose<
     VideoPlayerStateNotifier, VideoPlayerState>((ref) {
   final notifier = VideoPlayerStateNotifier();
   return notifier;
