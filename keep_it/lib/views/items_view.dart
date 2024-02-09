@@ -28,7 +28,6 @@ class _ItemsViewState extends ConsumerState<ItemsView> {
           title: items.collection.label,
           onPop: () {
             if (context.canPop()) {
-              ref.read(videoPlayerProvider.notifier).stopVideo(null);
               context.pop();
             }
           },

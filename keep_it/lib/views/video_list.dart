@@ -31,7 +31,7 @@ class _VideoListState extends ConsumerState<VideoList> {
   @override
   void dispose() {
     controller.dispose();
-     
+
     super.dispose();
   }
 
@@ -314,14 +314,19 @@ class VideoPlayerNotifier extends StateNotifier<VideoPlayState> {
 
   @override
   void dispose() {
-    controller?.dispose();
-    super.dispose();
+    if (mounted) {
+      if (controller?.value.isPlaying ?? false) {
+        controller?.pause();
+      }
+      controller?.dispose();
+      super.dispose();
+    }
   }
 }
 
 final videoPlayerProvider =
-    StateNotifierProvider<VideoPlayerNotifier, VideoPlayState>((ref) {
+    StateNotifierProvider.autoDispose<VideoPlayerNotifier, VideoPlayState>(
+        (ref) {
   final notifier = VideoPlayerNotifier();
-
   return notifier;
 });
