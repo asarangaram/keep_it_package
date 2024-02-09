@@ -5,16 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 @immutable
-class VideoPlayState {
+class VideoPlayerState {
   final String? path;
   final AsyncValue<VideoPlayerController> controllerAsync;
-  const VideoPlayState({
+  const VideoPlayerState({
     this.path,
     this.controllerAsync = const AsyncValue.loading(),
   });
 
   @override
-  bool operator ==(covariant VideoPlayState other) {
+  bool operator ==(covariant VideoPlayerState other) {
     if (identical(this, other)) return true;
 
     return other.path == path && other.controllerAsync == controllerAsync;
@@ -23,11 +23,11 @@ class VideoPlayState {
   @override
   int get hashCode => path.hashCode ^ controllerAsync.hashCode;
 
-  VideoPlayState copyWith({
+  VideoPlayerState copyWith({
     String? path,
     AsyncValue<VideoPlayerController>? controllerAsync,
   }) {
-    return VideoPlayState(
+    return VideoPlayerState(
       path: path ?? this.path,
       controllerAsync: controllerAsync ?? this.controllerAsync,
     );

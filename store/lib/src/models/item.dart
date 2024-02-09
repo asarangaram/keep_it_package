@@ -43,7 +43,7 @@ class Items {
       entries.where((e) => e.type == type).toList();
 
   List<CLMedia> get videos => itemsByType(CLMediaType.video);
-  List<CLMedia> get images => itemsByType(CLMediaType.video);
+  List<CLMedia> get images => itemsByType(CLMediaType.image);
 
   List<CLMediaType> get contentTypes =>
       Set<CLMediaType>.from(entries.map((e) => e.type)).toList();

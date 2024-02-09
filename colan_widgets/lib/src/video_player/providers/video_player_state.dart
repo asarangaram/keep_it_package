@@ -5,12 +5,12 @@ import 'package:video_player/video_player.dart';
 
 import '../models/video_player_state.dart';
 
-class VideoPlayerNotifier extends StateNotifier<VideoPlayState> {
-  VideoPlayerNotifier() : super(const VideoPlayState());
+class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
+  VideoPlayerStateNotifier() : super(const VideoPlayerState());
   VideoPlayerController? controller;
 
   Future<void> playVideo(String path) async {
-    state = VideoPlayState(path: path);
+    state = VideoPlayerState(path: path);
     try {
       if (!File(path).existsSync()) {
         throw FileSystemException('missing file', path);
@@ -28,7 +28,6 @@ class VideoPlayerNotifier extends StateNotifier<VideoPlayState> {
       if (!newController.value.isInitialized) {
         throw Exception('Failed to load Video');
       }
-      await newController.setVolume(0.1);
       await newController.seekTo(Duration.zero);
       await newController.play();
       state = state.copyWith(controllerAsync: AsyncValue.data(newController));
@@ -41,7 +40,7 @@ class VideoPlayerNotifier extends StateNotifier<VideoPlayState> {
     if (path == state.path || path == null) {
       if (controller != null) {
         await controller!.pause();
-        state = const VideoPlayState();
+        state = const VideoPlayerState();
         await controller!.dispose();
         controller = null;
       }
@@ -60,9 +59,8 @@ class VideoPlayerNotifier extends StateNotifier<VideoPlayState> {
   }
 }
 
-final videoPlayerProvider =
-    StateNotifierProvider.autoDispose<VideoPlayerNotifier, VideoPlayState>(
-        (ref) {
-  final notifier = VideoPlayerNotifier();
+final videoPlayerProvider = StateNotifierProvider.autoDispose<
+    VideoPlayerStateNotifier, VideoPlayerState>((ref) {
+  final notifier = VideoPlayerStateNotifier();
   return notifier;
 });

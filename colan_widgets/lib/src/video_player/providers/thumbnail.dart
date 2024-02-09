@@ -1,4 +1,4 @@
-import 'dart:io';
+/* import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -6,7 +6,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../models/cl_media.dart';
 
 final thumbnailProvider =
-    FutureProvider.family<File, CLMedia>((ref, media) async {
+    FutureProvider.family.autoDispose<String, CLMedia>((ref, media) async {
   {
     if (!File(media.path).existsSync()) {
       throw FileSystemException('missing', media.path);
@@ -14,13 +14,13 @@ final thumbnailProvider =
     if (media.previewPath != null) {
       final preview = File(media.previewPath!);
       if (preview.existsSync()) {
-        return preview;
+        return media.previewPath!;
       }
     }
     {
       final preview = File(media.previewFileName);
       if (preview.existsSync()) {
-        return preview;
+        return media.previewFileName;
       }
     }
   }
@@ -38,5 +38,6 @@ final thumbnailProvider =
   if (thumbnailPath == null) {
     throw Exception('Unable to generate thumbnail');
   }
-  return File(thumbnailPath);
+  return thumbnailPath;
 });
+ */

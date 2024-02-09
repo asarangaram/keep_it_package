@@ -46,6 +46,7 @@ class ItemsViewState extends ConsumerState<ItemsView> {
         return switch (widget.media[index].type) {
           CLMediaType.video => VideoViewer(
               media: widget.media[index],
+              
               onSelect: () async {
                 setState(() {
                   currentIndex = index;

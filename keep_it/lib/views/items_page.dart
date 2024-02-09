@@ -60,4 +60,3 @@ class ItemsPage extends ConsumerWidget {
     );
   }
 }
-
