@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:store/store.dart';
 
-import '../collections_view/collection_view.dart';
-import '../collections_view/empty_state.dart';
+import 'collection_view.dart';
+import 'empty_state.dart';
 import '../modules/huge_listview/events.dart';
 import '../modules/huge_listview/huge_listview.dart';
 import '../widgets/from_store/from_store.dart';
