@@ -14,7 +14,6 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   ItemNotifier({
     required this.ref,
     required this.collectionID,
-    required this.pathPrefix,
     this.databaseManager,
   }) : super(const AsyncValue.loading()) {
     loadItems();
@@ -22,9 +21,11 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   DatabaseManager? databaseManager;
   int collectionID;
   Ref ref;
-  final String pathPrefix;
-
+  String? _pathPrefix;
   bool isLoading = false;
+
+  Future<String> get pathPrefix async =>
+      _pathPrefix ??= (await getApplicationDocumentsDirectory()).path;
 
   Future<void> loadItems() async {
     if (databaseManager == null) return;
@@ -34,7 +35,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     items = ExtItemInDB.dbGetByCollectionId(
       databaseManager!.db,
       collectionID,
-      pathPrefix: pathPrefix,
+      pathPrefix: await pathPrefix,
     );
     collection = CollectionDB.getById(databaseManager!.db, collectionID);
 
@@ -48,13 +49,14 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
+    final prefix = await pathPrefix;
 
     (await item.copyFile(
-      pathPrefix: pathPrefix,
+      pathPrefix: prefix,
     ))
         .dbUpsert(
       databaseManager!.db,
-      pathPrefix: pathPrefix,
+      pathPrefix: prefix,
     );
 
     await loadItems();
@@ -62,15 +64,18 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
 
   Future<void> upsertItems(List<CLMedia> items) async {
     if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
+      print('DB Not ready, not saved !');
+      return;
+      //throw Exception('DB Manager is not ready');
     }
+    final prefix = await pathPrefix;
     for (final item in items) {
       (await item.copyFile(
-        pathPrefix: pathPrefix,
+        pathPrefix: prefix,
       ))
           .dbUpsert(
         databaseManager!.db,
-        pathPrefix: pathPrefix,
+        pathPrefix: prefix,
       );
     }
     await loadItems();
@@ -105,37 +110,20 @@ final itemsProvider =
     StateNotifierProvider.family<ItemNotifier, AsyncValue<Items>, int>(
         (ref, collectionID) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
-  final docDir = ref.watch(docDirProvider);
-  return docDir.when(
-    data: (pathPrefix) {
-      return dbManagerAsync.when(
-        data: (DatabaseManager dbManager) => ItemNotifier(
-          ref: ref,
-          databaseManager: dbManager,
-          collectionID: collectionID,
-          pathPrefix: pathPrefix.path,
-        ),
-        error: (_, __) => ItemNotifier(
-          ref: ref,
-          collectionID: collectionID,
-          pathPrefix: '',
-        ),
-        loading: () => ItemNotifier(
-          ref: ref,
-          collectionID: collectionID,
-          pathPrefix: '',
-        ),
-      );
-    },
+
+  return dbManagerAsync.when(
+    data: (DatabaseManager dbManager) => ItemNotifier(
+      ref: ref,
+      databaseManager: dbManager,
+      collectionID: collectionID,
+    ),
     error: (_, __) => ItemNotifier(
       ref: ref,
       collectionID: collectionID,
-      pathPrefix: '',
     ),
     loading: () => ItemNotifier(
       ref: ref,
       collectionID: collectionID,
-      pathPrefix: '',
     ),
   );
 });
