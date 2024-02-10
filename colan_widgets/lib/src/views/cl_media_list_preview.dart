@@ -48,7 +48,7 @@ class CLMediaListPreview extends ConsumerWidget {
     }
 
     return CLDecorateSquare(
-      child: CLMediaGridView.byMatrixSize(
+      child: CLMediaCollage.byMatrixSize(
         mediaWithPreview,
         hCount: d.itemsInRow,
         vCount: d.itemsInColumn,
