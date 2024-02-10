@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +33,8 @@ class CollectionsView extends ConsumerWidget {
     return _CollectionsView(
       collections.entries,
       emptyState: const EmptyState(),
-      header: Container(),
-      footer: Container(),
+      //header: const Text('This is header'),
+      //footer: const Text('This is footer'),
       tagPrefix: 'collections_home',
     );
   }
@@ -116,9 +118,10 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
           itemBuilder: (BuildContext context, int index) {
             final headerWidget =
                 CollectionHeader(collection: collections[index]);
+            // ignore: unused_local_variable
             final footerWidget =
                 CollectionFooter(collection: collections[index]);
-            return LoadItems(
+            final w = LoadItems(
               collectionID: collections[index].id!,
               buildOnData: (items) {
                 return Padding(
@@ -132,11 +135,22 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
                         .where((event) => event.tag == widget.tagPrefix)
                         .map((event) => event.index),
                     headerWidget: headerWidget,
-                    footerWidget: footerWidget,
+                    //footerWidget: footerWidget,
                   ),
                 );
               },
             );
+            if (index == 0 && widget.header != null) {
+              return Column(
+                children: [widget.header!, w],
+              );
+            }
+            if (index == (collections.length - 1) && widget.footer != null) {
+              return Column(
+                children: [w, widget.footer!],
+              );
+            }
+            return w;
           },
           firstShown: (int firstIndex) {
             Bus.instance
@@ -194,6 +208,9 @@ class CollectionHeader extends StatelessWidget {
               collection.label,
               textAlign: TextAlign.start,
             ),
+          ),
+          CollectionFooter(
+            collection: collection,
           ),
         ],
       ),
