@@ -13,6 +13,7 @@ class CLButtonsGrid extends ConsumerWidget {
     super.key,
     this.scaleType = CLScaleType.standard,
     this.size,
+    this.alignment,
   })  : onCancelNullable = null,
         isDialog = false;
   const CLButtonsGrid.dialog({
@@ -21,6 +22,7 @@ class CLButtonsGrid extends ConsumerWidget {
     super.key,
     this.scaleType = CLScaleType.standard,
     this.size,
+    this.alignment,
   })  : onCancelNullable = onCancel,
         isDialog = true;
   final List<List<CLMenuItem>> children2D;
@@ -28,6 +30,7 @@ class CLButtonsGrid extends ConsumerWidget {
   final CLScaleType scaleType;
   final bool isDialog;
   final Size? size;
+  final AlignmentGeometry? alignment;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +47,7 @@ class CLButtonsGrid extends ConsumerWidget {
         height: height,
         width: width,
         child: Align(
-          alignment: Alignment.topCenter,
+          alignment: alignment ?? Alignment.topCenter,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

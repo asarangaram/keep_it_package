@@ -68,10 +68,9 @@ class KeepItGrid extends ConsumerWidget {
     if (entities.isEmpty) {
       return KeepItMainView(
         pageBuilder: (context, quickMenuScopeKey) => Center(
-          child: Center(
-            child: CLButtonsGrid(
-              children2D: menuItems,
-            ),
+          child: CLButtonsGrid(
+            children2D: menuItems,
+            alignment: Alignment.center,
           ),
         ),
       );
