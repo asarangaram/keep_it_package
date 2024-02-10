@@ -14,6 +14,8 @@ class CLMedia {
     this.id,
     this.collectionId,
     this.previewWidth,
+    this.createdDate,
+    this.updatedDate,
   }) {
     switch (type) {
       case CLMediaType.text:
@@ -51,6 +53,12 @@ class CLMedia {
           map['collection_id'] != null ? map['collection_id'] as int : null,
       previewWidth:
           map['previewWidth'] != null ? map['previewWidth'] as int : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.parse(map['createdDate'] as String)
+          : null,
+      updatedDate: map['updatedDate'] != null
+          ? DateTime.parse(map['updatedDate'] as String)
+          : null,
     );
   }
 
@@ -68,6 +76,8 @@ class CLMedia {
   final int? id;
   final int? collectionId;
   final int? previewWidth;
+  final DateTime? createdDate;
+  final DateTime? updatedDate;
 
   CLMedia copyWith({
     String? path,

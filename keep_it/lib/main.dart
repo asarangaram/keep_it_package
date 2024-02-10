@@ -11,10 +11,12 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
+import 'collection_view/collection_view.dart';
 import 'collections_view/collections_page.dart';
+import 'folder_view/collections_view.dart' as folder_view;
 
 import 'views/item_page.dart';
-import 'views/items_page.dart';
+
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
 
@@ -48,7 +50,8 @@ class KeepItApp implements AppDescriptor {
   List<CLShellRouteDescriptor> get shellRoutes => [
         CLShellRouteDescriptor(
           name: '',
-          builder: (context, GoRouterState state) => const CollectionsPage(),
+          builder: (context, GoRouterState state) =>
+              const folder_view.CollectionsView(),
           iconData: Icons.home,
           label: 'Collections',
         ),
@@ -91,7 +94,7 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'items/:collection_id',
-          builder: (context, GoRouterState state) => ItemsPage(
+          builder: (context, GoRouterState state) => TimeLinePage(
             collectionID: int.parse(state.pathParameters['collection_id']!),
           ),
         ),

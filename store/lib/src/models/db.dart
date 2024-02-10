@@ -61,6 +61,7 @@ class DatabaseManager {
         ref TEXT,
         collection_id INTEGER,
         type TEXT NOT NULL,
+        originalDate DATETIME
         createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (collection_id) REFERENCES Collection(id)

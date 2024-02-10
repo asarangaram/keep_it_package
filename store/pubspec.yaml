@@ -11,9 +11,11 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.18.0
+  exif: ^3.3.0
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.9
+  intl: ^0.19.0
   path: ^1.8.3
   path_provider: ^2.1.1
   sqlite3: ^2.2.0
