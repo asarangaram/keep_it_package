@@ -43,21 +43,13 @@ class ItemsViewState extends ConsumerState<ItemsView> {
       hCount: 3,
       itemBuilder: (context, index) {
         final media = widget.media[index];
-        return switch (media.type) {
-          CLMediaType.video => GestureDetector(
-              onTap: () =>
-                  context.push('/item/${media.collectionId}/${media.id}'),
-              child: VideoPreview(
-                media: widget.media[index],
-
-                //onTap: onTap,
-              ),
-            ),
-          _ => CLMediaPreview(
-              media: widget.media[index],
-              keepAspectRatio: false,
-            )
-        };
+        return GestureDetector(
+          onTap: () => context.push('/item/${media.collectionId}/${media.id}'),
+          child: CLMediaPreview(
+            media: widget.media[index],
+            keepAspectRatio: false,
+          ),
+        );
       },
     );
   }

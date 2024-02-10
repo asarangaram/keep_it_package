@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../media_preview/cl_media_preview.dart';
 import '../../models/cl_media.dart';
-import '../../views/cl_media_preview.dart';
 import '../providers/video_player_state.dart';
 import 'video_controls.dart';
 
@@ -127,19 +127,21 @@ class VideoViewer extends ConsumerWidget {
             fit: BoxFit.contain,
           ),
           error: (_, __) => Container(),
-          loading: () => VideoPreview(
-            media: media,
-            videoOverlayChild: const CircularProgressIndicator(),
-            /* onTap: onTap,
-              overlayChild: , */
+          loading: () => Stack(
+            children: [
+              CLMediaPreview(
+                media: media,
+              ),
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ],
           ),
         ),
       false => GestureDetector(
           onTap: onTap,
-          child: VideoPreview(
+          child: CLMediaPreview(
             media: media,
- 
-            //onTap: onTap,
           ),
         )
     };

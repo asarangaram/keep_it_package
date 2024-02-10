@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:store/store.dart';
 
-import '../collection_new/collection_view.dart';
-import '../collection_new/empty_state.dart';
-import '../huge_listview/events.dart';
-import '../huge_listview/huge_listview.dart';
+import '../collections_view/collection_view.dart';
+import '../collections_view/empty_state.dart';
+import '../modules/huge_listview/events.dart';
+import '../modules/huge_listview/huge_listview.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
 
@@ -76,7 +76,7 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
   Widget build(BuildContext context) {
     final collections = widget.collections;
     return KeepItMainView(
-      title: 'Label',
+      title: 'All Pictures',
       onPop: context.canPop()
           ? () {
               context.pop();

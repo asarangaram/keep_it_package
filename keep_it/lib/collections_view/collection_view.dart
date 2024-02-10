@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import 'items_gridview.dart';
@@ -63,13 +65,8 @@ class _CollectionViewState extends ConsumerState<CollectionView> {
 
   @override
   Widget build(BuildContext context) {
-    //print('${widget.index} => should build? $_shouldRender');
-    print('${widget.items.collection.label} => ${widget.items.entries.length}');
     if (widget.items.isEmpty) {
-      return Container(
-        decoration: BoxDecoration(border: Border.all()),
-        child: const SizedBox.shrink(),
-      );
+      return const SizedBox.shrink();
     }
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -89,15 +86,37 @@ class _CollectionViewState extends ConsumerState<CollectionView> {
               ],
             ),
           ),
-          if (_shouldRender)
-            ItemsGridView(
-              widget.items,
-            )
-          else
-            PlaceHolderGridView(
-              widget.items.entries.length,
-              4,
+          if (_shouldRender) ...[
+            CLMediaGridView(
+              label: widget.items.collection.label,
+              items: widget.items.entries,
+              rows: 2,
+              additionalItems: [
+                CLButtonIcon.standard(
+                  MdiIcons.fileImagePlus,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .reduceBrightness(0.7),
+                  onTap: () async {
+                    await onPickFiles(
+                      context,
+                      ref,
+                      collectionId: widget.items.collection.id,
+                    );
+                  },
+                ),
+              ],
             ),
+          ] else
+            PlaceHolderGridView(widget.items.entries.length),
+          Align(
+            alignment: Alignment.centerRight,
+            child: CLButtonText.standard(
+              'See All',
+              onTap: () {},
+            ),
+          ),
         ],
       ),
     );

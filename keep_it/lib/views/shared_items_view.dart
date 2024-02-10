@@ -40,7 +40,7 @@ class SharedItemsView extends StatelessWidget {
               ),
             ),
             Flexible(
-              child: CLMediaGridView.byMatrixSize(
+              child: CLMediaCollage.byMatrixSize(
                 media.list,
                 hCount: switch (media.list.length) { _ => 2 },
               ),

@@ -3,14 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../extensions/ext_double.dart';
+import '../media_preview/cl_media_preview.dart';
 import '../models/cl_media.dart';
 import '../utils/media/cl_dimension.dart';
 import 'cl_decorate_square.dart';
 import 'cl_matrix_2d_fixed.dart';
-import 'cl_media_preview.dart';
 
-class CLMediaGridView extends StatelessWidget {
-  const CLMediaGridView._({
+class CLMediaCollage extends StatelessWidget {
+  const CLMediaCollage._({
     required this.mediaList,
     required this.canScroll,
     required this.keepAspectRatio,
@@ -20,7 +20,7 @@ class CLMediaGridView extends StatelessWidget {
     this.childSize,
     super.key,
   });
-  factory CLMediaGridView.byMatrixSize(
+  factory CLMediaCollage.byMatrixSize(
     List<CLMedia> mediaList, {
     required int hCount,
     int? vCount,
@@ -28,7 +28,7 @@ class CLMediaGridView extends StatelessWidget {
     bool? keepAspectRatio,
     CLDimension? maxPageDimension,
   }) {
-    return CLMediaGridView._(
+    return CLMediaCollage._(
       mediaList: mediaList,
       key: key,
       hCount: hCount,
@@ -39,7 +39,7 @@ class CLMediaGridView extends StatelessWidget {
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
     );
   }
-  factory CLMediaGridView.byChildSize(
+  factory CLMediaCollage.byChildSize(
     List<CLMedia> mediaList, {
     required Size childSize,
     Key? key,
@@ -47,7 +47,7 @@ class CLMediaGridView extends StatelessWidget {
     bool canScroll = false,
     CLDimension? maxPageDimension,
   }) {
-    return CLMediaGridView._(
+    return CLMediaCollage._(
       mediaList: mediaList,
       childSize: childSize,
       key: key,

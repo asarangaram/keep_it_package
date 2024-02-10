@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class PlaceHolderGridView extends StatelessWidget {
   const PlaceHolderGridView(
-    this.count,
-    this.columns, {
+    this.count, {
+    this.columns = 4,
     super.key,
   });
 
