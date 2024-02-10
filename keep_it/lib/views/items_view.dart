@@ -1,7 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 class ItemsView extends ConsumerStatefulWidget {
@@ -43,21 +42,10 @@ class ItemsViewState extends ConsumerState<ItemsView> {
       hCount: 3,
       itemBuilder: (context, index) {
         final media = widget.media[index];
-        return switch (media.type) {
-          CLMediaType.video => GestureDetector(
-              onTap: () =>
-                  context.push('/item/${media.collectionId}/${media.id}'),
-              child: VideoPreview(
-                media: widget.media[index],
-
-                //onTap: onTap,
-              ),
-            ),
-          _ => CLMediaPreview(
-              media: widget.media[index],
-              keepAspectRatio: false,
-            )
-        };
+        return CLMediaPreview(
+          media: media,
+          keepAspectRatio: false,
+        );
       },
     );
   }
