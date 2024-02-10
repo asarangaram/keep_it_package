@@ -114,15 +114,15 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
             );
           },
           itemBuilder: (BuildContext context, int index) {
-            const headerWidget = null;
-            //CollectionHeader(collection: collections[index]);
+            final headerWidget =
+                CollectionHeader(collection: collections[index]);
             final footerWidget =
                 CollectionFooter(collection: collections[index]);
             return LoadItems(
               collectionID: collections[index].id!,
               buildOnData: (items) {
                 return Padding(
-                  padding: const EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(8),
                   child: CollectionView(
                     items,
                     index: index,
@@ -131,7 +131,8 @@ class _CollectionsViewState extends ConsumerState<_CollectionsView> {
                         .on<GalleryIndexUpdatedEvent>()
                         .where((event) => event.tag == widget.tagPrefix)
                         .map((event) => event.index),
-                    // footerWidget: footerWidget,
+                    headerWidget: headerWidget,
+                    footerWidget: footerWidget,
                   ),
                 );
               },
