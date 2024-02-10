@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class CLMedia {
     this.previewWidth,
     this.createdDate,
     this.updatedDate,
+    this.originalDate,
   }) {
     switch (type) {
       case CLMediaType.text:
@@ -59,6 +61,9 @@ class CLMedia {
       updatedDate: map['updatedDate'] != null
           ? DateTime.parse(map['updatedDate'] as String)
           : null,
+      originalDate: map['originalDate'] != null
+          ? DateTime.parse(map['originalDate'] as String)
+          : null,
     );
   }
 
@@ -76,6 +81,7 @@ class CLMedia {
   final int? id;
   final int? collectionId;
   final int? previewWidth;
+  final DateTime? originalDate;
   final DateTime? createdDate;
   final DateTime? updatedDate;
 
@@ -85,6 +91,10 @@ class CLMedia {
     String? ref,
     int? id,
     int? collectionId,
+    int? previewWidth,
+    DateTime? originalDate,
+    DateTime? createdDate,
+    DateTime? updatedDate,
   }) {
     return CLMedia(
       path: path ?? this.path,
@@ -92,6 +102,10 @@ class CLMedia {
       ref: ref ?? this.ref,
       id: id ?? this.id,
       collectionId: collectionId ?? this.collectionId,
+      previewWidth: previewWidth ?? this.previewWidth,
+      originalDate: originalDate ?? this.originalDate,
+      createdDate: createdDate ?? this.createdDate,
+      updatedDate: updatedDate ?? this.updatedDate,
     );
   }
 
@@ -103,7 +117,11 @@ class CLMedia {
         other.type == type &&
         other.ref == ref &&
         other.id == id &&
-        other.collectionId == collectionId;
+        other.collectionId == collectionId &&
+        other.previewWidth == previewWidth &&
+        other.originalDate == originalDate &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate;
   }
 
   @override
@@ -112,13 +130,16 @@ class CLMedia {
         type.hashCode ^
         ref.hashCode ^
         id.hashCode ^
-        collectionId.hashCode;
+        collectionId.hashCode ^
+        previewWidth.hashCode ^
+        originalDate.hashCode ^
+        createdDate.hashCode ^
+        updatedDate.hashCode;
   }
 
   @override
   String toString() {
-    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, '
-        'collectionId: $collectionId)';
+    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, collectionId: $collectionId, previewWidth: $previewWidth, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate)';
   }
 
   Map<String, dynamic> toMap({
