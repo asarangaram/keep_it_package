@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import '../collections_view/items_gridview.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keep_it_main_view.dart';
-import 'items_view.dart';
 
 class ItemsPage extends ConsumerWidget {
   const ItemsPage({required this.collectionID, super.key});
@@ -37,22 +37,14 @@ class ItemsPage extends ConsumerWidget {
                 ),
           ],
           pageBuilder: (context, quickMenuScopeKey) {
-            return Column(
-              children: [
-                if (items.collection.description != null) ...[
-                  SizedBox(
-                    height: 32,
-                    child: CLText.standard(items.collection.description!),
-                  ),
-                  const Divider(height: 1),
-                ],
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: ItemsView(media: items.entries),
-                  ),
-                ),
-              ],
+            return Padding(
+              padding: const EdgeInsets.all(8),
+              child: CLMediaGridView(
+                label: items.collection.label,
+                items: items.entries,
+                columns: 2,
+                //rows: 2,
+              ),
             );
           },
         );

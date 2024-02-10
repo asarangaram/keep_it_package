@@ -11,9 +11,9 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
-import 'views/collections_view.dart';
+import 'collections_view/collections_page.dart';
 
-import 'views/item_view.dart';
+import 'views/item_page.dart';
 import 'views/items_page.dart';
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
@@ -48,7 +48,7 @@ class KeepItApp implements AppDescriptor {
   List<CLShellRouteDescriptor> get shellRoutes => [
         CLShellRouteDescriptor(
           name: '',
-          builder: (context, GoRouterState state) => const CollectionsView(),
+          builder: (context, GoRouterState state) => const CollectionsPage(),
           iconData: Icons.home,
           label: 'Collections',
         ),
@@ -73,7 +73,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'item/:collection_id/:item_id',
           builder: (context, GoRouterState state) {
-            return ItemViewByID(
+            return ItemPage(
               collectionId: int.parse(state.pathParameters['collection_id']!),
               id: int.parse(state.pathParameters['item_id']!),
             );
@@ -85,7 +85,7 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
           name: 'collections/:tag_id',
-          builder: (context, GoRouterState state) => CollectionsView(
+          builder: (context, GoRouterState state) => CollectionsPage(
             tagId: int.parse(state.pathParameters['tag_id']!),
           ),
         ),
