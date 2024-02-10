@@ -1,3 +1,5 @@
+// ignore_for_file: comment_references, lines_longer_than_80_chars
+
 import 'dart:math' show max;
 
 import 'package:flutter/material.dart';
@@ -100,9 +102,9 @@ class HugeListViewState<T> extends State<HugeListView<T>> {
   void initState() {
     super.initState();
 
-    widget.isScrollablePositionedList
-        ? listener.itemPositions.addListener(_sendScroll)
-        : null;
+    if (widget.isScrollablePositionedList) {
+      listener.itemPositions.addListener(_sendScroll);
+    }
   }
 
   @override

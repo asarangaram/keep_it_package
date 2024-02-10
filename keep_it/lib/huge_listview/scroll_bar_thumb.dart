@@ -1,16 +1,6 @@
 import 'package:flutter/material.dart';
 
 class ScrollBarThumb extends StatelessWidget {
-  final Color backgroundColor;
-  final Color drawColor;
-  final double height;
-  final String title;
-  final Animation? labelAnimation;
-  final Animation? thumbAnimation;
-  final Function(DragStartDetails details) onDragStart;
-  final Function(DragUpdateDetails details) onDragUpdate;
-  final Function(DragEndDetails details) onDragEnd;
-
   const ScrollBarThumb(
     this.backgroundColor,
     this.drawColor,
@@ -21,8 +11,17 @@ class ScrollBarThumb extends StatelessWidget {
     this.onDragStart,
     this.onDragUpdate,
     this.onDragEnd, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
+  final Color backgroundColor;
+  final Color drawColor;
+  final double height;
+  final String title;
+  final Animation<dynamic>? labelAnimation;
+  final Animation<dynamic>? thumbAnimation;
+  final void Function(DragStartDetails details) onDragStart;
+  final void Function(DragUpdateDetails details) onDragUpdate;
+  final void Function(DragEndDetails details) onDragEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +30,7 @@ class ScrollBarThumb extends StatelessWidget {
       children: [
         IgnorePointer(
           child: FadeTransition(
-            opacity: labelAnimation as Animation<double>,
+            opacity: labelAnimation! as Animation<double>,
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
               decoration: BoxDecoration(
@@ -62,13 +61,13 @@ class ScrollBarThumb extends StatelessWidget {
             child: CustomPaint(
               foregroundPainter: _ArrowCustomPainter(drawColor),
               child: Material(
-                elevation: 4.0,
+                elevation: 4,
                 color: backgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(height),
                   bottomLeft: Radius.circular(height),
-                  topRight: const Radius.circular(4.0),
-                  bottomRight: const Radius.circular(4.0),
+                  topRight: const Radius.circular(4),
+                  bottomRight: const Radius.circular(4),
                 ),
                 child: Container(
                   constraints: BoxConstraints.tight(Size(height * 0.6, height)),
@@ -83,9 +82,8 @@ class ScrollBarThumb extends StatelessWidget {
 }
 
 class _ArrowCustomPainter extends CustomPainter {
-  final Color drawColor;
-
   _ArrowCustomPainter(this.drawColor);
+  final Color drawColor;
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
@@ -101,20 +99,22 @@ class _ArrowCustomPainter extends CustomPainter {
     final baseX = size.width / 2;
     final baseY = size.height / 2;
 
-    canvas.drawPath(
-      trianglePath(Offset(baseX - 2.0, baseY - 2.0), width, height, true),
-      paint,
-    );
-    canvas.drawPath(
-      trianglePath(Offset(baseX - 2.0, baseY + 2.0), width, height, false),
-      paint,
-    );
+    canvas
+      ..drawPath(
+        trianglePath(Offset(baseX - 2.0, baseY - 2.0), width, height, true),
+        paint,
+      )
+      ..drawPath(
+        trianglePath(Offset(baseX - 2.0, baseY + 2.0), width, height, false),
+        paint,
+      );
   }
 
   static Path trianglePath(
     Offset offset,
     double width,
     double height,
+    // ignore: avoid_positional_boolean_parameters
     bool isUp,
   ) {
     return Path()
@@ -129,14 +129,13 @@ class _ArrowCustomPainter extends CustomPainter {
 }
 
 class SlideFadeTransition extends StatelessWidget {
-  final Animation<double>? animation;
-  final Widget child;
-
   const SlideFadeTransition({
-    Key? key,
     required this.animation,
     required this.child,
-  }) : super(key: key);
+    super.key,
+  });
+  final Animation<double>? animation;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -146,8 +145,8 @@ class SlideFadeTransition extends StatelessWidget {
           animation!.value == 0.0 ? const SizedBox.shrink() : child!,
       child: SlideTransition(
         position: Tween(
-          begin: const Offset(0.3, 0.0),
-          end: const Offset(0.0, 0.0),
+          begin: const Offset(0.3, 0),
+          end: Offset.zero,
         ).animate(animation!),
         child: FadeTransition(
           opacity: animation!,

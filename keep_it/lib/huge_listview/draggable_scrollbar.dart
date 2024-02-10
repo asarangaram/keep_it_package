@@ -114,7 +114,7 @@ class DraggableScrollbarState extends State<DraggableScrollbar>
   }
 
   Widget buildThumb() => Padding(
-        padding: widget.padding!,
+        padding: widget.padding ?? EdgeInsets.zero,
         child: Container(
           alignment: Alignment.topRight,
           margin: EdgeInsets.only(top: thumbOffset),

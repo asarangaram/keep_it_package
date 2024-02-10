@@ -10,16 +10,16 @@ import 'package:store/store.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/keepit_grid/keepit_grid.dart';
 
-class CollectionsView extends ConsumerStatefulWidget {
-  const CollectionsView({super.key, this.tagId});
+class CollectionsPage extends ConsumerStatefulWidget {
+  const CollectionsPage({super.key, this.tagId});
   final int? tagId;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CollectionsViewState();
+      _CollectionsPageState();
 }
 
-class _CollectionsViewState extends ConsumerState<CollectionsView> {
+class _CollectionsPageState extends ConsumerState<CollectionsPage> {
   bool isLoading = false;
 
   @override

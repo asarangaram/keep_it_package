@@ -12,7 +12,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'views/collections_page.dart';
-import 'views/collections_view.dart';
 
 import 'views/item_view.dart';
 import 'views/items_page.dart';
