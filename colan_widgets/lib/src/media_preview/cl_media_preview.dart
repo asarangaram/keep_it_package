@@ -29,7 +29,7 @@ class CLMediaPreview extends StatelessWidget {
     return KeepAspectRatio(
       keepAspectRatio: keepAspectRatio,
       child: switch (media.type) {
-        CLMediaType.image => CachedImagePreview(
+        CLMediaType.image => UnCachedImagePreview(
             previewImagePath: media.previewPath!,
             fit: fit,
           ),
@@ -38,7 +38,7 @@ class CLMediaPreview extends StatelessWidget {
             thumbnailPath: media.previewFileName,
             builder: (context, path) {
               return path.when(
-                data: (path) => CachedImagePreview(
+                data: (path) => UnCachedImagePreview(
                   previewImagePath: path,
                   fit: fit,
                   overlayIcon: Icons.play_arrow_sharp,
@@ -70,7 +70,7 @@ class CLMediaPreview extends StatelessWidget {
                     videoPath: media.path,
                     builder: (context, path) {
                       return path.when(
-                        data: (path) => CachedImagePreview(
+                        data: (path) => UnCachedImagePreview(
                           previewImagePath: path,
                           fit: fit,
                           overlayIcon: Icons.play_arrow_sharp,

@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'collection_view/collection_view.dart';
-import 'collections_view/collections_page.dart';
+
 import 'folder_view/collections_view.dart' as folder_view;
 
 import 'views/item_page.dart';

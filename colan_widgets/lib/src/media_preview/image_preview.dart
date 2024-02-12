@@ -1,11 +1,13 @@
+// ignore: unused_import
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../basics/cl_icon.dart';
+import 'missing_preview.dart';
 
-class CachedImagePreview extends StatelessWidget {
-  const CachedImagePreview({
+class UnCachedImagePreview extends StatelessWidget {
+  const UnCachedImagePreview({
     required this.previewImagePath,
     this.overlayIcon,
     this.fit,
@@ -13,7 +15,6 @@ class CachedImagePreview extends StatelessWidget {
     this.refresh = false,
   });
   final String previewImagePath;
-  static Map<String, Widget> cached = {};
 
   final BoxFit? fit;
   final IconData? overlayIcon;
@@ -21,47 +22,39 @@ class CachedImagePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final key = '$previewImagePath ${overlayIcon.hashCode} ${fit.hashCode}';
-    if (!cached.containsKey(key) || refresh) {
-      cached[key] = Stack(
-        children: [
+    return Stack(
+      children: [
+        const Positioned.fill(
+          child: MissingPreview(),
+        ),
+        if (overlayIcon != null)
           Positioned.fill(
-            child: Image.file(
-              File(previewImagePath),
-              fit: fit,
-              filterQuality: FilterQuality.none,
-            ),
-          ),
-          if (overlayIcon != null)
-            Positioned.fill(
-              child: Center(
-                child: FractionallySizedBox(
-                  widthFactor: 0.2,
-                  heightFactor: 0.2,
-                  child: FittedBox(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withAlpha(192), // Color for the circular container
-                      ),
-                      child: CLIcon.veryLarge(
-                        overlayIcon!,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .background
-                            .withAlpha(192),
-                      ),
+            child: Center(
+              child: FractionallySizedBox(
+                widthFactor: 0.2,
+                heightFactor: 0.2,
+                child: FittedBox(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground
+                          .withAlpha(192), // Color for the circular container
+                    ),
+                    child: CLIcon.veryLarge(
+                      overlayIcon!,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .background
+                          .withAlpha(192),
                     ),
                   ),
                 ),
               ),
             ),
-        ],
-      );
-    }
-    return cached[key]!;
+          ),
+      ],
+    );
   }
 }

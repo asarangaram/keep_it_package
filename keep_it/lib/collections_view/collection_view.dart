@@ -31,7 +31,7 @@ class CollectionView extends ConsumerStatefulWidget {
 class _CollectionViewState extends ConsumerState<CollectionView> {
   static const numberOfGroupsToRenderBeforeAndAfter = 8;
   bool _shouldRender = true;
-  bool _isVisible = false;
+  final bool _isVisible = false;
   late StreamSubscription<int> _currentIndexSubscription;
 
   @override
@@ -75,12 +75,12 @@ class _CollectionViewState extends ConsumerState<CollectionView> {
     return VisibilityDetector(
       key: ValueKey('VisibilityDetector ${widget.items.collection.label}'),
       onVisibilityChanged: (info) {
-        if (mounted && !_shouldRender && info.visibleFraction > 0.0) {
+        /* if (mounted && !_shouldRender && info.visibleFraction > 0.0) {
           setState(() {
             _shouldRender = true;
             _isVisible = true;
           });
-        }
+        } */
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

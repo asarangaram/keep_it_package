@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element
+/* // ignore_for_file: unused_element
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -217,3 +217,4 @@ class CollectionHeader extends StatelessWidget {
     );
   }
 }
+ */

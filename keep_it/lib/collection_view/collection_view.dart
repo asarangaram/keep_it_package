@@ -20,8 +20,14 @@ class TimeLinePage extends ConsumerWidget {
   final int collectionID;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      LoadItems(collectionID: collectionID, buildOnData: TimeLineView.new);
+  Widget build(BuildContext context, WidgetRef ref) => LoadItems(
+        collectionID: collectionID,
+        buildOnData: (items) {
+          return TimeLineView(
+            Items(entries: items.images, collection: items.collection),
+          );
+        },
+      );
 }
 
 class TimeLineView extends ConsumerWidget {
