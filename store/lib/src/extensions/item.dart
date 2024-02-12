@@ -1,5 +1,15 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:sqlite3/sqlite3.dart';
+
+extension SQLEXTDATETIME on DateTime? {
+  String? toSQL() {
+    if (this == null) {
+      return null;
+    }
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(this!);
+  }
+}
 
 extension ExtItemInDB on CLMedia {
   static CLMedia getByID(
@@ -42,14 +52,14 @@ extension ExtItemInDB on CLMedia {
     if (id != null) {
       db.execute(
         'UPDATE OR IGNORE Item SET path = ?, '
-        'ref = ?, collection_id = ? type=? WHERE id = ?',
-        [updatedPath, ref, collectionId, type, id],
+        'ref = ?, collection_id = ? type=? originalDate=? WHERE id = ?',
+        [updatedPath, ref, collectionId, type, originalDate.toSQL(), id],
       );
     }
     db.execute(
       'INSERT OR IGNORE INTO Item (path, '
-      'ref, collection_id, type) VALUES (?, ?, ?, ?) ',
-      [updatedPath, ref, collectionId, type.name],
+      'ref, collection_id, type, originalDate) VALUES (?, ?, ?, ?, ?) ',
+      [updatedPath, ref, collectionId, type.name, originalDate.toSQL()],
     );
     return db.lastInsertRowId;
   }

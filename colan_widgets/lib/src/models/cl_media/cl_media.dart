@@ -139,7 +139,10 @@ class CLMedia {
 
   @override
   String toString() {
-    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, collectionId: $collectionId, previewWidth: $previewWidth, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate)';
+    return 'CLMedia(path: $path, type: $type, ref: $ref,'
+        ' id: $id, collectionId: $collectionId, previewWidth: $previewWidth, '
+        'originalDate: $originalDate, createdDate: $createdDate, '
+        'updatedDate: $updatedDate)';
   }
 
   Map<String, dynamic> toMap({
@@ -155,6 +158,9 @@ class CLMedia {
       'id': id,
       'collection_id': collectionId,
       'previewWidth': previewWidth,
+      'createdDate': createdDate,
+      'updatedDate': updatedDate,
+      'originalDate': originalDate,
     };
   }
 

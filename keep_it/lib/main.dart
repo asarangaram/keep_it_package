@@ -88,7 +88,8 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
           name: 'collections/:tag_id',
-          builder: (context, GoRouterState state) => CollectionsPage(
+          builder: (context, GoRouterState state) =>
+              folder_view.CollectionsView(
             tagId: int.parse(state.pathParameters['tag_id']!),
           ),
         ),

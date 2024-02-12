@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:crypto/crypto.dart';
+import 'package:exif/exif.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -45,38 +47,59 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
     });
   }
 
-  Future<void> upsertItem(CLMedia item) async {
+  Future<String> calculateMD5(File file) async {
+    final content = await file.readAsBytes();
+    final digest = md5.convert(content);
+    return digest.toString();
+  }
+
+  Future<void> _upsertItem(CLMedia item) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
     final prefix = await pathPrefix;
+    DateTime? originalDate;
+    try {
+      if (item.type != CLMediaType.image) {
+        throw Exception(' Support Only for Images');
+      }
+      if (item.originalDate == null && item.id == null) {
+        final fileBytes = File(item.path).readAsBytesSync();
+        final data = await readExifFromBytes(fileBytes);
+
+        var dateTimeString = data['EXIF DateTimeOriginal']!.printable;
+        final dateAndTime = dateTimeString.split(' ');
+        dateTimeString =
+            [dateAndTime[0].replaceAll(':', '-'), dateAndTime[1]].join(' ');
+
+        originalDate = DateTime.parse(dateTimeString);
+      }
+      //final md5String = await calculateMD5(File(item.path));
+      // TODO(anands): md5 compare and replace.
+    } catch (e) {
+      originalDate = null;
+    }
 
     (await item.copyFile(
       pathPrefix: prefix,
     ))
+        .copyWith(originalDate: originalDate)
         .dbUpsert(
-      databaseManager!.db,
-      pathPrefix: prefix,
-    );
+          databaseManager!.db,
+          pathPrefix: prefix,
+        );
 
     await loadItems();
   }
 
+  Future<void> upsertItem(CLMedia item) async => _upsertItem(item);
+
   Future<void> upsertItems(List<CLMedia> items) async {
     if (databaseManager == null) {
-      print('DB Not ready, not saved !');
-      return;
-      //throw Exception('DB Manager is not ready');
+      throw Exception('DB Manager is not ready');
     }
-    final prefix = await pathPrefix;
     for (final item in items) {
-      (await item.copyFile(
-        pathPrefix: prefix,
-      ))
-          .dbUpsert(
-        databaseManager!.db,
-        pathPrefix: prefix,
-      );
+      await _upsertItem(item);
     }
     await loadItems();
   }

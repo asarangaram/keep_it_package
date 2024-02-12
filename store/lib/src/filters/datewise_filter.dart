@@ -8,8 +8,8 @@ extension FilterItem on Items {
     final filterredMedia = <String, List<CLMedia>>{};
     for (final entry in entries) {
       final String formattedDate;
-      if (entry.createdDate != null) {
-        formattedDate = DateFormat('dd MMMM yyyy').format(entry.createdDate!);
+      if (entry.originalDate != null) {
+        formattedDate = DateFormat('dd MMMM yyyy').format(entry.originalDate!);
       } else {
         formattedDate = 'No Date';
       }

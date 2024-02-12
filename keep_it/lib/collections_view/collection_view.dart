@@ -91,10 +91,12 @@ class _CollectionViewState extends ConsumerState<CollectionView> {
               label: widget.items.collection.label,
               items: widget.items.entries,
               physics: const NeverScrollableScrollPhysics(),
-              rows: 2,
+              //rows: 2,
             )
           else
-            PlaceHolderGridView(widget.items.entries.length),
+            PlaceHolderGridView(
+              widget.items.entries.length,
+            ),
           if (widget.footerWidget != null) widget.footerWidget!,
         ],
       ),

@@ -34,9 +34,7 @@ class TimeLineView extends ConsumerWidget {
       collection: items.collection,
       itemsMap: items.filterByDate(),
       emptyState: const EmptyState(),
-      //header: const Text('This is header'),
-      //footer: const Text('This is footer'),
-      tagPrefix: 'timeline',
+      tagPrefix: 'timeline ${items.collection.id}',
     );
   }
 }

@@ -11,6 +11,7 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.18.0
+  crypto: ^3.0.3
   exif: ^3.3.0
   flutter:
     sdk: flutter
