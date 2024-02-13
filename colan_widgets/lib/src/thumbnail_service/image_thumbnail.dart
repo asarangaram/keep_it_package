@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:colan_widgets/src/media_preview/broken_image.dart';
 import 'package:colan_widgets/src/thumbnail_service/io_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

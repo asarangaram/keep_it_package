@@ -62,11 +62,6 @@ class ThumbnailServiceDataIn {
       );
 
   @override
-  String toString() {
-    return 'ThumbnailServiceDataIn(uuid: $uuid, inPath: $path, outPath: $thumbnailPath, isVideo: $isVideo, dimension: $dimension)';
-  }
-
-  @override
   bool operator ==(covariant ThumbnailServiceDataIn other) {
     if (identical(this, other)) return true;
 
@@ -84,6 +79,13 @@ class ThumbnailServiceDataIn {
         thumbnailPath.hashCode ^
         isVideo.hashCode ^
         dimension.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'ThumbnailServiceDataIn(uuid: $uuid, path: $path,'
+        ' thumbnailPath: $thumbnailPath, isVideo: $isVideo,'
+        ' dimension: $dimension)';
   }
 }
 
