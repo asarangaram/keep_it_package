@@ -50,11 +50,23 @@ class CLMediaGridView extends ConsumerWidget {
           return Container();
         }
         final media = items[index];
+
         return GestureDetector(
           onTap: () => context.push('/item/${media.collectionId}/${media.id}'),
-          child: CLMediaPreview(
+          child: ImageThumbnail(
             media: media,
-            keepAspectRatio: false,
+            builder: (context, thumbnailFile) {
+              return thumbnailFile.when(
+                data: (file) => ImageView(
+                  file: file,
+                  overlayIcon: (media.type == CLMediaType.video)
+                      ? Icons.play_arrow_sharp
+                      : null,
+                ),
+                error: (_, __) => const BrokenImage(),
+                loading: () => const Center(child: CircularProgressIndicator()),
+              );
+            },
           ),
         );
       },
