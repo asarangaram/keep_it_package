@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:colan_widgets/src/thumbnail_service/io_model.dart';
+import 'package:colan_widgets/src/services/thumbnail_service/model/io_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../models/cl_media.dart';
-import 'thumbnail_services.dart';
+import '../../../models/cl_media.dart';
+import '../provider/thumbnail_services.dart';
 
 class ImageThumbnail extends ConsumerStatefulWidget {
   const ImageThumbnail({

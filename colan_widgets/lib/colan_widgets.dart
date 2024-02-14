@@ -22,7 +22,6 @@ export 'src/media_preview/image_view.dart';
 export 'src/models/cl_media.dart';
 export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
-export 'src/thumbnail_service/image_thumbnail.dart';
 export 'src/utils/media/cl_dimension.dart';
 export 'src/utils/notify.dart';
 export 'src/utils/rand_image_generator.dart';

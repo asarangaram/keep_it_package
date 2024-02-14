@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' as path;
 
 import '../models/cl_media.dart';
-import '../thumbnail_service/image_thumbnail.dart';
+import '../services/thumbnail_service/view/image_thumbnail.dart';
 import 'image_view.dart';
 
 class CLMediaPreview extends StatelessWidget {
@@ -22,8 +21,8 @@ class CLMediaPreview extends StatelessWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
-    //final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
-    const fit = BoxFit.cover;
+    final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
+
     return KeepAspectRatio(
       keepAspectRatio: keepAspectRatio,
       child: switch (media.type) {
@@ -104,7 +103,7 @@ class KeepAspectRatio extends StatelessWidget {
     );
   }
 }
-
+/* 
 class MediaPlaceHolder extends StatelessWidget {
   const MediaPlaceHolder({
     required this.media,
@@ -141,3 +140,4 @@ class MediaPlaceHolder extends StatelessWidget {
     );
   }
 }
+ */

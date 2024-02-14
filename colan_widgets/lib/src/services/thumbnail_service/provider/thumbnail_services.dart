@@ -11,7 +11,7 @@ import 'package:image/image.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-import 'io_model.dart';
+import '../model/io_model.dart';
 
 class Bus {
   static final EventBus instance = EventBus();
