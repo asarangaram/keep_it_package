@@ -11,7 +11,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
-import 'collection_view/collection_view.dart';
+import 'collection_view/timeline_page.dart';
 
 import 'folder_view/collections_view.dart' as folder_view;
 
