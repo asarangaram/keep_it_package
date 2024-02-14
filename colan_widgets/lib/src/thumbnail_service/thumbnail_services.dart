@@ -1,12 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:collection';
-
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:isolate';
 
 import 'package:event_bus/event_bus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart';
-import 'package:iso/iso.dart';
+import 'package:stream_channel/isolate_channel.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import 'io_model.dart';
@@ -15,36 +17,54 @@ class Bus {
   static final EventBus instance = EventBus();
 }
 
+@immutable
+class ISOConfig {
+  final SendPort sPort;
+  final RootIsolateToken rootToken;
+  const ISOConfig({
+    required this.sPort,
+    required this.rootToken,
+  });
+}
+
 class ThumbnailService {
-  ThumbnailService() {
-    iso = Iso(
-      start,
-      onDataOut: (dynamic data) {
-        Bus.instance.fire(ThumbnailServiceDataOut.fromJson(data as String));
-      },
+  ThumbnailService();
+  late final IsolateChannel<String> channel;
+  late final ReceivePort rPort;
+
+  Future<void> startService() async {
+    rPort = ReceivePort();
+    final rootToken = RootIsolateToken.instance!;
+    channel = IsolateChannel<String>.connectReceive(rPort);
+    channel.stream.listen((data) {
+      Bus.instance.fire(ThumbnailServiceDataOut.fromJson(data));
+    });
+    await Isolate.spawn<ISOConfig>(
+      isoMain,
+      ISOConfig(sPort: rPort.sendPort, rootToken: rootToken),
     );
-    iso.run();
+
+    //BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
   }
-  late final Iso iso;
 
-  static Future<void> start(IsoRunner iso) async {
+  static Future<void> isoMain(ISOConfig config) async {
+    BackgroundIsolateBinaryMessenger.ensureInitialized(config.rootToken);
+    final channel = IsolateChannel<String>.connectSend(config.sPort);
+
     final taskQueue = Queue<ThumbnailServiceDataIn>();
-
-    iso.receive();
-    iso.dataIn?.listen((dynamic data) {
-      taskQueue.add(ThumbnailServiceDataIn.fromJson(data as String));
+    channel.stream.listen((data) {
+      taskQueue.add(ThumbnailServiceDataIn.fromJson(data));
     });
 
-    await run(iso, taskQueue);
+    await run(channel, taskQueue);
   }
 
   static Future<void> run(
-    IsoRunner iso,
+    IsolateChannel<String> channel,
     Queue<ThumbnailServiceDataIn> queue,
   ) async {
     while (true) {
       if (queue.isNotEmpty) {
-        print('Pending items: ${queue.length}');
         final dataIn = queue.removeFirst();
         try {
           if (dataIn.isVideo) {
@@ -71,23 +91,19 @@ class ThumbnailService {
           final dataOut = ThumbnailServiceDataOut(
             uuid: dataIn.uuid,
           );
-          iso.send(dataOut.toJson());
+          channel.sink.add(dataOut.toJson());
         } catch (e) {
           final dataOut = ThumbnailServiceDataOut(
             uuid: dataIn.uuid,
             errorMsg: e.toString(),
           );
-          iso.send(dataOut.toJson());
+          channel.sink.add(dataOut.toJson());
         }
       } else {
         // print('Sleeping for 100 msec');
         await Future<dynamic>.delayed(const Duration(milliseconds: 100));
       }
     }
-  }
-
-  Future<dynamic> ensureInitialized() async {
-    return iso.onCanReceive;
   }
 
   Future<bool> createThumbnail({
@@ -97,7 +113,6 @@ class ThumbnailService {
   }) async {
     // print(info);
     Bus.instance.on<ThumbnailServiceDataOut>().listen((event) {
-      print(event);
       if (event.uuid == info.uuid) {
         if (event.errorMsg != null) {
           onError?.call(event.errorMsg!);
@@ -107,7 +122,7 @@ class ThumbnailService {
       }
     });
 
-    iso.send(info.toJson());
+    channel.sink.add(info.toJson());
     return true;
   }
 }
@@ -133,6 +148,6 @@ static Future<String> get pathPrefix async =>
 
 final thumbnailServiceProvider = FutureProvider<ThumbnailService>((ref) async {
   final service = ThumbnailService();
-  await service.ensureInitialized();
+  await service.startService();
   return service;
 });

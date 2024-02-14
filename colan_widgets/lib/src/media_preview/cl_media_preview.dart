@@ -34,9 +34,6 @@ class CLMediaPreview extends StatelessWidget {
         CLMediaType.image || CLMediaType.video => ImageThumbnail(
             media: media,
             builder: (context, thumbnailFile) {
-              if (thumbnailFile.hasValue) {
-                print('Thumbnail Ready for ${thumbnailFile.value?.path}');
-              }
               return thumbnailFile.when(
                 data: (file) => ImageView(
                   file: file,
