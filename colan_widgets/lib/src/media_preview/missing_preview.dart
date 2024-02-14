@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart';
+/* import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class MissingPreview extends StatelessWidget {
@@ -32,3 +32,4 @@ class MissingPreview extends StatelessWidget {
     );
   }
 }
+ */

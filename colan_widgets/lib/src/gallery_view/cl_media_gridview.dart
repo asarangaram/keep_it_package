@@ -68,21 +68,8 @@ class CLMediaGridView extends ConsumerWidget {
                   : () {
                       onTapMedia?.call(media);
                     },
-              child: ImageThumbnail(
+              child: CLMediaPreview(
                 media: media,
-                builder: (context, thumbnailFile) {
-                  return thumbnailFile.when(
-                    data: (file) => ImageView(
-                      file: file,
-                      overlayIcon: (media.type == CLMediaType.video)
-                          ? Icons.play_arrow_sharp
-                          : null,
-                    ),
-                    error: (_, __) => const BrokenImage(),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                  );
-                },
               ),
             );
           },

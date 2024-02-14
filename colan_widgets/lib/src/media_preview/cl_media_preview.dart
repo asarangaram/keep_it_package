@@ -4,14 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 
-import '../basics/cl_icon.dart';
-import '../builders/video_preview_builder.dart';
 import '../models/cl_media.dart';
-import '../models/cl_media/extensions/url_handler.dart';
 import '../thumbnail_service/image_thumbnail.dart';
-import 'image_preview.dart';
 import 'image_view.dart';
-import 'missing_preview.dart';
 
 class CLMediaPreview extends StatelessWidget {
   const CLMediaPreview({
@@ -27,7 +22,8 @@ class CLMediaPreview extends StatelessWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
-    final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
+    //final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
+    const fit = BoxFit.cover;
     return KeepAspectRatio(
       keepAspectRatio: keepAspectRatio,
       child: switch (media.type) {
@@ -47,7 +43,7 @@ class CLMediaPreview extends StatelessWidget {
               );
             },
           ),
-        CLMediaType.url => FutureBuilder(
+        /* CLMediaType.url => FutureBuilder(
             future: URLHandler.getMimeType(media.path),
             builder: (context, snapShot) {
               if (snapShot.connectionState == ConnectionState.waiting) {
@@ -82,8 +78,8 @@ class CLMediaPreview extends StatelessWidget {
                 _ => const MissingPreview()
               };
             },
-          ),
-        _ => const MissingPreview()
+          ), */
+        _ => const BrokenImage()
       },
     );
   }
