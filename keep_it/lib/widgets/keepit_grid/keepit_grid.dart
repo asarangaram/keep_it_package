@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../dialogs.dart';
-import '../keep_it_main_view.dart';
+
 import 'keepit_grid_item.dart';
 
 class KeepItGrid extends ConsumerWidget {

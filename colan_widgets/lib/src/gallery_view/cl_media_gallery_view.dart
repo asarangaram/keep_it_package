@@ -1,40 +1,43 @@
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:store/store.dart';
 
-import '../modules/huge_listview/events.dart';
-import '../modules/huge_listview/huge_listview.dart';
 
-import '../widgets/keep_it_main_view.dart';
-import 'collection_view.dart';
+import 'cl_media_gridview_lazy.dart';
+import 'huge_listview/events.dart';
+import 'huge_listview/huge_listview.dart';
 
-class GroupView extends ConsumerStatefulWidget {
-  const GroupView({
-    required this.itemsMap,
-    required this.collection,
+class GalleryView extends ConsumerStatefulWidget {
+  const GalleryView({
+    required this.galleryMap,
+    required this.label,
     required this.emptyState,
     required this.tagPrefix,
+    required this.onPickFiles,
+    required this.onTapMedia,
     super.key,
     this.header,
     this.footer,
+    this.onPop,
   });
-  final Collection collection;
-  final Map<String, Items> itemsMap;
+  final String label;
+  final Map<String, List<CLMedia>> galleryMap;
 
   final Widget? header;
   final Widget? footer;
   final Widget emptyState;
   final String tagPrefix;
+  final void Function() onPickFiles;
+  final void Function()? onPop;
+  final void Function(CLMedia media)? onTapMedia;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => GroupViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() => GalleryState();
 }
 
-class GroupViewState extends ConsumerState<GroupView> {
+class GalleryState extends ConsumerState<GalleryView> {
   // ignore: unused_field
   late ItemScrollController _itemScroller;
   @override
@@ -50,32 +53,22 @@ class GroupViewState extends ConsumerState<GroupView> {
 
   @override
   Widget build(BuildContext context) {
-    final itemsMap = widget.itemsMap;
-    final dates = itemsMap.keys.toList();
+    final itemsMap = widget.galleryMap;
+    final labels = itemsMap.keys.toList();
     return KeepItMainView(
-      title: widget.collection.label,
-      onPop: context.canPop()
-          ? () {
-              context.pop();
-            }
-          : null,
+      title: widget.label,
+      onPop: widget.onPop,
       actionsBuilder: [
         (context, quickMenuScopeKey) => CLButtonIcon.standard(
               Icons.add,
-              onTap: () async {
-                await onPickFiles(
-                  context,
-                  ref,
-                  collectionId: widget.collection.id,
-                );
-              },
+              onTap: widget.onPickFiles,
             ),
       ],
       pageBuilder: (context, quickMenuScopeKey) {
-        return HugeListView<List<Collection>>(
+        return HugeListView<List<dynamic>>(
           startIndex: 0,
           totalCount: itemsMap.entries.length,
-          labelTextBuilder: (index) => dates[index],
+          labelTextBuilder: (index) => labels[index],
           emptyResultBuilder: (_) {
             final children = <Widget>[];
             if (widget.header != null) {
@@ -95,23 +88,21 @@ class GroupViewState extends ConsumerState<GroupView> {
             );
           },
           itemBuilder: (BuildContext context, int index) {
-            final headerWidget =
-                TimeLineHeader(dates[index], itemsMap[dates[index]]!);
-            // ignore: unused_local_variable
-            final footerWidget =
-                TimeLineFooter(dates[index], itemsMap[dates[index]]!);
             final w = Padding(
               padding: const EdgeInsets.all(8),
-              child: CollectionView(
-                itemsMap[dates[index]]!,
+              child: CLMediaGridViewLazy(
+                mediaList: itemsMap[labels[index]]!,
                 index: index,
-                tagPrefix: widget.tagPrefix,
+                onTapMedia: widget.onTapMedia,
                 currentIndexStream: Bus.instance
                     .on<GalleryIndexUpdatedEvent>()
                     .where((event) => event.tag == widget.tagPrefix)
                     .map((event) => event.index),
-                headerWidget: headerWidget,
-                //footerWidget: footerWidget,
+                header: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child:
+                      CLText.large(labels[index], textAlign: TextAlign.start),
+                ),
               ),
             );
             if (index == 0 && widget.header != null) {
@@ -132,54 +123,6 @@ class GroupViewState extends ConsumerState<GroupView> {
           },
         );
       },
-    );
-  }
-}
-
-class TimeLineFooter extends StatelessWidget {
-  const TimeLineFooter(
-    this.label,
-    this.items, {
-    super.key,
-  });
-
-  final String label;
-  final Items items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class TimeLineHeader extends StatelessWidget {
-  const TimeLineHeader(
-    this.label,
-    this.items, {
-    super.key,
-  });
-
-  final String label;
-  final Items items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: CLText.large(
-              label,
-              textAlign: TextAlign.start,
-            ),
-          ),
-          TimeLineFooter(
-            label,
-            items,
-          ),
-        ],
-      ),
     );
   }
 }

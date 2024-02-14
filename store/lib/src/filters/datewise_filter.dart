@@ -1,12 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:intl/intl.dart';
 
-import '../models/item.dart';
-
-extension FilterItem on Items {
-  Map<String, Items> filterByDate() {
+extension FilterItem on List<CLMedia> {
+  Map<String, List<CLMedia>> filterByDate() {
     final filterredMedia = <String, List<CLMedia>>{};
-    for (final entry in entries) {
+    for (final entry in this) {
       final String formattedDate;
       if (entry.originalDate != null) {
         formattedDate = DateFormat('dd MMMM yyyy').format(entry.originalDate!);
@@ -19,11 +17,7 @@ extension FilterItem on Items {
       }
       filterredMedia[formattedDate]!.add(entry);
     }
-    final result = <String, Items>{};
-    for (final mapEntry in filterredMedia.entries) {
-      result[mapEntry.key] =
-          Items(collection: collection, entries: mapEntry.value);
-    }
-    return result;
+
+    return filterredMedia;
   }
 }
