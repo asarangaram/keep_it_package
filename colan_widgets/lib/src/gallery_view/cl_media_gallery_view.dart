@@ -4,13 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-
 import 'cl_media_gridview_lazy.dart';
 import 'huge_listview/events.dart';
 import 'huge_listview/huge_listview.dart';
 
-class GalleryView extends ConsumerStatefulWidget {
-  const GalleryView({
+class CLGalleryView extends ConsumerStatefulWidget {
+  const CLGalleryView({
     required this.galleryMap,
     required this.label,
     required this.emptyState,
@@ -37,7 +36,7 @@ class GalleryView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => GalleryState();
 }
 
-class GalleryState extends ConsumerState<GalleryView> {
+class GalleryState extends ConsumerState<CLGalleryView> {
   // ignore: unused_field
   late ItemScrollController _itemScroller;
   @override

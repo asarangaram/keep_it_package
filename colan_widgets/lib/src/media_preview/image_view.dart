@@ -21,7 +21,12 @@ class ImageView extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: file.existsSync() ? Image.file(file) : const BrokenImage(),
+          child: file.existsSync()
+              ? Image.file(
+                  file,
+                  fit: fit,
+                )
+              : const BrokenImage(),
         ),
         if (overlayIcon != null)
           Positioned.fill(

@@ -13,7 +13,7 @@ import 'package:window_size/window_size.dart';
 
 import 'collection_view/timeline_page.dart';
 
-import 'folder_view/collections_view.dart' as folder_view;
+import 'views/collections_view.dart' as folder_view;
 
 import 'views/item_page.dart';
 

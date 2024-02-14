@@ -27,7 +27,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsView> {
         tagId: widget.tagId,
         buildOnData: (collections) => Stack(
           children: [
-            KeepItGrid(
+            CLFolderView(
               label: collections.tag?.label ?? 'Collections',
               entities: collections.entries,
               availableSuggestions: const [],

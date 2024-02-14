@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:colan_widgets/src/thumbnail_service/io_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/cl_media.dart';
 import 'thumbnail_services.dart';
@@ -24,44 +27,64 @@ class ImageThumbnail extends ConsumerStatefulWidget {
 }
 
 class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
-  late bool hasThumbnail;
+  bool hasThumbnail = false;
+  String? previewFileName;
   @override
   void initState() {
-    hasThumbnail =
-        !widget.refresh && File(widget.media.previewFileName).existsSync();
+    if (widget.media.id != null) {
+      previewFileName = widget.media.previewFileName;
+      hasThumbnail = !widget.refresh && File(previewFileName!).existsSync();
+    }
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final appCacheDirectoryPathAsync = ref.watch(appCacheDirectoryPathProvider);
     if (hasThumbnail) {
       return widget.builder(
         context,
-        AsyncData(File(widget.media.previewFileName)),
+        AsyncData(File(previewFileName!)),
       );
     }
-    final service = ref.watch(thumbnailServiceProvider);
-    return service.when(
-      data: (service) {
-        return FutureBuilder(
-          future: service.createThumbnail(
-            info: ThumbnailServiceDataIn(
-              uuid: widget.media.id!,
-              path: widget.media.path,
-              thumbnailPath: widget.media.previewFileName,
-              isVideo: widget.media.type == CLMediaType.video,
-              dimension: 128,
-            ),
-            onData: () {
-              if (mounted) {
-                setState(() {
-                  hasThumbnail = true;
-                });
-              }
-            },
-          ),
-          builder: (context, snapshot) =>
-              widget.builder(context, const AsyncLoading()),
+    return appCacheDirectoryPathAsync.when(
+      data: (appCacheDirectoryPath) {
+        final uuidGenerator = ref.watch(uuidProvider);
+        final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, widget.media.path);
+        if (previewFileName == null) {
+          final randomName = '$uuid.jpg';
+          previewFileName = path.join(appCacheDirectoryPath, randomName);
+        }
+
+        final service = ref.watch(thumbnailServiceProvider);
+
+        return service.when(
+          data: (service) {
+            return FutureBuilder(
+              future: service.createThumbnail(
+                info: ThumbnailServiceDataIn(
+                  uuid: uuid,
+                  path: widget.media.path,
+                  thumbnailPath: previewFileName!,
+                  isVideo: widget.media.type == CLMediaType.video,
+                  dimension: 128,
+                ),
+                onData: () {
+                  if (mounted) {
+                    setState(() {
+                      hasThumbnail = true;
+                    });
+                    
+                  }
+                },
+              ),
+              builder: (context, snapshot) =>
+                  widget.builder(context, const AsyncLoading()),
+            );
+          },
+          error: (_, __) => widget.builder(context, AsyncError(_, __)),
+          loading: () => widget.builder(context, const AsyncLoading()),
         );
       },
       error: (_, __) => widget.builder(context, AsyncError(_, __)),
@@ -69,3 +92,12 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
     );
   }
 }
+
+final uuidProvider = StateProvider<Uuid>((ref) {
+  return const Uuid();
+});
+
+final appCacheDirectoryPathProvider = FutureProvider<String>((ref) async {
+  final dir = await getApplicationCacheDirectory();
+  return dir.path;
+});

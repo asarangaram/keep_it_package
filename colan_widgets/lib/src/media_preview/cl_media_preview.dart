@@ -8,7 +8,9 @@ import '../basics/cl_icon.dart';
 import '../builders/video_preview_builder.dart';
 import '../models/cl_media.dart';
 import '../models/cl_media/extensions/url_handler.dart';
+import '../thumbnail_service/image_thumbnail.dart';
 import 'image_preview.dart';
+import 'image_view.dart';
 import 'missing_preview.dart';
 
 class CLMediaPreview extends StatelessWidget {
@@ -29,25 +31,22 @@ class CLMediaPreview extends StatelessWidget {
     return KeepAspectRatio(
       keepAspectRatio: keepAspectRatio,
       child: switch (media.type) {
-        CLMediaType.image => UnCachedImagePreview(
-            previewImagePath: media.previewPath!,
-            fit: fit,
-          ),
-        CLMediaType.video => VideoPreviewBuilder(
-            videoPath: media.path,
-            thumbnailPath: media.previewFileName,
-            builder: (context, path) {
-              return path.when(
-                data: (path) => UnCachedImagePreview(
-                  previewImagePath: path,
+        CLMediaType.image || CLMediaType.video => ImageThumbnail(
+            media: media,
+            builder: (context, thumbnailFile) {
+              if (thumbnailFile.hasValue) {
+                print('Thumbnail Ready for ${thumbnailFile.value?.path}');
+              }
+              return thumbnailFile.when(
+                data: (file) => ImageView(
+                  file: file,
                   fit: fit,
-                  overlayIcon: Icons.play_arrow_sharp,
+                  overlayIcon: (media.type == CLMediaType.video)
+                      ? Icons.play_arrow_sharp
+                      : null,
                 ),
-                error: (_, __) => CLIcon.large(
-                  Icons.broken_image_outlined,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                loading: CircularProgressIndicator.new,
+                error: (_, __) => const BrokenImage(),
+                loading: () => const Center(child: CircularProgressIndicator()),
               );
             },
           ),

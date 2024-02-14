@@ -44,6 +44,7 @@ class ThumbnailService {
   ) async {
     while (true) {
       if (queue.isNotEmpty) {
+        print('Pending items: ${queue.length}');
         final dataIn = queue.removeFirst();
         try {
           if (dataIn.isVideo) {
@@ -78,8 +79,10 @@ class ThumbnailService {
           );
           iso.send(dataOut.toJson());
         }
+      } else {
+        // print('Sleeping for 100 msec');
+        await Future<dynamic>.delayed(const Duration(milliseconds: 100));
       }
-      await Future<dynamic>.delayed(const Duration(milliseconds: 100));
     }
   }
 
@@ -92,7 +95,9 @@ class ThumbnailService {
     required void Function() onData,
     void Function(String errorString)? onError,
   }) async {
+    // print(info);
     Bus.instance.on<ThumbnailServiceDataOut>().listen((event) {
+      print(event);
       if (event.uuid == info.uuid) {
         if (event.errorMsg != null) {
           onError?.call(event.errorMsg!);

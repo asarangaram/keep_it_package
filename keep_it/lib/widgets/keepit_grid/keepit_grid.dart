@@ -11,8 +11,8 @@ import '../dialogs.dart';
 
 import 'keepit_grid_item.dart';
 
-class KeepItGrid extends ConsumerWidget {
-  const KeepItGrid({
+class CLFolderView extends ConsumerWidget {
+  const CLFolderView({
     required this.label,
     required this.entities,
     required this.availableSuggestions,

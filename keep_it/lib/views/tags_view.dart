@@ -16,7 +16,7 @@ class TagsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LoadTags(
-        buildOnData: (tags) => KeepItGrid(
+        buildOnData: (tags) => CLFolderView(
           label: 'Tags',
           entities: tags.entries,
           availableSuggestions: suggestedTags.where((element) {

@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
-import 'empty_state.dart';
 
 class TimeLinePage extends ConsumerWidget {
   const TimeLinePage({required this.collectionID, super.key});
@@ -18,7 +17,7 @@ class TimeLinePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => LoadItems(
         collectionID: collectionID,
         buildOnData: (items) {
-          return GalleryView(
+          return CLGalleryView(
             label: items.collection.label,
             galleryMap: items.entries.filterByDate(),
             emptyState: const EmptyState(),
@@ -40,4 +39,20 @@ class TimeLinePage extends ConsumerWidget {
           );
         },
       );
+}
+
+class EmptyState extends StatelessWidget {
+  const EmptyState({super.key});
+  static Widget? cache;
+  @override
+  Widget build(BuildContext context) {
+    return cache ??= const Center(
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: CLText.large(
+          'Nothing to see here',
+        ),
+      ),
+    );
+  }
 }

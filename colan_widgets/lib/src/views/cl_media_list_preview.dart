@@ -52,7 +52,7 @@ class CLMediaListPreview extends ConsumerWidget {
         mediaWithPreview,
         hCount: d.itemsInRow,
         vCount: d.itemsInColumn,
-        keepAspectRatio: false,
+        keepAspectRatio: true,
       ),
     );
   }

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class ThumbnailServiceDataIn {
-  final int uuid;
+  final String uuid;
   final String path;
   final String thumbnailPath;
   final bool isVideo;
@@ -19,7 +19,7 @@ class ThumbnailServiceDataIn {
   });
 
   ThumbnailServiceDataIn copyWith({
-    int? uuid,
+    String? uuid,
     String? inPath,
     String? outPath,
     bool? isVideo,
@@ -46,7 +46,7 @@ class ThumbnailServiceDataIn {
 
   factory ThumbnailServiceDataIn.fromMap(Map<String, dynamic> map) {
     return ThumbnailServiceDataIn(
-      uuid: map['uuid'] as int,
+      uuid: map['uuid'] as String,
       path: map['inPath'] as String,
       thumbnailPath: map['outPath'] as String,
       isVideo: map['isVideo'] as bool,
@@ -91,7 +91,7 @@ class ThumbnailServiceDataIn {
 
 @immutable
 class ThumbnailServiceDataOut {
-  final int uuid;
+  final String uuid;
 
   final String? errorMsg;
   const ThumbnailServiceDataOut({
@@ -100,7 +100,7 @@ class ThumbnailServiceDataOut {
   });
 
   ThumbnailServiceDataOut copyWith({
-    int? uuid,
+    String? uuid,
     String? errorMsg,
   }) {
     return ThumbnailServiceDataOut(
@@ -118,7 +118,7 @@ class ThumbnailServiceDataOut {
 
   factory ThumbnailServiceDataOut.fromMap(Map<String, dynamic> map) {
     return ThumbnailServiceDataOut(
-      uuid: map['uuid'] as int,
+      uuid: map['uuid'] as String,
       errorMsg: map['errorMsg'] != null ? map['errorMsg'] as String : null,
     );
   }
