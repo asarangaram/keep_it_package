@@ -1,8 +1,10 @@
 import 'dart:math';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+
+import '../extensions/ext_double.dart';
+import '../models/cl_dimension.dart';
 
 class CLCustomGrid extends StatelessWidget {
   const CLCustomGrid({
@@ -127,7 +129,7 @@ class _CLCustomGrid extends StatelessWidget {
           final r = index ~/ layers;
           final l = index - r * layers;
 
-          return Row(
+          final row = Row(
             crossAxisAlignment: l == 0
                 ? CrossAxisAlignment.end
                 : l == (layers - 1)
@@ -139,28 +141,25 @@ class _CLCustomGrid extends StatelessWidget {
                   width: size.width / crossAxisCount,
                   child: ((r * crossAxisCount + c) >= itemCount)
                       ? null
-                      : (controller == null)
-                          ? itemBuilder(context, r * crossAxisCount + c, l)
-                          : AutoScrollTag(
-                              key: ValueKey('$r $c $l'),
-                              controller: controller!,
-                              index: r * layers + l,
-                              highlightColor: Colors.black.withOpacity(0.1),
-                              child: itemBuilder(
-                                context,
-                                r * crossAxisCount + c,
-                                l,
-                              ),
-                            ),
+                      : itemBuilder(context, r * crossAxisCount + c, l),
                 ),
             ],
           );
+          return (controller == null)
+              ? row
+              : AutoScrollTag(
+                  key: ValueKey('$r  $l'),
+                  controller: controller!,
+                  index: r * layers + l,
+                  child: row,
+                );
         },
       ),
     );
   }
 }
 
+//Why this can' be replaced by LayoutBuilder?
 class ComputeSizeAndBuild extends StatefulWidget {
   const ComputeSizeAndBuild({
     required this.builder,
