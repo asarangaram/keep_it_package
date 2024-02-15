@@ -8,7 +8,7 @@ import '../../extensions/ext_double.dart';
 import '../../models/cl_dimension.dart';
 import '../../models/cl_media.dart';
 import '../../services/image_services/cl_media_preview.dart';
-import '../../widgets/cl_decorate_square.dart';
+import '../../basics/cl_decorate_square.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({
@@ -79,17 +79,16 @@ class CLMediaCollage extends StatelessWidget {
       return File(e.path).existsSync();
     }).toList();
     if (mediaWithPreview.isEmpty) {
-      return CLDecorateSquare(
-        borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
-        child: Center(
-          child: whenNopreview,
-        ),
+      return itemBuilder(
+        context,
+        whenNopreview,
       );
     }
     return LayoutBuilder(
       builder: (context, constraints) {
         final int x;
         final int? y;
+        final double aspectRatio;
         if (childSize == null) {
           if (vCount != null) {
             final totalCount = hCount! * vCount!;
@@ -109,6 +108,7 @@ class CLMediaCollage extends StatelessWidget {
             x = hCount!;
             y = vCount;
           }
+          aspectRatio = 1.0;
         } else {
           final pageMatrix = computePageMatrix(
             pageSize: Size(
@@ -119,16 +119,16 @@ class CLMediaCollage extends StatelessWidget {
           );
           x = pageMatrix.itemsInRow;
           y = canScroll ? null : pageMatrix.itemsInColumn;
+          aspectRatio = childSize!.width / childSize!.height;
         }
         return switch (y) {
           null => Matrix2D.scrollable(
               itemCount: mediaWithPreview.length,
               hCount: x,
               itemBuilder: (context, index) {
-                return CLDecorateSquare(
-                  borderRadius:
-                      keepAspectRatio ? BorderRadius.circular(0) : null,
-                  child: CLMediaPreview(
+                return itemBuilder(
+                  context,
+                  CLMediaPreview(
                     media: mediaWithPreview[index],
                     keepAspectRatio: keepAspectRatio,
                   ),
@@ -140,15 +140,11 @@ class CLMediaCollage extends StatelessWidget {
               hCount: x,
               vCount: y,
               itemBuilder: (context, index) {
-                return SizedBox.fromSize(
-                  size: childSize,
-                  child: CLDecorateSquare(
-                    borderRadius:
-                        keepAspectRatio ? BorderRadius.circular(0) : null,
-                    child: CLMediaPreview(
-                      media: mediaWithPreview[index],
-                      keepAspectRatio: keepAspectRatio,
-                    ),
+                return itemBuilder(
+                  context,
+                  CLMediaPreview(
+                    media: mediaWithPreview[index],
+                    keepAspectRatio: keepAspectRatio,
                   ),
                 );
               },
@@ -184,5 +180,18 @@ class CLMediaCollage extends StatelessWidget {
     );
 
     return CLDimension(itemsInRow: itemsInRow, itemsInColumn: itemsInColumn);
+  }
+
+  Widget itemBuilder(BuildContext context, Widget? child) {
+    if (childSize != null) {
+      return SizedBox.fromSize(
+        size: childSize,
+        child: Center(child: child),
+      );
+    }
+    return CLAspectRationDecorated(
+      padding: const EdgeInsets.all(1),
+      child: child,
+    );
   }
 }

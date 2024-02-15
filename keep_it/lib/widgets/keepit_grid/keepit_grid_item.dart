@@ -65,7 +65,10 @@ class CLFolderView extends ConsumerWidget {
                 context,
                 entity,
               ),
-              child: previewGenerator(context, entity),
+              child: CLAspectRationDecorated(
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                child: previewGenerator(context, entity),
+              ),
             ),
           );
         } else if (layer == 1) {

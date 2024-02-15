@@ -34,8 +34,6 @@ PODS:
     - DKImagePickerController/PhotoGallery
     - Flutter
   - Flutter (1.0.0)
-  - image_picker_ios (0.0.1):
-    - Flutter
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
     - libwebp/mux (= 1.3.2)
@@ -76,7 +74,6 @@ PODS:
 DEPENDENCIES:
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
-  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - share_handler_ios (from `.symlinks/plugins/share_handler_ios/ios`)
   - share_handler_ios_models (from `.symlinks/plugins/share_handler_ios/ios/Models`)
@@ -97,8 +94,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
-  image_picker_ios:
-    :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   share_handler_ios:
@@ -117,7 +112,6 @@ SPEC CHECKSUMS:
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 15fd9539e4eb735dc54bae8c0534a7a9511a03de
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec

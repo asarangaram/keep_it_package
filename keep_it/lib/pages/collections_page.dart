@@ -60,7 +60,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
                   throw Exception("Unexpected, id can't be null");
                 }
                 return PreviewGenerator(
-                  collectgionID: entity.id!,
+                  collectionID: entity.id!,
                 );
               },
               onCreateNew: (context, ref) async {
@@ -109,15 +109,15 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
 
 class PreviewGenerator extends StatelessWidget {
   const PreviewGenerator({
-    required this.collectgionID,
+    required this.collectionID,
     super.key,
   });
-  final int collectgionID;
+  final int collectionID;
 
   @override
   Widget build(BuildContext context) {
     return LoadItems(
-      collectionID: collectgionID,
+      collectionID: collectionID,
       buildOnData: (Items items) {
         return CLMediaCollage.byMatrixSize(
           items.entries,
