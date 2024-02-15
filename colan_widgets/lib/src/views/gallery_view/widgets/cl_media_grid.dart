@@ -70,6 +70,7 @@ class CLMediaGrid extends ConsumerWidget {
                     },
               child: CLMediaPreview(
                 media: media,
+                keepAspectRatio: false,
               ),
             );
           },

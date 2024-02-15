@@ -99,9 +99,11 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
       );
     }
     for (final entity in selectedEntities) {
-      await ref
+      final collectionId = await ref
           .read(collectionsProvider(null).notifier)
           .upsertCollection(Collection.fromBase(entity), null);
+      // ignore: unused_local_variable
+      final items = ref.refresh(itemsProvider(collectionId));
     }
     return true;
   }
