@@ -5,8 +5,8 @@ import 'package:store/store.dart';
 
 import '../wrap_standard_quick_menu.dart';
 
-class KeepItGridItem extends ConsumerWidget {
-  const KeepItGridItem({
+class CLFolderView extends ConsumerWidget {
+  const CLFolderView({
     required this.quickMenuScopeKey,
     required this.entities,
     required this.previewGenerator,

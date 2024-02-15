@@ -9,14 +9,14 @@ import 'package:store/store.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/from_store/from_store.dart';
 import '../widgets/from_store/items_in_tag.dart';
-import '../widgets/keepit_grid/keepit_grid.dart';
+import '../widgets/keepit_grid/cl_folder_view.dart';
 
 class TagsView extends ConsumerWidget {
   const TagsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LoadTags(
-        buildOnData: (tags) => CLFolderView(
+        buildOnData: (tags) => FolderView(
           label: 'Tags',
           entities: tags.entries,
           availableSuggestions: suggestedTags.where((element) {
@@ -45,8 +45,7 @@ class TagsView extends ConsumerWidget {
               buildOnData: (clMediaList) {
                 return CLMediaListPreview(
                   mediaList: clMediaList ?? [],
-                  mediaCountInPreview:
-                      const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+                  limit: const CLDimension(itemsInRow: 2, itemsInColumn: 2),
                   whenNopreview: CLText.veryLarge(tag.label.characters.first),
                 );
               },

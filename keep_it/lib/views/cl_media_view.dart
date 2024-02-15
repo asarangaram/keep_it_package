@@ -11,11 +11,8 @@ class CLMediaView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (media.type.isFile && !File(media.path).existsSync()) {
-      throw Exception('File not found ${media.path}');
+      return const BrokenImage();
     }
-    /*  WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(videoPlayerStateProvider.notifier).playVideo(media.path);
-    }); */
 
     return GestureDetector(
       onVerticalDragEnd: (details) {
@@ -60,7 +57,7 @@ class CLMediaView extends ConsumerWidget {
                 child: switch (media.type) {
                   CLMediaType.image =>
                     Center(child: Image.file(File(media.path))),
-                  CLMediaType.video => VideoViewer(media: media),
+                  CLMediaType.video => VideoPlayer(media: media),
                   _ => throw UnimplementedError('Not yet implemented')
                 },
               ),

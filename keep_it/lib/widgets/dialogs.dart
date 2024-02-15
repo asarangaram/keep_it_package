@@ -36,45 +36,41 @@ class KeepItDialogs {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return CLBackground(
-          child: CLBackground(
-            child: CLDialogWrapper(
-              backgroundColor: Colors.transparent,
-              onCancel: () {
-                Navigator.of(context).pop();
-              },
-              child: CLSelectionWrapper(
-                title: 'Suggestions',
-                selectableList: availableSuggestions.entries,
-                multiSelection: true,
-                onSelectionDone: (selectedIndices) {
-                  onSelectionDone(
-                    selectedIndices
-                        .map((e) => availableSuggestions.entries[e])
-                        .toList(),
-                  );
-
-                  Navigator.of(context).pop();
-                },
-                labelNoneSelected: 'Select from Suggestions',
-                labelSelected: 'Create Selected',
-                listBuilder: ({
-                  required onSelection,
-                  required selectableList,
-                  required selectionMask,
-                }) {
-                  if (selectableList.isEmpty) {
-                    throw Exception("TagList can't be empty!");
-                  }
-                  return TagsList(
-                    tags: Tags(selectableList),
-                    selectionMask: selectionMask,
-                    onSelection: onSelection,
-                    showCount: false,
-                  );
-                },
-              ),
-            ),
+        return CLDialogWrapper(
+          backgroundColor: Colors.transparent,
+          onCancel: () {
+            Navigator.of(context).pop();
+          },
+          child: CLSelectionWrapper(
+            title: 'Suggestions',
+            selectableList: availableSuggestions.entries,
+            multiSelection: true,
+            onSelectionDone: (selectedIndices) {
+              onSelectionDone(
+                selectedIndices
+                    .map((e) => availableSuggestions.entries[e])
+                    .toList(),
+              );
+                
+              Navigator.of(context).pop();
+            },
+            labelNoneSelected: 'Select from Suggestions',
+            labelSelected: 'Create Selected',
+            listBuilder: ({
+              required onSelection,
+              required selectableList,
+              required selectionMask,
+            }) {
+              if (selectableList.isEmpty) {
+                throw Exception("TagList can't be empty!");
+              }
+              return TagsList(
+                tags: Tags(selectableList),
+                selectionMask: selectionMask,
+                onSelection: onSelection,
+                showCount: false,
+              );
+            },
           ),
         );
       },

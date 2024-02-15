@@ -55,12 +55,8 @@ class _RaLRouterState extends ConsumerState<AppView>
         name: e.name,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: AppTheme(
-            child: CLFullscreenBox(
-              child: CLBackground(
-                child: e.builder(context, state),
-              ),
-            ),
+          child: StandalonePage(
+            child: e.builder(context, state),
           ),
           transitionsBuilder: app.transitionBuilder,
         ),
@@ -73,12 +69,8 @@ class _RaLRouterState extends ConsumerState<AppView>
         parentNavigatorKey: parentNavigatorKey,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: AppTheme(
-            child: CLFullscreenBox(
-              child: CLBackground(
-                child: e.builder(context, state),
-              ),
-            ),
+          child: StandalonePage(
+            child: e.builder(context, state),
           ),
           transitionsBuilder: app.transitionBuilder,
         ),
@@ -115,11 +107,9 @@ class _RaLRouterState extends ConsumerState<AppView>
             StatefulNavigationShell navigationShell,
           ) {
             return MaterialPage(
-              child: AppTheme(
-                child: BottomNavigationPage(
-                  incomingMediaViewBuilder: app.incomingMediaViewBuilder,
-                  child: navigationShell,
-                ),
+              child: BottomNavigationPage(
+                incomingMediaViewBuilder: app.incomingMediaViewBuilder,
+                child: navigationShell,
               ),
             );
           },

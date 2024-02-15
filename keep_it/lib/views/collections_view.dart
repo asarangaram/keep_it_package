@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/from_store.dart';
-import '../widgets/keepit_grid/keepit_grid.dart';
+import '../widgets/keepit_grid/cl_folder_view.dart';
 
 class CollectionsView extends ConsumerStatefulWidget {
   const CollectionsView({super.key, this.tagId});
@@ -27,7 +27,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsView> {
         tagId: widget.tagId,
         buildOnData: (collections) => Stack(
           children: [
-            CLFolderView(
+            FolderView(
               label: collections.tag?.label ?? 'Collections',
               entities: collections.entries,
               availableSuggestions: const [],
@@ -120,8 +120,7 @@ class PreviewGenerator extends StatelessWidget {
       buildOnData: (Items items) {
         return CLMediaListPreview(
           mediaList: items.entries,
-          mediaCountInPreview:
-              const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+          limit: const CLDimension(itemsInRow: 2, itemsInColumn: 2),
           whenNopreview: CLText.veryLarge(
             items.collection.label.characters.first,
           ),

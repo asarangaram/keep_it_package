@@ -1,8 +1,12 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../basics/cl_button.dart';
+import '../basics/cl_text.dart';
+
+import '../views/appearance/cl_fullscreen_box.dart';
 import 'cl_buttons_grid_demo.dart';
+import 'cl_fullscreen_box_enhanced.dart';
 
 Map<String, Widget Function(BuildContext context)> demos = {
   'EmptyViewtag': (BuildContext context) {
@@ -40,7 +44,7 @@ class DemoMainState extends ConsumerState<DemoMain> {
         child: demos[demoID]!.call(context),
       ),
     );
-    return CLFullscreenBox.navBar(
+    return CLFullscreenBoxEnhanced(
       key: ValueKey('$demoID $currentIndex'),
       useSafeArea: true,
       currentIndex: currentIndex,

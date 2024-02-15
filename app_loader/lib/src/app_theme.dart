@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,6 +16,17 @@ class AppTheme extends ConsumerWidget {
                   .bodyLarge
                   ?.copyWith(fontWeight: FontWeight.w600),
             ),
+        inputDecorationTheme: InputDecorationTheme(
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          disabledBorder: CLTextField.buildOutlineInputBorder(context),
+          enabledBorder: CLTextField.buildOutlineInputBorder(context),
+          focusedBorder: CLTextField.buildOutlineInputBorder(context, width: 2),
+          errorBorder: CLTextField.buildOutlineInputBorder(context),
+          focusedErrorBorder:
+              CLTextField.buildOutlineInputBorder(context, width: 2),
+          errorStyle: CLTextField.buildTextStyle(context),
+          floatingLabelStyle: CLTextField.buildTextStyle(context),
+        ),
       ),
       child: child,
     );
