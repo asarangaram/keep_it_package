@@ -16,18 +16,14 @@ dependencies:
     path: ../colan_widgets
   collection: ^1.17.2
   cupertino_icons: ^1.0.2
-  event_bus: ^2.0.0
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.9
-  flutter_slidable: ^3.0.1
+  flutter_slidable: ^3.0.1 # Used in ListView
   go_router: ^12.1.1
-  image_picker: ^1.0.7
-  infinite_carousel: ^1.0.3
   logger: ^2.0.2+1
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
-  palette_generator: ^0.3.3+3
   path: ^1.8.3
   path_provider: ^2.1.1
   scroll_to_index: ^3.0.1
@@ -38,9 +34,6 @@ dependencies:
   store: 
     path: ../store
  
-  video_player: ^2.8.2
-  video_thumbnail: ^0.5.3
-  visibility_detector: ^0.4.0+2
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding
