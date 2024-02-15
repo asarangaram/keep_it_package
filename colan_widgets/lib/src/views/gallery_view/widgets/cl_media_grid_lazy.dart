@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'cl_media_gridview.dart';
-import 'placeholder_gridview.dart';
+import 'cl_media_grid.dart';
+import 'placeholder_grid.dart';
 
-class CLMediaGridViewLazy extends ConsumerStatefulWidget {
-  const CLMediaGridViewLazy({
+class CLMediaGridLazy extends ConsumerStatefulWidget {
+  const CLMediaGridLazy({
     required this.mediaList,
     required this.currentIndexStream,
     required this.index,
@@ -41,7 +41,7 @@ class CLMediaGridViewLazy extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _CollectionViewState();
 }
 
-class _CollectionViewState extends ConsumerState<CLMediaGridViewLazy> {
+class _CollectionViewState extends ConsumerState<CLMediaGridLazy> {
   static const numberOfGroupsToRenderBeforeAndAfter = 8;
   bool _shouldRender = true;
   final bool _isVisible = false;
@@ -83,7 +83,7 @@ class _CollectionViewState extends ConsumerState<CLMediaGridViewLazy> {
   @override
   Widget build(BuildContext context) {
     if (_shouldRender) {
-      return CLMediaGridView(
+      return CLMediaGrid(
         mediaList: widget.mediaList,
         additionalItems: widget.additionalItems,
         columns: widget.columns,
@@ -104,7 +104,7 @@ class _CollectionViewState extends ConsumerState<CLMediaGridViewLazy> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.header != null) widget.header!,
-        PlaceHolderGridView(widget.mediaList.length),
+        PlaceHolderGrid(widget.mediaList.length),
         if (widget.footer != null) widget.footer!,
       ],
     );

@@ -4,8 +4,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CLMediaGridView extends ConsumerWidget {
-  const CLMediaGridView({
+class CLMediaGrid extends ConsumerWidget {
+  const CLMediaGrid({
     required this.mediaList,
     required this.onTapMedia,
     this.additionalItems,

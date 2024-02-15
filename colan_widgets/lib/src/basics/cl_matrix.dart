@@ -1,10 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'compute_size_and_build.dart';
-
-class Matrix2DNew extends StatelessWidget {
-  const Matrix2DNew({
+class Matrix2D extends StatelessWidget {
+  const Matrix2D({
     required this.itemBuilder,
     required this.hCount,
     required int vCount,
@@ -12,7 +9,7 @@ class Matrix2DNew extends StatelessWidget {
     this.strictMartrix = true,
     super.key,
   }) : vCount_ = vCount;
-  const Matrix2DNew.scrollable({
+  const Matrix2D.scrollable({
     required this.itemBuilder,
     required this.hCount,
     required this.itemCount,
@@ -56,7 +53,7 @@ class Matrix2DNew extends StatelessWidget {
                             ? strictMartrix
                                 ? Container()
                                 : throw Exception('Unexpected')
-                            : itembuilderWrapper(context, r * hCount + c),
+                            : itemBuilder(context, r * hCount + c),
                       ),
                   ],
                 ),
@@ -87,7 +84,7 @@ class Matrix2DNew extends StatelessWidget {
                           ? strictMartrix
                               ? Container()
                               : throw Exception('Unexpected')
-                          : itembuilderWrapper(context, r * hCount + c),
+                          : itemBuilder(context, r * hCount + c),
                     ),
                 ],
               ),
@@ -96,9 +93,52 @@ class Matrix2DNew extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget itembuilderWrapper(BuildContext context, int index) {
-    index.toString().printString(prefix: 'index = ');
-    return itemBuilder(context, index);
+class ComputeSizeAndBuild extends StatefulWidget {
+  const ComputeSizeAndBuild({
+    required this.builder,
+    this.builderWhenNoSize,
+    super.key,
+  });
+
+  final Widget Function(BuildContext context, Size size) builder;
+  final Widget Function(BuildContext context)? builderWhenNoSize;
+
+  @override
+  State<StatefulWidget> createState() => ComputeSizeAndBuildState();
+}
+
+class ComputeSizeAndBuildState extends State<ComputeSizeAndBuild> {
+  final GlobalKey _containerKey = GlobalKey();
+  Size? computedSize;
+
+  @override
+  void didChangeDependencies() {
+    WidgetsBinding.instance.addPostFrameCallback(_computeSize);
+    super.didChangeDependencies();
+  }
+
+  void _computeSize(_) {
+    final renderBox =
+        _containerKey.currentContext?.findRenderObject()! as RenderBox?;
+    if (renderBox != null) {
+      final widgetSize = renderBox.size;
+      if (computedSize != widgetSize) {
+        setState(() {
+          computedSize = widgetSize;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: _containerKey,
+      child: (computedSize == null)
+          ? widget.builderWhenNoSize?.call(context)
+          : widget.builder(context, computedSize!),
+    );
   }
 }

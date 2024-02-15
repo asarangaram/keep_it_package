@@ -7,7 +7,7 @@ import '../../models/cl_dimension.dart';
 import '../../models/cl_media.dart';
 import '../../services/image_services/cl_media_preview.dart';
 import '../../widgets/cl_decorate_square.dart';
-import 'cl_matrix_2d_fixed.dart';
+import '../../basics/cl_matrix.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({
@@ -87,12 +87,12 @@ class CLMediaCollage extends StatelessWidget {
           y = canScroll ? null : pageMatrix.itemsInColumn;
         }
         return switch (y) {
-          null => Matrix2DNew.scrollable(
+          null => Matrix2D.scrollable(
               itemCount: mediaList.length,
               hCount: x,
               itemBuilder: itemBuilder,
             ),
-          _ => Matrix2DNew(
+          _ => Matrix2D(
               itemCount: mediaList.length,
               hCount: x,
               vCount: y,

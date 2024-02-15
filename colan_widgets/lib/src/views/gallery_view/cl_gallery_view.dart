@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import 'cl_media_gridview_lazy.dart';
-import 'huge_listview/events.dart';
-import 'huge_listview/huge_listview.dart';
+import 'huge_list_view/events.dart';
+import 'huge_list_view/huge_list.dart';
+import 'widgets/cl_media_grid_lazy.dart';
 
 class CLGalleryView extends ConsumerStatefulWidget {
   const CLGalleryView({
@@ -89,7 +89,7 @@ class GalleryState extends ConsumerState<CLGalleryView> {
           itemBuilder: (BuildContext context, int index) {
             final w = Padding(
               padding: const EdgeInsets.all(8),
-              child: CLMediaGridViewLazy(
+              child: CLMediaGridLazy(
                 mediaList: itemsMap[labels[index]]!,
                 index: index,
                 onTapMedia: widget.onTapMedia,

@@ -1,9 +1,9 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../widgets/from_store/from_store.dart';
-import 'cl_media_view.dart';
+import '../widgets/from_store/load_items.dart';
 
 class ItemPage extends ConsumerWidget {
   const ItemPage({required this.id, required this.collectionId, super.key});

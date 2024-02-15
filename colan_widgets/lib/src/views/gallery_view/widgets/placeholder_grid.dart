@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class PlaceHolderGridView extends StatelessWidget {
-  const PlaceHolderGridView(
+class PlaceHolderGrid extends StatelessWidget {
+  const PlaceHolderGrid(
     this.count, {
     this.columns = 4,
     super.key,
@@ -13,7 +13,7 @@ class PlaceHolderGridView extends StatelessWidget {
   final int columns;
 
   static Widget? _placeHolderCache;
-  static final _gridViewCache = <String, GridView>{};
+  static final _placeHolderGrid = <String, Widget>{};
   static const crossAxisSpacing = 2.0; // as per your code
   static const mainAxisSpacing = 2.0; // as per your code
 
@@ -24,13 +24,13 @@ class PlaceHolderGridView extends StatelessWidget {
     final int limitCount = min(count, 8);
 
     final key = '$limitCount:$columns';
-    if (!_gridViewCache.containsKey(key)) {
-      _gridViewCache[key] = GridView.builder(
+    if (!_placeHolderGrid.containsKey(key)) {
+      _placeHolderGrid[key] = GridView.builder(
         padding: const EdgeInsets.only(top: 2),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return PlaceHolderGridView._placeHolderCache ??=
+          return PlaceHolderGrid._placeHolderCache ??=
               Container(color: faintColor);
         },
         itemCount: limitCount,
@@ -41,6 +41,6 @@ class PlaceHolderGridView extends StatelessWidget {
         ),
       );
     }
-    return _gridViewCache[key]!;
+    return _placeHolderGrid[key]!;
   }
 }

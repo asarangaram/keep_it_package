@@ -27,9 +27,8 @@ export 'src/services/image_services/image_view.dart';
 export 'src/services/notification/notification_service.dart';
 export 'src/services/notification/provider/notify.dart';
 export 'src/services/selection/cl_selection_wrapper.dart';
-export 'src/services/video_services/video_player.dart' show VideoPlayer;
+
 export 'src/utils/rand_image_generator.dart';
-export 'src/views/appearance/cl_dialog_wrapper.dart';
 export 'src/views/appearance/cl_error_view.dart';
 export 'src/views/appearance/cl_fullscreen_box.dart';
 export 'src/views/appearance/cl_loading_view.dart';
@@ -37,5 +36,6 @@ export 'src/views/appearance/keep_it_main_view.dart';
 export 'src/views/collage_view/cl_media_collage.dart';
 export 'src/views/collage_view/cl_media_list_preview.dart';
 export 'src/views/folder_view/cl_custom_grid.dart';
-export 'src/views/gallery_view/cl_media_gallery_view.dart';
+export 'src/views/gallery_view/cl_gallery_view.dart';
+export 'src/views/media_view/cl_media_view.dart';
 export 'src/views/quick_menu/cl_quickmenu.dart';

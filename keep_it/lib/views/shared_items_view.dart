@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/from_store/from_store.dart';
+import '../widgets/from_store/load_tags.dart';
 import '../widgets/keep_media_wizard/keep_media_wizard.dart';
 
 class SharedItemsView extends StatelessWidget {

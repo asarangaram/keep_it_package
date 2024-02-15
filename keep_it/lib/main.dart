@@ -6,17 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
-import 'collection_view/timeline_page.dart';
-
+import 'pages/item_page.dart';
+import 'pages/timeline_page.dart';
 import 'views/collections_view.dart' as folder_view;
-
-import 'views/item_page.dart';
-
 import 'views/shared_items_view.dart';
 import 'views/tags_view.dart';
 

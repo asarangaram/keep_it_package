@@ -7,8 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/dialogs.dart';
-import '../widgets/from_store/from_store.dart';
-import '../widgets/from_store/items_in_tag.dart';
+
+import '../widgets/from_store/load_items_in_tag.dart';
+import '../widgets/from_store/load_tags.dart';
 import '../widgets/keepit_grid/cl_folder_view.dart';
 
 class TagsView extends ConsumerWidget {

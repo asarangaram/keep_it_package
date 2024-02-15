@@ -51,7 +51,7 @@ class KeepItDialogs {
                     .map((e) => availableSuggestions.entries[e])
                     .toList(),
               );
-                
+
               Navigator.of(context).pop();
             },
             labelNoneSelected: 'Select from Suggestions',
@@ -85,14 +85,3 @@ class KeepItDialogs {
     return onPickFiles(context, ref, collectionId: collection.id);
   }
 }
-/*
-_selectTags(
-            context,
-            availableSuggestions,
-            onSelectionDone: onSelectionDone,
-            labelSelected: 'Create Selected',
-            labelNoneSelected: 'Select from Suggestions',
-            title: 'Suggestions',
-            showCount: false,
-          ),
-*/

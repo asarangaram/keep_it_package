@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../from_store/from_store.dart';
+
+import '../from_store/load_collections.dart';
 import 'pick_collection.dart';
 
 class KeepMediaWizard extends ConsumerWidget {
