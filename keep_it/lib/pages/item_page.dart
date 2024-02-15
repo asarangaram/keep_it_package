@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
 import '../widgets/from_store/load_items.dart';
@@ -22,9 +23,17 @@ class ItemPage extends ConsumerWidget {
         final index = items.entries.indexOf(media);
         return Stack(
           children: [
-            ItemView(
-              items: items,
-              startIndex: index,
+            LayoutBuilder(
+              builder: (context, boxConstraints) {
+                return SizedBox(
+                  width: boxConstraints.maxWidth,
+                  height: boxConstraints.maxHeight,
+                  child: ItemView(
+                    items: items,
+                    startIndex: index,
+                  ),
+                );
+              },
             ),
             Positioned(
               top: 8,
@@ -82,25 +91,46 @@ class _ItemViewState extends State<ItemView> {
         });
       },
       itemBuilder: (context, index) {
-        print('index is $index');
         final media = widget.items.entries[index];
+        final formattedDate = media.originalDate == null
+            ? 'No date'
+            : DateFormat('dd MMMM yyyy').format(media.originalDate!);
+
         return Hero(
           tag: '/item/${media.collectionId}/${media.id}',
-          child: SizedBox(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: switch (media.type) {
-                  CLMediaType.image => ImageViewerBasic(file: File(media.path)),
-                  CLMediaType.video => VideoPlayer(
-                      media: media,
-                      isSelected: currIndex == index,
+          child: switch (media.type) {
+            CLMediaType.image => ImageViewerBasic(file: File(media.path)),
+            CLMediaType.video => Center(
+                child: VideoPlayer(
+                  media: media,
+                  isSelected: currIndex == index,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withAlpha(
+                              192,
+                            ), // Color for the circular container
+                      ),
+                      child: CLText.large(
+                        formattedDate,
+                        textAlign: TextAlign.start,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .background
+                            .withAlpha(192),
+                      ),
                     ),
-                  _ => throw UnimplementedError('Not yet implemented')
-                },
+                  ],
+                ),
               ),
-            ),
-          ),
+            _ => throw UnimplementedError('Not yet implemented')
+          },
         );
       },
     );

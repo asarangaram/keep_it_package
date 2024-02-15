@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../image_services/cl_media_preview.dart';
+import '../../../basics/cl_text.dart';
 import 'video_controls.dart';
 
 class VideoLayer extends ConsumerStatefulWidget {
@@ -14,12 +14,14 @@ class VideoLayer extends ConsumerStatefulWidget {
     this.isPlayingFullScreen = false,
     this.onTapFullScreen,
     super.key,
+    this.children,
   });
   final VideoPlayerController controller;
 
   final void Function()? onTapFullScreen;
   final bool isPlayingFullScreen;
   final BoxFit? fit;
+  final List<Widget>? children;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => VideoLayerState();
@@ -90,10 +92,16 @@ class VideoLayerState extends ConsumerState<VideoLayer> {
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
                 child: (isHovering || !controller.value.isPlaying)
-                    ? VideoControls(
-                        controller: controller,
-                        onTapFullScreen: widget.onTapFullScreen,
-                        isPlayingFullScreen: widget.isPlayingFullScreen,
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (widget.children != null) ...widget.children!,
+                          VideoControls(
+                            controller: controller,
+                            onTapFullScreen: widget.onTapFullScreen,
+                            isPlayingFullScreen: widget.isPlayingFullScreen,
+                          ),
+                        ],
                       )
                     : Container(),
               ),

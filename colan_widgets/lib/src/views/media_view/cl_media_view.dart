@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../services/image_services/cl_image_viewer.dart';
+import '../../models/cl_media.dart';
+import '../../services/image_services/image_view.dart';
 import '../../services/video_services/video_player.dart';
 
 class CLMediaView extends ConsumerWidget {

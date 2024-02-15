@@ -12,10 +12,12 @@ class VideoPlayer extends ConsumerWidget {
     super.key,
     this.onSelect,
     this.isSelected = false,
+    this.children,
   });
   final CLMedia media;
   final void Function()? onSelect;
   final bool isSelected;
+  final List<Widget>? children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +34,8 @@ class VideoPlayer extends ConsumerWidget {
     final state = ref.watch(videoPlayerStateProvider);
     return switch (state.path == media.path) {
       true => state.controllerAsync.when(
-          data: (controller) => VideoLayer(controller: controller),
+          data: (controller) =>
+              VideoLayer(controller: controller, children: children),
           error: (_, __) => Container(),
           loading: () => Stack(
             children: [
