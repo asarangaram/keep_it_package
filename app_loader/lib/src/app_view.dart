@@ -69,27 +69,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: StandalonePage(
-            child: GestureDetector(
-              onVerticalDragEnd: (details) {
-                if (details.primaryVelocity == null) return;
-                // pop on Swipe
-                if (details.primaryVelocity! > 0) {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
-                }
-              },
-              onHorizontalDragEnd: (details) {
-                if (details.primaryVelocity == null) return;
-                // pop on Swipe
-                if (details.primaryVelocity! > 0) {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
-                }
-              },
-              child: e.builder(context, state),
-            ),
+            child: e.builder(context, state),
           ),
           transitionsBuilder: app.transitionBuilder,
         ),

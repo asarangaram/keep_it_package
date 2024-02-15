@@ -1,10 +1,37 @@
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../basics/cl_scrollable.dart';
+import '../../views/appearance/cl_error_view.dart';
+import '../../views/appearance/cl_loading_view.dart';
 
+class ImageViewer extends ConsumerWidget {
+  const ImageViewer({required this.path, super.key});
+  final String path;
 
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final image = ref.watch(imageProvider(path));
+    return image.when(
+      data: (image) {
+        return CLImageViewer(image: image);
+      },
+      error: (_, __) => CLErrorView(errorMessage: _.toString()),
+      loading: CLLoadingView.new,
+    );
+  }
+}
+
+final imageProvider =
+    FutureProvider.family<ui.Image, String>((ref, path) async {
+  final bytes = await File(path).readAsBytes();
+  final codec = await ui.instantiateImageCodec(bytes);
+  final frameInfo = await codec.getNextFrame();
+  return frameInfo.image;
+});
 
 /// If OnTap is provided, onZoom is assigned to onDoubleTap
 class CLImageViewer extends StatefulWidget {

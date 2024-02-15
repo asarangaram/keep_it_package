@@ -17,12 +17,31 @@ class ItemPage extends ConsumerWidget {
       collectionID: collectionId,
       buildOnData: (Items items) {
         final media = items.entries.where((e) => e.id == id).first;
-        return CLDialogWrapper(
-          isDialog: false,
-          onCancel: context.canPop() ? context.pop : null,
-          child: CLMediaView(
-            media: media,
-          ),
+        return Stack(
+          children: [
+            CLMediaView(
+              media: media,
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withAlpha(192), // Color for the circular container
+                ),
+                child: CLButtonIcon.small(
+                  Icons.close,
+                  color:
+                      Theme.of(context).colorScheme.background.withAlpha(192),
+                  onTap: context.canPop() ? context.pop : null,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
