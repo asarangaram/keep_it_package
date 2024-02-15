@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// If Scrolling is enabled,
+//  Nothing but a grid view, but some tweaks
+//  Avoid using it, instead use GridView
 class Matrix2D extends StatelessWidget {
   const Matrix2D({
     required this.itemBuilder,

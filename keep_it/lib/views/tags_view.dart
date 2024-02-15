@@ -44,9 +44,10 @@ class TagsView extends ConsumerWidget {
               id: tag.id!,
               limit: 4,
               buildOnData: (clMediaList) {
-                return CLMediaListPreview(
-                  mediaList: clMediaList ?? [],
-                  limit: const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+                return CLMediaCollage.byMatrixSize(
+                  clMediaList ?? [],
+                  hCount: 2,
+                  vCount: 2,
                   whenNopreview: CLText.veryLarge(tag.label.characters.first),
                 );
               },

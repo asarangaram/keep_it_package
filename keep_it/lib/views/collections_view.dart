@@ -119,9 +119,10 @@ class PreviewGenerator extends StatelessWidget {
     return LoadItems(
       collectionID: collectgionID,
       buildOnData: (Items items) {
-        return CLMediaListPreview(
-          mediaList: items.entries,
-          limit: const CLDimension(itemsInRow: 2, itemsInColumn: 2),
+        return CLMediaCollage.byMatrixSize(
+          items.entries,
+          hCount: 2,
+          vCount: 2,
           whenNopreview: CLText.veryLarge(
             items.collection.label.characters.first,
           ),

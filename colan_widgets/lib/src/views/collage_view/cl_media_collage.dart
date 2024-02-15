@@ -1,13 +1,14 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../basics/cl_matrix.dart';
 import '../../extensions/ext_double.dart';
 import '../../models/cl_dimension.dart';
 import '../../models/cl_media.dart';
 import '../../services/image_services/cl_media_preview.dart';
 import '../../widgets/cl_decorate_square.dart';
-import '../../basics/cl_matrix.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({
@@ -19,6 +20,7 @@ class CLMediaCollage extends StatelessWidget {
     this.vCount,
     this.childSize,
     super.key,
+    this.whenNopreview,
   });
   factory CLMediaCollage.byMatrixSize(
     List<CLMedia> mediaList, {
@@ -27,6 +29,7 @@ class CLMediaCollage extends StatelessWidget {
     Key? key,
     bool? keepAspectRatio,
     CLDimension? maxPageDimension,
+    Widget? whenNopreview,
   }) {
     return CLMediaCollage._(
       mediaList: mediaList,
@@ -37,6 +40,7 @@ class CLMediaCollage extends StatelessWidget {
       canScroll: vCount == null,
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
+      whenNopreview: whenNopreview,
     );
   }
   factory CLMediaCollage.byChildSize(
@@ -46,6 +50,7 @@ class CLMediaCollage extends StatelessWidget {
     bool? keepAspectRatio,
     bool canScroll = false,
     CLDimension? maxPageDimension,
+    Widget? whenNopreview,
   }) {
     return CLMediaCollage._(
       mediaList: mediaList,
@@ -55,6 +60,7 @@ class CLMediaCollage extends StatelessWidget {
       canScroll: canScroll,
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
+      whenNopreview: whenNopreview,
     );
   }
 
@@ -65,16 +71,44 @@ class CLMediaCollage extends StatelessWidget {
   final Size? childSize;
   final bool canScroll;
   final CLDimension maxPageDimension;
+  final Widget? whenNopreview;
 
   @override
   Widget build(BuildContext context) {
+    final mediaWithPreview = mediaList.where((e) {
+      return File(e.path).existsSync();
+    }).toList();
+    if (mediaWithPreview.isEmpty) {
+      return CLDecorateSquare(
+        borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
+        child: Center(
+          child: whenNopreview,
+        ),
+      );
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         final int x;
         final int? y;
         if (childSize == null) {
-          x = hCount!;
-          y = vCount;
+          if (vCount != null) {
+            final totalCount = hCount! * vCount!;
+            if (mediaWithPreview.length < totalCount) {
+              if (mediaWithPreview.length < hCount!) {
+                x = mediaWithPreview.length;
+                y = 1;
+              } else {
+                x = hCount!;
+                y = (mediaWithPreview.length + hCount! - 1) ~/ hCount!;
+              }
+            } else {
+              x = hCount!;
+              y = vCount;
+            }
+          } else {
+            x = hCount!;
+            y = vCount;
+          }
         } else {
           final pageMatrix = computePageMatrix(
             pageSize: Size(
@@ -88,36 +122,39 @@ class CLMediaCollage extends StatelessWidget {
         }
         return switch (y) {
           null => Matrix2D.scrollable(
-              itemCount: mediaList.length,
+              itemCount: mediaWithPreview.length,
               hCount: x,
-              itemBuilder: itemBuilder,
+              itemBuilder: (context, index) {
+                return CLDecorateSquare(
+                  borderRadius:
+                      keepAspectRatio ? BorderRadius.circular(0) : null,
+                  child: CLMediaPreview(
+                    media: mediaWithPreview[index],
+                    keepAspectRatio: keepAspectRatio,
+                  ),
+                );
+              },
             ),
           _ => Matrix2D(
-              itemCount: mediaList.length,
+              itemCount: mediaWithPreview.length,
               hCount: x,
               vCount: y,
               itemBuilder: (context, index) {
                 return SizedBox.fromSize(
                   size: childSize,
-                  child: CLMediaPreview(
-                    media: mediaList[index],
-                    keepAspectRatio: keepAspectRatio,
+                  child: CLDecorateSquare(
+                    borderRadius:
+                        keepAspectRatio ? BorderRadius.circular(0) : null,
+                    child: CLMediaPreview(
+                      media: mediaWithPreview[index],
+                      keepAspectRatio: keepAspectRatio,
+                    ),
                   ),
                 );
               },
             )
         };
       },
-    );
-  }
-
-  Widget itemBuilder(BuildContext context, int index) {
-    return CLDecorateSquare(
-      borderRadius: keepAspectRatio ? BorderRadius.circular(0) : null,
-      child: CLMediaPreview(
-        media: mediaList[index],
-        keepAspectRatio: keepAspectRatio,
-      ),
     );
   }
 
