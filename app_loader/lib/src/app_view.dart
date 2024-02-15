@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_descriptor.dart';
-import 'app_theme.dart';
 import 'bottom_nav_page.dart';
 import 'cl_route_descriptor.dart';
 
