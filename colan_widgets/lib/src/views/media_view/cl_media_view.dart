@@ -27,7 +27,7 @@ class CLMediaView extends ConsumerWidget {
       tag: '/item/${media.collectionId}/${media.id}',
       child: switch (media.type) {
         CLMediaType.image => Center(
-            child: ImageViewer(path: media.path),
+            child: ImageViewerBasic(file: File(media.path)),
           ),
         CLMediaType.video => VideoPlayer(
             media: media,

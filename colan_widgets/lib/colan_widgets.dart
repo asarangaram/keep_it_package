@@ -29,6 +29,7 @@ export 'src/services/image_services/image_view.dart';
 export 'src/services/notification/notification_service.dart';
 export 'src/services/notification/provider/notify.dart';
 export 'src/services/selection/cl_selection_wrapper.dart';
+export 'src/services/video_services/video_player.dart';
 export 'src/utils/rand_image_generator.dart';
 export 'src/views/appearance/cl_error_view.dart';
 export 'src/views/appearance/cl_fullscreen_box.dart';

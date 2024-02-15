@@ -22,10 +22,10 @@ class VideoLayer extends ConsumerStatefulWidget {
   final BoxFit? fit;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => CLVideoPlayerState();
+  ConsumerState<ConsumerStatefulWidget> createState() => VideoLayerState();
 }
 
-class CLVideoPlayerState extends ConsumerState<VideoLayer> {
+class VideoLayerState extends ConsumerState<VideoLayer> {
   bool isHovering = false;
 
   Timer? disableControls;
@@ -81,25 +81,24 @@ class CLVideoPlayerState extends ConsumerState<VideoLayer> {
             },
           );
         },
-        child: Stack(
-          alignment: AlignmentDirectional.bottomCenter,
-          children: [
-            KeepAspectRatio(
-              keepAspectRatio: widget.fit != null,
-              aspectRatio: controller.value.aspectRatio,
-              child: VideoPlayer(controller),
-            ),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500),
-              child: (isHovering || !controller.value.isPlaying)
-                  ? VideoControls(
-                      controller: controller,
-                      onTapFullScreen: widget.onTapFullScreen,
-                      isPlayingFullScreen: widget.isPlayingFullScreen,
-                    )
-                  : Container(),
-            ),
-          ],
+        child: AspectRatio(
+          aspectRatio: controller.value.aspectRatio,
+          child: Stack(
+            alignment: AlignmentDirectional.bottomCenter,
+            children: [
+              VideoPlayer(controller),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: (isHovering || !controller.value.isPlaying)
+                    ? VideoControls(
+                        controller: controller,
+                        onTapFullScreen: widget.onTapFullScreen,
+                        isPlayingFullScreen: widget.isPlayingFullScreen,
+                      )
+                    : Container(),
+              ),
+            ],
+          ),
         ),
       ),
     );

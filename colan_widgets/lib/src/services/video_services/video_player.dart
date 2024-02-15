@@ -21,17 +21,18 @@ class VideoPlayer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (isSelected) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await ref.read(videoPlayerStateProvider.notifier).playVideo(media.path);
+        if (context.mounted) {
+          await ref
+              .read(videoPlayerStateProvider.notifier)
+              .playVideo(media.path);
+        }
       });
     }
 
     final state = ref.watch(videoPlayerStateProvider);
     return switch (state.path == media.path) {
       true => state.controllerAsync.when(
-          data: (controller) => VideoLayer(
-            controller: controller,
-            fit: BoxFit.contain,
-          ),
+          data: (controller) => VideoLayer(controller: controller),
           error: (_, __) => Container(),
           loading: () => Stack(
             children: [
