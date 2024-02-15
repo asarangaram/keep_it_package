@@ -76,7 +76,10 @@ class CLDialogWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isDialog) {
-      return child;
+      return WrapCloseButton(
+        onCancel: onCancel,
+        child: child,
+      );
     }
     return Dialog(
       shape: const ContinuousRectangleBorder(),
@@ -85,14 +88,32 @@ class CLDialogWrapper extends StatelessWidget {
       //shape: const ContinuousRectangleBorder(),
       backgroundColor: backgroundColor,
       insetPadding: padding ?? EdgeInsets.zero,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width,
-          maxHeight: MediaQuery.of(context).size.height,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+      child: WrapCloseButton(onCancel: onCancel, child: child),
+    );
+  }
+}
+
+class WrapCloseButton extends StatelessWidget {
+  const WrapCloseButton({
+    required this.child,
+    this.onCancel,
+    super.key,
+  });
+
+  final void Function()? onCancel;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width,
+        maxHeight: MediaQuery.of(context).size.height,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (onCancel != null)
             Align(
               alignment: Alignment.topRight,
               child: SizedBox(
@@ -107,9 +128,8 @@ class CLDialogWrapper extends StatelessWidget {
                 ),
               ),
             ),
-            Flexible(child: child),
-          ],
-        ),
+          Flexible(child: child),
+        ],
       ),
     );
   }

@@ -15,7 +15,10 @@ class StandalonePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppTheme(
-      child: CLFullscreenBox(child: NotificationService(child: child)),
+      child: CLFullscreenBox(
+        useSafeArea: true,
+        child: NotificationService(child: child),
+      ),
     );
   }
 }
@@ -54,6 +57,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
 
     return AppTheme(
       child: CLFullscreenBox(
+        useSafeArea: true,
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: widget.child.currentIndex,

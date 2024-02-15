@@ -38,76 +38,74 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
       );
     }
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Center(
-          child: SizedBox.expand(
-            child: Stack(
-              children: [
-                Center(
-                  child: StreamBuilder<double>(
-                    stream: analyseMedia(widget.incomingMedia),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<double> snapshot) {
-                      final double? percent;
-                      if (snapshot.hasData) {
-                        percent = min(1, snapshot.data!);
-                        return CircularPercentIndicator(
-                          radius: 100,
-                          lineWidth: 13,
-                          animation: true,
-                          percent: percent,
-                          center: CLText.veryLarge(
-                            '${(percent * 100).toInt()} %',
-                          ),
-                          footer: const CLText.large(
-                            'Please wait while analysing media files',
-                          ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                          progressColor: Colors.purple,
-                        );
-                      } else {
-                        return CircularPercentIndicator(
-                          radius: 100,
-                          lineWidth: 13,
-                          footer: const CLText.large(
-                            'Please wait while analysing media files',
-                          ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                          progressColor: Colors.purple,
-                        );
-                      }
-                    },
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(8),
-                      /* boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: SizedBox.expand(
+          child: Stack(
+            children: [
+              Center(
+                child: StreamBuilder<double>(
+                  stream: analyseMedia(widget.incomingMedia),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<double> snapshot) {
+                    final double? percent;
+                    if (snapshot.hasData) {
+                      percent = min(1, snapshot.data!);
+                      return CircularPercentIndicator(
+                        radius: 100,
+                        lineWidth: 13,
+                        animation: true,
+                        percent: percent,
+                        center: CLText.veryLarge(
+                          '${(percent * 100).toInt()} %',
                         ),
-                      ], */
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: CLButtonText.large(
-                        'Discard',
-                        onTap: widget.onDone,
+                        footer: const CLText.large(
+                          'Please wait while analysing media files',
+                        ),
+                        circularStrokeCap: CircularStrokeCap.round,
+                        progressColor: Colors.purple,
+                      );
+                    } else {
+                      return CircularPercentIndicator(
+                        radius: 100,
+                        lineWidth: 13,
+                        footer: const CLText.large(
+                          'Please wait while analysing media files',
+                        ),
+                        circularStrokeCap: CircularStrokeCap.round,
+                        progressColor: Colors.purple,
+                      );
+                    }
+                  },
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(8),
+                    /* boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
+                    ], */
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: CLButtonText.large(
+                      'Discard',
+                      onTap: widget.onDone,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

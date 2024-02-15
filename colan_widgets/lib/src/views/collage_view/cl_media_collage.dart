@@ -3,12 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../basics/cl_decorate_square.dart';
 import '../../basics/cl_matrix.dart';
 import '../../extensions/ext_double.dart';
 import '../../models/cl_dimension.dart';
 import '../../models/cl_media.dart';
 import '../../services/image_services/cl_media_preview.dart';
-import '../../basics/cl_decorate_square.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({
@@ -88,7 +88,7 @@ class CLMediaCollage extends StatelessWidget {
       builder: (context, constraints) {
         final int x;
         final int? y;
-        final double aspectRatio;
+
         if (childSize == null) {
           if (vCount != null) {
             final totalCount = hCount! * vCount!;
@@ -108,7 +108,6 @@ class CLMediaCollage extends StatelessWidget {
             x = hCount!;
             y = vCount;
           }
-          aspectRatio = 1.0;
         } else {
           final pageMatrix = computePageMatrix(
             pageSize: Size(
@@ -119,7 +118,6 @@ class CLMediaCollage extends StatelessWidget {
           );
           x = pageMatrix.itemsInRow;
           y = canScroll ? null : pageMatrix.itemsInColumn;
-          aspectRatio = childSize!.width / childSize!.height;
         }
         return switch (y) {
           null => Matrix2D.scrollable(

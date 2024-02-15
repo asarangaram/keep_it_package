@@ -17,46 +17,44 @@ class SharedItemsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LoadTags(
-      buildOnData: (tags) => SafeArea(
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: SizedBox(
-                height: 32 + 20,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 8,
-                    right: 16,
-                    bottom: 8,
-                  ),
-                  child: CLButtonIcon.small(
-                    Icons.close,
-                    onTap: () {
-                      onDiscard(media);
-                    },
-                  ),
+      buildOnData: (tags) => Column(
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: SizedBox(
+              height: 32 + 20,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  right: 16,
+                  bottom: 8,
+                ),
+                child: CLButtonIcon.small(
+                  Icons.close,
+                  onTap: () {
+                    onDiscard(media);
+                  },
                 ),
               ),
             ),
-            Flexible(
-              child: CLMediaCollage.byMatrixSize(
-                media.list,
-                hCount: switch (media.list.length) { _ => 2 },
-              ),
+          ),
+          Flexible(
+            child: CLMediaCollage.byMatrixSize(
+              media.list,
+              hCount: switch (media.list.length) { _ => 2 },
             ),
-            const Divider(
-              thickness: 4,
+          ),
+          const Divider(
+            thickness: 4,
+          ),
+          SizedBox(
+            height: kMinInteractiveDimension * 4,
+            child: KeepMediaWizard(
+              media: media,
+              onDone: onDiscard,
             ),
-            SizedBox(
-              height: kMinInteractiveDimension * 4,
-              child: KeepMediaWizard(
-                media: media,
-                onDone: onDiscard,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -35,37 +35,35 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(2),
-        child: CLQuickMenuScope(
-          key: quickMenuScopeKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              MainHeader(
-                actionsBuilders: widget.actionsBuilder,
-                quickMenuScopeKey: quickMenuScopeKey,
-                title: widget.title?.uptoLength(15),
-                onPop: widget.onPop,
-                /* mainActionItems: const [
-                  [
-                    CLMenuItem(
-                      title: 'Paste',
-                      icon: Icons.content_paste_go_outlined,
-                    ),
-                    CLMenuItem(
-                      title: 'Settings',
-                      icon: Icons.settings,
-                      /*Icons.settings_applications_sharp,*/
-                    ),
-                  ],
-                ], */
-              ),
-              Expanded(child: widget.pageBuilder(context, quickMenuScopeKey)),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(2),
+      child: CLQuickMenuScope(
+        key: quickMenuScopeKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            MainHeader(
+              actionsBuilders: widget.actionsBuilder,
+              quickMenuScopeKey: quickMenuScopeKey,
+              title: widget.title?.uptoLength(15),
+              onPop: widget.onPop,
+              /* mainActionItems: const [
+                [
+                  CLMenuItem(
+                    title: 'Paste',
+                    icon: Icons.content_paste_go_outlined,
+                  ),
+                  CLMenuItem(
+                    title: 'Settings',
+                    icon: Icons.settings,
+                    /*Icons.settings_applications_sharp,*/
+                  ),
+                ],
+              ], */
+            ),
+            Expanded(child: widget.pageBuilder(context, quickMenuScopeKey)),
+          ],
         ),
       ),
     );
