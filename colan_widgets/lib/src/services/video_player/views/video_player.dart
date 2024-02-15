@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../media_preview/cl_media_preview.dart';
-import '../../models/cl_media.dart';
+import '../../../media_preview/cl_media_preview.dart';
+import '../../../models/cl_media.dart';
 import '../providers/video_player_state.dart';
 import 'video_controls.dart';
 

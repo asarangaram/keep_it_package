@@ -13,9 +13,9 @@ class CLMediaView extends ConsumerWidget {
     if (media.type.isFile && !File(media.path).existsSync()) {
       throw Exception('File not found ${media.path}');
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    /*  WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref.read(videoPlayerStateProvider.notifier).playVideo(media.path);
-    });
+    }); */
 
     return GestureDetector(
       onVerticalDragEnd: (details) {
