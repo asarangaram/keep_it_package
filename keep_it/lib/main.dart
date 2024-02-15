@@ -10,11 +10,11 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
+import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
+import 'pages/shared_items_page.dart';
+import 'pages/tags_page.dart';
 import 'pages/timeline_page.dart';
-import 'views/collections_view.dart' as folder_view;
-import 'views/shared_items_view.dart';
-import 'views/tags_view.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -46,14 +46,13 @@ class KeepItApp implements AppDescriptor {
   List<CLShellRouteDescriptor> get shellRoutes => [
         CLShellRouteDescriptor(
           name: '',
-          builder: (context, GoRouterState state) =>
-              const folder_view.CollectionsView(),
+          builder: (context, GoRouterState state) => const CollectionsPage(),
           iconData: Icons.home,
           label: 'Collections',
         ),
         CLShellRouteDescriptor(
           name: 'tags',
-          builder: (context, state) => const TagsView(),
+          builder: (context, state) => const TagsPage(),
           iconData: Icons.search,
           label: 'Search',
         ),
@@ -84,8 +83,7 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
           name: 'collections/:tag_id',
-          builder: (context, GoRouterState state) =>
-              folder_view.CollectionsView(
+          builder: (context, GoRouterState state) => CollectionsPage(
             tagId: int.parse(state.pathParameters['tag_id']!),
           ),
         ),
@@ -104,7 +102,7 @@ class KeepItApp implements AppDescriptor {
         required CLMediaInfoGroup media,
         required void Function(CLMediaInfoGroup media) onDiscard,
       }) {
-        return SharedItemsView(
+        return SharedItemsPage(
           media: media,
           onDiscard: onDiscard,
         );

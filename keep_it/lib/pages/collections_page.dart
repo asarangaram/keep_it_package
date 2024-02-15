@@ -11,8 +11,8 @@ import '../widgets/from_store/load_collections.dart';
 import '../widgets/from_store/load_items.dart';
 import '../widgets/keepit_grid/cl_folder_view.dart';
 
-class CollectionsView extends ConsumerStatefulWidget {
-  const CollectionsView({super.key, this.tagId});
+class CollectionsPage extends ConsumerStatefulWidget {
+  const CollectionsPage({super.key, this.tagId});
   final int? tagId;
 
   @override
@@ -20,7 +20,7 @@ class CollectionsView extends ConsumerStatefulWidget {
       _CollectionsViewState();
 }
 
-class _CollectionsViewState extends ConsumerState<CollectionsView> {
+class _CollectionsViewState extends ConsumerState<CollectionsPage> {
   bool isLoading = false;
 
   @override

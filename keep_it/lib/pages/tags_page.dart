@@ -12,8 +12,8 @@ import '../widgets/from_store/load_items_in_tag.dart';
 import '../widgets/from_store/load_tags.dart';
 import '../widgets/keepit_grid/cl_folder_view.dart';
 
-class TagsView extends ConsumerWidget {
-  const TagsView({super.key});
+class TagsPage extends ConsumerWidget {
+  const TagsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LoadTags(

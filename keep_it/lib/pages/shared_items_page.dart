@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import '../widgets/from_store/load_tags.dart';
 import '../widgets/keep_media_wizard/keep_media_wizard.dart';
 
-class SharedItemsView extends StatelessWidget {
-  const SharedItemsView({
+class SharedItemsPage extends StatelessWidget {
+  const SharedItemsPage({
     required this.media,
     required this.onDiscard,
     super.key,
