@@ -1,11 +1,15 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import 'huge_list_view/events.dart';
-import 'huge_list_view/huge_list.dart';
+import '../../basics/cl_button.dart';
+import '../../basics/cl_text.dart';
+import '../../models/cl_media.dart';
+import '../appearance/keep_it_main_view.dart';
+import '../huge_list_view/events.dart';
+import '../huge_list_view/huge_list.dart';
+
 import 'widgets/cl_media_grid_lazy.dart';
 
 class CLGalleryView extends ConsumerStatefulWidget {
