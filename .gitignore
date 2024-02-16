@@ -11,3 +11,5 @@ keep_it/macos/Flutter/GeneratedPluginRegistrant.swift
 keep_it/windows/flutter/generated_plugin_registrant.cc
 keep_it/windows/flutter/generated_plugin_registrant.h
 keep_it/windows/flutter/generated_plugins.cmake
+colan_widgets/.flutter-plugins
+colan_widgets/example/macos/Flutter/GeneratedPluginRegistrant.swift
