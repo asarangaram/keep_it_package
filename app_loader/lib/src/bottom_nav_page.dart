@@ -6,7 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'incoming_progress.dart';
+import 'models/cl_media_process.dart';
 import 'providers/incoming_media.dart';
+
+import 'stream_progress.dart';
 
 class StandalonePage extends ConsumerWidget {
   const StandalonePage({required this.child, super.key});
@@ -23,7 +26,7 @@ class StandalonePage extends ConsumerWidget {
   }
 }
 
-class BottomNavigationPage extends ConsumerStatefulWidget {
+class BottomNavigationPage extends StatefulWidget {
   const BottomNavigationPage({
     required this.child,
     required this.incomingMediaViewBuilder,
@@ -33,94 +36,79 @@ class BottomNavigationPage extends ConsumerStatefulWidget {
   final StatefulNavigationShell child;
   final IncomingMediaViewBuilder incomingMediaViewBuilder;
   @override
-  ConsumerState<BottomNavigationPage> createState() =>
-      _BottomNavigationPageState();
+  State<BottomNavigationPage> createState() => _BottomNavigationPageState();
 }
 
-class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
+class _BottomNavigationPageState extends State<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
-    final incomingMedia = ref.watch(incomingMediaStreamProvider);
-
-    if (incomingMedia.isNotEmpty) {
-      return StandalonePage(
-        child: IncomingProgress(
-          key: ValueKey(incomingMedia[0]),
-          incomingMedia: incomingMedia[0],
-          incomingMediaViewBuilder: widget.incomingMediaViewBuilder,
-          onDiscard: () {
-            ref.read(incomingMediaStreamProvider.notifier).pop();
-          },
-          onAccept: (collectionId) {},
-        ),
-      );
-    }
-
-    return AppTheme(
-      child: CLFullscreenBox(
-        useSafeArea: true,
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: widget.child.currentIndex,
-          onTap: (index) {
-            widget.child.goBranch(
-              index,
-              initialLocation: index == widget.child.currentIndex,
-            );
-            setState(() {});
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.folder_special_rounded),
-              label: 'Collections',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'settings',
-            ),
-          ],
-        ),
-        child: NotificationService(
-          child: GestureDetector(
-            onHorizontalDragEnd: (details) {
-              if (details.primaryVelocity == null) return;
-              // pop on Swipe
-              if (details.primaryVelocity! > 0) {
-                if (context.canPop()) {
-                  context.pop();
-                } else {
-                  if (widget.child.currentIndex == 1) {
-                    widget.child.goBranch(
-                      0,
-                    );
+    return IncomingMediaHandler(
+      child: AppTheme(
+        child: CLFullscreenBox(
+          useSafeArea: true,
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: widget.child.currentIndex,
+            onTap: (index) {
+              widget.child.goBranch(
+                index,
+                initialLocation: index == widget.child.currentIndex,
+              );
+              setState(() {});
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.folder_special_rounded),
+                label: 'Collections',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                label: 'search',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'settings',
+              ),
+            ],
+          ),
+          child: NotificationService(
+            child: GestureDetector(
+              onHorizontalDragEnd: (details) {
+                if (details.primaryVelocity == null) return;
+                // pop on Swipe
+                if (details.primaryVelocity! > 0) {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    if (widget.child.currentIndex == 1) {
+                      widget.child.goBranch(
+                        0,
+                      );
+                    }
+                    if (widget.child.currentIndex == 2) {
+                      widget.child.goBranch(
+                        1,
+                      );
+                    }
                   }
-                  if (widget.child.currentIndex == 2) {
+                }
+
+                // Swiping in left direction.
+                if (details.primaryVelocity! < 0) {
+                  if (widget.child.currentIndex == 0) {
                     widget.child.goBranch(
                       1,
                     );
                   }
+                  if (widget.child.currentIndex == 1) {
+                    widget.child.goBranch(
+                      2,
+                    );
+                  }
                 }
-              }
-
-              // Swiping in left direction.
-              if (details.primaryVelocity! < 0) {
-                if (widget.child.currentIndex == 0) {
-                  widget.child.goBranch(
-                    1,
-                  );
-                }
-                if (widget.child.currentIndex == 1) {
-                  widget.child.goBranch(
-                    2,
-                  );
-                }
-              }
-            },
-            child: widget.child,
+              },
+              child: widget.child,
+            ),
           ),
         ),
       ),

@@ -65,7 +65,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
     if (attachements.isNotEmpty) {
       push(
         CLMediaInfoGroup(
-          attachements,
+          list: attachements,
         ),
       );
     }

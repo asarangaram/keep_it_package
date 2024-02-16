@@ -16,7 +16,10 @@ class KeepMediaWizard extends ConsumerWidget {
   final CLMediaInfoGroup media;
 
   final void Function() onDiscard;
-  final void Function(int collectionID) onAccept;
+  final Future<void> Function(
+    CLMediaInfoGroup media, {
+    required Future<void> Function(CLMediaInfoGroup media) onUpdateDB,
+  }) onAccept;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadCollections(
@@ -51,8 +54,6 @@ class KeepMediaWizard extends ConsumerWidget {
     required Collection collection,
     List<int>? saveIntoTagsId,
   }) async {
-    _infoLogger('Start loading');
-    final stopwatch = Stopwatch()..start();
     // No one might be reading this, read once
     ref.read(collectionsProvider(null));
     final collectionId =
@@ -60,30 +61,20 @@ class KeepMediaWizard extends ConsumerWidget {
               collection,
               saveIntoTagsId,
             );
-    ref.read(itemsProvider(collectionId));
-
-    final items = <CLMedia>[
-      for (final entry in media.list)
-        entry.copyWith(collectionId: collectionId),
-    ];
-
-    await ref.read(itemsProvider(collectionId).notifier).upsertItems(items);
-
-    stopwatch.stop();
-
-    await ref.read(notificationMessageProvider.notifier).push('Saved.');
-
-    _infoLogger(
-      'Elapsed time: ${stopwatch.elapsedMilliseconds} milliseconds'
-      ' [${stopwatch.elapsed}]',
+    await onAccept(
+      media.copyWith(targetID: collectionId),
+      onUpdateDB: (media) => onUpdateDB(ref, media),
     );
   }
-}
 
-bool _disableInfoLogger = false;
-// ignore: unused_element
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
+  Future<void> onUpdateDB(
+    WidgetRef ref,
+    CLMediaInfoGroup updatedMedia,
+  ) async {
+    ref.read(itemsProvider(updatedMedia.targetID!));
+    await ref
+        .read(itemsProvider(updatedMedia.targetID!).notifier)
+        .upsertItems(updatedMedia.list);
+    await ref.read(notificationMessageProvider.notifier).push('Saved.');
   }
 }

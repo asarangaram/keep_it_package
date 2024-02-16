@@ -101,7 +101,10 @@ class KeepItApp implements AppDescriptor {
         WidgetRef ref, {
         required CLMediaInfoGroup media,
         required void Function() onDiscard,
-        required void Function(int collectionID) onAccept,
+        required Future<void> Function(
+          CLMediaInfoGroup media, {
+          required Future<void> Function(CLMediaInfoGroup media) onUpdateDB,
+        }) onAccept,
       }) {
         return SharedItemsPage(
           media: media,

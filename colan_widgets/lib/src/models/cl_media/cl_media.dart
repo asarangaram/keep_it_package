@@ -171,7 +171,7 @@ class CLMedia {
 }
 
 class CLMediaInfoGroup {
-  CLMediaInfoGroup(this.list, {this.targetID});
+  CLMediaInfoGroup({required this.list, this.targetID});
   final List<CLMedia> list;
   final int? targetID;
 
@@ -180,4 +180,14 @@ class CLMediaInfoGroup {
 
   @override
   String toString() => 'CLMediaInfoGroup(list: $list)';
+
+  CLMediaInfoGroup copyWith({
+    List<CLMedia>? list,
+    int? targetID,
+  }) {
+    return CLMediaInfoGroup(
+      list: list ?? this.list,
+      targetID: targetID ?? this.targetID,
+    );
+  }
 }

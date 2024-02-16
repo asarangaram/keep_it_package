@@ -14,7 +14,10 @@ class SharedItemsPage extends StatelessWidget {
 
   final CLMediaInfoGroup media;
   final void Function() onDiscard;
-  final void Function(int collectionID) onAccept;
+  final Future<void> Function(
+    CLMediaInfoGroup media, {
+    required Future<void> Function(CLMediaInfoGroup media) onUpdateDB,
+  }) onAccept;
 
   @override
   Widget build(BuildContext context) {
