@@ -8,11 +8,13 @@ class SharedItemsPage extends StatelessWidget {
   const SharedItemsPage({
     required this.media,
     required this.onDiscard,
+    required this.onAccept,
     super.key,
   });
 
   final CLMediaInfoGroup media;
-  final void Function(CLMediaInfoGroup media) onDiscard;
+  final void Function() onDiscard;
+  final void Function(int collectionID) onAccept;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +33,7 @@ class SharedItemsPage extends StatelessWidget {
                 ),
                 child: CLButtonIcon.small(
                   Icons.close,
-                  onTap: () {
-                    onDiscard(media);
-                  },
+                  onTap: onDiscard,
                 ),
               ),
             ),
@@ -51,7 +51,8 @@ class SharedItemsPage extends StatelessWidget {
             height: kMinInteractiveDimension * 4,
             child: KeepMediaWizard(
               media: media,
-              onDone: onDiscard,
+              onDiscard: onDiscard,
+              onAccept: onAccept,
             ),
           ),
         ],

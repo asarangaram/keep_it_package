@@ -85,7 +85,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
     state = state.removeFirstItem();
   }
 
-  void onDone() => pop();
+  void onDiscard() => pop();
 }
 
 final incomingMediaStreamProvider =

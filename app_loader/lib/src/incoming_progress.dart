@@ -12,11 +12,12 @@ class IncomingProgress extends ConsumerStatefulWidget {
   const IncomingProgress({
     required this.incomingMedia,
     required this.incomingMediaViewBuilder,
+    required this.onDiscard,
     super.key,
-    this.onDone,
   });
   final CLMediaInfoGroup incomingMedia;
-  final void Function()? onDone;
+  final void Function() onDiscard;
+  final void Function(int collectionID) onAccept;
   final IncomingMediaViewBuilder incomingMediaViewBuilder;
 
   @override
@@ -34,7 +35,8 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
         context,
         ref,
         media: clMediaInfoGroup!,
-        onDiscard: (_) => widget.onDone?.call(),
+        onDiscard: widget.onDiscard,
+        onAccept: widget.onAccept,
       );
     }
 
@@ -100,7 +102,7 @@ class _IncomingProgressState extends ConsumerState<IncomingProgress> {
                     padding: const EdgeInsets.all(4),
                     child: CLButtonText.large(
                       'Discard',
-                      onTap: widget.onDone,
+                      onTap: widget.onDiscard,
                     ),
                   ),
                 ),

@@ -100,11 +100,13 @@ class KeepItApp implements AppDescriptor {
         BuildContext context,
         WidgetRef ref, {
         required CLMediaInfoGroup media,
-        required void Function(CLMediaInfoGroup media) onDiscard,
+        required void Function() onDiscard,
+        required void Function(int collectionID) onAccept,
       }) {
         return SharedItemsPage(
           media: media,
           onDiscard: onDiscard,
+          onAccept: onAccept,
         );
       };
 

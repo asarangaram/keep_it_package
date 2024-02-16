@@ -48,7 +48,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
           key: ValueKey(incomingMedia[0]),
           incomingMedia: incomingMedia[0],
           incomingMediaViewBuilder: widget.incomingMediaViewBuilder,
-          onDone: () {
+          onDiscard: () {
             ref.read(incomingMediaStreamProvider.notifier).pop();
           },
         ),

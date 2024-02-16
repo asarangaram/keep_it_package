@@ -17,7 +17,8 @@ typedef IncomingMediaViewBuilder = Widget Function(
   BuildContext context,
   WidgetRef ref, {
   required CLMediaInfoGroup media,
-  required void Function(CLMediaInfoGroup media) onDiscard,
+  required void Function() onDiscard,
+  required void Function(int collectionID) onAccept,
 });
 
 abstract class AppDescriptor {

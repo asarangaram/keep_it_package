@@ -3,19 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-
 import '../from_store/load_collections.dart';
 import 'pick_collection.dart';
 
 class KeepMediaWizard extends ConsumerWidget {
   const KeepMediaWizard({
     required this.media,
-    required this.onDone,
+    required this.onDiscard,
+    required this.onAccept,
     super.key,
   });
   final CLMediaInfoGroup media;
 
-  final void Function(CLMediaInfoGroup media) onDone;
+  final void Function() onDiscard;
+  final void Function(int collectionID) onAccept;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadCollections(
@@ -37,7 +38,7 @@ class KeepMediaWizard extends ConsumerWidget {
               collection: Collection.fromBase(collection),
               saveIntoTagsId: selectedTags?.map((e) => e.id!).toList(),
             );
-            onDone(media);
+            onDiscard();
           },
         );
       },
