@@ -13,6 +13,7 @@ class IncomingProgress extends ConsumerStatefulWidget {
     required this.incomingMedia,
     required this.incomingMediaViewBuilder,
     required this.onDiscard,
+    required this.onAccept,
     super.key,
   });
   final CLMediaInfoGroup incomingMedia;

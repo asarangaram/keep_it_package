@@ -51,6 +51,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
           onDiscard: () {
             ref.read(incomingMediaStreamProvider.notifier).pop();
           },
+          onAccept: (collectionId) {},
         ),
       );
     }
