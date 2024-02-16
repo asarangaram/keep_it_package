@@ -5,10 +5,18 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-import 'models/cl_media_process.dart';
+@immutable
+class Progress {
+  const Progress({
+    required this.fractCompleted,
+    required this.currentItem,
+  });
+  final double fractCompleted;
+  final String currentItem;
+}
 
-class StreamProgress extends StatelessWidget {
-  const StreamProgress({
+class StreamProgressView extends StatelessWidget {
+  const StreamProgressView({
     required this.stream,
     required this.onCancel,
     super.key,

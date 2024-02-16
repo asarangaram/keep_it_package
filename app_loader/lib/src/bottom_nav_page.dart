@@ -4,7 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'incoming_progress.dart';
+import 'incoming_media_handler.dart';
 
 class BottomNavigationPage extends StatefulWidget {
   const BottomNavigationPage({

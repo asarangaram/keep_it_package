@@ -1,17 +1,8 @@
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 
-@immutable
-class Progress {
-  const Progress({
-    required this.fractCompleted,
-    required this.currentItem,
-  });
-  final double fractCompleted;
-  final String currentItem;
-}
+import '../models/cl_media.dart';
+import '../views/stream_progress_view.dart';
 
 class CLMediaProcess {
   static Stream<Progress> analyseMedia(

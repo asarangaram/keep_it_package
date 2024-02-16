@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app_descriptor.dart';
 import 'fullscreen_layout.dart';
-import 'models/cl_media_process.dart';
+
 import 'providers/incoming_media.dart';
-import 'stream_progress.dart';
+
 
 class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
@@ -44,7 +44,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     }
     if (accepted != null) {
       return FullscreenLayout(
-        child: StreamProgress(
+        child: StreamProgressView(
           stream: () => CLMediaProcess.acceptMedia(
             media: accepted!,
             onDone: (CLMediaInfoGroup items) async {
@@ -73,7 +73,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
       );
     } else {
       return FullscreenLayout(
-        child: StreamProgress(
+        child: StreamProgressView(
           stream: () => CLMediaProcess.analyseMedia(incomingMedia[0],
               (CLMediaInfoGroup mg) {
             setState(() {
