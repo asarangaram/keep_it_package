@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'app_descriptor.dart';
 import 'bottom_nav_page.dart';
 import 'cl_route_descriptor.dart';
+import 'fullscreen_layout.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({
@@ -54,7 +55,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         name: e.name,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: StandalonePage(
+          child: FullscreenLayout(
             child: e.builder(context, state),
           ),
           transitionsBuilder: app.transitionBuilder,
@@ -68,7 +69,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         parentNavigatorKey: parentNavigatorKey,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: StandalonePage(
+          child: FullscreenLayout(
             child: e.builder(context, state),
           ),
           transitionsBuilder: app.transitionBuilder,

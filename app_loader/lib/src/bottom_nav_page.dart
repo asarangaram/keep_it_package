@@ -2,26 +2,9 @@ import 'package:app_loader/src/app_descriptor.dart';
 import 'package:app_loader/src/app_theme.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'incoming_progress.dart';
-
-
-class StandalonePage extends ConsumerWidget {
-  const StandalonePage({required this.child, super.key});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return AppTheme(
-      child: CLFullscreenBox(
-        useSafeArea: true,
-        child: NotificationService(child: child),
-      ),
-    );
-  }
-}
 
 class BottomNavigationPage extends StatefulWidget {
   const BottomNavigationPage({
@@ -40,6 +23,7 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
     return IncomingMediaHandler(
+      incomingMediaViewBuilder: widget.incomingMediaViewBuilder,
       child: AppTheme(
         child: CLFullscreenBox(
           useSafeArea: true,

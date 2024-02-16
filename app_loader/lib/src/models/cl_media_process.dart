@@ -7,8 +7,8 @@ class CLMediaProcess {
     void Function(CLMediaInfoGroup) onDone,
   ) async* {
     final updated = <CLMedia>[];
+    yield 0.0;
 
-    // ignore: unused_local_variable
     for (final (i, item) in media.list.indexed) {
       switch (item.type) {
         case CLMediaType.file:
@@ -17,13 +17,19 @@ class CLMediaProcess {
               (final String mime) when mime.startsWith('image') => CLMedia(
                   path: item.path,
                   type: CLMediaType.image,
+                  collectionId: media.targetID,
                 ),
               (final String mime) when mime.startsWith('video') =>
                 await ExtCLMediaFile.clMediaWithPreview(
                   path: item.path,
                   type: CLMediaType.video,
+                  collectionId: media.targetID,
                 ),
-              _ => CLMedia(path: item.path, type: CLMediaType.file),
+              _ => CLMedia(
+                  path: item.path,
+                  type: CLMediaType.file,
+                  collectionId: media.targetID,
+                ),
             };
 
             updated.add(clMedia);
@@ -45,15 +51,19 @@ class CLMediaProcess {
 
   static Stream<double> acceptMedia({
     required CLMediaInfoGroup media,
-    required void Function(List<CLMedia> items) onDone,
+    required void Function(CLMediaInfoGroup) onDone,
   }) async* {
     if (media.targetID == null) {
       throw Exception("targetID can't be null to accept");
     }
-    final items = <CLMedia>[
-      for (final entry in media.list)
-        entry.copyWith(collectionId: media.targetID),
-    ];
-    onDone(items);
+    final updated = <CLMedia>[];
+    yield 0.0;
+    for (final (i, item) in media.list.indexed) {
+      updated.add(item.copyWith(collectionId: media.targetID));
+      await Future.delayed(const Duration(milliseconds: 200), () {});
+      yield (i + 1) / media.list.length;
+    }
+
+    onDone(CLMediaInfoGroup(list: updated, targetID: media.targetID));
   }
 }
