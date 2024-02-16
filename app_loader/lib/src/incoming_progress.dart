@@ -25,7 +25,11 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
 class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
   CLMediaInfoGroup? accepted;
   CLMediaInfoGroup? candidates;
-  Future<void> Function(CLMediaInfoGroup)? onUpdateDB;
+  Future<void> Function(
+    BuildContext context,
+    WidgetRef ref,
+    CLMediaInfoGroup media,
+  )? onUpdateDB;
 
   @override
   Widget build(BuildContext context) {
@@ -34,49 +38,61 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
       setState(() {
         accepted = null;
         candidates = null;
+        onUpdateDB = null;
       });
       return widget.child;
     }
     if (accepted != null) {
-      return StreamProgress(
-        stream: () => CLMediaProcess.acceptMedia(
-          media: accepted!,
-          onDone: (CLMediaInfoGroup items) async {
-            await onUpdateDB!(items);
-            onDiscard();
-          },
+      return FullscreenLayout(
+        child: StreamProgress(
+          stream: () => CLMediaProcess.acceptMedia(
+            media: accepted!,
+            onDone: (CLMediaInfoGroup items) async {
+              await onUpdateDB!(context, ref, items);
+              onDiscard();
+            },
+          ),
+          onCancel: onDiscard,
         ),
-        onCancel: onDiscard,
       );
     } else if (candidates != null) {
-      return widget.incomingMediaViewBuilder(
-        context,
-        ref,
-        media: candidates!,
-        onDiscard: onDiscard,
-        onAccept: (media, {required onUpdateDB}) async {
-          setState(() {
-            candidates = null;
-            accepted = media;
-            onUpdateDB = onUpdateDB;
-          });
-        },
+      return FullscreenLayout(
+        child: widget.incomingMediaViewBuilder(
+          context,
+          ref,
+          media: candidates!,
+          onDiscard: onDiscard,
+          onAccept: (media, {required onUpdateDB}) {
+            setState(() {
+              candidates = null;
+              accepted = media;
+              this.onUpdateDB = onUpdateDB;
+            });
+          },
+        ),
       );
     } else {
-      return StreamProgress(
-        stream: () => CLMediaProcess.analyseMedia(incomingMedia[0],
-            (CLMediaInfoGroup mg) {
-          setState(() {
-            candidates = mg;
-          });
-        }),
-        onCancel: onDiscard,
+      return FullscreenLayout(
+        child: StreamProgress(
+          stream: () => CLMediaProcess.analyseMedia(incomingMedia[0],
+              (CLMediaInfoGroup mg) {
+            setState(() {
+              candidates = mg;
+            });
+          }),
+          onCancel: onDiscard,
+        ),
       );
     }
   }
 
   void onDiscard() {
+    candidates = null;
+    accepted = null;
     ref.read(incomingMediaStreamProvider.notifier).pop();
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
 

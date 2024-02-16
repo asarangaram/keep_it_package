@@ -1,13 +1,28 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart' as path;
+
+@immutable
+class Progress {
+  const Progress({
+    required this.fractCompleted,
+    required this.currentItem,
+  });
+  final double fractCompleted;
+  final String currentItem;
+}
 
 class CLMediaProcess {
-  static Stream<double> analyseMedia(
+  static Stream<Progress> analyseMedia(
     CLMediaInfoGroup media,
     void Function(CLMediaInfoGroup) onDone,
   ) async* {
     final updated = <CLMedia>[];
-    yield 0.0;
+    yield Progress(
+      currentItem: path.basename(media.list[0].path),
+      fractCompleted: 0,
+    );
 
     for (final (i, item) in media.list.indexed) {
       switch (item.type) {
@@ -42,14 +57,20 @@ class CLMediaProcess {
         case CLMediaType.text:
           break;
       }
-      await Future.delayed(const Duration(milliseconds: 200), () {});
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
-      yield (i + 1) / media.list.length;
+      yield Progress(
+        currentItem: (i + 1 == media.list.length)
+            ? ''
+            : path.basename(media.list[i + 1].path),
+        fractCompleted: (i + 1) / media.list.length,
+      );
     }
+    await Future<void>.delayed(const Duration(milliseconds: 100));
     onDone(CLMediaInfoGroup(list: updated, targetID: media.targetID));
   }
 
-  static Stream<double> acceptMedia({
+  static Stream<Progress> acceptMedia({
     required CLMediaInfoGroup media,
     required void Function(CLMediaInfoGroup) onDone,
   }) async* {
@@ -57,13 +78,21 @@ class CLMediaProcess {
       throw Exception("targetID can't be null to accept");
     }
     final updated = <CLMedia>[];
-    yield 0.0;
+    yield Progress(
+      currentItem: path.basename(media.list[0].path),
+      fractCompleted: 0,
+    );
     for (final (i, item) in media.list.indexed) {
       updated.add(item.copyWith(collectionId: media.targetID));
-      await Future.delayed(const Duration(milliseconds: 200), () {});
-      yield (i + 1) / media.list.length;
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      yield Progress(
+        currentItem: (i + 1 == media.list.length)
+            ? ''
+            : path.basename(media.list[i + 1].path),
+        fractCompleted: (i + 1) / media.list.length,
+      );
     }
-
+    await Future<void>.delayed(const Duration(milliseconds: 100));
     onDone(CLMediaInfoGroup(list: updated, targetID: media.targetID));
   }
 }

@@ -16,9 +16,13 @@ class KeepMediaWizard extends ConsumerWidget {
   final CLMediaInfoGroup media;
 
   final void Function() onDiscard;
-  final Future<void> Function(
+  final void Function(
     CLMediaInfoGroup media, {
-    required Future<void> Function(CLMediaInfoGroup media) onUpdateDB,
+    required Future<void> Function(
+      BuildContext context,
+      WidgetRef ref,
+      CLMediaInfoGroup media,
+    ) onUpdateDB,
   }) onAccept;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,7 +45,6 @@ class KeepMediaWizard extends ConsumerWidget {
               collection: Collection.fromBase(collection),
               saveIntoTagsId: selectedTags?.map((e) => e.id!).toList(),
             );
-            onDiscard();
           },
         );
       },
@@ -61,13 +64,14 @@ class KeepMediaWizard extends ConsumerWidget {
               collection,
               saveIntoTagsId,
             );
-    await onAccept(
+    onAccept(
       media.copyWith(targetID: collectionId),
-      onUpdateDB: (media) => onUpdateDB(ref, media),
+      onUpdateDB: onUpdateDB,
     );
   }
 
-  Future<void> onUpdateDB(
+  static Future<void> onUpdateDB(
+    BuildContext context,
     WidgetRef ref,
     CLMediaInfoGroup updatedMedia,
   ) async {

@@ -1,10 +1,11 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/from_store/load_tags.dart';
 import '../widgets/keep_media_wizard/keep_media_wizard.dart';
 
-class SharedItemsPage extends StatelessWidget {
+class SharedItemsPage extends ConsumerWidget {
   const SharedItemsPage({
     required this.media,
     required this.onDiscard,
@@ -14,13 +15,17 @@ class SharedItemsPage extends StatelessWidget {
 
   final CLMediaInfoGroup media;
   final void Function() onDiscard;
-  final Future<void> Function(
+  final void Function(
     CLMediaInfoGroup media, {
-    required Future<void> Function(CLMediaInfoGroup media) onUpdateDB,
+    required Future<void> Function(
+      BuildContext context,
+      WidgetRef ref,
+      CLMediaInfoGroup media,
+    ) onUpdateDB,
   }) onAccept;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return LoadTags(
       buildOnData: (tags) => Column(
         children: [

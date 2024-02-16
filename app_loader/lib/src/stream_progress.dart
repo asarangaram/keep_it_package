@@ -1,8 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+
+import 'models/cl_media_process.dart';
 
 class StreamProgress extends StatelessWidget {
   const StreamProgress({
@@ -11,7 +14,7 @@ class StreamProgress extends StatelessWidget {
     super.key,
   });
 
-  final Stream<double> Function() stream;
+  final Stream<Progress> Function() stream;
   final void Function() onCancel;
 
   @override
@@ -23,13 +26,15 @@ class StreamProgress extends StatelessWidget {
           child: Stack(
             children: [
               Center(
-                child: StreamBuilder<double>(
+                child: StreamBuilder<Progress>(
                   stream: stream(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<double> snapshot) {
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<Progress> snapshot,
+                  ) {
                     final double? percent;
                     if (snapshot.hasData) {
-                      percent = min(1, snapshot.data!);
+                      percent = min(1, snapshot.data!.fractCompleted);
                       return CircularPercentIndicator(
                         radius: 100,
                         lineWidth: 13,
@@ -38,8 +43,8 @@ class StreamProgress extends StatelessWidget {
                         center: CLText.veryLarge(
                           '${(percent * 100).toInt()} %',
                         ),
-                        footer: const CLText.large(
-                          'Please wait while analysing media files',
+                        footer: CLText.large(
+                          snapshot.data!.currentItem,
                         ),
                         circularStrokeCap: CircularStrokeCap.round,
                         progressColor: Colors.purple,
