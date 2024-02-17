@@ -216,8 +216,17 @@ class ThumbnailService {
           } else {
             final inputImage = decodeImage(File(dataIn.path).readAsBytesSync());
             if (inputImage != null) {
-              final thumbnailWidth = dataIn.dimension;
-              final thumbnailHeight = dataIn.dimension;
+              final int thumbnailHeight;
+              final int thumbnailWidth;
+              if (inputImage.height > inputImage.width) {
+                thumbnailHeight = dataIn.dimension;
+                thumbnailWidth =
+                    (thumbnailHeight * inputImage.width) ~/ inputImage.height;
+              } else {
+                thumbnailWidth = dataIn.dimension;
+                thumbnailHeight =
+                    (thumbnailWidth * inputImage.height) ~/ inputImage.width;
+              }
               final thumbnail = copyResize(
                 inputImage,
                 width: thumbnailWidth,

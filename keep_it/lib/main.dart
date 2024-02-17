@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
@@ -16,6 +16,21 @@ import 'pages/shared_items_page.dart';
 import 'pages/tags_page.dart';
 import 'pages/timeline_page.dart';
 
+extension ExtDirectory on Directory {
+  void clear() {
+    if (existsSync()) {
+      final contents = listSync();
+      for (final content in contents) {
+        if (content is File) {
+          content.deleteSync();
+        } else if (content is Directory) {
+          content.deleteSync(recursive: true);
+        }
+      }
+    }
+  }
+}
+
 class KeepItApp implements AppDescriptor {
   @override
   String get title => 'Keep It';
@@ -23,22 +38,16 @@ class KeepItApp implements AppDescriptor {
   @override
   CLAppInitializer get appInitializer => (ref) async {
         // TODO(anandas): Delete only if saved preference is set to reset.
-
         // ignore: dead_code, literal_only_boolean_expressions
-        if (false) {
-          final appDir = await getApplicationDocumentsDirectory();
-          final fullPath = path.join(appDir.path, 'keepIt.db');
-          if (File(fullPath).existsSync()) {
-            await File(fullPath).delete();
+        if (true) {
+          for (final dir in [
+            await getApplicationDocumentsDirectory(),
+            await getApplicationCacheDirectory(),
+          ]) {
+            dir.clear();
           }
-          for (final dir in ['keep_it']) {
-            final folder = path.join(appDir.path, dir);
-            if (Directory(folder).existsSync()) {
-              Directory(folder).deleteSync(recursive: true);
-            }
-          }
+          await FilePicker.platform.clearTemporaryFiles();
         }
-
         return true;
       };
 

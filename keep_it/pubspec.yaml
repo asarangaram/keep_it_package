@@ -16,6 +16,7 @@ dependencies:
     path: ../colan_widgets
   collection: ^1.17.2
   cupertino_icons: ^1.0.2
+  file_picker: ^6.1.1
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.9

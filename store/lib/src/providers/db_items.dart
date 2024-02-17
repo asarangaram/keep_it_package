@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:crypto/crypto.dart';
-import 'package:exif/exif.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -58,37 +57,7 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
       throw Exception('DB Manager is not ready');
     }
     final prefix = await pathPrefix;
-    DateTime? originalDate;
-    try {
-      if (item.type != CLMediaType.image) {
-        throw Exception(' Support Only for Images');
-      }
-      if (item.originalDate == null && item.id == null) {
-        final fileBytes = File(item.path).readAsBytesSync();
-        final data = await readExifFromBytes(fileBytes);
-
-        var dateTimeString = data['EXIF DateTimeOriginal']!.printable;
-        final dateAndTime = dateTimeString.split(' ');
-        dateTimeString =
-            [dateAndTime[0].replaceAll(':', '-'), dateAndTime[1]].join(' ');
-
-        originalDate = DateTime.parse(dateTimeString);
-      }
-      //final md5String = await calculateMD5(File(item.path));
-      // TODO(anands): md5 compare and replace.
-    } catch (e) {
-      originalDate = null;
-    }
-
-    (await item.copyFile(
-      pathPrefix: prefix,
-    ))
-        .copyWith(originalDate: originalDate)
-        .dbUpsert(
-          databaseManager!.db,
-          pathPrefix: prefix,
-        );
-
+    item.dbUpsert(databaseManager!.db, pathPrefix: prefix);
     await loadItems();
   }
 
