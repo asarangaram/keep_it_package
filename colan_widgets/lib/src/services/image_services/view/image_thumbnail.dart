@@ -70,7 +70,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
                   path: widget.media.path,
                   thumbnailPath: previewFileName!,
                   isVideo: widget.media.type == CLMediaType.video,
-                  dimension: 128,
+                  dimension: 256,
                 ),
                 onData: () {
                   if (mounted) {

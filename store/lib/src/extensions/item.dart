@@ -52,14 +52,32 @@ extension ExtItemInDB on CLMedia {
     if (id != null) {
       db.execute(
         'UPDATE OR IGNORE Item SET path = ?, '
-        'ref = ?, collection_id = ? type=? originalDate=? WHERE id = ?',
-        [updatedPath, ref, collectionId, type, originalDate.toSQL(), id],
+        'ref = ?, collection_id = ? type=? originalDate=? md5String=? '
+        'WHERE id = ?',
+        [
+          updatedPath,
+          ref,
+          collectionId,
+          type,
+          originalDate.toSQL(),
+          md5String,
+          id
+        ],
       );
+      return id!;
     }
     db.execute(
       'INSERT OR IGNORE INTO Item (path, '
-      'ref, collection_id, type, originalDate) VALUES (?, ?, ?, ?, ?) ',
-      [updatedPath, ref, collectionId, type.name, originalDate.toSQL()],
+      'ref, collection_id, type, originalDate, md5String) '
+      'VALUES (?, ?, ?, ?, ?, ?) ',
+      [
+        updatedPath,
+        ref,
+        collectionId,
+        type.name,
+        originalDate.toSQL(),
+        md5String,
+      ],
     );
     return db.lastInsertRowId;
   }

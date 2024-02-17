@@ -7,8 +7,10 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  crypto: ^3.0.3
   event_bus: ^2.0.0
   exif: ^3.3.0
+  ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.9

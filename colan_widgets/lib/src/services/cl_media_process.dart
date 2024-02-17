@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:exif/exif.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
@@ -10,7 +11,7 @@ import '../views/stream_progress_view.dart';
 
 class CLMediaProcess {
   static Stream<Progress> analyseMedia(
-    CLMediaInfoGroup media,
+    CLMediaBaseInfoGroup media,
     void Function(CLMediaInfoGroup) onDone,
   ) async* {
     final updated = <CLMedia>[];
@@ -20,10 +21,15 @@ class CLMediaProcess {
     );
 
     for (final (i, item) in media.list.indexed) {
+      final CLMedia updatedItem;
+      final file = File(item.path);
+      final contents = await file.readAsBytes();
+      final md5String = md5.convert(contents);
+
       switch (item.type) {
         case CLMediaType.file:
           {
-            final clMedia = CLMedia(
+            updatedItem = CLMedia(
               path: item.path,
               type: switch (lookupMimeType(item.path)) {
                 (final String mime) when mime.startsWith('image') =>
@@ -33,18 +39,26 @@ class CLMediaProcess {
                 _ => CLMediaType.file
               },
               collectionId: media.targetID,
+              md5String: md5String.toString(),
             );
-
-            updated.add(clMedia);
           }
         case CLMediaType.image:
         case CLMediaType.video:
         case CLMediaType.url:
-          updated.add(item);
         case CLMediaType.audio:
         case CLMediaType.text:
-          break;
+          {
+            updatedItem = CLMedia(
+              path: item.path,
+              type: item.type,
+              collectionId: media.targetID,
+              md5String: md5String.toString(),
+            );
+          }
       }
+
+      updated.add(updatedItem);
+
       await Future<void>.delayed(const Duration(milliseconds: 10));
 
       yield Progress(
@@ -61,17 +75,20 @@ class CLMediaProcess {
   static Stream<Progress> acceptMedia({
     required CLMediaInfoGroup media,
     required void Function(CLMediaInfoGroup) onDone,
+    // required CLMedia? Function(CLMedia media) onGetDuplicate,
   }) async* {
     if (media.targetID == null) {
       throw Exception("targetID can't be null to accept");
     }
+
     final updated = <CLMedia>[];
     yield Progress(
       currentItem: path.basename(media.list[0].path),
       fractCompleted: 0,
     );
     final pathPrefix = await getApplicationDocumentsDirectory();
-    for (final (i, item) in media.list.indexed) {
+    for (final (i, item0) in media.list.indexed) {
+      final item = item0;
       updated.add(
         await (await item
                 .copyWith(collectionId: media.targetID)
@@ -110,8 +127,6 @@ extension ExtProcess on CLMedia {
         originalDate = DateTime.parse(dateTimeString);
         return copyWith(originalDate: originalDate);
       }
-      // final md5String = await calculateMD5(File(item.path));
-      // TODO(anandas): md5 compare and replace.
     } catch (e) {
       /*  */
     }

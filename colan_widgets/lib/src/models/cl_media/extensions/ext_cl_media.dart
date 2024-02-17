@@ -11,9 +11,11 @@ import '../../../app_logger.dart';
 import '../../../extensions/ext_io_file.dart';
 import '../cl_media.dart';
 import '../cl_media_type.dart';
-import 'url_handler.dart';
 
-extension ExtCLMediaFile on CLMedia {
+extension ExtCLMediaBaseFile on CLMediaBase {
+  String get previewFileName => '$path.jpg';
+  bool get hasPreview => File(previewFileName).existsSync();
+
   void deleteFile() {
     File(previewFileName).deleteIfExists();
     File(path).deleteIfExists();
@@ -43,7 +45,7 @@ extension ExtCLMediaFile on CLMedia {
     return '${DateTime.now().millisecondsSinceEpoch}_filename';
   }
 
-  Future<CLMedia> download(
+  Future<CLMediaBase> download(
     String url,
     CLMediaType type, {
     required String targetDir,
@@ -57,7 +59,9 @@ extension ExtCLMediaFile on CLMedia {
       ..writeAsBytesSync(response.bodyBytes);
     return copyWith(path: targetFile, type: type);
   }
+}
 
+extension ExtCLMediaFile on CLMedia {
   Future<CLMedia> copyFile({required String pathPrefix}) async {
     if (collectionId == null) {
       throw Exception("Item can't be stored without collectionId");
@@ -93,19 +97,6 @@ extension ExtCLMediaFile on CLMedia {
         return copyWith(path: targetFile);
 
       case CLMediaType.url:
-        final mime = await URLHandler.getMimeType(path);
-        switch (mime) {
-          case CLMediaType.image:
-          case CLMediaType.video:
-            return download(path, mime!, targetDir: targetDir);
-          case null:
-          case CLMediaType.text:
-          case CLMediaType.url:
-          case CLMediaType.audio:
-          case CLMediaType.file:
-            return this;
-        }
-
       case CLMediaType.text:
         return this;
     }
@@ -158,12 +149,9 @@ extension ExtCLMediaFile on CLMedia {
     };
   }
 
-  String get previewFileName => '$path.jpg';
-  bool get hasPreview => File(previewFileName).existsSync();
-
   String? get previewPath {
     if (hasPreview) return previewFileName;
-    if (type == CLMediaType.image) return path;
+
     return null;
   }
 
@@ -225,7 +213,7 @@ extension ExtCLMediaFile on CLMedia {
     }
   }
 
-  static Future<CLMedia> clMediaWithPreview({
+  /* static Future<CLMedia> clMediaWithPreview({
     required String path,
     required CLMediaType type,
     String? ref,
@@ -241,7 +229,7 @@ extension ExtCLMediaFile on CLMedia {
     );
     await m.generatePreview();
     return m;
-  }
+  } */
 }
 
 extension ExtCLMediaInfoGroupNullable on CLMediaInfoGroup? {
