@@ -23,7 +23,6 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
     return IncomingMediaHandler(
-      incomingMediaViewBuilder: widget.incomingMediaViewBuilder,
       child: AppTheme(
         child: CLFullscreenBox(
           useSafeArea: true,

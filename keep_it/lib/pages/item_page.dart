@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
-import '../widgets/from_store/load_items.dart';
 
 class ItemPage extends ConsumerWidget {
   const ItemPage({required this.id, required this.collectionId, super.key});

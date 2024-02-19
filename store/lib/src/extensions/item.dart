@@ -22,6 +22,19 @@ extension ExtItemInDB on CLMedia {
     return CLMedia.fromMap(map, pathPrefix: pathPrefix);
   }
 
+  static CLMedia? getByMD5(
+    Database db,
+    String md5String, {
+    required String? pathPrefix,
+  }) {
+    final Map<String, dynamic>? map = db.select(
+      'SELECT * FROM Item WHERE md5String = ?',
+      [md5String],
+    ).firstOrNull;
+    if (map == null) return null;
+    return CLMedia.fromMap(map, pathPrefix: pathPrefix);
+  }
+
   static List<CLMedia> getAll(Database db, {String pathPrefix = ''}) {
     final List<Map<String, dynamic>> maps = db.select('SELECT * FROM Item '
         ' ORDER BY Item.updatedDate DESC');

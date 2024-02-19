@@ -8,8 +8,6 @@ import 'package:store/store.dart';
 
 import '../widgets/dialogs.dart';
 
-import '../widgets/from_store/load_items_in_tag.dart';
-import '../widgets/from_store/load_tags.dart';
 import '../widgets/keepit_grid/cl_folder_view.dart';
 
 class TagsPage extends ConsumerWidget {

@@ -202,4 +202,32 @@ class CLMediaInfoGroup {
       targetID: targetID ?? this.targetID,
     );
   }
+
+  Iterable<CLMedia> get _stored => list.where((e) => e.id != null);
+  Iterable<CLMedia> get _targetMismatch => (targetID == null)
+      ? _stored
+      : _stored.where((e) => e.collectionId != targetID);
+  List<CLMedia> get targetMismatch => _targetMismatch.toList();
+  List<CLMedia> get stored => _stored.toList();
+
+  bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
+
+  CLMediaInfoGroup mergeMismatch() {
+    final items = list.map((e) => e.copyWith(collectionId: targetID));
+    return copyWith(list: items.toList());
+  }
+
+  CLMediaInfoGroup? removeMismatch() {
+    final items = list.where((e) => e.collectionId == targetID);
+    if (items.isEmpty) return null;
+
+    return copyWith(list: (items as List<CLMedia>).toList());
+  }
+
+  CLMediaInfoGroup? remove(CLMedia itemToRemove) {
+    final items = list.where((e) => e != itemToRemove);
+    if (items.isEmpty) return null;
+
+    return copyWith(list: items.toList());
+  }
 }

@@ -7,8 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/from_store/load_collections.dart';
-import '../widgets/from_store/load_items.dart';
 import '../widgets/keepit_grid/cl_folder_view.dart';
 
 class CollectionsPage extends ConsumerStatefulWidget {

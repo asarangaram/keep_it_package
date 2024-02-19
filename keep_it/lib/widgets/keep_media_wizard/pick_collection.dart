@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../from_store/load_tags.dart';
 import 'create_or_select.dart';
 import 'description_editor.dart';
 import 'keepit_selector.dart';

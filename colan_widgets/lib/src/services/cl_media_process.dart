@@ -10,54 +10,62 @@ import '../models/cl_media.dart';
 import '../views/stream_progress_view.dart';
 
 class CLMediaProcess {
-  static Stream<Progress> analyseMedia(
-    CLMediaInfoGroup media,
-    void Function(CLMediaInfoGroup) onDone,
-  ) async* {
-    final updated = <CLMedia>[];
+  static Stream<Progress> analyseMedia({
+    required CLMediaInfoGroup media,
+    required Future<CLMedia?> Function(String md5) findItemByMD5,
+    required void Function({
+      required CLMediaInfoGroup mg,
+    }) onDone,
+  }) async* {
+    final candidates = <CLMedia>[];
+
     yield Progress(
       currentItem: path.basename(media.list[0].path),
       fractCompleted: 0,
     );
 
     for (final (i, item) in media.list.indexed) {
-      final CLMedia updatedItem;
       final file = File(item.path);
       final contents = await file.readAsBytes();
-      final md5String = md5.convert(contents);
+      final md5String = md5.convert(contents).toString();
+      final duplicate = await findItemByMD5(md5String);
+      if (duplicate != null) {
+        candidates.add(duplicate);
+      } else {
+        final CLMedia itemsToAdd;
+        switch (item.type) {
+          case CLMediaType.file:
+            {
+              itemsToAdd = CLMedia(
+                path: item.path,
+                type: switch (lookupMimeType(item.path)) {
+                  (final String mime) when mime.startsWith('image') =>
+                    CLMediaType.image,
+                  (final String mime) when mime.startsWith('video') =>
+                    CLMediaType.video,
+                  _ => CLMediaType.file
+                },
+                collectionId: media.targetID,
+                md5String: md5String,
+              );
+            }
+          case CLMediaType.image:
+          case CLMediaType.video:
+          case CLMediaType.url:
+          case CLMediaType.audio:
+          case CLMediaType.text:
+            {
+              itemsToAdd = CLMedia(
+                path: item.path,
+                type: item.type,
+                collectionId: media.targetID,
+                md5String: md5String,
+              );
+            }
+        }
 
-      switch (item.type) {
-        case CLMediaType.file:
-          {
-            updatedItem = CLMedia(
-              path: item.path,
-              type: switch (lookupMimeType(item.path)) {
-                (final String mime) when mime.startsWith('image') =>
-                  CLMediaType.image,
-                (final String mime) when mime.startsWith('video') =>
-                  CLMediaType.video,
-                _ => CLMediaType.file
-              },
-              collectionId: media.targetID,
-              md5String: md5String.toString(),
-            );
-          }
-        case CLMediaType.image:
-        case CLMediaType.video:
-        case CLMediaType.url:
-        case CLMediaType.audio:
-        case CLMediaType.text:
-          {
-            updatedItem = CLMedia(
-              path: item.path,
-              type: item.type,
-              collectionId: media.targetID,
-              md5String: md5String.toString(),
-            );
-          }
+        candidates.add(itemsToAdd);
       }
-
-      updated.add(updatedItem);
 
       await Future<void>.delayed(const Duration(milliseconds: 10));
 
@@ -69,7 +77,9 @@ class CLMediaProcess {
       );
     }
     await Future<void>.delayed(const Duration(milliseconds: 10));
-    onDone(CLMediaInfoGroup(list: updated, targetID: media.targetID));
+    onDone(
+      mg: CLMediaInfoGroup(list: candidates, targetID: media.targetID),
+    );
   }
 
   static Stream<Progress> acceptMedia({

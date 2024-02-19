@@ -2,20 +2,15 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'app_descriptor.dart';
-import 'fullscreen_layout.dart';
 
 import 'providers/incoming_media.dart';
-
 
 class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
     required this.child,
-    required this.incomingMediaViewBuilder,
     super.key,
   });
   final Widget child;
-  final IncomingMediaViewBuilder incomingMediaViewBuilder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -23,72 +18,26 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
 }
 
 class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
-  CLMediaInfoGroup? accepted;
   CLMediaInfoGroup? candidates;
-  Future<void> Function(
-    BuildContext context,
-    WidgetRef ref,
-    CLMediaInfoGroup media,
-  )? onUpdateDB;
+
+  @override
+  void didChangeDependencies() {
+    candidates = null;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
     final incomingMedia = ref.watch(incomingMediaStreamProvider);
     if (incomingMedia.isEmpty) {
-      setState(() {
-        accepted = null;
-        candidates = null;
-        onUpdateDB = null;
-      });
       return widget.child;
     }
-    if (accepted != null) {
-      return FullscreenLayout(
-        child: StreamProgressView(
-          stream: () => CLMediaProcess.acceptMedia(
-            media: accepted!,
-            onDone: (CLMediaInfoGroup items) async {
-              await onUpdateDB!(context, ref, items);
-              onDiscard();
-            },
-          ),
-          onCancel: onDiscard,
-        ),
-      );
-    } else if (candidates != null) {
-      return FullscreenLayout(
-        child: widget.incomingMediaViewBuilder(
-          context,
-          ref,
-          media: candidates!,
-          onDiscard: onDiscard,
-          onAccept: (media, {required onUpdateDB}) {
-            setState(() {
-              candidates = null;
-              accepted = media;
-              this.onUpdateDB = onUpdateDB;
-            });
-          },
-        ),
-      );
-    } else {
-      return FullscreenLayout(
-        child: StreamProgressView(
-          stream: () => CLMediaProcess.analyseMedia(incomingMedia[0],
-              (CLMediaInfoGroup mg) {
-            setState(() {
-              candidates = mg;
-            });
-          }),
-          onCancel: onDiscard,
-        ),
-      );
-    }
+
+    return switch (candidates) { _ => Container() };
   }
 
   void onDiscard() {
     candidates = null;
-    accepted = null;
     ref.read(incomingMediaStreamProvider.notifier).pop();
     if (mounted) {
       setState(() {});
