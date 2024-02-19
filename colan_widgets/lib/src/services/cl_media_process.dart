@@ -11,7 +11,7 @@ import '../views/stream_progress_view.dart';
 
 class CLMediaProcess {
   static Stream<Progress> analyseMedia(
-    CLMediaBaseInfoGroup media,
+    CLMediaInfoGroup media,
     void Function(CLMediaInfoGroup) onDone,
   ) async* {
     final updated = <CLMedia>[];

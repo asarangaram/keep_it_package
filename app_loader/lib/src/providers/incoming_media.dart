@@ -7,7 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
-class IncomingMediaNotifier extends StateNotifier<List<CLMediaBaseInfoGroup>> {
+class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
   IncomingMediaNotifier()
       : intentDataStreamSubscription = null,
         super([]) {
@@ -46,32 +46,32 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaBaseInfoGroup>> {
     final attachements = [
       if (media.content != null)
         if (media.content!.isURL())
-          CLMediaBase(path: media.content!, type: CLMediaType.url)
+          CLMedia(path: media.content!, type: CLMediaType.url)
         else
-          CLMediaBase(path: 'text:${media.content!}', type: CLMediaType.text),
+          CLMedia(path: 'text:${media.content!}', type: CLMediaType.text),
       if (media.imageFilePath != null)
-        CLMediaBase(
+        CLMedia(
           path: media.imageFilePath!,
           type: CLMediaType.image,
         ),
       if (media.attachments != null)
         ...media.attachments!.where((e) => e != null).map(
           (e) {
-            return CLMediaBase(path: e!.path, type: toCLMediaType(e.type));
+            return CLMedia(path: e!.path, type: toCLMediaType(e.type));
           },
         ),
     ];
 
     if (attachements.isNotEmpty) {
       push(
-        CLMediaBaseInfoGroup(
+        CLMediaInfoGroup(
           list: attachements,
         ),
       );
     }
   }
 
-  void push(CLMediaBaseInfoGroup item) {
+  void push(CLMediaInfoGroup item) {
     state = [...state, item];
   }
 
@@ -89,8 +89,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaBaseInfoGroup>> {
 }
 
 final incomingMediaStreamProvider =
-    StateNotifierProvider<IncomingMediaNotifier, List<CLMediaBaseInfoGroup>>(
-        (ref) {
+    StateNotifierProvider<IncomingMediaNotifier, List<CLMediaInfoGroup>>((ref) {
   final notifier = IncomingMediaNotifier();
   ref.onDispose(notifier.dispose);
   return notifier;

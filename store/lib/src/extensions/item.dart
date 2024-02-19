@@ -61,7 +61,7 @@ extension ExtItemInDB on CLMedia {
           type,
           originalDate.toSQL(),
           md5String,
-          id
+          id,
         ],
       );
       return id!;

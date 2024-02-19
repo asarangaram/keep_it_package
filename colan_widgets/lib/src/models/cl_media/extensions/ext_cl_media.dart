@@ -12,7 +12,7 @@ import '../../../extensions/ext_io_file.dart';
 import '../cl_media.dart';
 import '../cl_media_type.dart';
 
-extension ExtCLMediaBaseFile on CLMediaBase {
+extension ExtCLMediaFile on CLMedia {
   String get previewFileName => '$path.jpg';
   bool get hasPreview => File(previewFileName).existsSync();
 
@@ -45,7 +45,7 @@ extension ExtCLMediaBaseFile on CLMediaBase {
     return '${DateTime.now().millisecondsSinceEpoch}_filename';
   }
 
-  Future<CLMediaBase> download(
+  Future<CLMedia> download(
     String url,
     CLMediaType type, {
     required String targetDir,
@@ -59,9 +59,7 @@ extension ExtCLMediaBaseFile on CLMediaBase {
       ..writeAsBytesSync(response.bodyBytes);
     return copyWith(path: targetFile, type: type);
   }
-}
 
-extension ExtCLMediaFile on CLMedia {
   Future<CLMedia> copyFile({required String pathPrefix}) async {
     if (collectionId == null) {
       throw Exception("Item can't be stored without collectionId");

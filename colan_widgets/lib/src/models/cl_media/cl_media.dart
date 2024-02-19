@@ -7,44 +7,11 @@ import '../../extensions/ext_string.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLMediaBase {
-  final String path;
-  final CLMediaType type;
-  const CLMediaBase({
+class CLMedia {
+  CLMedia({
     required this.path,
     required this.type,
-  });
-
-  CLMediaBase copyWith({
-    String? path,
-    CLMediaType? type,
-  }) {
-    return CLMediaBase(
-      path: path ?? this.path,
-      type: type ?? this.type,
-    );
-  }
-
-  @override
-  bool operator ==(covariant CLMediaBase other) {
-    if (identical(this, other)) return true;
-
-    return other.path == path && other.type == type;
-  }
-
-  @override
-  int get hashCode => path.hashCode ^ type.hashCode;
-
-  @override
-  String toString() => 'CLMediaBase(path: $path, type: $type)';
-}
-
-@immutable
-class CLMedia extends CLMediaBase {
-  CLMedia({
-    required super.path,
-    required super.type,
-    required this.md5String,
+    this.md5String,
     this.ref,
     this.id,
     this.collectionId,
@@ -111,6 +78,8 @@ class CLMedia extends CLMediaBase {
         pathPrefix: pathPrefix,
       );
 
+  final String path;
+  final CLMediaType type;
   final String? ref;
   final int? id;
   final int? collectionId;
@@ -118,9 +87,8 @@ class CLMedia extends CLMediaBase {
   final DateTime? originalDate;
   final DateTime? createdDate;
   final DateTime? updatedDate;
-  final String md5String;
+  final String? md5String;
 
-  @override
   CLMedia copyWith({
     String? path,
     CLMediaType? type,
@@ -188,6 +156,9 @@ class CLMedia extends CLMediaBase {
   Map<String, dynamic> toMap({
     required String? pathPrefix,
   }) {
+    if (md5String == null) {
+      throw Exception('md5String must be determined before generating map');
+    }
     final updatedPath =
         pathPrefix != null ? path.replaceFirst(pathPrefix, '') : path;
 
@@ -209,28 +180,6 @@ class CLMedia extends CLMediaBase {
     required String? pathPrefix,
   }) =>
       json.encode(toMap(pathPrefix: pathPrefix));
-}
-
-class CLMediaBaseInfoGroup {
-  CLMediaBaseInfoGroup({required this.list, this.targetID});
-  final List<CLMediaBase> list;
-  final int? targetID;
-
-  bool get isEmpty => list.isEmpty;
-  bool get isNotEmpty => list.isNotEmpty;
-
-  @override
-  String toString() => 'CLMediaInfoGroup(list: $list)';
-
-  CLMediaBaseInfoGroup copyWith({
-    List<CLMedia>? list,
-    int? targetID,
-  }) {
-    return CLMediaBaseInfoGroup(
-      list: list ?? this.list,
-      targetID: targetID ?? this.targetID,
-    );
-  }
 }
 
 class CLMediaInfoGroup {
