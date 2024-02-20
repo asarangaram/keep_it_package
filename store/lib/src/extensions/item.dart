@@ -2,6 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+import '../from_store/from_store.dart';
+
 extension SQLEXTDATETIME on DateTime? {
   String? toSQL() {
     if (this == null) {
@@ -112,6 +114,14 @@ extension ExtItemInDB on CLMedia {
     );
 
     return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
+  }
+
+  String relativePath(DeviceDirectories directories) {
+    if (path.startsWith(directories.container.path)) {
+      return path.replaceFirst(directories.container.path, '');
+    }
+    // Paths outside the container, lets keep the absoulte path
+    return path;
   }
 
   /* CLMedia toCLMedia({String pathPrefix = ''}) {

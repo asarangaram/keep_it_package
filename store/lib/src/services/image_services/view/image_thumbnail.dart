@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
+import 'package:store/src/extensions/item.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -39,11 +40,14 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
     return WhenDeviceDirectoriesAccessible(
       builder: (directories) {
         final uuidGenerator = ref.watch(uuidProvider);
-        final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, widget.media.path);
-        String previewFileName;
-        final randomName = '$uuid.jpg';
-        previewFileName = path.join(directories.cacheDir.path, randomName);
-
+        final uuid = uuidGenerator.v5(
+          Uuid.NAMESPACE_URL,
+          widget.media.relativePath(directories),
+        );
+        final previewFileName =
+            path.join(directories.cacheDir.path, '$uuid.jpg');
+        print(widget.media.relativePath(directories));
+        print(previewFileName);
         final hasThumbnail =
             !widget.refresh && File(previewFileName).existsSync();
         if (hasThumbnail) {
