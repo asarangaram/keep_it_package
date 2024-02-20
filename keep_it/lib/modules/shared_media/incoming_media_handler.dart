@@ -1,20 +1,20 @@
-import 'package:app_loader/src/fullscreen_layout.dart';
-import 'package:app_loader/src/shared_media/analyse.dart';
-import 'package:app_loader/src/shared_media/duplicates.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'providers/incoming_media.dart';
-import 'shared_media/shared_items_page.dart';
+import 'analyse.dart';
+import 'duplicates.dart';
+import 'shared_items_page.dart';
 
 class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
-    required this.child,
+    required this.incomingMedia,
+    required this.onDiscard,
     super.key,
   });
-  final Widget child;
+  final CLMediaInfoGroup incomingMedia;
+  final void Function() onDiscard;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -32,17 +32,12 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   @override
   Widget build(BuildContext context) {
-    final incomingMedia = ref.watch(incomingMediaStreamProvider);
-    if (incomingMedia.isEmpty) {
-      return widget.child;
-    }
-
     try {
       return FullscreenLayout(
         onClose: onDiscard,
         child: switch (candidates) {
           null => AnalysePage(
-              incomingMedia: incomingMedia[0],
+              incomingMedia: widget.incomingMedia,
               onDone: onDone,
               onCancel: onDiscard,
             ),
@@ -99,7 +94,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   void onDiscard() {
     candidates = null;
-    ref.read(incomingMediaStreamProvider.notifier).pop();
+    widget.onDiscard();
     if (mounted) {
       setState(() {});
     }

@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
+import 'modules/shared_media/incoming_media_handler.dart';
 import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
 import 'pages/tags_page.dart';
@@ -103,27 +104,16 @@ class KeepItApp implements AppDescriptor {
         ),
       ];
 
-  /* @override
+  @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
-        BuildContext context,
-        WidgetRef ref, {
-        required CLMediaInfoGroup media,
+        BuildContext context, {
+        required CLMediaInfoGroup incomingMedia,
         required void Function() onDiscard,
-        required void Function(
-          CLMediaInfoGroup media, {
-          required Future<void> Function(
-            BuildContext context,
-            WidgetRef ref,
-            CLMediaInfoGroup media,
-          ) onUpdateDB,
-        }) onAccept,
-      }) {
-        return SharedItemsPage(
-          media: media,
-          onDiscard: onDiscard,
-          onAccept: onAccept,
-        );
-      }; */
+      }) =>
+          IncomingMediaHandler(
+            incomingMedia: incomingMedia,
+            onDiscard: onDiscard,
+          );
 
   @override
   CLTransitionBuilder get transitionBuilder => (

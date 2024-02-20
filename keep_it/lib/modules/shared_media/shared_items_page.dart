@@ -1,8 +1,9 @@
-import 'package:app_loader/src/shared_media/keep_media_wizard/keep_media_wizard.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
+
+import 'keep_media_wizard/keep_media_wizard.dart';
 
 class SharedItemsPage extends ConsumerWidget {
   const SharedItemsPage({

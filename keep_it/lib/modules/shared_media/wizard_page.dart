@@ -31,54 +31,54 @@ abstract class WizardPageOld extends ConsumerWidget {
     CLMenuItem? option1,
     CLMenuItem? option2,
   }) {
+    /* decoration: BoxDecoration(
+            border: Border.all(),
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+          ), 
+          Do we need ClipRRect?? 
+          */
     return ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(4),
-        child: Container(
-          /* decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: const BorderRadius.all(Radius.circular(16)),
-          ), */
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: CLText.large(title),
-              ),
-              Expanded(
-                flex: 14,
-                child: child,
-              ),
-              Expanded(
-                flex: 5,
-                child: WizardDialog(
-                  option1: option1 == null
-                      ? null
-                      : CLButtonText.large(
-                          option1.title,
-                          onTap: option1.onTap,
-                          color: Theme.of(context).colorScheme.surface,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: CLText.large(title),
+            ),
+            Expanded(
+              flex: 14,
+              child: child,
+            ),
+            Expanded(
+              flex: 5,
+              child: WizardDialog(
+                option1: option1 == null
+                    ? null
+                    : CLButtonText.large(
+                        option1.title,
+                        onTap: option1.onTap,
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                option2: option2 == null
+                    ? null
+                    : CLButtonText.large(
+                        option2.title,
+                        onTap: option2.onTap,
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                content: Center(
+                  child: Text(
+                    message,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: CLScaleType.standard.fontSize,
                         ),
-                  option2: option2 == null
-                      ? null
-                      : CLButtonText.large(
-                          option2.title,
-                          onTap: option2.onTap,
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
-                  content: Center(
-                    child: Text(
-                      message,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontSize: CLScaleType.standard.fontSize,
-                          ),
-                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

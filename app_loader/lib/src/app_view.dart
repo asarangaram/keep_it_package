@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // Reference : https://gist.github.com/onatcipli/aed0372c987b4ae32311fe32bb4c1209
 
+import 'package:app_loader/src/app_theme.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,6 @@ import 'package:go_router/go_router.dart';
 import 'app_descriptor.dart';
 import 'bottom_nav_page.dart';
 import 'cl_route_descriptor.dart';
-import 'fullscreen_layout.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({
@@ -55,8 +55,10 @@ class _RaLRouterState extends ConsumerState<AppView>
         name: e.name,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: FullscreenLayout(
-            child: e.builder(context, state),
+          child: AppTheme(
+            child: FullscreenLayout(
+              child: e.builder(context, state),
+            ),
           ),
           transitionsBuilder: app.transitionBuilder,
         ),
@@ -69,8 +71,10 @@ class _RaLRouterState extends ConsumerState<AppView>
         parentNavigatorKey: parentNavigatorKey,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: FullscreenLayout(
-            child: e.builder(context, state),
+          child: AppTheme(
+            child: FullscreenLayout(
+              child: e.builder(context, state),
+            ),
           ),
           transitionsBuilder: app.transitionBuilder,
         ),
@@ -108,6 +112,7 @@ class _RaLRouterState extends ConsumerState<AppView>
           ) {
             return MaterialPage(
               child: BottomNavigationPage(
+                onMedia: app.incomingMediaViewBuilder,
                 child: navigationShell,
               ),
             );

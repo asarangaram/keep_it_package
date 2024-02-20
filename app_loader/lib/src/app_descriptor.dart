@@ -14,18 +14,9 @@ typedef CLTransitionBuilder = Widget Function(
 typedef CLRedirector = Future<String?> Function(String location);
 
 typedef IncomingMediaViewBuilder = Widget Function(
-  BuildContext context,
-  WidgetRef ref, {
-  required CLMediaInfoGroup media,
+  BuildContext context, {
+  required CLMediaInfoGroup incomingMedia,
   required void Function() onDiscard,
-  required void Function(
-    CLMediaInfoGroup media, {
-    required Future<void> Function(
-      BuildContext context,
-      WidgetRef ref,
-      CLMediaInfoGroup media,
-    ) onUpdateDB,
-  }) onAccept,
 });
 
 abstract class AppDescriptor {
@@ -36,5 +27,5 @@ abstract class AppDescriptor {
   CLAppInitializer get appInitializer;
   CLTransitionBuilder get transitionBuilder;
   CLRedirector get redirector;
-  // IncomingMediaViewBuilder get incomingMediaViewBuilder;
+  IncomingMediaViewBuilder get incomingMediaViewBuilder;
 }

@@ -3,15 +3,21 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'incoming_media_handler.dart';
+import 'incoming_media_monitor.dart';
 
 class BottomNavigationPage extends StatefulWidget {
   const BottomNavigationPage({
     required this.child,
+    required this.onMedia,
     super.key,
   });
 
   final StatefulNavigationShell child;
+  final Widget Function(
+    BuildContext context, {
+    required CLMediaInfoGroup incomingMedia,
+    required void Function() onDiscard,
+  }) onMedia;
 
   @override
   State<BottomNavigationPage> createState() => _BottomNavigationPageState();
@@ -20,7 +26,8 @@ class BottomNavigationPage extends StatefulWidget {
 class _BottomNavigationPageState extends State<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
-    return IncomingMediaHandler(
+    return IncomingMediaMonitor(
+      onMedia: widget.onMedia,
       child: AppTheme(
         child: CLFullscreenBox(
           useSafeArea: true,
