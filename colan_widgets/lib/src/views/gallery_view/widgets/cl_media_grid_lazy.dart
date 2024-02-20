@@ -34,7 +34,7 @@ class CLMediaGridLazy extends ConsumerStatefulWidget {
   final double crossAxisSpacing;
   final double mainAxisSpacing;
   final void Function(CLMedia media)? onTapMedia;
-  final Widget Function(BuildContext context, int index) itemBuilder;
+  final Widget Function(BuildContext context, CLMedia media) itemBuilder;
 
   final int index;
   final Stream<int> currentIndexStream;

@@ -58,8 +58,10 @@ class KeepMediaWizard extends ConsumerWidget {
               collection,
               saveIntoTagsId,
             );
+    final items =
+        media.list.map((e) => e.setCollectionID(collectionId)).toList();
     onAccept(
-      mg: media.copyWith(targetID: collectionId),
+      mg: CLMediaInfoGroup(list: items, targetID: collectionId),
     );
   }
 

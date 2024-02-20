@@ -36,7 +36,7 @@ class CLGalleryView extends ConsumerStatefulWidget {
   final void Function() onPickFiles;
   final void Function()? onPop;
   final void Function(CLMedia media)? onTapMedia;
-  final Widget Function(BuildContext context, int index) itemBuilder;
+  final Widget Function(BuildContext context, CLMedia media) itemBuilder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GalleryState();

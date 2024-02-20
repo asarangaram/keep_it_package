@@ -87,7 +87,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
   }
 
   void onDone({CLMediaInfoGroup? mg}) {
-    if (mg == null) {
+    if (mg == null || mg.isEmpty) {
       ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
       onDiscard();
       return;

@@ -23,48 +23,60 @@ class CLMediaProcess {
       currentItem: path.basename(media.list[0].path),
       fractCompleted: 0,
     );
+    Future<String> getFileChecksum(File file) async {
+      try {
+        final stream = file.openRead();
+        final hash = await md5.bind(stream).first;
+        
+        // NOTE: You might not need to convert it to base64
+        return hash.toString();
+      } catch (exception) {
+        throw Exception('unable to determine md5');
+      }
+    }
 
     for (final (i, item) in media.list.indexed) {
       final file = File(item.path);
-      final contents = await file.readAsBytes();
-      final md5String = md5.convert(contents).toString();
-      final duplicate = await findItemByMD5(md5String);
-      if (duplicate != null) {
-        candidates.add(duplicate);
-      } else {
-        final CLMedia itemsToAdd;
-        switch (item.type) {
-          case CLMediaType.file:
-            {
-              itemsToAdd = CLMedia(
-                path: item.path,
-                type: switch (lookupMimeType(item.path)) {
-                  (final String mime) when mime.startsWith('image') =>
-                    CLMediaType.image,
-                  (final String mime) when mime.startsWith('video') =>
-                    CLMediaType.video,
-                  _ => CLMediaType.file
-                },
-                collectionId: media.targetID,
-                md5String: md5String,
-              );
-            }
-          case CLMediaType.image:
-          case CLMediaType.video:
-          case CLMediaType.url:
-          case CLMediaType.audio:
-          case CLMediaType.text:
-            {
-              itemsToAdd = CLMedia(
-                path: item.path,
-                type: item.type,
-                collectionId: media.targetID,
-                md5String: md5String,
-              );
-            }
-        }
+      if (file.existsSync()) {
+        final md5String = await getFileChecksum(file);
+        final duplicate = await findItemByMD5(md5String);
+        if (duplicate != null) {
+          candidates.add(duplicate);
+        } else {
+          final CLMedia itemsToAdd;
+          switch (item.type) {
+            case CLMediaType.file:
+              {
+                itemsToAdd = CLMedia(
+                  path: item.path,
+                  type: switch (lookupMimeType(item.path)) {
+                    (final String mime) when mime.startsWith('image') =>
+                      CLMediaType.image,
+                    (final String mime) when mime.startsWith('video') =>
+                      CLMediaType.video,
+                    _ => CLMediaType.file
+                  },
+                  collectionId: media.targetID,
+                  md5String: md5String,
+                );
+              }
+            case CLMediaType.image:
+            case CLMediaType.video:
+            case CLMediaType.url:
+            case CLMediaType.audio:
+            case CLMediaType.text:
+              {
+                itemsToAdd = CLMedia(
+                  path: item.path,
+                  type: item.type,
+                  collectionId: media.targetID,
+                  md5String: md5String,
+                );
+              }
+          }
 
-        candidates.add(itemsToAdd);
+          candidates.add(itemsToAdd);
+        }
       }
 
       await Future<void>.delayed(const Duration(milliseconds: 10));

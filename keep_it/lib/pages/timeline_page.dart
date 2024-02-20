@@ -19,8 +19,8 @@ class TimeLinePage extends ConsumerWidget {
             label: items.collection.label,
             galleryMap: items.entries.filterByDate(),
             emptyState: const EmptyState(),
-            itemBuilder: (context, index) => CLMediaPreview(
-              media: items.entries[index],
+            itemBuilder: (context, media) => CLMediaPreview(
+              media: media,
             ),
             tagPrefix: 'timeline ${items.collection.id}',
             onPickFiles: () async {

@@ -29,7 +29,7 @@ class CLMediaGrid extends ConsumerWidget {
   final double crossAxisSpacing;
   final double mainAxisSpacing;
   final void Function(CLMedia media)? onTapMedia;
-  final Widget Function(BuildContext context, int index) itemBuilder;
+  final Widget Function(BuildContext context, CLMedia media) itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,7 +70,7 @@ class CLMediaGrid extends ConsumerWidget {
                   : () {
                       onTapMedia?.call(media);
                     },
-              child: itemBuilder(context, index),
+              child: itemBuilder(context, media),
             );
           },
           itemCount: limitCount + additionaItemsCount,
