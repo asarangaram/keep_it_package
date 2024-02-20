@@ -16,3 +16,4 @@ export 'src/providers/db_collection.dart' show collectionsProvider;
 export 'src/providers/db_items.dart' show itemsProvider;
 export 'src/providers/db_queries.dart' show itemsByTagIdProvider;
 export 'src/providers/db_tag.dart' show tagsProvider;
+export 'src/services/image_services/view/cl_media_preview.dart';

@@ -114,9 +114,7 @@ class CLMediaProcess {
       );
     }
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    for (final element in updated) {
-      print(element.path);
-    }
+
     onDone(CLMediaInfoGroup(list: updated, targetID: media.targetID));
   }
 }

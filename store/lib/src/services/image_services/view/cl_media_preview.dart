@@ -1,11 +1,10 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/cl_media.dart';
-import 'image_view.dart';
-import 'view/image_thumbnail.dart';
+import 'image_thumbnail.dart';
 
 class CLMediaPreview extends StatelessWidget {
   const CLMediaPreview({

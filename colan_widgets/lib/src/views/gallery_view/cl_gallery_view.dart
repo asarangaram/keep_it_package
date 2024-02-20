@@ -20,6 +20,7 @@ class CLGalleryView extends ConsumerStatefulWidget {
     required this.tagPrefix,
     required this.onPickFiles,
     required this.onTapMedia,
+    required this.itemBuilder,
     super.key,
     this.header,
     this.footer,
@@ -35,6 +36,7 @@ class CLGalleryView extends ConsumerStatefulWidget {
   final void Function() onPickFiles;
   final void Function()? onPop;
   final void Function(CLMedia media)? onTapMedia;
+  final Widget Function(BuildContext context, int index) itemBuilder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GalleryState();
@@ -95,6 +97,7 @@ class GalleryState extends ConsumerState<CLGalleryView> {
               padding: const EdgeInsets.all(8),
               child: CLMediaGridLazy(
                 mediaList: itemsMap[labels[index]]!,
+                itemBuilder: widget.itemBuilder,
                 index: index,
                 onTapMedia: widget.onTapMedia,
                 currentIndexStream: Bus.instance

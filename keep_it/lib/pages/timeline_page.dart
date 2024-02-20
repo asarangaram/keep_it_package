@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-
 class TimeLinePage extends ConsumerWidget {
   const TimeLinePage({required this.collectionID, super.key});
   final int collectionID;
@@ -20,6 +19,9 @@ class TimeLinePage extends ConsumerWidget {
             label: items.collection.label,
             galleryMap: items.entries.filterByDate(),
             emptyState: const EmptyState(),
+            itemBuilder: (context, index) => CLMediaPreview(
+              media: items.entries[index],
+            ),
             tagPrefix: 'timeline ${items.collection.id}',
             onPickFiles: () async {
               await onPickFiles(

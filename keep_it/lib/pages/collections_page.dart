@@ -123,6 +123,9 @@ class PreviewGenerator extends StatelessWidget {
           items.entries,
           hCount: 2,
           vCount: 2,
+          itemBuilder: (context, index) => CLMediaPreview(
+            media: items.entries[index],
+          ),
           whenNopreview: CLText.veryLarge(
             items.collection.label.characters.first,
           ),

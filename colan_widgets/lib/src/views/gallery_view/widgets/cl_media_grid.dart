@@ -8,6 +8,7 @@ class CLMediaGrid extends ConsumerWidget {
   const CLMediaGrid({
     required this.mediaList,
     required this.onTapMedia,
+    required this.itemBuilder,
     this.additionalItems,
     this.columns = 4,
     this.rows,
@@ -28,6 +29,7 @@ class CLMediaGrid extends ConsumerWidget {
   final double crossAxisSpacing;
   final double mainAxisSpacing;
   final void Function(CLMedia media)? onTapMedia;
+  final Widget Function(BuildContext context, int index) itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -68,10 +70,7 @@ class CLMediaGrid extends ConsumerWidget {
                   : () {
                       onTapMedia?.call(media);
                     },
-              child: CLMediaPreview(
-                media: media,
-                keepAspectRatio: false,
-              ),
+              child: itemBuilder(context, index),
             );
           },
           itemCount: limitCount + additionaItemsCount,

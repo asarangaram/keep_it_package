@@ -46,6 +46,9 @@ class TagsPage extends ConsumerWidget {
                   clMediaList ?? [],
                   hCount: 2,
                   vCount: 2,
+                  itemBuilder: (context, index) => CLMediaPreview(
+                    media: clMediaList![index],
+                  ),
                   whenNopreview: CLText.veryLarge(tag.label.characters.first),
                 );
               },

@@ -1,11 +1,8 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:share_handler/share_handler.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../../app_logger.dart';
 import '../../../extensions/ext_io_file.dart';
@@ -13,11 +10,7 @@ import '../cl_media.dart';
 import '../cl_media_type.dart';
 
 extension ExtCLMediaFile on CLMedia {
-  String get previewFileName => '$path.jpg';
-  //bool get hasPreview => File(previewFileName).existsSync();
-
   void deleteFile() {
-    File(previewFileName).deleteIfExists();
     File(path).deleteIfExists();
   }
 
@@ -82,16 +75,6 @@ extension ExtCLMediaFile on CLMedia {
             path_handler.join(targetDir, path_handler.basename(path));
         File(targetFile).createSync(recursive: true);
         File(path).copySync(targetFile);
-        if (File(previewFileName).existsSync()) {
-          {
-            final targetFile = path_handler.join(
-              targetDir,
-              path_handler.basename(previewFileName),
-            );
-            File(previewFileName).copySync(targetFile);
-          }
-        }
-
         return copyWith(path: targetFile);
 
       case CLMediaType.url:
@@ -132,7 +115,7 @@ extension ExtCLMediaFile on CLMedia {
     return copyWith(path: newPath /* , previewPath: newPreviewPath */);
   } */
 
-  Future<bool> generatePreview({
+  /* Future<bool> generatePreview({
     bool regenerate = false,
   }) async {
     final previewFile = File(previewFileName);
@@ -145,7 +128,7 @@ extension ExtCLMediaFile on CLMedia {
       CLMediaType.video => await generateVideoPreview(regenerate: regenerate),
       _ => true // Ignore request
     };
-  }
+  } */
 
   /* String? get previewPath {
     if (hasPreview) return previewFileName;
@@ -153,7 +136,7 @@ extension ExtCLMediaFile on CLMedia {
     return null;
   } */
 
-  Future<bool> generateImagePreview({
+  /* Future<bool> generateImagePreview({
     bool regenerate = false,
   }) async {
     try {
@@ -209,7 +192,7 @@ extension ExtCLMediaFile on CLMedia {
     } catch (e) {
       return false;
     }
-  }
+  } */
 
   /* static Future<CLMedia> clMediaWithPreview({
     required String path,

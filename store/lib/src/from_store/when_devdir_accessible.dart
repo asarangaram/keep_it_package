@@ -9,8 +9,10 @@ import 'package:path_provider/path_provider.dart';
 @immutable
 class DeviceDirectories {
   final Directory docDir;
+  final Directory cacheDir;
   const DeviceDirectories({
     required this.docDir,
+    required this.cacheDir,
   });
 }
 
@@ -32,5 +34,6 @@ class WhenDeviceDirectoriesAccessible extends ConsumerWidget {
 final docDirProvider = FutureProvider<DeviceDirectories>((ref) async {
   return DeviceDirectories(
     docDir: await getApplicationDocumentsDirectory(),
+    cacheDir: await getApplicationCacheDirectory(),
   );
 });

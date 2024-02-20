@@ -25,8 +25,6 @@ export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
 export 'src/services/cl_media_process.dart';
 export 'src/services/forms/cl_textfield_form.dart';
-export 'src/services/image_services/cl_media_preview.dart';
-export 'src/services/image_services/image_view.dart';
 export 'src/services/notification/notification_service.dart';
 export 'src/services/notification/provider/notify.dart';
 export 'src/services/selection/cl_selection_wrapper.dart';
@@ -38,6 +36,8 @@ export 'src/views/appearance/cl_loading_view.dart';
 export 'src/views/appearance/keep_it_main_view.dart';
 export 'src/views/collage_view/cl_media_collage.dart';
 export 'src/views/gallery_view/cl_gallery_view.dart';
-export 'src/views/media_view/cl_media_view.dart';
+export 'src/views/image/cl_image_viewer.dart';
+export 'src/views/image/image_view.dart';
+
 export 'src/views/quick_menu/cl_quickmenu.dart';
 export 'src/views/stream_progress_view.dart';

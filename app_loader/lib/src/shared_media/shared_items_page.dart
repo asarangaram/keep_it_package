@@ -44,6 +44,9 @@ class SharedItemsPage extends ConsumerWidget {
             child: CLMediaCollage.byMatrixSize(
               media.list,
               hCount: switch (media.list.length) { _ => 2 },
+              itemBuilder: (context, index) => CLMediaPreview(
+                media: media.list[index],
+              ),
             ),
           ),
           const Divider(

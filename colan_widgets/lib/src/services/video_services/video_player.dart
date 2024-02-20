@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/cl_media/cl_media.dart';
-import '../image_services/cl_media_preview.dart';
+
 import 'providers/video_player_state.dart';
 import 'views/video_layer.dart';
 
 class VideoPlayer extends ConsumerWidget {
   const VideoPlayer({
     required this.media,
+    required this.alternate,
     super.key,
     this.onSelect,
     this.isSelected = false,
@@ -18,6 +19,7 @@ class VideoPlayer extends ConsumerWidget {
   final void Function()? onSelect;
   final bool isSelected;
   final List<Widget>? children;
+  final Widget alternate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,9 +41,7 @@ class VideoPlayer extends ConsumerWidget {
           error: (_, __) => Container(),
           loading: () => Stack(
             children: [
-              CLMediaPreview(
-                media: media,
-              ),
+              alternate,
               const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -50,9 +50,7 @@ class VideoPlayer extends ConsumerWidget {
         ),
       false => GestureDetector(
           onTap: onSelect,
-          child: CLMediaPreview(
-            media: media,
-          ),
+          child: alternate,
         )
     };
   }

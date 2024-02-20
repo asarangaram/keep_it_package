@@ -8,7 +8,6 @@ import '../../basics/cl_matrix.dart';
 import '../../extensions/ext_double.dart';
 import '../../models/cl_dimension.dart';
 import '../../models/cl_media.dart';
-import '../../services/image_services/cl_media_preview.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({
@@ -16,6 +15,7 @@ class CLMediaCollage extends StatelessWidget {
     required this.canScroll,
     required this.keepAspectRatio,
     required this.maxPageDimension,
+    required this.itemBuilder,
     this.hCount,
     this.vCount,
     this.childSize,
@@ -25,6 +25,7 @@ class CLMediaCollage extends StatelessWidget {
   factory CLMediaCollage.byMatrixSize(
     List<CLMedia> mediaList, {
     required int hCount,
+    required Widget Function(BuildContext context, int index) itemBuilder,
     int? vCount,
     Key? key,
     bool? keepAspectRatio,
@@ -41,11 +42,13 @@ class CLMediaCollage extends StatelessWidget {
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
       whenNopreview: whenNopreview,
+      itemBuilder: itemBuilder,
     );
   }
   factory CLMediaCollage.byChildSize(
     List<CLMedia> mediaList, {
     required Size childSize,
+    required Widget Function(BuildContext context, int index) itemBuilder,
     Key? key,
     bool? keepAspectRatio,
     bool canScroll = false,
@@ -61,6 +64,7 @@ class CLMediaCollage extends StatelessWidget {
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
       whenNopreview: whenNopreview,
+      itemBuilder: itemBuilder,
     );
   }
 
@@ -72,6 +76,7 @@ class CLMediaCollage extends StatelessWidget {
   final bool canScroll;
   final CLDimension maxPageDimension;
   final Widget? whenNopreview;
+  final Widget Function(BuildContext context, int index) itemBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +84,7 @@ class CLMediaCollage extends StatelessWidget {
       return File(e.path).existsSync();
     }).toList();
     if (mediaWithPreview.isEmpty) {
-      return itemBuilder(
+      return onBuildItem(
         context,
         whenNopreview,
       );
@@ -124,12 +129,9 @@ class CLMediaCollage extends StatelessWidget {
               itemCount: mediaWithPreview.length,
               hCount: x,
               itemBuilder: (context, index) {
-                return itemBuilder(
+                return onBuildItem(
                   context,
-                  CLMediaPreview(
-                    media: mediaWithPreview[index],
-                    keepAspectRatio: keepAspectRatio,
-                  ),
+                  itemBuilder(context, index),
                 );
               },
             ),
@@ -138,12 +140,9 @@ class CLMediaCollage extends StatelessWidget {
               hCount: x,
               vCount: y,
               itemBuilder: (context, index) {
-                return itemBuilder(
+                return onBuildItem(
                   context,
-                  CLMediaPreview(
-                    media: mediaWithPreview[index],
-                    keepAspectRatio: keepAspectRatio,
-                  ),
+                  itemBuilder(context, index),
                 );
               },
             )
@@ -180,7 +179,7 @@ class CLMediaCollage extends StatelessWidget {
     return CLDimension(itemsInRow: itemsInRow, itemsInColumn: itemsInColumn);
   }
 
-  Widget itemBuilder(BuildContext context, Widget? child) {
+  Widget onBuildItem(BuildContext context, Widget? child) {
     if (childSize != null) {
       return SizedBox.fromSize(
         size: childSize,

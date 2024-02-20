@@ -1,11 +1,9 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../models/cl_media.dart';
-import '../../services/image_services/image_view.dart';
-import '../../services/video_services/video_player.dart';
+import 'package:store/store.dart';
 
 class CLMediaView extends ConsumerWidget {
   const CLMediaView({
@@ -33,6 +31,9 @@ class CLMediaView extends ConsumerWidget {
             media: media,
             isSelected: isSelected,
             onSelect: onSelect,
+            alternate: CLMediaPreview(
+              media: media,
+            ),
           ),
         _ => throw UnimplementedError('Not yet implemented')
       },

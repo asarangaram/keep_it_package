@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
-
 class ItemPage extends ConsumerWidget {
   const ItemPage({required this.id, required this.collectionId, super.key});
   final int collectionId;
@@ -102,6 +101,9 @@ class _ItemViewState extends State<ItemView> {
             CLMediaType.video => Center(
                 child: VideoPlayer(
                   media: media,
+                  alternate: CLMediaPreview(
+                    media: media,
+                  ),
                   isSelected: currIndex == index,
                   children: [
                     Container(
