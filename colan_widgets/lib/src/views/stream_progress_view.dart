@@ -40,9 +40,9 @@ class StreamProgressView extends StatelessWidget {
                     BuildContext context,
                     AsyncSnapshot<Progress> snapshot,
                   ) {
-                    final double? percent;
                     if (snapshot.hasData) {
-                      percent = min(1, snapshot.data!.fractCompleted);
+                      final double percent =
+                          min(1, snapshot.data!.fractCompleted);
                       return CircularPercentIndicator(
                         radius: 100,
                         lineWidth: 13,
@@ -61,39 +61,11 @@ class StreamProgressView extends StatelessWidget {
                       return CircularPercentIndicator(
                         radius: 100,
                         lineWidth: 13,
-                        footer: const CLText.large(
-                          'Please wait while analysing media files',
-                        ),
                         circularStrokeCap: CircularStrokeCap.round,
                         progressColor: Colors.purple,
                       );
                     }
                   },
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(8),
-                    /* boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ], */
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: CLButtonText.large(
-                      'Discard',
-                      onTap: onCancel,
-                    ),
-                  ),
                 ),
               ),
             ],

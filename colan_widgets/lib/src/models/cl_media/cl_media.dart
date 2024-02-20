@@ -206,7 +206,7 @@ class CLMediaInfoGroup {
   Iterable<CLMedia> get _stored => list.where((e) => e.id != null);
   Iterable<CLMedia> get _targetMismatch => (targetID == null)
       ? _stored
-      : _stored.where((e) => e.collectionId != targetID);
+      : _stored.where((e) => (e.collectionId != targetID) && (e.id != null));
   List<CLMedia> get targetMismatch => _targetMismatch.toList();
   List<CLMedia> get stored => _stored.toList();
 
@@ -221,7 +221,7 @@ class CLMediaInfoGroup {
     final items = list.where((e) => e.collectionId == targetID);
     if (items.isEmpty) return null;
 
-    return copyWith(list: (items as List<CLMedia>).toList());
+    return copyWith(list: items.toList());
   }
 
   CLMediaInfoGroup? remove(CLMedia itemToRemove) {

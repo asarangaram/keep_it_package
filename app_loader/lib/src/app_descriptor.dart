@@ -36,5 +36,5 @@ abstract class AppDescriptor {
   CLAppInitializer get appInitializer;
   CLTransitionBuilder get transitionBuilder;
   CLRedirector get redirector;
-  IncomingMediaViewBuilder get incomingMediaViewBuilder;
+  // IncomingMediaViewBuilder get incomingMediaViewBuilder;
 }

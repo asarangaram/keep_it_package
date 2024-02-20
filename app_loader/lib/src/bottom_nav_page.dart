@@ -1,4 +1,3 @@
-import 'package:app_loader/src/app_descriptor.dart';
 import 'package:app_loader/src/app_theme.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +8,11 @@ import 'incoming_media_handler.dart';
 class BottomNavigationPage extends StatefulWidget {
   const BottomNavigationPage({
     required this.child,
-    required this.incomingMediaViewBuilder,
     super.key,
   });
 
   final StatefulNavigationShell child;
-  final IncomingMediaViewBuilder incomingMediaViewBuilder;
+
   @override
   State<BottomNavigationPage> createState() => _BottomNavigationPageState();
 }

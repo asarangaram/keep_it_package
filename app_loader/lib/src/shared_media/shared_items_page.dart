@@ -1,9 +1,8 @@
+import 'package:app_loader/src/shared_media/keep_media_wizard/keep_media_wizard.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../widgets/from_store/load_tags.dart';
-import '../widgets/keep_media_wizard/keep_media_wizard.dart';
+import 'package:store/store.dart';
 
 class SharedItemsPage extends ConsumerWidget {
   const SharedItemsPage({
@@ -15,13 +14,8 @@ class SharedItemsPage extends ConsumerWidget {
 
   final CLMediaInfoGroup media;
   final void Function() onDiscard;
-  final void Function(
-    CLMediaInfoGroup media, {
-    required Future<void> Function(
-      BuildContext context,
-      WidgetRef ref,
-      CLMediaInfoGroup media,
-    ) onUpdateDB,
+  final void Function({
+    CLMediaInfoGroup? mg,
   }) onAccept;
 
   @override

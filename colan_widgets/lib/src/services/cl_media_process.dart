@@ -76,7 +76,7 @@ class CLMediaProcess {
         fractCompleted: (i + 1) / media.list.length,
       );
     }
-    await Future<void>.delayed(const Duration(milliseconds: 10));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     onDone(
       mg: CLMediaInfoGroup(list: candidates, targetID: media.targetID),
     );
@@ -113,7 +113,10 @@ class CLMediaProcess {
         fractCompleted: (i + 1) / media.list.length,
       );
     }
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    for (final element in updated) {
+      print(element.path);
+    }
     onDone(CLMediaInfoGroup(list: updated, targetID: media.targetID));
   }
 }

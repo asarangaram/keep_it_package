@@ -12,7 +12,6 @@ import 'package:window_size/window_size.dart';
 
 import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
-import 'pages/shared_items_page.dart';
 import 'pages/tags_page.dart';
 import 'pages/timeline_page.dart';
 
@@ -104,7 +103,7 @@ class KeepItApp implements AppDescriptor {
         ),
       ];
 
-  @override
+  /* @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
         BuildContext context,
         WidgetRef ref, {
@@ -124,7 +123,7 @@ class KeepItApp implements AppDescriptor {
           onDiscard: onDiscard,
           onAccept: onAccept,
         );
-      };
+      }; */
 
   @override
   CLTransitionBuilder get transitionBuilder => (

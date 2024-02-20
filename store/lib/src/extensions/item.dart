@@ -64,14 +64,14 @@ extension ExtItemInDB on CLMedia {
 
     if (id != null) {
       db.execute(
-        'UPDATE OR IGNORE Item SET path = ?, '
-        'ref = ?, collection_id = ? type=? originalDate=? md5String=? '
+        'UPDATE  Item SET path = ?, '
+        'ref = ?, collection_id = ?, type=?, originalDate=?, md5String=? '
         'WHERE id = ?',
         [
           updatedPath,
           ref,
           collectionId,
-          type,
+          type.name,
           originalDate.toSQL(),
           md5String,
           id,
@@ -80,7 +80,7 @@ extension ExtItemInDB on CLMedia {
       return id!;
     }
     db.execute(
-      'INSERT OR IGNORE INTO Item (path, '
+      'INSERT  INTO Item (path, '
       'ref, collection_id, type, originalDate, md5String) '
       'VALUES (?, ?, ?, ?, ?, ?) ',
       [

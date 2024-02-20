@@ -1,9 +1,13 @@
+import 'package:app_loader/src/fullscreen_layout.dart';
+import 'package:app_loader/src/shared_media/analyse.dart';
+import 'package:app_loader/src/shared_media/duplicates.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:store/store.dart';
 
 import 'providers/incoming_media.dart';
+import 'shared_media/shared_items_page.dart';
 
 class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
@@ -33,7 +37,60 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
       return widget.child;
     }
 
-    return switch (candidates) { _ => Container() };
+    try {
+      return FullscreenLayout(
+        onClose: onDiscard,
+        child: switch (candidates) {
+          null => AnalysePage(
+              incomingMedia: incomingMedia[0],
+              onDone: onDone,
+              onCancel: onDiscard,
+            ),
+          (final candiates) when candidates!.hasTargetMismatchedItems =>
+            DuplicatePage(
+              incomingMedia: candiates,
+              onDone: onDone,
+              onCancel: onDiscard,
+            ),
+          (final candiates) when candidates!.targetID == null =>
+            SharedItemsPage(
+              media: candiates,
+              onAccept: onDone,
+              onDiscard: onDiscard,
+            ),
+          _ => StreamProgressView(
+              stream: () => CLMediaProcess.acceptMedia(
+                media: candidates!,
+                onDone: (CLMediaInfoGroup mg) async {
+                  ref.read(itemsProvider(mg.targetID!));
+                  await ref
+                      .read(itemsProvider(mg.targetID!).notifier)
+                      .upsertItems(mg.list);
+                  await ref
+                      .read(notificationMessageProvider.notifier)
+                      .push('Saved.');
+                  onDone();
+                },
+              ),
+              onCancel: onDiscard,
+            )
+        },
+      );
+    } catch (e) {
+      return FullscreenLayout(
+        child: CLErrorView(errorMessage: e.toString()),
+      );
+    }
+  }
+
+  void onDone({CLMediaInfoGroup? mg}) {
+    if (mg == null) {
+      onDiscard();
+      return;
+    }
+    setState(() {
+      candidates = mg;
+    });
   }
 
   void onDiscard() {

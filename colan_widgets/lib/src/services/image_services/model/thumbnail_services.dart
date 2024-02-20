@@ -206,40 +206,45 @@ class ThumbnailService {
       if (queue.isNotEmpty) {
         final dataIn = queue.removeFirst();
         try {
-          if (dataIn.isVideo) {
-            await VideoThumbnail.thumbnailFile(
-              video: dataIn.path,
-              thumbnailPath: dataIn.thumbnailPath,
-              maxWidth: dataIn.dimension,
-              imageFormat: ImageFormat.JPEG,
-            );
-          } else {
-            final inputImage = decodeImage(File(dataIn.path).readAsBytesSync());
-            if (inputImage != null) {
-              final int thumbnailHeight;
-              final int thumbnailWidth;
-              if (inputImage.height > inputImage.width) {
-                thumbnailHeight = dataIn.dimension;
-                thumbnailWidth =
-                    (thumbnailHeight * inputImage.width) ~/ inputImage.height;
-              } else {
-                thumbnailWidth = dataIn.dimension;
-                thumbnailHeight =
-                    (thumbnailWidth * inputImage.height) ~/ inputImage.width;
+          if (File(dataIn.path).existsSync()) {
+            if (dataIn.isVideo) {
+              await VideoThumbnail.thumbnailFile(
+                video: dataIn.path,
+                thumbnailPath: dataIn.thumbnailPath,
+                maxWidth: dataIn.dimension,
+                imageFormat: ImageFormat.JPEG,
+              );    
+            } else {
+              final inputImage =
+                  decodeImage(File(dataIn.path).readAsBytesSync());
+              if (inputImage != null) {
+                final int thumbnailHeight;
+                final int thumbnailWidth;
+                if (inputImage.height > inputImage.width) {
+                  thumbnailHeight = dataIn.dimension;
+                  thumbnailWidth =
+                      (thumbnailHeight * inputImage.width) ~/ inputImage.height;
+                } else {
+                  thumbnailWidth = dataIn.dimension;
+                  thumbnailHeight =
+                      (thumbnailWidth * inputImage.height) ~/ inputImage.width;
+                }
+                final thumbnail = copyResize(
+                  inputImage,
+                  width: thumbnailWidth,
+                  height: thumbnailHeight,
+                );
+                File(dataIn.thumbnailPath)
+                    .writeAsBytesSync(Uint8List.fromList(encodeJpg(thumbnail)));
               }
-              final thumbnail = copyResize(
-                inputImage,
-                width: thumbnailWidth,
-                height: thumbnailHeight,
-              );
-              File(dataIn.thumbnailPath)
-                  .writeAsBytesSync(Uint8List.fromList(encodeJpg(thumbnail)));
             }
+            final dataOut = ThumbnailServiceDataOut(
+              uuid: dataIn.uuid,
+            );
+            channel.sink.add(dataOut.toJson());
+          } else {
+            throw Exception('file ${dataIn.path} not found');
           }
-          final dataOut = ThumbnailServiceDataOut(
-            uuid: dataIn.uuid,
-          );
-          channel.sink.add(dataOut.toJson());
         } catch (e) {
           final dataOut = ThumbnailServiceDataOut(
             uuid: dataIn.uuid,
