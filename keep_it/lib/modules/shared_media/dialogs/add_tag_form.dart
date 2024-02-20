@@ -13,14 +13,8 @@ class UpsertEntityForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagsAsync = ref.watch(tagsProvider(null));
-
-    return tagsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(
-        errorMessage: err.toString(),
-      ),
-      data: (tags) => SizedBox(
+    return LoadTags(
+      buildOnData: (Tags tags) => SizedBox(
         width: min(MediaQuery.of(context).size.width, 450),
         child: CLTextFieldForm(
           buttonLabel: (entity?.id == null) ? 'Create' : 'Update',

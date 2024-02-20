@@ -18,7 +18,7 @@ class AnalysePage extends WizardPageOld {
     return WhenDeviceDirectoriesAccessible(
       builder: (directories) {
         return WhenDBAccessible(
-          builder: (DatabaseManager dbManager) {
+          builder: (dbManager) {
             return WizardPageOld.buildWizard(
               context, ref,
               title: 'Analysing Shared Media',
