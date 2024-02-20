@@ -14,7 +14,7 @@ import '../cl_media_type.dart';
 
 extension ExtCLMediaFile on CLMedia {
   String get previewFileName => '$path.jpg';
-  bool get hasPreview => File(previewFileName).existsSync();
+  //bool get hasPreview => File(previewFileName).existsSync();
 
   void deleteFile() {
     File(previewFileName).deleteIfExists();
@@ -147,11 +147,11 @@ extension ExtCLMediaFile on CLMedia {
     };
   }
 
-  String? get previewPath {
+  /* String? get previewPath {
     if (hasPreview) return previewFileName;
 
     return null;
-  }
+  } */
 
   Future<bool> generateImagePreview({
     bool regenerate = false,
