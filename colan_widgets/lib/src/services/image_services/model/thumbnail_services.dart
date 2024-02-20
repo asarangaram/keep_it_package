@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
@@ -170,6 +171,7 @@ class ThumbnailService {
   ThumbnailService();
   late final IsolateChannel<String> channel;
   late final ReceivePort rPort;
+  Map<String, StreamSubscription<ThumbnailServiceDataOut>> subscriptions = {};
 
   Future<void> startService() async {
     rPort = ReceivePort();
@@ -213,7 +215,7 @@ class ThumbnailService {
                 thumbnailPath: dataIn.thumbnailPath,
                 maxWidth: dataIn.dimension,
                 imageFormat: ImageFormat.JPEG,
-              );    
+              );
             } else {
               final inputImage =
                   decodeImage(File(dataIn.path).readAsBytesSync());
@@ -264,14 +266,21 @@ class ThumbnailService {
     required void Function() onData,
     void Function(String errorString)? onError,
   }) async {
-    // print(info);
-    Bus.instance.on<ThumbnailServiceDataOut>().listen((event) {
+    // Don't request multiple time
+    if (subscriptions.containsKey(info.uuid)) {
+      return true;
+    }
+
+    subscriptions[info.uuid] =
+        Bus.instance.on<ThumbnailServiceDataOut>().listen((event) {
       if (event.uuid == info.uuid) {
         if (event.errorMsg != null) {
           onError?.call(event.errorMsg!);
         } else {
           onData();
         }
+        // Cancel subscription once received
+        subscriptions.remove(info.uuid)?.cancel();
       }
     });
 
