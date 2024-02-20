@@ -46,8 +46,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
         );
         final previewFileName =
             path.join(directories.cacheDir.path, '$uuid.jpg');
-        print(widget.media.relativePath(directories));
-        print(previewFileName);
+
         final hasThumbnail =
             !widget.refresh && File(previewFileName).existsSync();
         if (hasThumbnail) {

@@ -115,6 +115,21 @@ class CLMedia {
     );
   }
 
+  CLMedia setCollectionID(int? newCollectionID) {
+    return CLMedia(
+      path: path,
+      type: type,
+      ref: ref,
+      id: id,
+      collectionId: newCollectionID,
+      previewWidth: previewWidth,
+      originalDate: originalDate,
+      createdDate: createdDate,
+      updatedDate: updatedDate,
+      md5String: md5String,
+    );
+  }
+
   @override
   bool operator ==(covariant CLMedia other) {
     if (identical(this, other)) return true;
@@ -204,16 +219,16 @@ class CLMediaInfoGroup {
   }
 
   Iterable<CLMedia> get _stored => list.where((e) => e.id != null);
-  Iterable<CLMedia> get _targetMismatch => (targetID == null)
-      ? _stored
-      : _stored.where((e) => (e.collectionId != targetID) && (e.id != null));
+  Iterable<CLMedia> get _targetMismatch =>
+      _stored.where((e) => e.collectionId != targetID);
+
   List<CLMedia> get targetMismatch => _targetMismatch.toList();
   List<CLMedia> get stored => _stored.toList();
 
   bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
 
   CLMediaInfoGroup mergeMismatch() {
-    final items = list.map((e) => e.copyWith(collectionId: targetID));
+    final items = list.map((e) => e.setCollectionID(targetID));
     return copyWith(list: items.toList());
   }
 

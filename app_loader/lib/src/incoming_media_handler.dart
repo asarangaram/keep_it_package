@@ -69,7 +69,10 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
                   await ref
                       .read(notificationMessageProvider.notifier)
                       .push('Saved.');
-                  onDone();
+                  onDiscard();
+                  setState(() {
+                    candidates = null;
+                  });
                 },
               ),
               onCancel: onDiscard,
@@ -85,6 +88,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   void onDone({CLMediaInfoGroup? mg}) {
     if (mg == null) {
+      ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
       onDiscard();
       return;
     }

@@ -108,11 +108,10 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                       final updated = currentMedia.remove(m);
                       if (updated?.targetMismatch.isEmpty ?? true) {
                         widget.onDone(mg: updated);
-                      } else {
-                        currentMedia = updated!;
                       }
-
-                      setState(() {});
+                      setState(() {
+                        currentMedia = updated!;
+                      });
                     },
                   ),
                 ),
@@ -140,6 +139,11 @@ class ExistInDifferentCollection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final duplicates = media.targetMismatch;
+    if (duplicates.isEmpty) {
+      const Center(
+        child: CLText.large('Nothing to show here'),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Stack(
