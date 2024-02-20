@@ -43,7 +43,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
               onDelete: (List<CollectionBase> selectedEntities) async {
                 if (selectedEntities.length != 1) {
                   throw Exception(
-                    "Unexected: Collections can't be added in bulk",
+                    "Unexected: Collections can't be deleted in bulk",
                   );
                 }
                 for (final entity in selectedEntities) {
