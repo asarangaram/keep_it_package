@@ -1,4 +1,4 @@
-import 'package:app_loader/src/app_theme.dart';
+import 'package:app_loader/src/widgets/app_theme.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

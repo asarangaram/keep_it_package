@@ -1,15 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // Reference : https://gist.github.com/onatcipli/aed0372c987b4ae32311fe32bb4c1209
 
-import 'package:app_loader/src/app_theme.dart';
+import 'package:app_loader/src/widgets/app_theme.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'app_descriptor.dart';
+import '../models/app_descriptor.dart';
+import '../models/cl_route_descriptor.dart';
 import 'bottom_nav_page.dart';
-import 'cl_route_descriptor.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({

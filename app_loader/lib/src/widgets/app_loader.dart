@@ -12,23 +12,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'app_descriptor.dart';
-
+import '../models/app_descriptor.dart';
+import '../providers/app_init.dart';
 import 'app_view.dart';
-
-final appInitProvider =
-    FutureProvider.family<void, AppDescriptor>((ref, appDescriptor) async {
-  try {
-    final result = await appDescriptor.appInitializer(ref);
-    if (!result) {
-      throw Exception('Initialization Failed');
-    }
-  } on Exception {
-    // Handle or rethrow
-    rethrow;
-  }
-  return;
-});
 
 class AppLoader extends ConsumerWidget {
   const AppLoader({
