@@ -32,6 +32,7 @@ class CLFromFieldTypeSelector extends CLFormField {
     required this.buildLabel,
     required this.onSelectSuggestion,
     required this.onCreate,
+    required this.removeItem,
     this.buildDescription,
   });
 
@@ -44,4 +45,5 @@ class CLFromFieldTypeSelector extends CLFormField {
   final String? Function(Object object)? buildDescription;
   final void Function(BuildContext context, Object object) onSelectSuggestion;
   final void Function(BuildContext context, String newLabel) onCreate;
+  final void Function(BuildContext context, Object item) removeItem;
 }

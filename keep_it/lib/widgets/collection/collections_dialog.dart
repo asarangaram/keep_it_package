@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'upsert_collection_form.dart';
+import '../../pages/edit_collection_page.dart';
 
 class CollectionsDialog {
-  static Future<Collection?> upsert(
+  /* static Future<Collection?> upsert(
     BuildContext context, {
-    Collection? entity,
+    required Collection entity,
     //  void Function()? onDone,
   }) async =>
       showDialog<Collection>(
@@ -25,7 +25,7 @@ class CollectionsDialog {
             ),
           );
         },
-      );
+      ); */
 
   static Future<bool> onAddItemsIntoCollection(
     BuildContext context,

@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import 'collection/upsert_collection_form.dart';
+import '../pages/edit_collection_page.dart';
 import 'wrap_standard_quick_menu.dart';
 
 class CollectionAsFolder extends ConsumerWidget {
@@ -23,27 +23,11 @@ class CollectionAsFolder extends ConsumerWidget {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
       onEdit: () async {
-        final updated = await showDialog<Collection>(
-          context: context,
-          builder: (BuildContext context) {
-            return CLDialogWrapper(
-              onCancel: () => Navigator.of(context).pop(),
-              child: CollectionEditor(
-                collection: collection,
-                onDone: (Collection updatedCollection) {
-                  Navigator.of(context).pop(updatedCollection);
-                },
-              ),
-            );
-          },
+        unawaited(
+          context.push(
+            '/edit/${collection.id}',
+          ),
         );
-        if (updated != null) {
-          await ref
-              .read(collectionsProvider(null).notifier)
-              .upsertCollection(updated, null);
-          // ignore: unused_local_variable
-          final items = ref.refresh(itemsProvider(collection.id!));
-        }
         return true;
       },
       onDelete: () async {

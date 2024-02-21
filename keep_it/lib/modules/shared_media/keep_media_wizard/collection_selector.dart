@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart';
+/* import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it/widgets/collection/collections_dialog.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -152,3 +152,4 @@ class _KeepItItemSelectorState extends State<CollectionSelector> {
     );
   }
 }
+ */

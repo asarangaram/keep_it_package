@@ -21,12 +21,10 @@ class _CLSelectorState extends State<CLSelector> {
   late ScrollController scrollController;
   final GlobalKey wrapKey = GlobalKey();
 
-  late List<Object> selectedEntities;
-
   @override
   void initState() {
     scrollController = ScrollController();
-    selectedEntities = widget.selector.initialEntries ?? [];
+
     super.initState();
   }
 
@@ -40,56 +38,64 @@ class _CLSelectorState extends State<CLSelector> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       controller: scrollController,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: Wrap(
-            key: wrapKey,
-            spacing: 1,
-            runSpacing: 1,
-            children: [
-              ...selectedEntities.map(
-                (e) => Theme(
-                  data: Theme.of(context).copyWith(
-                    chipTheme: const ChipThemeData(
-                      side: BorderSide.none,
+      child: Container(
+        width: double.infinity,
+        height: 6 * kMinInteractiveDimension,
+        decoration: BoxDecoration(border: Border.all()),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              key: wrapKey,
+              spacing: 1,
+              runSpacing: 1,
+              children: [
+                if (widget.selector.initialEntries != null)
+                  ...widget.selector.initialEntries!.map(
+                    (e) => Theme(
+                      data: Theme.of(context).copyWith(
+                        chipTheme: const ChipThemeData(
+                          side: BorderSide.none,
+                        ),
+                        canvasColor: Colors.transparent,
+                      ),
+                      child: Chip(
+                        label: Text(widget.selector.buildLabel(e)),
+                        onDeleted: () {
+                          widget.selector.removeItem(context, e);
+                        },
+                      ),
                     ),
-                    canvasColor: Colors.transparent,
                   ),
-                  child: Chip(
-                    label: Text(widget.selector.buildLabel(e)),
-                    onDeleted: () {
-                      setState(() {
-                        selectedEntities.remove(e);
-                      });
-                    },
-                  ),
+                SearchAnchor(
+                  searchController: widget.controller,
+                  isFullScreen: false,
+                  viewBackgroundColor: Theme.of(context).colorScheme.surface,
+                  builder: (context, controller) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        canvasColor: Colors.transparent,
+                      ),
+                      child: ActionChip(
+                        avatar: const Icon(Icons.add),
+                        label: Text(
+                          (widget.selector.initialEntries?.isEmpty ?? false)
+                              ? 'Add'
+                              : 'Add another',
+                        ),
+                        onPressed: controller.openView,
+                        shape: const ContinuousRectangleBorder(
+                          side: BorderSide(),
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+                        ),
+                      ),
+                    );
+                  },
+                  suggestionsBuilder: suggestionsBuilder,
                 ),
-              ),
-              SearchAnchor(
-                searchController: widget.controller,
-                builder: (context, controller) {
-                  return Theme(
-                    data: Theme.of(context).copyWith(
-                      canvasColor: Colors.transparent,
-                    ),
-                    child: ActionChip(
-                      avatar: const Icon(Icons.add),
-                      label: Text(
-                        selectedEntities.isEmpty ? 'Add ' : 'Add another',
-                      ),
-                      onPressed: controller.openView,
-                      shape: const ContinuousRectangleBorder(
-                        side: BorderSide(),
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                    ),
-                  );
-                },
-                suggestionsBuilder: suggestionsBuilder,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -114,7 +120,7 @@ class _CLSelectorState extends State<CLSelector> {
                 ? null
                 : Text(widget.selector.buildLabel(c)),
             onTap: () {
-              controller.closeView(widget.selector.buildLabel(c));
+              //controller.closeView(widget.selector.buildLabel(c));
 
               widget.selector.onSelectSuggestion(context, c);
             },
