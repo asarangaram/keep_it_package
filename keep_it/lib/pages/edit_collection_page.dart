@@ -1,12 +1,12 @@
 import 'dart:math';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it/aaa/models/cl_form_field_descriptors.dart';
 import 'package:store/store.dart';
 
 import '../modules/shared_media/dialogs/dialogs.dart';
-import '../modules/shared_media/keep_media_wizard/keepit_selector.dart';
 import '../modules/shared_media/keep_media_wizard/selector.dart';
-import '../widgets/collection/colletion_editor.dart';
 
 class EditCollectionPage extends StatelessWidget {
   const EditCollectionPage({
@@ -19,19 +19,26 @@ class EditCollectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LoadTags(
-      collectionID: collectionID,
-      buildOnData: (tags) {
-        return LoadCollections(
-          buildOnData: (collections) => SizedBox(
-            width: min(MediaQuery.of(context).size.width, 450),
-            child: CollectionEditor(
-              collection:
-                  // getByID
-                  collections.entries.where((e) => e.id == collectionID).first,
-              collections: collections,
-              tags: tags,
-            ),
-          ),
+      buildOnData: (existingTags) {
+        return LoadTags(
+          collectionID: collectionID,
+          buildOnData: (currentTags) {
+            return LoadCollections(
+              buildOnData: (collections) => SizedBox(
+                width: min(MediaQuery.of(context).size.width, 450),
+                child: CollectionEditor(
+                  collection:
+                      // getByID
+                      collections.entries
+                          .where((e) => e.id == collectionID)
+                          .first,
+                  collections: collections,
+                  existingTags: existingTags,
+                  currentTags: currentTags,
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -42,13 +49,15 @@ class CollectionEditor extends StatefulWidget {
   const CollectionEditor({
     required this.collection,
     required this.collections,
-    required this.tags,
+    required this.existingTags,
+    required this.currentTags,
     super.key,
     this.onDone,
   });
   final Collection collection;
   final Collections collections;
-  final Tags tags;
+  final Tags existingTags;
+  final Tags currentTags;
   final void Function(Collection collection)? onDone;
 
   @override
@@ -59,17 +68,27 @@ class _CollectionEditorState extends State<CollectionEditor> {
   @override
   Widget build(BuildContext context) {
     return Selector(
-      entities: widget.tags.entries,
-      availableSuggestions: suggestedTags,
-      onDone: (selectedTags) {},
-      onCreateByLabel: (label) async {
-        return create(Tag(label: label));
-      },
-      onSelect: (Object item) async {
-        return create(item as Tag);
-      },
-      labelBuilder: (e) => (e as Tag).label,
-      descriptionBuilder: (e) => (e as Tag).description,
+      descriptors: CLFormSelectDescriptors(
+        title: 'Tags',
+        label: 'Select Tags',
+        suggestionsAvailable: [
+          ...widget.existingTags.entries,
+          ...suggestedTags.excludeByLabel(
+            widget.existingTags.entries,
+            (e) => e.label,
+          ),
+        ],
+        initialValues: widget.currentTags.entries,
+        labelBuilder: (e) => (e as Tag).label,
+        descriptionBuilder: (e) => (e as Tag).description,
+        onSelectSuggestion: (Object item) async {
+          return create(item as Tag);
+        },
+        onCreateByLabel: (label) async {
+          return create(Tag(label: label));
+        },
+      ),
+      onSubmit: (selectedTags) {},
     );
   }
 
