@@ -6,7 +6,7 @@ export 'src/filters/datewise_filter.dart';
 export 'src/from_store/from_store.dart';
 export 'src/local_data/suggested_tags.dart' show suggestedTags;
 export 'src/models/collection.dart' show Collection, Collections;
-export 'src/models/collection_base.dart' show CollectionBase;
+
 export 'src/models/db_queries.dart' show DBQueries;
 export 'src/models/item.dart' show Items;
 export 'src/models/tag.dart' show Tag, Tags;

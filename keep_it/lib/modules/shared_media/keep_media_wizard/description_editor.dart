@@ -13,7 +13,7 @@ class DescriptionEditor extends StatefulWidget {
     this.onDone,
     this.onDiscard,
   });
-  final CollectionBase item;
+  final Tag item;
   final TextEditingController? controller;
   final FocusNode? focusNode;
 
