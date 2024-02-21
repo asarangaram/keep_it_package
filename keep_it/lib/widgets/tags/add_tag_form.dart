@@ -25,7 +25,7 @@ class UpsertEntityForm extends ConsumerWidget {
         child: CLTextFieldForm(
           buttonLabel: (entity?.id == null) ? 'Create' : 'Update',
           clFormFields: [
-            CLFormField(
+            CLFromFieldTypeText(
               type: CLFormFieldTypes.textField,
               validator: (name) => validateName(
                 name,
@@ -34,7 +34,7 @@ class UpsertEntityForm extends ConsumerWidget {
               label: 'Name',
               initialValue: entity?.label ?? '',
             ),
-            CLFormField(
+            CLFromFieldTypeText(
               type: CLFormFieldTypes.textFieldMultiLine,
               validator: validateDescription,
               label: 'Description',

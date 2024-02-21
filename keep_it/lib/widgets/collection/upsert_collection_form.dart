@@ -5,40 +5,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class UpsertCollectionForm extends ConsumerWidget {
-  const UpsertCollectionForm({super.key, this.entity, this.onDone});
+class CollectionEditor extends ConsumerWidget {
+  const CollectionEditor({super.key, this.collection, this.onDone});
 
-  final Collection? entity;
-  final void Function(Collection tag)? onDone;
+  final Collection? collection;
+  final void Function(Collection collection)? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagsAsync = ref.watch(tagsProvider(null));
-
-    return tagsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(
-        errorMessage: err.toString(),
-      ),
-      data: (tags) => SizedBox(
+    return LoadCollections(
+      buildOnData: (collections) => SizedBox(
         width: min(MediaQuery.of(context).size.width, 450),
         child: CLTextFieldForm(
-          buttonLabel: (entity?.id == null) ? 'Create' : 'Update',
+          buttonLabel: (collection?.id == null) ? 'Create' : 'Update',
           clFormFields: [
-            CLFormField(
+            CLFromFieldTypeText(
               type: CLFormFieldTypes.textField,
               validator: (name) => validateName(
                 name,
-                tags.entries,
+                collections.entries,
               ),
               label: 'Name',
-              initialValue: entity?.label ?? '',
+              initialValue: collection?.label ?? '',
             ),
-            CLFormField(
+            CLFromFieldTypeText(
               type: CLFormFieldTypes.textFieldMultiLine,
               validator: validateDescription,
               label: 'Description',
-              initialValue: entity?.description ?? '',
+              initialValue: collection?.description ?? '',
+            ),
+            CLFromFieldTypeSelector(
+              type: CLFormFieldTypes.selector,
+              initialEntries: [],
+              getSuggestions: (searchTerm) {
+                return [];
+              },
+              hasMatchingSuggestion: (searcTerm) {
+                return false;
+              },
+              buildLabel: (item) => (item as Tag).label,
+              buildDescription: (item) => (item as Tag).description,
+              onSelectSuggestion: (item) {},
+              onCreate: (newLabel) {},
             ),
           ],
           onSubmit: (List<String> values) {
@@ -49,7 +57,7 @@ class UpsertCollectionForm extends ConsumerWidget {
             try {
               onDone?.call(
                 Collection(
-                  id: entity?.id,
+                  id: collection?.id,
                   label: label.trim(),
                   description: description,
                 ),
@@ -65,14 +73,14 @@ class UpsertCollectionForm extends ConsumerWidget {
     );
   }
 
-  String? validateName(String? name, List<Tag> tags) {
+  String? validateName(String? name, List<Collection> tags) {
     if (name?.isEmpty ?? true) {
       return "Name can't be empty";
     }
     /* if (name!.length > 16) {
       return 'Name should not exceed 15 letters';
     } */
-    if (entity?.label == name) {
+    if (collection?.label == name) {
       // Nothing changed.
       return null;
     }

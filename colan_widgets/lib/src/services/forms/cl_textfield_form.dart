@@ -1,28 +1,13 @@
 import 'dart:io';
 
+import 'package:colan_widgets/src/services/forms/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../basics/cl_button.dart';
 import '../../basics/cl_text.dart';
 import '../../basics/cl_text_field.dart';
-
-enum CLFormFieldTypes { textField, textFieldMultiLine }
-
-class CLFormField {
-  CLFormField({
-    required this.type,
-    required this.validator,
-    required this.initialValue,
-    this.label,
-    this.hint,
-  });
-  CLFormFieldTypes type;
-  String? Function(String?) validator;
-  String? label;
-  String? hint;
-  String initialValue;
-}
+import 'cl_selector.dart';
 
 class CLTextFieldForm extends ConsumerStatefulWidget {
   const CLTextFieldForm({
@@ -50,16 +35,28 @@ class CLTextFieldForm extends ConsumerStatefulWidget {
 }
 
 class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
-  late final List<TextEditingController> controllers;
-  late final List<FocusNode> focusNodes;
+  late final List<Object> controllers;
+  late final List<FocusNode?> focusNodes;
   String? errorMessage;
 
   @override
   void initState() {
-    controllers = widget.clFormFields
-        .map((e) => TextEditingController(text: e.initialValue))
-        .toList();
-    focusNodes = widget.clFormFields.map((e) => FocusNode()).toList();
+    controllers = widget.clFormFields.map((e) {
+      return switch (e.runtimeType) {
+        (final type) when type == CLFromFieldTypeText =>
+          TextEditingController(text: (e as CLFromFieldTypeText).initialValue),
+        (final type) when type == CLFromFieldTypeSelector => SearchController(),
+        _ => TextEditingController()
+      };
+    }).toList();
+    focusNodes = widget.clFormFields.map((e) {
+      return switch (e.runtimeType) {
+        (final type) when type == CLFromFieldTypeText => FocusNode(),
+        _ => null
+      };
+    }).toList();
+
+    widget.clFormFields.map((e) => FocusNode()).toList();
 
     super.initState();
   }
@@ -67,10 +64,14 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
   @override
   void dispose() {
     for (final element in controllers) {
-      element.dispose();
+      if (element.runtimeType == TextEditingController) {
+        (element as TextEditingController).dispose();
+      } else if (element.runtimeType == SearchController) {
+        (element as SearchController).dispose();
+      }
     }
     for (final element in focusNodes) {
-      element.dispose();
+      element?.dispose();
     }
     super.dispose();
   }
@@ -104,16 +105,28 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
               children: [
                 for (final field in widget.clFormFields.asMap().entries)
                   switch (field.value.type) {
-                    CLFormFieldTypes.textField => CLTextField.form,
+                    CLFormFieldTypes.textField => CLTextField.form(
+                        controllers[field.key] as TextEditingController,
+                        validator:
+                            (field.value as CLFromFieldTypeText).validator,
+                        focusNode: focusNodes[field.key],
+                        label: (field.value as CLFromFieldTypeText).label,
+                        hint: (field.value as CLFromFieldTypeText).hint,
+                      ),
                     CLFormFieldTypes.textFieldMultiLine =>
-                      CLTextField.multiLineForm
-                  }(
-                    controllers[field.key],
-                    validator: field.value.validator,
-                    focusNode: focusNodes[field.key],
-                    label: field.value.label,
-                    hint: field.value.hint,
-                  ),
+                      CLTextField.multiLineForm(
+                        controllers[field.key] as TextEditingController,
+                        validator:
+                            (field.value as CLFromFieldTypeText).validator,
+                        focusNode: focusNodes[field.key],
+                        label: (field.value as CLFromFieldTypeText).label,
+                        hint: (field.value as CLFromFieldTypeText).hint,
+                      ),
+                    CLFormFieldTypes.selector => CLSelector(
+                        controller: controllers[field.key] as SearchController,
+                        selector: field.value as CLFromFieldTypeSelector,
+                      )
+                  },
                 if (errorMessage != null)
                   CLText.small(errorMessage!, color: widget.errorColor),
                 Center(
@@ -123,8 +136,19 @@ class _CLTextFieldFormState extends ConsumerState<CLTextFieldForm> {
                     disabledColor: widget.disabledColor,
                     onTap: () {
                       if (formKey.currentState!.validate()) {
-                        errorMessage = widget
-                            .onSubmit(controllers.map((e) => e.text).toList());
+                        errorMessage = widget.onSubmit(
+                          controllers
+                              .map(
+                                (e) => switch (e) {
+                                  (final e)
+                                      when e.runtimeType ==
+                                          TextEditingController =>
+                                    (e as TextEditingController).text,
+                                  _ => ''
+                                },
+                              )
+                              .toList(),
+                        );
                         setState(() {});
                       }
                     },

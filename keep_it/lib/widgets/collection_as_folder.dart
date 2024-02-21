@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import 'collection/upsert_collection_form.dart';
 import 'wrap_standard_quick_menu.dart';
 
 class CollectionAsFolder extends ConsumerWidget {
@@ -22,11 +23,27 @@ class CollectionAsFolder extends ConsumerWidget {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
       onEdit: () async {
-        await ref
-            .read(collectionsProvider(null).notifier)
-            .upsertCollection(collection, null);
-        // ignore: unused_local_variable
-        final items = ref.refresh(itemsProvider(collection.id!));
+        final updated = await showDialog<Collection>(
+          context: context,
+          builder: (BuildContext context) {
+            return CLDialogWrapper(
+              onCancel: () => Navigator.of(context).pop(),
+              child: CollectionEditor(
+                collection: collection,
+                onDone: (Collection updatedCollection) {
+                  Navigator.of(context).pop(updatedCollection);
+                },
+              ),
+            );
+          },
+        );
+        if (updated != null) {
+          await ref
+              .read(collectionsProvider(null).notifier)
+              .upsertCollection(updated, null);
+          // ignore: unused_local_variable
+          final items = ref.refresh(itemsProvider(collection.id!));
+        }
         return true;
       },
       onDelete: () async {
@@ -45,8 +62,23 @@ class CollectionAsFolder extends ConsumerWidget {
         );
         return true;
       },
-      child: PreviewGenerator(
-        collectionID: collection.id!,
+      child: Column(
+        children: [
+          Flexible(
+            child: PreviewGenerator(
+              collectionID: collection.id!,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              collection.label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }

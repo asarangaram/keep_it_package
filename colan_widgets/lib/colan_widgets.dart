@@ -25,6 +25,7 @@ export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
 export 'src/services/cl_media_process.dart';
 export 'src/services/forms/cl_textfield_form.dart';
+export 'src/services/forms/models.dart';
 export 'src/services/notification/notification_service.dart';
 export 'src/services/notification/provider/notify.dart';
 export 'src/services/selection/cl_selection_wrapper.dart';
