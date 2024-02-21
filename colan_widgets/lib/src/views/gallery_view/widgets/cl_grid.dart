@@ -1,11 +1,9 @@
 import 'dart:math';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CLMediaGrid extends ConsumerWidget {
-  const CLMediaGrid({
+class CLGrid extends StatelessWidget {
+  const CLGrid({
     required this.mediaList,
     required this.itemBuilder,
     this.additionalItems,
@@ -31,7 +29,7 @@ class CLMediaGrid extends ConsumerWidget {
   final Widget Function(BuildContext context, Object item) itemBuilder;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final int limitCount;
     final additionaItemsCount = additionalItems?.length ?? 0;
     final totalItems = mediaList.length + additionaItemsCount;

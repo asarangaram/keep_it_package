@@ -17,12 +17,18 @@ class TimeLinePage extends ConsumerWidget {
         buildOnData: (items) {
           final galleryGroups = <GalleryGroup>[];
           for (final entry in items.entries.filterByDate().entries) {
-            galleryGroups.add(GalleryGroup(entry.value, label: entry.key));
+            galleryGroups.add(
+              GalleryGroup(
+                entry.value,
+                label: entry.key,
+              ),
+            );
           }
           return CLGalleryView(
             label: items.collection.label,
             galleryMap: galleryGroups,
             emptyState: const EmptyState(),
+            labelTextBuilder: (index) => galleryGroups[index].label ?? '',
             itemBuilder: (context, item) {
               final media = item as CLMedia;
               return GestureDetector(
@@ -31,6 +37,7 @@ class TimeLinePage extends ConsumerWidget {
                 },
                 child: CLMediaPreview(
                   media: media,
+                  keepAspectRatio: false,
                 ),
               );
             },

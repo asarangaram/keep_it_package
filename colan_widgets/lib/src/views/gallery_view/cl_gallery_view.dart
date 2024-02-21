@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../basics/cl_button.dart';
 import '../../basics/cl_text.dart';
-import '../../models/cl_media.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../huge_list_view/events.dart';
 import '../huge_list_view/huge_list.dart';
 
-import 'widgets/cl_media_grid_lazy.dart';
+import 'widgets/cl_grid_lazy.dart';
 
 @immutable
 class GalleryGroup {
-  const GalleryGroup(this.items, {required this.label});
-  final String label;
+  const GalleryGroup(this.items, {this.label});
+  final String? label;
   final List<Object> items;
 }
 
-class CLGalleryView extends ConsumerStatefulWidget {
+class CLGalleryView extends StatefulWidget {
   const CLGalleryView({
     required this.galleryMap,
     required this.label,
@@ -27,6 +25,7 @@ class CLGalleryView extends ConsumerStatefulWidget {
     required this.tagPrefix,
     required this.onPickFiles,
     required this.itemBuilder,
+    required this.labelTextBuilder,
     super.key,
     this.header,
     this.footer,
@@ -43,12 +42,13 @@ class CLGalleryView extends ConsumerStatefulWidget {
   final void Function()? onPop;
 
   final Widget Function(BuildContext context, Object item) itemBuilder;
+  final String Function(int) labelTextBuilder;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => GalleryState();
+  State<StatefulWidget> createState() => GalleryState();
 }
 
-class GalleryState extends ConsumerState<CLGalleryView> {
+class GalleryState extends State<CLGalleryView> {
   // ignore: unused_field
   late ItemScrollController _itemScroller;
   @override
@@ -79,7 +79,7 @@ class GalleryState extends ConsumerState<CLGalleryView> {
         return HugeListView<List<dynamic>>(
           startIndex: 0,
           totalCount: itemsMap.length,
-          labelTextBuilder: (index) => itemsMap[index].label,
+          labelTextBuilder: widget.labelTextBuilder,
           emptyResultBuilder: (_) {
             final children = <Widget>[];
             if (widget.header != null) {
@@ -99,24 +99,23 @@ class GalleryState extends ConsumerState<CLGalleryView> {
             );
           },
           itemBuilder: (BuildContext context, int index) {
-            final w = Padding(
-              padding: const EdgeInsets.all(8),
-              child: CLMediaGridLazy(
-                mediaList: itemsMap[index].items,
-                itemBuilder: widget.itemBuilder,
-                index: index,
-                currentIndexStream: Bus.instance
-                    .on<GalleryIndexUpdatedEvent>()
-                    .where((event) => event.tag == widget.tagPrefix)
-                    .map((event) => event.index),
-                header: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: CLText.large(
-                    itemsMap[index].label,
-                    textAlign: TextAlign.start,
-                  ),
-                ),
-              ),
+            final w = CLGridLazy(
+              mediaList: itemsMap[index].items,
+              itemBuilder: widget.itemBuilder,
+              index: index,
+              currentIndexStream: Bus.instance
+                  .on<GalleryIndexUpdatedEvent>()
+                  .where((event) => event.tag == widget.tagPrefix)
+                  .map((event) => event.index),
+              header: itemsMap[index].label == null
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: CLText.large(
+                        itemsMap[index].label!,
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
             );
             if (index == 0 && widget.header != null) {
               return Column(

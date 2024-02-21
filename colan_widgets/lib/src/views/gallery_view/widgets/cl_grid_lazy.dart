@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'cl_media_grid.dart';
+import 'cl_grid.dart';
 import 'placeholder_grid.dart';
 
-class CLMediaGridLazy extends ConsumerStatefulWidget {
-  const CLMediaGridLazy({
+class CLGridLazy extends StatefulWidget {
+  const CLGridLazy({
     required this.mediaList,
     required this.currentIndexStream,
     required this.index,
@@ -39,10 +37,10 @@ class CLMediaGridLazy extends ConsumerStatefulWidget {
   final Stream<int> currentIndexStream;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _CollectionViewState();
+  State<StatefulWidget> createState() => CLGridLazyState();
 }
 
-class _CollectionViewState extends ConsumerState<CLMediaGridLazy> {
+class CLGridLazyState extends State<CLGridLazy> {
   static const numberOfGroupsToRenderBeforeAndAfter = 8;
   bool _shouldRender = true;
   final bool _isVisible = false;
@@ -84,7 +82,7 @@ class _CollectionViewState extends ConsumerState<CLMediaGridLazy> {
   @override
   Widget build(BuildContext context) {
     if (_shouldRender) {
-      return CLMediaGrid(
+      return CLGrid(
         mediaList: widget.mediaList,
         additionalItems: widget.additionalItems,
         columns: widget.columns,
