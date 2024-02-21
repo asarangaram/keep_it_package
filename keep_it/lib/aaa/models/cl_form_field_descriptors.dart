@@ -8,6 +8,20 @@ class CLFormFieldDescriptors {
 }
 
 @immutable
+class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
+  const CLFormTextFieldDescriptor({
+    required super.title,
+    required super.label,
+    required this.hint,
+    required this.initialValue,
+    required this.validator,
+  });
+  final String? Function(String?) validator;
+  final String? hint;
+  final String initialValue;
+}
+
+@immutable
 class CLFormSelectDescriptors extends CLFormFieldDescriptors {
   const CLFormSelectDescriptors({
     required super.title,

@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../pages/edit_collection_page.dart';
 import 'wrap_standard_quick_menu.dart';
 
 class CollectionAsFolder extends ConsumerWidget {

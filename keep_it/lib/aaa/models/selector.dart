@@ -3,36 +3,13 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../../aaa/models/cl_form_field_descriptors.dart';
-import '../../../aaa/models/cl_form_field_result.dart';
-import '../../../aaa/models/cl_form_field_state.dart';
-
-extension ExtMaterial on Color {
-  MaterialColor materialColor() {
-    final red = this.red;
-    final green = this.green;
-    final blue = this.blue;
-    final alpha = this.alpha;
-
-    final shades = <int, Color>{
-      50: Color.fromARGB(alpha, red, green, blue),
-      100: Color.fromARGB(alpha, red, green, blue),
-      200: Color.fromARGB(alpha, red, green, blue),
-      300: Color.fromARGB(alpha, red, green, blue),
-      400: Color.fromARGB(alpha, red, green, blue),
-      500: Color.fromARGB(alpha, red, green, blue),
-      600: Color.fromARGB(alpha, red, green, blue),
-      700: Color.fromARGB(alpha, red, green, blue),
-      800: Color.fromARGB(alpha, red, green, blue),
-      900: Color.fromARGB(alpha, red, green, blue),
-    };
-
-    return MaterialColor(value, shades);
-  }
-}
+import 'cl_form_field_descriptors.dart';
+import 'cl_form_field_result.dart';
+import 'cl_form_field_state.dart';
 
 class FormDesign {
   static InputDecoration inputDecoration(String label) => InputDecoration(
@@ -50,34 +27,43 @@ class Selector extends StatefulWidget {
     required this.onSubmit,
     super.key,
   });
-  final CLFormFieldDescriptors descriptors;
+  final List<CLFormFieldDescriptors> descriptors;
   final void Function(List<Object> selectedTags) onSubmit;
   @override
   State<Selector> createState() => SelectorState();
 }
 
 class SelectorState extends State<Selector> {
-  late CLFormFieldState state;
+  late List<CLFormFieldState> state;
   final formKey = GlobalKey<FormState>();
   String? errorMessage = 'This is Error';
 
   @override
   void initState() {
-    state = CLFormSelectState(
-      scrollController: ScrollController(),
-      searchController: SearchController(),
-      wrapKey: GlobalKey(),
-      result: CLFormSelectResult(
-        (widget.descriptors as CLFormSelectDescriptors).initialValues,
-      ),
-    );
+    state = [
+      for (final desc in widget.descriptors)
+        switch (desc.runtimeType) {
+          CLFormSelectDescriptors => CLFormSelectState(
+              scrollController: ScrollController(),
+              searchController: SearchController(),
+              wrapKey: GlobalKey(),
+              result: CLFormSelectResult(
+                (widget.descriptors as CLFormSelectDescriptors).initialValues,
+              ),
+            ),
+          _ => throw Exception('Unsupported')
+        },
+    ];
 
     super.initState();
   }
 
   @override
   void dispose() {
-    state.dispose();
+    for (final item in state) {
+      item.dispose();
+    }
+
     super.dispose();
   }
 
@@ -93,17 +79,19 @@ class SelectorState extends State<Selector> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CLText.large(
-                widget.descriptors.title,
-                textAlign: TextAlign.start,
-              ),
-              CLFormSelect(
-                descriptors: widget.descriptors as CLFormSelectDescriptors,
-                state: state as CLFormSelectState,
-                onRefresh: () {
-                  setState(() {});
-                },
-              ),
+              for (final (i, desc) in widget.descriptors.indexed) ...[
+                CLText.large(
+                  desc.title,
+                  textAlign: TextAlign.start,
+                ),
+                CLFormSelect(
+                  descriptors: desc as CLFormSelectDescriptors,
+                  state: state[i] as CLFormSelectState,
+                  onRefresh: () {
+                    setState(() {});
+                  },
+                ),
+              ],
               if (errorMessage != null)
                 Center(
                   child: CLText.standard(
@@ -115,18 +103,22 @@ class SelectorState extends State<Selector> {
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .surfaceVariant, // Change this color to the desired color
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceVariant,
                   ),
                   onPressed: () {},
                   child: CLButtonText.large(
                     'Submit',
                     onTap: () {
-                      print(
-                        (state.result as CLFormSelectResult).selectedEntities,
-                      );
+                      for (final s in state) {
+                        print(
+                          (s.result as CLFormSelectResult).selectedEntities,
+                        );
+                      }
                       if (formKey.currentState?.validate() ?? false) {}
+                      if (context.canPop()) {
+                        context.pop();
+                      }
                     },
                   ),
                 ),
@@ -349,9 +341,3 @@ class CLFormSelect extends StatelessWidget {
     Future.delayed(const Duration(milliseconds: 200), state.scrollToEnd);
   }
 }
-
-/*
-onDelete: (CLFormSelectState state, Object e) {
-        
-      },
-*/

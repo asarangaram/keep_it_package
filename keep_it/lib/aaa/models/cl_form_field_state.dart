@@ -9,6 +9,23 @@ abstract class CLFormFieldState {
 }
 
 @immutable
+class CLFormTextFieldState extends CLFormFieldState {
+  CLFormTextFieldState({
+    required CLFormTextFieldResult result,
+    required this.controller,
+    this.focusNode,
+  }) : super(result: result);
+  final TextEditingController controller;
+  final FocusNode? focusNode;
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focusNode?.dispose();
+  }
+}
+
+@immutable
 class CLFormSelectState extends CLFormFieldState {
   CLFormSelectState({
     required CLFormSelectResult result,

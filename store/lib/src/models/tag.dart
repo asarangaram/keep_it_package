@@ -15,6 +15,10 @@ class Tag {
     this.createdDate,
     this.updatedDate,
   });
+  @override
+  String toString() {
+    return 'id: ${id ?? "untracked"}, lable: $label,';
+  }
 
   factory Tag.fromMap(Map<String, dynamic> map) {
     return Tag(

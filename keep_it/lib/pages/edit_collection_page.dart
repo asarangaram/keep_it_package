@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:keep_it/aaa/models/cl_form_field_descriptors.dart';
 import 'package:store/store.dart';
 
+import '../aaa/models/selector.dart';
 import '../modules/shared_media/dialogs/dialogs.dart';
-import '../modules/shared_media/keep_media_wizard/selector.dart';
 
 class EditCollectionPage extends StatelessWidget {
   const EditCollectionPage({

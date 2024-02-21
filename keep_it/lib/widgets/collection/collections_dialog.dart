@@ -1,10 +1,8 @@
 import 'package:app_loader/app_loader.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../pages/edit_collection_page.dart';
 
 class CollectionsDialog {
   /* static Future<Collection?> upsert(
