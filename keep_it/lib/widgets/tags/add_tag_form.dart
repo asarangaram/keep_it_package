@@ -5,16 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class UpsertTagForm extends ConsumerWidget {
-  const UpsertTagForm({super.key, this.entity, this.onDone});
+class UpsertEntityForm extends ConsumerWidget {
+  const UpsertEntityForm({super.key, this.entity, this.onDone});
 
   final Tag? entity;
   final void Function(Tag tag)? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LoadTags(
-      buildOnData: (Tags tags) => SizedBox(
+    final tagsAsync = ref.watch(tagsProvider(null));
+
+    return tagsAsync.when(
+      loading: () => const CLLoadingView(),
+      error: (err, _) => CLErrorView(
+        errorMessage: err.toString(),
+      ),
+      data: (tags) => SizedBox(
         width: min(MediaQuery.of(context).size.width, 450),
         child: CLTextFieldForm(
           buttonLabel: (entity?.id == null) ? 'Create' : 'Update',

@@ -17,6 +17,7 @@ abstract class CollectionBase {
   final String? description;
   final DateTime? createdDate;
   final DateTime? updatedDate;
+  
 
   CollectionBase copyWith({
     int? id,

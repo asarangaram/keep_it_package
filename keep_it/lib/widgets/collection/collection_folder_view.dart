@@ -7,12 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../dialogs.dart';
+import '../wrap_standard_quick_menu.dart';
+import 'collections_dialog.dart';
 
-import 'keepit_grid_item.dart';
-
-class FolderView extends ConsumerWidget {
-  const FolderView({
+class CollectionFolderView extends ConsumerWidget {
+  const CollectionFolderView({
     required this.label,
     required this.entities,
     required this.availableSuggestions,
@@ -25,14 +24,13 @@ class FolderView extends ConsumerWidget {
     super.key,
   });
   final String label;
-  final List<CollectionBase> entities;
-  final List<CollectionBase> availableSuggestions;
-  final Future<bool> Function(BuildContext context, CollectionBase entity)
-      onSelect;
-  final Future<bool> Function(List<CollectionBase> selectedTags) onUpdate;
+  final List<Collection> entities;
+  final List<Collection> availableSuggestions;
+  final Future<bool> Function(BuildContext context, Collection entity) onSelect;
+  final Future<bool> Function(List<Collection> selectedTags) onUpdate;
 
-  final Future<bool> Function(List<CollectionBase> selectedTags) onDelete;
-  final Widget Function(BuildContext context, CollectionBase entity)
+  final Future<bool> Function(List<Collection> selectedTags) onDelete;
+  final Widget Function(BuildContext context, Collection entity)
       previewGenerator;
   final Size itemSize;
 
@@ -42,21 +40,6 @@ class FolderView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final menuItems = [
       [
-        if (availableSuggestions.isNotEmpty)
-          CLMenuItem(
-            title: 'Suggestions',
-            icon: Icons.menu,
-            onTap: () async {
-              KeepItDialogs.onSuggestions(
-                context,
-                availableSuggestions:
-                    Tags(availableSuggestions.map(Tag.fromBase).toList()),
-                onSelectionDone: onUpdate,
-              );
-
-              return true;
-            },
-          ),
         CLMenuItem(
           title: 'Create New',
           icon: Icons.new_label,
@@ -84,38 +67,17 @@ class FolderView extends ConsumerWidget {
           : null,
       actionsBuilder: [
         (context, quickMenuScopeKey) {
-          if (availableSuggestions.isEmpty) {
-            return CLButtonIcon.standard(
-              Icons.add,
-              onTap: () => onCreateNew(context, ref),
-            );
-          } else {
-            return CLQuickMenuAnchor(
-              parentKey: quickMenuScopeKey,
-              menuBuilder: (
-                context,
-                boxconstraints, {
-                required void Function() onDone,
-              }) {
-                return CLButtonsGrid(
-                  scaleType: CLScaleType.veryLarge,
-                  size: const Size(
-                    kMinInteractiveDimension * 1.5,
-                    kMinInteractiveDimension * 1.5,
-                  ),
-                  children2D: menuItems.insertOnDone(onDone),
-                );
-              },
-              child: const CLIcon.standard(Icons.add),
-            );
-          }
+          return CLButtonIcon.standard(
+            Icons.add,
+            onTap: () => onCreateNew(context, ref),
+          );
         },
         (context, quickMenuScopeKey) {
           if (availableSuggestions.isEmpty) {
             return CLButtonIcon.small(
               Icons.admin_panel_settings,
               onTap: () async {
-                final tag = await KeepItDialogs.upsert(context);
+                final tag = await CollectionsDialog.upsert(context);
                 if (tag != null) {
                   await onUpdate([tag]);
                 }
@@ -144,12 +106,12 @@ class FolderView extends ConsumerWidget {
         },
       ],
       pageBuilder: (context, quickMenuScopeKey) {
-        return CLFolderView(
+        return CollectionFolderViewitemBuilder(
           quickMenuScopeKey: quickMenuScopeKey,
           entities: entities,
           onTap: onSelect,
           onEdit: (context, entity) async {
-            final tag = await KeepItDialogs.upsert(context, entity: entity);
+            final tag = await CollectionsDialog.upsert(context, entity: entity);
             if (tag != null) {
               await onUpdate([tag]);
             }
@@ -165,7 +127,7 @@ class FolderView extends ConsumerWidget {
 
   Future<bool?> onDeleteTag(
     BuildContext context,
-    CollectionBase entity,
+    Collection entity,
   ) async {
     switch (await showOkCancelAlertDialog(
       context: context,
@@ -179,5 +141,88 @@ class FolderView extends ConsumerWidget {
       case OkCancelResult.cancel:
         return false;
     }
+  }
+}
+
+class CollectionFolderViewitemBuilder extends ConsumerWidget {
+  const CollectionFolderViewitemBuilder({
+    required this.quickMenuScopeKey,
+    required this.entities,
+    required this.previewGenerator,
+    required this.itemSize,
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
+    this.lastupdatedID, // Must avoid to item !
+    super.key,
+  });
+  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  final List<Collection> entities;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection entity,
+  )? onEdit;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection entity,
+  )? onDelete;
+  final Future<bool?> Function(
+    BuildContext context,
+    Collection entity,
+  )? onTap;
+  final int? lastupdatedID;
+  final Widget Function(BuildContext context, Collection entity)
+      previewGenerator;
+  final Size itemSize;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final highLightIndex = lastupdatedID == null
+        ? -1
+        : entities.indexWhere((e) => e.id == lastupdatedID);
+    return CLCustomGrid.fit(
+      childSize: itemSize,
+      itemCount: entities.length,
+      layers: 2,
+      controller: null,
+      itemBuilder: (context, index, layer) {
+        final entity = entities[index];
+        if (layer == 0) {
+          return CLHighlighted(
+            isHighlighed: index == highLightIndex,
+            child: WrapStandardQuickMenu(
+              quickMenuScopeKey: quickMenuScopeKey,
+              onEdit: () async => onEdit!.call(
+                context,
+                entity,
+              ),
+              onDelete: () async => onDelete!.call(
+                context,
+                entity,
+              ),
+              onTap: () async => onTap!.call(
+                context,
+                entity,
+              ),
+              child: CLAspectRationDecorated(
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                child: previewGenerator(context, entity),
+              ),
+            ),
+          );
+        } else if (layer == 1) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              entities[index].label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+        }
+        throw Exception('Incorrect layer');
+      },
+    );
   }
 }

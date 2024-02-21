@@ -4,26 +4,25 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import 'collection_base.dart';
 import 'tag.dart';
 
 @immutable
-class Collection extends CollectionBase {
+class Collection {
   const Collection({
-    required super.label,
-    super.id,
-    super.description,
-    super.createdDate,
-    super.updatedDate,
+    required this.label,
+    this.id,
+    this.description,
+    this.createdDate,
+    this.updatedDate,
   });
-  Collection.fromBase(CollectionBase base)
+  /* Collection.fromBase(CollectionBase base)
       : super(
           label: base.label,
           id: base.id,
           description: base.description,
           createdDate: base.createdDate,
           updatedDate: base.updatedDate,
-        );
+        ); */
 
   factory Collection.fromMap(Map<String, dynamic> map) {
     return Collection(
@@ -42,7 +41,12 @@ class Collection extends CollectionBase {
   factory Collection.fromJson(String source) =>
       Collection.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  @override
+  final int? id;
+  final String label;
+  final String? description;
+  final DateTime? createdDate;
+  final DateTime? updatedDate;
+
   Collection copyWith({
     int? id,
     String? label,

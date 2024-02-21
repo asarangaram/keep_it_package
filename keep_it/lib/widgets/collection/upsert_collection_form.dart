@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class UpsertEntityForm extends ConsumerWidget {
-  const UpsertEntityForm({super.key, this.entity, this.onDone});
+class UpsertCollectionForm extends ConsumerWidget {
+  const UpsertCollectionForm({super.key, this.entity, this.onDone});
 
-  final CollectionBase? entity;
-  final void Function(CollectionBase tag)? onDone;
+  final Collection? entity;
+  final void Function(Collection tag)? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,7 +48,7 @@ class UpsertEntityForm extends ConsumerWidget {
 
             try {
               onDone?.call(
-                Tag(
+                Collection(
                   id: entity?.id,
                   label: label.trim(),
                   description: description,

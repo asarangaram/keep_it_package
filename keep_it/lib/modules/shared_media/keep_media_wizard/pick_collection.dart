@@ -1,12 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/modules/shared_media/keep_media_wizard/collection_create_select.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import 'create_or_select.dart';
-import 'description_editor.dart';
+import 'collection_editor.dart';
 import 'keepit_selector.dart';
 import 'label_viewer.dart';
 import 'wizard_item.dart';
@@ -35,8 +35,8 @@ typedef PageBuilder = Widget Function(
   required void Function() onPrevious,
 });
 
-class PickCollectionBase extends ConsumerStatefulWidget {
-  const PickCollectionBase({
+class PickCollection extends ConsumerStatefulWidget {
+  const PickCollection({
     required this.suggestedCollections,
     required this.onDone,
     super.key,
@@ -45,18 +45,17 @@ class PickCollectionBase extends ConsumerStatefulWidget {
   });
 
   final void Function({
-    required CollectionBase collection,
-    List<CollectionBase>? selectedTags,
+    required Collection collection,
+    List<Tag>? selectedTags,
   }) onDone;
-  final List<CollectionBase> suggestedCollections;
-  final CollectionBase? preSelectedCollection;
+  final List<Collection> suggestedCollections;
+  final Collection? preSelectedCollection;
   final bool allowUpdateDescription;
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      PickCollectionBaseState();
+  ConsumerState<ConsumerStatefulWidget> createState() => PickCollectionState();
 }
 
-class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
+class PickCollectionState extends ConsumerState<PickCollection> {
   late final PageController pageController;
   late final SearchController labelController;
   late final TextEditingController descriptionController;
@@ -64,8 +63,8 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
   late final FocusNode descriptionNode;
 
   bool onEditLabel = true;
-  CollectionBase? collection;
-  List<CollectionBase>? selectedTags;
+  Collection? collection;
+  List<Tag>? selectedTags;
 
   @override
   void initState() {
@@ -151,7 +150,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
         Flexible(
           child: LoadTags(
             buildOnData: (tags) {
-              return KeepItItemSelector(
+              return TagsSelector(
                 entities: tags.entries,
                 availableSuggestions: suggestedTags,
                 onDone: (selectedTags) {
@@ -167,7 +166,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
                 onCreateNew: (entity) {
                   return ref
                       .read(tagsProvider(null).notifier)
-                      .upsertTag(Tag.fromBase(entity));
+                      .upsertTag(entity);
                 },
               );
             },
@@ -186,10 +185,10 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
       child: SizedBox(
         height: kMinInteractiveDimension * 2,
         child: WizardItem(
-          child: CreateOrSelect(
+          child: CollectionCreateOrSelect(
             suggestedCollections: widget.suggestedCollections,
             controller: labelController,
-            onDone: (CollectionBase collection) async {
+            onDone: (Collection collection) async {
               setState(() {
                 onEditLabel = false;
                 this.collection = collection;
@@ -202,7 +201,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
             anchorBuilder: (
               BuildContext context,
               SearchController controller, {
-              required void Function(CollectionBase) onDone,
+              required void Function(Collection) onDone,
             }) {
               return SearchBar(
                 focusNode: labelNode,
@@ -297,7 +296,7 @@ class PickCollectionBaseState extends ConsumerState<PickCollectionBase> {
             Flexible(
               child: WizardItem(
                 action: menuItem,
-                child: DescriptionEditor(
+                child: CollectionEditor(
                   collection!,
                   controller: descriptionController,
                   focusNode: descriptionNode,

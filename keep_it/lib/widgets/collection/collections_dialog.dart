@@ -4,23 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'add_tag_form.dart';
-import 'tags_list.dart';
+import 'upsert_collection_form.dart';
 
-class KeepItDialogs {
-  static Future<CollectionBase?> upsert(
+class CollectionsDialog {
+  static Future<Collection?> upsert(
     BuildContext context, {
-    CollectionBase? entity,
+    Collection? entity,
     //  void Function()? onDone,
   }) async =>
-      showDialog<CollectionBase>(
+      showDialog<Collection>(
         context: context,
         builder: (BuildContext context) {
           return CLDialogWrapper(
             onCancel: () => Navigator.of(context).pop(),
-            child: UpsertEntityForm(
+            child: UpsertCollectionForm(
               entity: entity,
-              onDone: (CollectionBase entity) {
+              onDone: (Collection entity) {
                 Navigator.of(context).pop(entity);
               },
             ),
@@ -28,7 +27,7 @@ class KeepItDialogs {
         },
       );
 
-  static void onSuggestions(
+  /* static void onSuggestions(
     BuildContext context, {
     required dynamic Function(List<Tag>) onSelectionDone,
     required Tags availableSuggestions,
@@ -74,8 +73,8 @@ class KeepItDialogs {
           ),
         );
       },
-    );
-  }
+    ); 
+  }*/
 
   static Future<bool> onAddItemsIntoCollection(
     BuildContext context,

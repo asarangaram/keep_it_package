@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/keepit_grid/cl_folder_view.dart';
+import '../widgets/collection/collection_folder_view.dart';
 
 class CollectionsPage extends ConsumerStatefulWidget {
   const CollectionsPage({super.key, this.tagId});
@@ -26,12 +26,12 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
         tagId: widget.tagId,
         buildOnData: (collections) => Stack(
           children: [
-            FolderView(
+            CollectionFolderView(
               label: collections.tag?.label ?? 'Collections',
               entities: collections.entries,
               availableSuggestions: const [],
               itemSize: const Size(180, 300),
-              onSelect: (BuildContext context, CollectionBase entity) async {
+              onSelect: (BuildContext context, Collection entity) async {
                 unawaited(
                   context.push(
                     '/items/${entity.id}',
@@ -40,7 +40,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
                 return true;
               },
               onUpdate: (items) => onUpdate(context, ref, items),
-              onDelete: (List<CollectionBase> selectedEntities) async {
+              onDelete: (List<Collection> selectedEntities) async {
                 if (selectedEntities.length != 1) {
                   throw Exception(
                     "Unexected: Collections can't be deleted in bulk",
@@ -49,11 +49,11 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
                 for (final entity in selectedEntities) {
                   await ref
                       .read(collectionsProvider(null).notifier)
-                      .deleteCollection(Collection.fromBase(entity));
+                      .deleteCollection(entity);
                 }
                 return true;
               },
-              previewGenerator: (BuildContext context, CollectionBase entity) {
+              previewGenerator: (BuildContext context, Collection entity) {
                 if (entity.id == null) {
                   throw Exception("Unexpected, id can't be null");
                 }
@@ -89,7 +89,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
   Future<bool> onUpdate(
     BuildContext context,
     WidgetRef ref,
-    List<CollectionBase> selectedEntities,
+    List<Collection> selectedEntities,
   ) async {
     if (selectedEntities.length != 1) {
       throw Exception(
@@ -99,7 +99,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
     for (final entity in selectedEntities) {
       final collectionId = await ref
           .read(collectionsProvider(null).notifier)
-          .upsertCollection(Collection.fromBase(entity), null);
+          .upsertCollection(entity, null);
       // ignore: unused_local_variable
       final items = ref.refresh(itemsProvider(collectionId));
     }

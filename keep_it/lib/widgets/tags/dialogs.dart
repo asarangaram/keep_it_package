@@ -7,7 +7,7 @@ import 'package:store/store.dart';
 import 'add_tag_form.dart';
 import 'tags_list.dart';
 
-class TagsDialog {
+class KeepItDialogs {
   static Future<Tag?> upsert(
     BuildContext context, {
     Tag? entity,
@@ -18,7 +18,7 @@ class TagsDialog {
         builder: (BuildContext context) {
           return CLDialogWrapper(
             onCancel: () => Navigator.of(context).pop(),
-            child: UpsertTagForm(
+            child: UpsertEntityForm(
               entity: entity,
               onDone: (Tag entity) {
                 Navigator.of(context).pop(entity);

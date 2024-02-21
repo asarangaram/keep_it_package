@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-class CreateOrSelectTags extends StatelessWidget {
-  const CreateOrSelectTags({
+class CollectionCreateOrSelect extends StatelessWidget {
+  const CollectionCreateOrSelect({
     required this.onDone,
     required this.anchorBuilder,
     this.suggestedCollections,
@@ -11,14 +11,14 @@ class CreateOrSelectTags extends StatelessWidget {
     super.key,
   });
 
-  final List<Tag>? suggestedCollections;
-  final void Function(Tag item) onDone;
+  final List<Collection>? suggestedCollections;
+  final void Function(Collection item) onDone;
   final SearchController? controller;
 
   final Widget Function(
     BuildContext context,
     SearchController controller, {
-    required void Function(Tag) onDone,
+    required void Function(Collection) onDone,
   }) anchorBuilder;
 
   @override
@@ -45,7 +45,7 @@ class CreateOrSelectTags extends StatelessWidget {
   ) {
     final list = <Widget>[];
     if (suggestedCollections != null) {
-      final List<Tag> availableSuggestions;
+      final List<Collection> availableSuggestions;
       if (controller.text.isEmpty) {
         availableSuggestions = suggestedCollections!;
       } else {
@@ -85,7 +85,7 @@ class CreateOrSelectTags extends StatelessWidget {
                 final c = suggestedCollections
                     ?.where((element) => element.label == controller.text)
                     .firstOrNull;
-                onDone(c ?? Tag(label: controller.text));
+                onDone(c ?? Collection(label: controller.text));
               }
             },
           ),

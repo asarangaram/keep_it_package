@@ -22,7 +22,7 @@ class KeepMediaWizard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadCollections(
       buildOnData: (collections) {
-        return PickCollectionBase(
+        return PickCollection(
           suggestedCollections: collections.entries,
           preSelectedCollection: media.targetID == null
               ? null
@@ -30,13 +30,13 @@ class KeepMediaWizard extends ConsumerWidget {
                   .where((element) => element.id == media.targetID)
                   .firstOrNull,
           onDone: ({
-            required CollectionBase collection,
-            List<CollectionBase>? selectedTags,
+            required Collection collection,
+            List<Tag>? selectedTags,
           }) async {
             await onSelectionDone(
               ref: ref,
               media: media,
-              collection: Collection.fromBase(collection),
+              collection: collection,
               saveIntoTagsId: selectedTags?.map((e) => e.id!).toList(),
             );
           },

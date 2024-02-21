@@ -1,34 +1,34 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it/widgets/collection/collections_dialog.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../dialogs/dialogs.dart';
-import 'create_or_select.dart';
+import 'collection_create_select.dart';
 import 'wizard_item.dart';
 
-class TagsSelector extends StatefulWidget {
-  const TagsSelector({
+class CollectionSelector extends StatefulWidget {
+  const CollectionSelector({
     required this.entities,
     required this.availableSuggestions,
     required this.onDone,
     required this.onCreateNew,
     super.key,
   });
-  final List<Tag> entities;
-  final List<Tag> availableSuggestions;
-  final void Function(List<Tag> selectedTags) onDone;
-  final Tag Function(Tag entity) onCreateNew;
+  final List<Collection> entities;
+  final List<Collection> availableSuggestions;
+  final void Function(List<Collection> selectedTags) onDone;
+  final Collection Function(Collection entity) onCreateNew;
 
   @override
-  State<TagsSelector> createState() => _TagsSelectorState();
+  State<CollectionSelector> createState() => _KeepItItemSelectorState();
 }
 
-class _TagsSelectorState extends State<TagsSelector> {
+class _KeepItItemSelectorState extends State<CollectionSelector> {
   late ScrollController scrollController;
   final GlobalKey wrapKey = GlobalKey();
 
-  List<Tag> selectedEntities = [];
+  List<Collection> selectedEntities = [];
   late SearchController controller;
   @override
   void initState() {
@@ -52,10 +52,10 @@ class _TagsSelectorState extends State<TagsSelector> {
     }
   }
 
-  Future<void> onDone(Tag c) async {
-    final Tag entityUpdated;
+  Future<void> onDone(Collection c) async {
+    final Collection entityUpdated;
     if (c.id == null) {
-      final res = await TagsDialog.upsert(context, entity: c);
+      final res = await CollectionsDialog.upsert(context, entity: c);
       if (res == null) {
         return;
       }
@@ -115,27 +115,13 @@ class _TagsSelectorState extends State<TagsSelector> {
                       ),
                     ),
                   ),
-                  CreateOrSelectTags(
+                  CollectionCreateOrSelect(
                     controller: controller,
                     onDone: onDone,
-                    suggestedCollections: [
-                      ...widget.entities,
-                      ...widget.availableSuggestions.where((element) {
-                        return !widget.entities
-                            .map((e) => e.label)
-                            .contains(element.label);
-                      }),
-                    ]
-                        .where(
-                          (element) => !selectedEntities
-                              .map((e) => e.label)
-                              .contains(element.label),
-                        )
-                        .toList(),
                     anchorBuilder: (
                       BuildContext context,
                       SearchController controller, {
-                      required void Function(Tag) onDone,
+                      required void Function(Collection) onDone,
                     }) {
                       return Theme(
                         data: Theme.of(context).copyWith(

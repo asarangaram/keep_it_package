@@ -5,25 +5,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../local_data/suggested_tags.dart';
-import 'collection_base.dart';
 
 @immutable
-class Tag extends CollectionBase {
+class Tag {
   const Tag({
-    required super.label,
-    super.id,
-    super.description,
-    super.createdDate,
-    super.updatedDate,
+    required this.label,
+    this.id,
+    this.description,
+    this.createdDate,
+    this.updatedDate,
   });
-  Tag.fromBase(CollectionBase base)
-      : super(
-          label: base.label,
-          id: base.id,
-          description: base.description,
-          createdDate: base.createdDate,
-          updatedDate: base.updatedDate,
-        );
 
   factory Tag.fromMap(Map<String, dynamic> map) {
     return Tag(
@@ -42,7 +33,16 @@ class Tag extends CollectionBase {
   factory Tag.fromJson(String source) =>
       Tag.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  @override
+  final int? id;
+
+  final String label;
+
+  final String? description;
+
+  final DateTime? createdDate;
+
+  final DateTime? updatedDate;
+
   Tag copyWith({
     int? id,
     String? label,

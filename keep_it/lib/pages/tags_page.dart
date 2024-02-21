@@ -6,23 +6,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/dialogs.dart';
+import '../widgets/tags/dialogs.dart';
 
-import '../widgets/keepit_grid/cl_folder_view.dart';
+import '../widgets/tags/tags_folder_view.dart';
 
 class TagsPage extends ConsumerWidget {
   const TagsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LoadTags(
-        buildOnData: (tags) => FolderView(
+        buildOnData: (tags) => TagsFolderView(
           label: 'Tags',
           entities: tags.entries,
           availableSuggestions: suggestedTags.where((element) {
             return !tags.entries.map((e) => e.label).contains(element.label);
           }).toList(),
           itemSize: const Size(100, 120),
-          onSelect: (BuildContext context, CollectionBase entity) async {
+          onSelect: (BuildContext context, Tag entity) async {
             unawaited(
               context.push(
                 '/collections/${entity.id}',
@@ -31,13 +31,11 @@ class TagsPage extends ConsumerWidget {
             return true;
           },
           onUpdate: (tags) => onUpdate(context, ref, tags),
-          onDelete: (List<CollectionBase> selectedTags) async {
-            ref
-                .read(tagsProvider(null).notifier)
-                .deleteTags(selectedTags.map(Tag.fromBase).toList());
+          onDelete: (List<Tag> selectedTags) async {
+            ref.read(tagsProvider(null).notifier).deleteTags(selectedTags);
             return true;
           },
-          previewGenerator: (BuildContext context, CollectionBase tag) {
+          previewGenerator: (BuildContext context, Tag tag) {
             return LoadItemsInTag(
               id: tag.id!,
               limit: 4,
@@ -66,11 +64,9 @@ class TagsPage extends ConsumerWidget {
   Future<bool> onUpdate(
     BuildContext context,
     WidgetRef ref,
-    List<CollectionBase> selectedTags,
+    List<Tag> selectedTags,
   ) async {
-    ref
-        .read(tagsProvider(null).notifier)
-        .upsertTags(selectedTags.map(Tag.fromBase).toList());
+    ref.read(tagsProvider(null).notifier).upsertTags(selectedTags);
     return true;
   }
 }
