@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class PlaceHolderGrid extends StatelessWidget {
   const PlaceHolderGrid(
     this.count, {
-    this.columns = 4,
+    required this.columns,
     super.key,
   });
 

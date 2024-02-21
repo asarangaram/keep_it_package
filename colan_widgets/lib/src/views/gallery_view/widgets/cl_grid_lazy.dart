@@ -10,8 +10,8 @@ class CLGridLazy extends StatefulWidget {
     required this.currentIndexStream,
     required this.index,
     required this.itemBuilder,
+    required this.columns,
     this.additionalItems,
-    this.columns = 4,
     this.rows,
     this.physics = const NeverScrollableScrollPhysics(),
     this.header,
@@ -103,7 +103,10 @@ class CLGridLazyState extends State<CLGridLazy> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.header != null) widget.header!,
-        PlaceHolderGrid(widget.mediaList.length),
+        PlaceHolderGrid(
+          widget.mediaList.length,
+          columns: widget.columns,
+        ),
         if (widget.footer != null) widget.footer!,
       ],
     );

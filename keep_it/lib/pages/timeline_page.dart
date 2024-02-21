@@ -25,6 +25,7 @@ class TimeLinePage extends ConsumerWidget {
             );
           }
           return CLGalleryView(
+            columns: 4,
             label: items.collection.label,
             galleryMap: galleryGroups,
             emptyState: const EmptyState(),

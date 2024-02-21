@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/collection/collection_folder_view.dart';
+import 'timeline_page.dart';
 
 class CollectionsPage extends ConsumerStatefulWidget {
   const CollectionsPage({super.key, this.tagId});
@@ -24,67 +25,44 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
   @override
   Widget build(BuildContext context) => LoadCollections(
         tagId: widget.tagId,
-        buildOnData: (collections) => Stack(
-          children: [
-            CollectionFolderView(
-              label: collections.tag?.label ?? 'Collections',
-              entities: collections.entries,
-              availableSuggestions: const [],
-              itemSize: const Size(180, 300),
-              onSelect: (BuildContext context, Collection entity) async {
-                unawaited(
-                  context.push(
-                    '/items/${entity.id}',
-                  ),
-                );
-                return true;
-              },
-              onUpdate: (items) => onUpdate(context, ref, items),
-              onDelete: (List<Collection> selectedEntities) async {
-                if (selectedEntities.length != 1) {
-                  throw Exception(
-                    "Unexected: Collections can't be deleted in bulk",
-                  );
-                }
-                for (final entity in selectedEntities) {
-                  await ref
-                      .read(collectionsProvider(null).notifier)
-                      .deleteCollection(entity);
-                }
-                return true;
-              },
-              previewGenerator: (BuildContext context, Collection entity) {
-                if (entity.id == null) {
-                  throw Exception("Unexpected, id can't be null");
-                }
-                return PreviewGenerator(
-                  collectionID: entity.id!,
-                );
-              },
-              onCreateNew: (context, ref) async {
-                var res = false;
-                setState(() {
-                  isLoading = true;
-                });
-                if (mounted) {
-                  res = await onPickFiles(context, ref);
-                }
-                if (mounted) {
-                  setState(() {
-                    isLoading = false;
-                  });
-                }
-                return res;
-              },
-            ),
-            if (isLoading)
-              Container(
-                color: Colors.grey.shade400.withAlpha(128),
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator(),
+        buildOnData: (collections) {
+          final galleryGroups = <GalleryGroup>[];
+          for (final rows in collections.entries.convertTo2D(3)) {
+            galleryGroups.add(
+              GalleryGroup(
+                rows,
               ),
-          ],
-        ),
+            );
+          }
+          return CLGalleryView(
+            label: collections.tag?.label ?? 'Collections',
+            columns: 3,
+            galleryMap: galleryGroups,
+            emptyState: const EmptyState(),
+            labelTextBuilder: (index) => galleryGroups[index].label ?? '',
+            itemBuilder: (context, item) {
+              final collection = item as Collection;
+              return GestureDetector(
+                onTap: () {},
+                child: PreviewGenerator(
+                  collectionID: collection.id!,
+                ),
+              );
+            },
+            tagPrefix: 'timeline ${collections.tag?.id ?? "all"}',
+            onPickFiles: () async {
+              await onPickFiles(
+                context,
+                ref,
+              );
+            },
+            onPop: context.canPop()
+                ? () {
+                    context.pop();
+                  }
+                : null,
+          );
+        },
       );
   Future<bool> onUpdate(
     BuildContext context,

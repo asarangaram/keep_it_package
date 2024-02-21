@@ -6,8 +6,8 @@ class CLGrid extends StatelessWidget {
   const CLGrid({
     required this.mediaList,
     required this.itemBuilder,
+    required this.columns,
     this.additionalItems,
-    this.columns = 4,
     this.rows,
     this.physics = const NeverScrollableScrollPhysics(),
     this.header,

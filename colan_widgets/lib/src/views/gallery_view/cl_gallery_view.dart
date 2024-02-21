@@ -26,6 +26,7 @@ class CLGalleryView extends StatefulWidget {
     required this.onPickFiles,
     required this.itemBuilder,
     required this.labelTextBuilder,
+    required this.columns,
     super.key,
     this.header,
     this.footer,
@@ -33,7 +34,7 @@ class CLGalleryView extends StatefulWidget {
   });
   final String label;
   final List<GalleryGroup> galleryMap;
-
+  final int columns;
   final Widget? header;
   final Widget? footer;
   final Widget emptyState;
@@ -101,6 +102,7 @@ class GalleryState extends State<CLGalleryView> {
           itemBuilder: (BuildContext context, int index) {
             final w = CLGridLazy(
               mediaList: itemsMap[index].items,
+              columns: widget.columns,
               itemBuilder: widget.itemBuilder,
               index: index,
               currentIndexStream: Bus.instance
