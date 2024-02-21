@@ -16,7 +16,7 @@ import 'widgets/cl_media_grid_lazy.dart';
 class GalleryGroup {
   const GalleryGroup(this.items, {required this.label});
   final String label;
-  final List<CLMedia> items;
+  final List<Object> items;
 }
 
 class CLGalleryView extends ConsumerStatefulWidget {
@@ -26,7 +26,6 @@ class CLGalleryView extends ConsumerStatefulWidget {
     required this.emptyState,
     required this.tagPrefix,
     required this.onPickFiles,
-    required this.onTapMedia,
     required this.itemBuilder,
     super.key,
     this.header,
@@ -42,8 +41,8 @@ class CLGalleryView extends ConsumerStatefulWidget {
   final String tagPrefix;
   final void Function() onPickFiles;
   final void Function()? onPop;
-  final void Function(CLMedia media)? onTapMedia;
-  final Widget Function(BuildContext context, CLMedia media) itemBuilder;
+
+  final Widget Function(BuildContext context, Object item) itemBuilder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GalleryState();
@@ -106,15 +105,16 @@ class GalleryState extends ConsumerState<CLGalleryView> {
                 mediaList: itemsMap[index].items,
                 itemBuilder: widget.itemBuilder,
                 index: index,
-                onTapMedia: widget.onTapMedia,
                 currentIndexStream: Bus.instance
                     .on<GalleryIndexUpdatedEvent>()
                     .where((event) => event.tag == widget.tagPrefix)
                     .map((event) => event.index),
                 header: Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: CLText.large(itemsMap[index].label,
-                      textAlign: TextAlign.start),
+                  child: CLText.large(
+                    itemsMap[index].label,
+                    textAlign: TextAlign.start,
+                  ),
                 ),
               ),
             );

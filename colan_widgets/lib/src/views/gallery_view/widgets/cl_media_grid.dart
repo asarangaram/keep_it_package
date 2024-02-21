@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class CLMediaGrid extends ConsumerWidget {
   const CLMediaGrid({
     required this.mediaList,
-    required this.onTapMedia,
     required this.itemBuilder,
     this.additionalItems,
     this.columns = 4,
@@ -19,7 +18,7 @@ class CLMediaGrid extends ConsumerWidget {
     this.mainAxisSpacing = 2.0,
     super.key,
   });
-  final List<CLMedia> mediaList;
+  final List<Object> mediaList;
   final List<Widget>? additionalItems;
   final int columns;
   final int? rows;
@@ -28,8 +27,8 @@ class CLMediaGrid extends ConsumerWidget {
   final Widget? footer;
   final double crossAxisSpacing;
   final double mainAxisSpacing;
-  final void Function(CLMedia media)? onTapMedia;
-  final Widget Function(BuildContext context, CLMedia media) itemBuilder;
+
+  final Widget Function(BuildContext context, Object item) itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,14 +63,7 @@ class CLMediaGrid extends ConsumerWidget {
             }
             final media = mediaList[index];
 
-            return GestureDetector(
-              onTap: onTapMedia == null
-                  ? null
-                  : () {
-                      onTapMedia?.call(media);
-                    },
-              child: itemBuilder(context, media),
-            );
+            return itemBuilder(context, media);
           },
           itemCount: limitCount + additionaItemsCount,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

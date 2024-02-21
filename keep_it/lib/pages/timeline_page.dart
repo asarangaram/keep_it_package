@@ -23,9 +23,17 @@ class TimeLinePage extends ConsumerWidget {
             label: items.collection.label,
             galleryMap: galleryGroups,
             emptyState: const EmptyState(),
-            itemBuilder: (context, media) => CLMediaPreview(
-              media: media,
-            ),
+            itemBuilder: (context, item) {
+              final media = item as CLMedia;
+              return GestureDetector(
+                onTap: () {
+                  context.push('/item/${media.collectionId}/${media.id}');
+                },
+                child: CLMediaPreview(
+                  media: media,
+                ),
+              );
+            },
             tagPrefix: 'timeline ${items.collection.id}',
             onPickFiles: () async {
               await onPickFiles(
@@ -34,8 +42,6 @@ class TimeLinePage extends ConsumerWidget {
                 collectionId: items.collection.id,
               );
             },
-            onTapMedia: (CLMedia media) =>
-                context.push('/item/${media.collectionId}/${media.id}'),
             onPop: context.canPop()
                 ? () {
                     context.pop();

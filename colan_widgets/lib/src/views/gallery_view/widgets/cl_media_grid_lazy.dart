@@ -11,7 +11,6 @@ class CLMediaGridLazy extends ConsumerStatefulWidget {
     required this.mediaList,
     required this.currentIndexStream,
     required this.index,
-    required this.onTapMedia,
     required this.itemBuilder,
     this.additionalItems,
     this.columns = 4,
@@ -24,7 +23,7 @@ class CLMediaGridLazy extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final List<CLMedia> mediaList;
+  final List<Object> mediaList;
   final List<Widget>? additionalItems;
   final int columns;
   final int? rows;
@@ -33,8 +32,8 @@ class CLMediaGridLazy extends ConsumerStatefulWidget {
   final Widget? footer;
   final double crossAxisSpacing;
   final double mainAxisSpacing;
-  final void Function(CLMedia media)? onTapMedia;
-  final Widget Function(BuildContext context, CLMedia media) itemBuilder;
+
+  final Widget Function(BuildContext context, Object item) itemBuilder;
 
   final int index;
   final Stream<int> currentIndexStream;
@@ -95,7 +94,6 @@ class _CollectionViewState extends ConsumerState<CLMediaGridLazy> {
         footer: widget.footer,
         crossAxisSpacing: widget.crossAxisSpacing,
         mainAxisSpacing: widget.mainAxisSpacing,
-        onTapMedia: widget.onTapMedia,
         itemBuilder: widget.itemBuilder,
       );
     }
