@@ -32,6 +32,7 @@ class CLGalleryView extends StatefulWidget {
     this.footer,
     this.onPop,
   });
+
   final String label;
   final List<GalleryGroup> galleryMap;
   final int columns;
@@ -42,7 +43,11 @@ class CLGalleryView extends StatefulWidget {
   final void Function() onPickFiles;
   final void Function()? onPop;
 
-  final Widget Function(BuildContext context, Object item) itemBuilder;
+  final Widget Function(
+    BuildContext context,
+    Object item, {
+    required GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
+  }) itemBuilder;
   final String Function(int) labelTextBuilder;
 
   @override
@@ -103,7 +108,13 @@ class GalleryState extends State<CLGalleryView> {
             final w = CLGridLazy(
               mediaList: itemsMap[index].items,
               columns: widget.columns,
-              itemBuilder: widget.itemBuilder,
+              itemBuilder: (context, item) {
+                return widget.itemBuilder(
+                  context,
+                  item,
+                  quickMenuScopeKey: quickMenuScopeKey,
+                );
+              },
               index: index,
               currentIndexStream: Bus.instance
                   .on<GalleryIndexUpdatedEvent>()

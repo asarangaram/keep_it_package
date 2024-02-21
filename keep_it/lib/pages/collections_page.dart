@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/collection/collection_folder_view.dart';
-import 'timeline_page.dart';
+import '../widgets/collection_as_folder.dart';
+import '../widgets/empty_state.dart';
 
 class CollectionsPage extends ConsumerStatefulWidget {
   const CollectionsPage({super.key, this.tagId});
@@ -40,15 +40,11 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
             galleryMap: galleryGroups,
             emptyState: const EmptyState(),
             labelTextBuilder: (index) => galleryGroups[index].label ?? '',
-            itemBuilder: (context, item) {
-              final collection = item as Collection;
-              return GestureDetector(
-                onTap: () {},
-                child: PreviewGenerator(
-                  collectionID: collection.id!,
-                ),
-              );
-            },
+            itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+                CollectionAsFolder(
+              collection: item as Collection,
+              quickMenuScopeKey: quickMenuScopeKey,
+            ),
             tagPrefix: 'timeline ${collections.tag?.id ?? "all"}',
             onPickFiles: () async {
               await onPickFiles(
@@ -82,33 +78,5 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
       final items = ref.refresh(itemsProvider(collectionId));
     }
     return true;
-  }
-}
-
-class PreviewGenerator extends StatelessWidget {
-  const PreviewGenerator({
-    required this.collectionID,
-    super.key,
-  });
-  final int collectionID;
-
-  @override
-  Widget build(BuildContext context) {
-    return LoadItems(
-      collectionID: collectionID,
-      buildOnData: (Items items) {
-        return CLMediaCollage.byMatrixSize(
-          items.entries,
-          hCount: 2,
-          vCount: 2,
-          itemBuilder: (context, index) => CLMediaPreview(
-            media: items.entries[index],
-          ),
-          whenNopreview: CLText.veryLarge(
-            items.collection.label.characters.first,
-          ),
-        );
-      },
-    );
   }
 }
