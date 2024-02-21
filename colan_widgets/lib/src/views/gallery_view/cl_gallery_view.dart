@@ -12,6 +12,13 @@ import '../huge_list_view/huge_list.dart';
 
 import 'widgets/cl_media_grid_lazy.dart';
 
+@immutable
+class GalleryGroup {
+  const GalleryGroup(this.items, {required this.label});
+  final String label;
+  final List<CLMedia> items;
+}
+
 class CLGalleryView extends ConsumerStatefulWidget {
   const CLGalleryView({
     required this.galleryMap,
@@ -27,7 +34,7 @@ class CLGalleryView extends ConsumerStatefulWidget {
     this.onPop,
   });
   final String label;
-  final Map<String, List<CLMedia>> galleryMap;
+  final List<GalleryGroup> galleryMap;
 
   final Widget? header;
   final Widget? footer;
@@ -59,7 +66,7 @@ class GalleryState extends ConsumerState<CLGalleryView> {
   @override
   Widget build(BuildContext context) {
     final itemsMap = widget.galleryMap;
-    final labels = itemsMap.keys.toList();
+
     return KeepItMainView(
       title: widget.label,
       onPop: widget.onPop,
@@ -72,8 +79,8 @@ class GalleryState extends ConsumerState<CLGalleryView> {
       pageBuilder: (context, quickMenuScopeKey) {
         return HugeListView<List<dynamic>>(
           startIndex: 0,
-          totalCount: itemsMap.entries.length,
-          labelTextBuilder: (index) => labels[index],
+          totalCount: itemsMap.length,
+          labelTextBuilder: (index) => itemsMap[index].label,
           emptyResultBuilder: (_) {
             final children = <Widget>[];
             if (widget.header != null) {
@@ -96,7 +103,7 @@ class GalleryState extends ConsumerState<CLGalleryView> {
             final w = Padding(
               padding: const EdgeInsets.all(8),
               child: CLMediaGridLazy(
-                mediaList: itemsMap[labels[index]]!,
+                mediaList: itemsMap[index].items,
                 itemBuilder: widget.itemBuilder,
                 index: index,
                 onTapMedia: widget.onTapMedia,
@@ -106,8 +113,8 @@ class GalleryState extends ConsumerState<CLGalleryView> {
                     .map((event) => event.index),
                 header: Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child:
-                      CLText.large(labels[index], textAlign: TextAlign.start),
+                  child: CLText.large(itemsMap[index].label,
+                      textAlign: TextAlign.start),
                 ),
               ),
             );

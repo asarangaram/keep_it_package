@@ -15,9 +15,13 @@ class TimeLinePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => LoadItems(
         collectionID: collectionID,
         buildOnData: (items) {
+          final galleryGroups = <GalleryGroup>[];
+          for (final entry in items.entries.filterByDate().entries) {
+            galleryGroups.add(GalleryGroup(entry.value, label: entry.key));
+          }
           return CLGalleryView(
             label: items.collection.label,
-            galleryMap: items.entries.filterByDate(),
+            galleryMap: galleryGroups,
             emptyState: const EmptyState(),
             itemBuilder: (context, media) => CLMediaPreview(
               media: media,
