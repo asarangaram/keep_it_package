@@ -4,24 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'tag_editor.dart';
+import '../editors/tag_editor.dart';
 import 'tags_list.dart';
 
 class KeepItDialogs {
-  static Future<Tag?> showDialogUpsertTag(
-    BuildContext context, {
-    Tag? entity,
-  }) async =>
-      showDialog<Tag>(
-        context: context,
-        builder: (BuildContext context) => TagEditor.dialog(
-          tag: entity,
-          onSubmit: (Tag? entity) {
-            Navigator.of(context).pop(entity);
-          },
-          onCancel: () => Navigator.of(context).pop(),
-        ),
-      );
+  
 
   static void onSuggestions(
     BuildContext context, {

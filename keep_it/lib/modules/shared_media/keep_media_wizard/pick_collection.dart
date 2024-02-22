@@ -163,7 +163,7 @@ class PickCollectionState extends ConsumerState<PickCollection> {
                   });
                   onNext();
                 },
-                onCreateNew: (entity) {
+                onCreateNew: (entity) async{
                   return ref
                       .read(tagsProvider(null).notifier)
                       .upsertTag(entity);

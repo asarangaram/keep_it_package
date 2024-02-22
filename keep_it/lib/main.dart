@@ -11,8 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
+import 'pages/collection_editor_page.dart';
 import 'pages/collections_page.dart';
-import 'pages/edit_collection_page.dart';
 import 'pages/item_page.dart';
 import 'pages/tags_page.dart';
 import 'pages/timeline_page.dart';
@@ -90,7 +90,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'edit/:collection_id',
           builder: (context, GoRouterState state) {
-            return EditCollectionPage(
+            return CollectionEditorPage(
               collectionID: int.parse(state.pathParameters['collection_id']!),
             );
           },

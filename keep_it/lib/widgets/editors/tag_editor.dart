@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:store/store.dart';
 
-class TagEditor extends StatefulWidget {
+class TagEditor extends StatelessWidget {
   factory TagEditor({
     required Tag? tag,
     required void Function(Tag tag) onSubmit,
@@ -47,30 +47,25 @@ class TagEditor extends StatefulWidget {
   final bool isDialog;
 
   @override
-  State<TagEditor> createState() => TagEditorState();
-}
-
-class TagEditorState extends State<TagEditor> {
-  @override
   Widget build(BuildContext context) {
     return CLDialogWrapper(
-      onCancel: widget.isDialog ? widget.onCancel : null,
+      onCancel: isDialog ? onCancel : null,
       child: LoadTags(
         buildOnData: (existingTags) {
           return CLForm(
-            explicitScrollDownOption: !widget.isDialog,
+            explicitScrollDownOption: !isDialog,
             descriptors: {
               'label': CLFormTextFieldDescriptor(
                 title: 'Name',
                 label: 'Collection Name',
-                initialValue: widget.tag?.label ?? '',
+                initialValue: tag?.label ?? '',
                 validator: (val) => validateName(val, existingTags),
                 hint: 'Collection Name',
               ),
               'description': CLFormTextFieldDescriptor(
                 title: 'About',
                 label: 'Describe about this collection',
-                initialValue: widget.tag?.description ?? '',
+                initialValue: tag?.description ?? '',
                 validator: (_) => null,
                 hint: 'Collection Name',
                 maxLines: 4,
@@ -80,7 +75,7 @@ class TagEditorState extends State<TagEditor> {
               final label = (result['label']! as CLFormTextFieldResult).value;
               final desc =
                   (result['description']! as CLFormTextFieldResult).value;
-              final updated = widget.tag?.copyWith(
+              final updated = tag?.copyWith(
                     label: label,
                     description: desc.isEmpty ? null : desc,
                   ) ??
@@ -88,9 +83,9 @@ class TagEditorState extends State<TagEditor> {
                     label: label,
                     description: desc.isEmpty ? null : desc,
                   );
-              widget.onSubmit.call(updated);
+              onSubmit.call(updated);
             },
-            onCancel: widget.isDialog ? null : widget.onCancel,
+            onCancel: isDialog ? null : onCancel,
           );
         },
       ),
@@ -104,7 +99,7 @@ class TagEditorState extends State<TagEditor> {
     /* if (name!.length > 16) {
       return 'Name should not exceed 15 letters';
     } */
-    if (widget.tag?.label == name) {
+    if (tag?.label == name) {
       // Nothing changed.
       return null;
     }
@@ -115,4 +110,19 @@ class TagEditorState extends State<TagEditor> {
     }
     return null;
   }
+
+  static Future<Tag?> popupDialog(
+    BuildContext context, {
+    required Tag tag,
+  }) async =>
+      showDialog<Tag>(
+        context: context,
+        builder: (BuildContext context) => TagEditor.dialog(
+          tag: tag,
+          onSubmit: (Tag? entity) {
+            Navigator.of(context).pop(entity);
+          },
+          onCancel: () => Navigator.of(context).pop(),
+        ),
+      );
 }

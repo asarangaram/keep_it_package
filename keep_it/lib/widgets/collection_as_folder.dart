@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keep_it/widgets/editors/collection_editor.dart';
 import 'package:store/store.dart';
 
 import 'wrap_standard_quick_menu.dart';
@@ -22,11 +23,21 @@ class CollectionAsFolder extends ConsumerWidget {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
       onEdit: () async {
-        unawaited(
-          context.push(
-            '/edit/${collection.id}',
-          ),
-        );
+        final res =
+            await CollectionEditor.popupDialog(context, collection: collection);
+        if (res != null) {
+          final (updated, tags) = res;
+
+          final newTags = await ref
+              .read(tagsProvider(null).notifier)
+              .upsertTags(tags.where((e) => e.id == null));
+          final existingTags = tags.where((e) => e.id != null);
+          await ref.read(collectionsProvider(null).notifier).upsertCollection(
+                updated,
+                [...newTags, ...existingTags].map((e) => e.id!).toList(),
+              );
+        }
+
         return true;
       },
       onDelete: () async {

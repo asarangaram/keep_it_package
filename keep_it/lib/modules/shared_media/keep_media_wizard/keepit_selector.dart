@@ -18,7 +18,7 @@ class TagsSelector extends StatefulWidget {
   final List<Tag> entities;
   final List<Tag> availableSuggestions;
   final void Function(List<Tag> selectedTags) onDone;
-  final Tag Function(Tag entity) onCreateNew;
+  final Future<Tag> Function(Tag entity) onCreateNew;
 
   @override
   State<TagsSelector> createState() => _TagsSelectorState();
@@ -59,7 +59,7 @@ class _TagsSelectorState extends State<TagsSelector> {
       if (res == null) {
         return;
       }
-      entityUpdated = widget.onCreateNew(res);
+      entityUpdated = await widget.onCreateNew(res);
     } else {
       entityUpdated = c;
     }
