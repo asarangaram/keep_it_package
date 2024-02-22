@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import 'cl_form_design.dart';
-import 'cl_form_field_descriptors.dart';
-import 'cl_form_field_result.dart';
-import 'cl_form_field_state.dart';
+import '../models/cl_form_field_descriptors.dart';
+import '../models/cl_form_field_state.dart';
+import '../style/cl_form_design.dart';
+import '../models/list_extensions.dart';
 
 class CLFormSelect extends StatelessWidget {
   const CLFormSelect({
@@ -43,25 +40,23 @@ class CLFormSelect extends StatelessWidget {
                   spacing: 1,
                   runSpacing: 1,
                   children: [
-                    ...(state.result as CLFormSelectResult)
-                        .selectedEntities
-                        .map(
-                          (e) => Theme(
-                            data: Theme.of(context).copyWith(
-                              chipTheme: const ChipThemeData(
-                                side: BorderSide.none,
-                              ),
-                              canvasColor: Colors.transparent,
-                            ),
-                            child: Chip(
-                              label: Text(descriptors.labelBuilder(e)),
-                              onDeleted: () {
-                                state.remove(e);
-                                onRefresh();
-                              },
-                            ),
+                    ...state.selectedEntities.map(
+                      (e) => Theme(
+                        data: Theme.of(context).copyWith(
+                          chipTheme: const ChipThemeData(
+                            side: BorderSide.none,
                           ),
+                          canvasColor: Colors.transparent,
                         ),
+                        child: Chip(
+                          label: Text(descriptors.labelBuilder(e)),
+                          onDeleted: () {
+                            state.remove(e);
+                            onRefresh();
+                          },
+                        ),
+                      ),
+                    ),
                     SearchAnchor(
                       searchController: state.searchController,
                       isFullScreen: false,
@@ -72,8 +67,7 @@ class CLFormSelect extends StatelessWidget {
                           context,
                           suggestions: descriptors.suggestionsAvailable
                               .excludeByLabel(
-                                (state.result as CLFormSelectResult)
-                                    .selectedEntities,
+                                state.selectedEntities,
                                 descriptors.labelBuilder,
                               )
                               .toList(),
@@ -87,13 +81,9 @@ class CLFormSelect extends StatelessWidget {
                             canvasColor: Colors.transparent,
                           ),
                           child: ActionChip(
-                            avatar: Icon(MdiIcons.plus),
+                            avatar: const Icon(Icons.add),
                             label: Text(
-                              (state.result as CLFormSelectResult)
-                                      .selectedEntities
-                                      .isEmpty
-                                  ? 'Add'
-                                  : 'Add',
+                              state.selectedEntities.isEmpty ? 'Add' : 'Add',
                             ),
                             onPressed: controller.openView,
                             shape: const ContinuousRectangleBorder(

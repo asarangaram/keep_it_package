@@ -2,11 +2,11 @@ import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/aaa/models/cl_form_field_descriptors.dart';
+import 'package:form_factory/form_factory.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:store/store.dart';
 
-import '../aaa/models/cl_form_field_result.dart';
-import '../aaa/models/selector.dart';
 import '../modules/shared_media/dialogs/dialogs.dart';
 
 class EditCollectionPage extends StatelessWidget {
@@ -68,25 +68,22 @@ class CollectionEditor extends StatefulWidget {
 class _CollectionEditorState extends State<CollectionEditor> {
   @override
   Widget build(BuildContext context) {
-    return Selector(
+    return CLForm(
       descriptors: {
         'label': CLFormTextFieldDescriptor(
           title: 'Name',
           label: 'Collection Name',
           initialValue: widget.collection.label,
-          validator: (str) {
-            return '';
-          },
+          validator: validateName,
           hint: 'Collection Name',
         ),
         'description': CLFormTextFieldDescriptor(
           title: 'About',
           label: 'Describe about this collection',
           initialValue: widget.collection.description ?? '',
-          validator: (str) {
-            return '';
-          },
+          validator: (_) => null,
           hint: 'Collection Name',
+          maxLines: 4,
         ),
         'tags': CLFormSelectDescriptors(
           title: 'Tags',
@@ -109,7 +106,17 @@ class _CollectionEditorState extends State<CollectionEditor> {
           },
         ),
       },
-      onSubmit: (Map<String, CLFormFieldResult> results) {},
+      onSubmit: (result) async {
+        print(result);
+        if (context.canPop()) {
+          context.pop();
+        }
+      },
+      onCancel: () {
+        if (context.canPop()) {
+          context.pop();
+        }
+      },
     );
   }
 
@@ -125,5 +132,22 @@ class _CollectionEditorState extends State<CollectionEditor> {
       entityUpdated = tag;
     }
     return entityUpdated;
+  }
+
+  String? validateName(String? name) {
+    if (name?.isEmpty ?? true) {
+      return "Name can't be empty";
+    }
+
+    if (widget.collection.label == name) {
+      // Nothing changed.
+      return null;
+    }
+    if (widget.collections.entries
+        .map((e) => e.label.trim())
+        .contains(name!.trim())) {
+      return '$name already exists';
+    }
+    return null;
   }
 }
