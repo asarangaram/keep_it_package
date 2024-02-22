@@ -44,9 +44,6 @@ class _TagsViewState extends ConsumerState<TagsPage> {
               quickMenuScopeKey: quickMenuScopeKey,
             ),
             tagPrefix: 'folder view tags "}',
-            onPickFiles: () async {
-              // Fix me
-            },
             onPop: context.canPop()
                 ? () {
                     context.pop();

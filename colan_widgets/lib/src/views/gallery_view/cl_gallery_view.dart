@@ -23,10 +23,10 @@ class CLGalleryView extends StatefulWidget {
     required this.label,
     required this.emptyState,
     required this.tagPrefix,
-    required this.onPickFiles,
     required this.itemBuilder,
     required this.labelTextBuilder,
     required this.columns,
+    this.onPickFiles,
     super.key,
     this.header,
     this.footer,
@@ -40,7 +40,7 @@ class CLGalleryView extends StatefulWidget {
   final Widget? footer;
   final Widget emptyState;
   final String tagPrefix;
-  final void Function() onPickFiles;
+  final void Function()? onPickFiles;
   final void Function()? onPop;
 
   final Widget Function(
@@ -76,10 +76,11 @@ class GalleryState extends State<CLGalleryView> {
       title: widget.label,
       onPop: widget.onPop,
       actionsBuilder: [
-        (context, quickMenuScopeKey) => CLButtonIcon.standard(
-              Icons.add,
-              onTap: widget.onPickFiles,
-            ),
+        if (widget.onPickFiles != null)
+          (context, quickMenuScopeKey) => CLButtonIcon.standard(
+                Icons.add,
+                onTap: widget.onPickFiles,
+              ),
       ],
       pageBuilder: (context, quickMenuScopeKey) {
         return HugeListView<List<dynamic>>(

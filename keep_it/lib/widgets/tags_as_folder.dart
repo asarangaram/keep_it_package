@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import 'tags/dialogs.dart';
 import 'wrap_standard_quick_menu.dart';
 
 class TagAsFolder extends ConsumerWidget {
@@ -22,11 +23,11 @@ class TagAsFolder extends ConsumerWidget {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
       onEdit: () async {
-        /* unawaited(
-          context.push(
-            '/edit/${tag.id}',
-          ),
-        ); */
+        final updated =
+            await KeepItDialogs.showDialogUpsertTag(context, entity: tag);
+        if (updated != null) {
+          ref.read(tagsProvider(null).notifier).upsertTag(updated);
+        }
         return true;
       },
       onDelete: () async {
