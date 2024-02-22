@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
-import '../widgets/item_file_view.dart';
+import '../widgets/media_as_file.dart';
 
 class TimeLinePage extends ConsumerWidget {
   const TimeLinePage({required this.collectionID, super.key});

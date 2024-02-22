@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -60,23 +58,4 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
           );
         },
       );
-  Future<bool> onUpdate(
-    BuildContext context,
-    WidgetRef ref,
-    List<Collection> selectedEntities,
-  ) async {
-    if (selectedEntities.length != 1) {
-      throw Exception(
-        "Unexected: Collections can't be added in bulk",
-      );
-    }
-    for (final entity in selectedEntities) {
-      final collectionId = await ref
-          .read(collectionsProvider(null).notifier)
-          .upsertCollection(entity, null);
-      // ignore: unused_local_variable
-      final items = ref.refresh(itemsProvider(collectionId));
-    }
-    return true;
-  }
 }

@@ -26,11 +26,11 @@ class TagsFolderView extends ConsumerWidget {
   final String label;
   final List<Tag> entities;
   final List<Tag> availableSuggestions;
-  final Future<bool> Function(BuildContext context, Tag entity) onSelect;
+  final Future<bool> Function(BuildContext context, Tag tag) onSelect;
   final Future<bool> Function(List<Tag> selectedTags) onUpdate;
 
   final Future<bool> Function(List<Tag> selectedTags) onDelete;
-  final Widget Function(BuildContext context, Tag entity) previewGenerator;
+  final Widget Function(BuildContext context, Tag tag) previewGenerator;
   final Size itemSize;
 
   final Future<bool> Function(BuildContext context, WidgetRef ref) onCreateNew;
@@ -111,7 +111,7 @@ class TagsFolderView extends ConsumerWidget {
             return CLButtonIcon.small(
               Icons.admin_panel_settings,
               onTap: () async {
-                final tag = await KeepItDialogs.upsert(context);
+                final tag = await KeepItDialogs.showDialogUpsertTag(context);
                 if (tag != null) {
                   await onUpdate([tag]);
                 }
@@ -144,10 +144,13 @@ class TagsFolderView extends ConsumerWidget {
           quickMenuScopeKey: quickMenuScopeKey,
           entities: entities,
           onTap: onSelect,
-          onEdit: (context, entity) async {
-            final tag = await KeepItDialogs.upsert(context, entity: entity);
-            if (tag != null) {
-              await onUpdate([tag]);
+          onEdit: (context, tag) async {
+            final updated = await KeepItDialogs.showDialogUpsertTag(
+              context,
+              entity: tag,
+            );
+            if (updated != null) {
+              await onUpdate([updated]);
             }
             return true;
           },
@@ -161,7 +164,7 @@ class TagsFolderView extends ConsumerWidget {
 
   Future<bool?> onDeleteTag(
     BuildContext context,
-    Tag entity,
+    Tag tag,
   ) async {
     switch (await showOkCancelAlertDialog(
       context: context,
@@ -170,7 +173,7 @@ class TagsFolderView extends ConsumerWidget {
       cancelLabel: 'No',
     )) {
       case OkCancelResult.ok:
-        return onDelete([entity]);
+        return onDelete([tag]);
 
       case OkCancelResult.cancel:
         return false;
@@ -194,18 +197,18 @@ class TagsFolderViewitemBuilder extends ConsumerWidget {
   final List<Tag> entities;
   final Future<bool?> Function(
     BuildContext context,
-    Tag entity,
+    Tag tag,
   )? onEdit;
   final Future<bool?> Function(
     BuildContext context,
-    Tag entity,
+    Tag tag,
   )? onDelete;
   final Future<bool?> Function(
     BuildContext context,
-    Tag entity,
+    Tag tag,
   )? onTap;
   final int? lastupdatedID;
-  final Widget Function(BuildContext context, Tag entity) previewGenerator;
+  final Widget Function(BuildContext context, Tag tag) previewGenerator;
   final Size itemSize;
 
   @override
@@ -219,7 +222,7 @@ class TagsFolderViewitemBuilder extends ConsumerWidget {
       layers: 2,
       controller: null,
       itemBuilder: (context, index, layer) {
-        final entity = entities[index];
+        final tag = entities[index];
         if (layer == 0) {
           return CLHighlighted(
             isHighlighed: index == highLightIndex,
@@ -227,19 +230,19 @@ class TagsFolderViewitemBuilder extends ConsumerWidget {
               quickMenuScopeKey: quickMenuScopeKey,
               onEdit: () async => onEdit!.call(
                 context,
-                entity,
+                tag,
               ),
               onDelete: () async => onDelete!.call(
                 context,
-                entity,
+                tag,
               ),
               onTap: () async => onTap!.call(
                 context,
-                entity,
+                tag,
               ),
               child: CLAspectRationDecorated(
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
-                child: previewGenerator(context, entity),
+                child: previewGenerator(context, tag),
               ),
             ),
           );

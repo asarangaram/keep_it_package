@@ -55,7 +55,7 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
     return tagWithID;
   }
 
-  void upsertTags(List<Tag> tags) {
+  /* void upsertTags(List<Tag> tags) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
@@ -63,25 +63,18 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
       tag.upsert(databaseManager!.db);
     }
     loadTags();
-  }
+  } */
 
-  void deleteTag(Tag tag) {
+  Future<int> deleteTag(Tag tag) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
-
-    tag.delete(databaseManager!.db);
-    loadTags();
-  }
-
-  void deleteTags(List<Tag> tags) {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    for (final tag in tags) {
+    if (tag.id != null) {
       tag.delete(databaseManager!.db);
+      await loadTags();
+      return tag.id!;
     }
-    loadTags();
+    return -1;
   }
 }
 

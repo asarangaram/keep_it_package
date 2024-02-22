@@ -1,72 +1,58 @@
-import 'dart:async';
-
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/tags/dialogs.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/tags_as_folder.dart';
 
-import '../widgets/tags/tags_folder_view.dart';
-
-class TagsPage extends ConsumerWidget {
+//For now, don't allow collectionID to be provided.
+// as collection is not part of Tags. - Fix Me.
+class TagsPage extends ConsumerStatefulWidget {
   const TagsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => LoadTags(
-        buildOnData: (tags) => TagsFolderView(
-          label: 'Tags',
-          entities: tags.entries,
-          availableSuggestions: suggestedTags.where((element) {
-            return !tags.entries.map((e) => e.label).contains(element.label);
-          }).toList(),
-          itemSize: const Size(100, 120),
-          onSelect: (BuildContext context, Tag entity) async {
-            unawaited(
-              context.push(
-                '/collections/${entity.id}',
+  ConsumerState<ConsumerStatefulWidget> createState() => _TagsViewState();
+}
+
+class _TagsViewState extends ConsumerState<TagsPage> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) => LoadTags(
+        //collectionID:  widget.collectionId ,
+        buildOnData: (Tags tags) {
+          final galleryGroups = <GalleryGroup>[];
+          for (final rows in tags.entries.convertTo2D(3)) {
+            galleryGroups.add(
+              GalleryGroup(
+                rows,
               ),
             );
-            return true;
-          },
-          onUpdate: (tags) => onUpdate(context, ref, tags),
-          onDelete: (List<Tag> selectedTags) async {
-            ref.read(tagsProvider(null).notifier).deleteTags(selectedTags);
-            return true;
-          },
-          previewGenerator: (BuildContext context, Tag tag) {
-            return LoadItemsInTag(
-              id: tag.id!,
-              limit: 4,
-              buildOnData: (clMediaList) {
-                return CLMediaCollage.byMatrixSize(
-                  clMediaList ?? [],
-                  hCount: 2,
-                  vCount: 2,
-                  itemBuilder: (context, index) => CLMediaPreview(
-                    media: clMediaList![index],
-                  ),
-                  whenNopreview: CLText.veryLarge(tag.label.characters.first),
-                );
-              },
-            );
-          },
-          onCreateNew: (BuildContext context, WidgetRef ref) async {
-            final tag = await KeepItDialogs.upsert(context);
-            if (tag != null && context.mounted) {
-              return onUpdate(context, ref, [tag]);
-            }
-            return false;
-          },
-        ),
+          }
+          return CLGalleryView(
+            label: 'Tags',
+            columns: 3,
+            galleryMap: galleryGroups,
+            emptyState: const EmptyState(),
+            labelTextBuilder: (index) => galleryGroups[index].label ?? '',
+            itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+                TagAsFolder(
+              tag: item as Tag,
+              quickMenuScopeKey: quickMenuScopeKey,
+            ),
+            tagPrefix: 'folder view tags "}',
+            onPickFiles: () async {
+              // Fix me
+            },
+            onPop: context.canPop()
+                ? () {
+                    context.pop();
+                  }
+                : null,
+          );
+        },
       );
-  Future<bool> onUpdate(
-    BuildContext context,
-    WidgetRef ref,
-    List<Tag> selectedTags,
-  ) async {
-    ref.read(tagsProvider(null).notifier).upsertTags(selectedTags);
-    return true;
-  }
 }

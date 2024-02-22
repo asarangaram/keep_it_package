@@ -4,28 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'add_tag_form.dart';
+import 'tag_editor.dart';
 import 'tags_list.dart';
 
 class KeepItDialogs {
-  static Future<Tag?> upsert(
+  static Future<Tag?> showDialogUpsertTag(
     BuildContext context, {
     Tag? entity,
-    //  void Function()? onDone,
   }) async =>
       showDialog<Tag>(
         context: context,
-        builder: (BuildContext context) {
-          return CLDialogWrapper(
-            onCancel: () => Navigator.of(context).pop(),
-            child: UpsertEntityForm(
-              entity: entity,
-              onDone: (Tag entity) {
-                Navigator.of(context).pop(entity);
-              },
-            ),
-          );
-        },
+        builder: (BuildContext context) => TagEditor.dialog(
+          tag: entity,
+          onSubmit: (Tag? entity) {
+            Navigator.of(context).pop(entity);
+          },
+          onCancel: () => Navigator.of(context).pop(),
+        ),
       );
 
   static void onSuggestions(

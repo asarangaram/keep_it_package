@@ -8,13 +8,13 @@ import 'package:store/store.dart';
 
 import 'wrap_standard_quick_menu.dart';
 
-class CollectionAsFolder extends ConsumerWidget {
-  const CollectionAsFolder({
-    required this.collection,
+class TagAsFolder extends ConsumerWidget {
+  const TagAsFolder({
+    required this.tag,
     required this.quickMenuScopeKey,
     super.key,
   });
-  final Collection collection;
+  final Tag tag;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
 
   @override
@@ -22,25 +22,22 @@ class CollectionAsFolder extends ConsumerWidget {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
       onEdit: () async {
-        unawaited(
+        /* unawaited(
           context.push(
-            '/edit/${collection.id}',
+            '/edit/${tag.id}',
           ),
-        );
+        ); */
         return true;
       },
       onDelete: () async {
-        // delete all the items in the collection !!
-
-        await ref
-            .read(collectionsProvider(null).notifier)
-            .deleteCollection(collection);
+        // delete all the items in the tag !!
+        await ref.read(tagsProvider(null).notifier).deleteTag(tag);
         return true;
       },
       onTap: () async {
         unawaited(
           context.push(
-            '/items/${collection.id}',
+            '/collections/${tag.id}',
           ),
         );
         return true;
@@ -49,13 +46,13 @@ class CollectionAsFolder extends ConsumerWidget {
         children: [
           Flexible(
             child: PreviewGenerator(
-              collection: collection,
+              tag: tag,
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              collection.label,
+              tag.label,
               maxLines: 2,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
@@ -69,31 +66,28 @@ class CollectionAsFolder extends ConsumerWidget {
 
 class PreviewGenerator extends StatelessWidget {
   const PreviewGenerator({
-    required this.collection,
+    required this.tag,
     super.key,
   });
-  final Collection collection;
+  final Tag tag;
 
   @override
   Widget build(BuildContext context) {
-    return LoadItems(
-      collectionID: collection.id!,
-      buildOnData: (Items items) {
+    return LoadItemsInTag(
+      id: tag.id!,
+      limit: 4,
+      buildOnData: (List<CLMedia>? clMediaList) {
         return CLAspectRationDecorated(
           borderRadius: const BorderRadius.all(Radius.circular(16)),
           child: CLMediaCollage.byMatrixSize(
-            items.entries,
+            clMediaList ?? [],
             hCount: 2,
             vCount: 2,
             itemBuilder: (context, index) => CLMediaPreview(
-              media: items.entries[index],
+              media: clMediaList![index],
               keepAspectRatio: false,
             ),
-            whenNopreview: Center(
-              child: CLText.veryLarge(
-                collection.label.characters.first,
-              ),
-            ),
+            whenNopreview: CLText.veryLarge(tag.label.characters.first),
           ),
         );
       },
