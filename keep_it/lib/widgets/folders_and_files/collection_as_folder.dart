@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:keep_it/widgets/editors/collection_editor.dart';
 import 'package:store/store.dart';
 
-import 'wrap_standard_quick_menu.dart';
+import '../wrap_standard_quick_menu.dart';
 
 class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({

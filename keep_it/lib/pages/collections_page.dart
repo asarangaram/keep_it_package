@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/collection_as_folder.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/folders_and_files/collection_as_folder.dart';
 
 class CollectionsPage extends ConsumerStatefulWidget {
   const CollectionsPage({super.key, this.tagId});

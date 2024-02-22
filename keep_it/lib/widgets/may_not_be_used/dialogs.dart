@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../editors/tag_editor.dart';
 import 'tags_list.dart';
 
 class KeepItDialogs {

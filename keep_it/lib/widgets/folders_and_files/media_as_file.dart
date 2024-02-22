@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import 'wrap_standard_quick_menu.dart';
+import '../wrap_standard_quick_menu.dart';
 
 class MediaAsFile extends ConsumerWidget {
   const MediaAsFile({
