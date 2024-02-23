@@ -1,4 +1,4 @@
-import 'package:store/store.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 List<Tag> suggestedTags = [
   const Tag(

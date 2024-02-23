@@ -2,17 +2,17 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/db.dart';
-import '../providers/db_manager.dart';
+import '../models/device_directories.dart';
+import '../providers/device_directories.dart';
 
-class WhenDBAccessible extends ConsumerWidget {
-  const WhenDBAccessible({required this.builder, super.key});
-  final Widget Function(DatabaseManager databaseManager) builder;
+class GetDeviceDirectories extends ConsumerWidget {
+  const GetDeviceDirectories({required this.builder, super.key});
+  final Widget Function(DeviceDirectories dirs) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dbManagerAsync = ref.watch(dbManagerProvider);
-    return dbManagerAsync.when(
+    final docDirAsync = ref.watch(docDirProvider);
+    return docDirAsync.when(
       data: builder,
       error: (error, stackTrace) => CLErrorView(errorMessage: error.toString()),
       loading: CLLoadingView.new,

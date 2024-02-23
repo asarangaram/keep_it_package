@@ -1,7 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:store/store.dart';
 
 import '../dialogs/dialogs.dart';
 import 'create_or_select.dart';

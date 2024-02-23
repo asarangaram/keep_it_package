@@ -1,6 +1,5 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite3/sqlite3.dart';
-
-import '../models/collection.dart';
 
 extension CollectionDB on Collection {
   static Collection getById(Database db, int id) {
@@ -51,7 +50,7 @@ extension CollectionDB on Collection {
       );
   }
 
-  static List<Collection> getCollectionsByTagId(Database db, int id) {
+  static List<Collection> getByTagId(Database db, int id) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Collection.* FROM Collection
@@ -63,7 +62,7 @@ extension CollectionDB on Collection {
     return maps.map(Collection.fromMap).toList();
   }
 
-  static void addTagToCollection(
+  static void addTag(
     Database db,
     int tagId,
     int collectionId,

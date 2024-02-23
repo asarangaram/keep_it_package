@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:store/store.dart';
 
 class TagsList extends ConsumerStatefulWidget {
   const TagsList({

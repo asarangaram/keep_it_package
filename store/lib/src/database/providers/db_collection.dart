@@ -1,7 +1,11 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import '../models/db.dart';
+import '../models/collection.dart';
+import '../models/db_manager.dart';
+import '../models/tag.dart';
+
+import 'db_items.dart';
 import 'db_manager.dart';
 
 class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
@@ -12,7 +16,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
   }) : super(const AsyncValue.loading()) {
     loadCollections();
   }
-  DatabaseManager? databaseManager;
+  DBManager? databaseManager;
   int? tagId;
   Ref ref;
 
@@ -26,7 +30,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
       collections = CollectionDB.getAll(databaseManager!.db);
       tag = null;
     } else {
-      collections = CollectionDB.getCollectionsByTagId(
+      collections = CollectionDB.getByTagId(
         databaseManager!.db,
         tagId!,
       );
@@ -54,14 +58,14 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
 
     if (tagIds != null) {
       for (final id in tagIds) {
-        CollectionDB.addTagToCollection(databaseManager!.db, id, collectionId);
+        CollectionDB.addTag(databaseManager!.db, id, collectionId);
         if (id != tagId) {
           await ref.read(collectionsProvider(id).notifier).loadCollections();
         } else {
           await loadCollections();
         }
-
-        ref.invalidate(itemsByTagIdProvider(DBQueries.byTagId(id)));
+        // Should this be here?
+        ref.invalidate(clMediaListByTagIdProvider(id));
       }
     }
 
@@ -89,7 +93,7 @@ final collectionsProvider = StateNotifierProvider.family<CollectionsNotifier,
     AsyncValue<Collections>, int?>((ref, collectionId) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
-    data: (DatabaseManager dbManager) => CollectionsNotifier(
+    data: (DBManager dbManager) => CollectionsNotifier(
       ref: ref,
       databaseManager: dbManager,
       tagId: collectionId,

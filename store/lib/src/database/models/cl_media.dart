@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:sqlite3/sqlite3.dart';
 
-import '../from_store/from_store.dart';
+import '../../device/models/device_directories.dart';
 
 extension SQLEXTDATETIME on DateTime? {
   String? toSQL() {
@@ -13,8 +13,8 @@ extension SQLEXTDATETIME on DateTime? {
   }
 }
 
-extension ExtItemInDB on CLMedia {
-  static CLMedia getByID(
+extension CLMediaDB on CLMedia {
+  static CLMedia getById(
     Database db,
     int itemId, {
     required String? pathPrefix,
@@ -43,7 +43,7 @@ extension ExtItemInDB on CLMedia {
     return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
   }
 
-  int dbUpsert(
+  int upsert(
     Database db, {
     required String? pathPrefix,
   }) {
@@ -97,12 +97,12 @@ extension ExtItemInDB on CLMedia {
     return db.lastInsertRowId;
   }
 
-  void dbDelete(Database db) {
+  void delete(Database db) {
     if (id == null) return;
     db.execute('DELETE FROM Item WHERE id = ?', [id]);
   }
 
-  static List<CLMedia> dbGetByCollectionId(
+  static List<CLMedia> getByCollectionId(
     Database db,
     int collectionId, {
     required String? pathPrefix,
@@ -116,7 +116,26 @@ extension ExtItemInDB on CLMedia {
     return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
   }
 
-  String relativePath(DeviceDirectories directories) {
+  static List<CLMedia> getByTagId(
+    Database db,
+    int tagId, {
+    required String? pathPrefix,
+  }) {
+    final List<Map<String, dynamic>> maps = db.select(
+      '''
+      SELECT Item.*
+      FROM Item
+      JOIN Collection ON Item.collection_id = Collection.id
+      JOIN TagCollection ON Collection.id = TagCollection.collection_id
+      WHERE TagCollection.tag_id = $tagId
+      ORDER BY Item.updatedDate DESC
+    ''',
+    );
+
+    return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
+  }
+
+  static String relativePath(String path, DeviceDirectories directories) {
     if (path.startsWith(directories.container.path)) {
       return path.replaceFirst(directories.container.path, '');
     }

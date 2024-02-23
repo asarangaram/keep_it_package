@@ -1,6 +1,5 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite3/sqlite3.dart';
-
-import '../models/tag.dart';
 
 extension TagDB on Tag {
   static Tag getById(Database db, int id) {
@@ -65,7 +64,7 @@ extension TagDB on Tag {
       );
   }
 
-  static List<Tag> getTagsByCollectionId(Database db, int id) {
+  static List<Tag> getByCollectionId(Database db, int id) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag
@@ -77,7 +76,7 @@ extension TagDB on Tag {
     return maps.map(Tag.fromMap).toList();
   }
 
-  static List<Tag> getTagsForItem(Database db, int itemId) {
+  static List<Tag> getByCLMediaId(Database db, int id) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag
@@ -85,7 +84,7 @@ extension TagDB on Tag {
       JOIN Item ON TagCollection.collection_id = Item.collection_id
       WHERE Item.id = ?
     ''',
-      [itemId],
+      [id],
     );
     return maps.map(Tag.fromMap).toList();
   }

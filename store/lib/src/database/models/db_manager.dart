@@ -1,11 +1,10 @@
 import 'package:sqlite3/sqlite3.dart';
 
-export '../extensions/collection.dart';
-export '../extensions/item.dart';
-export '../extensions/tags.dart';
 
-class DatabaseManager {
-  DatabaseManager({String? path, void Function()? sqlite3LibOverrider}) {
+export 'cl_media.dart';
+
+class DBManager {
+  DBManager({String? path, void Function()? sqlite3LibOverrider}) {
     sqlite3LibOverrider?.call();
     db = switch (path) {
       null => sqlite3.openInMemory(),

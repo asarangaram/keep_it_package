@@ -23,6 +23,8 @@ export 'src/models/cl_dimension.dart';
 export 'src/models/cl_media.dart';
 export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
+export 'src/models/collection.dart';
+export 'src/models/tag.dart';
 export 'src/services/cl_media_process.dart';
 export 'src/services/forms/cl_textfield_form.dart';
 export 'src/services/forms/models.dart';

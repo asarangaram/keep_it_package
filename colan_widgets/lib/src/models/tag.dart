@@ -4,8 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../local_data/suggested_tags.dart';
-
 @immutable
 class Tag {
   const Tag({
@@ -84,13 +82,5 @@ class Tags {
 
   Tags clearLastUpdated() {
     return Tags(entries);
-  }
-
-  Tags get getSuggestions {
-    return Tags(
-      suggestedTags.where((element) {
-        return !entries.map((e) => e.label).contains(element.label);
-      }).toList(),
-    );
   }
 }

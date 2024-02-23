@@ -4,12 +4,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
-import 'package:store/src/extensions/item.dart';
-
+import 'package:store/src/database/models/cl_media.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../from_store/from_store.dart';
-import '../../../providers/uuid.dart';
+import '../../../database/providers/uuid.dart';
+import '../../../device/widgets/when_devdir_accessible.dart';
 import '../model/thumbnail_services.dart';
 import '../provider/thumbnail_services.dart';
 
@@ -37,12 +36,12 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
 
   @override
   Widget build(BuildContext context) {
-    return WhenDeviceDirectoriesAccessible(
+    return GetDeviceDirectories(
       builder: (directories) {
         final uuidGenerator = ref.watch(uuidProvider);
         final uuid = uuidGenerator.v5(
           Uuid.NAMESPACE_URL,
-          widget.media.relativePath(directories),
+          CLMediaDB.relativePath(widget.media.path, directories),
         );
         final previewFileName =
             path.join(directories.cacheDir.path, '$uuid.jpg');

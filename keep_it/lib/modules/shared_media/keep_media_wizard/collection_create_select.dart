@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:store/store.dart';
 
 class CollectionCreateOrSelect extends StatelessWidget {
   const CollectionCreateOrSelect({

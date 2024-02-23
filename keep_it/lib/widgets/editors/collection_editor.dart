@@ -90,7 +90,7 @@ class CollectionEditor extends StatelessWidget {
                           ...existingTags.entries,
                           ...suggestedTags.excludeByLabel(
                             existingTags.entries,
-                            (e) => e.label,
+                            (Tag e) => e.label,
                           ),
                         ],
                         initialValues: currentTags.entries,

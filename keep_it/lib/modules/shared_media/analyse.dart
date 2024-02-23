@@ -15,9 +15,9 @@ class AnalysePage extends WizardPageOld {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WhenDeviceDirectoriesAccessible(
+    return GetDeviceDirectories(
       builder: (directories) {
-        return WhenDBAccessible(
+        return GetDBManager(
           builder: (dbManager) {
             return WizardPageOld.buildWizard(
               context, ref,
@@ -29,7 +29,7 @@ class AnalysePage extends WizardPageOld {
                 stream: () => CLMediaProcess.analyseMedia(
                   media: incomingMedia,
                   findItemByMD5: (md5String) async {
-                    return ExtItemInDB.getByMD5(
+                    return CLMediaDB.getByMD5(
                       dbManager.db,
                       md5String,
                       pathPrefix: directories.docDir.path,

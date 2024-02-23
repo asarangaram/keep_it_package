@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../models/db.dart';
+import '../models/db_manager.dart';
 import 'db_manager.dart';
 
 class CLMediaListByCollectionIdNotifier
@@ -17,7 +17,7 @@ class CLMediaListByCollectionIdNotifier
   }) : super(const AsyncValue.loading()) {
     loadItems();
   }
-  DatabaseManager? databaseManager;
+  DBManager? databaseManager;
   int collectionId;
   Ref ref;
   String? _pathPrefix;
@@ -30,7 +30,7 @@ class CLMediaListByCollectionIdNotifier
     if (databaseManager == null) return;
     final List<CLMedia> items;
 
-    items = ExtItemInDB.dbGetByCollectionId(
+    items = CLMediaDB.getByCollectionId(
       databaseManager!.db,
       collectionId,
       pathPrefix: await pathPrefix,
@@ -53,7 +53,7 @@ class CLMediaListByCollectionIdNotifier
       throw Exception('DB Manager is not ready');
     }
     final prefix = await pathPrefix;
-    item.dbUpsert(databaseManager!.db, pathPrefix: prefix);
+    item.upsert(databaseManager!.db, pathPrefix: prefix);
     await loadItems();
   }
 
@@ -76,7 +76,7 @@ class CLMediaListByCollectionIdNotifier
 
     item
       ..deleteFile()
-      ..dbDelete(databaseManager!.db);
+      ..delete(databaseManager!.db);
 
     loadItems();
   }
@@ -88,7 +88,7 @@ class CLMediaListByCollectionIdNotifier
     for (final item in items) {
       item
         ..deleteFile()
-        ..dbDelete(databaseManager!.db);
+        ..delete(databaseManager!.db);
     }
     loadItems();
   }
@@ -101,7 +101,7 @@ final clMediaListByCollectionIdProvider = StateNotifierProvider.family<
   final dbManagerAsync = ref.watch(dbManagerProvider);
 
   return dbManagerAsync.when(
-    data: (DatabaseManager dbManager) => CLMediaListByCollectionIdNotifier(
+    data: (DBManager dbManager) => CLMediaListByCollectionIdNotifier(
       ref: ref,
       databaseManager: dbManager,
       collectionId: collectionId,
@@ -117,6 +117,13 @@ final clMediaListByCollectionIdProvider = StateNotifierProvider.family<
   );
 });
 
-final docDirProvider = FutureProvider<Directory>((ref) async {
-  return getApplicationDocumentsDirectory();
+final clMediaListByTagIdProvider =
+    FutureProvider.family<List<CLMedia>, int>((ref, tagID) async {
+  final databaseManager = await ref.watch(dbManagerProvider.future);
+  final pathPrefix = (await getApplicationDocumentsDirectory()).path;
+  return CLMediaDB.getByTagId(
+    databaseManager.db,
+    tagID,
+    pathPrefix: pathPrefix,
+  );
 });
