@@ -10,10 +10,59 @@ extension CollectionDB on Collection {
     return Collection.fromMap(map);
   }
 
-  static List<Collection> getAll(Database db) {
-    final maps = db.select(
-      'SELECT * FROM Collection ' 'ORDER BY LOWER(label) ASC',
-    );
+  static List<Collection> getAll(Database db, {bool includeEmpty = false}) {
+    final ResultSet maps;
+    if (includeEmpty) {
+      maps = db.select(
+        'SELECT * FROM Collection ' 'ORDER BY LOWER(label) ASC',
+      );
+    } else {
+      maps = db.select('SELECT DISTINCT Collection.* FROM Collection '
+          'JOIN Item ON Collection.id = Item.collection_id;');
+    }
+    return maps.map(Collection.fromMap).toList();
+  }
+
+  static List<Collection> getByTagId(
+    Database db,
+    int id, {
+    bool includeEmpty = false,
+  }) {
+    final ResultSet maps;
+    if (includeEmpty) {
+      maps = db.select(
+        '''
+        SELECT DISTINCT Collection.*
+        FROM Collection
+        JOIN TagCollection ON Collection.id = TagCollection.collection_id
+        WHERE TagCollection.tag_id = :tagId;
+    ''',
+        [id],
+      );
+    } else {
+      maps = db.select(
+        '''
+        SELECT DISTINCT Collection.*
+        FROM Collection
+        JOIN Item ON Collection.id = Item.collection_id
+        JOIN TagCollection ON Collection.id = TagCollection.collection_id
+        WHERE TagCollection.tag_id = :tagId;
+    ''',
+        [id],
+      );
+    }
+    return maps.map(Collection.fromMap).toList();
+  }
+
+  static List<Collection> getUnused(
+    Database db,
+  ) {
+    final ResultSet maps;
+
+    maps = db.select('SELECT Collection.* FROM Collection '
+        'LEFT JOIN Item ON Collection.id = Item.collection_id '
+        'WHERE Item.collection_id IS NULL;');
+
     return maps.map(Collection.fromMap).toList();
   }
 
@@ -48,18 +97,6 @@ extension CollectionDB on Collection {
         'DELETE FROM Item WHERE collection_id = ?',
         [id],
       );
-  }
-
-  static List<Collection> getByTagId(Database db, int id) {
-    final List<Map<String, dynamic>> maps = db.select(
-      '''
-      SELECT Collection.* FROM Collection
-      JOIN TagCollection ON Collection.id = TagCollection.collection_id
-      WHERE TagCollection.tag_id = ?
-    ''',
-      [id],
-    );
-    return maps.map(Collection.fromMap).toList();
   }
 
   static void addTag(

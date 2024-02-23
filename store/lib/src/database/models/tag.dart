@@ -10,10 +10,23 @@ extension TagDB on Tag {
     return Tag.fromMap(map);
   }
 
-  static List<Tag> getAll(Database db) {
-    final maps = db.select(
-      'SELECT * FROM Tag ' 'ORDER BY LOWER(label) ASC',
-    );
+  static List<Tag> getAll(Database db, {bool includeEmpty = false}) {
+    final ResultSet maps;
+    if (includeEmpty) {
+      maps = db.select(
+        'SELECT * FROM Tag ' 'ORDER BY LOWER(label) ASC',
+      );
+    } else {
+      maps = db.select(
+        '''
+          SELECT DISTINCT Tag.*
+          FROM Tag
+          JOIN TagCollection ON Tag.id = TagCollection.tag_id
+          JOIN Collection ON TagCollection.collection_id = Collection.id
+          JOIN Item ON Collection.id = Item.collection_id;
+          ''',
+      );
+    }
     return maps.map(Tag.fromMap).toList();
   }
 

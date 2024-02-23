@@ -80,4 +80,6 @@ class Collections {
   Collections clearLastUpdated() {
     return Collections(entries);
   }
+
+  Collection? getByID(int id) => entries.where((e) => e.id == id).firstOrNull;
 }

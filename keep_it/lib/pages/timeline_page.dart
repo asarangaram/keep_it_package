@@ -31,7 +31,7 @@ class TimeLinePage extends ConsumerWidget {
               }
               return CLGalleryView(
                 columns: 4,
-                label: collections.entries[collectionId].label,
+                label: collections.getByID(collectionId)!.label,
                 galleryMap: galleryGroups,
                 emptyState: const EmptyState(),
                 labelTextBuilder: (index) => galleryGroups[index].label ?? '',
@@ -40,7 +40,7 @@ class TimeLinePage extends ConsumerWidget {
                   media: item as CLMedia,
                   quickMenuScopeKey: quickMenuScopeKey,
                 ),
-                tagPrefix: 'timeline ${collections.entries[collectionId].id}',
+                tagPrefix: 'timeline $collectionId',
                 onPickFiles: () async {
                   await onPickFiles(
                     context,
