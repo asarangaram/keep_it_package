@@ -12,6 +12,5 @@ export 'src/database/widgets/load_items.dart';
 export 'src/database/widgets/load_tags.dart';
 export 'src/device/models/device_directories.dart';
 export 'src/device/widgets/when_devdir_accessible.dart';
-export 'src/filters/datewise_filter.dart';
 export 'src/local_data/suggested_tags.dart' show suggestedTags;
 export 'src/services/image_services/view/cl_media_preview.dart';

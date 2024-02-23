@@ -12,6 +12,7 @@ export 'src/basics/cl_list_tile.dart';
 export 'src/basics/cl_text.dart';
 export 'src/basics/cl_text_field.dart';
 export 'src/demos/demo_main.dart' show DemoMain;
+export 'src/extensions/ext_cl_media.dart';
 export 'src/extensions/ext_cl_menu_item.dart';
 export 'src/extensions/ext_color.dart';
 export 'src/extensions/ext_double.dart';
