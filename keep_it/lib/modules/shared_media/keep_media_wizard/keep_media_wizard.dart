@@ -24,10 +24,10 @@ class KeepMediaWizard extends ConsumerWidget {
       buildOnData: (collections) {
         return PickCollection(
           suggestedCollections: collections.entries,
-          preSelectedCollection: media.targetID == null
+          preSelectedCollection: media.collectionId == null
               ? null
               : collections.entries
-                  .where((element) => element.id == media.targetID)
+                  .where((element) => element.id == media.collectionId)
                   .firstOrNull,
           onDone: ({
             required Collection collection,
@@ -59,9 +59,9 @@ class KeepMediaWizard extends ConsumerWidget {
               saveIntoTagsId,
             );
     final items =
-        media.entries.map((e) => e.setCollectionID(collectionId)).toList();
+        media.entries.map((e) => e.setCollectionId(collectionId)).toList();
     onAccept(
-      mg: CLMediaList(entries: items, targetID: collectionId),
+      mg: CLMediaList(entries: items, collectionId: collectionId),
     );
   }
 
@@ -70,10 +70,11 @@ class KeepMediaWizard extends ConsumerWidget {
     WidgetRef ref,
     CLMediaList updatedMedia,
   ) async {
-    ref.read(clMediaListByCollectionIdProvider(updatedMedia.targetID!));
+    ref.read(clMediaListByCollectionIdProvider(updatedMedia.collectionId!));
     await ref
         .read(
-          clMediaListByCollectionIdProvider(updatedMedia.targetID!).notifier,
+          clMediaListByCollectionIdProvider(updatedMedia.collectionId!)
+              .notifier,
         )
         .upsertItems(updatedMedia.entries);
     await ref.read(notificationMessageProvider.notifier).push('Saved.');

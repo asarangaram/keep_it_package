@@ -8,12 +8,12 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
   CollectionsNotifier({
     required this.ref,
     this.databaseManager,
-    this.tagID,
+    this.tagId,
   }) : super(const AsyncValue.loading()) {
     loadCollections();
   }
   DatabaseManager? databaseManager;
-  int? tagID;
+  int? tagId;
   Ref ref;
 
   bool isLoading = false;
@@ -22,15 +22,15 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     if (databaseManager == null) return;
     final List<Collection> collections;
     final Tag? tag;
-    if (tagID == null) {
+    if (tagId == null) {
       collections = CollectionDB.getAll(databaseManager!.db);
       tag = null;
     } else {
-      collections = CollectionDB.getCollectionsByTagID(
+      collections = CollectionDB.getCollectionsByTagId(
         databaseManager!.db,
-        tagID!,
+        tagId!,
       );
-      tag = TagDB.getById(databaseManager!.db, tagID!);
+      tag = TagDB.getById(databaseManager!.db, tagId!);
     }
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -55,13 +55,13 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     if (tagIds != null) {
       for (final id in tagIds) {
         CollectionDB.addTagToCollection(databaseManager!.db, id, collectionId);
-        if (id != tagID) {
+        if (id != tagId) {
           await ref.read(collectionsProvider(id).notifier).loadCollections();
         } else {
           await loadCollections();
         }
 
-        ref.invalidate(itemsByTagIdProvider(DBQueries.byTagID(id)));
+        ref.invalidate(itemsByTagIdProvider(DBQueries.byTagId(id)));
       }
     }
 
@@ -86,13 +86,13 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
 }
 
 final collectionsProvider = StateNotifierProvider.family<CollectionsNotifier,
-    AsyncValue<Collections>, int?>((ref, collectionID) {
+    AsyncValue<Collections>, int?>((ref, collectionId) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) => CollectionsNotifier(
       ref: ref,
       databaseManager: dbManager,
-      tagID: collectionID,
+      tagId: collectionId,
     ),
     error: (_, __) => CollectionsNotifier(
       ref: ref,

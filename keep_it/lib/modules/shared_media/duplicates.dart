@@ -53,7 +53,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
     return LoadCollections(
       buildOnData: (Collections collections) {
         final newCollection = collections.entries
-            .where((e) => e.id == widget.incomingMedia.targetID)
+            .where((e) => e.id == widget.incomingMedia.collectionId)
             .firstOrNull;
         final collectionLablel = newCollection?.label != null
             ? '"${newCollection?.label}"'
@@ -94,9 +94,9 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                     height: 100,
                     width: double.infinity,
                     child: ExistsInCollection(
-                      media: CLMediaInfoGroup(
+                      media: CLMediaList(
                         list: alreadyInSameCollection,
-                        targetID: widget.duplicates.targetID,
+                        collectionId: widget.duplicates.collectionId,
                       ),
                     ),
                   ), */

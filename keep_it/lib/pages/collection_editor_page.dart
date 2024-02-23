@@ -7,18 +7,18 @@ import '../widgets/editors/collection_editor.dart';
 
 class CollectionEditorPage extends StatelessWidget {
   const CollectionEditorPage({
-    required this.collectionID,
+    required this.collectionId,
     super.key,
   });
 
-  final int collectionID;
+  final int collectionId;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: min(MediaQuery.of(context).size.width, 450),
       child: CollectionEditor(
-        collectionID: collectionID,
+        collectionId: collectionId,
         onSubmit: (collection, tags) {},
         onCancel: () {
           if (context.canPop()) {

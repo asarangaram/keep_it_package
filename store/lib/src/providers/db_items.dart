@@ -12,13 +12,13 @@ class CLMediaListByCollectionIdNotifier
     extends StateNotifier<AsyncValue<CLMediaList>> {
   CLMediaListByCollectionIdNotifier({
     required this.ref,
-    required this.collectionID,
+    required this.collectionId,
     this.databaseManager,
   }) : super(const AsyncValue.loading()) {
     loadItems();
   }
   DatabaseManager? databaseManager;
-  int collectionID;
+  int collectionId;
   Ref ref;
   String? _pathPrefix;
   bool isLoading = false;
@@ -32,13 +32,13 @@ class CLMediaListByCollectionIdNotifier
 
     items = ExtItemInDB.dbGetByCollectionId(
       databaseManager!.db,
-      collectionID,
+      collectionId,
       pathPrefix: await pathPrefix,
     );
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return CLMediaList(targetID: collectionID, entries: items);
+      return CLMediaList(collectionId: collectionId, entries: items);
     });
   }
 
@@ -97,22 +97,22 @@ class CLMediaListByCollectionIdNotifier
 final clMediaListByCollectionIdProvider = StateNotifierProvider.family<
     CLMediaListByCollectionIdNotifier,
     AsyncValue<CLMediaList>,
-    int>((ref, collectionID) {
+    int>((ref, collectionId) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
 
   return dbManagerAsync.when(
     data: (DatabaseManager dbManager) => CLMediaListByCollectionIdNotifier(
       ref: ref,
       databaseManager: dbManager,
-      collectionID: collectionID,
+      collectionId: collectionId,
     ),
     error: (_, __) => CLMediaListByCollectionIdNotifier(
       ref: ref,
-      collectionID: collectionID,
+      collectionId: collectionId,
     ),
     loading: () => CLMediaListByCollectionIdNotifier(
       ref: ref,
-      collectionID: collectionID,
+      collectionId: collectionId,
     ),
   );
 });

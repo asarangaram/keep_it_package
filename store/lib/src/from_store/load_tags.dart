@@ -8,14 +8,14 @@ class LoadTags extends ConsumerWidget {
   const LoadTags({
     required this.buildOnData,
     super.key,
-    this.collectionID,
+    this.collectionId,
   });
   final Widget Function(Tags tags) buildOnData;
-  final int? collectionID;
+  final int? collectionId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagsAsync = ref.watch(tagsProvider(collectionID));
+    final tagsAsync = ref.watch(tagsProvider(collectionId));
 
     return tagsAsync.when(
       loading: () => const CLLoadingView(),

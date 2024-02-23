@@ -65,7 +65,7 @@ extension TagDB on Tag {
       );
   }
 
-  static List<Tag> getTagsByCollectionID(Database db, int id) {
+  static List<Tag> getTagsByCollectionId(Database db, int id) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
       SELECT Tag.* FROM Tag

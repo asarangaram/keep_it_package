@@ -10,5 +10,5 @@ final itemsByTagIdProvider =
     FutureProvider.family<List<CLMedia>, DBQueries>((ref, dbQuery) async {
   final databaseManager = await ref.watch(dbManagerProvider.future);
   final pathPrefix = (await getApplicationDocumentsDirectory()).path;
-  return dbQuery.getByTagID(databaseManager.db, pathPrefix: pathPrefix);
+  return dbQuery.getByTagId(databaseManager.db, pathPrefix: pathPrefix);
 });

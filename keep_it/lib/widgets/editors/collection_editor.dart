@@ -7,13 +7,13 @@ import 'package:store/store.dart';
 
 class CollectionEditor extends StatelessWidget {
   factory CollectionEditor({
-    required int collectionID,
+    required int collectionId,
     required void Function(Collection collection, List<Tag> tags) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      collectionID: collectionID,
+      collectionId: collectionId,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: false,
@@ -21,13 +21,13 @@ class CollectionEditor extends StatelessWidget {
     );
   }
   factory CollectionEditor.dialog({
-    required int collectionID,
+    required int collectionId,
     required void Function(Collection collection, List<Tag> tags) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      collectionID: collectionID,
+      collectionId: collectionId,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: true,
@@ -35,14 +35,14 @@ class CollectionEditor extends StatelessWidget {
     );
   }
   const CollectionEditor._({
-    required this.collectionID,
+    required this.collectionId,
     required this.isDialog,
     required this.onSubmit,
     required this.onCancel,
     super.key,
   });
 
-  final int collectionID;
+  final int collectionId;
 
   final void Function(Collection collection, List<Tag> tags) onSubmit;
   final void Function() onCancel;
@@ -55,11 +55,11 @@ class CollectionEditor extends StatelessWidget {
       child: LoadCollections(
         buildOnData: (collections) {
           final collection =
-              collections.entries.where((e) => e.id == collectionID).first;
+              collections.entries.where((e) => e.id == collectionId).first;
           return LoadTags(
             buildOnData: (existingTags) {
               return LoadTags(
-                collectionID: collection.id,
+                collectionId: collection.id,
                 buildOnData: (currentTags) {
                   return CLForm(
                     explicitScrollDownOption: !isDialog,
@@ -173,7 +173,7 @@ class CollectionEditor extends StatelessWidget {
       showDialog<(Collection, List<Tag>)>(
         context: context,
         builder: (BuildContext context) => CollectionEditor.dialog(
-          collectionID: collection.id!,
+          collectionId: collection.id!,
           onSubmit: (collection, tags) {
             Navigator.of(context).pop((collection, tags));
           },

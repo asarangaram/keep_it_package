@@ -1,4 +1,3 @@
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +7,7 @@ import 'package:store/store.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/tags_as_folder.dart';
 
-//For now, don't allow collectionID to be provided.
+//For now, don't allow collectionId to be provided.
 // as collection is not part of Tags. - Fix Me.
 class TagsPage extends ConsumerStatefulWidget {
   const TagsPage({super.key});
@@ -22,7 +21,7 @@ class _TagsViewState extends ConsumerState<TagsPage> {
 
   @override
   Widget build(BuildContext context) => LoadTags(
-        //collectionID:  widget.collectionId ,
+        //collectionId:  widget.collectionId ,
         buildOnData: (Tags tags) {
           final galleryGroups = <GalleryGroup>[];
           for (final rows in tags.entries.convertTo2D(3)) {

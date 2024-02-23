@@ -115,13 +115,13 @@ class CLMedia {
     );
   }
 
-  CLMedia setCollectionID(int? newCollectionID) {
+  CLMedia setCollectionId(int? newCollectionId) {
     return CLMedia(
       path: path,
       type: type,
       ref: ref,
       id: id,
-      collectionId: newCollectionID,
+      collectionId: newCollectionId,
       previewWidth: previewWidth,
       originalDate: originalDate,
       createdDate: createdDate,
@@ -170,9 +170,9 @@ class CLMedia {
 }
 
 class CLMediaList {
-  CLMediaList({required this.entries, this.targetID});
+  CLMediaList({required this.entries, this.collectionId});
   final List<CLMedia> entries;
-  final int? targetID;
+  final int? collectionId;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
@@ -182,17 +182,17 @@ class CLMediaList {
 
   CLMediaList copyWith({
     List<CLMedia>? entries,
-    int? targetID,
+    int? collectionId,
   }) {
     return CLMediaList(
       entries: entries ?? this.entries,
-      targetID: targetID ?? this.targetID,
+      collectionId: collectionId ?? this.collectionId,
     );
   }
 
   Iterable<CLMedia> get _stored => entries.where((e) => e.id != null);
   Iterable<CLMedia> get _targetMismatch =>
-      _stored.where((e) => e.collectionId != targetID);
+      _stored.where((e) => e.collectionId != collectionId);
 
   List<CLMedia> get targetMismatch => _targetMismatch.toList();
   List<CLMedia> get stored => _stored.toList();
@@ -200,12 +200,12 @@ class CLMediaList {
   bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
 
   CLMediaList mergeMismatch() {
-    final items = entries.map((e) => e.setCollectionID(targetID));
+    final items = entries.map((e) => e.setCollectionId(collectionId));
     return copyWith(entries: items.toList());
   }
 
   CLMediaList? removeMismatch() {
-    final items = entries.where((e) => e.collectionId == targetID);
+    final items = entries.where((e) => e.collectionId == collectionId);
     if (items.isEmpty) return null;
 
     return copyWith(entries: items.toList());

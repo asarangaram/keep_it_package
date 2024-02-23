@@ -24,7 +24,7 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
     if (collectionId == null) {
       tags = TagDB.getAll(databaseManager!.db);
     } else {
-      tags = TagDB.getTagsByCollectionID(
+      tags = TagDB.getTagsByCollectionId(
         databaseManager!.db,
         collectionId!,
       );

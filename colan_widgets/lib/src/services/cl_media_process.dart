@@ -56,7 +56,7 @@ class CLMediaProcess {
                       CLMediaType.video,
                     _ => CLMediaType.file
                   },
-                  collectionId: media.targetID,
+                  collectionId: media.collectionId,
                   md5String: md5String,
                 );
               }
@@ -69,7 +69,7 @@ class CLMediaProcess {
                 itemsToAdd = CLMedia(
                   path: item.path,
                   type: item.type,
-                  collectionId: media.targetID,
+                  collectionId: media.collectionId,
                   md5String: md5String,
                 );
               }
@@ -90,7 +90,7 @@ class CLMediaProcess {
     }
     await Future<void>.delayed(const Duration(milliseconds: 200));
     onDone(
-      mg: CLMediaList(entries: candidates, targetID: media.targetID),
+      mg: CLMediaList(entries: candidates, collectionId: media.collectionId),
     );
   }
 
@@ -99,8 +99,8 @@ class CLMediaProcess {
     required void Function(CLMediaList) onDone,
     // required CLMedia? Function(CLMedia media) onGetDuplicate,
   }) async* {
-    if (media.targetID == null) {
-      throw Exception("targetID can't be null to accept");
+    if (media.collectionId == null) {
+      throw Exception("collectionID can't be null to accept");
     }
 
     final updated = <CLMedia>[];
@@ -113,7 +113,7 @@ class CLMediaProcess {
       final item = item0;
       updated.add(
         await (await item
-                .copyWith(collectionId: media.targetID)
+                .copyWith(collectionId: media.collectionId)
                 .copyFile(pathPrefix: pathPrefix.path))
             .getMetadata(),
       );
@@ -127,7 +127,7 @@ class CLMediaProcess {
     }
     await Future<void>.delayed(const Duration(milliseconds: 200));
 
-    onDone(CLMediaList(entries: updated, targetID: media.targetID));
+    onDone(CLMediaList(entries: updated, collectionId: media.collectionId));
   }
 }
 

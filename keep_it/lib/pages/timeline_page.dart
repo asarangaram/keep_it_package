@@ -11,14 +11,14 @@ import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
 
 class TimeLinePage extends ConsumerWidget {
-  const TimeLinePage({required this.collectionID, super.key});
-  final int collectionID;
+  const TimeLinePage({required this.collectionId, super.key});
+  final int collectionId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LoadCollections(
         buildOnData: (collections) {
           return LoadItems(
-            collectionID: collectionID,
+            collectionId: collectionId,
             buildOnData: (items) {
               final galleryGroups = <GalleryGroup>[];
               for (final entry in items.entries.filterByDate().entries) {
@@ -31,7 +31,7 @@ class TimeLinePage extends ConsumerWidget {
               }
               return CLGalleryView(
                 columns: 4,
-                label: collections.entries[collectionID].label,
+                label: collections.entries[collectionId].label,
                 galleryMap: galleryGroups,
                 emptyState: const EmptyState(),
                 labelTextBuilder: (index) => galleryGroups[index].label ?? '',
@@ -40,12 +40,12 @@ class TimeLinePage extends ConsumerWidget {
                   media: item as CLMedia,
                   quickMenuScopeKey: quickMenuScopeKey,
                 ),
-                tagPrefix: 'timeline ${collections.entries[collectionID].id}',
+                tagPrefix: 'timeline ${collections.entries[collectionId].id}',
                 onPickFiles: () async {
                   await onPickFiles(
                     context,
                     ref,
-                    collectionId: collectionID,
+                    collectionId: collectionId,
                   );
                 },
                 onPop: context.canPop()

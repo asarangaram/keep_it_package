@@ -18,7 +18,7 @@ class LoadItemsInTag extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemsAsync = ref.watch(itemsByTagIdProvider(DBQueries.byTagID(id)));
+    final itemsAsync = ref.watch(itemsByTagIdProvider(DBQueries.byTagId(id)));
 
     return itemsAsync.when(
       loading: () => const CLLoadingView(),

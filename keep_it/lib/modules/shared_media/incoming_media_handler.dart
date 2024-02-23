@@ -47,7 +47,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               onDone: onDone,
               onCancel: onDiscard,
             ),
-          (final candiates) when candidates!.targetID == null =>
+          (final candiates) when candidates!.collectionId == null =>
             SharedItemsPage(
               media: candiates,
               onAccept: onDone,
@@ -57,10 +57,10 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               stream: () => CLMediaProcess.acceptMedia(
                 media: candidates!,
                 onDone: (CLMediaList mg) async {
-                  ref.read(clMediaListByCollectionIdProvider(mg.targetID!));
+                  ref.read(clMediaListByCollectionIdProvider(mg.collectionId!));
                   await ref
                       .read(
-                        clMediaListByCollectionIdProvider(mg.targetID!)
+                        clMediaListByCollectionIdProvider(mg.collectionId!)
                             .notifier,
                       )
                       .upsertItems(mg.entries);
@@ -125,7 +125,7 @@ class IncomingProgress extends ConsumerStatefulWidget {
   final CLMediaInfoGroup incomingMedia;
   final void Function() onDiscard;
   final Future<void> Function(
-    int collectionID, {
+    int collectionId, {
     required Future<void> Function(List<CLMedia> items) updateDB,
   }) onAccept;
   final IncomingMediaViewBuilder incomingMediaViewBuilder;

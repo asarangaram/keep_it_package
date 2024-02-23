@@ -21,7 +21,7 @@ Future<bool> onPickFiles(
           (path) => CLMedia(path: path!, type: CLMediaType.file),
         )
         .toList();
-    final sharedMedia = CLMediaList(entries: items, targetID: collectionId);
+    final sharedMedia = CLMediaList(entries: items, collectionId: collectionId);
 
     if (items.isNotEmpty) {
       ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);

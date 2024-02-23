@@ -91,7 +91,7 @@ class KeepItApp implements AppDescriptor {
           name: 'edit/:collection_id',
           builder: (context, GoRouterState state) {
             return CollectionEditorPage(
-              collectionID: int.parse(state.pathParameters['collection_id']!),
+              collectionId: int.parse(state.pathParameters['collection_id']!),
             );
           },
         ),
@@ -108,7 +108,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'items/:collection_id',
           builder: (context, GoRouterState state) => TimeLinePage(
-            collectionID: int.parse(state.pathParameters['collection_id']!),
+            collectionId: int.parse(state.pathParameters['collection_id']!),
           ),
         ),
       ];
