@@ -15,7 +15,7 @@ class BottomNavigationPage extends StatefulWidget {
   final StatefulNavigationShell child;
   final Widget Function(
     BuildContext context, {
-    required CLMediaInfoGroup incomingMedia,
+    required CLMediaList incomingMedia,
     required void Function() onDiscard,
   }) onMedia;
 

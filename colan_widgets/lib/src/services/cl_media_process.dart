@@ -11,23 +11,23 @@ import '../views/stream_progress_view.dart';
 
 class CLMediaProcess {
   static Stream<Progress> analyseMedia({
-    required CLMediaInfoGroup media,
+    required CLMediaList media,
     required Future<CLMedia?> Function(String md5) findItemByMD5,
     required void Function({
-      required CLMediaInfoGroup mg,
+      required CLMediaList mg,
     }) onDone,
   }) async* {
     final candidates = <CLMedia>[];
 
     yield Progress(
-      currentItem: path.basename(media.list[0].path),
+      currentItem: path.basename(media.entries[0].path),
       fractCompleted: 0,
     );
     Future<String> getFileChecksum(File file) async {
       try {
         final stream = file.openRead();
         final hash = await md5.bind(stream).first;
-        
+
         // NOTE: You might not need to convert it to base64
         return hash.toString();
       } catch (exception) {
@@ -35,7 +35,7 @@ class CLMediaProcess {
       }
     }
 
-    for (final (i, item) in media.list.indexed) {
+    for (final (i, item) in media.entries.indexed) {
       final file = File(item.path);
       if (file.existsSync()) {
         final md5String = await getFileChecksum(file);
@@ -82,21 +82,21 @@ class CLMediaProcess {
       await Future<void>.delayed(const Duration(milliseconds: 10));
 
       yield Progress(
-        currentItem: (i + 1 == media.list.length)
+        currentItem: (i + 1 == media.entries.length)
             ? ''
-            : path.basename(media.list[i + 1].path),
-        fractCompleted: (i + 1) / media.list.length,
+            : path.basename(media.entries[i + 1].path),
+        fractCompleted: (i + 1) / media.entries.length,
       );
     }
     await Future<void>.delayed(const Duration(milliseconds: 200));
     onDone(
-      mg: CLMediaInfoGroup(list: candidates, targetID: media.targetID),
+      mg: CLMediaList(entries: candidates, targetID: media.targetID),
     );
   }
 
   static Stream<Progress> acceptMedia({
-    required CLMediaInfoGroup media,
-    required void Function(CLMediaInfoGroup) onDone,
+    required CLMediaList media,
+    required void Function(CLMediaList) onDone,
     // required CLMedia? Function(CLMedia media) onGetDuplicate,
   }) async* {
     if (media.targetID == null) {
@@ -105,11 +105,11 @@ class CLMediaProcess {
 
     final updated = <CLMedia>[];
     yield Progress(
-      currentItem: path.basename(media.list[0].path),
+      currentItem: path.basename(media.entries[0].path),
       fractCompleted: 0,
     );
     final pathPrefix = await getApplicationDocumentsDirectory();
-    for (final (i, item0) in media.list.indexed) {
+    for (final (i, item0) in media.entries.indexed) {
       final item = item0;
       updated.add(
         await (await item
@@ -119,15 +119,15 @@ class CLMediaProcess {
       );
       await Future<void>.delayed(const Duration(milliseconds: 100));
       yield Progress(
-        currentItem: (i + 1 == media.list.length)
+        currentItem: (i + 1 == media.entries.length)
             ? ''
-            : path.basename(media.list[i + 1].path),
-        fractCompleted: (i + 1) / media.list.length,
+            : path.basename(media.entries[i + 1].path),
+        fractCompleted: (i + 1) / media.entries.length,
       );
     }
     await Future<void>.delayed(const Duration(milliseconds: 200));
 
-    onDone(CLMediaInfoGroup(list: updated, targetID: media.targetID));
+    onDone(CLMediaList(entries: updated, targetID: media.targetID));
   }
 }
 

@@ -30,8 +30,8 @@ class DuplicatePageStateful extends ConsumerStatefulWidget {
     required this.onCancel,
     super.key,
   });
-  final CLMediaInfoGroup incomingMedia;
-  final void Function({required CLMediaInfoGroup? mg}) onDone;
+  final CLMediaList incomingMedia;
+  final void Function({required CLMediaList? mg}) onDone;
   final void Function() onCancel;
 
   @override
@@ -40,7 +40,7 @@ class DuplicatePageStateful extends ConsumerStatefulWidget {
 }
 
 class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
-  late CLMediaInfoGroup currentMedia;
+  late CLMediaList currentMedia;
 
   @override
   void initState() {
@@ -132,7 +132,7 @@ class ExistInDifferentCollection extends StatelessWidget {
     super.key,
   });
 
-  final CLMediaInfoGroup media;
+  final CLMediaList media;
   final Collections collections;
   final void Function(CLMedia media) onRemove;
 

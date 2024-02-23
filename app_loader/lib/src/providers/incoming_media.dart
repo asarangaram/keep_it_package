@@ -7,7 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
-class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
+class IncomingMediaNotifier extends StateNotifier<List<CLMediaList>> {
   IncomingMediaNotifier()
       : intentDataStreamSubscription = null,
         super([]) {
@@ -64,21 +64,21 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
 
     if (attachements.isNotEmpty) {
       push(
-        CLMediaInfoGroup(
-          list: attachements,
+        CLMediaList(
+          entries: attachements,
         ),
       );
     }
   }
 
-  void push(CLMediaInfoGroup item) {
+  void push(CLMediaList item) {
     state = [...state, item];
   }
 
   void pop() {
     final media = state.firstOrNull;
     if (media?.isNotEmpty ?? false) {
-      for (final item in media!.list) {
+      for (final item in media!.entries) {
         item.deleteFile();
       }
     }
@@ -89,7 +89,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaInfoGroup>> {
 }
 
 final incomingMediaStreamProvider =
-    StateNotifierProvider<IncomingMediaNotifier, List<CLMediaInfoGroup>>((ref) {
+    StateNotifierProvider<IncomingMediaNotifier, List<CLMediaList>>((ref) {
   final notifier = IncomingMediaNotifier();
   ref.onDispose(notifier.dispose);
   return notifier;

@@ -3,16 +3,14 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:path_provider/path_provider.dart';
 
-import '../models/collection.dart';
 import '../models/db.dart';
-import '../models/item.dart';
 import 'db_manager.dart';
 
-class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
-  ItemNotifier({
+class CLMediaListByCollectionIdNotifier
+    extends StateNotifier<AsyncValue<CLMediaList>> {
+  CLMediaListByCollectionIdNotifier({
     required this.ref,
     required this.collectionID,
     this.databaseManager,
@@ -31,18 +29,16 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   Future<void> loadItems() async {
     if (databaseManager == null) return;
     final List<CLMedia> items;
-    final Collection collection;
 
     items = ExtItemInDB.dbGetByCollectionId(
       databaseManager!.db,
       collectionID,
       pathPrefix: await pathPrefix,
     );
-    collection = CollectionDB.getById(databaseManager!.db, collectionID);
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Items(collection: collection, entries: items);
+      return CLMediaList(targetID: collectionID, entries: items);
     });
   }
 
@@ -98,22 +94,23 @@ class ItemNotifier extends StateNotifier<AsyncValue<Items>> {
   }
 }
 
-final itemsProvider =
-    StateNotifierProvider.family<ItemNotifier, AsyncValue<Items>, int>(
-        (ref, collectionID) {
+final clMediaListByCollectionIdProvider = StateNotifierProvider.family<
+    CLMediaListByCollectionIdNotifier,
+    AsyncValue<CLMediaList>,
+    int>((ref, collectionID) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
 
   return dbManagerAsync.when(
-    data: (DatabaseManager dbManager) => ItemNotifier(
+    data: (DatabaseManager dbManager) => CLMediaListByCollectionIdNotifier(
       ref: ref,
       databaseManager: dbManager,
       collectionID: collectionID,
     ),
-    error: (_, __) => ItemNotifier(
+    error: (_, __) => CLMediaListByCollectionIdNotifier(
       ref: ref,
       collectionID: collectionID,
     ),
-    loading: () => ItemNotifier(
+    loading: () => CLMediaListByCollectionIdNotifier(
       ref: ref,
       collectionID: collectionID,
     ),

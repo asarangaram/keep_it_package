@@ -13,7 +13,7 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
     required this.onDiscard,
     super.key,
   });
-  final CLMediaInfoGroup incomingMedia;
+  final CLMediaList incomingMedia;
   final void Function() onDiscard;
 
   @override
@@ -22,7 +22,7 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
 }
 
 class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
-  CLMediaInfoGroup? candidates;
+  CLMediaList? candidates;
 
   @override
   void didChangeDependencies() {
@@ -56,11 +56,14 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
           _ => StreamProgressView(
               stream: () => CLMediaProcess.acceptMedia(
                 media: candidates!,
-                onDone: (CLMediaInfoGroup mg) async {
-                  ref.read(itemsProvider(mg.targetID!));
+                onDone: (CLMediaList mg) async {
+                  ref.read(clMediaListByCollectionIdProvider(mg.targetID!));
                   await ref
-                      .read(itemsProvider(mg.targetID!).notifier)
-                      .upsertItems(mg.list);
+                      .read(
+                        clMediaListByCollectionIdProvider(mg.targetID!)
+                            .notifier,
+                      )
+                      .upsertItems(mg.entries);
                   await ref
                       .read(notificationMessageProvider.notifier)
                       .push('Saved.');
@@ -81,7 +84,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     }
   }
 
-  void onDone({CLMediaInfoGroup? mg}) {
+  void onDone({CLMediaList? mg}) {
     if (mg == null || mg.isEmpty) {
       ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
       onDiscard();

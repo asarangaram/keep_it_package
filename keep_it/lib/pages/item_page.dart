@@ -16,7 +16,7 @@ class ItemPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return LoadItems(
       collectionID: collectionId,
-      buildOnData: (Items items) {
+      buildOnData: (CLMediaList items) {
         final media = items.entries.where((e) => e.id == id).first;
         final index = items.entries.indexOf(media);
         return Stack(
@@ -61,7 +61,7 @@ class ItemPage extends ConsumerWidget {
 
 class ItemView extends StatefulWidget {
   const ItemView({required this.items, required this.startIndex, super.key});
-  final Items items;
+  final CLMediaList items;
   final int startIndex;
 
   @override

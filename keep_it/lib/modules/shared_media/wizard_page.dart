@@ -18,8 +18,8 @@ abstract class WizardPageOld extends ConsumerWidget {
     required this.onCancel,
     super.key,
   });
-  final CLMediaInfoGroup incomingMedia;
-  final void Function({required CLMediaInfoGroup? mg}) onDone;
+  final CLMediaList incomingMedia;
+  final void Function({required CLMediaList? mg}) onDone;
   final void Function() onCancel;
 
   static Widget buildWizard(

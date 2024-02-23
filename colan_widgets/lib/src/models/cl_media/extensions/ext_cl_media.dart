@@ -213,8 +213,8 @@ extension ExtCLMediaFile on CLMedia {
   } */
 }
 
-extension ExtCLMediaInfoGroupNullable on CLMediaInfoGroup? {
-  List<CLMediaInfoGroup> toList() {
+extension ExtCLMediaInfoGroupNullable on CLMediaList? {
+  List<CLMediaList> toList() {
     if (this == null) {
       return [];
     } else {
@@ -223,7 +223,7 @@ extension ExtCLMediaInfoGroupNullable on CLMediaInfoGroup? {
   }
 }
 
-extension ExtCLMediaInfoGroup on CLMediaInfoGroup {
+extension ExtCLMediaInfoGroup on CLMediaList {
   static CLMediaType toCLMediaType(SharedAttachmentType type) {
     return switch (type) {
       SharedAttachmentType.image => CLMediaType.image,

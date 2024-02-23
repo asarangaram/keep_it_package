@@ -13,10 +13,10 @@ class SharedItemsPage extends ConsumerWidget {
     super.key,
   });
 
-  final CLMediaInfoGroup media;
+  final CLMediaList media;
   final void Function() onDiscard;
   final void Function({
-    CLMediaInfoGroup? mg,
+    CLMediaList? mg,
   }) onAccept;
 
   @override
@@ -43,10 +43,10 @@ class SharedItemsPage extends ConsumerWidget {
           ),
           Flexible(
             child: CLMediaCollage.byMatrixSize(
-              media.list,
-              hCount: switch (media.list.length) { _ => 2 },
+              media.entries,
+              hCount: switch (media.entries.length) { _ => 2 },
               itemBuilder: (context, index) => CLMediaPreview(
-                media: media.list[index],
+                media: media.entries[index],
               ),
             ),
           ),

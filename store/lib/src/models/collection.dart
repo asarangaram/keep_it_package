@@ -15,14 +15,6 @@ class Collection {
     this.createdDate,
     this.updatedDate,
   });
-  /* Collection.fromBase(CollectionBase base)
-      : super(
-          label: base.label,
-          id: base.id,
-          description: base.description,
-          createdDate: base.createdDate,
-          updatedDate: base.updatedDate,
-        ); */
 
   factory Collection.fromMap(Map<String, dynamic> map) {
     return Collection(
@@ -88,12 +80,4 @@ class Collections {
   Collections clearLastUpdated() {
     return Collections(entries);
   }
-
-  /* Collections get getSuggestions {
-    return Collections(
-      suggestedCollections.where((element) {
-        return !entries.map((e) => e.label).contains(element.label);
-      }).toList(),
-    );
-  } */
 }

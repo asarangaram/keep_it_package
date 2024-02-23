@@ -167,58 +167,30 @@ class CLMedia {
         ' originalDate: $originalDate, createdDate: $createdDate,'
         ' updatedDate: $updatedDate, md5String: $md5String)';
   }
-
-  Map<String, dynamic> toMap({
-    required String? pathPrefix,
-  }) {
-    if (md5String == null) {
-      throw Exception('md5String must be determined before generating map');
-    }
-    final updatedPath =
-        pathPrefix != null ? path.replaceFirst(pathPrefix, '') : path;
-
-    return <String, dynamic>{
-      'path': updatedPath,
-      'type': type.name,
-      'ref': ref,
-      'id': id,
-      'collection_id': collectionId,
-      'previewWidth': previewWidth,
-      'createdDate': createdDate,
-      'updatedDate': updatedDate,
-      'originalDate': originalDate,
-      'md5String': md5String,
-    };
-  }
-
-  String toJson({
-    required String? pathPrefix,
-  }) =>
-      json.encode(toMap(pathPrefix: pathPrefix));
 }
 
-class CLMediaInfoGroup {
-  CLMediaInfoGroup({required this.list, this.targetID});
-  final List<CLMedia> list;
+class CLMediaList {
+  CLMediaList({required this.entries, this.targetID});
+  final List<CLMedia> entries;
   final int? targetID;
 
-  bool get isEmpty => list.isEmpty;
-  bool get isNotEmpty => list.isNotEmpty;
+  bool get isEmpty => entries.isEmpty;
+  bool get isNotEmpty => entries.isNotEmpty;
 
   @override
-  String toString() => 'CLMediaInfoGroup(list: $list)';
+  String toString() => 'CLMediaInfoGroup(list: $entries)';
 
-  CLMediaInfoGroup copyWith({
-    List<CLMedia>? list,
+  CLMediaList copyWith({
+    List<CLMedia>? entries,
     int? targetID,
   }) {
-    return CLMediaInfoGroup(
-      list: list ?? this.list,
+    return CLMediaList(
+      entries: entries ?? this.entries,
       targetID: targetID ?? this.targetID,
     );
   }
 
-  Iterable<CLMedia> get _stored => list.where((e) => e.id != null);
+  Iterable<CLMedia> get _stored => entries.where((e) => e.id != null);
   Iterable<CLMedia> get _targetMismatch =>
       _stored.where((e) => e.collectionId != targetID);
 
@@ -227,22 +199,31 @@ class CLMediaInfoGroup {
 
   bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
 
-  CLMediaInfoGroup mergeMismatch() {
-    final items = list.map((e) => e.setCollectionID(targetID));
-    return copyWith(list: items.toList());
+  CLMediaList mergeMismatch() {
+    final items = entries.map((e) => e.setCollectionID(targetID));
+    return copyWith(entries: items.toList());
   }
 
-  CLMediaInfoGroup? removeMismatch() {
-    final items = list.where((e) => e.collectionId == targetID);
+  CLMediaList? removeMismatch() {
+    final items = entries.where((e) => e.collectionId == targetID);
     if (items.isEmpty) return null;
 
-    return copyWith(list: items.toList());
+    return copyWith(entries: items.toList());
   }
 
-  CLMediaInfoGroup? remove(CLMedia itemToRemove) {
-    final items = list.where((e) => e != itemToRemove);
+  CLMediaList? remove(CLMedia itemToRemove) {
+    final items = entries.where((e) => e != itemToRemove);
     if (items.isEmpty) return null;
 
-    return copyWith(list: items.toList());
+    return copyWith(entries: items.toList());
   }
+
+  List<CLMedia> itemsByType(CLMediaType type) =>
+      entries.where((e) => e.type == type).toList();
+
+  List<CLMedia> get videos => itemsByType(CLMediaType.video);
+  List<CLMedia> get images => itemsByType(CLMediaType.image);
+
+  List<CLMediaType> get contentTypes =>
+      Set<CLMediaType>.from(entries.map((e) => e.type)).toList();
 }

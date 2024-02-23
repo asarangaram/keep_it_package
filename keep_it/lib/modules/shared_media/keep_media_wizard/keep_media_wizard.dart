@@ -12,11 +12,11 @@ class KeepMediaWizard extends ConsumerWidget {
     required this.onAccept,
     super.key,
   });
-  final CLMediaInfoGroup media;
+  final CLMediaList media;
 
   final void Function() onDiscard;
   final void Function({
-    CLMediaInfoGroup? mg,
+    CLMediaList? mg,
   }) onAccept;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,7 +47,7 @@ class KeepMediaWizard extends ConsumerWidget {
 
   Future<void> onSelectionDone({
     required WidgetRef ref,
-    required CLMediaInfoGroup media,
+    required CLMediaList media,
     required Collection collection,
     List<int>? saveIntoTagsId,
   }) async {
@@ -59,21 +59,23 @@ class KeepMediaWizard extends ConsumerWidget {
               saveIntoTagsId,
             );
     final items =
-        media.list.map((e) => e.setCollectionID(collectionId)).toList();
+        media.entries.map((e) => e.setCollectionID(collectionId)).toList();
     onAccept(
-      mg: CLMediaInfoGroup(list: items, targetID: collectionId),
+      mg: CLMediaList(entries: items, targetID: collectionId),
     );
   }
 
   static Future<void> onUpdateDB(
     BuildContext context,
     WidgetRef ref,
-    CLMediaInfoGroup updatedMedia,
+    CLMediaList updatedMedia,
   ) async {
-    ref.read(itemsProvider(updatedMedia.targetID!));
+    ref.read(clMediaListByCollectionIdProvider(updatedMedia.targetID!));
     await ref
-        .read(itemsProvider(updatedMedia.targetID!).notifier)
-        .upsertItems(updatedMedia.list);
+        .read(
+          clMediaListByCollectionIdProvider(updatedMedia.targetID!).notifier,
+        )
+        .upsertItems(updatedMedia.entries);
     await ref.read(notificationMessageProvider.notifier).push('Saved.');
   }
 }

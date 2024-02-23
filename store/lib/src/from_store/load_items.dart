@@ -11,12 +11,13 @@ class LoadItems extends ConsumerWidget {
     super.key,
     this.hasBackground = true,
   });
-  final Widget Function(Items items) buildOnData;
+  final Widget Function(CLMediaList items) buildOnData;
   final int collectionID;
   final bool hasBackground;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemsAsync = ref.watch(itemsProvider(collectionID));
+    final itemsAsync =
+        ref.watch(clMediaListByCollectionIdProvider(collectionID));
 
     return itemsAsync.when(
       loading: () => const CLLoadingView(),

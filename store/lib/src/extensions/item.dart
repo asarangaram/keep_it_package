@@ -123,39 +123,4 @@ extension ExtItemInDB on CLMedia {
     // Paths outside the container, lets keep the absoulte path
     return path;
   }
-
-  /* CLMedia toCLMedia({String pathPrefix = ''}) {
-    final p = FileHandler.join(pathPrefix, this.path);
-    return switch (type) {
-      CLMediaType.image => CLMediaImage(path: p, ref: ref),
-      CLMediaType.video => CLMediaVideo(path: p, ref: ref),
-      _ => CLMedia(
-          path: p,
-          type: type,
-        )
-    }; 
-  }*/
-
-  /* static Future<ItemInDB> fromCLMedia(
-    CLMedia media, {
-    required int collectionId,
-  }) async {
-    if (![CLMediaType.video, CLMediaType.image].contains(media.type)) {
-      return ItemInDB(
-        collectionId: collectionId,
-        path: media.path,
-        type: media.type,
-      );
-    }
-
-    return ItemInDB(
-      collectionId: collectionId,
-      path: await (await media.copy(
-        toDir: path.join('keep_it', 'collection_$collectionId'),
-      ))
-          .relativePathFuture,
-      type: media.type,
-      ref: media.ref,
-    );
-  } */
 }

@@ -1,9 +1,5 @@
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 
-import 'collection.dart';
-
+/* 
 @immutable
 class Items {
   const Items({
@@ -47,4 +43,4 @@ class Items {
 
   List<CLMediaType> get contentTypes =>
       Set<CLMediaType>.from(entries.map((e) => e.type)).toList();
-}
+} */
