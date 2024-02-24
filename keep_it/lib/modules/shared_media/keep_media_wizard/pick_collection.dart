@@ -9,7 +9,7 @@ import 'package:store/store.dart';
 
 import '../../../widgets/editors/tag_editor.dart';
 import 'collection_editor.dart';
-import 'keepit_selector.dart';
+
 import 'label_viewer.dart';
 import 'pure/wizard_item.dart';
 
@@ -155,7 +155,7 @@ class PickCollectionState extends ConsumerState<PickCollection> {
               return LoadTags(
                 collectionId: collection?.id,
                 buildOnData: (currentTags) {
-                  return WizardFormPage(
+                  return CLWizardFormField(
                     actionMenu: (context, onTap) => CLMenuItem(
                       icon: MdiIcons.floppy,
                       title: 'Save',

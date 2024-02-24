@@ -1,9 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart' as cl;
 import 'package:flutter/material.dart';
-import 'package:form_factory/form_factory.dart';
 
-class WizardFormPage extends StatefulWidget {
-  const WizardFormPage({
+import '../models/cl_form_field_descriptors.dart';
+import '../models/cl_form_field_result.dart';
+import '../models/cl_form_field_state.dart';
+import 'cl_form_select.dart';
+
+class CLWizardFormField extends StatefulWidget {
+  const CLWizardFormField({
     required this.onSubmit,
     required this.descriptor,
     required this.actionMenu,
@@ -18,10 +22,10 @@ class WizardFormPage extends StatefulWidget {
     Future<bool?> Function() onTap,
   )? actionMenu;
   @override
-  State<WizardFormPage> createState() => _WizardFormPageState();
+  State<CLWizardFormField> createState() => _CLWizardFormFieldState();
 }
 
-class _WizardFormPageState extends State<WizardFormPage> {
+class _CLWizardFormFieldState extends State<CLWizardFormField> {
   late CLFormSelectState state;
   final GlobalKey wrapKey = GlobalKey();
   final formKey = GlobalKey<FormState>();

@@ -52,7 +52,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
               );
             },
             onRefresh: () async {
-              print('refresh called');
+              // TODO (anandas):
             },
             onPop: context.canPop()
                 ? () {
