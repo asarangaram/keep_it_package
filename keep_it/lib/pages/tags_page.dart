@@ -43,6 +43,7 @@ class _TagsViewState extends ConsumerState<TagsPage> {
               quickMenuScopeKey: quickMenuScopeKey,
             ),
             tagPrefix: 'folder view tags "}',
+            isScrollablePositionedList: false,
             onPop: context.canPop()
                 ? () {
                     context.pop();
