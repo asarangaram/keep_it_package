@@ -69,15 +69,15 @@ class CLMediaListByCollectionIdNotifier
     await loadItems();
   }
 
-  void deleteItem(CLMedia item) {
+  /* void deleteItem(CLMedia item) {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
-
+    final collectionID = item.collectionId;
     item
       ..deleteFile()
       ..delete(databaseManager!.db);
-
+    
     loadItems();
   }
 
@@ -91,7 +91,7 @@ class CLMediaListByCollectionIdNotifier
         ..delete(databaseManager!.db);
     }
     loadItems();
-  }
+  } */
 }
 
 final clMediaListByCollectionIdProvider = StateNotifierProvider.family<

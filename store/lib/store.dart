@@ -6,6 +6,7 @@ export 'src/database/providers/db_collection.dart' show collectionsProvider;
 export 'src/database/providers/db_items.dart'
     show clMediaListByCollectionIdProvider;
 export 'src/database/providers/db_tag.dart' show tagsProvider;
+export 'src/database/providers/db_updater.dart';
 export 'src/database/widgets/get_db_manager.dart';
 export 'src/database/widgets/load_collections.dart';
 export 'src/database/widgets/load_items.dart';

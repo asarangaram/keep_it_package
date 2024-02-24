@@ -22,11 +22,8 @@ class MediaAsFile extends ConsumerWidget {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
       onDelete: () async {
-        ref
-            .read(
-              clMediaListByCollectionIdProvider(media.collectionId!).notifier,
-            )
-            .deleteItem(media);
+        //TODO (anandas): Confirm delete
+        await ref.read(dbUpdaterNotifierProvider.notifier).deleteItem(media);
         return true;
       },
       onTap: () async {
