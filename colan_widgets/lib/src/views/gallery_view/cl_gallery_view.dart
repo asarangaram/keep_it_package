@@ -31,6 +31,8 @@ class CLGalleryView extends StatefulWidget {
     this.header,
     this.footer,
     this.onPop,
+    this.onRefresh,
+    this.isScrollablePositionedList = true,
   });
 
   final String label;
@@ -42,6 +44,8 @@ class CLGalleryView extends StatefulWidget {
   final String tagPrefix;
   final void Function()? onPickFiles;
   final void Function()? onPop;
+  final Future<void> Function()? onRefresh;
+  final bool isScrollablePositionedList;
 
   final Widget Function(
     BuildContext context,
@@ -83,70 +87,75 @@ class GalleryState extends State<CLGalleryView> {
               ),
       ],
       pageBuilder: (context, quickMenuScopeKey) {
-        return HugeListView<List<dynamic>>(
-          startIndex: 0,
-          totalCount: itemsMap.length,
-          labelTextBuilder: widget.labelTextBuilder,
-          emptyResultBuilder: (_) {
-            final children = <Widget>[];
-            if (widget.header != null) {
-              children.add(widget.header!);
-            }
-            children.add(
-              Expanded(
-                child: widget.emptyState,
-              ),
-            );
-            if (widget.footer != null) {
-              children.add(widget.footer!);
-            }
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: children,
-            );
-          },
-          itemBuilder: (BuildContext context, int index) {
-            final w = CLGridLazy(
-              mediaList: itemsMap[index].items,
-              columns: widget.columns,
-              itemBuilder: (context, item) {
-                return widget.itemBuilder(
-                  context,
-                  item,
-                  quickMenuScopeKey: quickMenuScopeKey,
-                );
-              },
-              index: index,
-              currentIndexStream: Bus.instance
-                  .on<GalleryIndexUpdatedEvent>()
-                  .where((event) => event.tag == widget.tagPrefix)
-                  .map((event) => event.index),
-              header: itemsMap[index].label == null
-                  ? null
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: CLText.large(
-                        itemsMap[index].label!,
-                        textAlign: TextAlign.start,
+        return RefreshIndicator(
+          onRefresh: widget.onRefresh ?? () async {},
+          key: ValueKey('${widget.tagPrefix} Refresh'),
+          child: HugeListView<List<dynamic>>(
+            startIndex: 0,
+            totalCount: itemsMap.length,
+            labelTextBuilder: widget.labelTextBuilder,
+            isScrollablePositionedList: widget.isScrollablePositionedList,
+            emptyResultBuilder: (_) {
+              final children = <Widget>[];
+              if (widget.header != null) {
+                children.add(widget.header!);
+              }
+              children.add(
+                Expanded(
+                  child: widget.emptyState,
+                ),
+              );
+              if (widget.footer != null) {
+                children.add(widget.footer!);
+              }
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: children,
+              );
+            },
+            itemBuilder: (BuildContext context, int index) {
+              final w = CLGridLazy(
+                mediaList: itemsMap[index].items,
+                columns: widget.columns,
+                itemBuilder: (context, item) {
+                  return widget.itemBuilder(
+                    context,
+                    item,
+                    quickMenuScopeKey: quickMenuScopeKey,
+                  );
+                },
+                index: index,
+                currentIndexStream: Bus.instance
+                    .on<GalleryIndexUpdatedEvent>()
+                    .where((event) => event.tag == widget.tagPrefix)
+                    .map((event) => event.index),
+                header: itemsMap[index].label == null
+                    ? null
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: CLText.large(
+                          itemsMap[index].label!,
+                          textAlign: TextAlign.start,
+                        ),
                       ),
-                    ),
-            );
-            if (index == 0 && widget.header != null) {
-              return Column(
-                children: [if (widget.header != null) widget.header!, w],
               );
-            }
-            if (index == (itemsMap.length - 1) && widget.footer != null) {
-              return Column(
-                children: [w, if (widget.footer != null) widget.footer!],
-              );
-            }
-            return w;
-          },
-          firstShown: (int firstIndex) {
-            Bus.instance
-                .fire(GalleryIndexUpdatedEvent(widget.tagPrefix, firstIndex));
-          },
+              if (index == 0 && widget.header != null) {
+                return Column(
+                  children: [if (widget.header != null) widget.header!, w],
+                );
+              }
+              if (index == (itemsMap.length - 1) && widget.footer != null) {
+                return Column(
+                  children: [w, if (widget.footer != null) widget.footer!],
+                );
+              }
+              return w;
+            },
+            firstShown: (int firstIndex) {
+              Bus.instance
+                  .fire(GalleryIndexUpdatedEvent(widget.tagPrefix, firstIndex));
+            },
+          ),
         );
       },
     );

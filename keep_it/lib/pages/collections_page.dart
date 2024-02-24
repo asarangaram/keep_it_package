@@ -44,11 +44,15 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
               quickMenuScopeKey: quickMenuScopeKey,
             ),
             tagPrefix: 'timeline ${collections.tag?.id ?? "all"}',
+            isScrollablePositionedList: false,
             onPickFiles: () async {
               await onPickFiles(
                 context,
                 ref,
               );
+            },
+            onRefresh: () async {
+              print('refresh called');
             },
             onPop: context.canPop()
                 ? () {
