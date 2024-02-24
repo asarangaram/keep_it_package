@@ -156,6 +156,11 @@ class PickCollectionState extends ConsumerState<PickCollection> {
                 collectionId: collection?.id,
                 buildOnData: (currentTags) {
                   return WizardFormPage(
+                    actionMenu: (context, onTap) => CLMenuItem(
+                      icon: MdiIcons.floppy,
+                      title: 'Save',
+                      onTap: onTap,
+                    ),
                     descriptor: CLFormSelectDescriptors(
                       title: 'Tags',
                       label: 'Select Tags',

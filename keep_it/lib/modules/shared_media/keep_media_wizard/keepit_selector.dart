@@ -1,20 +1,22 @@
-import 'package:colan_widgets/colan_widgets.dart';
+import 'package:colan_widgets/colan_widgets.dart' as cl;
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import 'pure/wizard_item.dart';
 
 class WizardFormPage extends StatefulWidget {
   const WizardFormPage({
     required this.onSubmit,
     required this.descriptor,
+    required this.actionMenu,
     super.key,
   });
 
   final void Function(CLFormFieldResult result) onSubmit;
 
   final CLFormFieldDescriptors descriptor;
+  final cl.CLMenuItem Function(
+    BuildContext context,
+    Future<bool?> Function() onTap,
+  )? actionMenu;
   @override
   State<WizardFormPage> createState() => _WizardFormPageState();
 }
@@ -46,22 +48,10 @@ class _WizardFormPageState extends State<WizardFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: WizardItem(
-        action: CLMenuItem(
-          title: 'Save',
-          icon: MdiIcons.floppy,
-          onTap: () async {
-            if (formKey.currentState?.validate() ?? false) {
-              widget.onSubmit(
-                CLFormSelectResult(state.selectedEntities),
-              );
-              return true;
-            }
-            return false;
-          },
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Form(
+        key: formKey,
         child: SizedBox.expand(
           child: CLFormSelect(
             descriptors: widget.descriptor as CLFormSelectDescriptors,
@@ -69,89 +59,45 @@ class _WizardFormPageState extends State<WizardFormPage> {
             onRefresh: () {
               setState(() {});
             },
+            actionBuilder: widget.actionMenu == null
+                ? null
+                : (
+                    context,
+                  ) {
+                    final menuItem = widget.actionMenu!(context, () async {
+                      if (formKey.currentState?.validate() ?? false) {
+                        widget.onSubmit(
+                          CLFormSelectResult(state.selectedEntities),
+                        );
+                      }
+                      return null;
+                    });
+                    return FractionallySizedBox(
+                      widthFactor: 0.2,
+                      heightFactor: 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          border: Border.all(),
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(16),
+                            bottomRight: Radius.circular(16),
+                          ),
+                        ),
+                        child: Align(
+                          child: cl.CLButtonIconLabelled.standard(
+                            menuItem.icon,
+                            menuItem.title,
+                            color: Theme.of(context).colorScheme.surface,
+                            onTap: menuItem.onTap,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
           ),
         ),
       ),
     );
   }
 }
-
-
-/*
-SingleChildScrollView(
-          controller: scrollController,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Wrap(
-                key: wrapKey,
-                spacing: 1,
-                runSpacing: 1,
-                children: [
-                  ...selectedEntities.map(
-                    (e) => Theme(
-                      data: Theme.of(context).copyWith(
-                        chipTheme: const ChipThemeData(
-                          side: BorderSide.none,
-                        ),
-                        canvasColor: Colors.transparent,
-                      ),
-                      child: Chip(
-                        label: Text(e.label),
-                        onDeleted: () {
-                          setState(() {
-                            selectedEntities.remove(e);
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  CreateOrSelectTags(
-                    controller: controller,
-                    onDone: onDone,
-                    suggestedCollections: [
-                      ...widget.entities,
-                      ...widget.availableSuggestions.where((element) {
-                        return !widget.entities
-                            .map((e) => e.label)
-                            .contains(element.label);
-                      }),
-                    ]
-                        .where(
-                          (element) => !selectedEntities
-                              .map((e) => e.label)
-                              .contains(element.label),
-                        )
-                        .toList(),
-                    anchorBuilder: (
-                      BuildContext context,
-                      SearchController controller, {
-                      required void Function(Tag) onDone,
-                    }) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          canvasColor: Colors.transparent,
-                        ),
-                        child: ActionChip(
-                          avatar: Icon(MdiIcons.plus),
-                          label: Text(
-                            selectedEntities.isEmpty
-                                ? 'Add Tag'
-                                : 'Add Another Tag',
-                          ),
-                          onPressed: controller.openView,
-                          shape: const ContinuousRectangleBorder(
-                            side: BorderSide(),
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
- */

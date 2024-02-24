@@ -1,17 +1,17 @@
 import 'dart:async';
 
+import 'package:colan_widgets/colan_widgets.dart' as cl;
 import 'package:flutter/material.dart';
 
 import '../models/cl_form_field_descriptors.dart';
 import '../models/cl_form_field_state.dart';
-import '../style/cl_form_design.dart';
-import '../models/list_extensions.dart';
 
 class CLFormSelect extends StatelessWidget {
   const CLFormSelect({
     required this.descriptors,
     required this.state,
     required this.onRefresh,
+    this.actionBuilder,
     super.key,
   });
   final CLFormSelectDescriptors descriptors;
@@ -19,96 +19,125 @@ class CLFormSelect extends StatelessWidget {
   final CLFormSelectState state;
 
   final void Function() onRefresh;
+  final Widget Function(BuildContext context)? actionBuilder;
 
   @override
   Widget build(BuildContext context) {
     return FormField<List<Object>>(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
           if (value!.isEmpty) {
             return "Atleast one value should be provided";
           }
 
           state.selectedEntities.clear();
-          state.selectedEntities.addAll(value);
+          for (var item in value) {
+            state.selectedEntities.add(item);
+          }
           return null;
         },
         initialValue: state.selectedEntities,
         builder: (fieldState) {
-          return Padding(
-            padding: const EdgeInsets.all(8),
-            child: SizedBox(
-              width: double.infinity,
-              height: kMinInteractiveDimension * 3,
-              child: InputDecorator(
-                decoration: FormDesign.inputDecoration(descriptors.label),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: SingleChildScrollView(
-                    controller: state.scrollController,
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Wrap(
-                        key: state.wrapKey,
-                        spacing: 1,
-                        runSpacing: 1,
-                        children: [
-                          ...fieldState.value!.map(
-                            (e) => Theme(
-                              data: Theme.of(context).copyWith(
-                                chipTheme: const ChipThemeData(
-                                  side: BorderSide.none,
-                                ),
-                                canvasColor: Colors.transparent,
+          return SizedBox(
+            width: double.infinity,
+            height: kMinInteractiveDimension * 3,
+            child: InputDecorator(
+              decoration: InputDecoration(
+                enabled: true,
+                isDense: true,
+                contentPadding: const EdgeInsets.fromLTRB(20, 8, 4, 8),
+                labelText: descriptors.label,
+                labelStyle: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+                enabledBorder: fieldState.hasError
+                    ? OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.error,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        gapPadding: 8,
+                      )
+                    : OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1),
+                        borderRadius: BorderRadius.circular(16),
+                        gapPadding: 8,
+                      ),
+                suffixIcon: fieldState.value!.isEmpty
+                    ? null
+                    : actionBuilder?.call(
+                        context,
+                      ),
+              ),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: SingleChildScrollView(
+                  controller: state.scrollController,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Wrap(
+                      key: state.wrapKey,
+                      spacing: 1,
+                      runSpacing: 1,
+                      children: [
+                        ...fieldState.value!.map(
+                          (e) => Theme(
+                            data: Theme.of(context).copyWith(
+                              chipTheme: const ChipThemeData(
+                                side: BorderSide.none,
                               ),
-                              child: Chip(
-                                label: Text(descriptors.labelBuilder(e)),
-                                onDeleted: () {
-                                  fieldState.value!.remove(e);
-                                  onRefresh();
-                                },
-                              ),
+                              canvasColor: Colors.transparent,
+                            ),
+                            child: Chip(
+                              label: Text(descriptors.labelBuilder(e)),
+                              onDeleted: () {
+                                fieldState.value!.remove(e);
+                                onRefresh();
+                              },
                             ),
                           ),
-                          SearchAnchor(
-                            searchController: state.searchController,
-                            isFullScreen: false,
-                            viewBackgroundColor:
-                                Theme.of(context).colorScheme.surface,
-                            suggestionsBuilder: (context, controller) {
-                              return suggestionsBuilder(context,
-                                  suggestions: descriptors.suggestionsAvailable
-                                      .excludeByLabel(
-                                        fieldState.value!,
-                                        descriptors.labelBuilder,
-                                      )
-                                      .toList(),
-                                  controller: controller,
-                                  labelBuilder: descriptors.labelBuilder,
-                                  fieldState: fieldState);
-                            },
-                            builder: (context, controller) {
-                              return Theme(
-                                data: Theme.of(context).copyWith(
-                                  canvasColor: Colors.transparent,
+                        ),
+                        SearchAnchor(
+                          searchController: state.searchController,
+                          isFullScreen: false,
+                          viewBackgroundColor:
+                              Theme.of(context).colorScheme.surface,
+                          suggestionsBuilder: (context, controller) {
+                            return suggestionsBuilder(context,
+                                suggestions: descriptors.suggestionsAvailable
+                                    .excludeByLabel(
+                                      fieldState.value!,
+                                      descriptors.labelBuilder,
+                                    )
+                                    .toList(),
+                                controller: controller,
+                                labelBuilder: descriptors.labelBuilder,
+                                fieldState: fieldState);
+                          },
+                          builder: (context, controller) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                canvasColor: Colors.transparent,
+                              ),
+                              child: ActionChip(
+                                avatar: const Icon(Icons.add),
+                                label: Text(
+                                  fieldState.value!.isEmpty ? 'Add' : 'Add',
                                 ),
-                                child: ActionChip(
-                                  avatar: const Icon(Icons.add),
-                                  label: Text(
-                                    fieldState.value!.isEmpty ? 'Add' : 'Add',
-                                  ),
-                                  onPressed: controller.openView,
-                                  shape: const ContinuousRectangleBorder(
-                                    side: BorderSide(),
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(16),
-                                    ),
+                                onPressed: controller.openView,
+                                shape: const ContinuousRectangleBorder(
+                                  side: BorderSide(),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(16),
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),

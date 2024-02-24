@@ -3,6 +3,8 @@ description: "A new Flutter package project."
 version: 0.0.1
 homepage:
 
+publish_to: none
+
 environment:
   sdk: '>=3.2.2 <4.0.0'
   flutter: ">=1.17.0"
@@ -10,6 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  colan_widgets:
+    path: ../colan_widgets
 
 dev_dependencies:
   flutter_test:
