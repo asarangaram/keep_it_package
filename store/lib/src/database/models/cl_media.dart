@@ -43,7 +43,7 @@ extension CLMediaDB on CLMedia {
     return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
   }
 
-  int upsert(
+  CLMedia upsert(
     Database db, {
     required String? pathPrefix,
   }) {
@@ -79,7 +79,7 @@ extension CLMediaDB on CLMedia {
           id,
         ],
       );
-      return id!;
+      return getById(db, id!, pathPrefix: pathPrefix);
     }
     db.execute(
       'INSERT  INTO Item (path, '
@@ -94,7 +94,7 @@ extension CLMediaDB on CLMedia {
         md5String,
       ],
     );
-    return db.lastInsertRowId;
+    return getById(db, db.lastInsertRowId, pathPrefix: pathPrefix);
   }
 
   void delete(Database db) {

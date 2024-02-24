@@ -72,10 +72,7 @@ class KeepMediaWizard extends ConsumerWidget {
   ) async {
     ref.read(clMediaListByCollectionIdProvider(updatedMedia.collectionId!));
     await ref
-        .read(
-          clMediaListByCollectionIdProvider(updatedMedia.collectionId!)
-              .notifier,
-        )
+        .read(dbUpdaterNotifierProvider.notifier)
         .upsertItems(updatedMedia.entries);
     await ref.read(notificationMessageProvider.notifier).push('Saved.');
   }

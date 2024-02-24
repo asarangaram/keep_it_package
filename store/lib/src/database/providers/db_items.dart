@@ -48,7 +48,7 @@ class CLMediaListByCollectionIdNotifier
     return digest.toString();
   }
 
-  Future<void> _upsertItem(CLMedia item) async {
+  /* Future<void> _upsertItem(CLMedia item) async {
     if (databaseManager == null) {
       throw Exception('DB Manager is not ready');
     }
@@ -67,7 +67,7 @@ class CLMediaListByCollectionIdNotifier
       await _upsertItem(item);
     }
     await loadItems();
-  }
+  } */
 
   /* void deleteItem(CLMedia item) {
     if (databaseManager == null) {

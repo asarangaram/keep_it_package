@@ -59,10 +59,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
                 onDone: (CLMediaList mg) async {
                   ref.read(clMediaListByCollectionIdProvider(mg.collectionId!));
                   await ref
-                      .read(
-                        clMediaListByCollectionIdProvider(mg.collectionId!)
-                            .notifier,
-                      )
+                      .read(dbUpdaterNotifierProvider.notifier)
                       .upsertItems(mg.entries);
                   await ref
                       .read(notificationMessageProvider.notifier)
