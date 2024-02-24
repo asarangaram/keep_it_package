@@ -52,6 +52,12 @@ class CLFormSelectState extends CLFormFieldState {
     }
   }
 
+  CLFormSelectState update(List<Object> res) => CLFormSelectState(
+      scrollController: scrollController,
+      searchController: searchController,
+      wrapKey: wrapKey,
+      selectedEntities: res);
+
   @override
   CLFormFieldResult get result => CLFormSelectResult(selectedEntities);
 

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-
 import '../models/cl_form_field_descriptors.dart';
 import '../models/cl_form_field_result.dart';
 import '../models/cl_form_field_state.dart';

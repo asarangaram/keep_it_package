@@ -3,50 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../../widgets/editors/tag_editor.dart';
-import '../dialogs/dialogs.dart';
-import 'create_or_select.dart';
 import 'pure/wizard_item.dart';
 
-class TagsSelector extends StatefulWidget {
-  const TagsSelector({
-    required this.entities,
-    required this.availableSuggestions,
-    required this.onDone,
-    required this.onCreateNew,
+class WizardFormPage extends StatefulWidget {
+  const WizardFormPage({
+    required this.onSubmit,
+    required this.descriptor,
     super.key,
   });
-  final List<Tag> entities;
-  final List<Tag> availableSuggestions;
-  final void Function(List<Tag> selectedTags) onDone;
-  final Future<Tag> Function(Tag entity) onCreateNew;
 
+  final void Function(CLFormFieldResult result) onSubmit;
+
+  final CLFormFieldDescriptors descriptor;
   @override
-  State<TagsSelector> createState() => _TagsSelectorState();
+  State<WizardFormPage> createState() => _WizardFormPageState();
 }
 
-class _TagsSelectorState extends State<TagsSelector> {
+class _WizardFormPageState extends State<WizardFormPage> {
   late CLFormSelectState state;
   final GlobalKey wrapKey = GlobalKey();
-  late CLFormSelectDescriptors descriptor;
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    descriptor = CLFormSelectDescriptors(
-      title: 'Tags',
-      label: 'Select Tags',
-      labelBuilder: (e) => (e as Tag).label,
-      descriptionBuilder: (e) => (e as Tag).description,
-      suggestionsAvailable: widget.availableSuggestions,
-      initialValues: widget.entities,
-      onSelectSuggestion: (item) => create(context, item as Tag),
-      onCreateByLabel: (label) => create(context, Tag(label: label)),
-    );
     state = CLFormSelectState(
       scrollController: ScrollController(),
       wrapKey: wrapKey,
       searchController: SearchController(),
-      selectedEntities: descriptor.initialValues,
+      selectedEntities:
+          (widget.descriptor as CLFormSelectDescriptors).initialValues,
     );
 
     super.initState();
@@ -61,45 +46,33 @@ class _TagsSelectorState extends State<TagsSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return WizardItem(
-      action: state.selectedEntities.isEmpty
-          ? null
-          : CLMenuItem(
-              title: 'Save',
-              icon: MdiIcons.floppy,
-              onTap: () async {
-                if (state.selectedEntities.isNotEmpty) {
-                  widget.onDone(CLFormSelectResult(state.selectedEntities)
-                      .selectedEntities as List<Tag>);
-                }
-                return state.selectedEntities.isNotEmpty;
-              },
-            ),
-      child: SizedBox.expand(
-        child: CLFormSelect(
-          descriptors: descriptor,
-          state: state,
-          onRefresh: () {
-            setState(() {});
+    return Form(
+      key: formKey,
+      child: WizardItem(
+        action: CLMenuItem(
+          title: 'Save',
+          icon: MdiIcons.floppy,
+          onTap: () async {
+            if (formKey.currentState?.validate() ?? false) {
+              widget.onSubmit(
+                CLFormSelectResult(state.selectedEntities),
+              );
+              return true;
+            }
+            return false;
           },
+        ),
+        child: SizedBox.expand(
+          child: CLFormSelect(
+            descriptors: widget.descriptor as CLFormSelectDescriptors,
+            state: state,
+            onRefresh: () {
+              setState(() {});
+            },
+          ),
         ),
       ),
     );
-  }
-
-  Future<Tag?> create(BuildContext context, Tag tag) async {
-    final Tag entityUpdated;
-    if (tag.id == null) {
-      final res = await TagEditor.popupDialog(context, tag: tag);
-      if (res == null) {
-        return null;
-      }
-      entityUpdated = res;
-    } else {
-      entityUpdated = tag;
-    }
-
-    return entityUpdated;
   }
 }
 

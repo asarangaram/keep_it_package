@@ -1,11 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_factory/form_factory.dart';
 import 'package:keep_it/modules/shared_media/keep_media_wizard/collection_create_select.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../../../widgets/editors/tag_editor.dart';
 import 'collection_editor.dart';
 import 'keepit_selector.dart';
 import 'label_viewer.dart';
@@ -153,32 +155,45 @@ class PickCollectionState extends ConsumerState<PickCollection> {
               return LoadTags(
                 collectionId: collection?.id,
                 buildOnData: (currentTags) {
-                  return TagsSelector(
-                    entities: collection?.id == null ? [] : currentTags.entries,
-                    availableSuggestions: [
-                      ...existingTags.entries,
-                      ...suggestedTags.excludeByLabel(
-                        existingTags.entries,
-                        (Tag e) => e.label,
-                      ),
-                    ],
-                    onDone: (selectedTags) async {
+                  return WizardFormPage(
+                    descriptor: CLFormSelectDescriptors(
+                      title: 'Tags',
+                      label: 'Select Tags',
+                      labelBuilder: (e) => (e as Tag).label,
+                      descriptionBuilder: (e) => (e as Tag).description,
+                      suggestionsAvailable: [
+                        ...existingTags.entries,
+                        ...suggestedTags.excludeByLabel(
+                          existingTags.entries,
+                          (Tag e) => e.label,
+                        ),
+                      ],
+                      initialValues:
+                          collection?.id == null ? [] : currentTags.entries,
+                      onSelectSuggestion: (item) =>
+                          createTag(context, item as Tag),
+                      onCreateByLabel: (label) =>
+                          createTag(context, Tag(label: label)),
+                    ),
+                    onSubmit: (CLFormFieldResult result) async {
+                      final selectedTags =
+                          (result as CLFormSelectResult).selectedEntities;
                       final newTags = await ref
                           .read(tagsProvider(null).notifier)
-                          .upsertTags(selectedTags.where((e) => e.id == null));
-                      final existingTags =
-                          selectedTags.where((e) => e.id != null);
+                          .upsertTags(
+                            selectedTags
+                                .where((e) => (e as Tag).id == null)
+                                .map((e) => e as Tag),
+                          );
+                      final existingTags = selectedTags
+                          .where((e) => (e as Tag).id != null)
+                          .map((e) => e as Tag);
                       widget.onDone(
                         collection: collection!,
                         selectedTags: [...newTags, ...existingTags],
                       );
 
                       onNext();
-                    },
-                    onCreateNew: (entity) async {
-                      return ref
-                          .read(tagsProvider(null).notifier)
-                          .upsertTag(entity);
                     },
                   );
                 },
@@ -188,6 +203,21 @@ class PickCollectionState extends ConsumerState<PickCollection> {
         ),
       ],
     );
+  }
+
+  Future<Tag?> createTag(BuildContext context, Tag tag) async {
+    final Tag entityUpdated;
+    if (tag.id == null) {
+      final res = await TagEditor.popupDialog(context, tag: tag);
+      if (res == null) {
+        return null;
+      }
+      entityUpdated = res;
+    } else {
+      entityUpdated = tag;
+    }
+
+    return entityUpdated;
   }
 
   Widget page0(

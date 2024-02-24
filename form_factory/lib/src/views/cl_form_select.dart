@@ -22,88 +22,100 @@ class CLFormSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: SizedBox(
-        width: double.infinity,
-        height: kMinInteractiveDimension * 3,
-        child: InputDecorator(
-          decoration: FormDesign.inputDecoration(descriptors.label),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
-              controller: state.scrollController,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                  key: state.wrapKey,
-                  spacing: 1,
-                  runSpacing: 1,
-                  children: [
-                    ...state.selectedEntities.map(
-                      (e) => Theme(
-                        data: Theme.of(context).copyWith(
-                          chipTheme: const ChipThemeData(
-                            side: BorderSide.none,
-                          ),
-                          canvasColor: Colors.transparent,
-                        ),
-                        child: Chip(
-                          label: Text(descriptors.labelBuilder(e)),
-                          onDeleted: () {
-                            state.remove(e);
-                            onRefresh();
-                          },
-                        ),
-                      ),
-                    ),
-                    SearchAnchor(
-                      searchController: state.searchController,
-                      isFullScreen: false,
-                      viewBackgroundColor:
-                          Theme.of(context).colorScheme.surface,
-                      suggestionsBuilder: (context, controller) {
-                        return suggestionsBuilder(
-                          context,
-                          suggestions: descriptors.suggestionsAvailable
-                              .excludeByLabel(
-                                state.selectedEntities,
-                                descriptors.labelBuilder,
-                              )
-                              .toList(),
-                          controller: controller,
-                          labelBuilder: descriptors.labelBuilder,
-                        );
-                      },
-                      builder: (context, controller) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            canvasColor: Colors.transparent,
-                          ),
-                          child: ActionChip(
-                            avatar: const Icon(Icons.add),
-                            label: Text(
-                              state.selectedEntities.isEmpty ? 'Add' : 'Add',
-                            ),
-                            onPressed: controller.openView,
-                            shape: const ContinuousRectangleBorder(
-                              side: BorderSide(),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
+    return FormField<List<Object>>(
+        validator: (value) {
+          if (value!.isEmpty) {
+            return "Atleast one value should be provided";
+          }
+
+          state.selectedEntities.clear();
+          state.selectedEntities.addAll(value);
+          return null;
+        },
+        initialValue: state.selectedEntities,
+        builder: (fieldState) {
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: SizedBox(
+              width: double.infinity,
+              height: kMinInteractiveDimension * 3,
+              child: InputDecorator(
+                decoration: FormDesign.inputDecoration(descriptors.label),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: SingleChildScrollView(
+                    controller: state.scrollController,
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Wrap(
+                        key: state.wrapKey,
+                        spacing: 1,
+                        runSpacing: 1,
+                        children: [
+                          ...fieldState.value!.map(
+                            (e) => Theme(
+                              data: Theme.of(context).copyWith(
+                                chipTheme: const ChipThemeData(
+                                  side: BorderSide.none,
+                                ),
+                                canvasColor: Colors.transparent,
+                              ),
+                              child: Chip(
+                                label: Text(descriptors.labelBuilder(e)),
+                                onDeleted: () {
+                                  fieldState.value!.remove(e);
+                                  onRefresh();
+                                },
                               ),
                             ),
                           ),
-                        );
-                      },
+                          SearchAnchor(
+                            searchController: state.searchController,
+                            isFullScreen: false,
+                            viewBackgroundColor:
+                                Theme.of(context).colorScheme.surface,
+                            suggestionsBuilder: (context, controller) {
+                              return suggestionsBuilder(context,
+                                  suggestions: descriptors.suggestionsAvailable
+                                      .excludeByLabel(
+                                        fieldState.value!,
+                                        descriptors.labelBuilder,
+                                      )
+                                      .toList(),
+                                  controller: controller,
+                                  labelBuilder: descriptors.labelBuilder,
+                                  fieldState: fieldState);
+                            },
+                            builder: (context, controller) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  canvasColor: Colors.transparent,
+                                ),
+                                child: ActionChip(
+                                  avatar: const Icon(Icons.add),
+                                  label: Text(
+                                    fieldState.value!.isEmpty ? 'Add' : 'Add',
+                                  ),
+                                  onPressed: controller.openView,
+                                  shape: const ContinuousRectangleBorder(
+                                    side: BorderSide(),
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(16),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 
   FutureOr<Iterable<Widget>> suggestionsBuilder(
@@ -112,6 +124,7 @@ class CLFormSelect extends StatelessWidget {
     required String Function(Object e) labelBuilder,
     String Function(Object e)? descriptionBuilder,
     List<Object>? suggestions,
+    required FormFieldState<List<Object>> fieldState,
   }) {
     final List<Object>? filterredSuggestion;
     if (controller.text.isEmpty) {
@@ -131,7 +144,7 @@ class CLFormSelect extends StatelessWidget {
             subtitle: description == null ? null : Text(description),
             onTap: () {
               controller.closeView(controller.text);
-              _onSelect(state, e, onRefresh);
+              _onSelect(fieldState, e, onRefresh);
             },
           );
         }).toList() ??
@@ -152,9 +165,9 @@ class CLFormSelect extends StatelessWidget {
                   labelBuilder,
                 );
                 if (c == null) {
-                  _onCreateByLabel(state, controller.text, onRefresh);
+                  _onCreateByLabel(fieldState, controller.text, onRefresh);
                 } else {
-                  _onSelect(state, c, onRefresh);
+                  _onSelect(fieldState, c, onRefresh);
                 }
               }
             },
@@ -173,27 +186,27 @@ class CLFormSelect extends StatelessWidget {
   }
 
   Future<void> _onSelect(
-    CLFormSelectState state,
+    FormFieldState<List<Object>> fieldState,
     Object item,
     void Function() onRefresh,
   ) async {
     final entityUpdated = await descriptors.onSelectSuggestion(item);
     if (entityUpdated == null) return;
     state.searchController.text = '';
-    state.insert(entityUpdated);
+    fieldState.didChange([...fieldState.value!, entityUpdated]);
     onRefresh();
     Future.delayed(const Duration(milliseconds: 200), state.scrollToEnd);
   }
 
   Future<void> _onCreateByLabel(
-    CLFormSelectState state,
+    FormFieldState<List<Object>> fieldState,
     String label,
     void Function() onRefresh,
   ) async {
     final entityUpdated = await descriptors.onCreateByLabel(label);
     if (entityUpdated == null) return;
     state.searchController.text = '';
-    state.insert(entityUpdated);
+    fieldState.didChange([...fieldState.value!, entityUpdated]);
     onRefresh();
     Future.delayed(const Duration(milliseconds: 200), state.scrollToEnd);
   }
