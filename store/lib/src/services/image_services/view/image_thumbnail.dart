@@ -49,7 +49,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
           CLMediaDB.relativePath(widget.media.path, directories),
         );
         final previewFileName =
-            path.join(directories.cacheDir.path, '$uuid.jpg');
+            path.join(directories.cacheDir.path, '$uuid.tn.jpeg');
 
         final hasThumbnail =
             !widget.refresh && File(previewFileName).existsSync();
