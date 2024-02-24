@@ -9,7 +9,7 @@ import 'package:store/store.dart';
 import 'collection_editor.dart';
 import 'keepit_selector.dart';
 import 'label_viewer.dart';
-import 'wizard_item.dart';
+import 'pure/wizard_item.dart';
 
 extension EXTListindex<T> on List<T> {
   int? previous(int index) {
@@ -149,24 +149,38 @@ class PickCollectionState extends ConsumerState<PickCollection> {
         LabelViewer(label: 'Collection: ${collection!.label}'),
         Flexible(
           child: LoadTags(
-            buildOnData: (tags) {
-              return TagsSelector(
-                entities: tags.entries,
-                availableSuggestions: suggestedTags,
-                onDone: (selectedTags) {
-                  setState(() {
-                    this.selectedTags = selectedTags;
-                    widget.onDone(
-                      collection: collection!,
-                      selectedTags: selectedTags,
-                    );
-                  });
-                  onNext();
-                },
-                onCreateNew: (entity) async{
-                  return ref
-                      .read(tagsProvider(null).notifier)
-                      .upsertTag(entity);
+            buildOnData: (existingTags) {
+              return LoadTags(
+                collectionId: collection?.id,
+                buildOnData: (currentTags) {
+                  return TagsSelector(
+                    entities: collection?.id == null ? [] : currentTags.entries,
+                    availableSuggestions: [
+                      ...existingTags.entries,
+                      ...suggestedTags.excludeByLabel(
+                        existingTags.entries,
+                        (Tag e) => e.label,
+                      ),
+                    ],
+                    onDone: (selectedTags) async {
+                      final newTags = await ref
+                          .read(tagsProvider(null).notifier)
+                          .upsertTags(selectedTags.where((e) => e.id == null));
+                      final existingTags =
+                          selectedTags.where((e) => e.id != null);
+                      widget.onDone(
+                        collection: collection!,
+                        selectedTags: [...newTags, ...existingTags],
+                      );
+
+                      onNext();
+                    },
+                    onCreateNew: (entity) async {
+                      return ref
+                          .read(tagsProvider(null).notifier)
+                          .upsertTag(entity);
+                    },
+                  );
                 },
               );
             },

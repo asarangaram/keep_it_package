@@ -10,7 +10,7 @@ extension TagDB on Tag {
     return Tag.fromMap(map);
   }
 
-  static List<Tag> getAll(Database db, {bool includeEmpty = false}) {
+  static List<Tag> getAll(Database db, {bool includeEmpty = true}) {
     final ResultSet maps;
     if (includeEmpty) {
       maps = db.select(

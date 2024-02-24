@@ -1,10 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:form_factory/form_factory.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../../widgets/editors/tag_editor.dart';
 import '../dialogs/dialogs.dart';
 import 'create_or_select.dart';
-import 'wizard_item.dart';
+import 'pure/wizard_item.dart';
 
 class TagsSelector extends StatefulWidget {
   const TagsSelector({
@@ -24,68 +26,86 @@ class TagsSelector extends StatefulWidget {
 }
 
 class _TagsSelectorState extends State<TagsSelector> {
-  late ScrollController scrollController;
+  late CLFormSelectState state;
   final GlobalKey wrapKey = GlobalKey();
+  late CLFormSelectDescriptors descriptor;
 
-  List<Tag> selectedEntities = [];
-  late SearchController controller;
   @override
   void initState() {
-    controller = SearchController();
-    scrollController = ScrollController();
+    descriptor = CLFormSelectDescriptors(
+      title: 'Tags',
+      label: 'Select Tags',
+      labelBuilder: (e) => (e as Tag).label,
+      descriptionBuilder: (e) => (e as Tag).description,
+      suggestionsAvailable: widget.availableSuggestions,
+      initialValues: widget.entities,
+      onSelectSuggestion: (item) => create(context, item as Tag),
+      onCreateByLabel: (label) => create(context, Tag(label: label)),
+    );
+    state = CLFormSelectState(
+      scrollController: ScrollController(),
+      wrapKey: wrapKey,
+      searchController: SearchController(),
+      selectedEntities: descriptor.initialValues,
+    );
+
     super.initState();
   }
 
   @override
   void dispose() {
-    controller.dispose();
-    scrollController.dispose();
+    state.dispose();
+
     super.dispose();
-  }
-
-  void scrollToEnd() {
-    if (wrapKey.currentContext != null) {
-      //final renderBox = wrapKey.currentContext?.findRenderObject();
-      final maxScroll = scrollController.position.maxScrollExtent;
-      scrollController.jumpTo(maxScroll);
-    }
-  }
-
-  Future<void> onDone(Tag c) async {
-    final Tag entityUpdated;
-    if (c.id == null) {
-      final res = await TagsDialog.upsert(context, entity: c);
-      if (res == null) {
-        return;
-      }
-      entityUpdated = await widget.onCreateNew(res);
-    } else {
-      entityUpdated = c;
-    }
-    setState(() {
-      selectedEntities.add(entityUpdated);
-      controller.text = '';
-    });
-    Future.delayed(const Duration(milliseconds: 200), scrollToEnd);
   }
 
   @override
   Widget build(BuildContext context) {
     return WizardItem(
-      action: selectedEntities.isEmpty
+      action: state.selectedEntities.isEmpty
           ? null
           : CLMenuItem(
               title: 'Save',
               icon: MdiIcons.floppy,
               onTap: () async {
-                if (selectedEntities.isNotEmpty) {
-                  widget.onDone(selectedEntities);
+                if (state.selectedEntities.isNotEmpty) {
+                  widget.onDone(CLFormSelectResult(state.selectedEntities)
+                      .selectedEntities as List<Tag>);
                 }
-                return selectedEntities.isNotEmpty;
+                return state.selectedEntities.isNotEmpty;
               },
             ),
       child: SizedBox.expand(
-        child: SingleChildScrollView(
+        child: CLFormSelect(
+          descriptors: descriptor,
+          state: state,
+          onRefresh: () {
+            setState(() {});
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<Tag?> create(BuildContext context, Tag tag) async {
+    final Tag entityUpdated;
+    if (tag.id == null) {
+      final res = await TagEditor.popupDialog(context, tag: tag);
+      if (res == null) {
+        return null;
+      }
+      entityUpdated = res;
+    } else {
+      entityUpdated = tag;
+    }
+
+    return entityUpdated;
+  }
+}
+
+
+/*
+SingleChildScrollView(
           controller: scrollController,
           child: Padding(
             padding: const EdgeInsets.all(8),
@@ -161,7 +181,4 @@ class _TagsSelectorState extends State<TagsSelector> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
+ */

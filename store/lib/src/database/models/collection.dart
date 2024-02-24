@@ -10,7 +10,7 @@ extension CollectionDB on Collection {
     return Collection.fromMap(map);
   }
 
-  static List<Collection> getAll(Database db, {bool includeEmpty = false}) {
+  static List<Collection> getAll(Database db, {bool includeEmpty = true}) {
     final ResultSet maps;
     if (includeEmpty) {
       maps = db.select(
