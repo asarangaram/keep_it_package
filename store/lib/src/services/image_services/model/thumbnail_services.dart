@@ -238,6 +238,8 @@ class ThumbnailService {
                 );
                 File(dataIn.thumbnailPath)
                     .writeAsBytesSync(Uint8List.fromList(encodeJpg(thumbnail)));
+              } else {
+                throw Exception('unable to decode');
               }
             }
             final dataOut = ThumbnailServiceDataOut(

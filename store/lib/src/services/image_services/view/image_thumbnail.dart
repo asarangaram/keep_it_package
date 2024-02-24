@@ -29,6 +29,8 @@ class ImageThumbnail extends ConsumerStatefulWidget {
 }
 
 class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
+  Object? error;
+  StackTrace? st;
   @override
   void initState() {
     super.initState();
@@ -36,6 +38,9 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
 
   @override
   Widget build(BuildContext context) {
+    if (error != null) {
+      return widget.builder(context, AsyncError(error!, st!));
+    }
     return GetDeviceDirectories(
       builder: (directories) {
         final uuidGenerator = ref.watch(uuidProvider);
@@ -71,6 +76,16 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
                 onData: () {
                   if (mounted) {
                     setState(() {});
+                  }
+                },
+                onError: (errorString) {
+                  try {
+                    throw Exception('errorString');
+                  } catch (e, st) {
+                    setState(() {
+                      error = e;
+                      this.st = st;
+                    });
                   }
                 },
               ),
