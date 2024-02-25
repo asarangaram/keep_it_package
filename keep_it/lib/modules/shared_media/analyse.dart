@@ -5,7 +5,7 @@ import 'package:store/store.dart';
 
 import 'wizard_page.dart';
 
-class AnalysePage extends WizardPageOld {
+class AnalysePage extends SharedMediaWizard {
   const AnalysePage({
     required super.incomingMedia,
     required super.onDone,
@@ -19,7 +19,7 @@ class AnalysePage extends WizardPageOld {
       builder: (directories) {
         return GetDBManager(
           builder: (dbManager) {
-            return WizardPageOld.buildWizard(
+            return SharedMediaWizard.buildWizard(
               context, ref,
               title: 'Analysing Shared Media',
               message: 'Please wait while analysing media files',

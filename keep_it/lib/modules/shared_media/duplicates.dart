@@ -5,7 +5,7 @@ import 'package:store/store.dart';
 
 import 'wizard_page.dart';
 
-class DuplicatePage extends WizardPageOld {
+class DuplicatePage extends SharedMediaWizard {
   const DuplicatePage({
     required super.incomingMedia,
     required super.onDone,
@@ -60,7 +60,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
             : 'a new collection';
         return Padding(
           padding: const EdgeInsets.all(8),
-          child: WizardPageOld.buildWizard(
+          child: SharedMediaWizard.buildWizard(
             context,
             ref,
             title: 'Already Imported',
