@@ -41,9 +41,6 @@ class CLFormSelectMultipleState extends CLFormFieldState {
   final SearchController searchController;
   final List<Object> selectedEntities;
 
-  void insert(Object item) => selectedEntities.add(item);
-  void remove(Object item) => selectedEntities.remove(item);
-
   void scrollToEnd() {
     if (wrapKey.currentContext != null) {
       //final renderBox = wrapKey.currentContext?.findRenderObject();
@@ -52,19 +49,31 @@ class CLFormSelectMultipleState extends CLFormFieldState {
     }
   }
 
-  CLFormSelectMultipleState update(List<Object> res) =>
-      CLFormSelectMultipleState(
-          scrollController: scrollController,
-          searchController: searchController,
-          wrapKey: wrapKey,
-          selectedEntities: res);
-
   @override
   CLFormFieldResult get result => CLFormSelectMultipleResult(selectedEntities);
 
   @override
   void dispose() {
     scrollController.dispose();
+    searchController.dispose();
+  }
+}
+
+@immutable
+class CLFormSelectSingleState extends CLFormFieldState {
+  CLFormSelectSingleState({
+    required this.searchController,
+    required this.selectedEntitry,
+  });
+
+  final SearchController searchController;
+  final Object? selectedEntitry;
+
+  @override
+  CLFormFieldResult get result => CLFormSelectSingleResult(selectedEntitry!);
+
+  @override
+  void dispose() {
     searchController.dispose();
   }
 }

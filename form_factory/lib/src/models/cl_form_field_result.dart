@@ -15,3 +15,9 @@ class CLFormSelectMultipleResult extends CLFormFieldResult {
   CLFormSelectMultipleResult(this.selectedEntities);
   final List<Object> selectedEntities;
 }
+
+@immutable
+class CLFormSelectSingleResult extends CLFormFieldResult {
+  CLFormSelectSingleResult(this.selectedEntitry);
+  final Object selectedEntitry;
+}

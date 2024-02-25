@@ -43,3 +43,24 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
   final Future<Object?> Function(Object item) onSelectSuggestion;
   final Future<Object?> Function(String label) onCreateByLabel;
 }
+
+@immutable
+class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
+  const CLFormSelectSingleDescriptors({
+    required super.title,
+    required super.label,
+    required this.suggestionsAvailable,
+    this.initialValues,
+    required this.labelBuilder,
+    required this.descriptionBuilder,
+    required this.onSelectSuggestion,
+    required this.onCreateByLabel,
+  });
+
+  final List<Object> suggestionsAvailable;
+  final Object? initialValues;
+  final String Function(Object e) labelBuilder;
+  final String? Function(Object e)? descriptionBuilder;
+  final Future<Object?> Function(Object item) onSelectSuggestion;
+  final Future<Object?> Function(String label) onCreateByLabel;
+}

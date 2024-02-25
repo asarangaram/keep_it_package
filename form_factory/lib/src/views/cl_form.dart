@@ -6,7 +6,7 @@ import '../models/cl_form_field_descriptors.dart';
 import '../models/cl_form_field_result.dart';
 import '../models/cl_form_field_state.dart';
 
-import 'cl_form_select.dart';
+import 'cl_form_select_multiple.dart';
 import 'cl_form_textfield.dart';
 
 class CLForm extends StatefulWidget {

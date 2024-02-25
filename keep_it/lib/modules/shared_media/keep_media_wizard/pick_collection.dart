@@ -1,7 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/modules/shared_media/keep_media_wizard/collection_create_select.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -10,6 +9,7 @@ import 'collection_editor.dart';
 import 'edit_tags_in_collection.dart';
 import 'label_viewer.dart';
 import 'pure/wizard_item.dart';
+import 'select_collection.dart';
 
 extension EXTListindex<T> on List<T> {
   int? previous(int index) {
@@ -167,54 +167,14 @@ class PickCollectionState extends ConsumerState<PickCollection> {
     required void Function() onNext,
     required void Function() onPrevious,
   }) {
-    return Align(
-      child: SizedBox(
-        height: kMinInteractiveDimension * 2,
-        child: WizardItem(
-          child: CollectionCreateOrSelect(
-            suggestedCollections: widget.suggestedCollections,
-            controller: labelController,
-            onDone: (Collection collection) async {
-              setState(() {
-                onEditLabel = false;
-                this.collection = collection;
-                descriptionController.text = collection.description ?? '';
-              });
-              labelNode.unfocus();
-
-              onNext();
-            },
-            anchorBuilder: (
-              BuildContext context,
-              SearchController controller, {
-              required void Function(Collection) onDone,
-            }) {
-              return SearchBar(
-                focusNode: labelNode,
-                controller: labelController,
-                padding: const MaterialStatePropertyAll<EdgeInsets>(
-                  EdgeInsets.symmetric(horizontal: 16),
-                ),
-                onTap: labelController.openView,
-                onChanged: (_) {
-                  labelController.openView();
-                },
-                onSubmitted: (val) {
-                  if (val.isNotEmpty) {
-                    labelNode.unfocus();
-                    final c = widget.suggestedCollections
-                        .where((element) => element.label == val)
-                        .firstOrNull;
-                    onDone(c ?? Collection(label: val));
-                  }
-                },
-                leading: const CLIcon.small(Icons.search),
-                hintText: 'Collection Name',
-              );
-            },
-          ),
-        ),
-      ),
+    return SelectCollection(
+      collection: collection,
+      onDone: (collection) {
+        setState(() {
+          onEditLabel = false;
+          this.collection = collection;
+        });
+      },
     );
   }
 
