@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import 'label_viewer.dart';
 import 'edit_collection_description.dart';
+import 'label_viewer.dart';
 import 'pick_collection.dart';
 import 'pick_tags.dart';
 
@@ -54,11 +54,11 @@ class PickCollectionState extends State<CreateCollectionWizard> {
               if (collection.id != null) {
                 widget.onDone(collection: collection, tags: currTags.entries);
                 hasDescription = true;
+                selectedTags = currTags.entries;
               }
               setState(() {
                 onEditLabel = false;
                 this.collection = collection;
-                selectedTags = currTags.entries;
               });
             },
           );
@@ -107,6 +107,9 @@ class PickCollectionState extends State<CreateCollectionWizard> {
               collection: collection!,
               onDone: (tags) {
                 widget.onDone(collection: collection!, tags: tags);
+                setState(() {
+                  selectedTags = tags;
+                });
               },
             ),
           ),
