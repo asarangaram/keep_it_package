@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart' as cl;
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:form_factory/src/views/cl_form_select_single.dart';
+import 'package:form_factory/src/views/cl_form_textfield.dart';
 
 import '../models/cl_form_field_state.dart';
 import 'cl_form_select_multiple.dart';
@@ -32,22 +33,25 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
 
   @override
   void initState() {
-    if (widget.descriptor.runtimeType == CLFormSelectMultipleDescriptors) {
-      state = CLFormSelectMultipleState(
-        scrollController: ScrollController(),
-        wrapKey: wrapKey,
-        searchController: SearchController(),
-        selectedEntities: (widget.descriptor as CLFormSelectMultipleDescriptors)
-            .initialValues,
-      );
-    } else {
-      state = CLFormSelectSingleState(
-        searchController: SearchController(),
-        selectedEntitry: [
-          (widget.descriptor as CLFormSelectSingleDescriptors).initialValues
-        ],
-      );
-    }
+    state = switch (widget.descriptor.runtimeType) {
+      CLFormSelectMultipleDescriptors => CLFormSelectMultipleState(
+          scrollController: ScrollController(),
+          wrapKey: wrapKey,
+          searchController: SearchController(),
+          selectedEntities:
+              (widget.descriptor as CLFormSelectMultipleDescriptors)
+                  .initialValues,
+        ),
+      CLFormSelectSingleDescriptors => CLFormSelectSingleState(
+          searchController: SearchController(),
+          selectedEntitry: [
+            (widget.descriptor as CLFormSelectSingleDescriptors).initialValues
+          ],
+        ),
+      CLFormTextFieldDescriptor =>
+        CLFormTextFieldState(controller: TextEditingController()),
+      _ => throw UnimplementedError()
+    };
 
     super.initState();
   }
@@ -55,7 +59,6 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
   @override
   void dispose() {
     state.dispose();
-
     super.dispose();
   }
 
@@ -73,10 +76,13 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                       (state as CLFormSelectMultipleState).selectedEntities),
                   CLFormSelectSingleDescriptors => CLFormSelectSingleResult(
                       (state as CLFormSelectSingleState).selectedEntitry[0]!),
+                  CLFormTextFieldDescriptor => CLFormTextFieldResult(
+                      (state as CLFormTextFieldState).controller.text),
                   _ => throw Exception("Unsupported")
                 });
+                return true;
               }
-              return null;
+              return false;
             });
             return FractionallySizedBox(
               widthFactor: 0.2,
@@ -123,6 +129,12 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                 },
                 actionBuilder: actionBuilder,
               ),
+            CLFormTextFieldDescriptor => CLFormTextField(
+                descriptors: widget.descriptor as CLFormTextFieldDescriptor,
+                state: state as CLFormTextFieldState,
+                onRefresh: () {
+                  setState(() {});
+                }),
             _ => throw Exception("Unsupported")
           },
         ),

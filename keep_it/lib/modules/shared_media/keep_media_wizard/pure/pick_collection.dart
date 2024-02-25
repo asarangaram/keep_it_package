@@ -4,8 +4,8 @@ import 'package:form_factory/form_factory.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-class SelectCollection extends StatelessWidget {
-  const SelectCollection({
+class PickCollection extends StatelessWidget {
+  const PickCollection({
     required this.collection,
     required this.onDone,
     super.key,
@@ -38,7 +38,7 @@ class SelectCollection extends StatelessWidget {
           onSubmit: (CLFormFieldResult result) async {
             final collection = (result as CLFormSelectSingleResult)
                 .selectedEntitry as Collection;
-            print('received $collection');
+
             onDone(collection);
           },
         );

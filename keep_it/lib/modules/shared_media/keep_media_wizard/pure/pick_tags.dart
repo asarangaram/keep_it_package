@@ -4,10 +4,10 @@ import 'package:form_factory/form_factory.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../../../widgets/editors/tag_editor.dart';
+import '../../../../widgets/editors/tag_editor.dart';
 
-class EditTagsInCollection extends StatelessWidget {
-  const EditTagsInCollection({
+class PickTags extends StatelessWidget {
+  const PickTags({
     required this.collection,
     required this.onDone,
     super.key,

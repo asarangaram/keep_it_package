@@ -10,14 +10,14 @@ class CLFormTextField extends StatelessWidget {
     required this.descriptors,
     required this.state,
     required this.onRefresh,
+    this.actionBuilder,
     super.key,
   });
 
   final CLFormTextFieldDescriptor descriptors;
-
   final CLFormTextFieldState state;
-
   final void Function() onRefresh;
+  final Widget Function(BuildContext context)? actionBuilder;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -27,7 +27,11 @@ class CLFormTextField extends StatelessWidget {
         false => [FilteringTextInputFormatter.deny(RegExp(r'\n'))],
         true => null
       },
-      decoration: FormDesign.inputDecoration(descriptors.label),
+      decoration: FormDesign.inputDecoration(
+        context,
+        label: descriptors.label,
+        actionBuilder: actionBuilder,
+      ),
       controller: state.controller,
       focusNode: state.focusNode,
       maxLines: descriptors.maxLines,

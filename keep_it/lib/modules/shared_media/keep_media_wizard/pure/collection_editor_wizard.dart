@@ -1,117 +1,115 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'collection_editor.dart';
+import '../label_viewer.dart';
+import 'edit_collection_description.dart';
+import 'pick_collection.dart';
+import 'pick_tags.dart';
 
-import 'edit_tags_in_collection.dart';
-import 'label_viewer.dart';
-import 'pure/wizard_item.dart';
-import 'select_collection.dart';
-
-extension EXTListindex<T> on List<T> {
-  int? previous(int index) {
-    return switch (index) {
-      (final int val) when val <= 0 => null,
-      (final int val) when val >= length => null,
-      _ => index - 1
-    };
-  }
-
-  int? next(int index) {
-    return switch (index) {
-      (final int val) when val < 0 => null,
-      (final int val) when val >= (length - 1) => null,
-      _ => index + 1
-    };
-  }
-}
-
-typedef PageBuilder = Widget Function(
-  BuildContext context, {
-  required void Function() onNext,
-  required void Function() onPrevious,
-});
-
-class PickCollection extends ConsumerStatefulWidget {
-  const PickCollection({
-    required this.suggestedCollections,
+class CreateCollectionWizard extends StatefulWidget {
+  const CreateCollectionWizard({
     required this.onDone,
     super.key,
-    this.allowUpdateDescription = true,
-    this.preSelectedCollection,
   });
 
   final void Function({
     required Collection collection,
-    List<Tag>? selectedTags,
+    required List<Tag> tags,
   }) onDone;
-  final List<Collection> suggestedCollections;
-  final Collection? preSelectedCollection;
-  final bool allowUpdateDescription;
+
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => PickCollectionState();
+  State<StatefulWidget> createState() => PickCollectionState();
 }
 
-class PickCollectionState extends ConsumerState<PickCollection> {
-  late final PageController pageController;
-  late final SearchController labelController;
-  late final TextEditingController descriptionController;
-  late final FocusNode labelNode;
-  late final FocusNode descriptionNode;
-
+class PickCollectionState extends State<CreateCollectionWizard> {
   bool onEditLabel = true;
   Collection? collection;
   List<Tag>? selectedTags;
+  late bool hasDescription;
 
   @override
   void initState() {
-    collection = widget.preSelectedCollection;
-    labelController = SearchController();
-    labelNode = FocusNode();
-    descriptionNode = FocusNode();
-    if (collection == null) {
-      onEditLabel = true;
-      pageController = PageController();
-      descriptionController = TextEditingController();
-      labelNode.requestFocus();
-    } else {
-      onEditLabel = false;
-      pageController = PageController(initialPage: 1);
-      descriptionController =
-          TextEditingController(text: collection!.description);
-      descriptionNode.requestFocus();
-    }
-
+    collection = null;
+    selectedTags = null;
+    hasDescription = false;
     super.initState();
   }
 
   @override
   void dispose() {
-    pageController.dispose();
-    labelController.dispose();
-    descriptionController.dispose();
-    labelNode.dispose();
-    descriptionNode.dispose();
     super.dispose();
-  }
-
-  void changePage(int? i, int maxCount) {
-    if (i != null && i >= 0 && i < maxCount) {
-      pageController.animateToPage(
-        i,
-        duration: const Duration(microseconds: 500),
-        curve: Curves.easeOut,
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (collection == null || onEditLabel) {
+      return PickCollection(
+        collection: collection,
+        onDone: (collection) {
+          setState(() {
+            onEditLabel = false;
+            this.collection = collection;
+          });
+        },
+      );
+    } else if (!hasDescription) {
+      return Column(
+        children: [
+          LabelViewer(
+            label: 'Collection: ${collection!.label}',
+            icon: MdiIcons.pencil,
+            onTap: () {
+              setState(() {
+                onEditLabel = true;
+              });
+            },
+          ),
+          Flexible(
+            child: EditCollectionDescription(
+              collection: collection!,
+              onDone: (collection) {
+                setState(() {
+                  this.collection = collection;
+                  hasDescription = true;
+                });
+              },
+            ),
+          ),
+        ],
+      );
+    } else if (selectedTags == null) {
+      return Column(
+        children: [
+          LabelViewer(
+            label: 'Collection: ${collection!.label}',
+            icon: MdiIcons.pencil,
+            onTap: () {
+              setState(() {
+                onEditLabel = true;
+                hasDescription = false;
+              });
+            },
+          ),
+          Flexible(
+            child: PickTags(
+              collection: collection!,
+              onDone: (tags) {
+                widget.onDone(collection: collection!, tags: tags);
+              },
+            ),
+          ),
+        ],
+      );
+    } else {
+      return const Center(child: CLLoadingView(message: 'Saving...'));
+    }
+  }
+}
+
+
+/* 
     final pages = <PageBuilder>[
-      page0,
       page1,
       page2,
     ];
@@ -147,36 +145,6 @@ class PickCollectionState extends ConsumerState<PickCollection> {
     if (collection == null) {
       return const Text('Error in previous page');
     }
-    return Column(
-      children: [
-        LabelViewer(label: 'Collection: ${collection!.label}'),
-        Flexible(
-          child: EditTagsInCollection(
-            collection: collection!,
-            onDone: (tags) {
-              widget.onDone(collection: collection!, selectedTags: tags);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget page0(
-    BuildContext context, {
-    required void Function() onNext,
-    required void Function() onPrevious,
-  }) {
-    return SelectCollection(
-      collection: collection,
-      onDone: (collection) {
-        setState(() {
-          onEditLabel = false;
-          this.collection = collection;
-        });
-        onNext();
-      },
-    );
   }
 
   Widget page1(
@@ -255,9 +223,8 @@ class PickCollectionState extends ConsumerState<PickCollection> {
         ),
       ),
     );
+   
   }
-}
-
 class UpsertCollectionFormTheme extends ConsumerWidget {
   const UpsertCollectionFormTheme({required this.child, super.key});
   final Widget child;
@@ -292,3 +259,4 @@ class UpsertCollectionFormTheme extends ConsumerWidget {
     );
   }
 }
+ */

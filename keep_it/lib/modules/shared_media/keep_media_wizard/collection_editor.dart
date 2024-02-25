@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart';
+/* import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class CollectionEditor extends StatefulWidget {
@@ -100,3 +100,4 @@ class CollectionEditorState extends State<CollectionEditor> {
     );
   }
 }
+ */

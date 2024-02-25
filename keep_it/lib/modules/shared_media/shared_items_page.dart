@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'keep_media_wizard/keep_media_wizard.dart';
+import 'keep_media_wizard/pure/collection_editor_wizard.dart';
 
 class SharedItemsPage extends ConsumerWidget {
   const SharedItemsPage({
@@ -55,10 +55,8 @@ class SharedItemsPage extends ConsumerWidget {
           ),
           SizedBox(
             height: kMinInteractiveDimension * 4,
-            child: KeepMediaWizard(
-              media: media,
-              onDiscard: onDiscard,
-              onAccept: onAccept,
+            child: CreateCollectionWizard(
+              onDone: ({required collection, required tags}) {},
             ),
           ),
         ],

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/cl_form_field_descriptors.dart';
 import '../models/cl_form_field_state.dart';
+import '../style/cl_form_design.dart';
 
 class CLFormSelectSingle extends StatelessWidget {
   const CLFormSelectSingle({
@@ -38,34 +39,10 @@ class CLFormSelectSingle extends StatelessWidget {
             width: double.infinity,
             height: kMinInteractiveDimension * 3,
             child: InputDecorator(
-              decoration: InputDecoration(
-                enabled: true,
-                isDense: true,
-                contentPadding: const EdgeInsets.fromLTRB(20, 8, 4, 8),
-                labelText: descriptors.label,
-                labelStyle: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
-                enabledBorder: fieldState.hasError
-                    ? OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        gapPadding: 8,
-                      )
-                    : OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1),
-                        borderRadius: BorderRadius.circular(16),
-                        gapPadding: 8,
-                      ),
-                suffixIcon: fieldState.value == null
-                    ? null
-                    : actionBuilder?.call(
-                        context,
-                      ),
+              decoration: FormDesign.inputDecoration(
+                context,
+                label: descriptors.label,
+                actionBuilder: actionBuilder,
               ),
               child: Align(
                 alignment: Alignment.topLeft,
