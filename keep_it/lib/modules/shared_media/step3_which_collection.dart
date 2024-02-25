@@ -34,7 +34,14 @@ class WhichCollection extends SharedMediaWizard {
           SizedBox(
             height: kMinInteractiveDimension * 4,
             child: CreateCollectionWizard(
-              onDone: ({required collection, required tags}) {},
+              onDone: ({required collection, required tags}) {
+                onDone(
+                  mg: incomingMedia.copyWith(
+                    collection: collection,
+                    tags: tags,
+                  ),
+                );
+              },
             ),
           ),
         ],

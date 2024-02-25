@@ -105,7 +105,7 @@ extension CollectionDB on Collection {
   ) {
     if (id != null) {
       db.execute(
-        'DELETE FROM TagCollection '
+        'INSERT INTO TagCollection '
         '(tag_id, collection_id) VALUES (?, ?)',
         [tagId, id],
       );
@@ -119,7 +119,7 @@ extension CollectionDB on Collection {
     if (id != null) {
       db.execute(
         'INSERT OR IGNORE INTO TagCollection '
-        '(tag_id, collection_id) VALUES (?, ?)',
+        'WHERE tag_id = ? , collection_id = ? ',
         [tagId, id],
       );
     }

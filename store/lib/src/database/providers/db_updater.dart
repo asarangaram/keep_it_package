@@ -19,7 +19,8 @@ class DBUpdaterNotifier extends StateNotifier<int> {
       _pathPrefix ??= (await getApplicationDocumentsDirectory()).path;
 
   void refreshProviders({Set<int>? collectionIdList, Set<int>? tagIdList}) {
-    if (collectionIdList?.isNotEmpty ?? false) {
+    state = state + 1;
+    /* if (collectionIdList?.isNotEmpty ?? false) {
       for (final id in collectionIdList!) {
         ref
           ..read(clMediaListByCollectionIdProvider(id).notifier).loadItems()
@@ -33,7 +34,7 @@ class DBUpdaterNotifier extends StateNotifier<int> {
     }
     ref
       ..read(tagsProvider(null).notifier).load()
-      ..read(collectionsProvider(null).notifier).load();
+      ..read(collectionsProvider(null).notifier).load(); */
   }
 
   Future<void> replaceTags(Collection collection, List<Tag> tags) async {

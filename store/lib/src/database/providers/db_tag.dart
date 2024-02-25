@@ -5,6 +5,7 @@ import '../models/db_manager.dart';
 
 import '../models/tag.dart';
 import 'db_manager.dart';
+import 'db_updater.dart';
 
 class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
   TagNotifier({
@@ -45,7 +46,7 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
   }
 }
 
-final tagsProvider =
+final tagsProvider2 =
     StateNotifierProvider.family<TagNotifier, AsyncValue<Tags>, int?>(
         (ref, collectionId) {
   final dbManagerAsync = ref.watch(dbManagerProvider);
@@ -55,4 +56,20 @@ final tagsProvider =
     error: (_, __) => TagNotifier(),
     loading: TagNotifier.new,
   );
+});
+
+final tagsProvider =
+    FutureProvider.family<Tags, int?>((ref, collectionId) async {
+  // ignore: unused_local_variable
+  final updatedChanged = ref.watch(dbUpdaterNotifierProvider);
+  final db = (await ref.watch(dbManagerProvider.future)).db;
+  final List<Tag> tags;
+  print('Loading Tags');
+  if (collectionId == null) {
+    tags = TagDB.getAll(db);
+  } else {
+    tags = TagDB.getByCollectionId(db, collectionId);
+  }
+
+  return Tags(tags);
 });
