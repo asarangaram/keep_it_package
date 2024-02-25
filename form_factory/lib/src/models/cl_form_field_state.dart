@@ -67,10 +67,10 @@ class CLFormSelectSingleState extends CLFormFieldState {
   });
 
   final SearchController searchController;
-  final Object? selectedEntitry;
+  final List<Object?> selectedEntitry;
 
   @override
-  CLFormFieldResult get result => CLFormSelectSingleResult(selectedEntitry!);
+  CLFormFieldResult get result => CLFormSelectSingleResult(selectedEntitry);
 
   @override
   void dispose() {

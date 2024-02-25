@@ -174,6 +174,7 @@ class PickCollectionState extends ConsumerState<PickCollection> {
           onEditLabel = false;
           this.collection = collection;
         });
+        onNext();
       },
     );
   }

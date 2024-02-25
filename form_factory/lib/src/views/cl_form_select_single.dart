@@ -27,6 +27,9 @@ class CLFormSelectSingle extends StatelessWidget {
           if (value == null) {
             return "can't be empty";
           }
+          state.selectedEntitry.clear();
+          state.selectedEntitry.add(value);
+
           return null;
         },
         initialValue: descriptors.initialValues,
@@ -58,7 +61,7 @@ class CLFormSelectSingle extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         gapPadding: 8,
                       ),
-                suffixIcon: fieldState.value != null
+                suffixIcon: fieldState.value == null
                     ? null
                     : actionBuilder?.call(
                         context,
@@ -81,9 +84,18 @@ class CLFormSelectSingle extends StatelessWidget {
                     return GestureDetector(
                       onTap: controller.openView,
                       child: SizedBox.expand(
-                        child: fieldState.value == null
-                            ? const Text("Nothing Selected")
-                            : Text(descriptors.labelBuilder(fieldState.value!)),
+                        child: Center(
+                          child: fieldState.value == null
+                              ? const cl.CLText.large("Tap here to select")
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    cl.CLText.large(descriptors
+                                        .labelBuilder(fieldState.value!)),
+                                    const cl.CLText.small("Tap here to change")
+                                  ],
+                                ),
+                        ),
                       ),
                     );
                   },

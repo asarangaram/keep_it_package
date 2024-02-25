@@ -43,8 +43,9 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
     } else {
       state = CLFormSelectSingleState(
         searchController: SearchController(),
-        selectedEntitry:
-            (widget.descriptor as CLFormSelectSingleDescriptors).initialValues,
+        selectedEntitry: [
+          (widget.descriptor as CLFormSelectSingleDescriptors).initialValues
+        ],
       );
     }
 
@@ -71,7 +72,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                   CLFormSelectMultipleDescriptors => CLFormSelectMultipleResult(
                       (state as CLFormSelectMultipleState).selectedEntities),
                   CLFormSelectSingleDescriptors => CLFormSelectSingleResult(
-                      (state as CLFormSelectSingleState).selectedEntitry!),
+                      (state as CLFormSelectSingleState).selectedEntitry[0]!),
                   _ => throw Exception("Unsupported")
                 });
               }
@@ -120,6 +121,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                 onRefresh: () {
                   setState(() {});
                 },
+                actionBuilder: actionBuilder,
               ),
             _ => throw Exception("Unsupported")
           },

@@ -19,15 +19,15 @@ class SelectCollection extends StatelessWidget {
       buildOnData: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
-            icon: MdiIcons.floppy,
-            title: 'Save',
+            icon: MdiIcons.arrowRight,
+            title: 'Next',
             onTap: onTap,
           ),
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as Tag).label,
-            descriptionBuilder: (e) => (e as Tag).description,
+            labelBuilder: (e) => (e as Collection).label,
+            descriptionBuilder: (e) => (e as Collection).description,
             suggestionsAvailable: [
               ...collections.entries,
             ],
@@ -36,10 +36,10 @@ class SelectCollection extends StatelessWidget {
             onCreateByLabel: (label) async => Collection(label: label),
           ),
           onSubmit: (CLFormFieldResult result) async {
-            onDone(
-              (result as CLFormSelectSingleResult).selectedEntitry
-                  as Collection,
-            );
+            final collection = (result as CLFormSelectSingleResult)
+                .selectedEntitry as Collection;
+            print('received $collection');
+            onDone(collection);
           },
         );
       },
