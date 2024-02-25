@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'keep_media_wizard/pure/collection_editor_wizard.dart';
+import '../../widgets/editors/collection_editor_wizard/collection_editor_wizard.dart';
 
 class SharedItemsPage extends ConsumerWidget {
   const SharedItemsPage({
