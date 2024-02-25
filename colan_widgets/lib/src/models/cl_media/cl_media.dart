@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../extensions/ext_string.dart';
 import '../collection.dart';
+import '../tag.dart';
 import 'cl_media_type.dart';
 
 @immutable
@@ -170,24 +171,29 @@ class CLMedia {
   }
 }
 
+@immutable
 class CLMediaList {
-  CLMediaList({required this.entries, this.collection});
+  const CLMediaList({required this.entries, this.collection, this.tags});
   final List<CLMedia> entries;
   final Collection? collection;
+  final List<Tag>? tags;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
 
   @override
-  String toString() => 'CLMediaInfoGroup(list: $entries)';
+  String toString() => 'CLMediaList(entries: $entries, '
+      'collection: $collection tags: $tags)';
 
   CLMediaList copyWith({
     List<CLMedia>? entries,
     Collection? collection,
+    List<Tag>? tags,
   }) {
     return CLMediaList(
       entries: entries ?? this.entries,
       collection: collection ?? this.collection,
+      tags: tags ?? this.tags,
     );
   }
 

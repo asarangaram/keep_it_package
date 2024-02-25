@@ -30,19 +30,19 @@ extension TagDB on Tag {
     return maps.map(Tag.fromMap).toList();
   }
 
-  int upsert(Database db) {
+  Tag upsert(Database db) {
     if (id != null) {
       db.execute(
         'UPDATE Tag SET label = ?, description = ? WHERE id = ? ',
         [label, description, id],
       );
-      return id!;
+      return getById(db, id!);
     } else {
       db.execute(
         'INSERT INTO Tag (label, description) VALUES (?, ?) ',
         [label, description],
       );
-      return db.lastInsertRowId;
+      return getById(db, db.lastInsertRowId);
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import 'wizard_page.dart';
 
@@ -14,12 +15,11 @@ class SaveCollection extends SharedMediaWizard {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final updater = ref.watch(dbUpdaterNotifierProvider.notifier);
     return StreamProgressView(
-      stream: () => CLMediaProcess.acceptMedia(
+      stream: () => updater.upsertMediaList(
         media: incomingMedia,
-        onDone: (CLMediaList mg) async {
-          onDone(mg: null);
-        },
+        onDone: onDone,
       ),
       onCancel: onCancel,
     );

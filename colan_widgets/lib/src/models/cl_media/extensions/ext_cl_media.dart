@@ -14,6 +14,8 @@ extension ExtCLMediaFile on CLMedia {
     File(path).deleteIfExists();
   }
 
+  String get basename => path_handler.basename(path);
+
   String generateFileName(http.Response response) {
     String? filename;
     // Check if we get file name

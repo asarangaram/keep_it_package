@@ -5,7 +5,6 @@ import '../models/collection.dart';
 import '../models/db_manager.dart';
 import '../models/tag.dart';
 
-import 'db_items.dart';
 import 'db_manager.dart';
 
 class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
@@ -14,7 +13,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     this.databaseManager,
     this.tagId,
   }) : super(const AsyncValue.loading()) {
-    loadCollections();
+    load();
   }
   DBManager? databaseManager;
   int? tagId;
@@ -22,7 +21,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
 
   bool isLoading = false;
 
-  Future<void> loadCollections() async {
+  Future<void> load() async {
     if (databaseManager == null) return;
     final List<Collection> collections;
     final Tag? tag;
@@ -42,38 +41,6 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     });
   }
 
-  Future<int> upsertCollection(
-    Collection collection,
-    List<int>? tagIds,
-  ) async {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-
-    // Save Collection and get Collection ID.
-    // Associate it wtih all the TagIds
-    // invalidate the collections queries by Tag id for all TagIds
-
-    final collectionId = collection.upsert(databaseManager!.db);
-
-    if (tagIds != null) {
-      for (final id in tagIds) {
-        CollectionDB.addTag(databaseManager!.db, id, collectionId);
-        if (id != tagId) {
-          await ref.read(collectionsProvider(id).notifier).loadCollections();
-        } else {
-          await loadCollections();
-        }
-        // Should this be here?
-        ref.invalidate(clMediaListByTagIdProvider(id));
-      }
-    }
-
-    await loadCollections();
-
-    return collectionId;
-  }
-
   Future<int> deleteCollection(
     Collection collection,
   ) async {
@@ -82,7 +49,7 @@ class CollectionsNotifier extends StateNotifier<AsyncValue<Collections>> {
     }
     if (collection.id != null) {
       collection.delete(databaseManager!.db);
-      await loadCollections();
+      await load();
       return collection.id!;
     }
     return -1;

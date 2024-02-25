@@ -66,19 +66,19 @@ extension CollectionDB on Collection {
     return maps.map(Collection.fromMap).toList();
   }
 
-  int upsert(Database db) {
+  Collection upsert(Database db) {
     if (id != null) {
       db.execute(
         'UPDATE Collection SET label = ? , description = ?  WHERE id = ?',
         [label, description, id],
       );
-      return id!;
+      return getById(db, id!);
     } else {
       db.execute(
         'INSERT INTO Collection (label, description) VALUES (?, ?) ',
         [label, description],
       );
-      return db.lastInsertRowId;
+      return getById(db, db.lastInsertRowId);
     }
   }
 
@@ -99,15 +99,29 @@ extension CollectionDB on Collection {
       );
   }
 
-  static void addTag(
+  void addTag(
     Database db,
     int tagId,
-    int collectionId,
   ) {
-    db.execute(
-      'INSERT OR IGNORE INTO TagCollection '
-      '(tag_id, collection_id) VALUES (?, ?)',
-      [tagId, collectionId],
-    );
+    if (id != null) {
+      db.execute(
+        'DELETE FROM TagCollection '
+        '(tag_id, collection_id) VALUES (?, ?)',
+        [tagId, id],
+      );
+    }
+  }
+
+  void removeTag(
+    Database db,
+    int tagId,
+  ) {
+    if (id != null) {
+      db.execute(
+        'INSERT OR IGNORE INTO TagCollection '
+        '(tag_id, collection_id) VALUES (?, ?)',
+        [tagId, id],
+      );
+    }
   }
 }

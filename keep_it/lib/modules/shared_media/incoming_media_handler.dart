@@ -55,7 +55,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
             ),
           _ => SaveCollection(
               incomingMedia: candidates!,
-              onDone: onDone,
+              onDone: onSave,
               onCancel: onDiscard,
             )
         },
@@ -65,6 +65,15 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
         child: CLErrorView(errorMessage: e.toString()),
       );
     }
+  }
+
+  void onSave({required CLMediaList? mg}) {
+    ref.read(notificationMessageProvider.notifier).push('Saved');
+    onDiscard();
+
+    setState(() {
+      candidates = null;
+    });
   }
 
   void onDone({CLMediaList? mg}) {

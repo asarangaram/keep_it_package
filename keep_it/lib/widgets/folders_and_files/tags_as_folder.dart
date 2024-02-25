@@ -25,15 +25,15 @@ class TagAsFolder extends ConsumerWidget {
       onEdit: () async {
         final updated = await TagEditor.popupDialog(context, tag: tag);
         if (updated != null) {
-          await ref.read(tagsProvider(null).notifier).upsertTag(updated);
+          await ref.read(dbUpdaterNotifierProvider.notifier).upsertTag(updated);
         }
         return true;
       },
-      onDelete: () async {
+      /* onDelete: () async {
         // delete all the items in the tag !!
         await ref.read(tagsProvider(null).notifier).deleteTag(tag);
         return true;
-      },
+      }, */
       onTap: () async {
         unawaited(
           context.push(

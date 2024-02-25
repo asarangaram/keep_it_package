@@ -26,15 +26,15 @@ class CollectionAsFolder extends ConsumerWidget {
         final res =
             await CollectionEditor.popupDialog(context, collection: collection);
         if (res != null) {
-          final (updated, tags) = res;
-
-          final newTags = await ref
-              .read(tagsProvider(null).notifier)
-              .upsertTags(tags.where((e) => e.id == null));
-          final existingTags = tags.where((e) => e.id != null);
-          await ref.read(collectionsProvider(null).notifier).upsertCollection(
-                updated,
-                [...newTags, ...existingTags].map((e) => e.id!).toList(),
+          final (collection, tags) = res;
+          ref.read(dbUpdaterNotifierProvider.notifier).upsertCollection(
+                collection: collection,
+                tags: tags,
+                onDone: ({required mg}) {
+                  ref
+                      .read(notificationMessageProvider.notifier)
+                      .push('Updated');
+                },
               );
         }
 

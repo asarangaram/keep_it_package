@@ -1,7 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 import '../models/db_manager.dart';
 
 import '../models/tag.dart';
@@ -12,7 +11,7 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
     this.databaseManager,
     this.collectionId,
   }) : super(const AsyncValue.loading()) {
-    loadTags();
+    load();
   }
   DBManager? databaseManager;
   int? collectionId;
@@ -20,7 +19,7 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
   bool isLoading = false;
   // Some race condition might occuur if many tags are updated
   /// How to avoid more frequent update if many triggers occur one after other.
-  Future<void> loadTags({int? lastupdatedID}) async {
+  Future<void> load({int? lastupdatedID}) async {
     if (databaseManager == null) return;
     final List<Tag> tags;
 
@@ -38,57 +37,11 @@ class TagNotifier extends StateNotifier<AsyncValue<Tags>> {
       if (lastupdatedID != null) {
         Future.delayed(
           const Duration(seconds: 5),
-          loadTags,
+          load,
         );
       }
       return res;
     });
-  }
-
-  Tag _upsertTag(Tag tag) {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-
-    final lastupdatedID = tag.upsert(databaseManager!.db);
-
-    final tagWithID = TagDB.getById(databaseManager!.db, lastupdatedID);
-
-    return tagWithID;
-  }
-
-  Future<Tag> upsertTag(Tag tag) async {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    final tagWithID = _upsertTag(tag);
-    await loadTags(lastupdatedID: tagWithID.id);
-    return tagWithID;
-  }
-
-  Future<Iterable<Tag>> upsertTags(Iterable<Tag> tags) async {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    final tagsWithID = <Tag>[];
-
-    for (final tag in tags) {
-      tagsWithID.add(_upsertTag(tag));
-    }
-    await loadTags();
-    return tagsWithID;
-  }
-
-  Future<int> deleteTag(Tag tag) async {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    if (tag.id != null) {
-      tag.delete(databaseManager!.db);
-      await loadTags();
-      return tag.id!;
-    }
-    return -1;
   }
 }
 
