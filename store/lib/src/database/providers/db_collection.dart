@@ -106,3 +106,9 @@ final collectionsProvider = StateNotifierProvider.family<CollectionsNotifier,
     ),
   );
 });
+
+final collectionProvider =
+    FutureProvider.family<Collection, int>((ref, id) async {
+  final db = (await ref.watch(dbManagerProvider.future)).db;
+  return CollectionDB.getById(db, id);
+});

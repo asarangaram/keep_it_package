@@ -47,7 +47,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               onDone: onDone,
               onCancel: onDiscard,
             ),
-          (final candiates) when candidates!.collectionId == null =>
+          (final candiates) when candidates!.collection == null =>
             WhichCollection(
               incomingMedia: candiates,
               onDone: onDone,

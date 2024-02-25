@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:store/src/database/models/collection.dart';
 
 import '../models/db_manager.dart';
 import 'db_manager.dart';
@@ -29,7 +30,7 @@ class CLMediaListByCollectionIdNotifier
   Future<void> loadItems() async {
     if (databaseManager == null) return;
     final List<CLMedia> items;
-
+    final collection = CollectionDB.getById(databaseManager!.db, collectionId);
     items = CLMediaDB.getByCollectionId(
       databaseManager!.db,
       collectionId,
@@ -38,7 +39,7 @@ class CLMediaListByCollectionIdNotifier
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return CLMediaList(collectionId: collectionId, entries: items);
+      return CLMediaList(collection: collection, entries: items);
     });
   }
 
@@ -47,51 +48,6 @@ class CLMediaListByCollectionIdNotifier
     final digest = md5.convert(content);
     return digest.toString();
   }
-
-  /* Future<void> _upsertItem(CLMedia item) async {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    final prefix = await pathPrefix;
-    item.upsert(databaseManager!.db, pathPrefix: prefix);
-    await loadItems();
-  }
-
-  Future<void> upsertItem(CLMedia item) async => _upsertItem(item);
-
-  Future<void> upsertItems(List<CLMedia> items) async {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    for (final item in items) {
-      await _upsertItem(item);
-    }
-    await loadItems();
-  } */
-
-  /* void deleteItem(CLMedia item) {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    final collectionID = item.collectionId;
-    item
-      ..deleteFile()
-      ..delete(databaseManager!.db);
-    
-    loadItems();
-  }
-
-  void deleteItems(List<CLMedia> items) {
-    if (databaseManager == null) {
-      throw Exception('DB Manager is not ready');
-    }
-    for (final item in items) {
-      item
-        ..deleteFile()
-        ..delete(databaseManager!.db);
-    }
-    loadItems();
-  } */
 }
 
 final clMediaListByCollectionIdProvider = StateNotifierProvider.family<

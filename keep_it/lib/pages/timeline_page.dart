@@ -17,42 +17,52 @@ class TimeLinePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => LoadCollections(
         buildOnData: (collections) {
-          return LoadItems(
-            collectionId: collectionId,
-            buildOnData: (items) {
-              final galleryGroups = <GalleryGroup>[];
-              for (final entry in items.entries.filterByDate().entries) {
-                galleryGroups.add(
-                  GalleryGroup(
-                    entry.value,
-                    label: entry.key,
-                  ),
-                );
-              }
-              return CLGalleryView(
-                columns: 4,
-                label: collections.getByID(collectionId)!.label,
-                galleryMap: galleryGroups,
-                emptyState: const EmptyState(),
-                labelTextBuilder: (index) => galleryGroups[index].label ?? '',
-                itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-                    MediaAsFile(
-                  media: item as CLMedia,
-                  quickMenuScopeKey: quickMenuScopeKey,
-                ),
-                tagPrefix: 'timeline $collectionId',
-                onPickFiles: () async {
-                  await onPickFiles(
-                    context,
-                    ref,
-                    collectionId: collectionId,
+          return LoadCollection(
+            id: collectionId,
+            buildOnData: (Collection collection) {
+              return LoadItems(
+                collectionId: collectionId,
+                buildOnData: (items) {
+                  final galleryGroups = <GalleryGroup>[];
+                  for (final entry in items.entries.filterByDate().entries) {
+                    galleryGroups.add(
+                      GalleryGroup(
+                        entry.value,
+                        label: entry.key,
+                      ),
+                    );
+                  }
+                  return CLGalleryView(
+                    columns: 4,
+                    label: collections.getByID(collectionId)!.label,
+                    galleryMap: galleryGroups,
+                    emptyState: const EmptyState(),
+                    labelTextBuilder: (index) =>
+                        galleryGroups[index].label ?? '',
+                    itemBuilder: (
+                      context,
+                      item, {
+                      required quickMenuScopeKey,
+                    }) =>
+                        MediaAsFile(
+                      media: item as CLMedia,
+                      quickMenuScopeKey: quickMenuScopeKey,
+                    ),
+                    tagPrefix: 'timeline $collectionId',
+                    onPickFiles: () async {
+                      await onPickFiles(
+                        context,
+                        ref,
+                        collection: collection,
+                      );
+                    },
+                    onPop: context.canPop()
+                        ? () {
+                            context.pop();
+                          }
+                        : null,
                   );
                 },
-                onPop: context.canPop()
-                    ? () {
-                        context.pop();
-                      }
-                    : null,
               );
             },
           );

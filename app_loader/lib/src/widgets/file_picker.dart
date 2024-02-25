@@ -8,7 +8,7 @@ import '../providers/incoming_media.dart';
 Future<bool> onPickFiles(
   BuildContext context,
   WidgetRef ref, {
-  int? collectionId,
+  Collection? collection,
 }) async {
   final result = await FilePicker.platform.pickFiles(
     allowMultiple: true,
@@ -21,7 +21,7 @@ Future<bool> onPickFiles(
           (path) => CLMedia(path: path!, type: CLMediaType.file),
         )
         .toList();
-    final sharedMedia = CLMediaList(entries: items, collectionId: collectionId);
+    final sharedMedia = CLMediaList(entries: items, collection: collection);
 
     if (items.isNotEmpty) {
       ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);

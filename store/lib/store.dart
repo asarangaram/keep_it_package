@@ -8,6 +8,7 @@ export 'src/database/providers/db_items.dart'
 export 'src/database/providers/db_tag.dart' show tagsProvider;
 export 'src/database/providers/db_updater.dart';
 export 'src/database/widgets/get_db_manager.dart';
+export 'src/database/widgets/load_collection.dart';
 export 'src/database/widgets/load_collections.dart';
 export 'src/database/widgets/load_items.dart';
 export 'src/database/widgets/load_tags.dart';
