@@ -20,6 +20,12 @@ class WrapStandardQuickMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (onEdit == null && onDelete == null) {
+      return GestureDetector(
+        onTap: onTap,
+        child: child,
+      );
+    }
     return CLQuickMenuAnchor.longPress(
       parentKey: quickMenuScopeKey,
       menuBuilder: (
@@ -41,11 +47,12 @@ class WrapStandardQuickMenu extends StatelessWidget {
                   icon: Icons.edit_rounded,
                   onTap: onEdit,
                 ),
-              CLMenuItem(
-                title: 'Delete',
-                icon: Icons.delete_rounded,
-                onTap: onDelete,
-              ),
+              if (onDelete != null)
+                CLMenuItem(
+                  title: 'Delete',
+                  icon: Icons.delete_rounded,
+                  onTap: onDelete,
+                ),
             ]
           ].insertOnDone(onDone),
         );
