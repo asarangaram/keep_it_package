@@ -20,22 +20,28 @@ class CLFormTextField extends StatelessWidget {
   final Widget Function(BuildContext context)? actionBuilder;
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      enabled: true,
-      showCursor: true,
-      inputFormatters: switch (descriptors.maxLines > 1) {
-        false => [FilteringTextInputFormatter.deny(RegExp(r'\n'))],
-        true => null
-      },
+    return InputDecorator(
       decoration: FormDesign.inputDecoration(
         context,
         label: descriptors.label,
         actionBuilder: actionBuilder,
       ),
-      controller: state.controller,
-      focusNode: state.focusNode,
-      maxLines: descriptors.maxLines,
-      validator: descriptors.validator,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          enabled: true,
+          showCursor: true,
+          inputFormatters: switch (descriptors.maxLines > 1) {
+            false => [FilteringTextInputFormatter.deny(RegExp(r'\n'))],
+            true => null
+          },
+          decoration: InputDecoration(hintText: descriptors.hint),
+          controller: state.controller,
+          focusNode: state.focusNode,
+          maxLines: descriptors.maxLines,
+          validator: descriptors.validator,
+        ),
+      ),
     );
   }
 }

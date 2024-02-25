@@ -21,12 +21,13 @@ class EditCollectionDescription extends StatelessWidget {
         onTap: onTap,
       ),
       descriptor: CLFormTextFieldDescriptor(
-        title: 'Collection',
-        label: 'Select Collection',
+        title: 'Description',
+        label: 'About "${collection.label}"',
         initialValue: collection.label,
         hint: 'What is the best thing,'
             ' you can say about this?',
         validator: (val) => null,
+        maxLines: 4,
       ),
       onSubmit: (CLFormFieldResult result) async {
         final description = (result as CLFormTextFieldResult).value;

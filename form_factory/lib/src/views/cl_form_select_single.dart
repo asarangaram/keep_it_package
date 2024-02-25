@@ -35,48 +35,44 @@ class CLFormSelectSingle extends StatelessWidget {
         },
         initialValue: descriptors.initialValues,
         builder: (fieldState) {
-          return SizedBox(
-            width: double.infinity,
-            height: kMinInteractiveDimension * 3,
-            child: InputDecorator(
-              decoration: FormDesign.inputDecoration(
-                context,
-                label: descriptors.label,
-                actionBuilder: actionBuilder,
-              ),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: SearchAnchor(
-                  searchController: state.searchController,
-                  isFullScreen: false,
-                  viewBackgroundColor: Theme.of(context).colorScheme.surface,
-                  suggestionsBuilder: (context, controller) {
-                    return suggestionsBuilder(context,
-                        suggestions: descriptors.suggestionsAvailable,
-                        controller: controller,
-                        labelBuilder: descriptors.labelBuilder,
-                        fieldState: fieldState);
-                  },
-                  builder: (context, controller) {
-                    return GestureDetector(
-                      onTap: controller.openView,
-                      child: SizedBox.expand(
-                        child: Center(
-                          child: fieldState.value == null
-                              ? const cl.CLText.large("Tap here to select")
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    cl.CLText.large(descriptors
-                                        .labelBuilder(fieldState.value!)),
-                                    const cl.CLText.small("Tap here to change")
-                                  ],
-                                ),
-                        ),
+          return InputDecorator(
+            decoration: FormDesign.inputDecoration(
+              context,
+              label: descriptors.label,
+              actionBuilder: fieldState.value == null ? null : actionBuilder,
+            ),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: SearchAnchor(
+                searchController: state.searchController,
+                isFullScreen: false,
+                viewBackgroundColor: Theme.of(context).colorScheme.surface,
+                suggestionsBuilder: (context, controller) {
+                  return suggestionsBuilder(context,
+                      suggestions: descriptors.suggestionsAvailable,
+                      controller: controller,
+                      labelBuilder: descriptors.labelBuilder,
+                      fieldState: fieldState);
+                },
+                builder: (context, controller) {
+                  return GestureDetector(
+                    onTap: controller.openView,
+                    child: SizedBox.expand(
+                      child: Center(
+                        child: fieldState.value == null
+                            ? const cl.CLText.large("Tap here to select")
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  cl.CLText.large(descriptors
+                                      .labelBuilder(fieldState.value!)),
+                                  const cl.CLText.small("Tap here to change")
+                                ],
+                              ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           );

@@ -111,7 +111,9 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
       padding: const EdgeInsets.all(8),
       child: Form(
         key: formKey,
-        child: SizedBox.expand(
+        child: SizedBox(
+          width: double.infinity,
+          height: kMinInteractiveDimension * 3,
           child: switch (widget.descriptor.runtimeType) {
             CLFormSelectMultipleDescriptors => CLFormSelectMultiple(
                 descriptors:
@@ -134,7 +136,9 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                 state: state as CLFormTextFieldState,
                 onRefresh: () {
                   setState(() {});
-                }),
+                },
+                actionBuilder: actionBuilder,
+              ),
             _ => throw Exception("Unsupported")
           },
         ),

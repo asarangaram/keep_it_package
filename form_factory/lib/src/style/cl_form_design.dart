@@ -6,7 +6,7 @@ class FormDesign {
           required Widget Function(BuildContext context)? actionBuilder}) =>
       InputDecoration(
         enabled: true,
-        isDense: true,
+        // isDense: true,
         contentPadding: const EdgeInsets.fromLTRB(20, 8, 4, 8),
         labelText: label,
         labelStyle: Theme.of(context)
@@ -14,6 +14,11 @@ class FormDesign {
             .bodyLarge
             ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
         enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(width: 1),
+          borderRadius: BorderRadius.circular(16),
+          gapPadding: 8,
+        ),
+        focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(width: 1),
           borderRadius: BorderRadius.circular(16),
           gapPadding: 8,

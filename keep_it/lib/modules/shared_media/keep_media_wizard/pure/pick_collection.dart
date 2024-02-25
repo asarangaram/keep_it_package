@@ -31,7 +31,7 @@ class PickCollection extends StatelessWidget {
             suggestionsAvailable: [
               ...collections.entries,
             ],
-            initialValues: collection?.label,
+            initialValues: collection,
             onSelectSuggestion: (item) async => item,
             onCreateByLabel: (label) async => Collection(label: label),
           ),
