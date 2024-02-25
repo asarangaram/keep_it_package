@@ -83,7 +83,7 @@ class CollectionEditor extends StatelessWidget {
                         hint: 'Collection Name',
                         maxLines: 4,
                       ),
-                      'tags': CLFormSelectDescriptors(
+                      'tags': CLFormSelectMultipleDescriptors(
                         title: 'Tags',
                         label: 'Select Tags',
                         suggestionsAvailable: [
@@ -115,8 +115,9 @@ class CollectionEditor extends StatelessWidget {
                         label: label,
                         description: desc.isEmpty ? null : desc,
                       );
-                      final tags = (result['tags']! as CLFormSelectResult)
-                          .selectedEntities as List<Tag>;
+                      final tags =
+                          (result['tags']! as CLFormSelectMultipleResult)
+                              .selectedEntities as List<Tag>;
                       onSubmit(updated, tags);
                     },
                     onCancel: isDialog ? null : onCancel,

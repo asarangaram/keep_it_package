@@ -1,15 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_factory/form_factory.dart';
 import 'package:keep_it/modules/shared_media/keep_media_wizard/collection_create_select.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:store/store.dart';
 
-import '../../../widgets/editors/tag_editor.dart';
 import 'collection_editor.dart';
 
+import 'edit_tags_in_collection.dart';
 import 'label_viewer.dart';
 import 'pure/wizard_item.dart';
 
@@ -100,8 +98,8 @@ class PickCollectionState extends ConsumerState<PickCollection> {
     super.dispose();
   }
 
-  void changePage(int? i) {
-    if (i != null) {
+  void changePage(int? i, int maxCount) {
+    if (i != null && i >= 0 && i < maxCount) {
       pageController.animateToPage(
         i,
         duration: const Duration(microseconds: 500),
@@ -112,7 +110,11 @@ class PickCollectionState extends ConsumerState<PickCollection> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = <PageBuilder>[page0, page1, page2, page3];
+    final pages = <PageBuilder>[
+      page0,
+      page1,
+      page2,
+    ];
     return UpsertCollectionFormTheme(
       child: PageView.builder(
         physics: const NeverScrollableScrollPhysics(),
@@ -121,8 +123,8 @@ class PickCollectionState extends ConsumerState<PickCollection> {
         itemBuilder: (context, pageNum) {
           return pages[pageNum](
             context,
-            onNext: () => changePage(pages.next(pageNum)),
-            onPrevious: () => changePage(pages.previous(pageNum)),
+            onNext: () => changePage(pages.next(pageNum), pages.length),
+            onPrevious: () => changePage(pages.previous(pageNum), pages.length),
           );
         },
       ),
@@ -146,83 +148,18 @@ class PickCollectionState extends ConsumerState<PickCollection> {
       return const Text('Error in previous page');
     }
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         LabelViewer(label: 'Collection: ${collection!.label}'),
         Flexible(
-          child: LoadTags(
-            buildOnData: (existingTags) {
-              return LoadTags(
-                collectionId: collection?.id,
-                buildOnData: (currentTags) {
-                  return CLWizardFormField(
-                    actionMenu: (context, onTap) => CLMenuItem(
-                      icon: MdiIcons.floppy,
-                      title: 'Save',
-                      onTap: onTap,
-                    ),
-                    descriptor: CLFormSelectDescriptors(
-                      title: 'Tags',
-                      label: 'Select Tags',
-                      labelBuilder: (e) => (e as Tag).label,
-                      descriptionBuilder: (e) => (e as Tag).description,
-                      suggestionsAvailable: [
-                        ...existingTags.entries,
-                        ...suggestedTags.excludeByLabel(
-                          existingTags.entries,
-                          (Tag e) => e.label,
-                        ),
-                      ],
-                      initialValues:
-                          collection?.id == null ? [] : currentTags.entries,
-                      onSelectSuggestion: (item) =>
-                          createTag(context, item as Tag),
-                      onCreateByLabel: (label) =>
-                          createTag(context, Tag(label: label)),
-                    ),
-                    onSubmit: (CLFormFieldResult result) async {
-                      final selectedTags =
-                          (result as CLFormSelectResult).selectedEntities;
-                      final newTags = await ref
-                          .read(tagsProvider(null).notifier)
-                          .upsertTags(
-                            selectedTags
-                                .where((e) => (e as Tag).id == null)
-                                .map((e) => e as Tag),
-                          );
-                      final existingTags = selectedTags
-                          .where((e) => (e as Tag).id != null)
-                          .map((e) => e as Tag);
-                      widget.onDone(
-                        collection: collection!,
-                        selectedTags: [...newTags, ...existingTags],
-                      );
-
-                      onNext();
-                    },
-                  );
-                },
-              );
+          child: EditTagsInCollection(
+            collection: collection!,
+            onDone: (tags) {
+              widget.onDone(collection: collection!, selectedTags: tags);
             },
           ),
         ),
       ],
     );
-  }
-
-  Future<Tag?> createTag(BuildContext context, Tag tag) async {
-    final Tag entityUpdated;
-    if (tag.id == null) {
-      final res = await TagEditor.popupDialog(context, tag: tag);
-      if (res == null) {
-        return null;
-      }
-      entityUpdated = res;
-    } else {
-      entityUpdated = tag;
-    }
-
-    return entityUpdated;
   }
 
   Widget page0(

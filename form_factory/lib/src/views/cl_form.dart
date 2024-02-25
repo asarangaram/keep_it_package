@@ -43,8 +43,9 @@ class CLFormState extends State<CLForm> {
                 text: (desc as CLFormTextFieldDescriptor).initialValue,
               ),
             ),
-          CLFormSelectDescriptors => CLFormSelectState(
-              selectedEntities: (desc as CLFormSelectDescriptors).initialValues,
+          CLFormSelectMultipleDescriptors => CLFormSelectMultipleState(
+              selectedEntities:
+                  (desc as CLFormSelectMultipleDescriptors).initialValues,
               scrollController: ScrollController(),
               searchController: SearchController(),
               wrapKey: GlobalKey(),
@@ -108,9 +109,10 @@ class CLFormState extends State<CLForm> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: switch (entry.value.runtimeType) {
-                  CLFormSelectDescriptors => CLFormSelect(
-                      descriptors: entry.value as CLFormSelectDescriptors,
-                      state: state[entry.key]! as CLFormSelectState,
+                  CLFormSelectMultipleDescriptors => CLFormSelectMultiple(
+                      descriptors:
+                          entry.value as CLFormSelectMultipleDescriptors,
+                      state: state[entry.key]! as CLFormSelectMultipleState,
                       onRefresh: () {
                         setState(() {});
                       },

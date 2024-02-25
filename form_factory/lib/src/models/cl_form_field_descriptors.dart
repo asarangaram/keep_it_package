@@ -24,8 +24,8 @@ class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
 }
 
 @immutable
-class CLFormSelectDescriptors extends CLFormFieldDescriptors {
-  const CLFormSelectDescriptors({
+class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
+  const CLFormSelectMultipleDescriptors({
     required super.title,
     required super.label,
     required this.suggestionsAvailable,

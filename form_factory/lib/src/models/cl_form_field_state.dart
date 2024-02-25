@@ -28,8 +28,8 @@ class CLFormTextFieldState extends CLFormFieldState {
 }
 
 @immutable
-class CLFormSelectState extends CLFormFieldState {
-  CLFormSelectState({
+class CLFormSelectMultipleState extends CLFormFieldState {
+  CLFormSelectMultipleState({
     required this.scrollController,
     required this.wrapKey,
     required this.searchController,
@@ -52,14 +52,15 @@ class CLFormSelectState extends CLFormFieldState {
     }
   }
 
-  CLFormSelectState update(List<Object> res) => CLFormSelectState(
-      scrollController: scrollController,
-      searchController: searchController,
-      wrapKey: wrapKey,
-      selectedEntities: res);
+  CLFormSelectMultipleState update(List<Object> res) =>
+      CLFormSelectMultipleState(
+          scrollController: scrollController,
+          searchController: searchController,
+          wrapKey: wrapKey,
+          selectedEntities: res);
 
   @override
-  CLFormFieldResult get result => CLFormSelectResult(selectedEntities);
+  CLFormFieldResult get result => CLFormSelectMultipleResult(selectedEntities);
 
   @override
   void dispose() {

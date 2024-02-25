@@ -6,17 +6,17 @@ import 'package:flutter/material.dart';
 import '../models/cl_form_field_descriptors.dart';
 import '../models/cl_form_field_state.dart';
 
-class CLFormSelect extends StatelessWidget {
-  const CLFormSelect({
+class CLFormSelectMultiple extends StatelessWidget {
+  const CLFormSelectMultiple({
     required this.descriptors,
     required this.state,
     required this.onRefresh,
     this.actionBuilder,
     super.key,
   });
-  final CLFormSelectDescriptors descriptors;
+  final CLFormSelectMultipleDescriptors descriptors;
 
-  final CLFormSelectState state;
+  final CLFormSelectMultipleState state;
 
   final void Function() onRefresh;
   final Widget Function(BuildContext context)? actionBuilder;

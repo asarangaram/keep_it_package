@@ -26,18 +26,18 @@ class CLWizardFormField extends StatefulWidget {
 }
 
 class _CLWizardFormFieldState extends State<CLWizardFormField> {
-  late CLFormSelectState state;
+  late CLFormSelectMultipleState state;
   final GlobalKey wrapKey = GlobalKey();
   final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    state = CLFormSelectState(
+    state = CLFormSelectMultipleState(
       scrollController: ScrollController(),
       wrapKey: wrapKey,
       searchController: SearchController(),
       selectedEntities:
-          (widget.descriptor as CLFormSelectDescriptors).initialValues,
+          (widget.descriptor as CLFormSelectMultipleDescriptors).initialValues,
     );
 
     super.initState();
@@ -57,8 +57,8 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
       child: Form(
         key: formKey,
         child: SizedBox.expand(
-          child: CLFormSelect(
-            descriptors: widget.descriptor as CLFormSelectDescriptors,
+          child: CLFormSelectMultiple(
+            descriptors: widget.descriptor as CLFormSelectMultipleDescriptors,
             state: state,
             onRefresh: () {
               setState(() {});
@@ -71,7 +71,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                     final menuItem = widget.actionMenu!(context, () async {
                       if (formKey.currentState?.validate() ?? false) {
                         widget.onSubmit(
-                          CLFormSelectResult(state.selectedEntities),
+                          CLFormSelectMultipleResult(state.selectedEntities),
                         );
                       }
                       return null;
