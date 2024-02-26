@@ -24,3 +24,24 @@ class GetTagsByCollectionId extends ConsumerWidget {
     );
   }
 }
+
+class GetNonEmptyTagsByCollectionId extends ConsumerWidget {
+  const GetNonEmptyTagsByCollectionId({
+    required this.buildOnData,
+    super.key,
+    this.collectionId,
+  });
+  final Widget Function(Tags tags) buildOnData;
+  final int? collectionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tagsAsync = ref.watch(getNonEmptyTagsByCollectionId(collectionId));
+
+    return tagsAsync.when(
+      loading: () => const CLLoadingView(),
+      error: (err, _) => CLErrorView(errorMessage: err.toString()),
+      data: buildOnData,
+    );
+  }
+}

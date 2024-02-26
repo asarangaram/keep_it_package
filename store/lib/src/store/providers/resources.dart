@@ -32,6 +32,21 @@ final getTagsByCollectionId =
   _infoLogger('Loading Tags for collection.id = $collectionId');
   return Tags(tags);
 });
+final getNonEmptyTagsByCollectionId =
+    FutureProvider.family<Tags, int?>((ref, collectionId) async {
+  final List<Tag> tags;
+  final resources = await ref.watch(resourcesProvider.future);
+  if (collectionId == null) {
+    tags = TagDB.getAll(resources.db, includeEmpty: false);
+  } else {
+    tags = TagDB.getByCollectionId(
+      resources.db,
+      collectionId,
+    );
+  }
+  _infoLogger('Loading Tags for collection.id = $collectionId');
+  return Tags(tags);
+});
 
 final getCollectionsByTagId =
     FutureProvider.family<Collections, int?>((ref, tagId) async {

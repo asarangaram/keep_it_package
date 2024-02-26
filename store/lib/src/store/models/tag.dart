@@ -30,6 +30,36 @@ extension TagDB on Tag {
     return maps.map(Tag.fromMap).toList();
   }
 
+  static List<Tag> getByCollectionId(
+    Database db,
+    int id, {
+    bool includeEmpty = true,
+  }) {
+    final List<Map<String, dynamic>> maps;
+    if (includeEmpty) {
+      maps = db.select(
+        '''
+      SELECT Tag.* FROM Tag
+      JOIN TagCollection ON Tag.id = TagCollection.tag_id
+      WHERE TagCollection.collection_id = ?
+    ''',
+        [id],
+      );
+    } else {
+      maps = db.select(
+        '''
+          SELECT DISTINCT Tag.*
+          FROM Tag
+          JOIN TagCollection ON Tag.id = TagCollection.tag_id
+          JOIN Collection ON TagCollection.collection_id = Collection.id
+          JOIN Item ON Collection.id = Item.collection_id;
+          WHERE TagCollection.collection_id = ?
+          ''',
+      );
+    }
+    return maps.map(Tag.fromMap).toList();
+  }
+
   Tag upsert(Database db) {
     if (id != null) {
       db.execute(
@@ -75,18 +105,6 @@ extension TagDB on Tag {
         'DELETE FROM Tag WHERE id = ?',
         [id],
       );
-  }
-
-  static List<Tag> getByCollectionId(Database db, int id) {
-    final List<Map<String, dynamic>> maps = db.select(
-      '''
-      SELECT Tag.* FROM Tag
-      JOIN TagCollection ON Tag.id = TagCollection.tag_id
-      WHERE TagCollection.collection_id = ?
-    ''',
-      [id],
-    );
-    return maps.map(Tag.fromMap).toList();
   }
 
   static List<Tag> getByCLMediaId(Database db, int id) {
