@@ -41,6 +41,16 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
     if (error != null) {
       return widget.builder(context, AsyncError(error!, st!));
     }
+    if (!File(widget.media.path).existsSync()) {
+      try {
+        throw Exception('file not found');
+      } catch (e, st) {
+        setState(() {
+          error = e;
+          this.st = st;
+        });
+      }
+    }
     return GetDeviceDirectories(
       builder: (directories) {
         final uuidGenerator = ref.watch(uuidProvider);
