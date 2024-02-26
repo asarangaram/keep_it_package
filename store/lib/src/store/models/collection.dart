@@ -124,4 +124,28 @@ extension CollectionDB on Collection {
       );
     }
   }
+
+  bool isCollectionEmpty(
+    Database db,
+  ) {
+    if (id != null) {
+      final result = db.select(
+        '''
+    SELECT COUNT(*) as count
+    FROM Item
+    WHERE collection_id = ?
+  ''',
+        [id],
+      );
+
+      if (result.isNotEmpty) {
+        final count = result.first['count'] as int;
+        return count == 0;
+      }
+    }
+
+    // Default to true if there's an issue with the query
+    return true;
+  }
+  
 }
