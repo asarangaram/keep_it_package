@@ -33,6 +33,9 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
             );
           }
           return CLGalleryView(
+            key: ValueKey(
+              collections.tag?.label ?? 'Collections',
+            ),
             label: collections.tag?.label ?? 'Collections',
             columns: 3,
             galleryMap: galleryGroups,
@@ -45,12 +48,14 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
             ),
             tagPrefix: 'timeline ${collections.tag?.id ?? "all"}',
             isScrollablePositionedList: false,
-            onPickFiles: () async {
-              await onPickFiles(
-                context,
-                ref,
-              );
-            },
+            onPickFiles: (widget.tagId != null)
+                ? null
+                : () async {
+                    await onPickFiles(
+                      context,
+                      ref,
+                    );
+                  },
             onRefresh: () async {
               // TODO (anandas):
             },
