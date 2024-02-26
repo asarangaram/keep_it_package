@@ -120,11 +120,7 @@ class HugeListViewState<T> extends State<HugeListView<T>> {
   }
 
   int _currentFirst() {
-    try {
-      return listener.itemPositions.value.first.index;
-    } catch (e) {
-      return 0;
-    }
+    return listener.itemPositions.value.firstOrNull?.index ?? 0;
   }
 
   @override

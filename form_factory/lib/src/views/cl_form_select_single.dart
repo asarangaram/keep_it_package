@@ -28,6 +28,10 @@ class CLFormSelectSingle extends StatelessWidget {
           if (value == null) {
             return "can't be empty";
           }
+          if (descriptors.labelBuilder(value).length > 20) {
+            return "length can't exceed 20 characters";
+          }
+
           state.selectedEntitry.clear();
           state.selectedEntitry.add(value);
 
@@ -66,6 +70,11 @@ class CLFormSelectSingle extends StatelessWidget {
                                 children: [
                                   cl.CLText.large(descriptors
                                       .labelBuilder(fieldState.value!)),
+                                  if (fieldState.hasError)
+                                    cl.CLText.small(fieldState.errorText!,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .error),
                                   const cl.CLText.small("Tap here to change")
                                 ],
                               ),
