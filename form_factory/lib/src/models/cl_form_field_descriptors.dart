@@ -12,7 +12,7 @@ class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
   const CLFormTextFieldDescriptor({
     required super.title,
     required super.label,
-    required this.hint,
+    this.hint,
     required this.initialValue,
     required this.validator,
     this.maxLines = 1,

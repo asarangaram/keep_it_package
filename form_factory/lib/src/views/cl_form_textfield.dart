@@ -21,11 +21,10 @@ class CLFormTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InputDecorator(
-      decoration: FormDesign.inputDecoration(
-        context,
-        label: descriptors.label,
-        actionBuilder: actionBuilder,
-      ),
+      decoration: FormDesign.inputDecoration(context,
+          label: descriptors.label,
+          actionBuilder: actionBuilder,
+          hintText: descriptors.hint),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(
@@ -35,7 +34,6 @@ class CLFormTextField extends StatelessWidget {
             false => [FilteringTextInputFormatter.deny(RegExp(r'\n'))],
             true => null
           },
-          decoration: InputDecoration(hintText: descriptors.hint),
           controller: state.controller,
           focusNode: state.focusNode,
           maxLines: descriptors.maxLines,

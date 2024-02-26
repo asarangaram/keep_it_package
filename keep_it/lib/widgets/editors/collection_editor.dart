@@ -73,14 +73,14 @@ class CollectionEditor extends StatelessWidget {
                           existingLabel: collection.label,
                           collections: collections,
                         ),
-                        hint: 'Collection Name',
+                        
                       ),
                       'description': CLFormTextFieldDescriptor(
                         title: 'About',
                         label: 'Describe about this collection',
                         initialValue: collection.description ?? '',
                         validator: (_) => null,
-                        hint: 'Collection Name',
+                        
                         maxLines: 4,
                       ),
                       'tags': CLFormSelectMultipleDescriptors(
@@ -136,18 +136,18 @@ class CollectionEditor extends StatelessWidget {
     required String? existingLabel,
     required Collections collections,
   }) {
-    if (newLabel?.isEmpty ?? true) {
+    final newLabel0 = newLabel?.trim();
+
+    if (newLabel0?.isEmpty ?? true) {
       return "Name can't be empty";
     }
 
-    if (existingLabel == newLabel) {
+    if (existingLabel == newLabel0) {
       // Nothing changed.
       return null;
     }
-    if (collections.entries
-        .map((e) => e.label.trim())
-        .contains(newLabel!.trim())) {
-      return '$newLabel already exists';
+    if (collections.entries.map((e) => e.label.trim()).contains(newLabel0)) {
+      return '$newLabel0 already exists';
     }
     return null;
   }

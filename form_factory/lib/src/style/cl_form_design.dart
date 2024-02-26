@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class FormDesign {
   static InputDecoration inputDecoration(BuildContext context,
           {required String label,
+          String? hintText,
           required Widget Function(BuildContext context)? actionBuilder}) =>
       InputDecoration(
         enabled: true,
@@ -31,6 +32,7 @@ class FormDesign {
           borderRadius: BorderRadius.circular(16),
           gapPadding: 8,
         ),
+        hintText: hintText,
         suffixIcon: actionBuilder?.call(context),
       );
 }
