@@ -48,10 +48,17 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
             (widget.descriptor as CLFormSelectSingleDescriptors).initialValues
           ],
         ),
-      CLFormTextFieldDescriptor =>
-        CLFormTextFieldState(controller: TextEditingController()),
+      CLFormTextFieldDescriptor => CLFormTextFieldState(
+          controller: TextEditingController(), focusNode: FocusNode()),
       _ => throw UnimplementedError()
     };
+    switch (widget.descriptor.runtimeType) {
+      case CLFormSelectMultipleDescriptors:
+      case CLFormSelectSingleDescriptors:
+        break;
+      case CLFormTextFieldDescriptor:
+        (state as CLFormTextFieldState).focusNode?.requestFocus();
+    }
 
     super.initState();
   }

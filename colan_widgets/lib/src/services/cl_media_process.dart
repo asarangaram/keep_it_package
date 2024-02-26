@@ -4,7 +4,6 @@ import 'package:crypto/crypto.dart';
 import 'package:exif/exif.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
 import '../models/cl_media.dart';
 import '../views/stream_progress_view.dart';
@@ -88,46 +87,10 @@ class CLMediaProcess {
         fractCompleted: (i + 1) / media.entries.length,
       );
     }
-    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 10));
     onDone(
       mg: CLMediaList(entries: candidates, collection: media.collection),
     );
-  }
-
-  static Stream<Progress> acceptMedia({
-    required CLMediaList media,
-    required void Function(CLMediaList) onDone,
-    // required CLMedia? Function(CLMedia media) onGetDuplicate,
-  }) async* {
-    if (media.collection?.id == null) {
-      throw Exception("collectionID can't be null to accept");
-    }
-
-    final updated = <CLMedia>[];
-    yield Progress(
-      currentItem: path.basename(media.entries[0].path),
-      fractCompleted: 0,
-    );
-    final pathPrefix = await getApplicationDocumentsDirectory();
-    for (final (i, item0) in media.entries.indexed) {
-      final item = item0;
-      updated.add(
-        await (await item
-                .copyWith(collectionId: media.collection?.id)
-                .copyFile(pathPrefix: pathPrefix.path))
-            .getMetadata(),
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      yield Progress(
-        currentItem: (i + 1 == media.entries.length)
-            ? ''
-            : path.basename(media.entries[i + 1].path),
-        fractCompleted: (i + 1) / media.entries.length,
-      );
-    }
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-
-    onDone(CLMediaList(entries: updated, collection: media.collection));
   }
 }
 

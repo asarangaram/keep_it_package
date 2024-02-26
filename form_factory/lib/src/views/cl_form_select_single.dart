@@ -156,7 +156,6 @@ class CLFormSelectSingle extends StatelessWidget {
     state.searchController.text = '';
     fieldState.didChange(entityUpdated);
     onRefresh();
-    Future.delayed(const Duration(milliseconds: 200));
   }
 
   Future<void> _onCreateByLabel(
@@ -169,6 +168,5 @@ class CLFormSelectSingle extends StatelessWidget {
     state.searchController.text = '';
     fieldState.didChange(entityUpdated);
     onRefresh();
-    Future.delayed(const Duration(milliseconds: 200));
   }
 }

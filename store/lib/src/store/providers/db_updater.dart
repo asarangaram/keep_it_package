@@ -18,26 +18,11 @@ class DBUpdaterNotifier extends StateNotifier<int> {
   Future<String> get pathPrefix async =>
       _pathPrefix ??= (await getApplicationDocumentsDirectory()).path;
 
-  void refreshProviders({Set<int>? collectionIdList, Set<int>? tagIdList}) {
+  void refreshProviders() {
     state = state + 1;
-    /* if (collectionIdList?.isNotEmpty ?? false) {
-      for (final id in collectionIdList!) {
-        ref
-          ..read(clMediaListByCollectionIdProvider(id).notifier).loadItems()
-          ..read(tagsProvider(id).notifier).load();
-      }
-    }
-    if (tagIdList?.isNotEmpty ?? false) {
-      for (final tagId in tagIdList!) {
-        ref.read(collectionsProvider(tagId).notifier).load();
-      }
-    }
-    ref
-      ..read(tagsProvider(null).notifier).load()
-      ..read(collectionsProvider(null).notifier).load(); */
   }
 
-  Future<void> replaceTags(Collection collection, List<Tag> tags) async {
+  Future<void> _replaceTags(Collection collection, List<Tag> tags) async {
     final updatedTags = <Tag>[];
     for (final tag in tags) {
       if (tag.id == null) {
@@ -68,15 +53,30 @@ class DBUpdaterNotifier extends StateNotifier<int> {
     }
   }
 
-  Stream<Progress> upsertCollection({
+  Future<Collection> _upsertCollection({
     required Collection collection,
-    required List<Tag> tags,
+    required List<Tag>? tags,
+
+    // required CLMedia? Function(CLMedia media) onGetDuplicate,
+  }) async {
+    final collectionUpdated = collection.upsert(await db);
+    if (tags != null) {
+      await _replaceTags(collectionUpdated, tags);
+    }
+
+    return collectionUpdated;
+  }
+
+  Future<void> upsertCollection({
+    required Collection collection,
+    required List<Tag>? tags,
     required void Function({required CLMediaList? mg}) onDone,
     // required CLMedia? Function(CLMedia media) onGetDuplicate,
-  }) async* {
-    final collectionUpdated = collection.upsert(await db);
-    await replaceTags(collectionUpdated, tags);
-    refreshProviders(collectionIdList: {collectionUpdated.id!});
+  }) async {
+    await _upsertCollection(collection: collection, tags: tags);
+
+    onDone(mg: null);
+    refreshProviders();
   }
 
   Stream<Progress> upsertMediaList({
@@ -92,49 +92,38 @@ class DBUpdaterNotifier extends StateNotifier<int> {
     }
 
     yield Progress(currentItem: media.entries[0].basename, fractCompleted: 0);
-    final collection = media.collection!.upsert(await db);
-    final updated = <CLMedia>[];
+
+    final collection = await _upsertCollection(
+      collection: media.collection!,
+      tags: media.tags,
+    );
+
     for (final (i, item0) in media.entries.indexed) {
-      final item = item0;
-      updated.add(
-        await (await item
-                .copyWith(collectionId: collection.id)
-                .copyFile(pathPrefix: await pathPrefix))
-            .getMetadata(),
-      );
-      // Artificial delay
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      final item1 = item0.copyWith(collectionId: collection.id);
+      if (item1.isValidMedia) {
+        final item = await (await item1.copyFile(pathPrefix: await pathPrefix))
+            .getMetadata();
+        item.upsert(await db, pathPrefix: await pathPrefix);
+      }
       yield Progress(
         currentItem: (i + 1 == media.entries.length)
-            ? 'Save Media into DB'
+            ? 'Completed Successfull'
             : media.entries[i + 1].basename,
-        fractCompleted: ((i + 1) / media.entries.length) * 0.9,
+        fractCompleted: (i + 1) / media.entries.length,
       );
     }
 
-    final mediaListNew = <CLMedia>[];
-    for (final item in updated) {
-      mediaListNew.add(item.upsert(await db, pathPrefix: await pathPrefix));
-    }
     yield const Progress(
-      currentItem: 'Processing Tags',
-      fractCompleted: 0.92,
-    );
-    // Process Tags
-    if (media.tags != null) {
-      await replaceTags(collection, media.tags!);
-    }
-    refreshProviders(collectionIdList: {collection.id!});
-    yield const Progress(
-      currentItem: 'Completed Successfull',
+      currentItem: '',
       fractCompleted: 1,
     );
+    refreshProviders();
     onDone(mg: null);
   }
 
   Future<Tag> upsertTag(Tag tag) async {
     final tagWithID = tag.upsert(await db);
-    refreshProviders(tagIdList: {tagWithID.id!});
+    refreshProviders();
     return tagWithID;
   }
 
@@ -161,10 +150,10 @@ class DBUpdaterNotifier extends StateNotifier<int> {
     refreshItem(collectionIdList);
   } */
 
-  Future<void> deleteCollection(Collection collection) async {}
+  /* Future<void> deleteCollection(Collection collection) async {}
   Future<void> deleteCollections(List<Collection> collections) async {}
   Future<void> deleteTag(Tag tag) async {}
-  Future<void> deleteTags(List<Tag> tag) async {}
+  Future<void> deleteTags(List<Tag> tag) async {} */
 
   Future<void> deleteItem(CLMedia item) async {
     if (item.id == null || item.collectionId == null) {
@@ -173,12 +162,12 @@ class DBUpdaterNotifier extends StateNotifier<int> {
       }
       return;
     }
-    final collectionID = item.collectionId!;
+
     item
       ..deleteFile()
       ..delete(await db);
 
-    refreshProviders(collectionIdList: {collectionID});
+    refreshProviders();
   }
 
   Future<void> deleteItems(List<CLMedia> items) async {
@@ -195,7 +184,7 @@ class DBUpdaterNotifier extends StateNotifier<int> {
         ..deleteFile()
         ..delete(await db);
     }
-    refreshProviders(collectionIdList: collectionIdList);
+    refreshProviders();
   }
 }
 

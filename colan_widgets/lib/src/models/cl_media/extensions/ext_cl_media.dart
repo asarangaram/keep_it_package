@@ -55,6 +55,26 @@ extension ExtCLMediaFile on CLMedia {
     return copyWith(path: targetFile, type: type);
   }
 
+  bool get isValidMedia {
+    if (collectionId == null) {
+      throw Exception("Item can't be stored without collectionId");
+    }
+    switch (type) {
+      case CLMediaType.image:
+      case CLMediaType.video:
+      case CLMediaType.audio:
+      case CLMediaType.file:
+        if (!File(path).existsSync()) {
+          return false;
+        }
+
+      case CLMediaType.url:
+      case CLMediaType.text:
+        break;
+    }
+    return true;
+  }
+
   Future<CLMedia> copyFile({required String pathPrefix}) async {
     if (collectionId == null) {
       throw Exception("Item can't be stored without collectionId");
@@ -71,14 +91,14 @@ extension ExtCLMediaFile on CLMedia {
       case CLMediaType.file:
         if (!File(path).existsSync()) {
           throw Exception('Incoming file not found!');
+        } else {
+          final targetFile =
+              path_handler.join(targetDir, path_handler.basename(path));
+          File(targetFile).createSync(recursive: true);
+          File(path).copySync(targetFile);
+          File(path).deleteIfExists();
+          return copyWith(path: targetFile);
         }
-
-        final targetFile =
-            path_handler.join(targetDir, path_handler.basename(path));
-        File(targetFile).createSync(recursive: true);
-        File(path).copySync(targetFile);
-        File(path).deleteIfExists();
-        return copyWith(path: targetFile);
 
       case CLMediaType.url:
       case CLMediaType.text:

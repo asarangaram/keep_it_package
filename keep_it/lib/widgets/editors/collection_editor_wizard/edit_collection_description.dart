@@ -25,7 +25,7 @@ class EditCollectionDescription extends StatelessWidget {
         label: 'About "${collection.label}"',
         initialValue: collection.label,
         hint: 'What is the best thing,'
-            ' you can say about this?',
+            ' you can say about "${collection.label}"?',
         validator: (val) => null,
         maxLines: 4,
       ),

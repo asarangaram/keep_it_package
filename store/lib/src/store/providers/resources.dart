@@ -49,6 +49,23 @@ final getCollectionsByTagId =
   return Collections(collections, tag: tag);
 });
 
+final getNonEmptyCollectionsByTagId =
+    FutureProvider.family<Collections, int?>((ref, tagId) async {
+  final resources = await ref.watch(resourcesProvider.future);
+  final List<Collection> collections;
+  final Tag? tag;
+  if (tagId == null) {
+    collections = CollectionDB.getAll(resources.db, includeEmpty: false);
+    tag = null;
+  } else {
+    collections =
+        CollectionDB.getByTagId(resources.db, tagId, includeEmpty: false);
+    tag = TagDB.getById(resources.db, tagId);
+  }
+  _infoLogger('Loading Collections for tag.id = $tagId');
+  return Collections(collections, tag: tag);
+});
+
 final getCollectionById =
     FutureProvider.family<Collection, int>((ref, id) async {
   final resources = await ref.watch(resourcesProvider.future);
@@ -80,7 +97,7 @@ final getMediaByCollectionId =
   return CLMediaList(entries: entries, collection: collection);
 });
 
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);

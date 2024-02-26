@@ -26,7 +26,7 @@ extension CollectionDB on Collection {
   static List<Collection> getByTagId(
     Database db,
     int id, {
-    bool includeEmpty = false,
+    bool includeEmpty = true,
   }) {
     final ResultSet maps;
     if (includeEmpty) {
@@ -147,5 +147,4 @@ extension CollectionDB on Collection {
     // Default to true if there's an issue with the query
     return true;
   }
-  
 }
