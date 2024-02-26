@@ -1,9 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/src/store/providers/db_providers.dart';
 
 import '../models/resources.dart';
+import '../providers/resources.dart';
 
 class GetResources extends ConsumerWidget {
   const GetResources({required this.builder, super.key});

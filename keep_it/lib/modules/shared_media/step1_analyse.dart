@@ -17,26 +17,22 @@ class AnalysePage extends SharedMediaWizard {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetResources(
       builder: (resources) {
-        return GetDBManager(
-          builder: (dbManager) {
-            return SharedMediaWizard.buildWizard(
-              context, ref,
-              title: 'Analysing Shared Media',
-              message: 'Please wait while analysing media files',
-              //option1: CLMenuItem(title: 'Yes', icon: Icons.abc),
-              //option2: CLMenuItem(title: 'No', icon: Icons.abc),
-              child: StreamProgressView(
-                stream: () => CLMediaProcess.analyseMedia(
-                  media: incomingMedia,
-                  findItemByMD5: (md5String) async {
-                    return resources.getMediaByMD5(md5String);
-                  },
-                  onDone: onDone,
-                ),
-                onCancel: onCancel,
-              ),
-            );
-          },
+        return SharedMediaWizard.buildWizard(
+          context, ref,
+          title: 'Analysing Shared Media',
+          message: 'Please wait while analysing media files',
+          //option1: CLMenuItem(title: 'Yes', icon: Icons.abc),
+          //option2: CLMenuItem(title: 'No', icon: Icons.abc),
+          child: StreamProgressView(
+            stream: () => CLMediaProcess.analyseMedia(
+              media: incomingMedia,
+              findItemByMD5: (md5String) async {
+                return resources.getMediaByMD5(md5String);
+              },
+              onDone: onDone,
+            ),
+            onCancel: onCancel,
+          ),
         );
       },
     );

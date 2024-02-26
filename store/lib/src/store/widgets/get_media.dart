@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/db_providers.dart';
+import '../providers/resources.dart';
 
 class GetMediaByCollectionId extends ConsumerWidget {
   const GetMediaByCollectionId({

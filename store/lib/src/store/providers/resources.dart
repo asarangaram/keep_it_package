@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,6 +10,7 @@ import 'db_updater.dart';
 import 'device_directories.dart';
 
 final resourcesProvider = FutureProvider<Resources>((ref) async {
+  // ignore: unused_local_variable
   final updatedChanged = ref.watch(dbUpdaterNotifierProvider);
 
   _infoLogger('Refreshing resources');
