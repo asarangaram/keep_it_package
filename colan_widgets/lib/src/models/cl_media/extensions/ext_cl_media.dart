@@ -77,6 +77,7 @@ extension ExtCLMediaFile on CLMedia {
             path_handler.join(targetDir, path_handler.basename(path));
         File(targetFile).createSync(recursive: true);
         File(path).copySync(targetFile);
+        File(path).deleteIfExists();
         return copyWith(path: targetFile);
 
       case CLMediaType.url:
