@@ -3,10 +3,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/db_collection.dart';
+import '../providers/db_providers.dart';
 
-class LoadCollection extends ConsumerWidget {
-  const LoadCollection({
+class GetCollectionById extends ConsumerWidget {
+  const GetCollectionById({
     required this.buildOnData,
     required this.id,
     super.key,
@@ -16,7 +16,7 @@ class LoadCollection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(collectionProvider(id));
+    final collectionsAsync = ref.watch(getCollectionById(id));
 
     return collectionsAsync.when(
       loading: () => const CLLoadingView(),

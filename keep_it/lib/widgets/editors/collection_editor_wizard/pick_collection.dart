@@ -15,7 +15,7 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoadCollections(
+    return GetCollectionsByTagId(
       buildOnData: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(

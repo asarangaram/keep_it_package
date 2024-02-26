@@ -73,7 +73,7 @@ class PreviewGenerator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoadItemsInTag(
+    return GetMediaByTagId(
       id: tag.id!,
       limit: 4,
       buildOnData: (List<CLMedia>? clMediaList) {

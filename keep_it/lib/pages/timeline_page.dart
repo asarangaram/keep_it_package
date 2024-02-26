@@ -15,12 +15,12 @@ class TimeLinePage extends ConsumerWidget {
   final int collectionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => LoadCollections(
+  Widget build(BuildContext context, WidgetRef ref) => GetCollectionsByTagId(
         buildOnData: (collections) {
-          return LoadCollection(
+          return GetCollectionById(
             id: collectionId,
             buildOnData: (Collection collection) {
-              return LoadItems(
+              return GetMediaByCollectionId(
                 collectionId: collectionId,
                 buildOnData: (items) {
                   final galleryGroups = <GalleryGroup>[];

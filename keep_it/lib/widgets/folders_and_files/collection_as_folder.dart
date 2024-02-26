@@ -43,9 +43,9 @@ class CollectionAsFolder extends ConsumerWidget {
       onDelete: () async {
         // delete all the items in the collection !!
 
-        await ref
+        /* await ref
             .read(collectionsProvider(null).notifier)
-            .deleteCollection(collection);
+            .deleteCollection(collection); */
         return true;
       },
       onTap: () async {
@@ -87,7 +87,7 @@ class PreviewGenerator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoadItems(
+    return GetMediaByCollectionId(
       collectionId: collection.id!,
       buildOnData: (CLMediaList items) {
         return CLAspectRationDecorated(

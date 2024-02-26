@@ -1,25 +1,23 @@
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:store/store.dart';
+import '../providers/db_providers.dart';
 
-class LoadCollections extends ConsumerWidget {
-  const LoadCollections({
+class GetTagsByCollectionId extends ConsumerWidget {
+  const GetTagsByCollectionId({
     required this.buildOnData,
     super.key,
-    this.tagId,
-    this.hasBackground = true,
+    this.collectionId,
   });
-  final Widget Function(Collections collections) buildOnData;
-  final int? tagId;
-  final bool hasBackground;
+  final Widget Function(Tags tags) buildOnData;
+  final int? collectionId;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(collectionsProvider(tagId));
+    final tagsAsync = ref.watch(getTagsByCollectionId(collectionId));
 
-    return collectionsAsync.when(
+    return tagsAsync.when(
       loading: () => const CLLoadingView(),
       error: (err, _) => CLErrorView(errorMessage: err.toString()),
       data: buildOnData,

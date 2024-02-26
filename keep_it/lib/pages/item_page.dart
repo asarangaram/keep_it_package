@@ -14,7 +14,7 @@ class ItemPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LoadItems(
+    return GetMediaByCollectionId(
       collectionId: collectionId,
       buildOnData: (CLMediaList items) {
         final media = items.entries.where((e) => e.id == id).first;

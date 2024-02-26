@@ -52,13 +52,13 @@ class CollectionEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: LoadCollections(
+      child: GetCollectionsByTagId(
         buildOnData: (collections) {
           final collection =
               collections.entries.where((e) => e.id == collectionId).first;
-          return LoadTags(
+          return GetTagsByCollectionId(
             buildOnData: (existingTags) {
-              return LoadTags(
+              return GetTagsByCollectionId(
                 collectionId: collection.id,
                 buildOnData: (currentTags) {
                   return CLForm(

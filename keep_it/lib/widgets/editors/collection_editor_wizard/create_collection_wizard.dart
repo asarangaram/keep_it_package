@@ -16,7 +16,7 @@ class CreateCollectionWizard extends StatefulWidget {
 
   final void Function({
     required Collection collection,
-    required List<Tag> tags,
+    required List<Tag>? tags,
   }) onDone;
 
   @override
@@ -45,14 +45,14 @@ class PickCollectionState extends State<CreateCollectionWizard> {
   @override
   Widget build(BuildContext context) {
     if (collection == null || onEditLabel) {
-      return LoadTags(
+      return GetTagsByCollectionId(
         collectionId: collection?.id,
         buildOnData: (currTags) {
           return PickCollection(
             collection: collection,
             onDone: (collection) {
               if (collection.id != null) {
-                widget.onDone(collection: collection, tags: currTags.entries);
+                widget.onDone(collection: collection, tags: null);
                 hasDescription = true;
                 selectedTags = currTags.entries;
               }

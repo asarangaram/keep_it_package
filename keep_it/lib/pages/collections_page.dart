@@ -21,7 +21,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
   bool isLoading = false;
 
   @override
-  Widget build(BuildContext context) => LoadCollections(
+  Widget build(BuildContext context) => GetCollectionsByTagId(
         tagId: widget.tagId,
         buildOnData: (collections) {
           final galleryGroups = <GalleryGroup>[];

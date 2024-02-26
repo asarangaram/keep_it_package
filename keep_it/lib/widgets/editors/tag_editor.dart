@@ -50,7 +50,7 @@ class TagEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: LoadTags(
+      child: GetTagsByCollectionId(
         buildOnData: (existingTags) {
           return CLForm(
             explicitScrollDownOption: !isDialog,

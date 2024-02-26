@@ -17,9 +17,9 @@ class PickTags extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoadTags(
+    return GetTagsByCollectionId(
       buildOnData: (existingTags) {
-        return LoadTags(
+        return GetTagsByCollectionId(
           collectionId: collection.id,
           buildOnData: (currentTags) {
             return CLWizardFormField(

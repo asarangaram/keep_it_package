@@ -20,7 +20,7 @@ class _TagsViewState extends ConsumerState<TagsPage> {
   bool isLoading = false;
 
   @override
-  Widget build(BuildContext context) => LoadTags(
+  Widget build(BuildContext context) => GetTagsByCollectionId(
         //collectionId:  widget.collectionId ,
         buildOnData: (Tags tags) {
           final galleryGroups = <GalleryGroup>[];

@@ -2,10 +2,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/db_items.dart';
+import '../providers/db_providers.dart';
 
-class LoadItems extends ConsumerWidget {
-  const LoadItems({
+class GetMediaByCollectionId extends ConsumerWidget {
+  const GetMediaByCollectionId({
     required this.collectionId,
     required this.buildOnData,
     super.key,
@@ -16,8 +16,7 @@ class LoadItems extends ConsumerWidget {
   final bool hasBackground;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemsAsync =
-        ref.watch(clMediaListByCollectionIdProvider(collectionId));
+    final itemsAsync = ref.watch(getMediaByCollectionId(collectionId));
 
     return itemsAsync.when(
       loading: () => const CLLoadingView(),
@@ -27,8 +26,8 @@ class LoadItems extends ConsumerWidget {
   }
 }
 
-class LoadItemsInTag extends ConsumerWidget {
-  const LoadItemsInTag({
+class GetMediaByTagId extends ConsumerWidget {
+  const GetMediaByTagId({
     required this.buildOnData,
     required this.id,
     super.key,
@@ -40,7 +39,7 @@ class LoadItemsInTag extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemsAsync = ref.watch(clMediaListByTagIdProvider(id));
+    final itemsAsync = ref.watch(getMediaByTagId(id));
 
     return itemsAsync.when(
       loading: () => const CLLoadingView(),

@@ -16,7 +16,7 @@ class WhichCollection extends SharedMediaWizard {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LoadTags(
+    return GetTagsByCollectionId(
       buildOnData: (tags) => Column(
         children: [
           Flexible(

@@ -50,7 +50,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
 
   @override
   Widget build(BuildContext context) {
-    return LoadCollections(
+    return GetCollectionsByTagId(
       buildOnData: (Collections collections) {
         final newCollection = collections.entries
             .where((e) => e.id == widget.incomingMedia.collection?.id)
