@@ -33,6 +33,7 @@ class TimeLinePage extends ConsumerWidget {
                     );
                   }
                   return CLGalleryView(
+                    key: ValueKey(collections.getByID(collectionId)!.label),
                     columns: 4,
                     label: collections.getByID(collectionId)!.label,
                     galleryMap: galleryGroups,
