@@ -75,7 +75,7 @@ extension ExtCLMediaFile on CLMedia {
     return true;
   }
 
-  Future<CLMedia> copyFile({required String pathPrefix}) async {
+  Future<CLMedia> moveFile({required String pathPrefix}) async {
     if (collectionId == null) {
       throw Exception("Item can't be stored without collectionId");
     }
@@ -94,9 +94,11 @@ extension ExtCLMediaFile on CLMedia {
         } else {
           final targetFile =
               path_handler.join(targetDir, path_handler.basename(path));
-          File(targetFile).createSync(recursive: true);
-          File(path).copySync(targetFile);
-          File(path).deleteIfExists();
+          if (path != targetFile) {
+            File(targetFile).createSync(recursive: true);
+            File(path).copySync(targetFile);
+            File(path).deleteIfExists();
+          }
           return copyWith(path: targetFile);
         }
 

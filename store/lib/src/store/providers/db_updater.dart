@@ -101,7 +101,7 @@ class DBUpdaterNotifier extends StateNotifier<int> {
     for (final (i, item0) in media.entries.indexed) {
       final item1 = item0.copyWith(collectionId: collection.id);
       if (item1.isValidMedia) {
-        final item = await (await item1.copyFile(pathPrefix: await pathPrefix))
+        final item = await (await item1.moveFile(pathPrefix: await pathPrefix))
             .getMetadata();
         item.upsert(await db, pathPrefix: await pathPrefix);
       }
