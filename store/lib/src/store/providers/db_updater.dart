@@ -3,9 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:store/src/database/models/collection.dart';
-import 'package:store/src/database/models/tag.dart';
-import 'package:store/store.dart';
+import 'package:store/src/store/models/cl_media.dart';
+import 'package:store/src/store/models/collection.dart';
+import 'package:store/src/store/models/tag.dart';
 
 import 'db_manager.dart';
 

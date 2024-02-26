@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:sqlite3/sqlite3.dart';
 
-import '../../device/models/device_directories.dart';
+import 'device_directories.dart';
 
 extension SQLEXTDATETIME on DateTime? {
   String? toSQL() {

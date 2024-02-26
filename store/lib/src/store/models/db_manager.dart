@@ -1,8 +1,5 @@
 import 'package:sqlite3/sqlite3.dart';
 
-
-export 'cl_media.dart';
-
 class DBManager {
   DBManager({String? path, void Function()? sqlite3LibOverrider}) {
     sqlite3LibOverrider?.call();

@@ -15,8 +15,8 @@ class AnalysePage extends SharedMediaWizard {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetDeviceDirectories(
-      builder: (directories) {
+    return GetResources(
+      builder: (resources) {
         return GetDBManager(
           builder: (dbManager) {
             return SharedMediaWizard.buildWizard(
@@ -29,11 +29,7 @@ class AnalysePage extends SharedMediaWizard {
                 stream: () => CLMediaProcess.analyseMedia(
                   media: incomingMedia,
                   findItemByMD5: (md5String) async {
-                    return CLMediaDB.getByMD5(
-                      dbManager.db,
-                      md5String,
-                      pathPrefix: directories.docDir.path,
-                    );
+                    return resources.getMediaByMD5(md5String);
                   },
                   onDone: onDone,
                 ),

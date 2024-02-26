@@ -4,11 +4,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
-import 'package:store/src/database/models/cl_media.dart';
+import 'package:store/src/store/models/cl_media.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../database/providers/uuid.dart';
-import '../../../device/widgets/when_devdir_accessible.dart';
+import '../../../store/providers/uuid.dart';
+import '../../../store/widgets/get_resources.dart';
 import '../model/thumbnail_services.dart';
 import '../provider/thumbnail_services.dart';
 
@@ -51,15 +51,15 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
         });
       }
     }
-    return GetDeviceDirectories(
-      builder: (directories) {
+    return GetResources(
+      builder: (resources) {
         final uuidGenerator = ref.watch(uuidProvider);
         final uuid = uuidGenerator.v5(
           Uuid.NAMESPACE_URL,
-          CLMediaDB.relativePath(widget.media.path, directories),
+          CLMediaDB.relativePath(widget.media.path, resources.directories),
         );
         final previewFileName =
-            path.join(directories.cacheDir.path, '$uuid.tn.jpeg');
+            path.join(resources.directories.cacheDir.path, '$uuid.tn.jpeg');
 
         final hasThumbnail =
             !widget.refresh && File(previewFileName).existsSync();
