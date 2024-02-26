@@ -56,9 +56,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: AppTheme(
-            child: FullscreenLayout(
-              child: e.builder(context, state),
-            ),
+            child: e.builder(context, state),
           ),
           transitionsBuilder: app.transitionBuilder,
         ),
