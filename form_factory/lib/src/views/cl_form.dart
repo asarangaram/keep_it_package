@@ -44,8 +44,8 @@ class CLFormState extends State<CLForm> {
               ),
             ),
           CLFormSelectMultipleDescriptors => CLFormSelectMultipleState(
-              selectedEntities:
-                  (desc as CLFormSelectMultipleDescriptors).initialValues,
+              selectedEntities: List.from(
+                  (desc as CLFormSelectMultipleDescriptors).initialValues),
               scrollController: ScrollController(),
               searchController: SearchController(),
               wrapKey: GlobalKey(),

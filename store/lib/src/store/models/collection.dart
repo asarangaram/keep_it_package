@@ -70,13 +70,13 @@ extension CollectionDB on Collection {
     if (id != null) {
       db.execute(
         'UPDATE Collection SET label = ? , description = ?  WHERE id = ?',
-        [label, description, id],
+        [label.trim(), description?.trim(), id],
       );
       return getById(db, id!);
     } else {
       db.execute(
         'INSERT INTO Collection (label, description) VALUES (?, ?) ',
-        [label, description],
+        [label.trim(), description?.trim()],
       );
       return getById(db, db.lastInsertRowId);
     }
@@ -118,8 +118,8 @@ extension CollectionDB on Collection {
   ) {
     if (id != null) {
       db.execute(
-        'INSERT OR IGNORE INTO TagCollection '
-        'WHERE tag_id = ? , collection_id = ? ',
+        'DELETE FROM TagCollection '
+        'WHERE tag_id = ? AND collection_id = ? ',
         [tagId, id],
       );
     }

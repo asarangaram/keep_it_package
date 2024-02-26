@@ -64,13 +64,13 @@ extension TagDB on Tag {
     if (id != null) {
       db.execute(
         'UPDATE Tag SET label = ?, description = ? WHERE id = ? ',
-        [label, description, id],
+        [label.trim(), description?.trim(), id],
       );
       return getById(db, id!);
     } else {
       db.execute(
         'INSERT INTO Tag (label, description) VALUES (?, ?) ',
-        [label, description],
+        [label.trim(), description?.trim()],
       );
       return getById(db, db.lastInsertRowId);
     }

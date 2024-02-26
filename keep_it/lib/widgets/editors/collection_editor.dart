@@ -117,7 +117,9 @@ class CollectionEditor extends StatelessWidget {
                       );
                       final tags =
                           (result['tags']! as CLFormSelectMultipleResult)
-                              .selectedEntities as List<Tag>;
+                              .selectedEntities
+                              .map((e) => e as Tag)
+                              .toList();
                       onSubmit(updated, tags);
                     },
                     onCancel: isDialog ? null : onCancel,
@@ -142,7 +144,7 @@ class CollectionEditor extends StatelessWidget {
       return "Name can't be empty";
     }
 
-    if (existingLabel == newLabel0) {
+    if (existingLabel?.trim() == newLabel0) {
       // Nothing changed.
       return null;
     }

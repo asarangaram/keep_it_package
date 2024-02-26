@@ -37,9 +37,11 @@ class DBUpdaterNotifier extends StateNotifier<int> {
     final updatedTagsIds = updatedTags.map((e) => e.id);
 
     final tagsAdded = updatedTagsIds
-      ..where((item) => !existingTagsIds.contains(item)).toList();
+        .where((item) => !existingTagsIds.contains(item))
+        .toList();
     final tagsRemoved = existingTagsIds
-      ..where((item) => !updatedTagsIds.contains(item)).toList();
+        .where((item) => !updatedTagsIds.contains(item))
+        .toList();
 
     if (tagsAdded.isNotEmpty) {
       for (final tagId in tagsAdded) {

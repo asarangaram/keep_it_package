@@ -37,7 +37,7 @@ class CLFormSelectMultiple extends StatelessWidget {
           }
           return null;
         },
-        initialValue: state.selectedEntities,
+        initialValue: List.from(state.selectedEntities),
         builder: (fieldState) {
           return InputDecorator(
             decoration: FormDesign.inputDecoration(

@@ -44,7 +44,7 @@ final getNonEmptyTagsByCollectionId =
       collectionId,
     );
   }
-  _infoLogger('Loading Tags for collection.id = $collectionId');
+  _infoLogger('Loading Non  Empty Tags for collection.id = $collectionId');
   return Tags(tags);
 });
 
@@ -77,7 +77,7 @@ final getNonEmptyCollectionsByTagId =
         CollectionDB.getByTagId(resources.db, tagId, includeEmpty: false);
     tag = TagDB.getById(resources.db, tagId);
   }
-  _infoLogger('Loading Collections for tag.id = $tagId');
+  _infoLogger('Loading Non  Empty Collections for tag.id = $tagId');
   return Collections(collections, tag: tag);
 });
 

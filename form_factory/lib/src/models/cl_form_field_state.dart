@@ -25,6 +25,11 @@ class CLFormTextFieldState extends CLFormFieldState {
     controller.dispose();
     focusNode?.dispose();
   }
+
+  @override
+  String toString() {
+    return "controller.text: ${controller.text}";
+  }
 }
 
 @immutable
@@ -50,12 +55,18 @@ class CLFormSelectMultipleState extends CLFormFieldState {
   }
 
   @override
-  CLFormFieldResult get result => CLFormSelectMultipleResult(selectedEntities);
+  CLFormFieldResult get result =>
+      CLFormSelectMultipleResult(List.from(selectedEntities));
 
   @override
   void dispose() {
     scrollController.dispose();
     searchController.dispose();
+  }
+
+  @override
+  String toString() {
+    return "$selectedEntities";
   }
 }
 

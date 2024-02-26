@@ -21,6 +21,10 @@ class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
   final String? hint;
   final String initialValue;
   final int maxLines;
+  @override
+  String toString() {
+    return "initialValues: $initialValue, title: $title, lable: $label}";
+  }
 }
 
 @immutable
@@ -42,6 +46,11 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
   final String? Function(Object e)? descriptionBuilder;
   final Future<Object?> Function(Object item) onSelectSuggestion;
   final Future<Object?> Function(String label) onCreateByLabel;
+
+  @override
+  String toString() {
+    return "initialValues: $initialValues, suggestionsAvailable: ${suggestionsAvailable.length}";
+  }
 }
 
 @immutable
@@ -63,4 +72,9 @@ class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
   final String? Function(Object e)? descriptionBuilder;
   final Future<Object?> Function(Object item) onSelectSuggestion;
   final Future<Object?> Function(String label) onCreateByLabel;
+
+  @override
+  String toString() {
+    return "initialValues: $initialValues, suggestionsAvailable: ${suggestionsAvailable.length}";
+  }
 }
