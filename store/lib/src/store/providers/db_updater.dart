@@ -87,9 +87,7 @@ class DBUpdaterNotifier extends StateNotifier<int> {
     // Collections must be non null
     // Atleast one item must be there
     // tag can be empty, but can't be null
-    if (media.collection == null ||
-        media.entries.isEmpty ||
-        media.tags == null) {
+    if (media.collection == null || media.entries.isEmpty) {
       throw Exception("Can't handle $media");
     }
 
@@ -123,7 +121,9 @@ class DBUpdaterNotifier extends StateNotifier<int> {
       fractCompleted: 0.92,
     );
     // Process Tags
-    await replaceTags(collection, media.tags!);
+    if (media.tags != null) {
+      await replaceTags(collection, media.tags!);
+    }
     refreshProviders(collectionIdList: {collection.id!});
     yield const Progress(
       currentItem: 'Completed Successfull',

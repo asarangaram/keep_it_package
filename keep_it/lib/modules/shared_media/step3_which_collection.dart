@@ -39,6 +39,9 @@ class WhichCollection extends SharedMediaWizard {
                   mg: incomingMedia.copyWith(
                     collection: collection,
                     tags: tags,
+                    entries: incomingMedia.entries
+                        .map((e) => e.copyWith(collectionId: collection.id))
+                        .toList(),
                   ),
                 );
               },
