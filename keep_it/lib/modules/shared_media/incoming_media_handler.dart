@@ -12,10 +12,12 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
     required this.incomingMedia,
     required this.onDiscard,
+    required this.findItemByMD5,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final void Function() onDiscard;
+  final Future<CLMedia?> Function(String) findItemByMD5;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -41,6 +43,9 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               incomingMedia: widget.incomingMedia,
               onDone: onDone,
               onCancel: onDiscard,
+              findItemByMD5: (md5String) async {
+                return widget.findItemByMD5(md5String);
+              },
             ),
           (final candiates) when candidates!.hasTargetMismatchedItems =>
             DuplicatePage(

@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:store/store.dart';
 import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
@@ -119,9 +120,15 @@ class KeepItApp implements AppDescriptor {
         required CLSharedMedia incomingMedia,
         required void Function() onDiscard,
       }) =>
-          IncomingMediaHandler(
-            incomingMedia: incomingMedia,
-            onDiscard: onDiscard,
+          GetResources(
+            builder: (resources) {
+              return IncomingMediaHandler(
+                incomingMedia: incomingMedia,
+                onDiscard: onDiscard,
+                findItemByMD5: (md5String) =>
+                    resources.getMediaByMD5(md5String),
+              );
+            },
           );
 
   @override

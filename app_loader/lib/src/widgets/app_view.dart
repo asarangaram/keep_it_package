@@ -9,8 +9,8 @@ import 'package:go_router/go_router.dart';
 
 import '../models/app_descriptor.dart';
 import '../models/cl_route_descriptor.dart';
-import 'bottom_nav_page.dart';
 import '../shared_media/widgets/incoming_media_monitor.dart';
+import 'bottom_nav_page.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({
