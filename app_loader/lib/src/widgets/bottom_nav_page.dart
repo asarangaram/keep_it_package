@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'incoming_media_monitor.dart';
+import '../shared_media/models/cl_shared_media.dart';
+import '../shared_media/widgets/incoming_media_monitor.dart';
 
 class BottomNavigationPage extends ConsumerStatefulWidget {
   const BottomNavigationPage({
@@ -16,7 +17,7 @@ class BottomNavigationPage extends ConsumerStatefulWidget {
   final StatefulNavigationShell child;
   final Widget Function(
     BuildContext context, {
-    required CLMediaList incomingMedia,
+    required CLSharedMedia incomingMedia,
     required void Function() onDiscard,
   }) onMedia;
 

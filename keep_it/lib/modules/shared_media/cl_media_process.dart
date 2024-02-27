@@ -1,19 +1,18 @@
 import 'dart:io';
 
+import 'package:app_loader/app_loader.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:crypto/crypto.dart';
 import 'package:exif/exif.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 
-import '../models/cl_media.dart';
-import '../views/stream_progress_view.dart';
-
 class CLMediaProcess {
   static Stream<Progress> analyseMedia({
-    required CLMediaList media,
+    required CLSharedMedia media,
     required Future<CLMedia?> Function(String md5) findItemByMD5,
     required void Function({
-      required CLMediaList mg,
+      required CLSharedMedia mg,
     }) onDone,
   }) async* {
     final candidates = <CLMedia>[];
@@ -89,7 +88,7 @@ class CLMediaProcess {
     }
     await Future<void>.delayed(const Duration(milliseconds: 10));
     onDone(
-      mg: CLMediaList(entries: candidates, collection: media.collection),
+      mg: CLSharedMedia(entries: candidates, collection: media.collection),
     );
   }
 }

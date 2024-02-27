@@ -116,7 +116,7 @@ class KeepItApp implements AppDescriptor {
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
         BuildContext context, {
-        required CLMediaList incomingMedia,
+        required CLSharedMedia incomingMedia,
         required void Function() onDiscard,
       }) =>
           IncomingMediaHandler(

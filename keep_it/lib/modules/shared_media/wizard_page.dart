@@ -1,3 +1,4 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +10,8 @@ abstract class SharedMediaWizard extends ConsumerWidget {
     required this.onCancel,
     super.key,
   });
-  final CLMediaList incomingMedia;
-  final void Function({required CLMediaList? mg}) onDone;
+  final CLSharedMedia incomingMedia;
+  final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
   static Widget buildWizard(

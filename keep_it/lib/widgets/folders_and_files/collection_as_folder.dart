@@ -28,24 +28,18 @@ class CollectionAsFolder extends ConsumerWidget {
         if (res != null) {
           final (collection, tags) = res;
           await ref.read(dbUpdaterNotifierProvider.notifier).upsertCollection(
-                collection: collection,
-                tags: tags,
-                onDone: ({required mg}) {
-                  ref
-                      .read(notificationMessageProvider.notifier)
-                      .push('Updated');
-                },
+                collection,
+                tags,
               );
+          await ref.read(notificationMessageProvider.notifier).push('Updated');
         }
 
         return true;
       },
       onDelete: () async {
-        // delete all the items in the collection !!
-
-        /* await ref
-            .read(collectionsProvider(null).notifier)
-            .deleteCollection(collection); */
+        await ref
+            .read(dbUpdaterNotifierProvider.notifier)
+            .deleteCollection(collection);
         return true;
       },
       onTap: () async {
@@ -89,15 +83,15 @@ class PreviewGenerator extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMediaByCollectionId(
       collectionId: collection.id!,
-      buildOnData: (CLMediaList items) {
+      buildOnData: (items) {
         return CLAspectRationDecorated(
           borderRadius: const BorderRadius.all(Radius.circular(16)),
           child: CLMediaCollage.byMatrixSize(
-            items.entries,
+            items,
             hCount: 2,
             vCount: 2,
             itemBuilder: (context, index) => CLMediaPreview(
-              media: items.entries[index],
+              media: items[index],
               keepAspectRatio: false,
             ),
             whenNopreview: Center(

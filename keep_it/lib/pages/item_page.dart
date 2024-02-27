@@ -16,9 +16,9 @@ class ItemPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMediaByCollectionId(
       collectionId: collectionId,
-      buildOnData: (CLMediaList items) {
-        final media = items.entries.where((e) => e.id == id).first;
-        final index = items.entries.indexOf(media);
+      buildOnData: (List<CLMedia> items) {
+        final media = items.where((e) => e.id == id).first;
+        final index = items.indexOf(media);
         return Stack(
           children: [
             LayoutBuilder(
@@ -61,7 +61,7 @@ class ItemPage extends ConsumerWidget {
 
 class ItemView extends StatefulWidget {
   const ItemView({required this.items, required this.startIndex, super.key});
-  final CLMediaList items;
+  final List<CLMedia> items;
   final int startIndex;
 
   @override
@@ -82,14 +82,14 @@ class _ItemViewState extends State<ItemView> {
   Widget build(BuildContext context) {
     return PageView.builder(
       controller: _pageController,
-      itemCount: widget.items.entries.length,
+      itemCount: widget.items.length,
       onPageChanged: (index) {
         setState(() {
           currIndex = index;
         });
       },
       itemBuilder: (context, index) {
-        final media = widget.items.entries[index];
+        final media = widget.items[index];
         final formattedDate = media.originalDate == null
             ? 'No date'
             : DateFormat('dd MMMM yyyy').format(media.originalDate!);

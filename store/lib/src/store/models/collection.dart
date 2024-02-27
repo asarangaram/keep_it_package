@@ -1,5 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite3/sqlite3.dart';
+import 'package:store/src/store/models/cl_media.dart';
+import 'package:store/src/store/models/tag.dart';
 
 extension CollectionDB on Collection {
   static Collection getById(Database db, int id) {
@@ -125,6 +127,23 @@ extension CollectionDB on Collection {
     }
   }
 
+  void addTags(Database db, List<Tag>? tagsToAdd) {
+    if (tagsToAdd != null) {
+      for (final tag in tagsToAdd) {
+        tag.upsert(db);
+        addTag(db, tag.id!);
+      }
+    }
+  }
+
+  void removeTags(Database db, List<Tag>? tagsToRemove) {
+    if (tagsToRemove != null) {
+      for (final tag in tagsToRemove) {
+        removeTag(db, tag.id!);
+      }
+    }
+  }
+
   bool isCollectionEmpty(
     Database db,
   ) {
@@ -146,5 +165,51 @@ extension CollectionDB on Collection {
 
     // Default to true if there's an issue with the query
     return true;
+  }
+
+  void addMediaDB(
+    List<CLMedia> media, {
+    required String pathPrefix,
+    required Database db,
+  }) {
+    for (final item in media) {
+      item.upsert(db, pathPrefix: pathPrefix);
+    }
+  }
+
+  (List<Tag>?, List<Tag>?) splitTags(
+    Database db,
+    List<Tag>? tags,
+  ) {
+    List<Tag>? tagsToAdd;
+    List<Tag>? tagsToRemove;
+    if (tags == null) return (null, null);
+    if (id == null) return (tags, null);
+
+    final existingTags = TagDB.getByCollectionId(db, id!);
+    tagsToAdd = tags
+        .where(
+          (updatedTag) => !existingTags
+              .any((existingTag) => existingTag.id == updatedTag.id),
+        )
+        .toList();
+
+    tagsToRemove = existingTags
+        .where(
+          (existingTag) =>
+              !tags.any((updatedTag) => updatedTag.id == existingTag.id),
+        )
+        .toList();
+    return (tagsToAdd, tagsToRemove);
+  }
+
+  void replaceTags(Database db, List<Tag>? tags) {
+    if (tags == null) {
+      return;
+    }
+    final (tagsToAdd, tagsToRemove) = splitTags(db, tags);
+
+    addTags(db, tagsToAdd);
+    removeTags(db, tagsToRemove);
   }
 }

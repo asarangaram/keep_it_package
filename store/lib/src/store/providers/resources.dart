@@ -100,16 +100,16 @@ final getMediaByTagId =
 });
 
 final getMediaByCollectionId =
-    FutureProvider.family<CLMediaList, int>((ref, collectionId) async {
+    FutureProvider.family<List<CLMedia>, int>((ref, collectionId) async {
   final resources = await ref.watch(resourcesProvider.future);
-  final collection = CollectionDB.getById(resources.db, collectionId);
+
   final entries = CLMediaDB.getByCollectionId(
     resources.db,
     collectionId,
     pathPrefix: resources.directories.docDir.path,
   );
   _infoLogger('Loading Media by collection.id = $collectionId');
-  return CLMediaList(entries: entries, collection: collection);
+  return entries;
 });
 
 bool _disableInfoLogger = false;

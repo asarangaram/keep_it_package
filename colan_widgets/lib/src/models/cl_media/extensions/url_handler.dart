@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 
-import '../cl_media_type.dart';
+import '../../cl_media_type.dart';
 
 class URLHandler {
   static Future<CLMediaType?> getMimeType(String url) async {
@@ -24,6 +26,45 @@ class URLHandler {
       /** */
     }
     return CLMediaType.url;
+  }
+
+  static Future<bool> download(String url, String filePath) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode != 200) return false;
+      File(filePath)
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(response.bodyBytes);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<String> generateFileName(String url) async {
+    String? filename;
+    final response = await http.get(Uri.parse(url));
+
+    // Check if we get file name
+    if (response.headers.containsKey('content-disposition')) {
+      final contentDispositionHeader = response.headers['content-disposition'];
+      final match = RegExp('filename=(?:"([^"]+)"|(.*))')
+          .firstMatch(contentDispositionHeader!);
+
+      filename = match?[1] ?? match?[2];
+    }
+    filename = filename ?? 'unnamedfile';
+    /* if (path_handler.extension(filename).isEmpty) {
+          // If no extension found, add extension if possible
+          // Parse the Content-Type header to determine the file extension
+          final mediaType =
+              MediaType.parse(response.headers['content-type'] ?? '');
+
+          final fileExtension = mediaType.subtype;
+          filename = '$filename.$fileExtension';
+        } */
+
+    return '${DateTime.now().millisecondsSinceEpoch}_filename';
   }
 }
 /* 

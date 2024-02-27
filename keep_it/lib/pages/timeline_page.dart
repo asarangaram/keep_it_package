@@ -24,7 +24,7 @@ class TimeLinePage extends ConsumerWidget {
                 collectionId: collectionId,
                 buildOnData: (items) {
                   final galleryGroups = <GalleryGroup>[];
-                  for (final entry in items.entries.filterByDate().entries) {
+                  for (final entry in items.filterByDate().entries) {
                     galleryGroups.add(
                       GalleryGroup(
                         entry.value,

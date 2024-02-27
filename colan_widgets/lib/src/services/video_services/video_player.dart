@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/cl_media/cl_media.dart';
+import '../../models/cl_media.dart';
 
 import 'providers/video_player_state.dart';
 import 'views/video_layer.dart';

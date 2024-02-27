@@ -17,9 +17,13 @@ class SaveCollection extends SharedMediaWizard {
   Widget build(BuildContext context, WidgetRef ref) {
     final updater = ref.watch(dbUpdaterNotifierProvider.notifier);
     return StreamProgressView(
-      stream: () => updater.upsertMediaList(
-        media: incomingMedia,
-        onDone: onDone,
+      stream: () => updater.upsertCollectionWithMedia(
+        collection: incomingMedia.collection!,
+        newTagsListToReplace: incomingMedia.tags,
+        media: incomingMedia.entries,
+        onDone: () {
+          onDone(mg: null);
+        },
       ),
       onCancel: onCancel,
     );

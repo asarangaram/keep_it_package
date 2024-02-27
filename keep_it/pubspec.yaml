@@ -15,7 +15,9 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
+  crypto: ^3.0.3
   cupertino_icons: ^1.0.2
+  exif: ^3.3.0
   file_picker: ^6.1.1
   flutter:
     sdk: flutter

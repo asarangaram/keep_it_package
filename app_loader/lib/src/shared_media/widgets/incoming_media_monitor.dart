@@ -1,7 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/cl_shared_media.dart';
 import '../providers/incoming_media.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
@@ -13,7 +13,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
   final Widget child;
   final Widget Function(
     BuildContext context, {
-    required CLMediaList incomingMedia,
+    required CLSharedMedia incomingMedia,
     required void Function() onDiscard,
   }) onMedia;
 

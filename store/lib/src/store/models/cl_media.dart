@@ -57,7 +57,7 @@ extension CLMediaDB on CLMedia {
       }
       updatedPath =
           pathPrefix != null ? path.replaceFirst(removeString, '') : path;
-      if (!updatedPath.startsWith('keep_it/')) {
+      if (!updatedPath.startsWith('keep_it/$collectionId')) {
         throw Exception('Media must be keep under keep_it dir ');
       }
     } else {

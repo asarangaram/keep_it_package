@@ -1,3 +1,4 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,8 +31,8 @@ class DuplicatePageStateful extends ConsumerStatefulWidget {
     required this.onCancel,
     super.key,
   });
-  final CLMediaList incomingMedia;
-  final void Function({required CLMediaList? mg}) onDone;
+  final CLSharedMedia incomingMedia;
+  final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
   @override
@@ -40,7 +41,7 @@ class DuplicatePageStateful extends ConsumerStatefulWidget {
 }
 
 class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
-  late CLMediaList currentMedia;
+  late CLSharedMedia currentMedia;
 
   @override
   void initState() {
@@ -94,7 +95,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                     height: 100,
                     width: double.infinity,
                     child: ExistsInCollection(
-                      media: CLMediaList(
+                      media: CLSharedMedia(
                         list: alreadyInSameCollection,
                         collectionId: widget.duplicates.collectionId,
                       ),
@@ -132,7 +133,7 @@ class ExistInDifferentCollection extends StatelessWidget {
     super.key,
   });
 
-  final CLMediaList media;
+  final CLSharedMedia media;
   final Collections collections;
   final void Function(CLMedia media) onRemove;
 

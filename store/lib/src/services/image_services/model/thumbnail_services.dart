@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -213,7 +212,9 @@ class ThumbnailService {
         try {
           if (File(dataIn.path).existsSync()) {
             if (dataIn.isVideo) {
-              File(dataIn.thumbnailPath).deleteIfExists();
+              if (File(dataIn.thumbnailPath).existsSync()) {
+                File(dataIn.thumbnailPath).deleteSync();
+              }
               final path = await VideoThumbnail.thumbnailFile(
                 video: dataIn.path,
                 //thumbnailPath: dataIn.thumbnailPath,
@@ -225,7 +226,8 @@ class ThumbnailService {
                   'Unable to create video thumbnail',
                 );
               }
-              File(path).moveTo(dataIn.thumbnailPath);
+              File(path).copySync(dataIn.thumbnailPath);
+              File(path).deleteSync();
             } else {
               final img.Image? inputImage;
               if (lookupMimeType(dataIn.path) == 'image/heic') {

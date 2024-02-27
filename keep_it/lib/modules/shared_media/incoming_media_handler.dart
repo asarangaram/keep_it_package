@@ -1,3 +1,4 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +14,7 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
     required this.onDiscard,
     super.key,
   });
-  final CLMediaList incomingMedia;
+  final CLSharedMedia incomingMedia;
   final void Function() onDiscard;
 
   @override
@@ -22,7 +23,7 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
 }
 
 class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
-  CLMediaList? candidates;
+  CLSharedMedia? candidates;
 
   @override
   void didChangeDependencies() {
@@ -67,7 +68,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     }
   }
 
-  void onSave({required CLMediaList? mg}) {
+  void onSave({required CLSharedMedia? mg}) {
     ref.read(notificationMessageProvider.notifier).push('Saved');
     onDiscard();
 
@@ -76,7 +77,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     });
   }
 
-  void onDone({CLMediaList? mg}) {
+  void onDone({CLSharedMedia? mg}) {
     if (mg == null || mg.isEmpty) {
       ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
       onDiscard();

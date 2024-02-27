@@ -11,7 +11,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
     super.key,
     this.hasBackground = true,
   });
-  final Widget Function(CLMediaList items) buildOnData;
+  final Widget Function(List<CLMedia> items) buildOnData;
   final int collectionId;
   final bool hasBackground;
   @override
