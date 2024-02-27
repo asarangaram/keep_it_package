@@ -8,19 +8,13 @@ import '../providers/resources.dart';
 
 class GetResources extends ConsumerWidget {
   const GetResources({required this.builder, super.key});
-  final Widget Function(Resources resources, {void Function()? onNewMedia})
-      builder;
+  final Widget Function(Resources resources) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final resourcesAsync = ref.watch(resourcesProvider);
     return resourcesAsync.when(
-      data: (res) => builder(
-        res,
-        onNewMedia: () {
-          ref.read(dbUpdaterNotifierProvider.notifier).refreshProviders();
-        },
-      ),
+      data: builder,
       error: (error, stackTrace) => CLErrorView(errorMessage: error.toString()),
       loading: CLLoadingView.new,
     );

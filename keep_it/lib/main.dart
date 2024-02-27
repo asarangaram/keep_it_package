@@ -120,16 +120,9 @@ class KeepItApp implements AppDescriptor {
         required CLSharedMedia incomingMedia,
         required void Function() onDiscard,
       }) =>
-          GetResources(
-            builder: (resources, {void Function()? onNewMedia}) {
-              return IncomingMediaHandler(
-                incomingMedia: incomingMedia,
-                onDiscard: onDiscard,
-                findItemByMD5: (md5String) =>
-                    resources.getMediaByMD5(md5String),
-                onNewMedia: () => onNewMedia?.call(),
-              );
-            },
+          IncomingMediaHandler(
+            incomingMedia: incomingMedia,
+            onDiscard: onDiscard,
           );
 
   @override

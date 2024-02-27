@@ -12,14 +12,10 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
     required this.incomingMedia,
     required this.onDiscard,
-    required this.findItemByMD5,
-    required this.onNewMedia,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final void Function() onDiscard;
-  final Future<CLMedia?> Function(String) findItemByMD5;
-  final void Function() onNewMedia;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -37,17 +33,16 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   @override
   Widget build(BuildContext context) {
+    _infoLogger('build IncomingMediaHandler $candidates');
+    final Widget widget0;
     try {
-      return FullscreenLayout(
+      widget0 = FullscreenLayout(
         onClose: onDiscard,
         child: switch (candidates) {
           null => AnalysePage(
               incomingMedia: widget.incomingMedia,
               onDone: onDone,
               onCancel: onDiscard,
-              findItemByMD5: (md5String) async {
-                return widget.findItemByMD5(md5String);
-              },
             ),
           (final candiates) when candidates!.hasTargetMismatchedItems =>
             DuplicatePage(
@@ -73,11 +68,13 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
         child: CLErrorView(errorMessage: e.toString()),
       );
     }
+    _infoLogger('build IncomingMediaHandler - Done');
+    return widget0;
   }
 
   void onSave({required CLSharedMedia? mg}) {
     ref.read(notificationMessageProvider.notifier).push('Saved');
-    widget.onNewMedia();
+
     onDiscard();
   }
 
@@ -98,5 +95,12 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     if (mounted) {
       setState(() {});
     }
+  }
+}
+
+bool _disableInfoLogger = true;
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
   }
 }
