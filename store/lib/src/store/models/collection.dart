@@ -173,7 +173,7 @@ extension CollectionDB on Collection {
     required Database db,
   }) {
     for (final item in media) {
-      item.upsert(db, pathPrefix: pathPrefix);
+      item.upsert(db, pathPrefix: pathPrefix, collectionPath: path);
     }
   }
 

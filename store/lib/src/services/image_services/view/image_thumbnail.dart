@@ -52,7 +52,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
       }
     }
     return GetResources(
-      builder: (resources) {
+      builder: (resources, {onNewMedia}) {
         final uuidGenerator = ref.watch(uuidProvider);
         final uuid = uuidGenerator.v5(
           Uuid.NAMESPACE_URL,

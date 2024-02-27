@@ -13,11 +13,13 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
     required this.incomingMedia,
     required this.onDiscard,
     required this.findItemByMD5,
+    required this.onNewMedia,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final void Function() onDiscard;
   final Future<CLMedia?> Function(String) findItemByMD5;
+  final void Function() onNewMedia;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -75,11 +77,8 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   void onSave({required CLSharedMedia? mg}) {
     ref.read(notificationMessageProvider.notifier).push('Saved');
+    widget.onNewMedia();
     onDiscard();
-
-    setState(() {
-      candidates = null;
-    });
   }
 
   void onDone({CLSharedMedia? mg}) {

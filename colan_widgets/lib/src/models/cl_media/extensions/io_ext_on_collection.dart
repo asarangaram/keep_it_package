@@ -9,11 +9,12 @@ import '../../cl_media.dart';
 import '../../collection.dart';
 
 extension IOExtOnCollection on Collection {
+  String get path => 'keep_it/cluster_${id!}';
+
   void deleteDir(String pathPrefix) {
     final targetDir = path_handler.join(
       pathPrefix,
-      'keep_it',
-      'cluster_${id!}',
+      path,
     );
     Directory(targetDir).deleteSync(recursive: true);
   }
@@ -22,14 +23,16 @@ extension IOExtOnCollection on Collection {
     required List<CLMedia>? media,
     required String pathPrefix,
   }) async {
+    if (id == null) {
+      throw Exception("can't add media to non existing collection");
+    }
+    final targetDir = path_handler.join(pathPrefix, path);
     if (media?.isEmpty ?? false) {
       final updated = <CLMedia>[];
       for (final item0 in media!) {
-        final item1 = item0..setCollectionId(id);
-        if (item1.isValidMedia) {
-          final item = await item1.moveFile(pathPrefix: pathPrefix);
-          updated.add(item);
-        }
+        final item1 =
+            await item0.setCollectionId(id).moveFile(targetDir: targetDir);
+        updated.add(item1);
       }
       return updated;
     }
@@ -44,6 +47,7 @@ extension IOExtOnCollection on Collection {
     if (media.isEmpty) {
       onDone([]);
     }
+    final targetDir = path_handler.join(pathPrefix, path);
 
     yield Progress(
       currentItem: 'processing ${media[0].basename}',
@@ -51,11 +55,10 @@ extension IOExtOnCollection on Collection {
     );
     final updated = <CLMedia>[];
     for (final (i, item0) in media.indexed) {
-      final item1 = item0.setCollectionId(id);
-      if (item1.isValidMedia) {
-        final item = await item1.moveFile(pathPrefix: pathPrefix);
-        updated.add(item);
-      }
+      final item =
+          await item0.setCollectionId(id).moveFile(targetDir: targetDir);
+      updated.add(item);
+
       if (i + 1 < media.length) {
         yield Progress(
           currentItem: 'processing ${media[i + 1].basename}',

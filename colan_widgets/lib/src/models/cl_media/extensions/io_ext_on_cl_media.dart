@@ -51,15 +51,13 @@ extension IOExtOnCLMedia on CLMedia {
     return true;
   }
 
-  Future<CLMedia> moveFile({required String pathPrefix}) async {
+  Future<CLMedia> moveFile({
+    required String targetDir,
+  }) async {
     if (collectionId == null) {
       throw Exception("Item can't be stored without collectionId");
     }
-    final targetDir = path_handler.join(
-      pathPrefix,
-      'keep_it',
-      'cluster_${collectionId!}',
-    );
+
     switch (type) {
       case CLMediaType.image:
       case CLMediaType.video:

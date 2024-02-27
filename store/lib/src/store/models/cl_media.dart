@@ -45,20 +45,20 @@ extension CLMediaDB on CLMedia {
 
   CLMedia upsert(
     Database db, {
-    required String? pathPrefix,
+    required String pathPrefix,
+    required String collectionPath,
   }) {
     final String updatedPath;
+    final String removeString;
+    if (pathPrefix.endsWith('/')) {
+      removeString = pathPrefix;
+    } else {
+      removeString = '$pathPrefix/';
+    }
     if (type.isFile) {
-      final String removeString;
-      if (pathPrefix?.endsWith('/') ?? true) {
-        removeString = pathPrefix ?? '';
-      } else {
-        removeString = '$pathPrefix/';
-      }
-      updatedPath =
-          pathPrefix != null ? path.replaceFirst(removeString, '') : path;
-      if (!updatedPath.startsWith('keep_it/$collectionId')) {
-        throw Exception('Media must be keep under keep_it dir ');
+      updatedPath = path.replaceFirst(removeString, '');
+      if (!updatedPath.startsWith(collectionPath)) {
+        throw Exception('Media must be keep under collection dir ');
       }
     } else {
       updatedPath = path;

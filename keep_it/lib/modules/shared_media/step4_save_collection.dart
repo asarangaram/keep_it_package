@@ -19,8 +19,9 @@ class SaveCollection extends SharedMediaWizard {
     return StreamProgressView(
       stream: () => updater.upsertCollectionWithMedia(
         collection: incomingMedia.collection!,
-        newTagsListToReplace: incomingMedia.tags,
-        media: incomingMedia.entries,
+        newTagsListToReplace:
+            incomingMedia.tags == null ? null : List.from(incomingMedia.tags!),
+        media: List.from(incomingMedia.entries),
         onDone: () {
           onDone(mg: null);
         },

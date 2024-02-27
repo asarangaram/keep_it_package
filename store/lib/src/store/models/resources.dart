@@ -104,7 +104,7 @@ extension ExtUpsertOnResources on Resources {
       pathPrefix: directories.docDir.path,
       onDone: (updated) {
         collectionUpdated.addMediaDB(
-          media,
+          updated,
           pathPrefix: directories.docDir.path,
           db: db,
         );

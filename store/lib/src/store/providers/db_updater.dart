@@ -51,7 +51,7 @@ class DBUpdaterNotifier extends StateNotifier<int> {
   }) async* {
     final stream = (await resources)
         .upsertCollectionWithMedia(collection, newTagsListToReplace, media, () {
-      refreshProviders();
+      //refreshProviders();
       onDone.call();
     });
 
