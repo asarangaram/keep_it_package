@@ -41,7 +41,7 @@ class KeepItApp implements AppDescriptor {
   CLAppInitializer get appInitializer => (ref) async {
         // TODO(anandas): Delete only if saved preference is set to reset.
         // ignore: dead_code, literal_only_boolean_expressions
-        if (false) {
+        if (true) {
           for (final dir in [
             await getApplicationDocumentsDirectory(),
             await getApplicationCacheDirectory(),
@@ -50,6 +50,9 @@ class KeepItApp implements AppDescriptor {
           }
           await FilePicker.platform.clearTemporaryFiles();
         }
+
+        await Store.create();
+
         return true;
       };
 

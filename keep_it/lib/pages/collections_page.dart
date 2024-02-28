@@ -25,7 +25,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
         tagId: widget.tagId,
         buildOnData: (collections) {
           final galleryGroups = <GalleryGroup>[];
-          for (final rows in collections.entries.convertTo2D(3)) {
+          for (final rows in collections.convertTo2D(3)) {
             galleryGroups.add(
               GalleryGroup(
                 rows,
@@ -33,10 +33,8 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
             );
           }
           return CLGalleryView(
-            key: ValueKey(
-              collections.tag?.label ?? 'Collections',
-            ),
-            label: collections.tag?.label ?? 'Collections',
+            key: const ValueKey('Collections'),
+            label: 'Collections',
             columns: 3,
             galleryMap: galleryGroups,
             emptyState: const EmptyState(),
@@ -46,7 +44,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
               collection: item as Collection,
               quickMenuScopeKey: quickMenuScopeKey,
             ),
-            tagPrefix: 'timeline ${collections.tag?.id ?? "all"}',
+            tagPrefix: 'CollectionsFolderView',
             isScrollablePositionedList: false,
             onPickFiles: (widget.tagId != null)
                 ? null

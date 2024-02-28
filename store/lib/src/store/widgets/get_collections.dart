@@ -1,48 +1,43 @@
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:signals/signals_flutter.dart';
 
-import '../providers/resources.dart';
+import '../../store_signals/store.dart';
+import '../../store_signals/subscriptions.dart';
 
-class GetCollectionsByTagId extends ConsumerWidget {
-  const GetCollectionsByTagId({
-    required this.buildOnData,
-    super.key,
-    this.tagId,
-  });
-  final Widget Function(Collections collections) buildOnData;
-  final int? tagId;
+class GetCollectionsByTagId extends StatelessWidget {
+  const GetCollectionsByTagId({required this.buildOnData, super.key});
+  final Widget Function(Collections collection) buildOnData;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(getCollectionsByTagId(tagId));
-
-    return collectionsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(errorMessage: err.toString()),
-      data: buildOnData,
-    );
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
 
-class GetNonEmptyCollectionsByTagId extends ConsumerWidget {
+class GetNonEmptyCollectionsByTagId extends StatelessWidget {
   const GetNonEmptyCollectionsByTagId({
     required this.buildOnData,
     super.key,
     this.tagId,
   });
-  final Widget Function(Collections collections) buildOnData;
+  final Widget Function(List<Collection> collections) buildOnData;
   final int? tagId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(getNonEmptyCollectionsByTagId(tagId));
+  Widget build(BuildContext context) {
+    final collections = Store.store
+        .subscribe<Collection>(
+          Subscription<Collection>(
+            'collections',
+            query: 'SELECT * FROM Collection ' 'ORDER BY LOWER(label) ASC',
+            watchTables: {'Collection'},
+            fromMap: Collection.fromMap,
+          ),
+        )
+        .watch(context);
 
-    return collectionsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(errorMessage: err.toString()),
-      data: buildOnData,
-    );
+    return buildOnData(collections);
   }
 }
