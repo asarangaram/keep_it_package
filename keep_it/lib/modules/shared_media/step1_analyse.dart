@@ -30,8 +30,8 @@ class AnalysePage extends SharedMediaWizard {
                 stream: () => CLMediaProcess.analyseMedia(
                   media: incomingMedia,
                   findItemByMD5: (md5String) async =>
-                      (DBQueries.mediaByMD5 as DBQuery<CLMedia>)
-                          .read(dbManager.db),
+                      (DBQueries.mediaByMD5.sql as DBQuery<CLMedia>)
+                          .copyWith(parameters: [md5String]).read(dbManager.db),
                   onDone: onDone,
                 ),
                 onCancel: onCancel,

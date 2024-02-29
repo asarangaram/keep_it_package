@@ -20,7 +20,7 @@ class DBQuery<T> {
   final Map<String, dynamic> Function(
     Map<String, dynamic> map, {
     required AppSettings appSettings,
-    bool? validate,
+    bool validate,
   })? preprocess;
 
   DBQuery<T> copyWith({
