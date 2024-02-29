@@ -142,8 +142,11 @@ enum QueryId {
             triggerOnTables: const {'Tag', 'TagCollection', 'Item'},
             fromMap: (map, {pathPrefix}) => Tag.fromMap(map),
           ),
-        // TODO: Handle this case.
-        QueryId.mediaByMD5 => throw UnimplementedError(),
+        QueryId.mediaByMD5 => DBQuery(
+            sql: 'SELECT * FROM Item WHERE md5String = ?',
+            triggerOnTables: const {'Item'},
+            fromMap: (map, {pathPrefix}) => Tag.fromMap(map),
+          ),
       };
 }
 
