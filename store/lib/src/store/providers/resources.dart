@@ -15,7 +15,7 @@ final resourcesProvider = FutureProvider<Resources>((ref) async {
 
   _infoLogger('Refreshing resources');
   return Resources(
-    directories: await ref.watch(docDirProvider.future),
+    directories: await ref.watch(deviceDirectoriesProvider.future),
     db: (await ref.watch(dbManagerProvider.future)).db,
   );
 });
