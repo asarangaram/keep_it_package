@@ -1,7 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/src/store/models/db_query.dart';
+import 'package:store/src/store/models/m3_db_query.dart';
+import '../models/m3_db_queries.dart';
 import 'async_widgets.dart';
 
 class GetCollection extends ConsumerWidget {
@@ -19,7 +20,7 @@ class GetCollection extends ConsumerWidget {
       return buildOnData(null);
     }
     return BuildOnQueryMultiple<Collection>(
-      query: (QueryId.collection.sql.copyWith(parameters: [id]))
+      query: (DBQueries.collection.sql.copyWith(parameters: [id]))
           as DBQuery<Collection>,
       builder: (data) {
         final collection = data.where((e) => e.id == id).firstOrNull;
@@ -44,11 +45,11 @@ class GetCollectionMultiple extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final qid = excludeEmpty
         ? (tagId == null)
-            ? QueryId.collectionsExcludeEmpty
-            : QueryId.collectionsByTagIDExcludeEmpty
+            ? DBQueries.collectionsExcludeEmpty
+            : DBQueries.collectionsByTagIDExcludeEmpty
         : (tagId == null)
-            ? QueryId.collectionsAll
-            : QueryId.collectionsByTagID;
+            ? DBQueries.collectionsAll
+            : DBQueries.collectionsByTagID;
 
     return BuildOnQueryMultiple<Collection>(
       query: (qid.sql as DBQuery<Collection>)

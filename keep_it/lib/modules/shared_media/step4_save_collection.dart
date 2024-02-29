@@ -15,18 +15,22 @@ class SaveCollection extends SharedMediaWizard {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final updater = ref.watch(dbUpdaterNotifierProvider.notifier);
-    return StreamProgressView(
-      stream: () => updater.upsertCollectionWithMedia(
-        collection: incomingMedia.collection!,
-        newTagsListToReplace:
-            incomingMedia.tags == null ? null : List.from(incomingMedia.tags!),
-        media: List.from(incomingMedia.entries),
-        onDone: () {
-          onDone(mg: null);
-        },
-      ),
-      onCancel: onCancel,
+    return GetDBManager(
+      builder: (dbManager) {
+        return StreamProgressView(
+          stream: () => dbManager.upsertCollectionWithMedia(
+            collection: incomingMedia.collection!,
+            newTagsListToReplace: incomingMedia.tags == null
+                ? null
+                : List.from(incomingMedia.tags!),
+            media: List.from(incomingMedia.entries),
+            onDone: () {
+              onDone(mg: null);
+            },
+          ),
+          onCancel: onCancel,
+        );
+      },
     );
   }
 }

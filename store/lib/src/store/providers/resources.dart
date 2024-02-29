@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart';
+/* import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/resources.dart';
@@ -114,3 +114,4 @@ void _infoLogger(String msg) {
     logger.i(msg);
   }
 }
+ */

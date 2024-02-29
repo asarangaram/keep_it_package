@@ -2,7 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/db_query.dart';
+import '../models/m3_db_queries.dart';
+import '../models/m3_db_query.dart';
 import 'async_widgets.dart';
 
 class GetTag extends ConsumerWidget {
@@ -20,7 +21,7 @@ class GetTag extends ConsumerWidget {
       return buildOnData(null);
     }
     return BuildOnQueryMultiple<Tag>(
-      query: (QueryId.tag.sql.copyWith(parameters: [id])) as DBQuery<Tag>,
+      query: (DBQueries.tag.sql.copyWith(parameters: [id])) as DBQuery<Tag>,
       builder: (data) {
         final tag = data.where((e) => e.id == id).firstOrNull;
         return buildOnData(tag);
@@ -44,11 +45,11 @@ class GetTagMultiple extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final qid = excludeEmpty
         ? (collectionId == null)
-            ? QueryId.tagsAllExcludeEmpty
-            : QueryId.tagsByCollectionIDExcludeEmpty
+            ? DBQueries.tagsAllExcludeEmpty
+            : DBQueries.tagsByCollectionIDExcludeEmpty
         : (collectionId == null)
-            ? QueryId.tagsAll
-            : QueryId.tagsByCollectionID;
+            ? DBQueries.tagsAll
+            : DBQueries.tagsByCollectionID;
 
     return BuildOnQueryMultiple<Tag>(
       query: (qid.sql as DBQuery<Tag>)

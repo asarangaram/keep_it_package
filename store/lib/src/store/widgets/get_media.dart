@@ -2,7 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/db_query.dart';
+import '../models/m3_db_queries.dart';
+import '../models/m3_db_query.dart';
 
 import 'async_widgets.dart';
 
@@ -18,7 +19,8 @@ class GetMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return BuildOnQueryMultiple<CLMedia>(
-      query: (QueryId.media.sql.copyWith(parameters: [id])) as DBQuery<CLMedia>,
+      query:
+          (DBQueries.media.sql.copyWith(parameters: [id])) as DBQuery<CLMedia>,
       builder: (data) {
         final media = data.where((e) => e.id == id).firstOrNull;
         if (media != null) {
@@ -48,9 +50,9 @@ class GetMediaMultiple extends ConsumerWidget {
     }
     final qid = (collectionId == null)
         ? (tagID == null)
-            ? QueryId.mediaAll
-            : QueryId.mediaByTagID
-        : QueryId.mediaByCollectionID;
+            ? DBQueries.mediaAll
+            : DBQueries.mediaByTagID
+        : DBQueries.mediaByCollectionID;
 
     return BuildOnQueryMultiple<CLMedia>(
       query: (qid.sql as DBQuery<CLMedia>).copyWith(

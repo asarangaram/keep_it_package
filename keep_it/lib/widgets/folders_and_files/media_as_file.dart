@@ -23,8 +23,9 @@ class MediaAsFile extends ConsumerWidget {
       quickMenuScopeKey: quickMenuScopeKey,
       onDelete: () async {
         //TODO (anandas): Confirm delete
-        await ref.read(dbUpdaterNotifierProvider.notifier).deleteItem(media);
-        return true;
+        /* await ref.read(dbUpdaterNotifierProvider.notifier).deleteItem(media);
+        return true; */
+        throw UnimplementedError('Wait');
       },
       onTap: () async {
         unawaited(

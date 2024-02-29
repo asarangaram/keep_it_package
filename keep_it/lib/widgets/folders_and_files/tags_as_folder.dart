@@ -20,46 +20,51 @@ class TagAsFolder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WrapStandardQuickMenu(
-      quickMenuScopeKey: quickMenuScopeKey,
-      onEdit: () async {
-        final updated = await TagEditor.popupDialog(context, tag: tag);
-        if (updated != null) {
-          await ref.read(dbUpdaterNotifierProvider.notifier).upsertTag(updated);
-        }
-        return true;
-      },
-      /* onDelete: () async {
-        // delete all the items in the tag !!
-        await ref.read(tagsProvider(null).notifier).deleteTag(tag);
-        return true;
-      }, */
-      onTap: () async {
-        unawaited(
-          context.push(
-            '/collections/${tag.id}',
+    return GetDBManager(
+      builder: (dbManager) {
+        return WrapStandardQuickMenu(
+          quickMenuScopeKey: quickMenuScopeKey,
+          onEdit: () async {
+            final updated = await TagEditor.popupDialog(context, tag: tag);
+            if (updated != null) {
+              /* await dbManager.updateTag(updated); */
+              throw UnimplementedError('Wait');
+            }
+            return true;
+          },
+          /* onDelete: () async {
+            // delete all the items in the tag !!
+            await ref.read(tagsProvider(null).notifier).deleteTag(tag);
+            return true;
+          }, */
+          onTap: () async {
+            unawaited(
+              context.push(
+                '/collections/${tag.id}',
+              ),
+            );
+            return true;
+          },
+          child: Column(
+            children: [
+              Flexible(
+                child: PreviewGenerator(
+                  tag: tag,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  tag.label,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         );
-        return true;
       },
-      child: Column(
-        children: [
-          Flexible(
-            child: PreviewGenerator(
-              tag: tag,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              tag.label,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

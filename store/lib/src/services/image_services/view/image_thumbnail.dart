@@ -8,7 +8,7 @@ import 'package:store/src/store/models/cl_media.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../store/providers/uuid.dart';
-import '../../../store/widgets/get_resources.dart';
+import '../../../store/widgets/w1_get_app_settings.dart';
 import '../model/thumbnail_services.dart';
 import '../provider/thumbnail_services.dart';
 
@@ -51,12 +51,13 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
         });
       }
     }
-    return GetResources(
+    return GetAppSettings(
       builder: (resources, {onNewMedia}) {
         final uuidGenerator = ref.watch(uuidProvider);
         final uuid = uuidGenerator.v5(
           Uuid.NAMESPACE_URL,
-          CLMediaDB.relativePath(widget.media.path, resources.directories),
+          CLMediaDB.relativePath(
+              widget.media.path, resources.directories.docDir.path),
         );
         final previewFileName =
             path.join(resources.directories.cacheDir.path, '$uuid.tn.jpeg');

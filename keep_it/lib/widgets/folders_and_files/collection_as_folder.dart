@@ -27,20 +27,22 @@ class CollectionAsFolder extends ConsumerWidget {
             await CollectionEditor.popupDialog(context, collection: collection);
         if (res != null) {
           final (collection, tags) = res;
-          await ref.read(dbUpdaterNotifierProvider.notifier).upsertCollection(
+          /* await ref.read(dbUpdaterNotifierProvider.notifier).upsertCollection(
                 collection,
                 tags,
-              );
+              ); */
+
           await ref.read(notificationMessageProvider.notifier).push('Updated');
+          throw UnimplementedError('Wait');
         }
 
         return true;
       },
       onDelete: () async {
-        await ref
+        /* await ref
             .read(dbUpdaterNotifierProvider.notifier)
-            .deleteCollection(collection);
-        return true;
+            .deleteCollection(collection);return true; */
+        throw UnimplementedError('Wait');
       },
       onTap: () async {
         unawaited(

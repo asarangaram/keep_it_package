@@ -1,8 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:sqlite3/sqlite3.dart';
-
-import 'device_directories.dart';
+import 'package:sqlite_async/sqlite_async.dart';
 
 extension SQLEXTDATETIME on DateTime? {
   String? toSQL() {
@@ -14,59 +12,22 @@ extension SQLEXTDATETIME on DateTime? {
 }
 
 extension CLMediaDB on CLMedia {
-  static CLMedia getById(
-    Database db,
-    int itemId, {
-    required String? pathPrefix,
-  }) {
-    final Map<String, dynamic> map =
-        db.select('', [itemId]).first;
-    return CLMedia.fromMap(map, pathPrefix: pathPrefix);
+  static String relativePath(String path, String pathPrefix) {
+    if (path.startsWith(pathPrefix)) {
+      return path.replaceFirst(pathPrefix, '');
+    }
+    // Paths outside the storage, lets keep the absoulte path
+    return path;
   }
 
-  static CLMedia? getByMD5(
-    Database db,
-    String md5String, {
-    required String? pathPrefix,
-  }) {
-    final Map<String, dynamic>? map = db.select(
-      'SELECT * FROM Item WHERE md5String = ?',
-      [md5String],
-    ).firstOrNull;
-    if (map == null) return null;
-    return CLMedia.fromMap(map, pathPrefix: pathPrefix);
-  }
-
-  
-
-  CLMedia upsert(
-    Database db, {
-    required String pathPrefix,
-    required String collectionPath,
-  }) {
-    final String updatedPath;
-    final String removeString;
-    if (pathPrefix.endsWith('/')) {
-      removeString = pathPrefix;
-    } else {
-      removeString = '$pathPrefix/';
-    }
-    if (type.isFile) {
-      updatedPath = path.replaceFirst(removeString, '');
-      if (!updatedPath.startsWith(collectionPath)) {
-        throw Exception('Media must be keep under collection dir ');
-      }
-    } else {
-      updatedPath = path;
-    }
-
+  Future<void> upsert(SqliteWriteContext tx) async {
     if (id != null) {
-      db.execute(
+      await tx.execute(
         'UPDATE  Item SET path = ?, '
         'ref = ?, collection_id = ?, type=?, originalDate=?, md5String=? '
         'WHERE id = ?',
         [
-          updatedPath,
+          path,
           ref,
           collectionId,
           type.name,
@@ -75,63 +36,25 @@ extension CLMediaDB on CLMedia {
           id,
         ],
       );
-      return getById(db, id!, pathPrefix: pathPrefix);
+    } else {
+      await tx.execute(
+        'INSERT  INTO Item (path, '
+        'ref, collection_id, type, originalDate, md5String) '
+        'VALUES (?, ?, ?, ?, ?, ?) ',
+        [
+          path,
+          ref,
+          collectionId,
+          type.name,
+          originalDate.toSQL(),
+          md5String,
+        ],
+      );
     }
-    db.execute(
-      'INSERT  INTO Item (path, '
-      'ref, collection_id, type, originalDate, md5String) '
-      'VALUES (?, ?, ?, ?, ?, ?) ',
-      [
-        updatedPath,
-        ref,
-        collectionId,
-        type.name,
-        originalDate.toSQL(),
-        md5String,
-      ],
-    );
-    return getById(db, db.lastInsertRowId, pathPrefix: pathPrefix);
   }
 
-  void delete(Database db) {
+  Future<void> delete(SqliteWriteContext tx) async {
     if (id == null) return;
-    db.execute('DELETE FROM Item WHERE id = ?', [id]);
-  }
-
-  static List<CLMedia> getByCollectionId(
-    Database db,
-    int collectionId, {
-    required String? pathPrefix,
-  }) {
-    final List<Map<String, dynamic>> maps = db.select(
-      ''
-      ' ORDER BY Item.updatedDate DESC',
-      [collectionId],
-    );
-
-    return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
-  }
-
-  static List<CLMedia> getByTagId(
-    Database db,
-    int tagId, {
-    required String? pathPrefix,
-  }) {
-    final List<Map<String, dynamic>> maps = db.select(
-      '''
-       $tagId
-      ORDER BY Item.updatedDate DESC
-    ''',
-    );
-
-    return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
-  }
-
-  static String relativePath(String path, DeviceDirectories directories) {
-    if (path.startsWith(directories.container.path)) {
-      return path.replaceFirst(directories.container.path, '');
-    }
-    // Paths outside the container, lets keep the absoulte path
-    return path;
+    await tx.execute('DELETE FROM Item WHERE id = ?', [id]);
   }
 }

@@ -1,11 +1,47 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/src/store/models/collection.dart';
 
-class DBManagerNew {
-  static Future<SqliteDatabase> createInstances(String path) async {
-    final db = SqliteDatabase(path: path);
+class DBManager {
+  DBManager({required this.db});
+
+  final SqliteDatabase db;
+
+  static Future<DBManager> createInstances({
+    required String dbpath,
+  }) async {
+    final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    return db;
+    return DBManager(db: db);
+  }
+
+  Stream<Progress> upsertCollectionWithMedia({
+    required Collection collection,
+    required List<Tag>? newTagsListToReplace,
+    required List<CLMedia> media,
+    required void Function() onDone,
+  }) async* {
+    {
+      await collection.upsert(db);
+    }
+
+    /*  final collectionUpdated =
+    final stream = collectionUpdated.addMediaWithProgress(
+      media: media,
+      pathPrefix: directories.docDir.path,
+      onDone: (updated) {
+        collectionUpdated.addMediaDB(
+          updated,
+          pathPrefix: directories.docDir.path,
+          db: db,
+        );
+        onDone();
+      },
+    );
+    await for (final item in stream) {
+      yield item;
+    } */
   }
 }
 
@@ -109,26 +145,3 @@ final migrations = SqliteMigrations()
     ''');
     }),
   );
-/* 
-class Store extends DBManager {
-  Store(super.docDir);
-
-  static Future<Store> create() async {
-    final docDir = await getApplicationDocumentsDirectory();
-    _store ??= Store(docDir);
-    await migrations.migrate(_store!.db);
-    print(await _store!.db.execute('SELECT * from Collection'));
-
-    return _store!;
-  }
-
-  static Store get instance {
-    if (_store == null) {
-      throw Exception('Store has not been created');
-    }
-    return _store!;
-  }
-}
-
-Store? _store;
- */

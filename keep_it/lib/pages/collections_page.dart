@@ -63,7 +63,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
                         );
                       },
                 onRefresh: () async {
-                  // TODO (anandas):
+                  // TODO(anandas): how to refresh?
                 },
                 onPop: context.canPop()
                     ? () {
