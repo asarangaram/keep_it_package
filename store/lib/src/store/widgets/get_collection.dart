@@ -1,28 +1,59 @@
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/src/store/models/db_query.dart';
+import 'async_widgets.dart';
 
-
-import '../providers/resources.dart';
-
-class GetCollectionById extends ConsumerWidget {
-  const GetCollectionById({
+class GetCollection extends ConsumerWidget {
+  const GetCollection({
     required this.buildOnData,
-    required this.id,
+    this.id,
     super.key,
   });
-  final Widget Function(Collection collections) buildOnData;
-  final int id;
+  final Widget Function(Collection? collections) buildOnData;
+  final int? id;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(getCollectionById(id));
+    if (id == null) {
+      return buildOnData(null);
+    }
+    return BuildOnQueryMultiple<Collection>(
+      query: (QueryId.collection.sql.copyWith(parameters: [id]))
+          as DBQuery<Collection>,
+      builder: (data) {
+        final collection = data.where((e) => e.id == id).firstOrNull;
+        return buildOnData(collection);
+      },
+    );
+  }
+}
 
-    return collectionsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(errorMessage: err.toString()),
-      data: buildOnData,
+class GetCollectionMultiple extends ConsumerWidget {
+  const GetCollectionMultiple({
+    required this.buildOnData,
+    super.key,
+    this.excludeEmpty = false,
+    this.tagId,
+  });
+  final Widget Function(List<Collection> collections) buildOnData;
+  final bool excludeEmpty;
+  final int? tagId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final qid = excludeEmpty
+        ? (tagId == null)
+            ? QueryId.collectionsExcludeEmpty
+            : QueryId.collectionsByTagIDExcludeEmpty
+        : (tagId == null)
+            ? QueryId.collectionsAll
+            : QueryId.collectionsByTagID;
+
+    return BuildOnQueryMultiple<Collection>(
+      query: (qid.sql as DBQuery<Collection>)
+          .copyWith(parameters: (tagId == null) ? [] : [tagId]),
+      builder: buildOnData,
     );
   }
 }

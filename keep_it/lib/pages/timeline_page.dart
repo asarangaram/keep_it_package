@@ -15,12 +15,12 @@ class TimeLinePage extends ConsumerWidget {
   final int collectionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => GetCollectionsByTagId(
+  Widget build(BuildContext context, WidgetRef ref) => GetCollectionMultiple(
         buildOnData: (collections) {
-          return GetCollectionById(
+          return GetCollection(
             id: collectionId,
-            buildOnData: (Collection collection) {
-              return GetMediaByCollectionId(
+            buildOnData: (collection) {
+              return GetMediaMultiple(
                 collectionId: collectionId,
                 buildOnData: (items) {
                   final galleryGroups = <GalleryGroup>[];
@@ -33,9 +33,9 @@ class TimeLinePage extends ConsumerWidget {
                     );
                   }
                   return CLGalleryView(
-                    key: ValueKey(collections.getByID(collectionId)!.label),
+                    key: ValueKey(collection?.label ?? 'All Media'),
                     columns: 4,
-                    label: collections.getByID(collectionId)!.label,
+                    label: collection?.label ?? 'All Media',
                     galleryMap: galleryGroups,
                     emptyState: const EmptyState(),
                     labelTextBuilder: (index) =>

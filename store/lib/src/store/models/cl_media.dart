@@ -20,7 +20,7 @@ extension CLMediaDB on CLMedia {
     required String? pathPrefix,
   }) {
     final Map<String, dynamic> map =
-        db.select('SELECT * FROM Item WHERE id = ?', [itemId]).first;
+        db.select('', [itemId]).first;
     return CLMedia.fromMap(map, pathPrefix: pathPrefix);
   }
 
@@ -37,11 +37,7 @@ extension CLMediaDB on CLMedia {
     return CLMedia.fromMap(map, pathPrefix: pathPrefix);
   }
 
-  static List<CLMedia> getAll(Database db, {String pathPrefix = ''}) {
-    final List<Map<String, dynamic>> maps = db.select('SELECT * FROM Item '
-        ' ORDER BY Item.updatedDate DESC');
-    return maps.map((e) => CLMedia.fromMap(e, pathPrefix: pathPrefix)).toList();
-  }
+  
 
   CLMedia upsert(
     Database db, {
@@ -108,7 +104,7 @@ extension CLMediaDB on CLMedia {
     required String? pathPrefix,
   }) {
     final List<Map<String, dynamic>> maps = db.select(
-      'SELECT * FROM Item WHERE collection_id = ?'
+      ''
       ' ORDER BY Item.updatedDate DESC',
       [collectionId],
     );
@@ -123,11 +119,7 @@ extension CLMediaDB on CLMedia {
   }) {
     final List<Map<String, dynamic>> maps = db.select(
       '''
-      SELECT Item.*
-      FROM Item
-      JOIN Collection ON Item.collection_id = Collection.id
-      JOIN TagCollection ON Collection.id = TagCollection.collection_id
-      WHERE TagCollection.tag_id = $tagId
+       $tagId
       ORDER BY Item.updatedDate DESC
     ''',
     );

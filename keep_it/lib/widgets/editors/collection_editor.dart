@@ -52,13 +52,13 @@ class CollectionEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: GetCollectionsByTagId(
+      child: GetCollectionMultiple(
         buildOnData: (collections) {
           final collection =
-              collections.entries.where((e) => e.id == collectionId).first;
-          return GetTagsByCollectionId(
+              collections.where((e) => e.id == collectionId).first;
+          return GetTagMultiple(
             buildOnData: (existingTags) {
-              return GetTagsByCollectionId(
+              return GetTagMultiple(
                 collectionId: collection.id,
                 buildOnData: (currentTags) {
                   return CLForm(
@@ -73,27 +73,25 @@ class CollectionEditor extends StatelessWidget {
                           existingLabel: collection.label,
                           collections: collections,
                         ),
-                        
                       ),
                       'description': CLFormTextFieldDescriptor(
                         title: 'About',
                         label: 'Describe about this collection',
                         initialValue: collection.description ?? '',
                         validator: (_) => null,
-                        
                         maxLines: 4,
                       ),
                       'tags': CLFormSelectMultipleDescriptors(
                         title: 'Tags',
                         label: 'Select Tags',
                         suggestionsAvailable: [
-                          ...existingTags.entries,
+                          ...existingTags,
                           ...suggestedTags.excludeByLabel(
-                            existingTags.entries,
+                            existingTags,
                             (Tag e) => e.label,
                           ),
                         ],
-                        initialValues: currentTags.entries,
+                        initialValues: collection.id == null ? [] : currentTags,
                         labelBuilder: (e) => (e as Tag).label,
                         descriptionBuilder: (e) => (e as Tag).description,
                         onSelectSuggestion: (Object item) async {
@@ -136,7 +134,7 @@ class CollectionEditor extends StatelessWidget {
   String? validateName({
     required String? newLabel,
     required String? existingLabel,
-    required Collections collections,
+    required List<Collection> collections,
   }) {
     final newLabel0 = newLabel?.trim();
 
@@ -148,7 +146,7 @@ class CollectionEditor extends StatelessWidget {
       // Nothing changed.
       return null;
     }
-    if (collections.entries.map((e) => e.label.trim()).contains(newLabel0)) {
+    if (collections.map((e) => e.label.trim()).contains(newLabel0)) {
       return '$newLabel0 already exists';
     }
     return null;

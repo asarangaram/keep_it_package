@@ -11,8 +11,6 @@ export 'src/store/providers/db_updater.dart';
 /// Widgets that load resources. Similar to future builder, but with
 /// Riverpod's AsyncValue
 export 'src/store/widgets/get_collection.dart';
-export 'src/store/widgets/get_collections.dart';
-
 export 'src/store/widgets/get_media.dart';
 export 'src/store/widgets/get_resources.dart';
 export 'src/store/widgets/get_tags.dart';

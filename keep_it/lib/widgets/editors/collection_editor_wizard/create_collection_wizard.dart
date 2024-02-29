@@ -45,8 +45,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
   @override
   Widget build(BuildContext context) {
     if (collection == null || onEditLabel) {
-      return GetTagsByCollectionId(
-        collectionId: collection?.id,
+      return GetTagMultiple(
         buildOnData: (currTags) {
           return PickCollection(
             collection: collection,
@@ -54,7 +53,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
               if (collection.id != null) {
                 widget.onDone(collection: collection, tags: null);
                 hasDescription = true;
-                selectedTags = currTags.entries;
+                selectedTags = currTags;
               }
               setState(() {
                 onEditLabel = false;

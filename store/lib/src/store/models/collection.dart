@@ -1,62 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:sqlite3/sqlite3.dart';
-import 'package:store/src/store/models/cl_media.dart';
-import 'package:store/src/store/models/tag.dart';
+import 'package:sqlite_async/sqlite_async.dart';
+
 
 extension CollectionDB on Collection {
-  static Collection getById(Database db, int id) {
-    final map = db.select(
-      'SELECT * FROM Collection WHERE id = ? ' 'ORDER BY LOWER(label) ASC',
-      [id],
-    ).first;
-    return Collection.fromMap(map);
-  }
-
-  static List<Collection> getAll(Database db, {bool includeEmpty = true}) {
-    final ResultSet maps;
-    if (includeEmpty) {
-      maps = db.select(
-        'SELECT * FROM Collection ' 'ORDER BY LOWER(label) ASC',
-      );
-    } else {
-      maps = db.select('SELECT DISTINCT Collection.* FROM Collection '
-          'JOIN Item ON Collection.id = Item.collection_id;');
-    }
-    return maps.map(Collection.fromMap).toList();
-  }
-
-  static List<Collection> getByTagId(
-    Database db,
-    int id, {
-    bool includeEmpty = true,
-  }) {
-    final ResultSet maps;
-    if (includeEmpty) {
-      maps = db.select(
-        '''
-        SELECT DISTINCT Collection.*
-        FROM Collection
-        JOIN TagCollection ON Collection.id = TagCollection.collection_id
-        WHERE TagCollection.tag_id = :tagId;
-    ''',
-        [id],
-      );
-    } else {
-      maps = db.select(
-        '''
-        SELECT DISTINCT Collection.*
-        FROM Collection
-        JOIN Item ON Collection.id = Item.collection_id
-        JOIN TagCollection ON Collection.id = TagCollection.collection_id
-        WHERE TagCollection.tag_id = :tagId;
-    ''',
-        [id],
-      );
-    }
-    return maps.map(Collection.fromMap).toList();
-  }
-
-  static List<Collection> getUnused(
+  /* static List<Collection> getUnused(
     Database db,
   ) {
     final ResultSet maps;
@@ -66,10 +13,10 @@ extension CollectionDB on Collection {
         'WHERE Item.collection_id IS NULL;');
 
     return maps.map(Collection.fromMap).toList();
-  }
+  } */
 
-  Collection upsert(Database db) {
-    if (id != null) {
+  Collection upsert(SqliteDatabase db) {
+    /* if (id != null) {
       db.execute(
         'UPDATE Collection SET label = ? , description = ?  WHERE id = ?',
         [label.trim(), description?.trim(), id],
@@ -81,10 +28,11 @@ extension CollectionDB on Collection {
         [label.trim(), description?.trim()],
       );
       return getById(db, db.lastInsertRowId);
-    }
+    } */
+    return const Collection(label: 'unexpected');
   }
 
-  void delete(Database db) {
+  void delete(SqliteDatabase db) {
     if (id == null) return;
     db
       ..execute(
@@ -102,7 +50,7 @@ extension CollectionDB on Collection {
   }
 
   void addTag(
-    Database db,
+    SqliteDatabase db,
     int tagId,
   ) {
     if (id != null) {
@@ -115,7 +63,7 @@ extension CollectionDB on Collection {
   }
 
   void removeTag(
-    Database db,
+    SqliteDatabase db,
     int tagId,
   ) {
     if (id != null) {
@@ -127,7 +75,7 @@ extension CollectionDB on Collection {
     }
   }
 
-  void addTags(Database db, List<Tag>? tagsToAdd) {
+  /* void addTags(SqliteDatabase db, List<Tag>? tagsToAdd) {
     if (tagsToAdd != null) {
       for (final tag in tagsToAdd) {
         tag.upsert(db);
@@ -136,16 +84,16 @@ extension CollectionDB on Collection {
     }
   }
 
-  void removeTags(Database db, List<Tag>? tagsToRemove) {
+  void removeTags(SqliteDatabase db, List<Tag>? tagsToRemove) {
     if (tagsToRemove != null) {
       for (final tag in tagsToRemove) {
         removeTag(db, tag.id!);
       }
     }
-  }
+  } */
 
-  bool isCollectionEmpty(
-    Database db,
+  /* bool isCollectionEmpty(
+    SqliteDatabase db,
   ) {
     if (id != null) {
       final result = db.select(
@@ -165,20 +113,20 @@ extension CollectionDB on Collection {
 
     // Default to true if there's an issue with the query
     return true;
-  }
+  } */
 
-  void addMediaDB(
+  /* void addMediaDB(
     List<CLMedia> media, {
     required String pathPrefix,
-    required Database db,
+    required SqliteDatabase db,
   }) {
     for (final item in media) {
       item.upsert(db, pathPrefix: pathPrefix, collectionPath: path);
     }
-  }
+  } */
 
-  (List<Tag>?, List<Tag>?) splitTags(
-    Database db,
+  /* (List<Tag>?, List<Tag>?) splitTags(
+    SqliteDatabase db,
     List<Tag>? tags,
   ) {
     List<Tag>? tagsToAdd;
@@ -211,5 +159,5 @@ extension CollectionDB on Collection {
 
     addTags(db, tagsToAdd);
     removeTags(db, tagsToRemove);
-  }
+  } */
 }

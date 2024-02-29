@@ -34,7 +34,7 @@ class DBFetchNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
   }
 }
 
-final dbFetchProviderProvider = StateNotifierProvider.family<
+final dbFetchAndWatch = StateNotifierProvider.family<
     AsyncValue<DBFetchNotifier>,
     AsyncValue<List<dynamic>>,
     DBQuery<dynamic>>((ref, dbQuery) {

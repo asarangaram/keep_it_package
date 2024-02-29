@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/resources.dart';
-import '../providers/db_updater.dart';
 import '../providers/resources.dart';
 
 class GetResources extends ConsumerWidget {

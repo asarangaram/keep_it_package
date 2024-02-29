@@ -13,13 +13,13 @@ class DBQuery<T> {
   final String sql;
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
-  final T Function(Map<String, dynamic> map) fromMap;
+  final T Function(Map<String, dynamic> map, {String? pathPrefix}) fromMap;
 
   DBQuery<T> copyWith({
     String? sql,
     Set<String>? triggerOnTables,
     List<Object?>? parameters,
-    T Function(Map<String, dynamic> map)? fromMap,
+    T Function(Map<String, dynamic> map, {String? pathPrefix})? fromMap,
   }) {
     return DBQuery<T>(
       sql: sql ?? this.sql,

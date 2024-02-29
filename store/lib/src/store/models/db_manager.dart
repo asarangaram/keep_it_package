@@ -1,4 +1,4 @@
-import 'package:sqlite3/sqlite3.dart';
+/* 
 
 class DBManager {
   DBManager({String? path, void Function()? sqlite3LibOverrider}) {
@@ -89,3 +89,4 @@ class DBManager {
     db.dispose();
   }
 }
+ */

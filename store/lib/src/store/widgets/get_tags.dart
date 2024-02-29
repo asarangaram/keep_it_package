@@ -2,46 +2,58 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/resources.dart';
+import '../models/db_query.dart';
+import 'async_widgets.dart';
 
-class GetTagsByCollectionId extends ConsumerWidget {
-  const GetTagsByCollectionId({
+class GetTag extends ConsumerWidget {
+  const GetTag({
     required this.buildOnData,
+    required this.id,
     super.key,
-    this.collectionId,
   });
-  final Widget Function(Tags tags) buildOnData;
-  final int? collectionId;
+  final Widget Function(Tag? tag) buildOnData;
+  final int? id;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagsAsync = ref.watch(getTagsByCollectionId(collectionId));
-
-    return tagsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(errorMessage: err.toString()),
-      data: buildOnData,
+    if (id == null) {
+      return buildOnData(null);
+    }
+    return BuildOnQueryMultiple<Tag>(
+      query: (QueryId.tag.sql.copyWith(parameters: [id])) as DBQuery<Tag>,
+      builder: (data) {
+        final tag = data.where((e) => e.id == id).firstOrNull;
+        return buildOnData(tag);
+      },
     );
   }
 }
 
-class GetNonEmptyTagsByCollectionId extends ConsumerWidget {
-  const GetNonEmptyTagsByCollectionId({
+class GetTagMultiple extends ConsumerWidget {
+  const GetTagMultiple({
     required this.buildOnData,
     super.key,
     this.collectionId,
+    this.excludeEmpty = false,
   });
-  final Widget Function(Tags tags) buildOnData;
+  final Widget Function(List<Tag> tags) buildOnData;
+  final bool excludeEmpty;
   final int? collectionId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagsAsync = ref.watch(getNonEmptyTagsByCollectionId(collectionId));
+    final qid = excludeEmpty
+        ? (collectionId == null)
+            ? QueryId.tagsAllExcludeEmpty
+            : QueryId.tagsByCollectionIDExcludeEmpty
+        : (collectionId == null)
+            ? QueryId.tagsAll
+            : QueryId.tagsByCollectionID;
 
-    return tagsAsync.when(
-      loading: () => const CLLoadingView(),
-      error: (err, _) => CLErrorView(errorMessage: err.toString()),
-      data: buildOnData,
+    return BuildOnQueryMultiple<Tag>(
+      query: (qid.sql as DBQuery<Tag>)
+          .copyWith(parameters: (collectionId == null) ? [] : [collectionId]),
+      builder: buildOnData,
     );
   }
 }

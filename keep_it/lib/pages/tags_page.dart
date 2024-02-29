@@ -20,11 +20,12 @@ class _TagsViewState extends ConsumerState<TagsPage> {
   bool isLoading = false;
 
   @override
-  Widget build(BuildContext context) => GetNonEmptyTagsByCollectionId(
+  Widget build(BuildContext context) => GetTagMultiple(
+        excludeEmpty: true,
         //collectionId:  widget.collectionId ,
-        buildOnData: (Tags tags) {
+        buildOnData: (tags) {
           final galleryGroups = <GalleryGroup>[];
-          for (final rows in tags.entries.convertTo2D(3)) {
+          for (final rows in tags.convertTo2D(3)) {
             galleryGroups.add(
               GalleryGroup(
                 rows,

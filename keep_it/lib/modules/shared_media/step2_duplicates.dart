@@ -51,9 +51,9 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
 
   @override
   Widget build(BuildContext context) {
-    return GetCollectionsByTagId(
-      buildOnData: (Collections collections) {
-        final newCollection = collections.entries
+    return GetCollectionMultiple(
+      buildOnData: (List<Collection> collections) {
+        final newCollection = collections
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;
         final collectionLablel = newCollection?.label != null
@@ -134,7 +134,7 @@ class ExistInDifferentCollection extends StatelessWidget {
   });
 
   final CLSharedMedia media;
-  final Collections collections;
+  final List<Collection> collections;
   final void Function(CLMedia media) onRemove;
 
   @override
@@ -166,9 +166,8 @@ class ExistInDifferentCollection extends StatelessWidget {
               itemCount: duplicates.length,
               itemBuilder: (BuildContext ctx, index) {
                 final m = duplicates[index];
-                final currCollection = collections.entries
-                    .where((e) => e.id == m.collectionId)
-                    .first;
+                final currCollection =
+                    collections.where((e) => e.id == m.collectionId).first;
 
                 return SizedBox(
                   height: 80,

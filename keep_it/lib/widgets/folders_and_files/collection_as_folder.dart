@@ -81,8 +81,8 @@ class PreviewGenerator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMediaByCollectionId(
-      collectionId: collection.id!,
+    return GetMediaMultiple(
+      collectionId: collection.id,
       buildOnData: (items) {
         return CLAspectRationDecorated(
           borderRadius: const BorderRadius.all(Radius.circular(16)),

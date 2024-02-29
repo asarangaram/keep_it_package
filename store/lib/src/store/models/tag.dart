@@ -1,67 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:sqlite3/sqlite3.dart';
+import 'package:sqlite_async/sqlite_async.dart';
 
 extension TagDB on Tag {
-  static Tag getById(Database db, int id) {
-    final map = db.select(
-      'SELECT * FROM Tag WHERE id = ? ' 'ORDER BY LOWER(label) ASC',
-      [id],
-    ).first;
-    return Tag.fromMap(map);
-  }
-
-  static List<Tag> getAll(Database db, {bool includeEmpty = true}) {
-    final ResultSet maps;
-    if (includeEmpty) {
-      maps = db.select(
-        'SELECT * FROM Tag ' 'ORDER BY LOWER(label) ASC',
-      );
-    } else {
-      maps = db.select(
-        '''
-          SELECT DISTINCT Tag.*
-          FROM Tag
-          JOIN TagCollection ON Tag.id = TagCollection.tag_id
-          JOIN Collection ON TagCollection.collection_id = Collection.id
-          JOIN Item ON Collection.id = Item.collection_id;
-          ''',
-      );
-    }
-    return maps.map(Tag.fromMap).toList();
-  }
-
-  static List<Tag> getByCollectionId(
-    Database db,
-    int id, {
-    bool includeEmpty = true,
-  }) {
-    final List<Map<String, dynamic>> maps;
-    if (includeEmpty) {
-      maps = db.select(
-        '''
-      SELECT Tag.* FROM Tag
-      JOIN TagCollection ON Tag.id = TagCollection.tag_id
-      WHERE TagCollection.collection_id = ?
-    ''',
-        [id],
-      );
-    } else {
-      maps = db.select(
-        '''
-          SELECT DISTINCT Tag.*
-          FROM Tag
-          JOIN TagCollection ON Tag.id = TagCollection.tag_id
-          JOIN Collection ON TagCollection.collection_id = Collection.id
-          JOIN Item ON Collection.id = Item.collection_id;
-          WHERE TagCollection.collection_id = ?
-          ''',
-      );
-    }
-    return maps.map(Tag.fromMap).toList();
-  }
-
-  Tag upsert(Database db) {
-    if (id != null) {
+  Tag upsert(SqliteDatabase db) {
+    /* if (id != null) {
       db.execute(
         'UPDATE Tag SET label = ?, description = ? WHERE id = ? ',
         [label.trim(), description?.trim(), id],
@@ -73,10 +15,11 @@ extension TagDB on Tag {
         [label.trim(), description?.trim()],
       );
       return getById(db, db.lastInsertRowId);
-    }
+    } */
+    return const Tag(label: 'unknown');
   }
 
-  void transfer(Database db, int toTag) {
+  void transfer(SqliteDatabase db, int toTag) {
     if (id == null) return;
     db.execute(
       '''
@@ -94,7 +37,7 @@ extension TagDB on Tag {
     );
   }
 
-  void delete(Database db) {
+  void delete(SqliteDatabase db) {
     if (id == null) return;
     db
       ..execute(
@@ -105,18 +48,5 @@ extension TagDB on Tag {
         'DELETE FROM Tag WHERE id = ?',
         [id],
       );
-  }
-
-  static List<Tag> getByCLMediaId(Database db, int id) {
-    final List<Map<String, dynamic>> maps = db.select(
-      '''
-      SELECT Tag.* FROM Tag
-      JOIN TagCollection ON Tag.id = TagCollection.tag_id
-      JOIN Item ON TagCollection.collection_id = Item.collection_id
-      WHERE Item.id = ?
-    ''',
-      [id],
-    );
-    return maps.map(Tag.fromMap).toList();
   }
 }

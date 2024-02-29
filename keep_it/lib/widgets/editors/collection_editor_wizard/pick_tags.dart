@@ -17,9 +17,9 @@ class PickTags extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetTagsByCollectionId(
+    return GetTagMultiple(
       buildOnData: (existingTags) {
-        return GetTagsByCollectionId(
+        return GetTagMultiple(
           collectionId: collection.id,
           buildOnData: (currentTags) {
             return CLWizardFormField(
@@ -34,13 +34,13 @@ class PickTags extends StatelessWidget {
                 labelBuilder: (e) => (e as Tag).label,
                 descriptionBuilder: (e) => (e as Tag).description,
                 suggestionsAvailable: [
-                  ...existingTags.entries,
+                  ...existingTags,
                   ...suggestedTags.excludeByLabel(
-                    existingTags.entries,
+                    existingTags,
                     (Tag e) => e.label,
                   ),
                 ],
-                initialValues: collection.id == null ? [] : currentTags.entries,
+                initialValues: collection.id == null ? [] : currentTags,
                 onSelectSuggestion: (item) => createTag(context, item as Tag),
                 onCreateByLabel: (label) =>
                     createTag(context, Tag(label: label)),

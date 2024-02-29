@@ -50,7 +50,7 @@ class TagEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: GetTagsByCollectionId(
+      child: GetTagMultiple(
         buildOnData: (existingTags) {
           return CLForm(
             explicitScrollDownOption: !isDialog,
@@ -92,7 +92,7 @@ class TagEditor extends StatelessWidget {
     );
   }
 
-  String? validateName(String? name, Tags existingTags) {
+  String? validateName(String? name, List<Tag> existingTags) {
     if (name?.isEmpty ?? true) {
       return "Name can't be empty";
     }
@@ -103,9 +103,7 @@ class TagEditor extends StatelessWidget {
       // Nothing changed.
       return null;
     }
-    if (existingTags.entries
-        .map((e) => e.label.trim())
-        .contains(name!.trim())) {
+    if (existingTags.map((e) => e.label.trim()).contains(name!.trim())) {
       return '$name already exists';
     }
     return null;

@@ -15,7 +15,7 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetCollectionsByTagId(
+    return GetCollectionMultiple(
       buildOnData: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
@@ -29,7 +29,7 @@ class PickCollection extends StatelessWidget {
             labelBuilder: (e) => (e as Collection).label,
             descriptionBuilder: (e) => (e as Collection).description,
             suggestionsAvailable: [
-              ...collections.entries,
+              ...collections,
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,

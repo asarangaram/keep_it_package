@@ -20,50 +20,58 @@ class CollectionsPage extends ConsumerStatefulWidget {
 class _CollectionsViewState extends ConsumerState<CollectionsPage> {
   bool isLoading = false;
 
+  bool excludeEmpty = true;
+
   @override
-  Widget build(BuildContext context) => GetNonEmptyCollectionsByTagId(
-        tagId: widget.tagId,
-        buildOnData: (collections) {
-          final galleryGroups = <GalleryGroup>[];
-          for (final rows in collections.entries.convertTo2D(3)) {
-            galleryGroups.add(
-              GalleryGroup(
-                rows,
-              ),
-            );
-          }
-          return CLGalleryView(
-            key: ValueKey(
-              collections.tag?.label ?? 'Collections',
-            ),
-            label: collections.tag?.label ?? 'Collections',
-            columns: 3,
-            galleryMap: galleryGroups,
-            emptyState: const EmptyState(),
-            labelTextBuilder: (index) => galleryGroups[index].label ?? '',
-            itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-                CollectionAsFolder(
-              collection: item as Collection,
-              quickMenuScopeKey: quickMenuScopeKey,
-            ),
-            tagPrefix: 'timeline ${collections.tag?.id ?? "all"}',
-            isScrollablePositionedList: false,
-            onPickFiles: (widget.tagId != null)
-                ? null
-                : () async {
-                    await onPickFiles(
-                      context,
-                      ref,
-                    );
-                  },
-            onRefresh: () async {
-              // TODO (anandas):
+  Widget build(BuildContext context) => GetTag(
+        id: widget.tagId,
+        buildOnData: (tag) {
+          return GetCollectionMultiple(
+            excludeEmpty: excludeEmpty,
+            tagId: widget.tagId,
+            buildOnData: (collections) {
+              final tagPrefix = 'FolderView Collections tagId: ${widget.tagId}'
+                  ' excludeEmpty: $excludeEmpty';
+              final galleryGroups = <GalleryGroup>[];
+              for (final rows in collections.convertTo2D(3)) {
+                galleryGroups.add(
+                  GalleryGroup(
+                    rows,
+                  ),
+                );
+              }
+              return CLGalleryView(
+                key: ValueKey(tagPrefix),
+                label: tag?.label ?? 'Collections',
+                columns: 3,
+                galleryMap: galleryGroups,
+                emptyState: const EmptyState(),
+                labelTextBuilder: (index) => galleryGroups[index].label ?? '',
+                itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+                    CollectionAsFolder(
+                  collection: item as Collection,
+                  quickMenuScopeKey: quickMenuScopeKey,
+                ),
+                tagPrefix: tagPrefix,
+                isScrollablePositionedList: false,
+                onPickFiles: (widget.tagId != null)
+                    ? null
+                    : () async {
+                        await onPickFiles(
+                          context,
+                          ref,
+                        );
+                      },
+                onRefresh: () async {
+                  // TODO (anandas):
+                },
+                onPop: context.canPop()
+                    ? () {
+                        context.pop();
+                      }
+                    : null,
+              );
             },
-            onPop: context.canPop()
-                ? () {
-                    context.pop();
-                  }
-                : null,
           );
         },
       );

@@ -1,11 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/cl_media.dart';
-import '../models/collection.dart';
 import '../models/resources.dart';
-import '../models/tag.dart';
-import 'db_manager.dart';
+
 import 'db_updater.dart';
 import 'device_directories.dart';
 
@@ -16,10 +13,9 @@ final resourcesProvider = FutureProvider<Resources>((ref) async {
   _infoLogger('Refreshing resources');
   return Resources(
     directories: await ref.watch(deviceDirectoriesProvider.future),
-    db: (await ref.watch(dbManagerProvider.future)).db,
   );
 });
-
+/* 
 final getTagsByCollectionId =
     FutureProvider.family<Tags, int?>((ref, collectionId) async {
   final List<Tag> tags;
@@ -111,7 +107,7 @@ final getMediaByCollectionId =
   _infoLogger('Loading Media by collection.id = $collectionId');
   return entries;
 });
-
+*/
 bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
