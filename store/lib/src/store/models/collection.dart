@@ -1,21 +1,20 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
-import 'm3_db_queries.dart';
-import 'm3_db_query.dart';
-
 extension CollectionDB on Collection {
   Future<void> upsert(SqliteWriteContext tx) async {
     if (id != null) {
-      await tx.execute(
+      final x = await tx.execute(
         'UPDATE Collection SET label = ? , description = ?  WHERE id = ?',
         [label.trim(), description?.trim(), id],
       );
+      print(x);
     } else {
-      await tx.execute(
+      final x = await tx.execute(
         'INSERT INTO Collection (label, description) VALUES (?, ?) ',
         [label.trim(), description?.trim()],
       );
+      print(x);
     }
   }
 

@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/src/store/models/m3_db_query.dart';
+import 'package:store/store.dart';
 
 import '../providers/p3_db_query_result.dart';
-
-
 
 class BuildOnQueryMultiple<T> extends ConsumerWidget {
   const BuildOnQueryMultiple({

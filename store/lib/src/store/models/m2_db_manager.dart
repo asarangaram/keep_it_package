@@ -23,7 +23,9 @@ class DBManager {
     required void Function() onDone,
   }) async* {
     {
-      await collection.upsert(db);
+      await db.writeTransaction((tx) async {
+        await collection.upsert(tx);
+      });
     }
 
     /*  final collectionUpdated =

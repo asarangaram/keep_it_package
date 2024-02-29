@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/src/store/models/m1_app_settings.dart';
 
 @immutable
 class DBQuery<T> {
@@ -9,12 +10,18 @@ class DBQuery<T> {
     required this.triggerOnTables,
     required this.fromMap,
     this.parameters,
+    this.preprocess,
   });
 
   final String sql;
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
   final T Function(Map<String, dynamic> map) fromMap;
+  final Map<String, dynamic> Function(
+    Map<String, dynamic> map, {
+    required AppSettings appSettings,
+    bool? validate,
+  })? preprocess;
 
   DBQuery<T> copyWith({
     String? sql,

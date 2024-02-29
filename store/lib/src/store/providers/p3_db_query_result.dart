@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/src/store/providers/p1_app_settings.dart';
+import 'package:store/store.dart';
 
 import '../models/m1_app_settings.dart';
 import '../models/m2_db_manager.dart';
@@ -14,7 +12,7 @@ import 'p2_db_manager.dart';
 class DBQueryResultNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
   DBQueryResultNotifier({
     required this.dbManagerNew,
-    required this.appPreferences,
+    required this.appSettings,
     required this.dbQuery,
   }) : super(const AsyncValue.loading()) {
     sub = dbManagerNew.db
@@ -24,7 +22,13 @@ class DBQueryResultNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
           parameters: dbQuery.parameters ?? [],
         )
         .map(
-          (rows) => rows.map((e) => dbQuery.fromMap(preprocess(e))).toList(),
+          (rows) => rows
+              .map(
+                (e) => dbQuery.fromMap(
+                  dbQuery.preprocess?.call(e, appSettings: appSettings) ?? e,
+                ),
+              )
+              .toList(),
         )
         .listen((value) async {
       state = const AsyncValue.loading();
@@ -34,7 +38,7 @@ class DBQueryResultNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
     });
   }
   DBQuery<dynamic> dbQuery;
-  AppSettings appPreferences;
+  AppSettings appSettings;
   DBManager dbManagerNew;
   late final StreamSubscription<List<dynamic>> sub;
 
@@ -43,59 +47,35 @@ class DBQueryResultNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
     sub.cancel();
     super.dispose();
   }
-
-  Map<String, dynamic> preprocess(
-    Map<String, dynamic> map, {
-    bool validate = true,
-  }) {
-    return map.map((key, value) {
-      final String v;
-      if (key == 'path' &&
-          CLMediaType.values
-              .where((e) => e.isFile)
-              .map((e) => e.name)
-              .contains(map['type'])) {
-        final path = value as String;
-        final collectionID = map['collection_id'] as int;
-
-        if (validate && !File(path).existsSync()) {
-          throw Exception('file not found');
-        }
-        final prefix = appPreferences.validPrefix(collectionID);
-        if (validate && path.startsWith(prefix)) {
-          throw Exception('Media is not placed in appropriate folder');
-        }
-        return MapEntry(key, path.replaceFirst(prefix, ''));
-      } else {
-        v = value as String;
-        return MapEntry(key, v);
-      }
-    });
-  }
-
-  Map<String, dynamic> postprocess(Map<String, dynamic> map) {
-    return map.map((key, value) {
-      if (key == 'path' &&
-          CLMediaType.values
-              .where((e) => e.isFile)
-              .map((e) => e.name)
-              .contains(map['type'])) {
-        final collectionID = map['collection_id'] as int;
-        final path = value as String;
-
-        return MapEntry(
-          key,
-          '${appPreferences.validPrefix(collectionID)}/$path',
-        );
-      } else {
-        return MapEntry(key, value);
-      }
-    });
-  }
 }
 
+final dbQueryResultProvider =
+    StreamProvider.family<List<dynamic>, DBQuery<dynamic>>(
+        (ref, dbQuery) async* {
+  final dbManager = await ref.watch(dbManagerProvider.future);
+  final appSettings = await ref.watch(appSettingsProvider.future);
+  final sub = dbManager.db
+      .watchRows(
+        dbQuery.sql,
+        triggerOnTables: dbQuery.triggerOnTables,
+        parameters: dbQuery.parameters ?? [],
+      )
+      .map(
+        (rows) => rows
+            .map(
+              (e) => dbQuery.fromMap(
+                dbQuery.preprocess?.call(e, appSettings: appSettings) ?? e,
+              ),
+            )
+            .toList(),
+      );
+  await for (final res in sub) {
+    yield res;
+  }
+});
+/* 
 final dbQueryResultProvider = StateNotifierProvider.family<
-    AsyncValue<DBQueryResultNotifier>,
+    DBQueryResultNotifier,
     AsyncValue<List<dynamic>>,
     DBQuery<dynamic>>((ref, dbQuery) {
   return ref.watch(dbManagerProvider).when(
@@ -106,11 +86,11 @@ final dbQueryResultProvider = StateNotifierProvider.family<
               loading: AsyncLoading.new,
               data: (appPreferences) => AsyncData(
                 DBQueryResultNotifier(
-                  appPreferences: appPreferences,
+                  appSettings: appPreferences,
                   dbManagerNew: dbManager,
                   dbQuery: dbQuery,
                 ),
               ),
             ),
       );
-});
+}); */
