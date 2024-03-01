@@ -82,6 +82,9 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     if (mg == null || mg.isEmpty) {
       ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
       onDiscard();
+      setState(() {
+        candidates = null;
+      });
       return;
     }
     setState(() {
