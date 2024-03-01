@@ -145,13 +145,13 @@ final migrations = SqliteMigrations()
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         path TEXT NOT NULL UNIQUE,
         ref TEXT,
-        collection_id INTEGER,
+        collectionId INTEGER,
         type TEXT NOT NULL,
         md5String TEXT NOT NULL,
         originalDate DATETIME,
         createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (collection_id) REFERENCES Collection(id)
+        FOREIGN KEY (collectionId) REFERENCES Collection(id)
       )
     ''');
       await tx.execute('''
@@ -166,10 +166,10 @@ final migrations = SqliteMigrations()
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS TagCollection (
         tag_id INTEGER,
-        collection_id INTEGER,
+        collectionId INTEGER,
         FOREIGN KEY (tag_id) REFERENCES Tag(id),
-        FOREIGN KEY (collection_id) REFERENCES Collection(id),
-        PRIMARY KEY (tag_id, collection_id)
+        FOREIGN KEY (collectionId) REFERENCES Collection(id),
+        PRIMARY KEY (tag_id, collectionId)
       )
     ''');
     }),

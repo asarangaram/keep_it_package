@@ -12,7 +12,7 @@ class TagCollection {
   factory TagCollection.fromMap(Map<String, dynamic> map) {
     return TagCollection(
       tagID: map['tag_id'] as int,
-      collectionId: map['collection_id'] as int,
+      collectionId: map['collectionId'] as int,
     );
   }
 
@@ -44,7 +44,7 @@ class TagCollection {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'tag_id': tagID,
-      'collection_id': collectionId,
+      'collectionId': collectionId,
     };
   }
 
@@ -52,5 +52,5 @@ class TagCollection {
 
   @override
   String toString() =>
-      'TagCollection(tagID: $tagID, collection_id: $collectionId)';
+      'TagCollection(tagID: $tagID, collectionId: $collectionId)';
 }

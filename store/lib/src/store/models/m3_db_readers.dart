@@ -68,15 +68,15 @@ enum DBReaders {
           ),
         collectionsExcludeEmpty => DBReader<Collection>(
             sql: 'SELECT DISTINCT Collection.* FROM Collection '
-                'JOIN Item ON Collection.id = Item.collection_id;',
+                'JOIN Item ON Collection.id = Item.collectionId;',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
         collectionsEmpty => DBReader<Collection>(
             sql: 'SELECT Collection.* FROM Collection '
-                'LEFT JOIN Item ON Collection.id = Item.collection_id '
-                'WHERE Item.collection_id IS NULL;',
+                'LEFT JOIN Item ON Collection.id = Item.collectionId '
+                'WHERE Item.collectionId IS NULL;',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
@@ -84,7 +84,7 @@ enum DBReaders {
         collectionsByTagId => DBReader<Collection>(
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
-                'JOIN TagCollection ON Collection.id = TagCollection.collection_id '
+                'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
                 'WHERE TagCollection.tag_id = :tagId',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -93,8 +93,8 @@ enum DBReaders {
         collectionsByTagIDExcludeEmpty => DBReader<Collection>(
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
-                'JOIN Item ON Collection.id = Item.collection_id '
-                'JOIN TagCollection ON Collection.id = TagCollection.collection_id '
+                'JOIN Item ON Collection.id = Item.collectionId '
+                'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
                 'WHERE TagCollection.tag_id = :tagId;',
             triggerOnTables: const {'Collection', 'Item', 'TagCollection'},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -109,8 +109,8 @@ enum DBReaders {
         DBReaders.tagsAllExcludeEmpty => DBReader<Tag>(
             sql: 'SELECT DISTINCT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
-                'JOIN Collection ON TagCollection.collection_id = Collection.id '
-                'JOIN Item ON Collection.id = Item.collection_id ',
+                'JOIN Collection ON TagCollection.collectionId = Collection.id '
+                'JOIN Item ON Collection.id = Item.collectionId ',
             triggerOnTables: const {
               'Tag',
               'TagCollection',
@@ -123,7 +123,7 @@ enum DBReaders {
         DBReaders.tagsByCollectionId => DBReader<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
-                'WHERE TagCollection.collection_id = ?',
+                'WHERE TagCollection.collectionId = ?',
             triggerOnTables: const {'Tag', 'TagCollection'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
@@ -132,9 +132,9 @@ enum DBReaders {
             sql: 'SELECT DISTINCT Tag.* '
                 'FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
-                'JOIN Collection ON TagCollection.collection_id = Collection.id '
-                'JOIN Item ON Collection.id = Item.collection_id '
-                'WHERE TagCollection.collection_id = ? ',
+                'JOIN Collection ON TagCollection.collectionId = Collection.id '
+                'JOIN Item ON Collection.id = Item.collectionId '
+                'WHERE TagCollection.collectionId = ? ',
             triggerOnTables: const {
               'Tag',
               'TagCollection',
@@ -155,7 +155,7 @@ enum DBReaders {
             ),
           ),
         DBReaders.mediaByCollectionId => DBReader<CLMedia>(
-            sql: 'SELECT * FROM Item WHERE collection_id = ?',
+            sql: 'SELECT * FROM Item WHERE collectionId = ?',
             triggerOnTables: const {},
             fromMap: (map, {required appSettings, required validate}) =>
                 CLMedia.fromMap(
@@ -167,8 +167,8 @@ enum DBReaders {
         DBReaders.mediaByTagId => DBReader<CLMedia>(
             sql: 'SELECT Item.* '
                 'FROM Item '
-                'JOIN Collection ON Item.collection_id = Collection.id '
-                'JOIN TagCollection ON Collection.id = TagCollection.collection_id '
+                'JOIN Collection ON Item.collectionId = Collection.id '
+                'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
                 'WHERE TagCollection.tag_id =? ',
             triggerOnTables: const {},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -181,7 +181,7 @@ enum DBReaders {
         DBReaders.tagsByMediaId => DBReader<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
-                'JOIN Item ON TagCollection.collection_id = Item.collection_id '
+                'JOIN Item ON TagCollection.collectionId = Item.collectionId '
                 'WHERE Item.id = ? ',
             triggerOnTables: const {'Tag', 'TagCollection', 'Item'},
             fromMap: (map, {required appSettings, required validate}) =>

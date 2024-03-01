@@ -60,7 +60,7 @@ class CLMedia {
       ref: map['ref'] != null ? map['ref'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
       collectionId:
-          map['collection_id'] != null ? map['collection_id'] as int : null,
+          map['collectionId'] != null ? map['collectionId'] as int : null,
       previewWidth:
           map['previewWidth'] != null ? map['previewWidth'] as int : null,
       createdDate: map['createdDate'] != null

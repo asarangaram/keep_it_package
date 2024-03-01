@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
 import 'm1_app_settings.dart';
-import 'm3_db_reader.dart';
-import 'm3_db_readers.dart';
 
 @immutable
 class DBWriter<T> {

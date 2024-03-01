@@ -127,7 +127,7 @@ class DBWriters {
         tags.add(await upsertTag(tx, tag));
       }
       await tagCollectionTable
-          .delete(tx, {'collection_id': collection.id.toString()});
+          .delete(tx, {'collectionId': collection.id.toString()});
       await tagCollectionTable.upsertAll(
         tx,
         tags
@@ -146,8 +146,8 @@ class DBWriters {
     Collection collection,
   ) async {
     await tagCollectionTable
-        .delete(tx, {'collection_id': collection.id.toString()});
-    await mediaTable.delete(tx, {'collection_id': collection.id.toString()});
+        .delete(tx, {'collectionId': collection.id.toString()});
+    await mediaTable.delete(tx, {'collectionId': collection.id.toString()});
     await collectionTable.delete(tx, {'id': collection.id.toString()});
   }
 
@@ -163,13 +163,13 @@ class DBWriters {
 Future<void> mergeTag(SqliteWriteContext tx, int toTag) async {
     await tx.execute(
       '''
-          INSERT OR REPLACE INTO TagCollection (tag_id, collection_id)
+          INSERT OR REPLACE INTO TagCollection (tag_id, collectionId)
           SELECT 
               CASE 
                   WHEN tag_id = ? THEN ?
                   ELSE tag_id
               END AS new_tag_id,
-              collection_id
+              collectionId
           FROM TagCollection
           WHERE tag_id = ?
         ''',
