@@ -44,8 +44,8 @@ class CLMedia {
 
   factory CLMedia.fromMap(
     Map<String, dynamic> map, {
+    required bool validate,
     String? pathPrefix,
-    bool validate = true,
   }) {
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
@@ -81,9 +81,6 @@ class CLMedia {
       md5String: map['md5String'] as String,
     );
   }
-
-  factory CLMedia.fromJson(String source) =>
-      CLMedia.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final String path;
   final CLMediaType type;
@@ -176,8 +173,8 @@ class CLMedia {
   }
 
   Map<String, dynamic> toMap({
+    required bool validate,
     String? pathPrefix,
-    bool validate = true,
   }) {
     return <String, dynamic>{
       'path': relativePath(
@@ -195,12 +192,10 @@ class CLMedia {
     };
   }
 
-  String toJson() => json.encode(toMap());
-
   static String relativePath(
     String fullPath, {
     required String? pathPrefix,
-    bool validate = true,
+    required bool validate,
   }) {
     if (validate && !File(fullPath).existsSync()) {
       throw Exception('file not found');
@@ -211,4 +206,12 @@ class CLMedia {
     }
     return fullPath;
   }
+
+  /// Not used
+  factory CLMedia.fromJson(String source) => CLMedia.fromMap(
+        json.decode(source) as Map<String, dynamic>,
+        validate: true,
+      );
+
+  String toJson() => json.encode(toMap(validate: true));
 }

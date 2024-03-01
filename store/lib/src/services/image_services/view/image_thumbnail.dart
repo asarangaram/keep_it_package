@@ -58,6 +58,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
           CLMedia.relativePath(
             widget.media.path,
             pathPrefix: resources.directories.docDir.path,
+            validate: false,
           ),
         );
         final previewFileName =

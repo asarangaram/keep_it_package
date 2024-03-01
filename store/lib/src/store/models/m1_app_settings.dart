@@ -15,9 +15,16 @@ class DeviceDirectories {
 }
 
 class AppSettings {
-  AppSettings(this.directories);
+  AppSettings(
+    this.directories, {
+    this.shouldValidate = true,
+  });
   final DeviceDirectories directories;
+  final bool shouldValidate;
   String validPrefix(int collectionID) =>
       '${directories.docDir.path}/keep_it/cluster_$collectionID';
+  String validRelativePrefix(int collectionID) =>
+      'keep_it/cluster_$collectionID';
+
   String dbName = 'keepIt.db';
 }

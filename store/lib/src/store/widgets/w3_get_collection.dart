@@ -2,8 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/m3_db_reader.dart';
-import '../models/m3_db_readers.dart';
+import '../models/m3_db_query.dart';
+import '../models/m3_db_queries.dart';
 import 'w3_get_from_store.dart';
 
 class GetCollection extends ConsumerWidget {
@@ -21,8 +21,8 @@ class GetCollection extends ConsumerWidget {
       return buildOnData(null);
     }
     return GetFromStore<Collection>(
-      query: (DBReaders.collectionById.sql.copyWith(parameters: [id]))
-          as DBReader<Collection>,
+      query: (DBQueries.collectionById.sql.copyWith(parameters: [id]))
+          as DBQuery<Collection>,
       builder: (data) {
         final collection = data.where((e) => e.id == id).firstOrNull;
         return buildOnData(collection);
@@ -46,14 +46,14 @@ class GetCollectionMultiple extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final qid = excludeEmpty
         ? (tagId == null)
-            ? DBReaders.collectionsExcludeEmpty
-            : DBReaders.collectionsByTagIDExcludeEmpty
+            ? DBQueries.collectionsExcludeEmpty
+            : DBQueries.collectionsByTagIDExcludeEmpty
         : (tagId == null)
-            ? DBReaders.collectionsAll
-            : DBReaders.collectionsByTagId;
+            ? DBQueries.collectionsAll
+            : DBQueries.collectionsByTagId;
 
     return GetFromStore<Collection>(
-      query: (qid.sql as DBReader<Collection>)
+      query: (qid.sql as DBQuery<Collection>)
           .copyWith(parameters: (tagId == null) ? [] : [tagId]),
       builder: buildOnData,
     );

@@ -1,18 +1,33 @@
 import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
 import '../models/m1_app_settings.dart';
-import '../models/m3_db_reader.dart';
-import '../models/m3_db_readers.dart';
-import 'm4_db_writers.dart';
+import 'm3_db_reader.dart';
+import 'm4_db_writer.dart';
 
-class DBManager {
+abstract class Store {
+  Future<Collection> upsertCollection({
+    required Collection collection,
+    required List<Tag>? newTagsListToReplace,
+  });
+  Future<void> upsertMediaMultiple(List<CLMedia> media);
+  Future<void> deleteCollection(
+    Collection collection, {
+    required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
+  });
+  Future<void> deleteMedia(CLMedia media);
+}
+
+class DBManager extends Store {
   DBManager({required this.db, required AppSettings appSettings})
-      : dbWriter = DBWriters(appSettings: appSettings);
+      : dbWriter = DBWriter(appSettings: appSettings),
+        dbReader = DBReader(appSettings: appSettings);
 
   final SqliteDatabase db;
-  final DBWriters dbWriter;
+  final DBWriter dbWriter;
+  final DBReader dbReader;
 
   static Future<DBManager> createInstances({
     required String dbpath,
@@ -27,15 +42,7 @@ class DBManager {
     db.close();
   }
 
-  Future<CLMedia?> getMediaByMD5(String md5String) async {
-    return (DBReaders.mediaByMD5.sql as DBReader<CLMedia>)
-        .copyWith(parameters: [md5String]).read(
-      db,
-      appSettings: dbWriter.appSettings,
-      validate: true,
-    );
-  }
-
+  @override
   Future<Collection> upsertCollection({
     required Collection collection,
     required List<Tag>? newTagsListToReplace,
@@ -47,22 +54,20 @@ class DBManager {
     });
   }
 
+  @override
   Future<void> upsertMediaMultiple(List<CLMedia> media) async {
     await db.writeTransaction((tx) async {
       await dbWriter.upsertMediaMultiple(tx, media);
     });
   }
 
+  @override
   Future<void> deleteCollection(
     Collection collection, {
     required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
   }) async {
-    final media = await (DBReaders.mediaByCollectionId.sql as DBReader<CLMedia>)
-        .copyWith(parameters: [collection.id]).readMultiple(
-      db,
-      appSettings: dbWriter.appSettings,
-      validate: true,
-    );
+    if (collection.id == null) return;
+    final media = await dbReader.getMediaByCollectionId(db, collection.id!);
     if (media.isNotEmpty) {
       await onDeleteMediaFiles(media);
     }
@@ -71,7 +76,9 @@ class DBManager {
     });
   }
 
+  @override
   Future<void> deleteMedia(CLMedia media) async {
+    if (media.id == null) return;
     await db.writeTransaction((tx) async {
       await dbWriter.deleteMedia(tx, media);
     });

@@ -2,8 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/m3_db_reader.dart';
-import '../models/m3_db_readers.dart';
+import '../models/m3_db_query.dart';
+import '../models/m3_db_queries.dart';
 import 'w3_get_from_store.dart';
 
 class GetMedia extends ConsumerWidget {
@@ -18,8 +18,8 @@ class GetMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetFromStore<CLMedia>(
-      query: (DBReaders.mediaById.sql.copyWith(parameters: [id]))
-          as DBReader<CLMedia>,
+      query: (DBQueries.mediaById.sql.copyWith(parameters: [id]))
+          as DBQuery<CLMedia>,
       builder: (data) {
         final media = data.where((e) => e.id == id).firstOrNull;
         if (media != null) {
@@ -49,12 +49,12 @@ class GetMediaMultiple extends ConsumerWidget {
     }
     final qid = (collectionId == null)
         ? (tagID == null)
-            ? DBReaders.mediaAll
-            : DBReaders.mediaByTagId
-        : DBReaders.mediaByCollectionId;
+            ? DBQueries.mediaAll
+            : DBQueries.mediaByTagId
+        : DBQueries.mediaByCollectionId;
 
     return GetFromStore<CLMedia>(
-      query: (qid.sql as DBReader<CLMedia>).copyWith(
+      query: (qid.sql as DBQuery<CLMedia>).copyWith(
         parameters: (collectionId == null)
             ? (tagID == null)
                 ? []
