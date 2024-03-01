@@ -1,10 +1,19 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-
+import 'package:intl/intl.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
 import 'm1_app_settings.dart';
+
+extension ExtDATETIME on DateTime? {
+  String? toSQL() {
+    if (this == null) {
+      return null;
+    }
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(this!);
+  }
+}
 
 extension CLMediaDB on CLMedia {
   static String relativePath(String path, String pathPrefix) {
@@ -26,7 +35,7 @@ extension CLMediaDB on CLMedia {
           ref,
           collectionId,
           type.name,
-          originalDate.toSQL(),
+          originalDate?.toSQL(),
           md5String,
           id,
         ],

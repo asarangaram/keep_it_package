@@ -1,26 +1,50 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
+
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/models/cl_media.dart';
 import 'package:store/src/store/models/collection.dart';
 import 'package:store/src/store/models/m1_app_settings.dart';
-import 'package:store/src/store/models/tag.dart';
 
-import 'm3_db_queries.dart';
-import 'm3_db_query.dart';
+import 'm4_db_exec.dart';
+import 'tags_in_collection.dart';
 
-class DBUpdater {
-  static Future<Collection> upsertCollection(
+@immutable
+class DBWriter {
+  DBWriter({required this.appSettings});
+  final DBTable<Collection> collectionTable = DBTable<Collection>(
+    table: 'Collection',
+    toMap: (Collection c) => c.toMap(),
+  );
+  final DBTable<Tag> tagTable = DBTable<Tag>(
+    table: 'Collection',
+    toMap: (Tag c) => c.toMap(),
+  );
+  final DBTable<CLMedia> mediaTable = DBTable<CLMedia>(
+    table: 'Collection',
+    toMap: (CLMedia c) => c.toMap(),
+  );
+  final DBTable<TagCollection> tagCollectionTable = DBTable<TagCollection>(
+    table: 'TagCollection',
+    toMap: (TagCollection c) => c.toMap(),
+  );
+  final AppSettings appSettings;
+
+  Future<Collection> upsertCollection(
     SqliteWriteContext tx,
     Collection collection,
   ) async {
-    await collection.upsertCollection(tx);
-    return (await (DBQueries.collectionByLabel.sql as DBQuery<Collection>)
-        .copyWith(parameters: [collection.label]).read(tx))!;
+    return (await collectionTable.upsert(tx, collection, appSettings))!;
   }
 
-  static Future<void> replaceTags(
+  Future<void> upsertMediaMultiple(
+    SqliteWriteContext tx,
+    List<CLMedia> media,
+  ) async {
+    await mediaTable.upsertAll(tx, media, appSettings);
+  }
+
+  Future<void> replaceTags(
     SqliteWriteContext tx,
     Collection collection,
     List<Tag>? newTagsListToReplace,
@@ -30,21 +54,28 @@ class DBUpdater {
       final tags = newTagsListToReplace.where((e) => e.id != null).toList();
 
       for (final tag in newTags) {
-        await tag.upsertTag(tx);
-        final tagWithId = await (DBQueries.tagByLabel.sql as DBQuery<Tag>)
-            .copyWith(parameters: [tag.label]).read(tx);
-        tags.add(tagWithId!);
+        tags.add((await tagTable.upsert(tx, tag, appSettings))!);
       }
-      await collection.replaceTags(tx, tags.map((e) => e.id!).toList());
+      await collection.removeAllTags(tx);
+      await tagCollectionTable.upsertAll(
+        tx,
+        tags
+            .map(
+              (e) => TagCollection(tagID: e.id!, collectionId: collection.id!),
+            )
+            .toList(),
+        appSettings,
+      );
     }
   }
 }
 
 class DBManager {
-  DBManager({required this.db, required this.appSettings});
+  DBManager({required this.db, required AppSettings appSettings})
+      : dbWriter = DBWriter(appSettings: appSettings);
 
   final SqliteDatabase db;
-  final AppSettings appSettings;
+  final DBWriter dbWriter;
 
   static Future<DBManager> createInstances({
     required String dbpath,
@@ -64,16 +95,18 @@ class DBManager {
     {
       await db.writeTransaction((tx) async {
         final collectionWithId =
-            await DBUpdater.upsertCollection(tx, collection);
-        await DBUpdater.replaceTags(tx, collectionWithId, newTagsListToReplace);
+            await dbWriter.upsertCollection(tx, collection);
+        await dbWriter.replaceTags(tx, collectionWithId, newTagsListToReplace);
         if (media?.isNotEmpty ?? false) {
+          final updatedMedia = <CLMedia>[];
           for (final item in media!) {
             var updated = item.copyWith(collectionId: collectionWithId.id);
             updated = await updated.moveFile(
-              targetDir: appSettings.validPrefix(collectionWithId.id!),
+              targetDir: dbWriter.appSettings.validPrefix(collectionWithId.id!),
             );
-            await updated.upsertMedia(tx);
+            updatedMedia.add(updated);
           }
+          await dbWriter.upsertMediaMultiple(tx, updatedMedia);
         }
       });
       onDone();
@@ -88,15 +121,15 @@ class DBManager {
     {
       await db.writeTransaction((tx) async {
         if (media?.isNotEmpty ?? false) {
-          final mediaUpdated = <CLMedia>[];
+          final updatedMedia = <CLMedia>[];
           for (final item in media!) {
             var updated = item.copyWith(collectionId: collection.id);
             updated = await updated.moveFile(
-              targetDir: appSettings.validPrefix(collection.id!),
+              targetDir: dbWriter.appSettings.validPrefix(collection.id!),
             );
-            mediaUpdated.add(updated);
+            updatedMedia.add(updated);
           }
-          await collection.upsertMedia(tx, media);
+          await dbWriter.upsertMediaMultiple(tx, updatedMedia);
         }
       });
       onDone();
@@ -204,12 +237,3 @@ final migrations = SqliteMigrations()
     ''');
     }),
   );
-
-extension SQLEXTDATETIME on DateTime? {
-  String? toSQL() {
-    if (this == null) {
-      return null;
-    }
-    return DateFormat('yyyy-MM-dd HH:mm:ss').format(this!);
-  }
-}

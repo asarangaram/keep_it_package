@@ -54,6 +54,16 @@ class Collection {
       updatedDate: updatedDate ?? this.updatedDate,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'label': label,
+      'description': description,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
 }
 
 class Collections {

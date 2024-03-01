@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../extensions/ext_datetime.dart';
 import '../extensions/ext_string.dart';
 import 'cl_media_type.dart';
 
@@ -158,4 +159,19 @@ class CLMedia {
         ' originalDate: $originalDate, createdDate: $createdDate,'
         ' updatedDate: $updatedDate, md5String: $md5String)';
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'path': path,
+      'type': type.name,
+      'ref': ref,
+      'id': id,
+      'collectionId': collectionId,
+      'previewWidth': previewWidth,
+      'originalDate': originalDate?.toSQL(),
+      'md5String': md5String,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
 }

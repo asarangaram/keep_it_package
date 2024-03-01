@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:colan_widgets/src/extensions/ext_datetime.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -60,6 +61,16 @@ class Tag {
       updatedDate: updatedDate ?? this.updatedDate,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'label': label,
+      'description': description,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
 }
 
 class Tags {
