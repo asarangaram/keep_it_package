@@ -23,6 +23,15 @@ class DBManager {
     return DBManager(db: db, appSettings: appSettings);
   }
 
+  Future<CLMedia?> getMediaByMD5(String md5String) async {
+    return (DBReaders.mediaByMD5.sql as DBReader<CLMedia>)
+        .copyWith(parameters: [md5String]).read(
+      db,
+      appSettings: dbWriter.appSettings,
+      validate: true,
+    );
+  }
+
   Future<Collection> upsertCollection({
     required Collection collection,
     required List<Tag>? newTagsListToReplace,
