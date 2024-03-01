@@ -142,7 +142,12 @@ class DBWriter {
       validate: true,
     );
     _infoLogger('upsertMediaMultiple: Done :  $updated');
-    // TODO(anandas): : implemetn readback and introduce Exception here
+    if (updated.any((e) => e == null)) {
+      exceptionLogger(
+        '$_filePrefix: DB Failure',
+        '$_filePrefix: Failed to write / retrive Collection',
+      );
+    }
     return updated;
   }
 

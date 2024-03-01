@@ -75,7 +75,7 @@ class DBExec<T> {
     if (cmd.value.isNotEmpty) {
       await tx.execute(cmd.key, cmd.value);
     }
-    final result = readBack?.call(
+    final result = await readBack?.call(
       tx,
       obj,
       appSettings: appSettings,
