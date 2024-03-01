@@ -3,6 +3,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/src/store/models/m1_app_settings.dart';
+import 'package:store/src/store/models/m3_db_queries.dart';
+import 'package:store/src/store/models/m3_db_query.dart';
 
 import 'm4_db_writer.dart';
 
@@ -36,6 +38,21 @@ class DBManager {
   Future<void> upsertMediaMultiple(List<CLMedia> media) async {
     await db.writeTransaction((tx) async {
       await dbWriter.upsertMediaMultiple(tx, media);
+    });
+  }
+
+  Future<void> deleteCollection(
+    DBManager dbManager,
+    Collection collection, {
+    required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
+  }) async {
+    final media = await (DBQueries.mediaByCollectionId.sql as DBQuery<CLMedia>)
+        .copyWith(parameters: [collection.id]).readMultiple(db);
+    if (media.isNotEmpty) {
+      await onDeleteMediaFiles(media);
+    }
+    await db.writeTransaction((tx) async {
+      dbWriter.deleteCollection(tx, collection);
     });
   }
 }

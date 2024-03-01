@@ -73,12 +73,12 @@ class DBTable<T> {
     return read(tx, obj);
   }
 
-  Future<void> upsertAll(
+  Future<List<T?>> upsertAll(
     SqliteWriteContext tx,
     List<T> objList,
     AppSettings appSettings,
   ) async {
-    for (final cmd in _formatSQL(objList, appSettings).entries) {
+    for (final cmd in formatSQL(objList, appSettings).entries) {
       if (cmd.value.isNotEmpty) {
         if (cmd.value.length == 1) {
           await tx.execute(cmd.key, cmd.value[0]);
@@ -87,6 +87,11 @@ class DBTable<T> {
         }
       }
     }
+    final result = <T?>[];
+    for (final obj in objList) {
+      result.add(await read(tx, obj));
+    }
+    return result;
   }
 
   Future<void> delete(
@@ -123,7 +128,7 @@ class DBTable<T> {
     return MapEntry(sql, values);
   }
 
-  Map<String, List<List<String>>> _formatSQL(
+  Map<String, List<List<String>>> formatSQL(
     List<T> objList,
     AppSettings appSettings,
   ) {

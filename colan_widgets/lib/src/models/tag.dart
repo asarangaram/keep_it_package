@@ -2,8 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:colan_widgets/src/extensions/ext_datetime.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 @immutable
 class Tag {

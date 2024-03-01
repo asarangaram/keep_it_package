@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/models/collection.dart';
 import 'package:store/src/store/models/m1_app_settings.dart';
 
 import 'm4_db_table.dart';
@@ -55,7 +54,7 @@ class DBWriter {
       for (final tag in newTags) {
         tags.add((await tagTable.upsert(tx, tag, appSettings))!);
       }
-      await collection.removeAllTags(tx);
+      await mediaTable.delete(tx, {'collection_id': collection.id.toString()});
       await tagCollectionTable.upsertAll(
         tx,
         tags
@@ -67,4 +66,41 @@ class DBWriter {
       );
     }
   }
+
+  Future<void> deleteCollection(
+    SqliteWriteContext tx,
+    Collection collection,
+  ) async {
+    await tagCollectionTable
+        .delete(tx, {'collection_id': collection.id.toString()});
+    await mediaTable.delete(tx, {'collection_id': collection.id.toString()});
+    await collectionTable.delete(tx, {'id': collection.id.toString()});
+  }
+
+  Future<void> deleteMedia(
+    SqliteWriteContext tx,
+    CLMedia media,
+  ) async {
+    await mediaTable.delete(tx, {'id': media.id.toString()});
+  }
 }
+
+/*
+Future<void> mergeTag(SqliteWriteContext tx, int toTag) async {
+    await tx.execute(
+      '''
+          INSERT OR REPLACE INTO TagCollection (tag_id, collection_id)
+          SELECT 
+              CASE 
+                  WHEN tag_id = ? THEN ?
+                  ELSE tag_id
+              END AS new_tag_id,
+              collection_id
+          FROM TagCollection
+          WHERE tag_id = ?
+        ''',
+      [id, toTag, id],
+    );
+    await tx.execute('DELETE FROM Tag WHERE id = ?', [id]);
+  }
+*/

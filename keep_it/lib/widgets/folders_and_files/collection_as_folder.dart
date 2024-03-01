@@ -20,58 +20,72 @@ class CollectionAsFolder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WrapStandardQuickMenu(
-      quickMenuScopeKey: quickMenuScopeKey,
-      onEdit: () async {
-        final res =
-            await CollectionEditor.popupDialog(context, collection: collection);
-        if (res != null) {
-          final (collection, tags) = res;
-          
-          /* await ref.read(dbUpdaterNotifierProvider.notifier).upsertCollection(
-                collection,
-                tags,
-              ); */
+    return GetDBManager(
+      builder: (dbManager) {
+        return WrapStandardQuickMenu(
+          quickMenuScopeKey: quickMenuScopeKey,
+          onEdit: () async {
+            final res = await CollectionEditor.popupDialog(
+              context,
+              collection: collection,
+            );
+            if (res != null) {
+              final (collection, tags) = res;
+              await dbManager.upsertCollection(
+                collection: collection,
+                newTagsListToReplace: tags,
+              );
 
-          await ref.read(notificationMessageProvider.notifier).push('Updated');
-          throw UnimplementedError('Wait');
-        }
+              await ref
+                  .read(notificationMessageProvider.notifier)
+                  .push('Updated');
+              throw UnimplementedError('Wait');
+            }
 
-        return true;
-      },
-      onDelete: () async {
-        /* await ref
-            .read(dbUpdaterNotifierProvider.notifier)
-            .deleteCollection(collection);return true; */
-        throw UnimplementedError('Wait');
-      },
-      onTap: () async {
-        unawaited(
-          context.push(
-            '/items/${collection.id}',
+            return true;
+          },
+          onDelete: () async {
+            /* await ref
+                .read(dbUpdaterNotifierProvider.notifier)
+                .deleteCollection(collection);return true; */
+            throw UnimplementedError('Wait');
+          },
+          onTap: () async {
+            unawaited(
+              context.push(
+                '/items/${collection.id}',
+              ),
+            );
+            return true;
+          },
+          child: Column(
+            children: [
+              Flexible(
+                child: PreviewGenerator(
+                  collection: collection,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  collection.label,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         );
-        return true;
       },
-      child: Column(
-        children: [
-          Flexible(
-            child: PreviewGenerator(
-              collection: collection,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              collection.label,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
     );
+  }
+
+  Future<void> deleteCollection(
+    DBManager dbManager,
+    Collection collection,
+  ) async {
+    
   }
 }
 

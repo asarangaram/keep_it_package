@@ -24,44 +24,6 @@ extension CLMediaDB on CLMedia {
     return path;
   }
 
-  Future<void> upsertMedia(SqliteWriteContext tx) async {
-    if (id != null) {
-      await tx.execute(
-        'UPDATE  Item SET path = ?, '
-        'ref = ?, collection_id = ?, type=?, originalDate=?, md5String=? '
-        'WHERE id = ?',
-        [
-          path,
-          ref,
-          collectionId,
-          type.name,
-          originalDate?.toSQL(),
-          md5String,
-          id,
-        ],
-      );
-    } else {
-      await tx.execute(
-        'INSERT  INTO Item (path, '
-        'ref, collection_id, type, originalDate, md5String) '
-        'VALUES (?, ?, ?, ?, ?, ?) ',
-        [
-          path,
-          ref,
-          collectionId,
-          type.name,
-          originalDate.toSQL(),
-          md5String,
-        ],
-      );
-    }
-  }
-
-  Future<void> delete(SqliteWriteContext tx) async {
-    if (id == null) return;
-    await tx.execute('DELETE FROM Item WHERE id = ?', [id]);
-  }
-
   static Map<String, dynamic> preprocessMediaMap(
     Map<String, dynamic> map, {
     required AppSettings appSettings,
