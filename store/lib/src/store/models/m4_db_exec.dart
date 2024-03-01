@@ -130,7 +130,7 @@ class DBExec<T> {
 
     final sql =
         'DELETE FROM $table WHERE ${keys.map((e) => '$e = ?').join(', ')}';
-
+    _infoLogger('Readback:  $sql');
     await tx.execute(sql, value);
   }
 

@@ -45,6 +45,9 @@ class _TagsViewState extends ConsumerState<TagsPage> {
             ),
             tagPrefix: 'folder view tags "}',
             isScrollablePositionedList: false,
+            onRefresh: () async {
+              ref.invalidate(dbManagerProvider);
+            },
             onPop: context.canPop()
                 ? () {
                     context.pop();

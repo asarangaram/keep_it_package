@@ -101,13 +101,13 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        DBQueries.tagsAll => DBQuery<Tag>(
+        tagsAll => DBQuery<Tag>(
             sql: 'SELECT * FROM Tag',
             triggerOnTables: const {'Tag'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.tagsAllExcludeEmpty => DBQuery<Tag>(
+        tagsAllExcludeEmpty => DBQuery<Tag>(
             sql: 'SELECT DISTINCT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tagId '
                 'JOIN Collection ON TagCollection.collectionId = Collection.id '
@@ -121,7 +121,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.tagsByCollectionId => DBQuery<Tag>(
+        tagsByCollectionId => DBQuery<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tagId '
                 'WHERE TagCollection.collectionId = ?',
@@ -129,7 +129,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.tagsByCollectionIDExcludeEmpty => DBQuery<Tag>(
+        tagsByCollectionIDExcludeEmpty => DBQuery<Tag>(
             sql: 'SELECT DISTINCT Tag.* '
                 'FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tagId '
@@ -145,7 +145,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.mediaAll => DBQuery<CLMedia>(
+        mediaAll => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item',
             triggerOnTables: const {'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -155,9 +155,9 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        DBQueries.mediaByCollectionId => DBQuery<CLMedia>(
+        mediaByCollectionId => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE collectionId = ?',
-            triggerOnTables: const {},
+            triggerOnTables: const {'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
                 CLMedia.fromMap(
               map,
@@ -165,13 +165,13 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        DBQueries.mediaByTagId => DBQuery<CLMedia>(
+        mediaByTagId => DBQuery<CLMedia>(
             sql: 'SELECT Item.* '
                 'FROM Item '
                 'JOIN Collection ON Item.collectionId = Collection.id '
                 'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
                 'WHERE TagCollection.tagId =? ',
-            triggerOnTables: const {},
+            triggerOnTables: const {'Item', 'Collection', 'TagCollection'},
             fromMap: (map, {required appSettings, required validate}) =>
                 CLMedia.fromMap(
               map,
@@ -179,7 +179,7 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        DBQueries.tagsByMediaId => DBQuery<Tag>(
+        tagsByMediaId => DBQuery<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tagId '
                 'JOIN Item ON TagCollection.collectionId = Item.collectionId '
@@ -188,7 +188,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.mediaByMD5 => DBQuery<CLMedia>(
+        mediaByMD5 => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE md5String = ?',
             triggerOnTables: const {'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -198,7 +198,7 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        DBQueries.mediaByPath => DBQuery<CLMedia>(
+        mediaByPath => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE path = ?',
             triggerOnTables: const {'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
