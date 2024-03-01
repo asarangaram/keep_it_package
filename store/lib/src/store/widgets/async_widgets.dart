@@ -5,18 +5,16 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:store/src/store/models/m3_db_query.dart';
-import 'package:store/store.dart';
-
+import '../models/m3_db_reader.dart';
 import '../providers/p3_db_query_result.dart';
 
-class BuildOnQueryMultiple<T> extends ConsumerWidget {
-  const BuildOnQueryMultiple({
+class DBReaderWidget<T> extends ConsumerWidget {
+  const DBReaderWidget({
     required this.query,
     required this.builder,
     super.key,
   });
-  final DBQuery<T> query;
+  final DBReader<T> query;
   final Widget Function(List<T> results) builder;
 
   @override

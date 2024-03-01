@@ -2,8 +2,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/m3_db_queries.dart';
-import '../models/m3_db_query.dart';
+import '../models/m3_db_reader.dart';
+import '../models/m3_db_readers.dart';
+
 import 'async_widgets.dart';
 
 class GetTag extends ConsumerWidget {
@@ -20,8 +21,9 @@ class GetTag extends ConsumerWidget {
     if (id == null) {
       return buildOnData(null);
     }
-    return BuildOnQueryMultiple<Tag>(
-      query: (DBQueries.tagById.sql.copyWith(parameters: [id])) as DBQuery<Tag>,
+    return DBReaderWidget<Tag>(
+      query:
+          (DBReaders.tagById.sql.copyWith(parameters: [id])) as DBReader<Tag>,
       builder: (data) {
         final tag = data.where((e) => e.id == id).firstOrNull;
         return buildOnData(tag);
@@ -45,14 +47,14 @@ class GetTagMultiple extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final qid = excludeEmpty
         ? (collectionId == null)
-            ? DBQueries.tagsAllExcludeEmpty
-            : DBQueries.tagsByCollectionIDExcludeEmpty
+            ? DBReaders.tagsAllExcludeEmpty
+            : DBReaders.tagsByCollectionIDExcludeEmpty
         : (collectionId == null)
-            ? DBQueries.tagsAll
-            : DBQueries.tagsByCollectionId;
+            ? DBReaders.tagsAll
+            : DBReaders.tagsByCollectionId;
 
-    return BuildOnQueryMultiple<Tag>(
-      query: (qid.sql as DBQuery<Tag>)
+    return DBReaderWidget<Tag>(
+      query: (qid.sql as DBReader<Tag>)
           .copyWith(parameters: (collectionId == null) ? [] : [collectionId]),
       builder: buildOnData,
     );

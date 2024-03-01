@@ -2,8 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/m3_db_queries.dart';
-import '../models/m3_db_query.dart';
+import '../models/m3_db_reader.dart';
+import '../models/m3_db_readers.dart';
 
 import 'async_widgets.dart';
 
@@ -18,9 +18,9 @@ class GetMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return BuildOnQueryMultiple<CLMedia>(
-      query: (DBQueries.mediaById.sql.copyWith(parameters: [id]))
-          as DBQuery<CLMedia>,
+    return DBReaderWidget<CLMedia>(
+      query: (DBReaders.mediaById.sql.copyWith(parameters: [id]))
+          as DBReader<CLMedia>,
       builder: (data) {
         final media = data.where((e) => e.id == id).firstOrNull;
         if (media != null) {
@@ -50,12 +50,12 @@ class GetMediaMultiple extends ConsumerWidget {
     }
     final qid = (collectionId == null)
         ? (tagID == null)
-            ? DBQueries.mediaAll
-            : DBQueries.mediaByTagId
-        : DBQueries.mediaByCollectionId;
+            ? DBReaders.mediaAll
+            : DBReaders.mediaByTagId
+        : DBReaders.mediaByCollectionId;
 
-    return BuildOnQueryMultiple<CLMedia>(
-      query: (qid.sql as DBQuery<CLMedia>).copyWith(
+    return DBReaderWidget<CLMedia>(
+      query: (qid.sql as DBReader<CLMedia>).copyWith(
         parameters: (collectionId == null)
             ? (tagID == null)
                 ? []

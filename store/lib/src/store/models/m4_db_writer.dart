@@ -1,131 +1,184 @@
-import 'package:colan_widgets/colan_widgets.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
-import '../models/m1_app_settings.dart';
-import 'm4_db_table.dart';
-import 'tags_in_collection.dart';
+import 'm1_app_settings.dart';
+import 'm3_db_reader.dart';
+import 'm3_db_readers.dart';
 
 @immutable
-class DBWriter {
-  DBWriter({required this.appSettings});
-  final DBTable<Collection> collectionTable = DBTable<Collection>(
-    table: 'Collection',
-    toMap: (obj, {required appSettings, required validate}) {
-      return obj.toMap();
-    },
-  );
-  final DBTable<Tag> tagTable = DBTable<Tag>(
-    table: 'Collection',
-    toMap: (obj, {required appSettings, required validate}) {
-      return obj.toMap();
-    },
-  );
-  final DBTable<CLMedia> mediaTable = DBTable<CLMedia>(
-    table: 'Collection',
-    toMap: (CLMedia obj, {required appSettings, required validate}) {
-      return obj.toMap(pathPrefix: appSettings.directories.docDir.path);
-    },
-  );
-  final DBTable<TagCollection> tagCollectionTable = DBTable<TagCollection>(
-    table: 'TagCollection',
-    toMap: (obj, {required appSettings, required validate}) {
-      return obj.toMap();
-    },
-  );
-  final AppSettings appSettings;
+class DBWriter<T> {
+  const DBWriter({
+    required this.table,
+    required this.toMap,
+    this.lableQuery,
+  });
+  final String table;
+  final Map<String, dynamic> Function(
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) toMap;
+  final DBReaders? lableQuery;
 
-  Future<Collection> upsertCollection(
-    SqliteWriteContext tx,
-    Collection collection,
-  ) async {
-    return (await collectionTable.upsert(
-      tx,
-      collection,
-      appSettings: appSettings,
-      validate: true,
-    ))!;
-  }
-
-  Future<void> upsertMediaMultiple(
-    SqliteWriteContext tx,
-    List<CLMedia> media,
-  ) async {
-    await mediaTable.upsertAll(
-      tx,
-      media,
-      appSettings: appSettings,
-      validate: true,
+  DBWriter<T> copyWith({
+    String? table,
+    Map<String, dynamic> Function(
+      T obj, {
+      required AppSettings appSettings,
+      required bool validate,
+    })? toMap,
+  }) {
+    return DBWriter<T>(
+      table: table ?? this.table,
+      toMap: toMap ?? this.toMap,
     );
   }
 
-  Future<void> replaceTags(
-    SqliteWriteContext tx,
-    Collection collection,
-    List<Tag>? newTagsListToReplace,
-  ) async {
-    if (newTagsListToReplace?.isNotEmpty ?? false) {
-      final newTags = newTagsListToReplace!.where((e) => e.id == null).toList();
-      final tags = newTagsListToReplace.where((e) => e.id != null).toList();
+  @override
+  bool operator ==(covariant DBWriter<T> other) {
+    if (identical(this, other)) return true;
+    final mapEquals = const DeepCollectionEquality().equals;
 
-      for (final tag in newTags) {
-        tags.add(
-          (await tagTable.upsert(
-            tx,
-            tag,
-            appSettings: appSettings,
-            validate: true,
-          ))!,
-        );
-      }
-      await mediaTable.delete(tx, {'collection_id': collection.id.toString()});
-      await tagCollectionTable.upsertAll(
+    return other.table == table && mapEquals(other.toMap, toMap);
+  }
+
+  @override
+  int get hashCode => table.hashCode ^ toMap.hashCode;
+
+  @override
+  String toString() => 'DBExec(table: $table, toMap: $toMap)';
+
+  Future<T?> read(
+    SqliteWriteContext tx,
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    final map = toMap(obj, appSettings: appSettings, validate: validate);
+    if (map.containsKey('label') && lableQuery != null) {
+      return (lableQuery! as DBReader<T>)
+          .copyWith(parameters: [map['label']]).read(
         tx,
-        tags
-            .map(
-              (e) => TagCollection(tagID: e.id!, collectionId: collection.id!),
-            )
-            .toList(),
         appSettings: appSettings,
-        validate: true,
+        validate: validate,
       );
     }
+
+    return null;
   }
 
-  Future<void> deleteCollection(
+  Future<T?> upsert(
     SqliteWriteContext tx,
-    Collection collection,
-  ) async {
-    await tagCollectionTable
-        .delete(tx, {'collection_id': collection.id.toString()});
-    await mediaTable.delete(tx, {'collection_id': collection.id.toString()});
-    await collectionTable.delete(tx, {'id': collection.id.toString()});
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    final cmd = _sql(
+      obj,
+      appSettings: appSettings,
+      validate: validate,
+    );
+    if (cmd.value.isNotEmpty) {
+      await tx.execute(cmd.key, cmd.value);
+    }
+    return read(
+      tx,
+      obj,
+      appSettings: appSettings,
+      validate: validate,
+    );
   }
 
-  Future<void> deleteMedia(
+  Future<List<T?>> upsertAll(
     SqliteWriteContext tx,
-    CLMedia media,
-  ) async {
-    await mediaTable.delete(tx, {'id': media.id.toString()});
+    List<T> objList, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    for (final cmd in formatSQL(
+      objList,
+      appSettings: appSettings,
+      validate: validate,
+    ).entries) {
+      if (cmd.value.isNotEmpty) {
+        if (cmd.value.length == 1) {
+          await tx.execute(cmd.key, cmd.value[0]);
+        } else {
+          await tx.executeBatch(cmd.key, cmd.value);
+        }
+      }
+    }
+    final result = <T?>[];
+    for (final obj in objList) {
+      result.add(
+        await read(
+          tx,
+          obj,
+          appSettings: appSettings,
+          validate: validate,
+        ),
+      );
+    }
+    return result;
+  }
+
+  Future<void> delete(
+    SqliteWriteContext tx,
+    Map<String, String> identifierMap, {
+    List<String>? identifier,
+  }) async {
+    final keys = identifierMap.keys;
+    final value = keys.map((e) => identifierMap[e]).toList();
+
+    final sql =
+        'DELETE FROM $table WHERE ${keys.map((e) => '$e = ?').join(', ')}';
+
+    await tx.execute(sql, value);
+  }
+
+  MapEntry<String, List<String>> _sql(
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) {
+    final map = toMap(
+      obj,
+      appSettings: appSettings,
+      validate: validate,
+    );
+
+    String? id;
+    if (map.containsKey('id')) {
+      id = map['id']!.toString();
+    }
+    final keys = map.keys.where((e) => e != 'id' && map[e] != null);
+    final values = keys.map((e) => map[e].toString()).toList();
+    final String sql;
+    if (id != null) {
+      sql = 'UPDATE $table SET ${keys.map((e) => '$e =?').join(', ')} '
+          'WHERE id = ?';
+    } else {
+      sql = 'INSERT INTO $table (${keys.join(', ')}) '
+          'VALUES (${keys.map((e) => '?').join(', ')}) ';
+    }
+    return MapEntry(sql, values);
+  }
+
+  Map<String, List<List<String>>> formatSQL(
+    List<T> objList, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) {
+    final execCmdList = <String, List<List<String>>>{};
+
+    for (final obj in objList) {
+      final entry = _sql(obj, appSettings: appSettings, validate: validate);
+      if (!execCmdList.containsKey(entry.key)) {
+        execCmdList[entry.key] = [];
+      }
+      execCmdList[entry.key]!.add(entry.value);
+    }
+    return execCmdList;
   }
 }
-
-/*
-Future<void> mergeTag(SqliteWriteContext tx, int toTag) async {
-    await tx.execute(
-      '''
-          INSERT OR REPLACE INTO TagCollection (tag_id, collection_id)
-          SELECT 
-              CASE 
-                  WHEN tag_id = ? THEN ?
-                  ELSE tag_id
-              END AS new_tag_id,
-              collection_id
-          FROM TagCollection
-          WHERE tag_id = ?
-        ''',
-      [id, toTag, id],
-    );
-    await tx.execute('DELETE FROM Tag WHERE id = ?', [id]);
-  }
-*/

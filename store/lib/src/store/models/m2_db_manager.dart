@@ -1,19 +1,18 @@
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/models/m1_app_settings.dart';
-import 'package:store/src/store/models/m3_db_queries.dart';
-import 'package:store/src/store/models/m3_db_query.dart';
 
-import 'm4_db_writer.dart';
+import '../models/m1_app_settings.dart';
+import '../models/m3_db_reader.dart';
+import '../models/m3_db_readers.dart';
+import 'm4_db_writers.dart';
 
 class DBManager {
   DBManager({required this.db, required AppSettings appSettings})
-      : dbWriter = DBWriter(appSettings: appSettings);
+      : dbWriter = DBWriters(appSettings: appSettings);
 
   final SqliteDatabase db;
-  final DBWriter dbWriter;
+  final DBWriters dbWriter;
 
   static Future<DBManager> createInstances({
     required String dbpath,
@@ -45,7 +44,7 @@ class DBManager {
     Collection collection, {
     required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
   }) async {
-    final media = await (DBQueries.mediaByCollectionId.sql as DBQuery<CLMedia>)
+    final media = await (DBReaders.mediaByCollectionId.sql as DBReader<CLMedia>)
         .copyWith(parameters: [collection.id]).readMultiple(
       db,
       appSettings: dbWriter.appSettings,

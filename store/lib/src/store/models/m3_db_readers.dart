@@ -2,9 +2,9 @@
 
 import 'package:colan_widgets/colan_widgets.dart';
 
-import 'm3_db_query.dart';
+import 'm3_db_reader.dart';
 
-enum DBQueries {
+enum DBReaders {
   collectionById,
   tagById,
   mediaById,
@@ -25,20 +25,20 @@ enum DBQueries {
   mediaByTagId,
   mediaByMD5;
 
-  DBQuery<dynamic> get sql => switch (this) {
-        collectionById => DBQuery<Collection>(
+  DBReader<dynamic> get sql => switch (this) {
+        collectionById => DBReader<Collection>(
             sql: 'SELECT * FROM Collection WHERE id = ? ',
             triggerOnTables: const {'Collection'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        tagById => DBQuery<Tag>(
+        tagById => DBReader<Tag>(
             sql: 'SELECT * FROM Tag WHERE id = ? ',
             triggerOnTables: const {'Tag'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        mediaById => DBQuery<CLMedia>(
+        mediaById => DBReader<CLMedia>(
             sql: 'SELECT * FROM Item WHERE id = ?',
             triggerOnTables: const {'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -48,32 +48,32 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        collectionByLabel => DBQuery<Collection>(
+        collectionByLabel => DBReader<Collection>(
             sql: 'SELECT * FROM Collection WHERE label = ? ',
             triggerOnTables: const {'Collection'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        tagByLabel => DBQuery<Tag>(
+        tagByLabel => DBReader<Tag>(
             sql: 'SELECT * FROM Tag WHERE label = ? ',
             triggerOnTables: const {'Tag'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        collectionsAll => DBQuery<Collection>(
+        collectionsAll => DBReader<Collection>(
             sql: 'SELECT * FROM Collection',
             triggerOnTables: const {'Collection'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        collectionsExcludeEmpty => DBQuery<Collection>(
+        collectionsExcludeEmpty => DBReader<Collection>(
             sql: 'SELECT DISTINCT Collection.* FROM Collection '
                 'JOIN Item ON Collection.id = Item.collection_id;',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        collectionsEmpty => DBQuery<Collection>(
+        collectionsEmpty => DBReader<Collection>(
             sql: 'SELECT Collection.* FROM Collection '
                 'LEFT JOIN Item ON Collection.id = Item.collection_id '
                 'WHERE Item.collection_id IS NULL;',
@@ -81,7 +81,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        collectionsByTagId => DBQuery<Collection>(
+        collectionsByTagId => DBReader<Collection>(
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
                 'JOIN TagCollection ON Collection.id = TagCollection.collection_id '
@@ -90,7 +90,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        collectionsByTagIDExcludeEmpty => DBQuery<Collection>(
+        collectionsByTagIDExcludeEmpty => DBReader<Collection>(
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
                 'JOIN Item ON Collection.id = Item.collection_id '
@@ -100,13 +100,13 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Collection.fromMap(map),
           ),
-        DBQueries.tagsAll => DBQuery<Tag>(
+        DBReaders.tagsAll => DBReader<Tag>(
             sql: 'SELECT * FROM Tag',
             triggerOnTables: const {'Tag'},
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.tagsAllExcludeEmpty => DBQuery<Tag>(
+        DBReaders.tagsAllExcludeEmpty => DBReader<Tag>(
             sql: 'SELECT DISTINCT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
                 'JOIN Collection ON TagCollection.collection_id = Collection.id '
@@ -120,7 +120,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.tagsByCollectionId => DBQuery<Tag>(
+        DBReaders.tagsByCollectionId => DBReader<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
                 'WHERE TagCollection.collection_id = ?',
@@ -128,7 +128,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.tagsByCollectionIDExcludeEmpty => DBQuery<Tag>(
+        DBReaders.tagsByCollectionIDExcludeEmpty => DBReader<Tag>(
             sql: 'SELECT DISTINCT Tag.* '
                 'FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
@@ -144,7 +144,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.mediaAll => DBQuery<CLMedia>(
+        DBReaders.mediaAll => DBReader<CLMedia>(
             sql: 'SELECT * FROM Item',
             triggerOnTables: const {'Item'},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -154,7 +154,7 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        DBQueries.mediaByCollectionId => DBQuery<CLMedia>(
+        DBReaders.mediaByCollectionId => DBReader<CLMedia>(
             sql: 'SELECT * FROM Item WHERE collection_id = ?',
             triggerOnTables: const {},
             fromMap: (map, {required appSettings, required validate}) =>
@@ -164,7 +164,7 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        DBQueries.mediaByTagId => DBQuery<CLMedia>(
+        DBReaders.mediaByTagId => DBReader<CLMedia>(
             sql: 'SELECT Item.* '
                 'FROM Item '
                 'JOIN Collection ON Item.collection_id = Collection.id '
@@ -178,7 +178,7 @@ enum DBQueries {
               validate: validate,
             ),
           ),
-        DBQueries.tagsByMediaId => DBQuery<Tag>(
+        DBReaders.tagsByMediaId => DBReader<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
                 'JOIN Item ON TagCollection.collection_id = Item.collection_id '
@@ -187,7 +187,7 @@ enum DBQueries {
             fromMap: (map, {required appSettings, required validate}) =>
                 Tag.fromMap(map),
           ),
-        DBQueries.mediaByMD5 => DBQuery<CLMedia>(
+        DBReaders.mediaByMD5 => DBReader<CLMedia>(
             sql: 'SELECT * FROM Item WHERE md5String = ?',
             triggerOnTables: const {'Item'},
             fromMap: (map, {required appSettings, required validate}) =>

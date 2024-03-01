@@ -1,11 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/models/m1_app_settings.dart';
+
+import '../models/m1_app_settings.dart';
 
 @immutable
-class DBQuery<T> {
-  const DBQuery({
+class DBReader<T> {
+  const DBReader({
     required this.sql,
     required this.triggerOnTables,
     required this.fromMap,
@@ -21,7 +22,7 @@ class DBQuery<T> {
     required bool validate,
   }) fromMap;
 
-  DBQuery<T> copyWith({
+  DBReader<T> copyWith({
     String? sql,
     Set<String>? triggerOnTables,
     List<Object?>? parameters,
@@ -31,7 +32,7 @@ class DBQuery<T> {
       required bool validate,
     })? fromMap,
   }) {
-    return DBQuery<T>(
+    return DBReader<T>(
       sql: sql ?? this.sql,
       triggerOnTables: triggerOnTables ?? this.triggerOnTables,
       parameters: parameters ?? this.parameters,
@@ -46,7 +47,7 @@ class DBQuery<T> {
   }
 
   @override
-  bool operator ==(covariant DBQuery<T> other) {
+  bool operator ==(covariant DBReader<T> other) {
     if (identical(this, other)) return true;
     final collectionEquals = const DeepCollectionEquality().equals;
 
