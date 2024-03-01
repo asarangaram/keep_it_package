@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/m3_db_reader.dart';
 import '../models/m3_db_readers.dart';
-import 'async_widgets.dart';
+import 'w3_get_from_store.dart';
 
 class GetCollection extends ConsumerWidget {
   const GetCollection({
@@ -20,7 +20,7 @@ class GetCollection extends ConsumerWidget {
     if (id == null) {
       return buildOnData(null);
     }
-    return DBReaderWidget<Collection>(
+    return GetFromStore<Collection>(
       query: (DBReaders.collectionById.sql.copyWith(parameters: [id]))
           as DBReader<Collection>,
       builder: (data) {
@@ -52,7 +52,7 @@ class GetCollectionMultiple extends ConsumerWidget {
             ? DBReaders.collectionsAll
             : DBReaders.collectionsByTagId;
 
-    return DBReaderWidget<Collection>(
+    return GetFromStore<Collection>(
       query: (qid.sql as DBReader<Collection>)
           .copyWith(parameters: (tagId == null) ? [] : [tagId]),
       builder: buildOnData,

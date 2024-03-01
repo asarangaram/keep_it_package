@@ -6,7 +6,7 @@ import '../models/m3_db_reader.dart';
 import 'p1_app_settings.dart';
 import 'p2_db_manager.dart';
 
-final dbQueryResultProvider =
+final dbReaderProvider =
     StreamProvider.family<List<dynamic>, DBReader<dynamic>>(
         (ref, dbQuery) async* {
   final dbManager = await ref.watch(dbManagerProvider.future);
@@ -23,7 +23,7 @@ final dbQueryResultProvider =
               (e) => dbQuery.fromMap(
                 e,
                 appSettings: appSettings,
-                validate: true,
+                validate: false,
               ),
             )
             .toList(),

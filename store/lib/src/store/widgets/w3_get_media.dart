@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/m3_db_reader.dart';
 import '../models/m3_db_readers.dart';
-
-import 'async_widgets.dart';
+import 'w3_get_from_store.dart';
 
 class GetMedia extends ConsumerWidget {
   const GetMedia({
@@ -18,7 +17,7 @@ class GetMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return DBReaderWidget<CLMedia>(
+    return GetFromStore<CLMedia>(
       query: (DBReaders.mediaById.sql.copyWith(parameters: [id]))
           as DBReader<CLMedia>,
       builder: (data) {
@@ -54,7 +53,7 @@ class GetMediaMultiple extends ConsumerWidget {
             : DBReaders.mediaByTagId
         : DBReaders.mediaByCollectionId;
 
-    return DBReaderWidget<CLMedia>(
+    return GetFromStore<CLMedia>(
       query: (qid.sql as DBReader<CLMedia>).copyWith(
         parameters: (collectionId == null)
             ? (tagID == null)

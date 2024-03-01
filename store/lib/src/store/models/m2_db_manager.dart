@@ -23,6 +23,10 @@ class DBManager {
     return DBManager(db: db, appSettings: appSettings);
   }
 
+  void dispose() {
+    db.close();
+  }
+
   Future<CLMedia?> getMediaByMD5(String md5String) async {
     return (DBReaders.mediaByMD5.sql as DBReader<CLMedia>)
         .copyWith(parameters: [md5String]).read(

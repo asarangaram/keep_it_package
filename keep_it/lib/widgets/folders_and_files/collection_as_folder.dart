@@ -39,16 +39,20 @@ class CollectionAsFolder extends ConsumerWidget {
               await ref
                   .read(notificationMessageProvider.notifier)
                   .push('Updated');
-              throw UnimplementedError('Wait');
             }
 
             return true;
           },
           onDelete: () async {
-            /* await ref
-                .read(dbUpdaterNotifierProvider.notifier)
-                .deleteCollection(collection);return true; */
-            throw UnimplementedError('Wait');
+            await dbManager.deleteCollection(
+              collection,
+              onDeleteMediaFiles: (media) async {
+                for (final m in media) {
+                  m.deleteFile();
+                }
+              },
+            );
+            return null;
           },
           onTap: () async {
             unawaited(
@@ -84,9 +88,7 @@ class CollectionAsFolder extends ConsumerWidget {
   Future<void> deleteCollection(
     DBManager dbManager,
     Collection collection,
-  ) async {
-    
-  }
+  ) async {}
 }
 
 class PreviewGenerator extends StatelessWidget {

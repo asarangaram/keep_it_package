@@ -113,7 +113,7 @@ class DBWriters {
       appSettings: appSettings,
       validate: true,
     );
-    _infoLogger('upsertCollection: Done :  $updated');
+    _infoLogger('upsertMediaMultiple: Done :  $updated');
     // TODO(anandas): : implemetn readback and introduce Exception here
     return updated;
   }
