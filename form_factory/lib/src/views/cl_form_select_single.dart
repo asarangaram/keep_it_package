@@ -171,9 +171,9 @@ class CLFormSelectSingle extends StatelessWidget {
   ) async {
     final entityUpdated = await descriptors.onSelectSuggestion(item);
     if (entityUpdated == null) return;
-    //state.searchController.text = '';
+    state.searchController.text = descriptors.labelBuilder(entityUpdated);
     fieldState.didChange(entityUpdated);
-    onRefresh();
+    //onRefresh();
   }
 
   Future<void> _onCreateByLabel(
@@ -183,8 +183,8 @@ class CLFormSelectSingle extends StatelessWidget {
   ) async {
     final entityUpdated = await descriptors.onCreateByLabel(label);
     if (entityUpdated == null) return;
-    //state.searchController.text = '';
+    state.searchController.text = descriptors.labelBuilder(entityUpdated);
     fieldState.didChange(entityUpdated);
-    onRefresh();
+    //onRefresh();
   }
 }
