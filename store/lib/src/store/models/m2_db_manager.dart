@@ -42,7 +42,6 @@ class DBManager {
   }
 
   Future<void> deleteCollection(
-    DBManager dbManager,
     Collection collection, {
     required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
   }) async {
@@ -52,7 +51,13 @@ class DBManager {
       await onDeleteMediaFiles(media);
     }
     await db.writeTransaction((tx) async {
-      dbWriter.deleteCollection(tx, collection);
+      await dbWriter.deleteCollection(tx, collection);
+    });
+  }
+
+  Future<void> deleteMedia(CLMedia media) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.deleteMedia(tx, media);
     });
   }
 }

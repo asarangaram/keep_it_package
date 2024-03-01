@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/src/store/providers/p1_app_settings.dart';
-import 'package:store/store.dart';
 
 import '../models/m1_app_settings.dart';
 import '../models/m2_db_manager.dart';
 import '../models/m3_db_query.dart';
 
+import 'p1_app_settings.dart';
 import 'p2_db_manager.dart';
 
 class DBQueryResultNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {

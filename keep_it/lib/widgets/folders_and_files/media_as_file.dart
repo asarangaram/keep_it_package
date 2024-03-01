@@ -19,24 +19,28 @@ class MediaAsFile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WrapStandardQuickMenu(
-      quickMenuScopeKey: quickMenuScopeKey,
-      onDelete: () async {
-        //TODO (anandas): Confirm delete
-        /* await ref.read(dbUpdaterNotifierProvider.notifier).deleteItem(media);
-        return true; */
-        throw UnimplementedError('Wait');
-      },
-      onTap: () async {
-        unawaited(
-          context.push('/item/${media.collectionId}/${media.id}'),
+    return GetDBManager(
+      builder: (dbManager) {
+        return WrapStandardQuickMenu(
+          quickMenuScopeKey: quickMenuScopeKey,
+          onDelete: () async {
+            // TODO(anandas): Confirm delete
+
+            await dbManager.deleteMedia(media);
+            throw UnimplementedError('Wait');
+          },
+          onTap: () async {
+            unawaited(
+              context.push('/item/${media.collectionId}/${media.id}'),
+            );
+            return true;
+          },
+          child: CLMediaPreview(
+            media: media,
+            keepAspectRatio: false,
+          ),
         );
-        return true;
       },
-      child: CLMediaPreview(
-        media: media,
-        keepAspectRatio: false,
-      ),
     );
   }
 }

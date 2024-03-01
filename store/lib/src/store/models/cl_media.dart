@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:sqlite_async/sqlite_async.dart';
 
 import 'm1_app_settings.dart';
 
