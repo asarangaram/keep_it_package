@@ -64,6 +64,12 @@ class Collection {
   }
 
   String toJson() => json.encode(toMap());
+
+  @override
+  String toString() {
+    return 'Collection(id: $id, label: $label, description: $description, '
+        'createdDate: $createdDate, updatedDate: $updatedDate)';
+  }
 }
 
 class Collections {

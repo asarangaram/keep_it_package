@@ -1,8 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/src/store/models/m3_db_reader.dart';
 
 import '../models/m1_app_settings.dart';
+import 'm3_db_readers.dart';
 import 'm4_db_writer.dart';
 import 'tags_in_collection.dart';
 
@@ -14,37 +16,90 @@ class DBWriters {
     toMap: (obj, {required appSettings, required validate}) {
       return obj.toMap();
     },
+    readBack: (
+      tx,
+      collection, {
+      required appSettings,
+      required validate,
+    }) async {
+      return (DBReaders.collectionByLabel.sql as DBReader<Collection>)
+          .copyWith(parameters: [collection.label]).read(
+        tx,
+        appSettings: appSettings,
+        validate: validate,
+      );
+    },
   );
   final DBWriter<Tag> tagTable = DBWriter<Tag>(
-    table: 'Collection',
+    table: 'Tag',
     toMap: (obj, {required appSettings, required validate}) {
       return obj.toMap();
     },
+    readBack: (tx, tag, {required appSettings, required validate}) {
+      return (DBReaders.tagByLabel.sql as DBReader<Tag>)
+          .copyWith(parameters: [tag.label]).read(
+        tx,
+        appSettings: appSettings,
+        validate: validate,
+      );
+    },
   );
   final DBWriter<CLMedia> mediaTable = DBWriter<CLMedia>(
-    table: 'Collection',
+    table: 'Item',
     toMap: (CLMedia obj, {required appSettings, required validate}) {
       return obj.toMap(pathPrefix: appSettings.directories.docDir.path);
     },
+    readBack: null,
   );
   final DBWriter<TagCollection> tagCollectionTable = DBWriter<TagCollection>(
     table: 'TagCollection',
     toMap: (obj, {required appSettings, required validate}) {
       return obj.toMap();
     },
+    readBack: null,
   );
   final AppSettings appSettings;
+
+  Future<Tag> upsertTag(
+    SqliteWriteContext tx,
+    Tag tag,
+  ) async {
+    _infoLogger('upsertTag: $tag');
+    final updated = await tagTable.upsert(
+      tx,
+      tag,
+      appSettings: appSettings,
+      validate: true,
+    );
+    _infoLogger('upsertTag: Done :  $updated');
+    if (updated == null) {
+      exceptionLogger(
+        '$_filePrefix: DB Failure',
+        '$_filePrefix: Failed to write / retrive Tag',
+      );
+    }
+    return updated!;
+  }
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
     Collection collection,
   ) async {
-    return (await collectionTable.upsert(
+    _infoLogger('upsertCollection: $collection');
+    final updated = await collectionTable.upsert(
       tx,
       collection,
       appSettings: appSettings,
       validate: true,
-    ))!;
+    );
+    _infoLogger('upsertCollection: Done :  $updated');
+    if (updated == null) {
+      exceptionLogger(
+        '$_filePrefix: DB Failure',
+        '$_filePrefix: Failed to write / retrive Collection',
+      );
+    }
+    return updated!;
   }
 
   Future<void> upsertMediaMultiple(
@@ -69,16 +124,10 @@ class DBWriters {
       final tags = newTagsListToReplace.where((e) => e.id != null).toList();
 
       for (final tag in newTags) {
-        tags.add(
-          (await tagTable.upsert(
-            tx,
-            tag,
-            appSettings: appSettings,
-            validate: true,
-          ))!,
-        );
+        tags.add(await upsertTag(tx, tag));
       }
-      await mediaTable.delete(tx, {'collection_id': collection.id.toString()});
+      await tagCollectionTable
+          .delete(tx, {'collection_id': collection.id.toString()});
       await tagCollectionTable.upsertAll(
         tx,
         tags
@@ -129,3 +178,12 @@ Future<void> mergeTag(SqliteWriteContext tx, int toTag) async {
     await tx.execute('DELETE FROM Tag WHERE id = ?', [id]);
   }
 */
+
+const _filePrefix = 'DB Write: ';
+bool _disableInfoLogger = false;
+// ignore: unused_element
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i('$_filePrefix$msg');
+  }
+}

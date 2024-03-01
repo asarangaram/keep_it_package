@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -11,7 +12,7 @@ class DBWriter<T> {
   const DBWriter({
     required this.table,
     required this.toMap,
-    this.lableQuery,
+    required this.readBack,
   });
   final String table;
   final Map<String, dynamic> Function(
@@ -19,7 +20,12 @@ class DBWriter<T> {
     required AppSettings appSettings,
     required bool validate,
   }) toMap;
-  final DBReaders? lableQuery;
+  final Future<T?> Function(
+    SqliteWriteContext tx,
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  })? readBack;
 
   DBWriter<T> copyWith({
     String? table,
@@ -28,10 +34,17 @@ class DBWriter<T> {
       required AppSettings appSettings,
       required bool validate,
     })? toMap,
+    Future<T?> Function(
+      SqliteWriteContext tx,
+      T obj, {
+      required AppSettings appSettings,
+      required bool validate,
+    })? readBack,
   }) {
     return DBWriter<T>(
       table: table ?? this.table,
       toMap: toMap ?? this.toMap,
+      readBack: readBack ?? this.readBack,
     );
   }
 
@@ -49,25 +62,6 @@ class DBWriter<T> {
   @override
   String toString() => 'DBExec(table: $table, toMap: $toMap)';
 
-  Future<T?> read(
-    SqliteWriteContext tx,
-    T obj, {
-    required AppSettings appSettings,
-    required bool validate,
-  }) async {
-    final map = toMap(obj, appSettings: appSettings, validate: validate);
-    if (map.containsKey('label') && lableQuery != null) {
-      return (lableQuery! as DBReader<T>)
-          .copyWith(parameters: [map['label']]).read(
-        tx,
-        appSettings: appSettings,
-        validate: validate,
-      );
-    }
-
-    return null;
-  }
-
   Future<T?> upsert(
     SqliteWriteContext tx,
     T obj, {
@@ -79,10 +73,11 @@ class DBWriter<T> {
       appSettings: appSettings,
       validate: validate,
     );
+    _infoLogger('Exec:  $cmd');
     if (cmd.value.isNotEmpty) {
       await tx.execute(cmd.key, cmd.value);
     }
-    return read(
+    return readBack?.call(
       tx,
       obj,
       appSettings: appSettings,
@@ -112,7 +107,7 @@ class DBWriter<T> {
     final result = <T?>[];
     for (final obj in objList) {
       result.add(
-        await read(
+        await readBack?.call(
           tx,
           obj,
           appSettings: appSettings,
@@ -149,7 +144,7 @@ class DBWriter<T> {
     );
 
     String? id;
-    if (map.containsKey('id')) {
+    if (map.containsKey('id') && map['id'] != null) {
       id = map['id']!.toString();
     }
     final keys = map.keys.where((e) => e != 'id' && map[e] != null);
@@ -180,5 +175,14 @@ class DBWriter<T> {
       execCmdList[entry.key]!.add(entry.value);
     }
     return execCmdList;
+  }
+}
+
+const _filePrefix = 'DB Write (internal): ';
+bool _disableInfoLogger = false;
+// ignore: unused_element
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i('$_filePrefix$msg');
   }
 }

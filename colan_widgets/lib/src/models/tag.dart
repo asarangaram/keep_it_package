@@ -15,7 +15,8 @@ class Tag {
   });
   @override
   String toString() {
-    return 'id: ${id ?? "untracked"}, lable: $label,';
+    return 'Tag(id: $id, label: $label, description: $description,'
+        ' createdDate: $createdDate, updatedDate: $updatedDate)';
   }
 
   factory Tag.fromMap(Map<String, dynamic> map) {

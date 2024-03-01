@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -71,9 +72,12 @@ class DBReader<T> {
     required AppSettings appSettings,
     required bool validate,
   }) async {
-    return (await db.getAll(sql, parameters ?? []))
+    _infoLogger('cmd: $sql, $parameters');
+    final objs = (await db.getAll(sql, parameters ?? []))
         .map((m) => fromMap(m, appSettings: appSettings, validate: validate))
         .toList();
+    _infoLogger("read: ${objs.map((e) => e.toString()).join(', ')}");
+    return objs;
   }
 
   Future<T?> read(
@@ -81,8 +85,20 @@ class DBReader<T> {
     required AppSettings appSettings,
     required bool validate,
   }) async {
-    return (await tx.getAll(sql, parameters ?? []))
+    _infoLogger('cmd: $sql, $parameters');
+    final obj = (await tx.getAll(sql, parameters ?? []))
         .map((m) => fromMap(m, appSettings: appSettings, validate: validate))
         .firstOrNull;
+    _infoLogger('read $obj');
+    return obj;
+  }
+}
+
+const _filePrefix = 'DB Read (internal): ';
+bool _disableInfoLogger = false;
+// ignore: unused_element
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i('$_filePrefix$msg');
   }
 }
