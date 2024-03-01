@@ -27,7 +27,7 @@ class MediaAsFile extends ConsumerWidget {
             // TODO(anandas): Confirm delete
 
             await dbManager.deleteMedia(media);
-            throw UnimplementedError('Wait');
+            return true;
           },
           onTap: () async {
             unawaited(

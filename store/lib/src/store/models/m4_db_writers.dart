@@ -102,16 +102,20 @@ class DBWriters {
     return updated!;
   }
 
-  Future<void> upsertMediaMultiple(
+  Future<List<CLMedia?>> upsertMediaMultiple(
     SqliteWriteContext tx,
     List<CLMedia> media,
   ) async {
-    await mediaTable.upsertAll(
+    _infoLogger('upsertMediaMultiple: $media');
+    final updated = await mediaTable.upsertAll(
       tx,
       media,
       appSettings: appSettings,
       validate: true,
     );
+    _infoLogger('upsertCollection: Done :  $updated');
+    // TODO(anandas): : implemetn readback and introduce Exception here
+    return updated;
   }
 
   Future<void> replaceTags(

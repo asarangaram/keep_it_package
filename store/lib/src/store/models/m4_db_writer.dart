@@ -75,12 +75,14 @@ class DBWriter<T> {
     if (cmd.value.isNotEmpty) {
       await tx.execute(cmd.key, cmd.value);
     }
-    return readBack?.call(
+    final result = readBack?.call(
       tx,
       obj,
       appSettings: appSettings,
       validate: validate,
     );
+    _infoLogger('Readback:  $result');
+    return result;
   }
 
   Future<List<T?>> upsertAll(
@@ -94,6 +96,7 @@ class DBWriter<T> {
       appSettings: appSettings,
       validate: validate,
     ).entries) {
+      _infoLogger('Exec:  $cmd');
       if (cmd.value.isNotEmpty) {
         if (cmd.value.length == 1) {
           await tx.execute(cmd.key, cmd.value[0]);
@@ -113,6 +116,7 @@ class DBWriter<T> {
         ),
       );
     }
+    _infoLogger('Readback:  $result');
     return result;
   }
 
@@ -151,6 +155,7 @@ class DBWriter<T> {
     if (id != null) {
       sql = 'UPDATE $table SET ${keys.map((e) => '$e =?').join(', ')} '
           'WHERE id = ?';
+      values.add(id);
     } else {
       sql = 'INSERT INTO $table (${keys.join(', ')}) '
           'VALUES (${keys.map((e) => '?').join(', ')}) ';
