@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -40,13 +41,21 @@ class CLMedia {
     }
   }
 
-  factory CLMedia.fromMap(Map<String, dynamic> map) {
+  factory CLMedia.fromMap(
+    Map<String, dynamic> map, {
+    String? pathPrefix,
+    bool validate = true,
+  }) {
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
     }
 
     return CLMedia(
-      path: map['path'] as String,
+      path: relativePath(
+        map['path'] as String,
+        pathPrefix: pathPrefix,
+        validate: validate,
+      ),
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       ref: map['ref'] != null ? map['ref'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
@@ -160,9 +169,9 @@ class CLMedia {
         ' updatedDate: $updatedDate, md5String: $md5String)';
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({String? pathPrefix}) {
     return <String, dynamic>{
-      'path': path,
+      'path': (pathPrefix != null) ? '$pathPrefix/$path' : path,
       'type': type.name,
       'ref': ref,
       'id': id,
@@ -174,4 +183,20 @@ class CLMedia {
   }
 
   String toJson() => json.encode(toMap());
+
+  static String relativePath(
+    String fullPath, {
+    required String? pathPrefix,
+    bool validate = true,
+  }) {
+    if (validate && !File(fullPath).existsSync()) {
+      throw Exception('file not found');
+    }
+    if (pathPrefix == null) return fullPath;
+
+    if (validate && fullPath.startsWith(pathPrefix)) {
+      throw Exception('Media is not placed in appropriate folder');
+    }
+    return fullPath.replaceFirst(pathPrefix, '');
+  }
 }

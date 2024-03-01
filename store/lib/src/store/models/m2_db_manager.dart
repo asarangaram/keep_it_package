@@ -46,7 +46,11 @@ class DBManager {
     required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
   }) async {
     final media = await (DBQueries.mediaByCollectionId.sql as DBQuery<CLMedia>)
-        .copyWith(parameters: [collection.id]).readMultiple(db);
+        .copyWith(parameters: [collection.id]).readMultiple(
+      db,
+      appSettings: dbWriter.appSettings,
+      validate: true,
+    );
     if (media.isNotEmpty) {
       await onDeleteMediaFiles(media);
     }

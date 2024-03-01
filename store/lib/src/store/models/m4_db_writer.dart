@@ -1,9 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/models/m1_app_settings.dart';
 
+import '../models/m1_app_settings.dart';
 import 'm4_db_table.dart';
 import 'tags_in_collection.dart';
 
@@ -12,19 +11,27 @@ class DBWriter {
   DBWriter({required this.appSettings});
   final DBTable<Collection> collectionTable = DBTable<Collection>(
     table: 'Collection',
-    toMap: (Collection c) => c.toMap(),
+    toMap: (obj, {required appSettings, required validate}) {
+      return obj.toMap();
+    },
   );
   final DBTable<Tag> tagTable = DBTable<Tag>(
     table: 'Collection',
-    toMap: (Tag c) => c.toMap(),
+    toMap: (obj, {required appSettings, required validate}) {
+      return obj.toMap();
+    },
   );
   final DBTable<CLMedia> mediaTable = DBTable<CLMedia>(
     table: 'Collection',
-    toMap: (CLMedia c) => c.toMap(),
+    toMap: (CLMedia obj, {required appSettings, required validate}) {
+      return obj.toMap(pathPrefix: appSettings.directories.docDir.path);
+    },
   );
   final DBTable<TagCollection> tagCollectionTable = DBTable<TagCollection>(
     table: 'TagCollection',
-    toMap: (TagCollection c) => c.toMap(),
+    toMap: (obj, {required appSettings, required validate}) {
+      return obj.toMap();
+    },
   );
   final AppSettings appSettings;
 
@@ -32,14 +39,24 @@ class DBWriter {
     SqliteWriteContext tx,
     Collection collection,
   ) async {
-    return (await collectionTable.upsert(tx, collection, appSettings))!;
+    return (await collectionTable.upsert(
+      tx,
+      collection,
+      appSettings: appSettings,
+      validate: true,
+    ))!;
   }
 
   Future<void> upsertMediaMultiple(
     SqliteWriteContext tx,
     List<CLMedia> media,
   ) async {
-    await mediaTable.upsertAll(tx, media, appSettings);
+    await mediaTable.upsertAll(
+      tx,
+      media,
+      appSettings: appSettings,
+      validate: true,
+    );
   }
 
   Future<void> replaceTags(
@@ -52,7 +69,14 @@ class DBWriter {
       final tags = newTagsListToReplace.where((e) => e.id != null).toList();
 
       for (final tag in newTags) {
-        tags.add((await tagTable.upsert(tx, tag, appSettings))!);
+        tags.add(
+          (await tagTable.upsert(
+            tx,
+            tag,
+            appSettings: appSettings,
+            validate: true,
+          ))!,
+        );
       }
       await mediaTable.delete(tx, {'collection_id': collection.id.toString()});
       await tagCollectionTable.upsertAll(
@@ -62,7 +86,8 @@ class DBWriter {
               (e) => TagCollection(tagID: e.id!, collectionId: collection.id!),
             )
             .toList(),
-        appSettings,
+        appSettings: appSettings,
+        validate: true,
       );
     }
   }

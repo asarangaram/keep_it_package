@@ -10,24 +10,26 @@ class DBQuery<T> {
     required this.triggerOnTables,
     required this.fromMap,
     this.parameters,
-    this.preprocess,
   });
 
   final String sql;
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
-  final T Function(Map<String, dynamic> map) fromMap;
-  final Map<String, dynamic> Function(
+  final T Function(
     Map<String, dynamic> map, {
     required AppSettings appSettings,
-    bool validate,
-  })? preprocess;
+    required bool validate,
+  }) fromMap;
 
   DBQuery<T> copyWith({
     String? sql,
     Set<String>? triggerOnTables,
     List<Object?>? parameters,
-    T Function(Map<String, dynamic> map)? fromMap,
+    T Function(
+      Map<String, dynamic> map, {
+      required AppSettings appSettings,
+      required bool validate,
+    })? fromMap,
   }) {
     return DBQuery<T>(
       sql: sql ?? this.sql,
@@ -63,11 +65,23 @@ class DBQuery<T> {
   }
 
   // Use this only to pick specific items, not cached.
-  Future<List<T>> readMultiple(SqliteDatabase db) async {
-    return (await db.getAll(sql, parameters ?? [])).map(fromMap).toList();
+  Future<List<T>> readMultiple(
+    SqliteDatabase db, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    return (await db.getAll(sql, parameters ?? []))
+        .map((m) => fromMap(m, appSettings: appSettings, validate: validate))
+        .toList();
   }
 
-  Future<T?> read(SqliteWriteContext tx) async {
-    return (await tx.getAll(sql, parameters ?? [])).map(fromMap).firstOrNull;
+  Future<T?> read(
+    SqliteWriteContext tx, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    return (await tx.getAll(sql, parameters ?? []))
+        .map((m) => fromMap(m, appSettings: appSettings, validate: validate))
+        .firstOrNull;
   }
 }

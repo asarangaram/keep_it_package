@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
-import 'package:store/src/store/models/cl_media.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../store/providers/uuid.dart';
@@ -56,9 +55,9 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
         final uuidGenerator = ref.watch(uuidProvider);
         final uuid = uuidGenerator.v5(
           Uuid.NAMESPACE_URL,
-          CLMediaDB.relativePath(
+          CLMedia.relativePath(
             widget.media.path,
-            resources.directories.docDir.path,
+            pathPrefix: resources.directories.docDir.path,
           ),
         );
         final previewFileName =

@@ -11,22 +11,23 @@ class DBTable<T> {
   const DBTable({
     required this.table,
     required this.toMap,
-    this.preprocess,
     this.lableQuery,
   });
   final String table;
-  final Map<String, dynamic> Function(T obj) toMap;
-  final DBQueries? lableQuery;
-
   final Map<String, dynamic> Function(
-    Map<String, dynamic> map, {
+    T obj, {
     required AppSettings appSettings,
-    bool validate,
-  })? preprocess;
+    required bool validate,
+  }) toMap;
+  final DBQueries? lableQuery;
 
   DBTable<T> copyWith({
     String? table,
-    Map<String, dynamic> Function(T obj)? toMap,
+    Map<String, dynamic> Function(
+      T obj, {
+      required AppSettings appSettings,
+      required bool validate,
+    })? toMap,
   }) {
     return DBTable<T>(
       table: table ?? this.table,
@@ -50,12 +51,18 @@ class DBTable<T> {
 
   Future<T?> read(
     SqliteWriteContext tx,
-    T obj,
-  ) async {
-    final map = toMap(obj);
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    final map = toMap(obj, appSettings: appSettings, validate: validate);
     if (map.containsKey('label') && lableQuery != null) {
       return (lableQuery! as DBQuery<T>)
-          .copyWith(parameters: [map['label']]).read(tx);
+          .copyWith(parameters: [map['label']]).read(
+        tx,
+        appSettings: appSettings,
+        validate: validate,
+      );
     }
 
     return null;
@@ -63,22 +70,37 @@ class DBTable<T> {
 
   Future<T?> upsert(
     SqliteWriteContext tx,
-    T obj,
-    AppSettings appSettings,
-  ) async {
-    final cmd = _sql(obj, appSettings);
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    final cmd = _sql(
+      obj,
+      appSettings: appSettings,
+      validate: validate,
+    );
     if (cmd.value.isNotEmpty) {
       await tx.execute(cmd.key, cmd.value);
     }
-    return read(tx, obj);
+    return read(
+      tx,
+      obj,
+      appSettings: appSettings,
+      validate: validate,
+    );
   }
 
   Future<List<T?>> upsertAll(
     SqliteWriteContext tx,
-    List<T> objList,
-    AppSettings appSettings,
-  ) async {
-    for (final cmd in formatSQL(objList, appSettings).entries) {
+    List<T> objList, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) async {
+    for (final cmd in formatSQL(
+      objList,
+      appSettings: appSettings,
+      validate: validate,
+    ).entries) {
       if (cmd.value.isNotEmpty) {
         if (cmd.value.length == 1) {
           await tx.execute(cmd.key, cmd.value[0]);
@@ -89,7 +111,14 @@ class DBTable<T> {
     }
     final result = <T?>[];
     for (final obj in objList) {
-      result.add(await read(tx, obj));
+      result.add(
+        await read(
+          tx,
+          obj,
+          appSettings: appSettings,
+          validate: validate,
+        ),
+      );
     }
     return result;
   }
@@ -108,9 +137,17 @@ class DBTable<T> {
     await tx.execute(sql, value);
   }
 
-  MapEntry<String, List<String>> _sql(T obj, AppSettings appSettings) {
-    final map =
-        preprocess?.call(toMap(obj), appSettings: appSettings) ?? toMap(obj);
+  MapEntry<String, List<String>> _sql(
+    T obj, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) {
+    final map = toMap(
+      obj,
+      appSettings: appSettings,
+      validate: validate,
+    );
+
     String? id;
     if (map.containsKey('id')) {
       id = map['id']!.toString();
@@ -129,13 +166,14 @@ class DBTable<T> {
   }
 
   Map<String, List<List<String>>> formatSQL(
-    List<T> objList,
-    AppSettings appSettings,
-  ) {
+    List<T> objList, {
+    required AppSettings appSettings,
+    required bool validate,
+  }) {
     final execCmdList = <String, List<List<String>>>{};
 
     for (final obj in objList) {
-      final entry = _sql(obj, appSettings);
+      final entry = _sql(obj, appSettings: appSettings, validate: validate);
       if (!execCmdList.containsKey(entry.key)) {
         execCmdList[entry.key] = [];
       }

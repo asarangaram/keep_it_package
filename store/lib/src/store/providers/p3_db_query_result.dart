@@ -1,52 +1,10 @@
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/m1_app_settings.dart';
 import '../models/m2_db_manager.dart';
 import '../models/m3_db_query.dart';
 
 import 'p1_app_settings.dart';
 import 'p2_db_manager.dart';
-
-class DBQueryResultNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
-  DBQueryResultNotifier({
-    required this.dbManagerNew,
-    required this.appSettings,
-    required this.dbQuery,
-  }) : super(const AsyncValue.loading()) {
-    sub = dbManagerNew.db
-        .watchRows(
-          dbQuery.sql,
-          triggerOnTables: dbQuery.triggerOnTables,
-          parameters: dbQuery.parameters ?? [],
-        )
-        .map(
-          (rows) => rows
-              .map(
-                (e) => dbQuery.fromMap(
-                  dbQuery.preprocess?.call(e, appSettings: appSettings) ?? e,
-                ),
-              )
-              .toList(),
-        )
-        .listen((value) async {
-      state = const AsyncValue.loading();
-      state = await AsyncValue.guard(() async {
-        return value;
-      });
-    });
-  }
-  DBQuery<dynamic> dbQuery;
-  AppSettings appSettings;
-  DBManager dbManagerNew;
-  late final StreamSubscription<List<dynamic>> sub;
-
-  @override
-  void dispose() {
-    sub.cancel();
-    super.dispose();
-  }
-}
 
 final dbQueryResultProvider =
     StreamProvider.family<List<dynamic>, DBQuery<dynamic>>(
@@ -63,7 +21,9 @@ final dbQueryResultProvider =
         (rows) => rows
             .map(
               (e) => dbQuery.fromMap(
-                dbQuery.preprocess?.call(e, appSettings: appSettings) ?? e,
+                e,
+                appSettings: appSettings,
+                validate: true,
               ),
             )
             .toList(),
