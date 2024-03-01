@@ -6,40 +6,52 @@ import 'package:store/src/store/models/cl_media.dart';
 import 'm3_db_query.dart';
 
 enum DBQueries {
-  collection,
-  tag,
-  media,
+  collectionById,
+  tagById,
+  mediaById,
+  collectionByLabel,
+  tagByLabel,
   collectionsAll,
   collectionsExcludeEmpty,
-  collectionsByTagID,
+  collectionsByTagId,
   collectionsEmpty,
   collectionsByTagIDExcludeEmpty,
   tagsAll,
-  tagsByCollectionID,
+  tagsByCollectionId,
   tagsAllExcludeEmpty,
   tagsByCollectionIDExcludeEmpty,
-  tagsByMediaID,
+  tagsByMediaId,
   mediaAll,
-  mediaByCollectionID,
-  mediaByTagID,
+  mediaByCollectionId,
+  mediaByTagId,
   mediaByMD5;
 
   DBQuery<dynamic> get sql => switch (this) {
-        collection => const DBQuery<Collection>(
+        collectionById => const DBQuery<Collection>(
             sql: 'SELECT * FROM Collection WHERE id = ? ',
             triggerOnTables: {'Collection'},
             fromMap: Collection.fromMap,
           ),
-        tag => const DBQuery<Tag>(
+        tagById => const DBQuery<Tag>(
             sql: 'SELECT * FROM Tag WHERE id = ? ',
             triggerOnTables: {'Tag'},
             fromMap: Tag.fromMap,
           ),
-        media => const DBQuery<CLMedia>(
+        mediaById => const DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE id = ?',
             triggerOnTables: {'Item'},
             fromMap: CLMedia.fromMap,
             preprocess: CLMediaDB.preprocessMediaMap,
+          ),
+        collectionByLabel => const DBQuery<Collection>(
+            sql: 'SELECT * FROM Collection WHERE label = ? ',
+            triggerOnTables: {'Collection'},
+            fromMap: Collection.fromMap,
+          ),
+        tagByLabel => const DBQuery<Tag>(
+            sql: 'SELECT * FROM Tag WHERE label = ? ',
+            triggerOnTables: {'Tag'},
+            fromMap: Tag.fromMap,
           ),
         collectionsAll => const DBQuery<Collection>(
             sql: 'SELECT * FROM Collection',
@@ -59,7 +71,7 @@ enum DBQueries {
             triggerOnTables: {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
-        collectionsByTagID => const DBQuery<Collection>(
+        collectionsByTagId => const DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
                 'JOIN TagCollection ON Collection.id = TagCollection.collection_id '
@@ -94,7 +106,7 @@ enum DBQueries {
             },
             fromMap: Tag.fromMap,
           ),
-        DBQueries.tagsByCollectionID => const DBQuery<Tag>(
+        DBQueries.tagsByCollectionId => const DBQuery<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
                 'WHERE TagCollection.collection_id = ?',
@@ -122,13 +134,13 @@ enum DBQueries {
             fromMap: CLMedia.fromMap,
             preprocess: CLMediaDB.preprocessMediaMap,
           ),
-        DBQueries.mediaByCollectionID => const DBQuery<CLMedia>(
+        DBQueries.mediaByCollectionId => const DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE collection_id = ?',
             triggerOnTables: {},
             fromMap: CLMedia.fromMap,
             preprocess: CLMediaDB.preprocessMediaMap,
           ),
-        DBQueries.mediaByTagID => const DBQuery<CLMedia>(
+        DBQueries.mediaByTagId => const DBQuery<CLMedia>(
             sql: 'SELECT Item.* '
                 'FROM Item '
                 'JOIN Collection ON Item.collection_id = Collection.id '
@@ -138,7 +150,7 @@ enum DBQueries {
             fromMap: CLMedia.fromMap,
             preprocess: CLMediaDB.preprocessMediaMap,
           ),
-        DBQueries.tagsByMediaID => const DBQuery<Tag>(
+        DBQueries.tagsByMediaId => const DBQuery<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tag_id '
                 'JOIN Item ON TagCollection.collection_id = Item.collection_id '

@@ -20,7 +20,7 @@ class GetCollection extends ConsumerWidget {
       return buildOnData(null);
     }
     return BuildOnQueryMultiple<Collection>(
-      query: (DBQueries.collection.sql.copyWith(parameters: [id]))
+      query: (DBQueries.collectionById.sql.copyWith(parameters: [id]))
           as DBQuery<Collection>,
       builder: (data) {
         final collection = data.where((e) => e.id == id).firstOrNull;
@@ -49,7 +49,7 @@ class GetCollectionMultiple extends ConsumerWidget {
             : DBQueries.collectionsByTagIDExcludeEmpty
         : (tagId == null)
             ? DBQueries.collectionsAll
-            : DBQueries.collectionsByTagID;
+            : DBQueries.collectionsByTagId;
 
     return BuildOnQueryMultiple<Collection>(
       query: (qid.sql as DBQuery<Collection>)

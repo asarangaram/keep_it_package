@@ -27,6 +27,7 @@ class CollectionAsFolder extends ConsumerWidget {
             await CollectionEditor.popupDialog(context, collection: collection);
         if (res != null) {
           final (collection, tags) = res;
+          
           /* await ref.read(dbUpdaterNotifierProvider.notifier).upsertCollection(
                 collection,
                 tags,

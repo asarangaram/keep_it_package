@@ -21,7 +21,7 @@ class GetTag extends ConsumerWidget {
       return buildOnData(null);
     }
     return BuildOnQueryMultiple<Tag>(
-      query: (DBQueries.tag.sql.copyWith(parameters: [id])) as DBQuery<Tag>,
+      query: (DBQueries.tagById.sql.copyWith(parameters: [id])) as DBQuery<Tag>,
       builder: (data) {
         final tag = data.where((e) => e.id == id).firstOrNull;
         return buildOnData(tag);
@@ -49,7 +49,7 @@ class GetTagMultiple extends ConsumerWidget {
             : DBQueries.tagsByCollectionIDExcludeEmpty
         : (collectionId == null)
             ? DBQueries.tagsAll
-            : DBQueries.tagsByCollectionID;
+            : DBQueries.tagsByCollectionId;
 
     return BuildOnQueryMultiple<Tag>(
       query: (qid.sql as DBQuery<Tag>)

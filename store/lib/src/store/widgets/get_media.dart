@@ -19,8 +19,8 @@ class GetMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return BuildOnQueryMultiple<CLMedia>(
-      query:
-          (DBQueries.media.sql.copyWith(parameters: [id])) as DBQuery<CLMedia>,
+      query: (DBQueries.mediaById.sql.copyWith(parameters: [id]))
+          as DBQuery<CLMedia>,
       builder: (data) {
         final media = data.where((e) => e.id == id).firstOrNull;
         if (media != null) {
@@ -51,8 +51,8 @@ class GetMediaMultiple extends ConsumerWidget {
     final qid = (collectionId == null)
         ? (tagID == null)
             ? DBQueries.mediaAll
-            : DBQueries.mediaByTagID
-        : DBQueries.mediaByCollectionID;
+            : DBQueries.mediaByTagId
+        : DBQueries.mediaByCollectionId;
 
     return BuildOnQueryMultiple<CLMedia>(
       query: (qid.sql as DBQuery<CLMedia>).copyWith(

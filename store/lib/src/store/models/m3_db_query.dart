@@ -67,7 +67,7 @@ class DBQuery<T> {
     return (await db.getAll(sql, parameters ?? [])).map(fromMap).toList();
   }
 
-  Future<T?> read(SqliteDatabase db) async {
-    return (await db.getAll(sql, parameters ?? [])).map(fromMap).firstOrNull;
+  Future<T?> read(SqliteWriteContext tx) async {
+    return (await tx.getAll(sql, parameters ?? [])).map(fromMap).firstOrNull;
   }
 }

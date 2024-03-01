@@ -1,49 +1,106 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/src/store/models/cl_media.dart';
 import 'package:store/src/store/models/collection.dart';
+import 'package:store/src/store/models/m1_app_settings.dart';
+import 'package:store/src/store/models/tag.dart';
+
+import 'm3_db_queries.dart';
+import 'm3_db_query.dart';
+
+class DBUpdater {
+  static Future<Collection> upsertCollection(
+    SqliteWriteContext tx,
+    Collection collection,
+  ) async {
+    await collection.upsertCollection(tx);
+    return (await (DBQueries.collectionByLabel.sql as DBQuery<Collection>)
+        .copyWith(parameters: [collection.label]).read(tx))!;
+  }
+
+  static Future<void> replaceTags(
+    SqliteWriteContext tx,
+    Collection collection,
+    List<Tag>? newTagsListToReplace,
+  ) async {
+    if (newTagsListToReplace?.isNotEmpty ?? false) {
+      final newTags = newTagsListToReplace!.where((e) => e.id == null).toList();
+      final tags = newTagsListToReplace.where((e) => e.id != null).toList();
+
+      for (final tag in newTags) {
+        await tag.upsertTag(tx);
+        final tagWithId = await (DBQueries.tagByLabel.sql as DBQuery<Tag>)
+            .copyWith(parameters: [tag.label]).read(tx);
+        tags.add(tagWithId!);
+      }
+      await collection.replaceTags(tx, tags.map((e) => e.id!).toList());
+    }
+  }
+}
 
 class DBManager {
-  DBManager({required this.db});
+  DBManager({required this.db, required this.appSettings});
 
   final SqliteDatabase db;
+  final AppSettings appSettings;
 
   static Future<DBManager> createInstances({
     required String dbpath,
+    required AppSettings appSettings,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    return DBManager(db: db);
+    return DBManager(db: db, appSettings: appSettings);
   }
 
   Stream<Progress> upsertCollectionWithMedia({
     required Collection collection,
     required List<Tag>? newTagsListToReplace,
-    required List<CLMedia> media,
+    required List<CLMedia>? media,
     required void Function() onDone,
   }) async* {
     {
       await db.writeTransaction((tx) async {
-        await collection.upsert(tx);
+        final collectionWithId =
+            await DBUpdater.upsertCollection(tx, collection);
+        await DBUpdater.replaceTags(tx, collectionWithId, newTagsListToReplace);
+        if (media?.isNotEmpty ?? false) {
+          for (final item in media!) {
+            var updated = item.copyWith(collectionId: collectionWithId.id);
+            updated = await updated.moveFile(
+              targetDir: appSettings.validPrefix(collectionWithId.id!),
+            );
+            await updated.upsertMedia(tx);
+          }
+        }
       });
+      onDone();
     }
+  }
 
-    /*  final collectionUpdated =
-    final stream = collectionUpdated.addMediaWithProgress(
-      media: media,
-      pathPrefix: directories.docDir.path,
-      onDone: (updated) {
-        collectionUpdated.addMediaDB(
-          updated,
-          pathPrefix: directories.docDir.path,
-          db: db,
-        );
-        onDone();
-      },
-    );
-    await for (final item in stream) {
-      yield item;
-    } */
+  Stream<Progress> upsertMedia({
+    required Collection collection,
+    required List<CLMedia>? media,
+    required void Function() onDone,
+  }) async* {
+    {
+      await db.writeTransaction((tx) async {
+        if (media?.isNotEmpty ?? false) {
+          final mediaUpdated = <CLMedia>[];
+          for (final item in media!) {
+            var updated = item.copyWith(collectionId: collection.id);
+            updated = await updated.moveFile(
+              targetDir: appSettings.validPrefix(collection.id!),
+            );
+            mediaUpdated.add(updated);
+          }
+          await collection.upsertMedia(tx, media);
+        }
+      });
+      onDone();
+    }
   }
 }
 
@@ -147,3 +204,12 @@ final migrations = SqliteMigrations()
     ''');
     }),
   );
+
+extension SQLEXTDATETIME on DateTime? {
+  String? toSQL() {
+    if (this == null) {
+      return null;
+    }
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(this!);
+  }
+}

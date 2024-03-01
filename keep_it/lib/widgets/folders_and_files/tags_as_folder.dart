@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +85,7 @@ class PreviewGenerator extends StatelessWidget {
         return CLAspectRationDecorated(
           borderRadius: const BorderRadius.all(Radius.circular(16)),
           child: CLMediaCollage.byMatrixSize(
-            clMediaList?.sublist(0, 4) ?? [],
+            clMediaList?.sublist(0, min(4, clMediaList.length)) ?? [],
             hCount: 2,
             vCount: 2,
             itemBuilder: (context, index) => CLMediaPreview(

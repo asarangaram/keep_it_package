@@ -63,7 +63,16 @@ class CLFormSelectSingle extends StatelessWidget {
                     onTap: controller.openView,
                     child: SizedBox.expand(
                       child: Center(
-                        child: fieldState.value == null
+                          child: TextField(
+                        controller: controller,
+                        onTap: () {
+                          controller.openView();
+                        },
+                        onChanged: (_) {
+                          controller.openView();
+                        },
+                      )
+                          /* fieldState.value == null
                             ? const cl.CLText.large("Tap here to select")
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -77,8 +86,8 @@ class CLFormSelectSingle extends StatelessWidget {
                                             .error),
                                   const cl.CLText.small("Tap here to change")
                                 ],
-                              ),
-                      ),
+                              ), */
+                          ),
                     ),
                   );
                 },
@@ -162,7 +171,7 @@ class CLFormSelectSingle extends StatelessWidget {
   ) async {
     final entityUpdated = await descriptors.onSelectSuggestion(item);
     if (entityUpdated == null) return;
-    state.searchController.text = '';
+    //state.searchController.text = '';
     fieldState.didChange(entityUpdated);
     onRefresh();
   }
@@ -174,7 +183,7 @@ class CLFormSelectSingle extends StatelessWidget {
   ) async {
     final entityUpdated = await descriptors.onCreateByLabel(label);
     if (entityUpdated == null) return;
-    state.searchController.text = '';
+    //state.searchController.text = '';
     fieldState.didChange(entityUpdated);
     onRefresh();
   }

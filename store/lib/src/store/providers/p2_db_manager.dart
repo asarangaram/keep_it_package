@@ -9,5 +9,6 @@ final dbManagerProvider = FutureProvider<DBManager>((ref) async {
   final fullPath = join(appDir.path, appSettings.dbName);
   return DBManager.createInstances(
     dbpath: fullPath,
+    appSettings: appSettings,
   );
 });

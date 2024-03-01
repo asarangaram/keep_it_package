@@ -1,19 +1,10 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:intl/intl.dart';
+
 import 'package:sqlite_async/sqlite_async.dart';
 
 import 'm1_app_settings.dart';
-
-extension SQLEXTDATETIME on DateTime? {
-  String? toSQL() {
-    if (this == null) {
-      return null;
-    }
-    return DateFormat('yyyy-MM-dd HH:mm:ss').format(this!);
-  }
-}
 
 extension CLMediaDB on CLMedia {
   static String relativePath(String path, String pathPrefix) {
@@ -24,7 +15,7 @@ extension CLMediaDB on CLMedia {
     return path;
   }
 
-  Future<void> upsert(SqliteWriteContext tx) async {
+  Future<void> upsertMedia(SqliteWriteContext tx) async {
     if (id != null) {
       await tx.execute(
         'UPDATE  Item SET path = ?, '

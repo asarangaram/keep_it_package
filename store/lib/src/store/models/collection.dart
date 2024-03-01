@@ -1,20 +1,23 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/src/store/models/m2_db_manager.dart';
+import 'package:store/store.dart';
+
+
 
 extension CollectionDB on Collection {
-  Future<void> upsert(SqliteWriteContext tx) async {
+  Future<void> upsertCollection(SqliteWriteContext tx) async {
     if (id != null) {
-      final x = await tx.execute(
+      await tx.execute(
         'UPDATE Collection SET label = ? , description = ?  WHERE id = ?',
         [label.trim(), description?.trim(), id],
       );
-      print(x);
     } else {
-      final x = await tx.execute(
+      await tx.execute(
         'INSERT INTO Collection (label, description) VALUES (?, ?) ',
         [label.trim(), description?.trim()],
       );
-      print(x);
     }
   }
 
@@ -82,7 +85,7 @@ extension CollectionDB on Collection {
     if (id != null) {
       await tx.execute(
         'DELETE FROM TagCollection '
-        'WHERE tag_id = ? AND collection_id = ? ',
+        'WHERE collection_id = ? ',
         [id],
       );
     }
@@ -93,30 +96,33 @@ extension CollectionDB on Collection {
     await addTags(tx, tagIds);
   }
 
-  /* Future<(List<int>?, List<int>?)> splitTags(
-    SqliteDatabase db,
-    List<int>? tagIds,
-  ) async {
-    List<int>? tagsIdsToAdd;
-    List<int>? tagIdsToRemove;
-    if (tagIds == null) return (null, null);
-    if (id == null) return (tagIds, null);
+  Future<void> upsertMedia(SqliteWriteContext tx, List<CLMedia> media) async {
+    final newMedia = media.where((e) => e.id == null);
+    if (newMedia.isNotEmpty) {
+      await tx.executeBatch(
+        'INSERT  INTO Item (path, '
+        'ref, collection_id, type, originalDate, md5String) '
+        'VALUES (?, ?, ?, ?, ?, ?) ',
+        [
+          for (final m in newMedia)
+            [
+              m.path,
+              m.ref,
+              m.collectionId,
+              m.type.name,
+              m.originalDate?.toSQL(),
+              m.md5String,
+            ],
+        ],
+      );
+    }
+  }
+}
 
-    final existingTagIds =
-        (await (DBQueries.tagsByCollectionID.sql as DBQuery<Tag>)
-                .copyWith(parameters: [id]).readMultiple(db))
-            .map((e) => e.id!);
-    tagsIdsToAdd = tagIds
-        .where(
-          (updated) => !existingTagIds.any((existing) => existing == updated),
-        )
-        .toList();
-
-    tagIdsToRemove = existingTagIds
-        .where(
-          (existing) => !tagIds.any((updated) => updated == existing),
-        )
-        .toList();
-    return (tagsIdsToAdd, tagIdsToRemove);
-  } */
+bool _disableInfoLogger = true;
+// ignore: unused_element
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
+  }
 }
