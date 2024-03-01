@@ -26,7 +26,7 @@ class ImageViewerBasic extends StatelessWidget {
                   file,
                   fit: fit,
                 )
-              : const BrokenImage(),
+              : const Center(child: BrokenImage()),
         ),
         if (overlayIcon != null)
           Positioned.fill(
