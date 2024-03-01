@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../app_logger.dart';
 import '../extensions/ext_datetime.dart';
 import '../extensions/ext_string.dart';
 import 'cl_media_type.dart';
@@ -49,13 +50,18 @@ class CLMedia {
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
     }
+    final path = (pathPrefix != null)
+        ? '$pathPrefix/${map['path']}'
+        : map['path'] as String;
+    if (validate && !File(path).existsSync()) {
+      exceptionLogger(
+        'File not found',
+        'CL Media file path read from database is not found',
+      );
+    }
 
     return CLMedia(
-      path: relativePath(
-        map['path'] as String,
-        pathPrefix: pathPrefix,
-        validate: validate,
-      ),
+      path: path,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       ref: map['ref'] != null ? map['ref'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
@@ -169,9 +175,16 @@ class CLMedia {
         ' updatedDate: $updatedDate, md5String: $md5String)';
   }
 
-  Map<String, dynamic> toMap({String? pathPrefix}) {
+  Map<String, dynamic> toMap({
+    String? pathPrefix,
+    bool validate = true,
+  }) {
     return <String, dynamic>{
-      'path': (pathPrefix != null) ? '$pathPrefix/$path' : path,
+      'path': relativePath(
+        path,
+        pathPrefix: pathPrefix,
+        validate: validate,
+      ),
       'type': type.name,
       'ref': ref,
       'id': id,
@@ -192,11 +205,10 @@ class CLMedia {
     if (validate && !File(fullPath).existsSync()) {
       throw Exception('file not found');
     }
-    if (pathPrefix == null) return fullPath;
 
-    if (validate && fullPath.startsWith(pathPrefix)) {
-      throw Exception('Media is not placed in appropriate folder');
+    if (validate && pathPrefix != null && fullPath.startsWith(pathPrefix)) {
+      return fullPath.replaceFirst(pathPrefix, '');
     }
-    return fullPath.replaceFirst(pathPrefix, '');
+    return fullPath;
   }
 }
