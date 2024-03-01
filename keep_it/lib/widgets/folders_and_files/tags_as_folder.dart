@@ -33,11 +33,43 @@ class TagAsFolder extends ConsumerWidget {
             }
             return true;
           },
-          /* onDelete: () async {
-            // delete all the items in the tag !!
-            await ref.read(tagsProvider(null).notifier).deleteTag(tag);
+          onDelete: () async {
+            final confirmed = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Confirm Delete'),
+                  content: CLText.large(
+                    'Are you sure you want to delete '
+                    '"${tag.label}" and its content?',
+                  ),
+                  actions: [
+                    ButtonBar(
+                      alignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          child: const Text('No'),
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                        ),
+                        ElevatedButton(
+                          child: const Text('Yes'),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            );
+            if (confirmed ?? false) {
+              await dbManager.deleteTag(tag);
+            }
             return true;
-          }, */
+          },
           onTap: () async {
             unawaited(
               context.push(

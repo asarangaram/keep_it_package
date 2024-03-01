@@ -13,6 +13,9 @@ abstract class Store {
     required List<Tag>? newTagsListToReplace,
   });
   Future<void> upsertMediaMultiple(List<CLMedia> media);
+  Future<void> deleteTag(
+    Tag tag,
+  );
   Future<void> deleteCollection(
     Collection collection, {
     required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
@@ -64,6 +67,15 @@ class DBManager extends Store {
   Future<void> upsertMediaMultiple(List<CLMedia> media) async {
     await db.writeTransaction((tx) async {
       await dbWriter.upsertMediaMultiple(tx, media);
+    });
+  }
+
+  @override
+  Future<void> deleteTag(
+    Tag tag,
+  ) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.deleteTag(tx, tag);
     });
   }
 

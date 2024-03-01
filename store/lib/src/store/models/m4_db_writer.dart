@@ -52,7 +52,7 @@ class DBWriter {
         validate: true,
       );
       if (validate) {
-        final collectionId = map['collectionID'] as int?;
+        final collectionId = map['collectionId'] as int?;
         if (collectionId == null) {
           exceptionLogger(
             'Invalid Media',
@@ -64,15 +64,22 @@ class DBWriter {
         if (obj.type.isFile && !(map['path'] as String).startsWith(prefix)) {
           exceptionLogger(
             'Invalid Media',
-            'Media is not in the expected to be in the folder: $prefix',
+            'Media is not in the expected to be in the '
+                'folder: $prefix. \nCurrent file: ${map['path']}',
           );
         }
       }
       return map;
     },
     readBack: (tx, item, {required appSettings, required validate}) {
+      final pathExpected = CLMedia.relativePath(
+        item.path,
+        pathPrefix: appSettings.directories.docDir.path,
+        validate: true,
+      );
+
       return (DBQueries.mediaByPath.sql as DBQuery<CLMedia>)
-          .copyWith(parameters: [item.path]).read(
+          .copyWith(parameters: [pathExpected]).read(
         tx,
         appSettings: appSettings,
         validate: validate,
@@ -176,6 +183,14 @@ class DBWriter {
         validate: true,
       );
     }
+  }
+
+  Future<void> deleteTag(
+    SqliteWriteContext tx,
+    Tag tag,
+  ) async {
+    await tagCollectionTable.delete(tx, {'tagId': tag.id.toString()});
+    await tagTable.delete(tx, {'id': tag.id.toString()});
   }
 
   Future<void> deleteCollection(

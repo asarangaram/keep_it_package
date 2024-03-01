@@ -28,6 +28,7 @@ class MediaAsFile extends ConsumerWidget {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
+                  alignment: Alignment.center,
                   title: const Text('Confirm Delete'),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -38,24 +39,29 @@ class MediaAsFile extends ConsumerWidget {
                           media: media,
                         ),
                       ),
-                      Text(
+                      CLText.large(
                         'Are you sure you want to delete '
-                        'this ${media.type.name}',
+                        'this ${media.type.name}?',
                       ),
                     ],
                   ),
                   actions: [
-                    ElevatedButton(
-                      child: const Text('No'),
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                    ),
-                    ElevatedButton(
-                      child: const Text('Yes'),
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
+                    ButtonBar(
+                      alignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          child: const Text('No'),
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                        ),
+                        ElevatedButton(
+                          child: const Text('Yes'),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 );

@@ -50,9 +50,10 @@ class CLMedia {
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
     }
-    final path = (pathPrefix != null)
+    final path = ((pathPrefix != null)
         ? '$pathPrefix/${map['path']}'
-        : map['path'] as String;
+        : map['path'] as String)
+      ..replaceAll('//', '/');
     if (validate && !File(path).existsSync()) {
       exceptionLogger(
         'File not found',
@@ -202,7 +203,7 @@ class CLMedia {
     }
 
     if (validate && pathPrefix != null && fullPath.startsWith(pathPrefix)) {
-      return fullPath.replaceFirst(pathPrefix, '');
+      return fullPath.replaceFirst('$pathPrefix/', '').replaceAll('//', '/');
     }
     return fullPath;
   }

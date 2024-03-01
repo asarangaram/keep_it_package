@@ -49,22 +49,27 @@ class CollectionAsFolder extends ConsumerWidget {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text('Confirm Delete'),
-                  content: Text(
+                  content: CLText.large(
                     'Are you sure you want to delete '
                     '"${collection.label}" and its content?',
                   ),
                   actions: [
-                    ElevatedButton(
-                      child: const Text('No'),
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                    ),
-                    ElevatedButton(
-                      child: const Text('Yes'),
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
+                    ButtonBar(
+                      alignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          child: const Text('No'),
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                        ),
+                        ElevatedButton(
+                          child: const Text('Yes'),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 );
