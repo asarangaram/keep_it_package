@@ -44,14 +44,42 @@ class CollectionAsFolder extends ConsumerWidget {
             return true;
           },
           onDelete: () async {
-            await dbManager.deleteCollection(
-              collection,
-              onDeleteMediaFiles: (media) async {
-                for (final m in media) {
-                  m.deleteFile();
-                }
+            final confirmed = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Confirm Delete'),
+                  content: Text(
+                    'Are you sure you want to delete '
+                    '"${collection.label}" and its content?',
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      child: const Text('No'),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                    ElevatedButton(
+                      child: const Text('Yes'),
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  ],
+                );
               },
             );
+            if (confirmed ?? false) {
+              await dbManager.deleteCollection(
+                collection,
+                onDeleteMediaFiles: (media) async {
+                  for (final m in media) {
+                    m.deleteFile();
+                  }
+                },
+              );
+            }
             return null;
           },
           onTap: () async {

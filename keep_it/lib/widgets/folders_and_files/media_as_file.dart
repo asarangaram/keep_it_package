@@ -24,10 +24,47 @@ class MediaAsFile extends ConsumerWidget {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
           onDelete: () async {
-            // TODO(anandas): Confirm delete
-
-            await dbManager.deleteMedia(media);
-            return true;
+            final confirmed = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Confirm Delete'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox.square(
+                        dimension: 200,
+                        child: CLMediaPreview(
+                          media: media,
+                        ),
+                      ),
+                      Text(
+                        'Are you sure you want to delete '
+                        'this ${media.type.name}',
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      child: const Text('No'),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                    ElevatedButton(
+                      child: const Text('Yes'),
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+            if (confirmed ?? false) {
+              await dbManager.deleteMedia(media);
+            }
+            return confirmed ?? false;
           },
           onTap: () async {
             unawaited(
