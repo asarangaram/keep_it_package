@@ -163,15 +163,15 @@ class DBWriters {
 Future<void> mergeTag(SqliteWriteContext tx, int toTag) async {
     await tx.execute(
       '''
-          INSERT OR REPLACE INTO TagCollection (tag_id, collectionId)
+          INSERT OR REPLACE INTO TagCollection (tagId, collectionId)
           SELECT 
               CASE 
-                  WHEN tag_id = ? THEN ?
-                  ELSE tag_id
-              END AS new_tag_id,
+                  WHEN tagId = ? THEN ?
+                  ELSE tagId
+              END AS new_tagId,
               collectionId
           FROM TagCollection
-          WHERE tag_id = ?
+          WHERE tagId = ?
         ''',
       [id, toTag, id],
     );

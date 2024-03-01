@@ -100,9 +100,9 @@ class KeepItApp implements AppDescriptor {
   @override
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
-          name: 'collections/:tag_id',
+          name: 'collections/:tagId',
           builder: (context, GoRouterState state) => CollectionsPage(
-            tagId: int.parse(state.pathParameters['tag_id']!),
+            tagId: int.parse(state.pathParameters['tagId']!),
           ),
         ),
         CLRouteDescriptor(

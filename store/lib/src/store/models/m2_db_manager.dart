@@ -165,11 +165,11 @@ final migrations = SqliteMigrations()
     ''');
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS TagCollection (
-        tag_id INTEGER,
+        tagId INTEGER,
         collectionId INTEGER,
-        FOREIGN KEY (tag_id) REFERENCES Tag(id),
+        FOREIGN KEY (tagId) REFERENCES Tag(id),
         FOREIGN KEY (collectionId) REFERENCES Collection(id),
-        PRIMARY KEY (tag_id, collectionId)
+        PRIMARY KEY (tagId, collectionId)
       )
     ''');
     }),

@@ -11,7 +11,7 @@ class TagCollection {
 
   factory TagCollection.fromMap(Map<String, dynamic> map) {
     return TagCollection(
-      tagID: map['tag_id'] as int,
+      tagID: map['tagId'] as int,
       collectionId: map['collectionId'] as int,
     );
   }
@@ -43,7 +43,7 @@ class TagCollection {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'tag_id': tagID,
+      'tagId': tagID,
       'collectionId': collectionId,
     };
   }
