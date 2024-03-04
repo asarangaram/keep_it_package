@@ -1,11 +1,15 @@
 import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:intl/intl.dart';
 
 extension ExtCLMediaList on List<CLMedia> {
   Map<String, List<CLMedia>> filterByDate() {
     sort((a, b) {
-      if (a.createdDate != null && b.createdDate != null) {
-        return a.createdDate!.compareTo(b.createdDate!);
+      final aDate = a.originalDate ?? a.createdDate;
+      final bDate = b.originalDate ?? b.createdDate;
+
+      if (aDate != null && bDate != null) {
+        return bDate.compareTo(aDate);
       }
       return 0;
     });
