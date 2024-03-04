@@ -37,7 +37,7 @@ class CLFormTextField extends StatelessWidget {
           controller: state.controller,
           focusNode: state.focusNode,
           maxLines: descriptors.maxLines,
-          validator: descriptors.validator,
+          validator: descriptors.onValidate,
         ),
       ),
     );

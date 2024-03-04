@@ -14,10 +14,10 @@ class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
     required super.label,
     this.hint,
     required this.initialValue,
-    required this.validator,
+    required this.onValidate,
     this.maxLines = 1,
   });
-  final String? Function(String?) validator;
+  final String? Function(String?) onValidate;
   final String? hint;
   final String initialValue;
   final int maxLines;

@@ -68,7 +68,7 @@ class CollectionEditor extends StatelessWidget {
                         title: 'Name',
                         label: 'Collection Name',
                         initialValue: collection.label,
-                        validator: (value) => validateName(
+                        onValidate: (value) => validateName(
                           newLabel: value,
                           existingLabel: collection.label,
                           collections: collections,
@@ -78,7 +78,7 @@ class CollectionEditor extends StatelessWidget {
                         title: 'About',
                         label: 'Describe about this collection',
                         initialValue: collection.description ?? '',
-                        validator: (_) => null,
+                        onValidate: (_) => null,
                         maxLines: 4,
                       ),
                       'tags': CLFormSelectMultipleDescriptors(

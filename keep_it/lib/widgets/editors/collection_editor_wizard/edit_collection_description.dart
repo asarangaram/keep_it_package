@@ -26,7 +26,7 @@ class EditCollectionDescription extends StatelessWidget {
         initialValue: collection.label,
         hint: 'What is the best thing,'
             ' you can say about "${collection.label}"?',
-        validator: (val) => null,
+        onValidate: (val) => null,
         maxLines: 4,
       ),
       onSubmit: (CLFormFieldResult result) async {
