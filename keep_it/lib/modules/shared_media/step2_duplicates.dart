@@ -2,6 +2,7 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/widgets/empty_state.dart';
 import 'package:store/store.dart';
 
 import 'wizard_page.dart';
@@ -51,6 +52,9 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
 
   @override
   Widget build(BuildContext context) {
+    if (currentMedia.isEmpty) {
+      return const EmptyState();
+    }
     return GetCollectionMultiple(
       buildOnData: (List<Collection> collections) {
         final newCollection = collections
@@ -109,10 +113,11 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                       final updated = currentMedia.remove(m);
                       if (updated?.targetMismatch.isEmpty ?? true) {
                         widget.onDone(mg: updated);
-                      }
-                      setState(() {
+                        currentMedia = const CLSharedMedia(entries: []);
+                      } else {
                         currentMedia = updated!;
-                      });
+                      }
+                      setState(() {});
                     },
                   ),
                 ),
