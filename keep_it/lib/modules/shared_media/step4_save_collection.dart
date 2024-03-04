@@ -65,12 +65,15 @@ class SaveCollection extends SharedMediaWizard {
             fractCompleted: i / media.length,
             currentItem: 'adding ${path.basename(media[0].path)}',
           );
+          await Future<void>.delayed(const Duration(microseconds: 10));
           var updated = item.copyWith(collectionId: updatedCollection.id);
-          updated = await updated.moveFile(
-            targetDir: dbManager.dbWriter.appSettings
-                .validPrefix(updatedCollection.id!),
-          );
-          updatedMedia.add(updated);
+          try {
+            updated = await updated.moveFile(
+              targetDir: dbManager.dbWriter.appSettings
+                  .validPrefix(updatedCollection.id!),
+            );
+            updatedMedia.add(updated);
+          } catch (e) {/* */}
         }
         yield const Progress(
           fractCompleted: 1,
