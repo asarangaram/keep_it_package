@@ -27,15 +27,19 @@ class CLFormSelectMultiple extends StatelessWidget {
     return FormField<List<Object>>(
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
-          if (value!.isEmpty) {
-            return "Atleast one value should be provided";
-          }
+          {
+            final res = descriptors.onValidate?.call(value);
 
-          state.selectedEntities.clear();
-          for (var item in value) {
-            state.selectedEntities.add(item);
+            if (res != null) return res;
+
+            state.selectedEntities.clear();
+            if (value?.isNotEmpty ?? false) {
+              for (var item in value!) {
+                state.selectedEntities.add(item);
+              }
+            }
+            return null;
           }
-          return null;
         },
         initialValue: List.from(state.selectedEntities),
         builder: (fieldState) {

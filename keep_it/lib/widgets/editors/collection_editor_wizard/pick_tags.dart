@@ -44,6 +44,12 @@ class PickTags extends StatelessWidget {
                 onSelectSuggestion: (item) => createTag(context, item as Tag),
                 onCreateByLabel: (label) =>
                     createTag(context, Tag(label: label)),
+                onValidate: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Atleast one value should be provided';
+                  }
+                  return null;
+                },
               ),
               onSubmit: (CLFormFieldResult result) async {
                 onDone(

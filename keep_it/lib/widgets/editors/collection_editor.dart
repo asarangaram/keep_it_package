@@ -100,6 +100,12 @@ class CollectionEditor extends StatelessWidget {
                         onCreateByLabel: (label) async {
                           return create(context, Tag(label: label));
                         },
+                        onValidate: (value) {
+                          if (value?.isEmpty ?? true) {
+                            return 'Atleast one value should be provided';
+                          }
+                          return null;
+                        },
                       ),
                     },
                     onSubmit: (result) async {

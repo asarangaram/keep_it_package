@@ -34,6 +34,15 @@ class PickCollection extends StatelessWidget {
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
             onCreateByLabel: (label) async => Collection(label: label),
+            onValidate: (value) {
+              if (value == null) {
+                return "can't be empty";
+              }
+              if ((value as Collection).label.length > 20) {
+                return "length can't exceed 20 characters";
+              }
+              return null;
+            },
           ),
           onSubmit: (CLFormFieldResult result) async {
             final collection = (result as CLFormSelectSingleResult)

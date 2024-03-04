@@ -38,6 +38,7 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
     required this.descriptionBuilder,
     required this.onSelectSuggestion,
     required this.onCreateByLabel,
+    required this.onValidate,
   });
 
   final List<Object> suggestionsAvailable;
@@ -46,6 +47,7 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
   final String? Function(Object e)? descriptionBuilder;
   final Future<Object?> Function(Object item) onSelectSuggestion;
   final Future<Object?> Function(String label) onCreateByLabel;
+  final String? Function(List<Object>?)? onValidate;
 
   @override
   String toString() {
@@ -64,6 +66,7 @@ class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
     required this.descriptionBuilder,
     required this.onSelectSuggestion,
     required this.onCreateByLabel,
+    required this.onValidate,
   });
 
   final List<Object> suggestionsAvailable;
@@ -72,6 +75,7 @@ class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
   final String? Function(Object e)? descriptionBuilder;
   final Future<Object?> Function(Object item) onSelectSuggestion;
   final Future<Object?> Function(String label) onCreateByLabel;
+  final String? Function(Object?)? onValidate;
 
   @override
   String toString() {

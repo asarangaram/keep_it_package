@@ -25,12 +25,11 @@ class CLFormSelectSingle extends StatelessWidget {
     return FormField<Object?>(
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
-          if (value == null) {
-            return "can't be empty";
-          }
-          if (descriptors.labelBuilder(value).length > 20) {
-            return "length can't exceed 20 characters";
-          }
+          final res = descriptors.onValidate?.call(value);
+
+          if (res != null) return res;
+
+          
 
           state.selectedEntitry.clear();
           state.selectedEntitry.add(value);
