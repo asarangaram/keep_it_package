@@ -74,10 +74,10 @@ extension IOExtOnCLMedia on CLMedia {
             File(targetFile).createSync(recursive: true);
             File(path).copySync(targetFile);
             deleteFile();
-            _infoLogger('file ${path_handler.basename(path)} moved to $targetDir');
-          }
-          else
-          {
+            _infoLogger(
+              'file ${path_handler.basename(path)} moved to $targetDir',
+            );
+          } else {
             _infoLogger('file not moved, as path is same');
           }
           return copyWith(path: targetFile);
@@ -90,8 +90,8 @@ extension IOExtOnCLMedia on CLMedia {
   }
 }
 
-const _filePrefix = 'Media File handling';
-bool _disableInfoLogger = false;
+const _filePrefix = 'Media File handling: ';
+bool _disableInfoLogger = true;
 // ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
