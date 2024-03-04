@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class WrapStandardQuickMenu extends StatelessWidget {
   const WrapStandardQuickMenu({
@@ -9,6 +10,7 @@ class WrapStandardQuickMenu extends StatelessWidget {
     this.onEdit,
     this.onDelete,
     this.onTap,
+    this.onMove,
   });
   final Widget child;
 
@@ -16,6 +18,7 @@ class WrapStandardQuickMenu extends StatelessWidget {
 
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;
+  final Future<bool?> Function()? onMove;
   final Future<bool?> Function()? onTap;
 
   @override
@@ -52,6 +55,12 @@ class WrapStandardQuickMenu extends StatelessWidget {
                   title: 'Delete',
                   icon: Icons.delete_rounded,
                   onTap: onDelete,
+                ),
+              if (onMove != null)
+                CLMenuItem(
+                  title: 'Move',
+                  icon: MdiIcons.imageMove,
+                  onTap: onMove,
                 ),
             ]
           ].insertOnDone(onDone),

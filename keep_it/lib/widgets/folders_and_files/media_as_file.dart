@@ -23,6 +23,9 @@ class MediaAsFile extends ConsumerWidget {
       builder: (dbManager) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
+          onMove: () async {
+            return true;
+          },
           onDelete: () async {
             final confirmed = await showDialog<bool>(
               context: context,
