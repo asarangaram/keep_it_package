@@ -123,11 +123,11 @@ extension ExtProcess on CLMedia {
         _infoLogger('No Information');
       } else {
         try {
-          final jsonString = jsonEncode(properties);
-          printFormattedJson(jsonString);
-          _infoLogger(
+          /* final jsonString = jsonEncode(properties);
+          printFormattedJson(jsonString); */
+          /* _infoLogger(
             getAllValuesForKey(properties, 'creation_time').toString(),
-          );
+          ); */
           final creationTimeTags =
               getAllValuesForKey(properties, 'creation_time');
           if (creationTimeTags.isNotEmpty) {
@@ -160,11 +160,10 @@ List<dynamic> getAllValuesForKey(Map<dynamic, dynamic> map, String targetKey) {
   return values;
 }
 
-void printFormattedJson(String jsonString) {
+String printFormattedJson(String jsonString) {
   const encoder =
       JsonEncoder.withIndent('  '); // Use two spaces for indentation
-  final prettyPrintedJson = encoder.convert(json.decode(jsonString));
-  print(prettyPrintedJson);
+  return encoder.convert(json.decode(jsonString));
 }
 
 const _filePrefix = 'Media Processing: ';
