@@ -129,12 +129,13 @@ class CLFormSelectMultiple extends StatelessWidget {
     required FormFieldState<List<Object>> fieldState,
   }) {
     final List<Object>? filterredSuggestion;
-    if (controller.text.isEmpty) {
+    final controllerText = controller.text.trim();
+    if (controllerText.isEmpty) {
       filterredSuggestion = suggestions;
     } else {
       filterredSuggestion = suggestions
           ?.where(
-            (element) => labelBuilder(element).contains(controller.text),
+            (element) => labelBuilder(element).contains(controllerText),
           )
           .toList();
     }
@@ -145,29 +146,30 @@ class CLFormSelectMultiple extends StatelessWidget {
             title: Text(labelBuilder(e)),
             subtitle: description == null ? null : Text(description),
             onTap: () {
-              controller.closeView(controller.text);
+              controller.closeView(controllerText);
               _onSelect(fieldState, e, onRefresh);
             },
           );
         }).toList() ??
         [];
-    if (controller.text.isNotEmpty) {
-      final c = suggestions?.getByLabel(controller.text, labelBuilder);
+
+    if (controllerText.isNotEmpty) {
+      final c = suggestions?.getByLabel(controllerText, labelBuilder);
 
       if (c == null) {
         list.add(
           ListTile(
-            title: Text('Create "${controller.text}"'),
+            title: Text('Create "$controllerText"'),
             onTap: () {
-              if (controller.text.isNotEmpty) {
-                controller.closeView(controller.text);
+              if (controllerText.isNotEmpty) {
+                controller.closeView(controllerText);
 
                 final c = suggestions?.getByLabel(
-                  controller.text,
+                  controllerText,
                   labelBuilder,
                 );
                 if (c == null) {
-                  _onCreateByLabel(fieldState, controller.text, onRefresh);
+                  _onCreateByLabel(fieldState, controllerText, onRefresh);
                 } else {
                   _onSelect(fieldState, c, onRefresh);
                 }
