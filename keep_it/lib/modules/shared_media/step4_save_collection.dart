@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/modules/shared_media/cl_media_process.dart';
 import 'package:path/path.dart' as path;
 import 'package:store/store.dart';
 
@@ -72,7 +73,7 @@ class SaveCollection extends SharedMediaWizard {
               targetDir: dbManager.dbWriter.appSettings
                   .validPrefix(updatedCollection.id!),
             );
-            updatedMedia.add(updated);
+            updatedMedia.add(await updated.getMetadata());
           } catch (e) {/* */}
         }
         yield const Progress(
