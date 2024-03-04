@@ -64,7 +64,9 @@ extension IOExtOnCLMedia on CLMedia {
       case CLMediaType.audio:
       case CLMediaType.file:
         if (!File(path).existsSync()) {
-          throw Exception('Incoming file not found!');
+          _infoLogger('file $path is missing');
+          exceptionLogger('File IO error', "'$path file not found!'");
+          return this; // never happens
         } else {
           final targetFile =
               path_handler.join(targetDir, path_handler.basename(path));
@@ -72,6 +74,11 @@ extension IOExtOnCLMedia on CLMedia {
             File(targetFile).createSync(recursive: true);
             File(path).copySync(targetFile);
             deleteFile();
+            _infoLogger('file ${path_handler.basename(path)} moved to $targetDir');
+          }
+          else
+          {
+            _infoLogger('file not moved, as path is same');
           }
           return copyWith(path: targetFile);
         }
@@ -83,10 +90,11 @@ extension IOExtOnCLMedia on CLMedia {
   }
 }
 
+const _filePrefix = 'Media File handling';
 bool _disableInfoLogger = false;
 // ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
-    logger.i(msg);
+    logger.i('$_filePrefix$msg');
   }
 }
