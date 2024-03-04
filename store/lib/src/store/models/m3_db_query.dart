@@ -95,7 +95,7 @@ class DBQuery<T> {
 }
 
 const _filePrefix = 'DB Read (internal): ';
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 // ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
