@@ -85,7 +85,7 @@ class CollectionAsFolder extends ConsumerWidget {
                 },
               );
             }
-            return null;
+            return confirmed ?? false;
           },
           onTap: () async {
             unawaited(

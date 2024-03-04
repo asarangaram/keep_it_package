@@ -68,7 +68,7 @@ class TagAsFolder extends ConsumerWidget {
             if (confirmed ?? false) {
               await dbManager.deleteTag(tag);
             }
-            return true;
+            return confirmed ?? false;
           },
           onTap: () async {
             unawaited(
