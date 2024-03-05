@@ -24,49 +24,45 @@ class MediaAsFile extends ConsumerWidget {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
           onMove: () async {
+            unawaited(
+              context.push(
+                '/item_move/${media.collectionId}/${media.id}',
+              ),
+            );
             return true;
+            /* final confirmed = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return ConfirmAction(
+                  title: 'Confirm delete',
+                  message: 'Are you sure you want to move '
+                      'this ${media.type.name}?',
+                  child: CLMediaPreview(media: media),
+                  onConfirm: ({required confirmed}) =>
+                      Navigator.of(context).pop(confirmed),
+                );
+              },
+            ); 
+            if (confirmed ?? false) {
+              unawaited(
+                context.push(
+                  '/item_move/${media.collectionId}/${media.id}',
+                ),
+              );
+            }
+            return confirmed ?? false;*/
           },
           onDelete: () async {
             final confirmed = await showDialog<bool>(
               context: context,
               builder: (BuildContext context) {
-                return AlertDialog(
-                  alignment: Alignment.center,
-                  title: const Text('Confirm Delete'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox.square(
-                        dimension: 200,
-                        child: CLMediaPreview(
-                          media: media,
-                        ),
-                      ),
-                      CLText.large(
-                        'Are you sure you want to delete '
-                        'this ${media.type.name}?',
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    ButtonBar(
-                      alignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          child: const Text('No'),
-                          onPressed: () {
-                            Navigator.of(context).pop(false);
-                          },
-                        ),
-                        ElevatedButton(
-                          child: const Text('Yes'),
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                return ConfirmAction(
+                  title: 'Confirm delete',
+                  message: 'Are you sure you want to delete '
+                      'this ${media.type.name}?',
+                  child: CLMediaPreview(media: media),
+                  onConfirm: ({required confirmed}) =>
+                      Navigator.of(context).pop(confirmed),
                 );
               },
             );
@@ -87,6 +83,62 @@ class MediaAsFile extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/**
+ * 
+ * 
+
+            
+ */
+class ConfirmAction extends StatelessWidget {
+  const ConfirmAction({
+    required this.title,
+    required this.message,
+    required this.child,
+    required this.onConfirm,
+    super.key,
+  });
+
+  final String title;
+  final String message;
+  final Widget? child;
+  final void Function({
+    required bool confirmed,
+  }) onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      alignment: Alignment.center,
+      title: const Text('Confirm Delete'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox.square(
+            dimension: 200,
+            child: child,
+          ),
+          CLText.large(message),
+        ],
+      ),
+      actions: [
+        ButtonBar(
+          alignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () => onConfirm(confirmed: false),
+              child: const Text('No'),
+            ),
+            ElevatedButton(
+              child: const Text('Yes'),
+              onPressed: () => onConfirm(confirmed: true),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

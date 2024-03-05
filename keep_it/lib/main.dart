@@ -14,6 +14,7 @@ import 'modules/shared_media/incoming_media_handler.dart';
 import 'pages/collection_editor_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
+import 'pages/move_media_page.dart';
 import 'pages/tags_page.dart';
 import 'pages/timeline_page.dart';
 
@@ -92,6 +93,15 @@ class KeepItApp implements AppDescriptor {
           builder: (context, GoRouterState state) {
             return CollectionEditorPage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'item_move/:collectionId/:item_id',
+          builder: (context, GoRouterState state) {
+            return MoveMediaPage(
+              collectionId: int.parse(state.pathParameters['collectionId']!),
+              id: int.parse(state.pathParameters['item_id']!),
             );
           },
         ),

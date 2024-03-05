@@ -158,6 +158,24 @@ class DBWriter {
     return updated;
   }
 
+  Future<CLMedia> upsertMedia(SqliteWriteContext tx, CLMedia media) async {
+    _infoLogger('upsertMedia: $media');
+    final updated = await mediaTable.upsert(
+      tx,
+      media,
+      appSettings: appSettings,
+      validate: true,
+    );
+    _infoLogger('upsertCollection: Done :  $updated');
+    if (updated == null) {
+      exceptionLogger(
+        '$_filePrefix: DB Failure',
+        '$_filePrefix: Failed to write / retrive Media',
+      );
+    }
+    return updated!;
+  }
+
   Future<void> replaceTags(
     SqliteWriteContext tx,
     Collection collection,

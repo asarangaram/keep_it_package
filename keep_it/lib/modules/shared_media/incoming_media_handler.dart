@@ -13,9 +13,11 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
     required this.incomingMedia,
     required this.onDiscard,
     super.key,
+    this.moving = false,
   });
   final CLSharedMedia incomingMedia;
   final void Function() onDiscard;
+  final bool moving;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -24,10 +26,14 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
 
 class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
   CLSharedMedia? candidates;
-
+  bool isSaving = false;
   @override
   void didChangeDependencies() {
     candidates = null;
+    if (widget.moving) {
+      // No need to analyze
+      candidates = widget.incomingMedia;
+    }
     super.didChangeDependencies();
   }
 
@@ -35,6 +41,11 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
   Widget build(BuildContext context) {
     _infoLogger('build IncomingMediaHandler $candidates');
     final Widget widget0;
+    if (isSaving) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     try {
       widget0 = FullscreenLayout(
         onClose: onDiscard,
@@ -44,7 +55,8 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               onDone: onDone,
               onCancel: onDiscard,
             ),
-          (final candiates) when candidates!.hasTargetMismatchedItems =>
+          (final candiates)
+              when candidates!.hasTargetMismatchedItems && !widget.moving =>
             DuplicatePage(
               incomingMedia: candiates,
               onDone: onDone,
@@ -55,6 +67,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               incomingMedia: candiates,
               onDone: onDone,
               onCancel: onDiscard,
+              title: const CLText.large('Moving...'),
             ),
           _ => SaveCollection(
               incomingMedia: candidates!,
@@ -73,6 +86,9 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
   }
 
   void onSave({required CLSharedMedia? mg}) {
+    candidates = null;
+    isSaving = true;
+    setState(() {});
     ref.read(notificationMessageProvider.notifier).push('Saved');
 
     onDiscard();
@@ -80,11 +96,11 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   void onDone({CLSharedMedia? mg}) {
     if (mg == null || mg.isEmpty) {
+      candidates = null;
+      isSaving = true;
+      setState(() {});
       ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
       onDiscard();
-      setState(() {
-        candidates = null;
-      });
       return;
     }
     setState(() {
@@ -94,7 +110,9 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   void onDiscard() {
     candidates = null;
+
     widget.onDiscard();
+    isSaving = false;
     if (mounted) {
       setState(() {});
     }

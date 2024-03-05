@@ -12,22 +12,32 @@ class WhichCollection extends SharedMediaWizard {
     required super.onDone,
     required super.onCancel,
     super.key,
+    this.title,
   });
+  final Widget? title;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetTagMultiple(
       buildOnData: (tags) => Column(
         children: [
-          Flexible(
-            child: CLMediaCollage.byMatrixSize(
-              incomingMedia.entries,
-              hCount: switch (incomingMedia.entries.length) { _ => 2 },
-              itemBuilder: (context, index) => CLMediaPreview(
-                media: incomingMedia.entries[index],
+          if (title != null) title!,
+          if (incomingMedia.entries.length == 1)
+            Flexible(
+              child: CLMediaPreview(
+                media: incomingMedia.entries[0],
+              ),
+            )
+          else
+            Flexible(
+              child: CLMediaCollage.byMatrixSize(
+                incomingMedia.entries,
+                hCount: switch (incomingMedia.entries.length) { _ => 2 },
+                itemBuilder: (context, index) => CLMediaPreview(
+                  media: incomingMedia.entries[index],
+                ),
               ),
             ),
-          ),
           const Divider(
             thickness: 4,
           ),

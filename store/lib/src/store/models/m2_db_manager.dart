@@ -70,6 +70,12 @@ class DBManager extends Store {
     });
   }
 
+  Future<void> upsertMedia(CLMedia media) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.upsertMedia(tx, media);
+    });
+  }
+
   @override
   Future<void> deleteTag(
     Tag tag,
