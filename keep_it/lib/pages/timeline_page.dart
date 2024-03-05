@@ -38,6 +38,7 @@ class TimeLinePage extends ConsumerWidget {
                     label: collection?.label ?? 'All Media',
                     galleryMap: galleryGroups,
                     emptyState: const EmptyState(),
+                    isScrollablePositionedList: false,
                     labelTextBuilder: (index) =>
                         galleryGroups[index].label ?? '',
                     itemBuilder: (
