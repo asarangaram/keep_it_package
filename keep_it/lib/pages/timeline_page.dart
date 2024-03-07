@@ -32,7 +32,7 @@ class TimeLinePage extends ConsumerWidget {
                       ),
                     );
                   }
-                  return CLGalleryView(
+                  return CLGalleryViewBasic(
                     key: ValueKey(collection?.label ?? 'All Media'),
                     columns: 4,
                     label: collection?.label ?? 'All Media',
