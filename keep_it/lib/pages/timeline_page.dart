@@ -15,61 +15,77 @@ class TimeLinePage extends ConsumerWidget {
   final int collectionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => GetCollectionMultiple(
-        buildOnData: (collections) {
-          return GetCollection(
-            id: collectionId,
-            buildOnData: (collection) {
-              return GetMediaMultiple(
-                collectionId: collectionId,
-                buildOnData: (items) {
-                  final galleryGroups = <GalleryGroup>[];
-                  for (final entry in items.filterByDate().entries) {
-                    galleryGroups.add(
-                      GalleryGroup(
-                        entry.value,
-                        label: entry.key,
-                      ),
-                    );
-                  }
-                  return CLGalleryView(
-                    key: ValueKey(collection?.label ?? 'All Media'),
-                    columns: 4,
-                    label: collection?.label ?? 'All Media',
-                    galleryMap: galleryGroups,
-                    emptyState: const EmptyState(),
-                    labelTextBuilder: (index) =>
-                        galleryGroups[index].label ?? '',
-                    itemBuilder: (
-                      context,
-                      item, {
-                      required quickMenuScopeKey,
-                    }) =>
-                        MediaAsFile(
-                      media: item as CLMedia,
-                      quickMenuScopeKey: quickMenuScopeKey,
-                    ),
-                    tagPrefix: 'timeline $collectionId',
-                    onPickFiles: () async {
-                      await onPickFiles(
-                        context,
-                        ref,
-                        collection: collection,
-                      );
-                    },
-                    onRefresh: () async {
-                      ref.invalidate(dbManagerProvider);
-                    },
-                    onPop: context.canPop()
-                        ? () {
-                            context.pop();
-                          }
-                        : null,
-                  );
-                },
-              );
-            },
-          );
-        },
+  Widget build(BuildContext context, WidgetRef ref) => GetCollection(
+        id: collectionId,
+        buildOnData: (collection) => GetMediaMultiple(
+          collectionId: collectionId,
+          buildOnData: (items) => TimeLinePage0(
+            collection: collection,
+            items: items,
+          ),
+        ),
       );
 }
+
+class TimeLinePage0 extends ConsumerWidget {
+  const TimeLinePage0({
+    required this.collection,
+    required this.items,
+    super.key,
+  });
+
+  final Collection? collection;
+  final List<CLMedia> items;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final galleryGroups = ref.watch(groupedItemsProvider(items));
+    return CLGalleryView(
+      key: ValueKey(collection?.label ?? 'All Media'),
+      columns: 4,
+      label: collection?.label ?? 'All Media',
+      galleryMap: galleryGroups,
+      emptyState: const EmptyState(),
+      labelTextBuilder: (index) => galleryGroups[index].label ?? '',
+      itemBuilder: (
+        context,
+        item, {
+        required quickMenuScopeKey,
+      }) =>
+          MediaAsFile(
+        media: item as CLMedia,
+        quickMenuScopeKey: quickMenuScopeKey,
+      ),
+      tagPrefix: 'timeline ${collection?.id}',
+      onPickFiles: () async {
+        await onPickFiles(
+          context,
+          ref,
+          collection: collection,
+        );
+      },
+      onRefresh: () async {
+        ref.invalidate(dbManagerProvider);
+      },
+      onPop: context.canPop()
+          ? () {
+              context.pop();
+            }
+          : null,
+    );
+  }
+}
+
+final groupedItemsProvider =
+    StateProvider.family<List<GalleryGroup>, List<CLMedia>>((ref, items) {
+  final galleryGroups = <GalleryGroup>[];
+  for (final entry in items.filterByDate().entries) {
+    galleryGroups.add(
+      GalleryGroup(
+        entry.value,
+        label: entry.key,
+      ),
+    );
+  }
+  return galleryGroups;
+});
