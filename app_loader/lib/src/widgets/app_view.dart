@@ -92,6 +92,7 @@ class _RaLRouterState extends ConsumerState<AppView>
             path: '/${route.name}',
             pageBuilder: (context, GoRouterState state) {
               return MaterialPage(
+                key: state.pageKey,
                 child: route.builder(context, state),
               );
             },
