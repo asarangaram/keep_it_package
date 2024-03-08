@@ -7,22 +7,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import '../providers/gallery_group_provider.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
 
-class TimeLinePage extends ConsumerWidget {
+class TimeLinePage extends StatelessWidget {
   const TimeLinePage({required this.collectionId, super.key});
+
   final int collectionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => GetCollection(
+  Widget build(BuildContext context) => GetCollection(
         id: collectionId,
         buildOnData: (collection) => GetMediaMultiple(
           collectionId: collectionId,
-          buildOnData: (items) => TimeLinePage0(
-            collection: collection,
-            items: items,
-          ),
+          buildOnData: (items) =>
+              TimeLinePage0(collection: collection, items: items),
         ),
       );
 }
@@ -40,52 +40,27 @@ class TimeLinePage0 extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
+    final label = collection?.label ?? 'All Media';
     return CLGalleryView(
-      key: ValueKey(collection?.label ?? 'All Media'),
+      key: ValueKey(label),
+      label: label,
+      tagPrefix: 'TimeLinePage0 $label',
+      isScrollablePositionedList: false,
       columns: 4,
-      label: collection?.label ?? 'All Media',
       galleryMap: galleryGroups,
       emptyState: const EmptyState(),
       labelTextBuilder: (index) => galleryGroups[index].label ?? '',
-      itemBuilder: (
-        context,
-        item, {
-        required quickMenuScopeKey,
-      }) =>
-          MediaAsFile(
+      itemBuilder: (context, item, {required quickMenuScopeKey}) => MediaAsFile(
         media: item as CLMedia,
         quickMenuScopeKey: quickMenuScopeKey,
       ),
-      tagPrefix: 'timeline ${collection?.id}',
-      onPickFiles: () async {
-        await onPickFiles(
-          context,
-          ref,
-          collection: collection,
-        );
-      },
-      onRefresh: () async {
-        ref.invalidate(dbManagerProvider);
-      },
-      onPop: context.canPop()
-          ? () {
-              context.pop();
-            }
-          : null,
+      onPickFiles: () async => onPickFiles(
+        context,
+        ref,
+        collection: collection,
+      ),
+      onRefresh: () async => ref.invalidate(dbManagerProvider),
+      onPop: context.canPop() ? () => context.pop() : null,
     );
   }
 }
-
-final groupedItemsProvider =
-    StateProvider.family<List<GalleryGroup>, List<CLMedia>>((ref, items) {
-  final galleryGroups = <GalleryGroup>[];
-  for (final entry in items.filterByDate().entries) {
-    galleryGroups.add(
-      GalleryGroup(
-        entry.value,
-        label: entry.key,
-      ),
-    );
-  }
-  return galleryGroups;
-});

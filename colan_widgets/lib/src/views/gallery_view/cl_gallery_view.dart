@@ -26,13 +26,13 @@ class CLGalleryView extends StatefulWidget {
     required this.itemBuilder,
     required this.labelTextBuilder,
     required this.columns,
+    required this.isScrollablePositionedList,
     this.onPickFiles,
     super.key,
     this.header,
     this.footer,
     this.onPop,
     this.onRefresh,
-    this.isScrollablePositionedList = true,
   });
 
   final String label;
