@@ -47,23 +47,35 @@ class DBQuery<T> {
 
   @override
   bool operator ==(covariant DBQuery<T> other) {
-    if (identical(this, other)) return true;
-    final collectionEquals = const DeepCollectionEquality().equals;
+    final bool res;
+    if (identical(this, other)) {
+      res = true;
+    } else {
+      final collectionEquals = const DeepCollectionEquality().equals;
 
-    final res = other.sql == sql &&
-        collectionEquals(other.triggerOnTables, triggerOnTables) &&
-        collectionEquals(other.parameters, parameters);
+      res = other.sql == sql &&
+          collectionEquals(other.triggerOnTables, triggerOnTables) &&
+          collectionEquals(other.parameters, parameters) &&
+          other.fromMap == fromMap;
+    }
 
-    print('are they equal? $res');
     return res;
   }
 
+  /// Fix:
+  /// The paramerters as a list causes different hash, that
+  /// invokes frequent rebuild in top level.
+  /// need to be carefull while comparing.
+  ///
   @override
   int get hashCode {
-    print(
-      '${sql.hashCode} ${triggerOnTables.hashCode} ${parameters.hashCode} ${fromMap.hashCode}',
-    );
-    return sql.hashCode ^ triggerOnTables.hashCode;
+    var hashCode = sql.hashCode ^ triggerOnTables.hashCode ^ fromMap.hashCode;
+    if (parameters != null) {
+      for (final p in parameters!) {
+        hashCode ^= p.hashCode;
+      }
+    }
+    return hashCode;
   }
 
   // Use this only to pick specific items, not cached.
