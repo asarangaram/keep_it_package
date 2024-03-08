@@ -41,15 +41,13 @@ class TimeLinePage0 extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
     final label = collection?.label ?? 'All Media';
-    return CLGalleryView(
+    return CLSimpleGalleryView(
       key: ValueKey(label),
       label: label,
       tagPrefix: 'TimeLinePage0 $label',
-      isScrollablePositionedList: false,
       columns: 4,
       galleryMap: galleryGroups,
       emptyState: const EmptyState(),
-      labelTextBuilder: (index) => galleryGroups[index].label ?? '',
       itemBuilder: (context, item, {required quickMenuScopeKey}) => MediaAsFile(
         media: item as CLMedia,
         quickMenuScopeKey: quickMenuScopeKey,

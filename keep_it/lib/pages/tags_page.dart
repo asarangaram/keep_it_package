@@ -32,19 +32,17 @@ class _TagsViewState extends ConsumerState<TagsPage> {
               ),
             );
           }
-          return CLGalleryView(
+          return CLSimpleGalleryView(
             label: 'Tags',
             columns: 3,
             galleryMap: galleryGroups,
             emptyState: const EmptyState(),
-            labelTextBuilder: (index) => galleryGroups[index].label ?? '',
             itemBuilder: (context, item, {required quickMenuScopeKey}) =>
                 TagAsFolder(
               tag: item as Tag,
               quickMenuScopeKey: quickMenuScopeKey,
             ),
             tagPrefix: 'folder view tags "}',
-            isScrollablePositionedList: false,
             onRefresh: () async {
               ref.invalidate(dbManagerProvider);
             },

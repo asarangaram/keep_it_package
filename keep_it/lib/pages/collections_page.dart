@@ -40,20 +40,18 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
                   ),
                 );
               }
-              return CLGalleryView(
+              return CLSimpleGalleryView(
                 key: ValueKey(tagPrefix),
                 label: tag?.label ?? 'Collections',
                 columns: 3,
                 galleryMap: galleryGroups,
                 emptyState: const EmptyState(),
-                labelTextBuilder: (index) => galleryGroups[index].label ?? '',
                 itemBuilder: (context, item, {required quickMenuScopeKey}) =>
                     CollectionAsFolder(
                   collection: item as Collection,
                   quickMenuScopeKey: quickMenuScopeKey,
                 ),
                 tagPrefix: tagPrefix,
-                isScrollablePositionedList: false,
                 onPickFiles: (widget.tagId != null)
                     ? null
                     : () async {

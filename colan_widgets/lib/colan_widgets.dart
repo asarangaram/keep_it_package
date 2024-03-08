@@ -41,7 +41,7 @@ export 'src/views/appearance/cl_loading_view.dart';
 export 'src/views/appearance/fullscreen_layout.dart';
 export 'src/views/appearance/keep_it_main_view.dart';
 export 'src/views/collage_view/cl_media_collage.dart';
-export 'src/views/gallery_view/cl_gallery_view.dart';
+export 'src/views/gallery_view/cl_simple_gallery_view.dart';
 export 'src/views/image/cl_image_viewer.dart';
 export 'src/views/image/image_view.dart';
 export 'src/views/quick_menu/cl_quickmenu.dart';
