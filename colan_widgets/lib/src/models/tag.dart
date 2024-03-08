@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'm1_app_settings.dart';
+
 @immutable
 class Tag {
   const Tag({
@@ -19,7 +21,13 @@ class Tag {
         ' createdDate: $createdDate, updatedDate: $updatedDate)';
   }
 
-  factory Tag.fromMap(Map<String, dynamic> map) {
+  factory Tag.fromMap(
+    Map<String, dynamic> map, {
+    // ignore: avoid_unused_constructor_parameters
+    required AppSettings appSettings,
+    // ignore: avoid_unused_constructor_parameters
+    required bool validate,
+  }) {
     return Tag(
       id: map['id'] != null ? map['id'] as int : null,
       label: map['label'] as String,
@@ -33,8 +41,8 @@ class Tag {
           : null,
     );
   }
-  factory Tag.fromJson(String source) =>
-      Tag.fromMap(json.decode(source) as Map<String, dynamic>);
+  /* factory Tag.fromJson(String source) =>
+      Tag.fromMap(json.decode(source) as Map<String, dynamic>); */
 
   final int? id;
 

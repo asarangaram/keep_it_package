@@ -3,7 +3,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
-import '../models/m1_app_settings.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_writer.dart';
 

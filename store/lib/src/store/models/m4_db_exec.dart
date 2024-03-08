@@ -3,8 +3,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
-import 'm1_app_settings.dart';
-
 @immutable
 class DBExec<T> {
   const DBExec({

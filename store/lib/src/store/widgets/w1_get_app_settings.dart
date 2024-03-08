@@ -1,6 +1,6 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/m1_app_settings.dart';
 import '../providers/p1_app_settings.dart';
 
 import 'async_widgets.dart';

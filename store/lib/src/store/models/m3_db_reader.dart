@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
-import '../models/m1_app_settings.dart';
 import 'm3_db_queries.dart';
 import 'm3_db_query.dart';
 

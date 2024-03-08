@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class FullscreenLayout extends StatelessWidget {
   const FullscreenLayout({required this.child, super.key, this.onClose});

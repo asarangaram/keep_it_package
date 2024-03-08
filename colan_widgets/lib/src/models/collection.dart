@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import 'm1_app_settings.dart';
 import 'tag.dart';
 
 @immutable
@@ -16,7 +17,13 @@ class Collection {
     this.updatedDate,
   });
 
-  factory Collection.fromMap(Map<String, dynamic> map) {
+  factory Collection.fromMap(
+    Map<String, dynamic> map, {
+    // ignore: avoid_unused_constructor_parameters
+    required AppSettings appSettings,
+    // ignore: avoid_unused_constructor_parameters
+    required bool validate,
+  }) {
     return Collection(
       id: map['id'] != null ? map['id'] as int : null,
       label: map['label'] as String,
@@ -30,8 +37,8 @@ class Collection {
           : null,
     );
   }
-  factory Collection.fromJson(String source) =>
-      Collection.fromMap(json.decode(source) as Map<String, dynamic>);
+  /* factory Collection.fromJson(String source) =>
+      Collection.fromMap(json.decode(source) as Map<String, dynamic>); */
 
   final int? id;
   final String label;

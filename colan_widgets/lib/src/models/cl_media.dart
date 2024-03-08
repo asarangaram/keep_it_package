@@ -8,6 +8,7 @@ import '../app_logger.dart';
 import '../extensions/ext_datetime.dart';
 import '../extensions/ext_string.dart';
 import 'cl_media_type.dart';
+import 'm1_app_settings.dart';
 
 @immutable
 class CLMedia {
@@ -44,12 +45,16 @@ class CLMedia {
 
   factory CLMedia.fromMap(
     Map<String, dynamic> map, {
+    // ignore: avoid_unused_constructor_parameters
+    required AppSettings appSettings,
+    // ignore: avoid_unused_constructor_parameters
     required bool validate,
-    String? pathPrefix,
   }) {
+    final pathPrefix = appSettings.directories.docDir.path;
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
     }
+    // ignore: unnecessary_null_comparison
     final path = ((pathPrefix != null)
         ? '$pathPrefix/${map['path']}'
         : map['path'] as String)
@@ -208,11 +213,11 @@ class CLMedia {
     return fullPath;
   }
 
-  /// Not used
+  /*  /// Not used
   factory CLMedia.fromJson(String source) => CLMedia.fromMap(
         json.decode(source) as Map<String, dynamic>,
         validate: true,
-      );
+      ); */
 
   String toJson() => json.encode(toMap(validate: true));
 }
