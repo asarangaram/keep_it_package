@@ -18,7 +18,6 @@ class DBQuery<T> {
   final T Function(
     Map<String, dynamic> map, {
     required AppSettings appSettings,
-    required bool validate,
   }) fromMap;
 
   DBQuery<T> copyWith({
@@ -28,7 +27,6 @@ class DBQuery<T> {
     T Function(
       Map<String, dynamic> map, {
       required AppSettings appSettings,
-      required bool validate,
     })? fromMap,
   }) {
     return DBQuery<T>(
@@ -86,7 +84,7 @@ class DBQuery<T> {
   }) async {
     _infoLogger('cmd: $sql, $parameters');
     final objs = (await tx.getAll(sql, parameters ?? []))
-        .map((m) => fromMap(m, appSettings: appSettings, validate: validate))
+        .map((m) => fromMap(m, appSettings: appSettings))
         .toList();
     _infoLogger("read: ${objs.map((e) => e.toString()).join(', ')}");
     return objs;
@@ -99,7 +97,7 @@ class DBQuery<T> {
   }) async {
     _infoLogger('cmd: $sql, $parameters');
     final obj = (await tx.getAll(sql, parameters ?? []))
-        .map((m) => fromMap(m, appSettings: appSettings, validate: validate))
+        .map((m) => fromMap(m, appSettings: appSettings))
         .firstOrNull;
     _infoLogger('read $obj');
     return obj;

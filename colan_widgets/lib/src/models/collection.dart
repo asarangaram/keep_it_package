@@ -21,8 +21,6 @@ class Collection {
     Map<String, dynamic> map, {
     // ignore: avoid_unused_constructor_parameters
     required AppSettings appSettings,
-    // ignore: avoid_unused_constructor_parameters
-    required bool validate,
   }) {
     return Collection(
       id: map['id'] != null ? map['id'] as int : null,

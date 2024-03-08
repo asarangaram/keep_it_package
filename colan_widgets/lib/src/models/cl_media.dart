@@ -47,8 +47,6 @@ class CLMedia {
     Map<String, dynamic> map, {
     // ignore: avoid_unused_constructor_parameters
     required AppSettings appSettings,
-    // ignore: avoid_unused_constructor_parameters
-    required bool validate,
   }) {
     final pathPrefix = appSettings.directories.docDir.path;
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
@@ -59,7 +57,7 @@ class CLMedia {
         ? '$pathPrefix/${map['path']}'
         : map['path'] as String)
       ..replaceAll('//', '/');
-    if (validate && !File(path).existsSync()) {
+    if (appSettings.shouldValidate && !File(path).existsSync()) {
       exceptionLogger(
         'File not found',
         'CL Media file path read from database is not found',
