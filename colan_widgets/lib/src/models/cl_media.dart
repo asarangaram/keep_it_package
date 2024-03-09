@@ -205,7 +205,7 @@ class CLMedia {
       throw Exception('file not found');
     }
 
-    if (validate && pathPrefix != null && fullPath.startsWith(pathPrefix)) {
+    if (pathPrefix != null && fullPath.startsWith(pathPrefix)) {
       return fullPath.replaceFirst('$pathPrefix/', '').replaceAll('//', '/');
     }
     return fullPath;
