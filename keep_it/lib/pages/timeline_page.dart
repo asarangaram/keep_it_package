@@ -45,7 +45,7 @@ class TimeLinePage0 extends ConsumerWidget {
     final label = collection?.label ?? 'All Media';
     return CLSimpleGalleryView(
       key: ValueKey(label),
-      label: label,
+      title: label,
       tagPrefix: 'TimeLinePage0 $label',
       columns: 4,
       galleryMap: galleryGroups,

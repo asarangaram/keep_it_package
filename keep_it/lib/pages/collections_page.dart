@@ -42,7 +42,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
               }
               return CLSimpleGalleryView(
                 key: ValueKey(tagPrefix),
-                label: tag?.label ?? 'Collections',
+                title: tag?.label ?? 'Collections',
                 columns: 3,
                 galleryMap: galleryGroups,
                 emptyState: const EmptyState(),

@@ -33,7 +33,7 @@ class _TagsViewState extends ConsumerState<TagsPage> {
             );
           }
           return CLSimpleGalleryView(
-            label: 'Tags',
+            title: 'Tags',
             columns: 3,
             galleryMap: galleryGroups,
             emptyState: const EmptyState(),

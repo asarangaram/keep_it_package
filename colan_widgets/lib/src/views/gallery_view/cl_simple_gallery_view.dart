@@ -16,7 +16,7 @@ class GalleryGroup {
 class CLSimpleGalleryView extends StatelessWidget {
   const CLSimpleGalleryView({
     required this.galleryMap,
-    required this.label,
+    required this.title,
     required this.emptyState,
     required this.tagPrefix,
     required this.itemBuilder,
@@ -27,7 +27,7 @@ class CLSimpleGalleryView extends StatelessWidget {
     this.onRefresh,
   });
 
-  final String label;
+  final String title;
   final List<GalleryGroup> galleryMap;
   final int columns;
 
@@ -46,7 +46,7 @@ class CLSimpleGalleryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return KeepItMainView(
-      title: label,
+      title: title,
       onPop: onPop,
       actionsBuilder: [
         if (onPickFiles != null)
@@ -61,34 +61,72 @@ class CLSimpleGalleryView extends StatelessWidget {
           key: ValueKey('$tagPrefix Refresh'),
           child: galleryMap.isEmpty
               ? emptyState
-              : ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: galleryMap.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return CLGrid(
-                      mediaList: galleryMap[index].items,
-                      columns: columns,
-                      itemBuilder: (context, item) {
-                        return itemBuilder(
-                          context,
-                          item,
-                          quickMenuScopeKey: quickMenuScopeKey,
-                        );
-                      },
-                      header: galleryMap[index].label == null
-                          ? null
-                          : Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: CLText.large(
-                                galleryMap[index].label!,
-                                textAlign: TextAlign.start,
-                              ),
-                            ),
+              : CLSimpleGalleryView0(
+                  galleryMap: galleryMap,
+                  itemBuilder: (context, item) {
+                    return itemBuilder(
+                      context,
+                      item,
+                      quickMenuScopeKey: quickMenuScopeKey,
                     );
                   },
+                  columns: columns,
                 ),
         );
       },
+    );
+  }
+}
+
+class CLSimpleGalleryView0 extends StatefulWidget {
+  const CLSimpleGalleryView0({
+    required this.galleryMap,
+    required this.itemBuilder,
+    required this.columns,
+    super.key,
+  });
+
+  final List<GalleryGroup> galleryMap;
+  final int columns;
+
+  final Widget Function(BuildContext context, Object item) itemBuilder;
+
+  @override
+  State<CLSimpleGalleryView0> createState() => _CLSimpleGalleryView0State();
+}
+
+class _CLSimpleGalleryView0State extends State<CLSimpleGalleryView0> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: widget.galleryMap.length,
+          itemBuilder: (BuildContext context, int index) {
+            return CLGrid(
+              mediaList: widget.galleryMap[index].items,
+              columns: widget.columns,
+              itemBuilder: (context, item) {
+                return Stack(
+                  children: [
+                    widget.itemBuilder(context, item),
+                  ],
+                );
+              },
+              header: widget.galleryMap[index].label == null
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: CLText.large(
+                        widget.galleryMap[index].label!,
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
