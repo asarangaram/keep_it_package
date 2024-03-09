@@ -7,13 +7,13 @@ import '../appearance/keep_it_main_view.dart';
 import 'widgets/cl_grid.dart';
 
 @immutable
-class GalleryGroup {
+class GalleryGroup<T> {
   const GalleryGroup(this.items, {this.label});
   final String? label;
-  final List<Object> items;
+  final List<T> items;
 }
 
-class CLSimpleGalleryView extends StatelessWidget {
+class CLSimpleGalleryView<T> extends StatelessWidget {
   const CLSimpleGalleryView({
     required this.galleryMap,
     required this.title,
@@ -28,7 +28,7 @@ class CLSimpleGalleryView extends StatelessWidget {
   });
 
   final String title;
-  final List<GalleryGroup> galleryMap;
+  final List<GalleryGroup<T>> galleryMap;
   final int columns;
 
   final Widget emptyState;
@@ -39,7 +39,7 @@ class CLSimpleGalleryView extends StatelessWidget {
 
   final Widget Function(
     BuildContext context,
-    Object item, {
+    T item, {
     required GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
   }) itemBuilder;
 
@@ -78,7 +78,7 @@ class CLSimpleGalleryView extends StatelessWidget {
   }
 }
 
-class CLSimpleGalleryView0 extends StatefulWidget {
+class CLSimpleGalleryView0<T> extends StatefulWidget {
   const CLSimpleGalleryView0({
     required this.galleryMap,
     required this.itemBuilder,
@@ -86,16 +86,17 @@ class CLSimpleGalleryView0 extends StatefulWidget {
     super.key,
   });
 
-  final List<GalleryGroup> galleryMap;
+  final List<GalleryGroup<T>> galleryMap;
   final int columns;
 
-  final Widget Function(BuildContext context, Object item) itemBuilder;
+  final Widget Function(BuildContext context, T item) itemBuilder;
 
   @override
-  State<CLSimpleGalleryView0> createState() => _CLSimpleGalleryView0State();
+  State<CLSimpleGalleryView0<T>> createState() =>
+      _CLSimpleGalleryView0State<T>();
 }
 
-class _CLSimpleGalleryView0State extends State<CLSimpleGalleryView0> {
+class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
   @override
   Widget build(BuildContext context) {
     return Column(

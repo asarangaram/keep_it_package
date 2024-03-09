@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class CLGrid extends StatelessWidget {
+class CLGrid<T> extends StatelessWidget {
   const CLGrid({
     required this.mediaList,
     required this.itemBuilder,
@@ -16,7 +16,7 @@ class CLGrid extends StatelessWidget {
     this.mainAxisSpacing = 2.0,
     super.key,
   });
-  final List<Object> mediaList;
+  final List<T> mediaList;
   final List<Widget>? additionalItems;
   final int columns;
   final int? rows;
@@ -26,7 +26,7 @@ class CLGrid extends StatelessWidget {
   final double crossAxisSpacing;
   final double mainAxisSpacing;
 
-  final Widget Function(BuildContext context, Object item) itemBuilder;
+  final Widget Function(BuildContext context, T item) itemBuilder;
 
   @override
   Widget build(BuildContext context) {

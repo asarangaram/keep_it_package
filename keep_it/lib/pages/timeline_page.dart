@@ -51,7 +51,7 @@ class TimeLinePage0 extends ConsumerWidget {
       galleryMap: galleryGroups,
       emptyState: const EmptyState(),
       itemBuilder: (context, item, {required quickMenuScopeKey}) => MediaAsFile(
-        media: item as CLMedia,
+        media: item,
         quickMenuScopeKey: quickMenuScopeKey,
       ),
       onPickFiles: () async => onPickFiles(

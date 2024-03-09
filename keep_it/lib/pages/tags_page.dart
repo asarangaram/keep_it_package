@@ -24,7 +24,7 @@ class _TagsViewState extends ConsumerState<TagsPage> {
         excludeEmpty: true,
         //collectionId:  widget.collectionId ,
         buildOnData: (tags) {
-          final galleryGroups = <GalleryGroup>[];
+          final galleryGroups = <GalleryGroup<Tag>>[];
           for (final rows in tags.convertTo2D(3)) {
             galleryGroups.add(
               GalleryGroup(
@@ -39,7 +39,7 @@ class _TagsViewState extends ConsumerState<TagsPage> {
             emptyState: const EmptyState(),
             itemBuilder: (context, item, {required quickMenuScopeKey}) =>
                 TagAsFolder(
-              tag: item as Tag,
+              tag: item,
               quickMenuScopeKey: quickMenuScopeKey,
             ),
             tagPrefix: 'folder view tags "}',

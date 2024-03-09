@@ -32,7 +32,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
             buildOnData: (collections) {
               final tagPrefix = 'FolderView Collections tagId: ${widget.tagId}'
                   ' excludeEmpty: $excludeEmpty';
-              final galleryGroups = <GalleryGroup>[];
+              final galleryGroups = <GalleryGroup<Collection>>[];
               for (final rows in collections.convertTo2D(3)) {
                 galleryGroups.add(
                   GalleryGroup(
@@ -48,7 +48,7 @@ class _CollectionsViewState extends ConsumerState<CollectionsPage> {
                 emptyState: const EmptyState(),
                 itemBuilder: (context, item, {required quickMenuScopeKey}) =>
                     CollectionAsFolder(
-                  collection: item as Collection,
+                  collection: item,
                   quickMenuScopeKey: quickMenuScopeKey,
                 ),
                 tagPrefix: tagPrefix,
