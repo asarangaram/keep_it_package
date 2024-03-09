@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import '../providers/gallery_group_provider.dart';
@@ -61,6 +62,12 @@ class TimeLinePage0 extends ConsumerWidget {
       ),
       onRefresh: () async => ref.invalidate(dbManagerProvider),
       onPop: context.canPop() ? () => context.pop() : null,
+      selectionActions: (context) {
+        return [
+          const CLMenuItem(title: 'Delete', icon: Icons.delete),
+          CLMenuItem(title: 'Move', icon: MdiIcons.imageMove),
+        ];
+      },
     );
   }
 }
