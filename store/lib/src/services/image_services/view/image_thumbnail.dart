@@ -53,14 +53,13 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
     return GetAppSettings(
       builder: (resources, {onNewMedia}) {
         final uuidGenerator = ref.watch(uuidProvider);
-        final uuid = uuidGenerator.v5(
-          Uuid.NAMESPACE_URL,
-          CLMedia.relativePath(
-            widget.media.path,
-            pathPrefix: resources.directories.docDir.path,
-            validate: false,
-          ),
+        final relativePath = CLMedia.relativePath(
+          widget.media.path,
+          pathPrefix: resources.directories.docDir.path,
+          validate: false,
         );
+
+        final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, relativePath);
         final previewFileName =
             path.join(resources.directories.cacheDir.path, '$uuid.tn.jpeg');
 
