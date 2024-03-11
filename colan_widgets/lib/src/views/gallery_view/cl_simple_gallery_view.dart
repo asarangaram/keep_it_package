@@ -1,14 +1,13 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../basics/cl_button.dart';
-import '../../basics/cl_icon.dart';
-import '../../basics/cl_text.dart';
-import '../appearance/keep_it_main_view.dart';
+import '../draggable/draggable_menu.dart';
+import '../draggable/menu.dart';
+import '../draggable/menu_control.dart';
 
 @immutable
 class GalleryGroup<T> {
@@ -130,16 +129,23 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
         },
       );
     } else {
-      return CLSimpleGalleryView0(
-        title: title,
-        onPickFiles: onPickFiles,
-        onPop: onPop,
-        galleryMap: galleryMap,
-        itemBuilder: itemBuilder,
-        columns: columns,
-        tagPrefix: tagPrefix,
-        onRefresh: onRefresh,
-        selectionActions: selectionActions,
+      return ProviderScope(
+        overrides: [
+          menuControlNotifierProvider.overrideWith((ref) {
+            return MenuControlNotifier();
+          }),
+        ],
+        child: CLSimpleGalleryView0(
+          title: title,
+          onPickFiles: onPickFiles,
+          onPop: onPop,
+          galleryMap: galleryMap,
+          itemBuilder: itemBuilder,
+          columns: columns,
+          tagPrefix: tagPrefix,
+          onRefresh: onRefresh,
+          selectionActions: selectionActions,
+        ),
       );
     }
   }
@@ -182,6 +188,7 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
 
 class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
   late List<GalleryGroupMutable<bool>> selectionMap;
+  final GlobalKey parentKey = GlobalKey();
   bool isSelectionMode = false;
   @override
   void initState() {
@@ -222,122 +229,235 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
               ),
       ],
       pageBuilder: (context, quickMenuScopeKey) {
-        return Column(
+        return Stack(
+          key: parentKey,
           children: [
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: widget.onRefresh ?? () async {},
-                key: ValueKey('${widget.tagPrefix} Refresh'),
-                child: ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: widget.galleryMap.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return CLGrid<T>(
-                      itemCount: widget.galleryMap[index].items.length,
-                      columns: widget.columns,
-                      itemBuilder: (context, groupIndex) {
-                        final media =
-                            widget.galleryMap[index].items[groupIndex];
-                        return Stack(
-                          children: [
-                            widget.itemBuilder(
-                              context,
-                              media,
-                              quickMenuScopeKey: quickMenuScopeKey,
-                            ),
-                            if (isSelectionMode)
-                              Positioned.fill(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectionMap[index].items[groupIndex] =
-                                          !selectionMap[index]
-                                              .items[groupIndex];
-                                    });
-                                  },
-                                  child: (selectionMap[index].items[groupIndex])
-                                      ? Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: const Color.fromARGB(
-                                                255,
-                                                0x08,
-                                                0xFF,
-                                                0x08,
-                                              ),
-                                            ),
-                                          ),
-                                          child: SizedBox.expand(
-                                            child: Center(
-                                              child: FractionallySizedBox(
-                                                widthFactor: 0.3,
-                                                heightFactor: 0.3,
-                                                child: FittedBox(
-                                                  child: DecoratedBox(
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onBackground
-                                                          .withAlpha(
-                                                            192,
-                                                          ), // Color for the circular container
-                                                    ),
-                                                    child: CLIcon.veryLarge(
-                                                      Icons.check,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .background
-                                                          .withAlpha(192),
+            Column(
+              children: [
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: widget.onRefresh ?? () async {},
+                    key: ValueKey('${widget.tagPrefix} Refresh'),
+                    child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: widget.galleryMap.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return CLGrid<T>(
+                          itemCount: widget.galleryMap[index].items.length,
+                          columns: widget.columns,
+                          itemBuilder: (context, groupIndex) {
+                            final media =
+                                widget.galleryMap[index].items[groupIndex];
+                            final isSelected =
+                                selectionMap[index].items[groupIndex];
+                            return Stack(
+                              children: [
+                                widget.itemBuilder(
+                                  context,
+                                  media,
+                                  quickMenuScopeKey: quickMenuScopeKey,
+                                ),
+                                if (isSelectionMode)
+                                  Positioned.fill(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectionMap[index]
+                                              .items[groupIndex] = !isSelected;
+                                        });
+                                      },
+                                      child: SizedBox.expand(
+                                        child: Container(
+                                          decoration: isSelected
+                                              ? BoxDecoration(
+                                                  border: Border.all(
+                                                    color: const Color.fromARGB(
+                                                      255,
+                                                      0x08,
+                                                      0xFF,
+                                                      0x08,
                                                     ),
                                                   ),
+                                                )
+                                              : BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .surface
+                                                      .withAlpha(128),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : SizedBox.expand(
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surface
-                                                  .withAlpha(192),
-                                            ),
-                                          ),
+                                          child: isSelected
+                                              ? Center(
+                                                  child: FractionallySizedBox(
+                                                    widthFactor: 0.3,
+                                                    heightFactor: 0.3,
+                                                    child: FittedBox(
+                                                      child: DecoratedBox(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          color: Theme.of(
+                                                            context,
+                                                          )
+                                                              .colorScheme
+                                                              .onBackground
+                                                              .withAlpha(
+                                                                192,
+                                                              ), // Color for the circular container
+                                                        ),
+                                                        child: CLIcon.veryLarge(
+                                                          Icons.check,
+                                                          color: Theme.of(
+                                                            context,
+                                                          )
+                                                              .colorScheme
+                                                              .background
+                                                              .withAlpha(192),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              : null,
                                         ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                          header: widget.galleryMap[index].label == null
+                              ? null
+                              : Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  child: CLText.large(
+                                    widget.galleryMap[index].label!,
+                                    textAlign: TextAlign.start,
+                                  ),
                                 ),
-                              ),
-                          ],
                         );
                       },
-                      header: widget.galleryMap[index].label == null
-                          ? null
-                          : Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: CLText.large(
-                                widget.galleryMap[index].label!,
-                                textAlign: TextAlign.start,
-                              ),
-                            ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
-              ),
+                if (widget.selectionActions != null &&
+                    isSelectionMode &&
+                    selectionMap.trueCount > 0)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      //borderRadius: BorderRadius.circular(15),
+                      /* border: Border.all(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ), */
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(
+                            128 + 64,
+                            128 + 64,
+                            128 + 64,
+                            128 + 64,
+                          ),
+                          blurRadius: 20, // soften the shadow
+                          offset: Offset(
+                            10, // Move to right 10  horizontally
+                            5, // Move to bottom 10 Vertically
+                          ),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CLText.large(
+                            ' ${selectionMap.trueCount} '
+                            'of ${selectionMap.totalCount} selected',
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const CLText.standard('Select All'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            Text(
-              '${selectionMap.trueCount} of ${selectionMap.totalCount} selected',
-            ),
-            if (widget.selectionActions != null && isSelectionMode)
-              Row(
-                children: [
-                  for (final item in widget.selectionActions!(context))
-                    ElevatedButton(onPressed: () {}, child: const Text('test')),
-                ],
+            if (widget.selectionActions != null &&
+                isSelectionMode &&
+                selectionMap.trueCount > 0)
+              DraggableMenu(
+                key: const ValueKey('DraggableMenu'),
+                parentKey: parentKey,
+                child: Menu(
+                  menuItems: widget.selectionActions!(context),
+                ),
               ),
           ],
         );
       },
+    );
+  }
+}
+
+class TopStripWithButtons extends StatelessWidget {
+  const TopStripWithButtons({required this.buttons, super.key});
+  final List<Widget> buttons;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Card(
+        elevation: 8,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (var i = 0; i < buttons.length - 1; i++)
+                Padding(
+                  padding: const EdgeInsets.only(right: 32),
+                  child: buttons[i],
+                ),
+              buttons.last,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TopStripContainer extends StatelessWidget {
+  const TopStripContainer({
+    required this.child,
+    super.key,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withAlpha(192),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: child,
     );
   }
 }
