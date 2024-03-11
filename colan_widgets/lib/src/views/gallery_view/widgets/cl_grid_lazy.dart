@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'cl_grid.dart';
+import 'cl_grid_media.dart';
 import 'placeholder_grid.dart';
 
 class CLGridLazy extends StatefulWidget {
@@ -82,7 +82,7 @@ class CLGridLazyState extends State<CLGridLazy> {
   @override
   Widget build(BuildContext context) {
     if (_shouldRender) {
-      return CLGrid(
+      return CLGridMedia(
         mediaList: widget.mediaList,
         additionalItems: widget.additionalItems,
         columns: widget.columns,

@@ -7,7 +7,7 @@ final dbManagerProvider = FutureProvider<DBManager>((ref) async {
   final appSettings = await ref.watch(appSettingsProvider.future);
   final appDir = appSettings.directories.docDir;
   final fullPath = join(appDir.path, appSettings.dbName);
-  await Future<void>.delayed(const Duration(seconds: 1));
+  //await Future<void>.delayed(const Duration(seconds: 1));
   final dbManager = await DBManager.createInstances(
     dbpath: fullPath,
     appSettings: appSettings,

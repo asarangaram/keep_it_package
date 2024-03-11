@@ -35,7 +35,6 @@ class _DraggableMenu extends ConsumerStatefulWidget {
     required this.child,
     required this.offset,
     required this.onUpdateOffset,
-    super.key,
   });
   final GlobalKey parentKey;
   final Widget child;

@@ -2,9 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class CLGrid<T> extends StatelessWidget {
-  const CLGrid({
-    required this.itemCount,
+//Replace this with CLGrid
+class CLGridMedia<T> extends StatelessWidget {
+  const CLGridMedia({
+    required this.mediaList,
     required this.itemBuilder,
     required this.columns,
     this.additionalItems,
@@ -16,7 +17,7 @@ class CLGrid<T> extends StatelessWidget {
     this.mainAxisSpacing = 2.0,
     super.key,
   });
-  final int itemCount;
+  final List<T> mediaList;
   final List<Widget>? additionalItems;
   final int columns;
   final int? rows;
@@ -26,19 +27,19 @@ class CLGrid<T> extends StatelessWidget {
   final double crossAxisSpacing;
   final double mainAxisSpacing;
 
-  final Widget Function(BuildContext context, int index) itemBuilder;
+  final Widget Function(BuildContext context, T item) itemBuilder;
 
   @override
   Widget build(BuildContext context) {
     final int limitCount;
     final additionaItemsCount = additionalItems?.length ?? 0;
-    final totalItems = itemCount + additionaItemsCount;
+    final totalItems = mediaList.length + additionaItemsCount;
     if (rows == null) {
-      limitCount = itemCount;
+      limitCount = mediaList.length;
     } else {
       limitCount = min(totalItems, rows! * columns) - additionaItemsCount;
     }
-    if (itemCount == 0) {
+    if (mediaList.isEmpty) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -56,11 +57,12 @@ class CLGrid<T> extends StatelessWidget {
               }
               /* return  */
             }
-            if (index >= itemCount) {
+            if (index >= mediaList.length) {
               return Container();
             }
+            final media = mediaList[index];
 
-            return itemBuilder(context, index);
+            return itemBuilder(context, media);
           },
           itemCount: limitCount + additionaItemsCount,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
