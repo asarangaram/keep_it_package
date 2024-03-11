@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../draggable/draggable_menu.dart';
 import '../draggable/menu.dart';
@@ -207,8 +209,38 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
     }).toList();
   }
 
+  void toggleSelection(int groupIndex, int itemIndex) {
+    setState(() {
+      selectionMap[groupIndex].items[itemIndex] =
+          !selectionMap[groupIndex].items[itemIndex];
+    });
+  }
+
+  void selectGroup(int groupIndex, {required bool select}) {
+    final group = selectionMap[groupIndex];
+
+    for (var i = 0; i < group.items.length; i++) {
+      group.items[i] = select;
+    }
+    setState(() {});
+  }
+
+  void selectAll({required bool select}) {
+    for (var g = 0; g < selectionMap.length; g++) {
+      final group = selectionMap[g];
+
+      for (var i = 0; i < group.items.length; i++) {
+        group.items[i] = select;
+      }
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasSelection = widget.selectionActions != null &&
+        isSelectionMode &&
+        selectionMap.trueCount > 0;
     return KeepItMainView(
       title: widget.title,
       onPop: widget.onPop,
@@ -235,105 +267,94 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
             Column(
               children: [
                 Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: widget.onRefresh ?? () async {},
+                  child: RefreshIndicatorOptional(
+                    onRefresh: isSelectionMode ? null : widget.onRefresh,
                     key: ValueKey('${widget.tagPrefix} Refresh'),
                     child: ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: widget.galleryMap.length,
-                      itemBuilder: (BuildContext context, int index) {
+                      itemBuilder: (BuildContext context, int groupIndex) {
+                        final gallery = widget.galleryMap[groupIndex];
+                        final gallerySelection = selectionMap[groupIndex];
                         return CLGrid<T>(
-                          itemCount: widget.galleryMap[index].items.length,
+                          itemCount: gallery.items.length,
                           columns: widget.columns,
-                          itemBuilder: (context, groupIndex) {
-                            final media =
-                                widget.galleryMap[index].items[groupIndex];
-                            final isSelected =
-                                selectionMap[index].items[groupIndex];
-                            return Stack(
-                              children: [
-                                widget.itemBuilder(
+                          itemBuilder: (context, itemIndex) {
+                            final media = gallery.items[itemIndex];
+                            if (isSelectionMode) {
+                              return SelectableItem(
+                                isSelected:
+                                    selectionMap[groupIndex].items[itemIndex],
+                                child: widget.itemBuilder(
                                   context,
                                   media,
                                   quickMenuScopeKey: quickMenuScopeKey,
                                 ),
-                                if (isSelectionMode)
-                                  Positioned.fill(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectionMap[index]
-                                              .items[groupIndex] = !isSelected;
-                                        });
-                                      },
-                                      child: SizedBox.expand(
-                                        child: Container(
-                                          decoration: isSelected
-                                              ? BoxDecoration(
-                                                  border: Border.all(
-                                                    color: const Color.fromARGB(
-                                                      255,
-                                                      0x08,
-                                                      0xFF,
-                                                      0x08,
-                                                    ),
-                                                  ),
-                                                )
-                                              : BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .surface
-                                                      .withAlpha(128),
-                                                ),
-                                          child: isSelected
-                                              ? Center(
-                                                  child: FractionallySizedBox(
-                                                    widthFactor: 0.3,
-                                                    heightFactor: 0.3,
-                                                    child: FittedBox(
-                                                      child: DecoratedBox(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color: Theme.of(
-                                                            context,
-                                                          )
-                                                              .colorScheme
-                                                              .onBackground
-                                                              .withAlpha(
-                                                                192,
-                                                              ), // Color for the circular container
-                                                        ),
-                                                        child: CLIcon.veryLarge(
-                                                          Icons.check,
-                                                          color: Theme.of(
-                                                            context,
-                                                          )
-                                                              .colorScheme
-                                                              .background
-                                                              .withAlpha(192),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              : null,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            );
+                                onTap: () =>
+                                    toggleSelection(groupIndex, itemIndex),
+                              );
+                            } else {
+                              return widget.itemBuilder(
+                                context,
+                                media,
+                                quickMenuScopeKey: quickMenuScopeKey,
+                              );
+                            }
                           },
-                          header: widget.galleryMap[index].label == null
+                          header: gallery.label == null
                               ? null
                               : Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  child: CLText.large(
-                                    widget.galleryMap[index].label!,
-                                    textAlign: TextAlign.start,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Flexible(
+                                        child: CLText.large(
+                                          gallery.label!,
+                                          textAlign: TextAlign.start,
+                                        ),
+                                      ),
+                                      if (isSelectionMode)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              selectGroup(
+                                                groupIndex,
+                                                select:
+                                                    gallerySelection.items.any(
+                                                  (element) => element == false,
+                                                ),
+                                              );
+                                            },
+                                            child: CLIcon.small(
+                                              gallerySelection.items.every(
+                                                (element) => element == false,
+                                              )
+                                                  ? MdiIcons.checkboxBlank
+                                                  : gallerySelection.items.any(
+                                                      (element) =>
+                                                          element == false,
+                                                    )
+                                                      ? Icons
+                                                          .indeterminate_check_box_outlined
+                                                      : MdiIcons.checkboxMarked,
+                                              color:
+                                                  gallerySelection.items.every(
+                                                (element) => element == true,
+                                              )
+                                                      ? null
+                                                      : Theme.of(context)
+                                                          .disabledColor,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
                         );
@@ -341,67 +362,175 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
                     ),
                   ),
                 ),
-                if (widget.selectionActions != null &&
-                    isSelectionMode &&
-                    selectionMap.trueCount > 0)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      //borderRadius: BorderRadius.circular(15),
-                      /* border: Border.all(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ), */
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromARGB(
-                            128 + 64,
-                            128 + 64,
-                            128 + 64,
-                            128 + 64,
-                          ),
-                          blurRadius: 20, // soften the shadow
-                          offset: Offset(
-                            10, // Move to right 10  horizontally
-                            5, // Move to bottom 10 Vertically
-                          ),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CLText.large(
-                            ' ${selectionMap.trueCount} '
-                            'of ${selectionMap.totalCount} selected',
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {},
-                            child: const CLText.standard('Select All'),
-                          ),
-                        ],
-                      ),
-                    ),
+                if (isSelectionMode)
+                  SelectionCount(
+                    selectionMap,
+                    onSelectAll: selectAll,
                   ),
               ],
             ),
-            if (widget.selectionActions != null &&
-                isSelectionMode &&
-                selectionMap.trueCount > 0)
+            if (hasSelection)
               DraggableMenu(
                 key: const ValueKey('DraggableMenu'),
                 parentKey: parentKey,
-                child: Menu(
-                  menuItems: widget.selectionActions!(context),
-                ),
+                child: Menu(menuItems: widget.selectionActions!(context)),
               ),
           ],
         );
       },
+    );
+  }
+}
+
+class SelectionCount extends ConsumerWidget {
+  const SelectionCount(this.selectionMap, {super.key, this.onSelectAll});
+  final List<GalleryGroupMutable<bool>> selectionMap;
+  final void Function({required bool select})? onSelectAll;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        //borderRadius: BorderRadius.circular(15),
+        /* border: Border.all(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ), */
+        boxShadow: const [
+          BoxShadow(
+            color: Color.fromARGB(
+              128 + 64,
+              128 + 64,
+              128 + 64,
+              128 + 64,
+            ),
+            blurRadius: 20, // soften the shadow
+            offset: Offset(
+              10, // Move to right 10  horizontally
+              5, // Move to bottom 10 Vertically
+            ),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (selectionMap.trueCount > 0)
+              Flexible(
+                child: CLText.standard(
+                  ' ${selectionMap.trueCount} '
+                  'of ${selectionMap.totalCount} selected',
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              )
+            else
+              Flexible(child: Container()),
+            ElevatedButton(
+              onPressed: () => onSelectAll?.call(
+                select: !(selectionMap.trueCount == selectionMap.totalCount),
+              ),
+              child: CLText.small(
+                selectionMap.trueCount == selectionMap.totalCount
+                    ? 'Select None'
+                    : 'Select All',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SelectableItem extends ConsumerWidget {
+  const SelectableItem({
+    required this.child,
+    required this.onTap,
+    required this.isSelected,
+    super.key,
+  });
+  final Widget child;
+  final void Function() onTap;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Stack(
+      children: [
+        child,
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: onTap,
+            child: SelectionOverlay(
+              isSelected: isSelected,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class SelectionOverlay extends StatelessWidget {
+  const SelectionOverlay({
+    required this.isSelected,
+    super.key,
+  });
+
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final decoration = isSelected
+        ? BoxDecoration(
+            border:
+                Border.all(color: const Color.fromARGB(255, 0x08, 0xFF, 0x08)),
+          )
+        : BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withAlpha(128),
+          );
+    return SizedBox.expand(
+      child: Container(
+        decoration: decoration,
+        child:
+            isSelected ? const Center(child: OverlayIcon(Icons.check)) : null,
+      ),
+    );
+  }
+}
+
+class OverlayIcon extends StatelessWidget {
+  const OverlayIcon(
+    this.iconData, {
+    super.key,
+  });
+  final IconData iconData;
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+      widthFactor: 0.3,
+      heightFactor: 0.3,
+      child: FittedBox(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Theme.of(
+              context,
+            ).colorScheme.onBackground.withAlpha(
+                  192,
+                ), // Color for the circular container
+          ),
+          child: CLIcon.veryLarge(
+            iconData,
+            color: Theme.of(
+              context,
+            ).colorScheme.background.withAlpha(192),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -531,6 +660,29 @@ class CLGrid<T> extends StatelessWidget {
         ),
         if (footer != null) footer!,
       ],
+    );
+  }
+}
+
+class RefreshIndicatorOptional extends ConsumerWidget {
+  const RefreshIndicatorOptional({
+    required this.child,
+    required Key key,
+    this.onRefresh,
+  })  : refreshKey = key,
+        super(key: null);
+  final Future<void> Function()? onRefresh;
+  final Widget child;
+  final Key refreshKey;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (onRefresh == null) {
+      return child;
+    }
+    return RefreshIndicator(
+      key: refreshKey,
+      onRefresh: onRefresh!,
+      child: child,
     );
   }
 }
