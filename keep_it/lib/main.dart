@@ -97,11 +97,18 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'item_move/:collectionId/:item_id',
+          name: 'item_move',
           builder: (context, GoRouterState state) {
+            if (!state.uri.queryParameters.containsKey('ids')) {
+              throw Exception('Nothing to move');
+            }
+            final idsToMove = state.uri.queryParameters['ids']!
+                .split(',')
+                .map(int.parse)
+                .toList();
+
             return MoveMediaPage(
-              collectionId: int.parse(state.pathParameters['collectionId']!),
-              idsToMove: [int.parse(state.pathParameters['item_id']!)],
+              idsToMove: idsToMove,
             );
           },
         ),
@@ -127,7 +134,7 @@ class KeepItApp implements AppDescriptor {
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
         BuildContext context, {
         required CLSharedMedia incomingMedia,
-        required void Function() onDiscard,
+        required void Function({required bool result}) onDiscard,
       }) =>
           IncomingMediaHandler(
             incomingMedia: incomingMedia,
@@ -207,7 +214,7 @@ void printGoRouterState(GoRouterState state) {
       '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
 }
 
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);

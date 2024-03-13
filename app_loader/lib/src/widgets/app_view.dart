@@ -174,7 +174,7 @@ void printGoRouterState(GoRouterState state) {
       '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
 }
 
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);

@@ -91,7 +91,7 @@ extension IOExtOnCLMedia on CLMedia {
 }
 
 const _filePrefix = 'Media File handling: ';
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 // ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {

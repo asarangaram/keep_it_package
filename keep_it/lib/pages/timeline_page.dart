@@ -94,22 +94,11 @@ class TimeLinePage0 extends ConsumerWidget {
                 title: 'Move',
                 icon: MdiIcons.imageMove,
                 onTap: () async {
-                  final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return ConfirmAction(
-                            title: 'Confirm delete',
-                            message: 'Are you sure you want to delete '
-                                '${items.length} items?',
-                            child: null,
-                            onConfirm: ({required confirmed}) =>
-                                Navigator.of(context).pop(confirmed),
-                          );
-                        },
-                      ) ??
-                      false;
-                  if (confirmed) {}
-                  return null;
+                  final result = await context.push<bool>(
+                    '/item_move?ids=${items.map((e) => e.id).join(',')}',
+                  );
+
+                  return result;
                 },
               ),
             ];

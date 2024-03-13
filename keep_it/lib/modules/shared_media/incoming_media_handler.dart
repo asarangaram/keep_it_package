@@ -16,7 +16,7 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
     this.moving = false,
   });
   final CLSharedMedia incomingMedia;
-  final void Function() onDiscard;
+  final void Function({required bool result}) onDiscard;
   final bool moving;
 
   @override
@@ -48,31 +48,31 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     }
     try {
       widget0 = FullscreenLayout(
-        onClose: onDiscard,
+        onClose: () => onDiscard(result: false),
         child: switch (candidates) {
           null => AnalysePage(
               incomingMedia: widget.incomingMedia,
               onDone: onDone,
-              onCancel: onDiscard,
+              onCancel: () => onDiscard(result: false),
             ),
           (final candiates)
               when candidates!.hasTargetMismatchedItems && !widget.moving =>
             DuplicatePage(
               incomingMedia: candiates,
               onDone: onDone,
-              onCancel: onDiscard,
+              onCancel: () => onDiscard(result: false),
             ),
           (final candiates) when candidates!.collection == null =>
             WhichCollection(
               incomingMedia: candiates,
               onDone: onDone,
-              onCancel: onDiscard,
+              onCancel: () => onDiscard(result: false),
               title: const CLText.large('Moving...'),
             ),
           _ => SaveCollection(
               incomingMedia: candidates!,
               onDone: onSave,
-              onCancel: onDiscard,
+              onCancel: () => onDiscard(result: false),
             )
         },
       );
@@ -91,7 +91,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     setState(() {});
     ref.read(notificationMessageProvider.notifier).push('Saved');
 
-    onDiscard();
+    onDiscard(result: true);
   }
 
   void onDone({CLSharedMedia? mg}) {
@@ -100,7 +100,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
       isSaving = true;
       setState(() {});
       ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
-      onDiscard();
+      onDiscard(result: false);
       return;
     }
     setState(() {
@@ -108,10 +108,10 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     });
   }
 
-  void onDiscard() {
+  void onDiscard({required bool result}) {
     candidates = null;
 
-    widget.onDiscard();
+    widget.onDiscard(result: result);
     isSaving = false;
     if (mounted) {
       setState(() {});

@@ -16,7 +16,7 @@ typedef CLRedirector = Future<String?> Function(String location);
 typedef IncomingMediaViewBuilder = Widget Function(
   BuildContext context, {
   required CLSharedMedia incomingMedia,
-  required void Function() onDiscard,
+  required void Function({required bool result}) onDiscard,
 });
 
 abstract class AppDescriptor {

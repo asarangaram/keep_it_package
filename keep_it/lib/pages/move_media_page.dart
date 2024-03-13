@@ -9,10 +9,9 @@ import '../modules/shared_media/incoming_media_handler.dart';
 class MoveMediaPage extends ConsumerWidget {
   const MoveMediaPage({
     required this.idsToMove,
-    required this.collectionId,
     super.key,
   });
-  final int collectionId;
+
   final List<int> idsToMove;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,9 +25,9 @@ class MoveMediaPage extends ConsumerWidget {
             .toList();
         return IncomingMediaHandler(
           incomingMedia: CLSharedMedia(entries: media2Move),
-          onDiscard: () {
+          onDiscard: ({required bool result}) {
             if (context.canPop()) {
-              context.pop();
+              context.pop(result);
             }
           },
           moving: true,
