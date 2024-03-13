@@ -11,7 +11,14 @@ abstract class Store {
     required Collection collection,
     required List<Tag>? newTagsListToReplace,
   });
-  Future<void> upsertMediaMultiple(List<CLMedia> media);
+  Future<void> upsertMediaMultiple({
+    required Collection collection,
+    required List<CLMedia>? media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onMoveMedia,
+  });
   Future<void> deleteTag(
     Tag tag,
   );
@@ -64,9 +71,26 @@ class DBManager extends Store {
   }
 
   @override
-  Future<void> upsertMediaMultiple(List<CLMedia> media) async {
+  Future<void> upsertMediaMultiple({
+    required Collection collection,
+    required List<CLMedia>? media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onMoveMedia,
+  }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.upsertMediaMultiple(tx, media);
+      final updatedMedia = <CLMedia>[];
+      for (final item in media!) {
+        try {
+          final updated = await onMoveMedia(
+            item.copyWith(collectionId: collection.id),
+            targetDir: dbWriter.appSettings.validPrefix(collection.id!),
+          );
+          updatedMedia.add(updated);
+        } catch (e) {/* */}
+      }
+      await dbWriter.upsertMediaMultiple(tx, updatedMedia);
     });
   }
 
