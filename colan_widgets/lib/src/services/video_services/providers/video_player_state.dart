@@ -61,10 +61,8 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
 }
 
 // Remember: removed .autoDispose
-final videoPlayerStateProvider =
-    StateNotifierProvider<VideoPlayerStateNotifier, VideoPlayerState>((ref) {
+final videoPlayerStateProvider = StateNotifierProvider.autoDispose<
+    VideoPlayerStateNotifier, VideoPlayerState>((ref) {
   final notifier = VideoPlayerStateNotifier();
   return notifier;
 });
-
-

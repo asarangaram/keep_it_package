@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
@@ -33,35 +32,30 @@ class ItemPage extends ConsumerWidget {
                 );
               },
             ),
-            Positioned(
+            const Positioned(
               top: 8,
               right: 8,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onBackground
-                      .withAlpha(192), // Color for the circular container
-                ),
-                child: CLButtonIcon.small(
-                  Icons.close,
-                  color:
-                      Theme.of(context).colorScheme.background.withAlpha(192),
-                  onTap: context.canPop()
-                      ? () {
-                          if (context.canPop()) {
-                            context.pop();
-                          }
-                        }
-                      : null,
-                ),
-              ),
+              child: ShowControl(),
             ),
           ],
         );
       },
     );
+  }
+}
+
+class ShowControl extends ConsumerWidget {
+  const ShowControl({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
+
+    if (showControl.showControl) {
+      return const PopFullScreen();
+    } else {
+      return const IgnorePointer();
+    }
   }
 }
 

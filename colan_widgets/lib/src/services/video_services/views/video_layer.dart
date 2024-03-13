@@ -1,12 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
+import '../providers/show_controls.dart';
 import 'video_controls.dart';
 
-class VideoLayer extends ConsumerStatefulWidget {
+class VideoLayer extends ConsumerWidget {
   const VideoLayer({
     required this.controller,
     this.fit,
@@ -23,24 +22,8 @@ class VideoLayer extends ConsumerStatefulWidget {
   final List<Widget>? children;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => VideoLayerState();
-}
-
-class VideoLayerState extends ConsumerState<VideoLayer> {
-  bool isHovering = false;
-
-  Timer? disableControls;
-  bool isFocussed = false;
-
-  @override
-  void dispose() {
-    disableControls?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = widget.controller;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
 
     return GestureDetector(
       onTap: () {
@@ -53,34 +36,13 @@ class VideoLayerState extends ConsumerState<VideoLayer> {
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: (_) {
-          disableControls?.cancel();
-          setState(() {
-            isHovering = true;
-          });
+          ref.read(showControlsProvider.notifier).onHover();
         },
         onPointerUp: (_) {
           // If the video is playing, pause it.
-
-          disableControls = Timer(
-            const Duration(seconds: 3),
-            () {
-              if (mounted) {
-                setState(() => isHovering = false);
-              }
-            },
-          );
         },
         onPointerHover: (_) {
-          setState(() => isHovering = true);
-          disableControls?.cancel();
-          disableControls = Timer(
-            const Duration(seconds: 2),
-            () {
-              if (mounted) {
-                setState(() => isHovering = false);
-              }
-            },
-          );
+          ref.read(showControlsProvider.notifier).onHover();
         },
         child: AspectRatio(
           aspectRatio: controller.value.aspectRatio,
@@ -90,15 +52,15 @@ class VideoLayerState extends ConsumerState<VideoLayer> {
               VideoPlayer(controller),
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
-                child: (isHovering || !controller.value.isPlaying)
+                child: showControl.showControl
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if (widget.children != null) ...widget.children!,
+                          if (children != null) ...children!,
                           VideoControls(
                             controller: controller,
-                            onTapFullScreen: widget.onTapFullScreen,
-                            isPlayingFullScreen: widget.isPlayingFullScreen,
+                            onTapFullScreen: onTapFullScreen,
+                            isPlayingFullScreen: isPlayingFullScreen,
                           ),
                         ],
                       )
