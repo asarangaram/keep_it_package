@@ -43,12 +43,13 @@ class TimeLinePage0 extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
     final label = collection?.label ?? 'All Media';
+    final tagPrefix = 'Gallery View Media CollectionId: ${collection?.id} ';
     return GetDBManager(
       builder: (dbManager) {
         return CLSimpleGalleryView(
           key: ValueKey(label),
           title: label,
-          tagPrefix: 'TimeLinePage0 $label',
+          tagPrefix: tagPrefix,
           columns: 4,
           galleryMap: galleryGroups,
           emptyState: const EmptyState(),

@@ -12,13 +12,11 @@ class CollectionsPage extends ConsumerStatefulWidget {
   final int? tagId;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CollectionsViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() => CollectionsPageState();
 }
 
-class _CollectionsViewState extends ConsumerState<CollectionsPage> {
+class CollectionsPageState extends ConsumerState<CollectionsPage> {
   bool isLoading = false;
-
   bool excludeEmpty = true;
 
   @override
