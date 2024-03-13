@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../basics/cl_button.dart';
 import '../../basics/cl_refresh_indicator.dart';
 import '../../basics/cl_text.dart';
+import '../../extensions/ext_cl_menu_item.dart';
 import '../../models/cl_menu_item.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
@@ -46,7 +47,8 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
   final void Function()? onPickFiles;
   final void Function()? onPop;
   final Future<void> Function()? onRefresh;
-  final List<CLMenuItem> Function(BuildContext context)? selectionActions;
+  final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
+      selectionActions;
   final ItemBuilder<T> itemBuilder;
 
   @override
@@ -110,7 +112,8 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
   final Future<void> Function()? onRefresh;
 
   final ItemBuilder<T> itemBuilder;
-  final List<CLMenuItem> Function(BuildContext context)? selectionActions;
+  final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
+      selectionActions;
 
   @override
   State<CLSimpleGalleryView0<T>> createState() =>
@@ -138,10 +141,8 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
   }
 
   void toggleSelection(int groupIndex, int itemIndex) {
-    setState(() {
-      selectionMap[groupIndex].items[itemIndex] =
-          !selectionMap[groupIndex].items[itemIndex];
-    });
+    selectionMap[groupIndex].items[itemIndex] =
+        !selectionMap[groupIndex].items[itemIndex];
   }
 
   void selectGroup(int groupIndex, {required bool select}) {
@@ -150,7 +151,6 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
     for (var i = 0; i < group.items.length; i++) {
       group.items[i] = select;
     }
-    setState(() {});
   }
 
   void selectAll({required bool select}) {
@@ -161,7 +161,6 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
         group.items[i] = select;
       }
     }
-    setState(() {});
   }
 
   @override
@@ -224,7 +223,11 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
                             isSelected:
                                 selectionMap[groupIndex].items[itemIndex],
                             child: itemWidget,
-                            onTap: () => toggleSelection(groupIndex, itemIndex),
+                            onTap: () {
+                              toggleSelection(groupIndex, itemIndex);
+
+                              setState(() {});
+                            },
                           );
                         },
                         header: gallery.label == null
@@ -235,11 +238,13 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
                                     selectionMap:
                                         selectionMap[groupIndex].items,
                                     child: labelWidget ?? Container(),
-                                    onSelect: ({required select}) =>
-                                        selectGroup(
-                                      groupIndex,
-                                      select: select,
-                                    ),
+                                    onSelect: ({required select}) {
+                                      selectGroup(
+                                        groupIndex,
+                                        select: select,
+                                      );
+                                      setState(() {});
+                                    },
                                   ),
                       );
                     },
@@ -247,14 +252,30 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
                 ),
               ),
               if (isSelectionMode)
-                SelectionCount(selectionMap, onSelectAll: selectAll),
+                SelectionCount(
+                  selectionMap,
+                  onSelectAll: ({required select}) {
+                    selectAll(select: select);
+                    setState(() {});
+                  },
+                ),
             ],
           ),
           if (hasSelection)
             DraggableMenu(
               key: ValueKey('${widget.tagPrefix} DraggableMenu'),
               parentKey: parentKey,
-              child: Menu(menuItems: widget.selectionActions!(context)),
+              child: Menu(
+                menuItems: widget.selectionActions!(
+                  context,
+                  selectionMap.filterItems(widget.galleryMap),
+                )
+                    .insertOnDone(() {
+                  selectAll(select: false);
+                  isSelectionMode = false;
+                  setState(() {});
+                }),
+              ),
             ),
         ],
       ),

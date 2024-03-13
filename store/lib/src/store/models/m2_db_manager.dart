@@ -20,6 +20,7 @@ abstract class Store {
     required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
   });
   Future<void> deleteMedia(CLMedia media);
+  Future<void> deleteMediaList(List<CLMedia> media);
 }
 
 class DBManager extends Store {
@@ -104,6 +105,13 @@ class DBManager extends Store {
     if (media.id == null) return;
     await db.writeTransaction((tx) async {
       await dbWriter.deleteMedia(tx, media);
+    });
+  }
+
+  @override
+  Future<void> deleteMediaList(List<CLMedia> media) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.deleteMediaList(tx, media);
     });
   }
 }

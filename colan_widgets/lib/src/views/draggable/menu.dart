@@ -44,6 +44,9 @@ class Menu extends ConsumerWidget {
                       e.icon,
                       e.title,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      onTap: () async {
+                        await e.onTap?.call();
+                      },
                     ),
                   ),
                 )

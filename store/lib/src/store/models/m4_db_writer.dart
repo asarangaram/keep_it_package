@@ -226,6 +226,15 @@ class DBWriter {
   ) async {
     await mediaTable.delete(tx, {'id': media.id.toString()});
   }
+
+  Future<void> deleteMediaList(
+    SqliteWriteContext tx,
+    List<CLMedia> media,
+  ) async {
+    for (final m in media) {
+      await deleteMedia(tx, m);
+    }
+  }
 }
 
 /*

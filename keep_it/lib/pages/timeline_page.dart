@@ -43,29 +43,47 @@ class TimeLinePage0 extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
     final label = collection?.label ?? 'All Media';
-    return CLSimpleGalleryView(
-      key: ValueKey(label),
-      title: label,
-      tagPrefix: 'TimeLinePage0 $label',
-      columns: 4,
-      galleryMap: galleryGroups,
-      emptyState: const EmptyState(),
-      itemBuilder: (context, item, {required quickMenuScopeKey}) => MediaAsFile(
-        media: item,
-        quickMenuScopeKey: quickMenuScopeKey,
-      ),
-      onPickFiles: () async => onPickFiles(
-        context,
-        ref,
-        collection: collection,
-      ),
-      onRefresh: () async => ref.invalidate(dbManagerProvider),
-      onPop: context.canPop() ? () => context.pop() : null,
-      selectionActions: (context) {
-        return [
-          const CLMenuItem(title: 'Delete', icon: Icons.delete),
-          CLMenuItem(title: 'Move', icon: MdiIcons.imageMove),
-        ];
+    return GetDBManager(
+      builder: (dbManager) {
+        return CLSimpleGalleryView(
+          key: ValueKey(label),
+          title: label,
+          tagPrefix: 'TimeLinePage0 $label',
+          columns: 4,
+          galleryMap: galleryGroups,
+          emptyState: const EmptyState(),
+          itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+              MediaAsFile(
+            media: item,
+            quickMenuScopeKey: quickMenuScopeKey,
+          ),
+          onPickFiles: () async => onPickFiles(
+            context,
+            ref,
+            collection: collection,
+          ),
+          onRefresh: () async => ref.invalidate(dbManagerProvider),
+          onPop: context.canPop() ? () => context.pop() : null,
+          selectionActions: (context, items) {
+            return [
+              CLMenuItem(
+                title: 'Delete',
+                icon: Icons.delete,
+                onTap: () async {
+                  await dbManager.deleteMediaList(items);
+                  return true;
+                },
+              ),
+              CLMenuItem(
+                title: 'Move',
+                icon: MdiIcons.imageMove,
+                onTap: () async {
+                  return true;
+                },
+              ),
+            ];
+          },
+        );
       },
     );
   }

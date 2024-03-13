@@ -9,3 +9,11 @@ extension Ext2DCLMenuItem on List<List<CLMenuItem>> {
     }).toList();
   }
 }
+
+extension Ext1DCLMenuItem on List<CLMenuItem> {
+  List<CLMenuItem> insertOnDone(
+    void Function() onDone,
+  ) {
+    return map((e) => e.extraActionOnSuccess(onDone)).toList();
+  }
+}

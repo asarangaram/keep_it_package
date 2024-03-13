@@ -16,7 +16,7 @@ class SelectableLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final noneSelected = selectionMap.every((e) => e == false);
-    final partialSelected = selectionMap.any((e) => e == true);
+    final partialSelected = selectionMap.any((e) => e == false);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
