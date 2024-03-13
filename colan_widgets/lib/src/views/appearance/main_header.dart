@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:go_router/go_router.dart';
 
 class MainHeader extends ConsumerWidget {
   const MainHeader({
@@ -10,7 +10,6 @@ class MainHeader extends ConsumerWidget {
     this.actionsBuilders,
     this.mainActionItems,
     this.title,
-    this.onPop,
   });
 
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
@@ -21,7 +20,6 @@ class MainHeader extends ConsumerWidget {
       )>? actionsBuilders;
   final List<List<CLMenuItem>>? mainActionItems;
   final String? title;
-  final void Function()? onPop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,12 +27,16 @@ class MainHeader extends ConsumerWidget {
       padding: const EdgeInsets.all(8),
       child: Row(
         children: [
-          if (onPop != null)
+          if (context.canPop())
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: CLButtonIcon.small(
                 Icons.arrow_back,
-                onTap: onPop,
+                onTap: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                },
               ),
             ),
           Flexible(

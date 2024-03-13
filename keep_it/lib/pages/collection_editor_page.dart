@@ -1,9 +1,6 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-import '../widgets/editors/collection_editor.dart';
 
 class CollectionEditorPage extends StatelessWidget {
   const CollectionEditorPage({
@@ -15,7 +12,8 @@ class CollectionEditorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    throw UnimplementedError('This page needs proper implementation');
+    /* return SizedBox(
       width: min(MediaQuery.of(context).size.width, 450),
       child: CollectionEditor(
         collectionId: collectionId,
@@ -26,6 +24,6 @@ class CollectionEditorPage extends StatelessWidget {
           }
         },
       ),
-    );
+    ); */
   }
 }

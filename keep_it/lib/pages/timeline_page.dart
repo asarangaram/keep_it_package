@@ -63,7 +63,6 @@ class TimeLinePage0 extends ConsumerWidget {
             collection: collection,
           ),
           onRefresh: () async => ref.invalidate(dbManagerProvider),
-          onPop: context.canPop() ? () => context.pop() : null,
           selectionActions: (context, items) {
             return [
               CLMenuItem(

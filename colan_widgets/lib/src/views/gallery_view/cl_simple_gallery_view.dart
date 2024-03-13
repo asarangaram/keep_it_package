@@ -33,7 +33,6 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
     required this.columns,
     this.onPickFiles,
     super.key,
-    this.onPop,
     this.onRefresh,
     this.selectionActions,
   });
@@ -45,7 +44,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
   final Widget emptyState;
   final String tagPrefix;
   final void Function()? onPickFiles;
-  final void Function()? onPop;
+
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
       selectionActions;
@@ -56,7 +55,6 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
     if (galleryMap.isEmpty) {
       return KeepItMainView(
         title: title,
-        onPop: onPop,
         actionsBuilder: [
           if (onPickFiles != null)
             (context, quickMenuScopeKey) => CLButtonIcon.standard(
@@ -75,7 +73,6 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
         child: CLSimpleGalleryView0(
           title: title,
           onPickFiles: onPickFiles,
-          onPop: onPop,
           galleryMap: galleryMap,
           itemBuilder: itemBuilder,
           columns: columns,
@@ -96,7 +93,6 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.columns,
     required this.onPickFiles,
-    required this.onPop,
     required this.onRefresh,
     required this.selectionActions,
     super.key,
@@ -108,7 +104,7 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
 
   final String tagPrefix;
   final void Function()? onPickFiles;
-  final void Function()? onPop;
+
   final Future<void> Function()? onRefresh;
 
   final ItemBuilder<T> itemBuilder;
@@ -170,7 +166,6 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
         selectionMap.trueCount > 0;
     return KeepItMainView(
       title: widget.title,
-      onPop: widget.onPop,
       actionsBuilder: [
         if (widget.selectionActions != null)
           (context, quickMenuScopeKey) => CLButtonText.small(

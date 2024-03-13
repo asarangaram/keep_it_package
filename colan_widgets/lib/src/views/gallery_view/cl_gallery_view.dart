@@ -31,7 +31,6 @@ class CLGalleryView extends StatefulWidget {
     super.key,
     this.header,
     this.footer,
-    this.onPop,
     this.onRefresh,
   });
 
@@ -43,7 +42,7 @@ class CLGalleryView extends StatefulWidget {
   final Widget emptyState;
   final String tagPrefix;
   final void Function()? onPickFiles;
-  final void Function()? onPop;
+
   final Future<void> Function()? onRefresh;
   final bool isScrollablePositionedList;
 
@@ -78,7 +77,6 @@ class GalleryState extends State<CLGalleryView> {
 
     return KeepItMainView(
       title: widget.label,
-      onPop: widget.onPop,
       actionsBuilder: [
         if (widget.onPickFiles != null)
           (context, quickMenuScopeKey) => CLButtonIcon.standard(

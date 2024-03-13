@@ -48,7 +48,13 @@ class ItemPage extends ConsumerWidget {
                   Icons.close,
                   color:
                       Theme.of(context).colorScheme.background.withAlpha(192),
-                  onTap: context.canPop() ? context.pop : null,
+                  onTap: context.canPop()
+                      ? () {
+                          if (context.canPop()) {
+                            context.pop();
+                          }
+                        }
+                      : null,
                 ),
               ),
             ),

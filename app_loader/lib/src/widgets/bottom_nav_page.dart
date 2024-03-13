@@ -70,7 +70,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
                   if (context.canPop()) {
                     context.pop();
                   } else {
-                    if (widget.child.currentIndex == 1) {
+                   /*  if (widget.child.currentIndex == 1) {
                       widget.child.goBranch(
                         0,
                       );
@@ -79,13 +79,13 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
                       widget.child.goBranch(
                         1,
                       );
-                    }
+                    } */
                   }
                 }
 
                 // Swiping in left direction.
                 if (details.primaryVelocity! < 0) {
-                  if (widget.child.currentIndex == 0) {
+                 /*  if (widget.child.currentIndex == 0) {
                     widget.child.goBranch(
                       1,
                     );
@@ -94,7 +94,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
                     widget.child.goBranch(
                       2,
                     );
-                  }
+                  } */
                 }
               },
               child: widget.child,
