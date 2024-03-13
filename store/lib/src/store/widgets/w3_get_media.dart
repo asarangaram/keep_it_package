@@ -31,35 +31,47 @@ class GetMedia extends ConsumerWidget {
   }
 }
 
-class GetMediaMultiple extends ConsumerWidget {
-  const GetMediaMultiple({
+class GetMediaByTagId extends ConsumerWidget {
+  const GetMediaByTagId({
     required this.buildOnData,
-    this.collectionId,
     this.tagID,
     super.key,
   });
   final Widget Function(List<CLMedia> items) buildOnData;
-  final int? collectionId;
+
   final int? tagID;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (collectionId != null && tagID != null) {
-      throw Exception("can't specify both collection ID and tag ID");
-    }
+    final qid = (tagID == null) ? DBQueries.mediaAll : DBQueries.mediaByTagId;
+
+    return GetFromStore<CLMedia>(
+      query: (qid.sql as DBQuery<CLMedia>).copyWith(
+        parameters: (tagID == null) ? [] : [tagID],
+      ),
+      builder: buildOnData,
+    );
+  }
+}
+
+class GetMediaByCollectionId extends ConsumerWidget {
+  const GetMediaByCollectionId({
+    required this.buildOnData,
+    this.collectionId,
+    super.key,
+  });
+  final Widget Function(List<CLMedia> items) buildOnData;
+  final int? collectionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final qid = (collectionId == null)
-        ? (tagID == null)
-            ? DBQueries.mediaAll
-            : DBQueries.mediaByTagId
+        ? DBQueries.mediaAll
         : DBQueries.mediaByCollectionId;
 
     return GetFromStore<CLMedia>(
       query: (qid.sql as DBQuery<CLMedia>).copyWith(
-        parameters: (collectionId == null)
-            ? (tagID == null)
-                ? []
-                : [tagID]
-            : [collectionId],
+        parameters: (collectionId == null) ? [] : [collectionId],
       ),
       builder: buildOnData,
     );

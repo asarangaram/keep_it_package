@@ -21,7 +21,7 @@ class TimeLinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GetCollection(
         id: collectionId,
-        buildOnData: (collection) => GetMediaMultiple(
+        buildOnData: (collection) => GetMediaByCollectionId(
           collectionId: collectionId,
           buildOnData: (items) =>
               TimeLinePage0(collection: collection, items: items),
@@ -70,15 +70,46 @@ class TimeLinePage0 extends ConsumerWidget {
                 title: 'Delete',
                 icon: Icons.delete,
                 onTap: () async {
-                  await dbManager.deleteMediaMultiple(items);
-                  return true;
+                  final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmAction(
+                            title: 'Confirm delete',
+                            message: 'Are you sure you want to delete '
+                                '${items.length} items?',
+                            child: null,
+                            onConfirm: ({required confirmed}) =>
+                                Navigator.of(context).pop(confirmed),
+                          );
+                        },
+                      ) ??
+                      false;
+                  if (confirmed) {
+                    await dbManager.deleteMediaMultiple(items);
+                  }
+                  return confirmed;
                 },
               ),
               CLMenuItem(
                 title: 'Move',
                 icon: MdiIcons.imageMove,
                 onTap: () async {
-                  return true;
+                  final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmAction(
+                            title: 'Confirm delete',
+                            message: 'Are you sure you want to delete '
+                                '${items.length} items?',
+                            child: null,
+                            onConfirm: ({required confirmed}) =>
+                                Navigator.of(context).pop(confirmed),
+                          );
+                        },
+                      ) ??
+                      false;
+                  if (confirmed) {}
+                  return null;
                 },
               ),
             ];

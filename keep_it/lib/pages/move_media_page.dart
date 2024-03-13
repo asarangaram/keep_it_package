@@ -8,19 +8,24 @@ import '../modules/shared_media/incoming_media_handler.dart';
 
 class MoveMediaPage extends ConsumerWidget {
   const MoveMediaPage({
-    required this.id,
+    required this.idsToMove,
     required this.collectionId,
     super.key,
   });
   final int collectionId;
-  final int id;
+  final List<int> idsToMove;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetMedia(
-      id: id,
+    return GetMediaByCollectionId(
+      collectionId: collectionId,
       buildOnData: (media) {
+        final media2Move = media
+            .where(
+              (m) => idsToMove.contains(m.id),
+            )
+            .toList();
         return IncomingMediaHandler(
-          incomingMedia: CLSharedMedia(entries: [media]),
+          incomingMedia: CLSharedMedia(entries: media2Move),
           onDiscard: () {
             if (context.canPop()) {
               context.pop();

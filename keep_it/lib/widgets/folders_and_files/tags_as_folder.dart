@@ -111,7 +111,7 @@ class PreviewGenerator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMediaMultiple(
+    return GetMediaByTagId(
       tagID: tag.id,
       buildOnData: (List<CLMedia>? clMediaList) {
         return CLAspectRationDecorated(

@@ -101,7 +101,7 @@ class KeepItApp implements AppDescriptor {
           builder: (context, GoRouterState state) {
             return MoveMediaPage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
-              id: int.parse(state.pathParameters['item_id']!),
+              idsToMove: [int.parse(state.pathParameters['item_id']!)],
             );
           },
         ),

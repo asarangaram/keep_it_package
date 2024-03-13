@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/modules/shared_media/cl_media_process.dart';
-import 'package:path/path.dart' as path;
 import 'package:store/store.dart';
 
 import 'wizard_page.dart';
