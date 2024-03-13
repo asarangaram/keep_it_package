@@ -115,15 +115,6 @@ class _ItemViewState extends State<ItemView> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withAlpha(
-                              192,
-                            ), // Color for the circular container
-                      ),
                       child: CLText.large(
                         formattedDate,
                         textAlign: TextAlign.start,
