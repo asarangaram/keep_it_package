@@ -54,6 +54,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     if (galleryMap.isEmpty) {
       return KeepItMainView(
+        key: ValueKey('KeepItMainView $tagPrefix'),
         title: title,
         actionsBuilder: [
           if (onPickFiles != null)
