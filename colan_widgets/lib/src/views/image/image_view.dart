@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../basics/cl_icon.dart';
+import '../../basics/pop_fullscreen.dart';
 
 class ImageViewerBasic extends StatelessWidget {
   const ImageViewerBasic({
@@ -10,8 +11,10 @@ class ImageViewerBasic extends StatelessWidget {
     this.overlayIcon,
     this.fit,
     super.key,
+    this.isFullScreen = false,
   });
   final File file;
+  final bool isFullScreen;
 
   final BoxFit? fit;
   final IconData? overlayIcon;
@@ -54,6 +57,12 @@ class ImageViewerBasic extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+        if (isFullScreen)
+          const Positioned(
+            top: 8,
+            right: 8,
+            child: PopFullScreen(),
           ),
       ],
     );
