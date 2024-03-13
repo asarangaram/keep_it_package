@@ -70,7 +70,7 @@ class TimeLinePage0 extends ConsumerWidget {
                 title: 'Delete',
                 icon: Icons.delete,
                 onTap: () async {
-                  await dbManager.deleteMediaList(items);
+                  await dbManager.deleteMediaMultiple(items);
                   return true;
                 },
               ),
