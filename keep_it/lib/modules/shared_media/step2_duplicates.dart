@@ -195,12 +195,9 @@ class ExistInDifferentCollection extends StatelessWidget {
                           aspectRatio: 1,
                           child: Padding(
                             padding: const EdgeInsets.all(2),
-                            child: Hero(
-                              tag: m.path,
-                              child: CLMediaPreview(
-                                media: m,
-                                keepAspectRatio: false,
-                              ),
+                            child: CLMediaPreview(
+                              media: m,
+                              keepAspectRatio: false,
                             ),
                           ),
                         ),

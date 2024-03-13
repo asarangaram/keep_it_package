@@ -53,10 +53,12 @@ class TimeLinePage0 extends ConsumerWidget {
           columns: 4,
           galleryMap: galleryGroups,
           emptyState: const EmptyState(),
-          itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-              MediaAsFile(
-            media: item,
-            quickMenuScopeKey: quickMenuScopeKey,
+          itemBuilder: (context, item, {required quickMenuScopeKey}) => Hero(
+            tag: '/item/${item.collectionId}/${item.id}',
+            child: MediaAsFile(
+              media: item,
+              quickMenuScopeKey: quickMenuScopeKey,
+            ),
           ),
           onPickFiles: () async => onPickFiles(
             context,
