@@ -5,7 +5,24 @@ import 'package:sqlite_async/sqlite_async.dart';
 
 @immutable
 class DBQuery<T> {
-  const DBQuery({
+  factory DBQuery({
+    required String sql,
+    required Set<String> triggerOnTables,
+    required T Function(
+      Map<String, dynamic> map, {
+      required AppSettings appSettings,
+    }) fromMap,
+    List<Object?>? parameters,
+  }) {
+    final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
+    return DBQuery._(
+      sql: sql0,
+      triggerOnTables: triggerOnTables,
+      fromMap: fromMap,
+      parameters: parameters0,
+    );
+  }
+  const DBQuery._({
     required this.sql,
     required this.triggerOnTables,
     required this.fromMap,
@@ -101,6 +118,54 @@ class DBQuery<T> {
         .firstOrNull;
     _infoLogger('read $obj');
     return obj;
+  }
+
+  static List<String> _extractContentInsideParentheses(String input) {
+    final regex = RegExp(r'\(([^)]*)\)');
+    final Match? match = regex.firstMatch(input);
+    final matchedString = match?.group(1) ?? '';
+    final res = matchedString.split(',').map((e) => e.trim()).toList();
+
+    return res;
+  }
+
+  static (String, List<dynamic>?) preprocessSqlAndParams(
+    String sql,
+    List<Object?>? parameters,
+  ) {
+    if (parameters == null) {
+      return (sql, parameters);
+    }
+    try {
+      var paramIndex = 0;
+      final processedParameters = <Object?>[];
+
+      final processedSql = sql.replaceAllMapped(
+        RegExp(r'\?|\(\?\)'),
+        (match) {
+          if (match.group(0) == '(?)') {
+            final parameter = parameters[paramIndex]! as String;
+            final splittedParams = _extractContentInsideParentheses(parameter);
+
+            for (var i = 0; i < splittedParams.length; i++) {
+              processedParameters.add(splittedParams[i]);
+            }
+
+            final processed = "(${splittedParams.map((e) => '?').join(', ')})";
+            paramIndex++;
+            return processed;
+          } else {
+            processedParameters.add(parameters[paramIndex]);
+            paramIndex++;
+            return match.group(0)!;
+          }
+        },
+      );
+
+      return (processedSql, processedParameters);
+    } catch (e) {
+      return (sql, parameters);
+    }
   }
 }
 

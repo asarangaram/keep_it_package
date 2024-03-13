@@ -6,98 +6,94 @@ import 'm3_db_query.dart';
 
 enum DBQueries {
   collectionById,
-  tagById,
-  mediaById,
   collectionByLabel,
-  tagByLabel,
   collectionsAll,
   collectionsExcludeEmpty,
   collectionsByTagId,
   collectionsEmpty,
   collectionsByTagIDExcludeEmpty,
+  tagById,
+  tagByLabel,
   tagsAll,
   tagsByCollectionId,
   tagsAllExcludeEmpty,
   tagsByCollectionIDExcludeEmpty,
   tagsByMediaId,
+  mediaById,
   mediaAll,
   mediaByCollectionId,
   mediaByTagId,
   mediaByPath,
-  mediaByMD5;
+  mediaByMD5,
+  mediaByIdList;
 
   DBQuery<dynamic> get sql => switch (this) {
-        collectionById => const DBQuery<Collection>(
+        collectionById => DBQuery<Collection>(
             sql: 'SELECT * FROM Collection WHERE id = ? ',
-            triggerOnTables: {'Collection'},
+            triggerOnTables: const {'Collection'},
             fromMap: Collection.fromMap,
           ),
-        tagById => const DBQuery<Tag>(
-            sql: 'SELECT * FROM Tag WHERE id = ? ',
-            triggerOnTables: {'Tag'},
-            fromMap: Tag.fromMap,
-          ),
-        mediaById => const DBQuery<CLMedia>(
-            sql: 'SELECT * FROM Item WHERE id = ?',
-            triggerOnTables: {'Item'},
-            fromMap: CLMedia.fromMap,
-          ),
-        collectionByLabel => const DBQuery<Collection>(
+        collectionByLabel => DBQuery<Collection>(
             sql: 'SELECT * FROM Collection WHERE label = ? ',
-            triggerOnTables: {'Collection'},
+            triggerOnTables: const {'Collection'},
             fromMap: Collection.fromMap,
           ),
-        tagByLabel => const DBQuery<Tag>(
-            sql: 'SELECT * FROM Tag WHERE label = ? ',
-            triggerOnTables: {'Tag'},
-            fromMap: Tag.fromMap,
-          ),
-        collectionsAll => const DBQuery<Collection>(
+        collectionsAll => DBQuery<Collection>(
             sql: 'SELECT * FROM Collection',
-            triggerOnTables: {'Collection'},
+            triggerOnTables: const {'Collection'},
             fromMap: Collection.fromMap,
           ),
-        collectionsExcludeEmpty => const DBQuery<Collection>(
+        collectionsExcludeEmpty => DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* FROM Collection '
                 'JOIN Item ON Collection.id = Item.collectionId;',
-            triggerOnTables: {'Collection', 'Item'},
+            triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
-        collectionsEmpty => const DBQuery<Collection>(
+        collectionsEmpty => DBQuery<Collection>(
             sql: 'SELECT Collection.* FROM Collection '
                 'LEFT JOIN Item ON Collection.id = Item.collectionId '
                 'WHERE Item.collectionId IS NULL;',
-            triggerOnTables: {'Collection', 'Item'},
+            triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
-        collectionsByTagId => const DBQuery<Collection>(
+        collectionsByTagId => DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
                 'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
                 'WHERE TagCollection.tagId = :tagId',
-            triggerOnTables: {'Collection', 'Item'},
+            triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
-        collectionsByTagIDExcludeEmpty => const DBQuery<Collection>(
+        collectionsByTagIDExcludeEmpty => DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
                 'JOIN Item ON Collection.id = Item.collectionId '
                 'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
                 'WHERE TagCollection.tagId = :tagId;',
-            triggerOnTables: {'Collection', 'Item', 'TagCollection'},
+            triggerOnTables: const {'Collection', 'Item', 'TagCollection'},
             fromMap: Collection.fromMap,
           ),
-        tagsAll => const DBQuery<Tag>(
-            sql: 'SELECT * FROM Tag',
-            triggerOnTables: {'Tag'},
+        tagById => DBQuery<Tag>(
+            sql: 'SELECT * FROM Tag WHERE id = ? ',
+            triggerOnTables: const {'Tag'},
             fromMap: Tag.fromMap,
           ),
-        tagsAllExcludeEmpty => const DBQuery<Tag>(
+        tagByLabel => DBQuery<Tag>(
+            sql: 'SELECT * FROM Tag WHERE label = ? ',
+            triggerOnTables: const {'Tag'},
+            fromMap: Tag.fromMap,
+          ),
+        tagsAll => DBQuery<Tag>(
+            sql: 'SELECT * FROM Tag',
+            triggerOnTables: const {'Tag'},
+            fromMap: Tag.fromMap,
+          ),
+        tagsAllExcludeEmpty => DBQuery<Tag>(
             sql: 'SELECT DISTINCT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tagId '
                 'JOIN Collection ON TagCollection.collectionId = Collection.id '
                 'JOIN Item ON Collection.id = Item.collectionId ',
-            triggerOnTables: {
+            triggerOnTables: const {
               'Tag',
               'TagCollection',
               'Collection',
@@ -105,21 +101,21 @@ enum DBQueries {
             },
             fromMap: Tag.fromMap,
           ),
-        tagsByCollectionId => const DBQuery<Tag>(
+        tagsByCollectionId => DBQuery<Tag>(
             sql: 'SELECT Tag.* FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tagId '
                 'WHERE TagCollection.collectionId = ?',
-            triggerOnTables: {'Tag', 'TagCollection'},
+            triggerOnTables: const {'Tag', 'TagCollection'},
             fromMap: Tag.fromMap,
           ),
-        tagsByCollectionIDExcludeEmpty => const DBQuery<Tag>(
+        tagsByCollectionIDExcludeEmpty => DBQuery<Tag>(
             sql: 'SELECT DISTINCT Tag.* '
                 'FROM Tag '
                 'JOIN TagCollection ON Tag.id = TagCollection.tagId '
                 'JOIN Collection ON TagCollection.collectionId = Collection.id '
                 'JOIN Item ON Collection.id = Item.collectionId '
                 'WHERE TagCollection.collectionId = ? ',
-            triggerOnTables: {
+            triggerOnTables: const {
               'Tag',
               'TagCollection',
               'Collection',
@@ -127,41 +123,51 @@ enum DBQueries {
             },
             fromMap: Tag.fromMap,
           ),
-        mediaAll => const DBQuery<CLMedia>(
+        tagsByMediaId => DBQuery<Tag>(
+            sql: 'SELECT Tag.* FROM Tag '
+                'JOIN TagCollection ON Tag.id = TagCollection.tagId '
+                'JOIN Item ON TagCollection.collectionId = Item.collectionId '
+                'WHERE Item.id = ? ',
+            triggerOnTables: const {'Tag', 'TagCollection', 'Item'},
+            fromMap: Tag.fromMap,
+          ),
+        mediaById => DBQuery<CLMedia>(
+            sql: 'SELECT * FROM Item WHERE id = ?',
+            triggerOnTables: const {'Item'},
+            fromMap: CLMedia.fromMap,
+          ),
+        mediaAll => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item',
-            triggerOnTables: {'Item'},
+            triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
-        mediaByCollectionId => const DBQuery<CLMedia>(
+        mediaByCollectionId => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE collectionId = ?',
-            triggerOnTables: {'Item'},
+            triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
-        mediaByTagId => const DBQuery<CLMedia>(
+        mediaByTagId => DBQuery<CLMedia>(
             sql: 'SELECT Item.* '
                 'FROM Item '
                 'JOIN Collection ON Item.collectionId = Collection.id '
                 'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
                 'WHERE TagCollection.tagId =? ',
-            triggerOnTables: {'Item', 'Collection', 'TagCollection'},
+            triggerOnTables: const {'Item', 'Collection', 'TagCollection'},
             fromMap: CLMedia.fromMap,
           ),
-        tagsByMediaId => const DBQuery<Tag>(
-            sql: 'SELECT Tag.* FROM Tag '
-                'JOIN TagCollection ON Tag.id = TagCollection.tagId '
-                'JOIN Item ON TagCollection.collectionId = Item.collectionId '
-                'WHERE Item.id = ? ',
-            triggerOnTables: {'Tag', 'TagCollection', 'Item'},
-            fromMap: Tag.fromMap,
-          ),
-        mediaByMD5 => const DBQuery<CLMedia>(
+        mediaByMD5 => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE md5String = ?',
-            triggerOnTables: {'Item'},
+            triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
-        mediaByPath => const DBQuery<CLMedia>(
+        mediaByPath => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE path = ?',
-            triggerOnTables: {'Item'},
+            triggerOnTables: const {'Item'},
+            fromMap: CLMedia.fromMap,
+          ),
+        mediaByIdList => DBQuery<CLMedia>(
+            sql: 'SELECT * FROM Item WHERE id IN (?)',
+            triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
       };

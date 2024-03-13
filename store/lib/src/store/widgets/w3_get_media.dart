@@ -77,3 +77,25 @@ class GetMediaByCollectionId extends ConsumerWidget {
     );
   }
 }
+
+class GetMediaMultiple extends ConsumerWidget {
+  const GetMediaMultiple({
+    required this.buildOnData,
+    required this.idList,
+    super.key,
+  });
+  final Widget Function(List<CLMedia> items) buildOnData;
+  final List<int> idList;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const qid = DBQueries.mediaByIdList;
+
+    return GetFromStore<CLMedia>(
+      query: (qid.sql as DBQuery<CLMedia>).copyWith(
+        parameters: ['(${idList.join(', ')})'],
+      ),
+      builder: buildOnData,
+    );
+  }
+}

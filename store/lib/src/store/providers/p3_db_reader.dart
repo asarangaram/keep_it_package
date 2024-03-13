@@ -10,6 +10,8 @@ final dbReaderProvider = StreamProvider.family<List<dynamic>, DBQuery<dynamic>>(
     (ref, dbQuery) async* {
   final dbManager = await ref.watch(dbManagerProvider.future);
   final appSettings = await ref.watch(appSettingsProvider.future);
+  // Handling 'IN ???'
+
   final sub = dbManager.db
       .watchRows(
         dbQuery.sql,

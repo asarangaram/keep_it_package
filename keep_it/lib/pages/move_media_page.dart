@@ -16,8 +16,8 @@ class MoveMediaPage extends ConsumerWidget {
   final List<int> idsToMove;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetMediaByCollectionId(
-      collectionId: collectionId,
+    return GetMediaMultiple(
+      idList: idsToMove,
       buildOnData: (media) {
         final media2Move = media
             .where(

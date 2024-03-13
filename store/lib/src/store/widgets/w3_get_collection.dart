@@ -51,10 +51,10 @@ class GetCollectionMultiple extends ConsumerWidget {
         : (tagId == null)
             ? DBQueries.collectionsAll
             : DBQueries.collectionsByTagId;
-
+    final q = qid.sql as DBQuery<Collection>;
+    final qWithParam = q.copyWith(parameters: (tagId == null) ? [] : [tagId]);
     return GetFromStore<Collection>(
-      query: (qid.sql as DBQuery<Collection>)
-          .copyWith(parameters: (tagId == null) ? [] : [tagId]),
+      query: qWithParam,
       builder: buildOnData,
     );
   }
