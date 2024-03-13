@@ -193,7 +193,7 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
                   onRefresh: isSelectionMode ? null : widget.onRefresh,
                   key: ValueKey('${widget.tagPrefix} Refresh'),
                   child: ListView.builder(
-                    key: ValueKey(widget.galleryMap),
+                    //key: ValueKey(widget.galleryMap),
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: widget.galleryMap.length,
                     itemBuilder: (BuildContext context, int groupIndex) {
