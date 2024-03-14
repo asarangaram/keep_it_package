@@ -17,7 +17,7 @@ class AnalysePage extends SharedMediaWizard {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetAppSettings(
-      builder: (resources) {
+      builder: (appSettings) {
         return GetDBManager(
           builder: (dbManager) {
             return SharedMediaWizard.buildWizard(
@@ -31,6 +31,7 @@ class AnalysePage extends SharedMediaWizard {
                   media: incomingMedia,
                   findItemByMD5: dbManager.getMediaByMD5,
                   onDone: onDone,
+                  appSettings: appSettings,
                 ),
                 onCancel: onCancel,
               ),

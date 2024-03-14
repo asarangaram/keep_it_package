@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:colan_widgets/src/models/cl_media/extensions/url_handler.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path_handler;
 
 import '../../../app_logger.dart';
@@ -16,20 +14,6 @@ extension IOExtOnCLMedia on CLMedia {
   }
 
   String get basename => path_handler.basename(path);
-
-  Future<CLMedia> download(
-    String url,
-    CLMediaType type, {
-    required String downloadDir,
-  }) async {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode != 200) return this;
-
-    final targetFile =
-        path_handler.join(downloadDir, await URLHandler.generateFileName(url));
-    await URLHandler.download(url, targetFile);
-    return copyWith(path: targetFile, type: type);
-  }
 
   bool get isValidMedia {
     if (collectionId == null) {

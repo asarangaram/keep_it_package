@@ -13,6 +13,7 @@ class CLMediaProcess {
   static Stream<Progress> analyseMedia({
     required CLSharedMedia media,
     required Future<CLMedia?> Function(String md5) findItemByMD5,
+    required AppSettings appSettings,
     required void Function({
       required CLSharedMedia mg,
     }) onDone,
@@ -35,47 +36,35 @@ class CLMediaProcess {
       }
     }
 
-    for (final (i, item) in media.entries.indexed) {
-      final file = File(item.path);
-      if (file.existsSync()) {
-        final md5String = await getFileChecksum(file);
-        final duplicate = await findItemByMD5(md5String);
-        if (duplicate != null) {
-          candidates.add(duplicate);
-        } else {
-          final CLMedia itemsToAdd;
-          switch (item.type) {
-            case CLMediaType.file:
-              {
-                itemsToAdd = CLMedia(
-                  path: item.path,
-                  type: switch (lookupMimeType(item.path)) {
-                    (final String mime) when mime.startsWith('image') =>
-                      CLMediaType.image,
-                    (final String mime) when mime.startsWith('video') =>
-                      CLMediaType.video,
-                    _ => CLMediaType.file
-                  },
-                  collectionId: media.collection?.id,
-                  md5String: md5String,
-                );
-              }
-            case CLMediaType.image:
-            case CLMediaType.video:
-            case CLMediaType.url:
-            case CLMediaType.audio:
-            case CLMediaType.text:
-              {
-                itemsToAdd = CLMedia(
-                  path: item.path,
-                  type: item.type,
-                  collectionId: media.collection?.id,
-                  md5String: md5String,
-                );
-              }
+    for (final (i, item0) in media.entries.indexed) {
+      final item1 = await tryDownloadMedia(item0, appSettings: appSettings);
+      final item = await identifyMediaType(item1, appSettings: appSettings);
+      if (!item.type.isFile) {
+        candidates.add(
+          item.copyWith(
+            collectionId: media.collection?.id,
+          ),
+        );
+      }
+      if (item.type.isFile) {
+        final file = File(item.path);
+        if (file.existsSync()) {
+          final md5String = await getFileChecksum(file);
+          final duplicate = await findItemByMD5(md5String);
+          if (duplicate != null) {
+            candidates.add(duplicate);
+          } else {
+            candidates.add(
+              CLMedia(
+                path: item.path,
+                type: item.type,
+                collectionId: media.collection?.id,
+                md5String: md5String,
+              ),
+            );
           }
-
-          candidates.add(itemsToAdd);
+        } else {
+          /* Missing file? ignoring */
         }
       }
 
@@ -92,6 +81,50 @@ class CLMediaProcess {
     onDone(
       mg: CLSharedMedia(entries: candidates, collection: media.collection),
     );
+  }
+
+  static Future<CLMedia> tryDownloadMedia(
+    CLMedia item0, {
+    required AppSettings appSettings,
+  }) async {
+    if (item0.type != CLMediaType.url) {
+      return item0;
+    }
+    final mimeType = await URLHandler.getMimeType(item0.path);
+    if (![
+      CLMediaType.image,
+      CLMediaType.video,
+      CLMediaType.audio,
+      CLMediaType.file,
+    ].contains(mimeType)) {
+      return item0;
+    }
+    final downloadedFile = await URLHandler.download(
+      item0.path,
+      appSettings.downloadDir,
+    );
+    if (downloadedFile == null) {
+      return item0;
+    }
+    return item0.copyWith(path: downloadedFile, type: mimeType);
+  }
+
+  static Future<CLMedia> identifyMediaType(
+    CLMedia item0, {
+    required AppSettings appSettings,
+  }) async {
+    if (item0.type != CLMediaType.file) {
+      return item0;
+    }
+    final mimeType = switch (lookupMimeType(item0.path)) {
+      (final String mime) when mime.startsWith('image') => CLMediaType.image,
+      (final String mime) when mime.startsWith('video') => CLMediaType.video,
+      _ => CLMediaType.file
+    };
+    if (mimeType == CLMediaType.file) {
+      return item0;
+    }
+    return item0.copyWith(type: mimeType);
   }
 }
 

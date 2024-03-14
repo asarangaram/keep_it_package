@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart';
 
 @immutable
 class DeviceDirectories {
@@ -27,4 +28,6 @@ class AppSettings {
       'keep_it/cluster_$collectionID';
 
   String dbName = 'keepIt.db';
+  Directory get downloadDir =>
+      Directory(join(directories.cacheDir.path, 'downloads'));
 }
