@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
@@ -13,7 +14,9 @@ class ItemPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
     return FullscreenLayout(
+      useSafeArea: showControl.showControl,
       child: GetMediaByCollectionId(
         collectionId: collectionId,
         buildOnData: (List<CLMedia> items) {
@@ -22,17 +25,19 @@ class ItemPage extends ConsumerWidget {
           return Stack(
             children: [
               const MediaBackground(),
-              LayoutBuilder(
-                builder: (context, boxConstraints) {
-                  return SizedBox(
-                    width: boxConstraints.maxWidth,
-                    height: boxConstraints.maxHeight,
-                    child: ItemView(
-                      items: items,
-                      startIndex: index,
-                    ),
-                  );
-                },
+              SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, boxConstraints) {
+                    return SizedBox(
+                      width: boxConstraints.maxWidth,
+                      height: boxConstraints.maxHeight,
+                      child: ItemView(
+                        items: items,
+                        startIndex: index,
+                      ),
+                    );
+                  },
+                ),
               ),
               const Positioned(
                 top: 8,
@@ -68,9 +73,10 @@ class MediaBackground extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
+    if (showControl.showControl) return Container();
     return Container(
       decoration:
-          BoxDecoration(color: showControl.showControl ? null : Colors.blue),
+          BoxDecoration(color: Theme.of(context).colorScheme.inverseSurface),
     );
   }
 }

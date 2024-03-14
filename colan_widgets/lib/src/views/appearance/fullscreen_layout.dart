@@ -2,9 +2,15 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class FullscreenLayout extends StatelessWidget {
-  const FullscreenLayout({required this.child, super.key, this.onClose});
+  const FullscreenLayout({
+    required this.child,
+    super.key,
+    this.onClose,
+    this.useSafeArea = true,
+  });
   final Widget child;
   final void Function()? onClose;
+  final bool useSafeArea;
 
   @override
   Widget build(
@@ -41,7 +47,7 @@ class FullscreenLayout extends StatelessWidget {
       ),
     ); */
     return CLFullscreenBox(
-      useSafeArea: true,
+      useSafeArea: useSafeArea,
       child: NotificationService(
         child: Column(
           children: [
