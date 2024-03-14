@@ -5,41 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-@immutable
-class ShowControl {
-  final bool isHover;
-
-  const ShowControl({
-    required this.isHover,
-  });
-
-  ShowControl copyWith({
-    bool? isHover,
-    VideoPlayerController? controller,
-  }) {
-    return ShowControl(
-      isHover: isHover ?? this.isHover,
-    );
-  }
-
-  bool get showControl => isHover;
-
-  @override
-  bool operator ==(covariant ShowControl other) {
-    if (identical(this, other)) return true;
-
-    return other.isHover == isHover;
-  }
-
-  @override
-  int get hashCode => isHover.hashCode;
-
-  @override
-  String toString() => 'ShowControl(isHover: $isHover)';
-}
-
-class ShowControlNotifier extends StateNotifier<ShowControl> {
-  ShowControlNotifier() : super(const ShowControl(isHover: false));
+class ShowControlNotifier extends StateNotifier<bool> {
+  ShowControlNotifier() : super(false);
 
   Timer? disableControls;
 
@@ -50,26 +17,26 @@ class ShowControlNotifier extends StateNotifier<ShowControl> {
   }
 
   void hideControls() {
-    state = state.copyWith(isHover: false);
+    state = false;
   }
 
   void showControls() {
-    state = state.copyWith(isHover: false);
+    state = true;
   }
 
   void toggleControls() {
-    state = state.copyWith(isHover: !state.isHover);
+    state = !state;
   }
 
   void briefHover({Duration? timeout}) {
     disableControls?.cancel();
-    state = state.copyWith(isHover: true);
+    state = true;
     if (timeout != null) {
       disableControls = Timer(
         timeout,
         () {
           if (mounted) {
-            state = state.copyWith(isHover: false);
+            state = false;
           }
         },
       );
@@ -78,6 +45,6 @@ class ShowControlNotifier extends StateNotifier<ShowControl> {
 }
 
 final showControlsProvider =
-    StateNotifierProvider.autoDispose<ShowControlNotifier, ShowControl>((ref) {
+    StateNotifierProvider.autoDispose<ShowControlNotifier, bool>((ref) {
   return ShowControlNotifier();
 });

@@ -15,7 +15,7 @@ class ItemPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
     return FullscreenLayout(
-      useSafeArea: showControl.showControl,
+      useSafeArea: showControl,
       child: GetMediaByCollectionId(
         collectionId: collectionId,
         buildOnData: (List<CLMedia> items) {
@@ -64,7 +64,7 @@ class ShowControl extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
 
-    if (showControl.showControl) {
+    if (showControl) {
       return const PopFullScreen();
     } else {
       return const IgnorePointer();
@@ -80,7 +80,7 @@ class MediaBackground extends ConsumerWidget {
     final showControl = ref.watch(showControlsProvider);
 
     return AnimatedOpacity(
-      opacity: showControl.showControl ? 0 : 1.0,
+      opacity: showControl ? 0 : 1.0,
       duration: const Duration(milliseconds: 500),
       child: Container(
         decoration:

@@ -47,7 +47,7 @@ class VideoLayer extends ConsumerWidget {
             VideoPlayer(controller),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
-              child: showControl.showControl
+              child: showControl
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
