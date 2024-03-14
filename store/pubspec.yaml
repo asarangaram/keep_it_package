@@ -16,7 +16,7 @@ dependencies:
   exif: ^3.3.0
   flutter:
     sdk: flutter
-  flutter_riverpod: ^2.4.9
+  flutter_riverpod: ^2.5.1
   heif_converter: ^1.0.0
   image: ^4.1.7
   intl: ^0.19.0
