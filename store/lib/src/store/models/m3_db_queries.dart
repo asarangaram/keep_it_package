@@ -60,7 +60,7 @@ enum DBQueries {
             sql: 'SELECT DISTINCT Collection.* '
                 'FROM Collection '
                 'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
-                'WHERE TagCollection.tagId = :tagId',
+                'WHERE TagCollection.tagId = ?',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
@@ -69,7 +69,7 @@ enum DBQueries {
                 'FROM Collection '
                 'JOIN Item ON Collection.id = Item.collectionId '
                 'JOIN TagCollection ON Collection.id = TagCollection.collectionId '
-                'WHERE TagCollection.tagId = :tagId;',
+                'WHERE TagCollection.tagId = ?',
             triggerOnTables: const {'Collection', 'Item', 'TagCollection'},
             fromMap: Collection.fromMap,
           ),
