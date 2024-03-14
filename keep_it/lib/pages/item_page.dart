@@ -2,24 +2,58 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
-class ItemPage extends ConsumerWidget {
+class ItemPage extends ConsumerStatefulWidget {
   const ItemPage({required this.id, required this.collectionId, super.key});
   final int collectionId;
   final int id;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _ItemPageState();
+}
+
+class _ItemPageState extends ConsumerState<ItemPage> {
+  @override
+  void dispose() {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     final showControl = ref.watch(showControlsProvider);
+    if (!showControl) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
+    }
     return FullscreenLayout(
-      useSafeArea: showControl,
+      useSafeArea: false,
       child: GetMediaByCollectionId(
-        collectionId: collectionId,
+        collectionId: widget.collectionId,
         buildOnData: (List<CLMedia> items) {
-          final media = items.where((e) => e.id == id).first;
+          final media = items.where((e) => e.id == widget.id).first;
           final index = items.indexOf(media);
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
@@ -30,23 +64,28 @@ class ItemPage extends ConsumerWidget {
               children: [
                 const MediaBackground(),
                 SafeArea(
-                  child: LayoutBuilder(
-                    builder: (context, boxConstraints) {
-                      return SizedBox(
-                        width: boxConstraints.maxWidth,
-                        height: boxConstraints.maxHeight,
-                        child: ItemView(
-                          items: items,
-                          startIndex: index,
-                        ),
-                      );
-                    },
+                  bottom: false,
+                  child: Stack(
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, boxConstraints) {
+                          return SizedBox(
+                            width: boxConstraints.maxWidth,
+                            height: boxConstraints.maxHeight,
+                            child: ItemView(
+                              items: items,
+                              startIndex: index,
+                            ),
+                          );
+                        },
+                      ),
+                      const Positioned(
+                        top: 8,
+                        right: 8,
+                        child: ShowControl(),
+                      ),
+                    ],
                   ),
-                ),
-                const Positioned(
-                  top: 8,
-                  right: 8,
-                  child: ShowControl(),
                 ),
               ],
             ),

@@ -61,11 +61,11 @@ PODS:
   - SDWebImage (5.18.10):
     - SDWebImage/Core (= 5.18.10)
   - SDWebImage/Core (5.18.10)
-  - share_handler_ios (0.0.12):
+  - share_handler_ios (0.0.13):
     - Flutter
-    - share_handler_ios/share_handler_ios_models (= 0.0.12)
+    - share_handler_ios/share_handler_ios_models (= 0.0.13)
     - share_handler_ios_models
-  - share_handler_ios/share_handler_ios_models (0.0.12):
+  - share_handler_ios/share_handler_ios_models (0.0.13):
     - Flutter
     - share_handler_ios_models
   - share_handler_ios_models (0.0.9)
@@ -151,15 +151,15 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   heif_converter: e3802659e4104e27e28c4d7bff07903da2f69318
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
   SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec
-  share_handler_ios: 83934899a7ad80e435607a0302a7e5b257f8e2f9
+  share_handler_ios: 088138c17ce73333b4875a35860cd52604041521
   share_handler_ios_models: fc638c9b4330dc7f082586c92aee9dfa0b87b871
-  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
+  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
   sqlite3: 73b7fc691fdc43277614250e04d183740cb15078
   sqlite3_flutter_libs: af0e8fe9bce48abddd1ffdbbf839db0302d72d80
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
-  video_player_avfoundation: e9e6f9cae7d7a6d9b43519b0aab382bca60fcfd1
+  video_player_avfoundation: 02011213dab73ae3687df27ce441fbbcc82b5579
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
 
 PODFILE CHECKSUM: 058c28ebaf08524b42912ae0dcfbe73c0337807e

@@ -26,12 +26,25 @@ class VideoLayer extends ConsumerWidget {
     final showControl = ref.watch(showControlsProvider);
 
     return GestureDetector(
-      onTap: () {
+      onDoubleTap: () {
         if (controller.value.isPlaying) {
           ref
               .read(showControlsProvider.notifier)
               .briefHover(timeout: const Duration(seconds: 3));
           controller.pause();
+        } else {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 1));
+          controller.play();
+        }
+      },
+      onTap: () {
+        if (controller.value.isPlaying) {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 3));
+          // controller.pause();
         } else {
           ref
               .read(showControlsProvider.notifier)
