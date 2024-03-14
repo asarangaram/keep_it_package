@@ -66,7 +66,7 @@ class SaveCollection extends SharedMediaWizard {
             .upsertMediaMultiple(
           media: media,
           collection: updatedCollection,
-          onMoveMedia: (m, {required targetDir}) async {
+          onPrepareMedia: (m, {required targetDir}) async {
             final updated =
                 (await m.moveFile(targetDir: targetDir)).getMetadata();
             completedMedia++;

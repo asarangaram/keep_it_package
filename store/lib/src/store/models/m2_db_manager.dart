@@ -13,13 +13,21 @@ abstract class Store {
     required Collection collection,
     required List<Tag>? newTagsListToReplace,
   });
+  Future<void> upsertMedia({
+    required Collection collection,
+    required CLMedia media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onPrepareMedia,
+  });
   Future<void> upsertMediaMultiple({
     required Collection collection,
     required List<CLMedia>? media,
     required Future<CLMedia> Function(
       CLMedia media, {
       required String targetDir,
-    }) onMoveMedia,
+    }) onPrepareMedia,
   });
   Future<void> deleteTag(
     Tag tag,
@@ -85,13 +93,14 @@ class DBManager extends Store {
     required Future<CLMedia> Function(
       CLMedia media, {
       required String targetDir,
-    }) onMoveMedia,
+    }) onPrepareMedia,
   }) async {
     await db.writeTransaction((tx) async {
+      if (media?.isEmpty ?? true) return;
       final updatedMedia = <CLMedia>[];
       for (final item in media!) {
         try {
-          final updated = await onMoveMedia(
+          final updated = await onPrepareMedia(
             item.copyWith(collectionId: collection.id),
             targetDir: dbWriter.appSettings.validPrefix(collection.id!),
           );
@@ -102,9 +111,23 @@ class DBManager extends Store {
     });
   }
 
-  Future<void> upsertMedia(CLMedia media) async {
+  @override
+  Future<void> upsertMedia({
+    required Collection collection,
+    required CLMedia media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onPrepareMedia,
+  }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.upsertMedia(tx, media);
+      try {
+        final updated = await onPrepareMedia(
+          media.copyWith(collectionId: collection.id),
+          targetDir: dbWriter.appSettings.validPrefix(collection.id!),
+        );
+        await dbWriter.upsertMedia(tx, updated);
+      } catch (e) {/* */}
     });
   }
 
