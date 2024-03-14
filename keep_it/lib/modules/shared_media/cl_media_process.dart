@@ -40,11 +40,7 @@ class CLMediaProcess {
       final item1 = await tryDownloadMedia(item0, appSettings: appSettings);
       final item = await identifyMediaType(item1, appSettings: appSettings);
       if (!item.type.isFile) {
-        candidates.add(
-          item.copyWith(
-            collectionId: media.collection?.id,
-          ),
-        );
+        // Skip for now
       }
       if (item.type.isFile) {
         final file = File(item.path);
@@ -176,27 +172,30 @@ extension ExtProcess on CLMedia {
       return this;
     }
   }
-}
 
-List<dynamic> getAllValuesForKey(Map<dynamic, dynamic> map, String targetKey) {
-  final values = <dynamic>[];
+  List<dynamic> getAllValuesForKey(
+    Map<dynamic, dynamic> map,
+    String targetKey,
+  ) {
+    final values = <dynamic>[];
 
-  for (final entry in map.entries) {
-    if (entry.key == targetKey) {
-      values.add(entry.value);
-    } else if (entry.value is Map) {
-      final nestedValues =
-          getAllValuesForKey(entry.value as Map<dynamic, dynamic>, targetKey);
-      values.addAll(nestedValues);
+    for (final entry in map.entries) {
+      if (entry.key == targetKey) {
+        values.add(entry.value);
+      } else if (entry.value is Map) {
+        final nestedValues =
+            getAllValuesForKey(entry.value as Map<dynamic, dynamic>, targetKey);
+        values.addAll(nestedValues);
+      }
     }
+    return values;
   }
-  return values;
-}
 
-String printFormattedJson(String jsonString) {
-  const encoder =
-      JsonEncoder.withIndent('  '); // Use two spaces for indentation
-  return encoder.convert(json.decode(jsonString));
+  String printFormattedJson(String jsonString) {
+    const encoder =
+        JsonEncoder.withIndent('  '); // Use two spaces for indentation
+    return encoder.convert(json.decode(jsonString));
+  }
 }
 
 const _filePrefix = 'Media Processing: ';
