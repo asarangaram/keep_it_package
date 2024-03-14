@@ -13,33 +13,36 @@ class ItemPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetMediaByCollectionId(
-      collectionId: collectionId,
-      buildOnData: (List<CLMedia> items) {
-        final media = items.where((e) => e.id == id).first;
-        final index = items.indexOf(media);
-        return Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, boxConstraints) {
-                return SizedBox(
-                  width: boxConstraints.maxWidth,
-                  height: boxConstraints.maxHeight,
-                  child: ItemView(
-                    items: items,
-                    startIndex: index,
-                  ),
-                );
-              },
-            ),
-            const Positioned(
-              top: 8,
-              right: 8,
-              child: ShowControl(),
-            ),
-          ],
-        );
-      },
+    return FullscreenLayout(
+      child: GetMediaByCollectionId(
+        collectionId: collectionId,
+        buildOnData: (List<CLMedia> items) {
+          final media = items.where((e) => e.id == id).first;
+          final index = items.indexOf(media);
+          return Stack(
+            children: [
+              const MediaBackground(),
+              LayoutBuilder(
+                builder: (context, boxConstraints) {
+                  return SizedBox(
+                    width: boxConstraints.maxWidth,
+                    height: boxConstraints.maxHeight,
+                    child: ItemView(
+                      items: items,
+                      startIndex: index,
+                    ),
+                  );
+                },
+              ),
+              const Positioned(
+                top: 8,
+                right: 8,
+                child: ShowControl(),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -56,6 +59,19 @@ class ShowControl extends ConsumerWidget {
     } else {
       return const IgnorePointer();
     }
+  }
+}
+
+class MediaBackground extends ConsumerWidget {
+  const MediaBackground({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
+    return Container(
+      decoration:
+          BoxDecoration(color: showControl.showControl ? null : Colors.blue),
+    );
   }
 }
 

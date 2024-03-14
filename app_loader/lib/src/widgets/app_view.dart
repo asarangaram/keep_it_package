@@ -73,9 +73,7 @@ class _RaLRouterState extends ConsumerState<AppView>
           child: AppTheme(
             child: IncomingMediaMonitor(
               onMedia: app.incomingMediaViewBuilder,
-              child: FullscreenLayout(
-                child: e.builder(context, state),
-              ),
+              child: e.builder(context, state),
             ),
           ),
           transitionsBuilder: app.transitionBuilder,
