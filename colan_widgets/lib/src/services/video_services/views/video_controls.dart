@@ -122,7 +122,8 @@ class VideoControlsState extends ConsumerState<VideoControls> {
                   children: [
                     IconButton(
                       icon: Icon(
-                          video.isPlaying ? Icons.pause : Icons.play_arrow),
+                        video.isPlaying ? Icons.pause : Icons.play_arrow,
+                      ),
                       onPressed: onPlayPause,
                     ),
                     IconButton(
