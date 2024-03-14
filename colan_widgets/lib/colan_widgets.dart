@@ -17,6 +17,7 @@ export 'src/extensions/ext_cl_media.dart';
 export 'src/extensions/ext_cl_menu_item.dart';
 export 'src/extensions/ext_color.dart';
 export 'src/extensions/ext_double.dart';
+export 'src/extensions/ext_file.dart';
 //export 'src/extensions/ext_io_file.dart';
 export 'src/extensions/ext_list.dart';
 export 'src/extensions/ext_string.dart';

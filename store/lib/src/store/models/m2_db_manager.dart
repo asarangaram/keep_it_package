@@ -28,8 +28,14 @@ abstract class Store {
     Collection collection, {
     required Future<void> Function(Directory dir) onDeleteDir,
   });
-  Future<void> deleteMedia(CLMedia media);
-  Future<void> deleteMediaMultiple(List<CLMedia> media);
+  Future<void> deleteMedia(
+    CLMedia media, {
+    required Future<void> Function(File file) onDeleteFile,
+  });
+  Future<void> deleteMediaMultiple(
+    List<CLMedia> media, {
+    required Future<void> Function(File file) onDeleteFile,
+  });
 }
 
 class DBManager extends Store {
@@ -126,17 +132,22 @@ class DBManager extends Store {
   }
 
   @override
-  Future<void> deleteMedia(CLMedia media) async {
-    if (media.id == null) return;
+  Future<void> deleteMedia(
+    CLMedia media, {
+    required Future<void> Function(File file) onDeleteFile,
+  }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteMedia(tx, media);
+      await dbWriter.deleteMedia(tx, media, onDeleteFile: onDeleteFile);
     });
   }
 
   @override
-  Future<void> deleteMediaMultiple(List<CLMedia> media) async {
+  Future<void> deleteMediaMultiple(
+    List<CLMedia> media, {
+    required Future<void> Function(File file) onDeleteFile,
+  }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteMediaList(tx, media);
+      await dbWriter.deleteMediaList(tx, media, onDeleteFile: onDeleteFile);
     });
   }
 }

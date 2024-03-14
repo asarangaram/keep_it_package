@@ -67,7 +67,10 @@ class MediaAsFile extends ConsumerWidget {
               },
             );
             if (confirmed ?? false) {
-              await dbManager.deleteMedia(media);
+              await dbManager.deleteMedia(
+                media,
+                onDeleteFile: (f) async => f.deleteIfExists(),
+              );
             }
             return confirmed ?? false;
           },

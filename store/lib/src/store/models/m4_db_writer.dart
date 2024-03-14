@@ -227,17 +227,23 @@ class DBWriter {
 
   Future<void> deleteMedia(
     SqliteWriteContext tx,
-    CLMedia media,
-  ) async {
+    CLMedia media, {
+    required Future<void> Function(File file) onDeleteFile,
+  }) async {
+    if (media.id == null) return;
+    await onDeleteFile(File(media.path));
     await mediaTable.delete(tx, {'id': media.id.toString()});
   }
 
   Future<void> deleteMediaList(
     SqliteWriteContext tx,
-    List<CLMedia> media,
-  ) async {
+    List<CLMedia> media, {
+    required Future<void> Function(File file) onDeleteFile,
+  }) async {
     for (final m in media) {
-      await deleteMedia(tx, m);
+      if (m.id != null) {
+        await deleteMedia(tx, m, onDeleteFile: onDeleteFile);
+      }
     }
   }
 }

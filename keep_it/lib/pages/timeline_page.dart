@@ -87,7 +87,10 @@ class TimeLinePage0 extends ConsumerWidget {
                       ) ??
                       false;
                   if (confirmed) {
-                    await dbManager.deleteMediaMultiple(items);
+                    await dbManager.deleteMediaMultiple(
+                      items,
+                      onDeleteFile: (f) async => f.deleteIfExists(),
+                    );
                   }
                   return confirmed;
                 },
