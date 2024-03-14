@@ -21,29 +21,35 @@ class ItemPage extends ConsumerWidget {
         buildOnData: (List<CLMedia> items) {
           final media = items.where((e) => e.id == id).first;
           final index = items.indexOf(media);
-          return Stack(
-            children: [
-              const MediaBackground(),
-              SafeArea(
-                child: LayoutBuilder(
-                  builder: (context, boxConstraints) {
-                    return SizedBox(
-                      width: boxConstraints.maxWidth,
-                      height: boxConstraints.maxHeight,
-                      child: ItemView(
-                        items: items,
-                        startIndex: index,
-                      ),
-                    );
-                  },
+          return GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              ref.read(showControlsProvider.notifier).toggleControls();
+            },
+            child: Stack(
+              children: [
+                const MediaBackground(),
+                SafeArea(
+                  child: LayoutBuilder(
+                    builder: (context, boxConstraints) {
+                      return SizedBox(
+                        width: boxConstraints.maxWidth,
+                        height: boxConstraints.maxHeight,
+                        child: ItemView(
+                          items: items,
+                          startIndex: index,
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const Positioned(
-                top: 8,
-                right: 8,
-                child: ShowControl(),
-              ),
-            ],
+                const Positioned(
+                  top: 8,
+                  right: 8,
+                  child: ShowControl(),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -72,10 +78,14 @@ class MediaBackground extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    if (showControl.showControl) return Container();
-    return Container(
-      decoration:
-          BoxDecoration(color: Theme.of(context).colorScheme.inverseSurface),
+
+    return AnimatedOpacity(
+      opacity: showControl.showControl ? 0 : 1.0,
+      duration: const Duration(milliseconds: 500),
+      child: Container(
+        decoration:
+            BoxDecoration(color: Theme.of(context).colorScheme.inverseSurface),
+      ),
     );
   }
 }

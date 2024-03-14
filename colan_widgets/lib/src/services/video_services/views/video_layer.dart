@@ -28,46 +28,40 @@ class VideoLayer extends ConsumerWidget {
     return GestureDetector(
       onTap: () {
         if (controller.value.isPlaying) {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 3));
           controller.pause();
         } else {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 1));
           controller.play();
         }
       },
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (_) {
-          ref.read(showControlsProvider.notifier).onHover();
-        },
-        onPointerUp: (_) {
-          // If the video is playing, pause it.
-        },
-        onPointerHover: (_) {
-          ref.read(showControlsProvider.notifier).onHover();
-        },
-        child: AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: Stack(
-            alignment: AlignmentDirectional.bottomCenter,
-            children: [
-              VideoPlayer(controller),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: showControl.showControl
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (children != null) ...children!,
-                          VideoControls(
-                            controller: controller,
-                            onTapFullScreen: onTapFullScreen,
-                            isPlayingFullScreen: isPlayingFullScreen,
-                          ),
-                        ],
-                      )
-                    : Container(),
-              ),
-            ],
-          ),
+      child: AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+          children: [
+            VideoPlayer(controller),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: showControl.showControl
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (children != null) ...children!,
+                        VideoControls(
+                          controller: controller,
+                          onTapFullScreen: onTapFullScreen,
+                          isPlayingFullScreen: isPlayingFullScreen,
+                        ),
+                      ],
+                    )
+                  : Container(),
+            ),
+          ],
         ),
       ),
     );
