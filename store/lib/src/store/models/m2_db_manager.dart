@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:sqlite_async/sqlite3.dart';
@@ -24,7 +26,7 @@ abstract class Store {
   );
   Future<void> deleteCollection(
     Collection collection, {
-    required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
+    required Future<void> Function(Directory dir) onDeleteDir,
   });
   Future<void> deleteMedia(CLMedia media);
   Future<void> deleteMediaMultiple(List<CLMedia> media);
@@ -112,15 +114,14 @@ class DBManager extends Store {
   @override
   Future<void> deleteCollection(
     Collection collection, {
-    required Future<void> Function(List<CLMedia> media) onDeleteMediaFiles,
+    required Future<void> Function(Directory dir) onDeleteDir,
   }) async {
-    if (collection.id == null) return;
-    final media = await dbReader.getMediaByCollectionId(db, collection.id!);
-    if (media.isNotEmpty) {
-      await onDeleteMediaFiles(media);
-    }
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteCollection(tx, collection);
+      await dbWriter.deleteCollection(
+        tx,
+        collection,
+        onDeleteDir: onDeleteDir,
+      );
     });
   }
 

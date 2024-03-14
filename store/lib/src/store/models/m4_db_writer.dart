@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -212,8 +214,11 @@ class DBWriter {
 
   Future<void> deleteCollection(
     SqliteWriteContext tx,
-    Collection collection,
-  ) async {
+    Collection collection, {
+    required Future<void> Function(Directory dir) onDeleteDir,
+  }) async {
+    if (collection.id == null) return;
+    await onDeleteDir(Directory(appSettings.validPrefix(collection.id!)));
     await tagCollectionTable
         .delete(tx, {'collectionId': collection.id.toString()});
     await mediaTable.delete(tx, {'collectionId': collection.id.toString()});
