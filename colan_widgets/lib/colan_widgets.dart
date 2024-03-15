@@ -48,6 +48,7 @@ export 'src/views/collage_view/cl_media_collage.dart';
 export 'src/views/gallery_view/cl_simple_gallery_view.dart';
 export 'src/views/gallery_view/model/gallery_group.dart';
 export 'src/views/image/cl_image_viewer.dart';
+export 'src/views/image/cl_zimage.dart';
 export 'src/views/image/image_view.dart';
 export 'src/views/quick_menu/cl_quickmenu.dart';
 export 'src/views/stream_progress_view.dart';

@@ -25,6 +25,7 @@ dependencies:
   path: ^1.8.3
   path_provider: ^2.1.2
   percent_indicator: ^4.2.3
+  photo_view: ^0.14.0
   progress_indicators: ^1.0.0
   scroll_to_index: ^3.0.1
   scrollable_positioned_list: ^0.3.8

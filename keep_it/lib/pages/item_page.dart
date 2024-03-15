@@ -167,7 +167,7 @@ class _ItemViewState extends State<ItemView> {
         return Hero(
           tag: '/item/${media.collectionId}/${media.id}',
           child: switch (media.type) {
-            CLMediaType.image => ImageViewerBasic(file: File(media.path)),
+            CLMediaType.image => CLzImage(file: File(media.path)),
             CLMediaType.video => Center(
                 child: VideoPlayer(
                   media: media,
