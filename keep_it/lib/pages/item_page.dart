@@ -64,7 +64,7 @@ class _ItemPageState extends ConsumerState<ItemPage> {
               children: [
                 const MediaBackground(),
                 SafeArea(
-                  bottom: false,
+                  //bottom: false,
                   child: Stack(
                     children: [
                       LayoutBuilder(
