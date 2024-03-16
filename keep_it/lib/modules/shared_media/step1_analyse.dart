@@ -23,7 +23,7 @@ class AnalysePage extends SharedMediaWizard {
             return SharedMediaWizard.buildWizard(
               context, ref,
               title: 'Analysing Shared Media',
-              message: 'Please wait while analysing media files',
+              message: 'Please wait while we analysing media files',
               //option1: CLMenuItem(title: 'Yes', icon: Icons.abc),
               //option2: CLMenuItem(title: 'No', icon: Icons.abc),
               child: StreamProgressView(
