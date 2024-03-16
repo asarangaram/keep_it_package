@@ -49,7 +49,7 @@ class SaveCollection extends SharedMediaWizard {
     if (collection.id == null) {
       yield const Progress(
         fractCompleted: 0,
-        currentItem: 'creating new collection',
+        currentItem: 'Creating new collection',
       );
       updatedCollection = await dbManager.upsertCollection(
         collection: collection,
@@ -85,7 +85,7 @@ class SaveCollection extends SharedMediaWizard {
           streamController.add(
             const Progress(
               fractCompleted: 1,
-              currentItem: 'successfully imported',
+              currentItem: 'Successfully Imported',
             ),
           );
           await Future<void>.delayed(const Duration(microseconds: 10));

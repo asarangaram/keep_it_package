@@ -89,6 +89,7 @@ class VideoControlsState extends ConsumerState<VideoControls> {
             color: const Color.fromRGBO(0, 0, 0, 0.5),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Material(
                   color: Colors.transparent,
@@ -131,12 +132,16 @@ class VideoControlsState extends ConsumerState<VideoControls> {
                       onPressed: onMuteToggle,
                     ),
                     const Spacer(),
-                    Text(
-                      timestamp,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: Colors.white),
+                    Flexible(
+                      child: FittedBox(
+                        child: Text(
+                          timestamp,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: Colors.white),
+                        ),
+                      ),
                     ),
                     IconButton(
                       icon: Icon(

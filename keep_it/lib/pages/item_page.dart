@@ -161,7 +161,7 @@ class _ItemViewState extends State<ItemView> {
       itemBuilder: (context, index) {
         final media = widget.items[index];
         final formattedDate = media.originalDate == null
-            ? 'No date'
+            ? 'Err: No date'
             : DateFormat('dd MMMM yyyy').format(media.originalDate!);
 
         return Hero(
@@ -179,7 +179,7 @@ class _ItemViewState extends State<ItemView> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       alignment: Alignment.centerLeft,
-                      child: CLText.large(
+                      child: CLText.standard(
                         formattedDate,
                         textAlign: TextAlign.start,
                         color: Theme.of(context)
