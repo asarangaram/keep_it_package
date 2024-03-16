@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../basics/cl_icon.dart';
-import '../../basics/pop_fullscreen.dart';
 
 class ImageViewerBasic extends StatelessWidget {
   const ImageViewerBasic({
@@ -57,12 +56,6 @@ class ImageViewerBasic extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        if (isFullScreen)
-          const Positioned(
-            top: 8,
-            right: 8,
-            child: PopFullScreen(),
           ),
       ],
     );

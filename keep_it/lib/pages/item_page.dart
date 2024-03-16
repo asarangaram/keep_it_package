@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
+import '../widgets/pop_fullscreen.dart';
+
 class ItemPage extends ConsumerStatefulWidget {
   const ItemPage({required this.id, required this.collectionId, super.key});
   final int collectionId;
