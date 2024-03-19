@@ -4,16 +4,6 @@ import 'package:intl/intl.dart';
 
 extension ExtCLMediaList on List<CLMedia> {
   Map<String, List<CLMedia>> filterByDate() {
-    sort((a, b) {
-      final aDate = a.originalDate ?? a.createdDate;
-      final bDate = b.originalDate ?? b.createdDate;
-
-      if (aDate != null && bDate != null) {
-        return bDate.compareTo(aDate);
-      }
-      return 0;
-    });
-
     final filterredMedia = <String, List<CLMedia>>{};
     final noDate = <CLMedia>[];
     for (final entry in this) {

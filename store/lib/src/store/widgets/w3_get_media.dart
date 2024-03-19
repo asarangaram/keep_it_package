@@ -49,7 +49,18 @@ class GetMediaByTagId extends ConsumerWidget {
       query: (qid.sql as DBQuery<CLMedia>).copyWith(
         parameters: (tagID == null) ? [] : [tagID],
       ),
-      builder: buildOnData,
+      builder: (media) {
+        media.sort((a, b) {
+          final aDate = a.originalDate ?? a.createdDate;
+          final bDate = b.originalDate ?? b.createdDate;
+
+          if (aDate != null && bDate != null) {
+            return bDate.compareTo(aDate);
+          }
+          return 0;
+        });
+        return buildOnData(media);
+      },
     );
   }
 }
@@ -73,7 +84,18 @@ class GetMediaByCollectionId extends ConsumerWidget {
       query: (qid.sql as DBQuery<CLMedia>).copyWith(
         parameters: (collectionId == null) ? [] : [collectionId],
       ),
-      builder: buildOnData,
+      builder: (media) {
+        media.sort((a, b) {
+          final aDate = a.originalDate ?? a.createdDate;
+          final bDate = b.originalDate ?? b.createdDate;
+
+          if (aDate != null && bDate != null) {
+            return bDate.compareTo(aDate);
+          }
+          return 0;
+        });
+        return buildOnData(media);
+      },
     );
   }
 }
@@ -95,7 +117,18 @@ class GetMediaMultiple extends ConsumerWidget {
       query: (qid.sql as DBQuery<CLMedia>).copyWith(
         parameters: ['(${idList.join(', ')})'],
       ),
-      builder: buildOnData,
+      builder: (media) {
+        media.sort((a, b) {
+          final aDate = a.originalDate ?? a.createdDate;
+          final bDate = b.originalDate ?? b.createdDate;
+
+          if (aDate != null && bDate != null) {
+            return bDate.compareTo(aDate);
+          }
+          return 0;
+        });
+        return buildOnData(media);
+      },
     );
   }
 }
