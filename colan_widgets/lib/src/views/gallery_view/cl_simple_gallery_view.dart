@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../basics/cl_button.dart';
 import '../../basics/cl_refresh_indicator.dart';
@@ -32,6 +33,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
     required this.itemBuilder,
     required this.columns,
     this.onPickFiles,
+    this.onCamera,
     super.key,
     this.onRefresh,
     this.selectionActions,
@@ -44,6 +46,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
   final Widget emptyState;
   final String tagPrefix;
   final void Function()? onPickFiles;
+  final void Function()? onCamera;
 
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
@@ -80,6 +83,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
           tagPrefix: tagPrefix,
           onRefresh: onRefresh,
           selectionActions: selectionActions,
+          onCamera: onCamera,
         ),
       );
     }
@@ -94,6 +98,7 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.columns,
     required this.onPickFiles,
+    required this.onCamera,
     required this.onRefresh,
     required this.selectionActions,
     super.key,
@@ -105,6 +110,7 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
 
   final String tagPrefix;
   final void Function()? onPickFiles;
+  final void Function()? onCamera;
 
   final Future<void> Function()? onRefresh;
 
@@ -181,6 +187,11 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
           (context, quickMenuScopeKey) => CLButtonIcon.standard(
                 Icons.add,
                 onTap: widget.onPickFiles,
+              ),
+        if (!isSelectionMode && widget.onCamera != null)
+          (context, quickMenuScopeKey) => CLButtonIcon.small(
+                MdiIcons.cameraPlus,
+                onTap: widget.onCamera,
               ),
       ],
       pageBuilder: (context, quickMenuScopeKey) => Stack(
