@@ -26,7 +26,7 @@ class MediaAsFile extends ConsumerWidget {
           onMove: () async {
             unawaited(
               context.push(
-                '/item_move?ids=${media.id}',
+                '/move?ids=${media.id}',
               ),
             );
             return true;
@@ -46,7 +46,7 @@ class MediaAsFile extends ConsumerWidget {
             if (confirmed ?? false) {
               unawaited(
                 context.push(
-                  '/item_move/${media.collectionId}/${media.id}',
+                  '/move/${media.collectionId}/${media.id}',
                 ),
               );
             }

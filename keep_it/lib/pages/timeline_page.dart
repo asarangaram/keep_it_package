@@ -103,7 +103,7 @@ class TimeLinePage0 extends ConsumerWidget {
                 icon: MdiIcons.imageMove,
                 onTap: () async {
                   final result = await context.push<bool>(
-                    '/item_move?ids=${items.map((e) => e.id).join(',')}',
+                    '/move?ids=${items.map((e) => e.id).join(',')}',
                   );
 
                   return result;

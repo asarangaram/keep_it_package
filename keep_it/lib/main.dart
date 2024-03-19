@@ -97,7 +97,7 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'item_move',
+          name: 'move',
           builder: (context, GoRouterState state) {
             if (!state.uri.queryParameters.containsKey('ids')) {
               throw Exception('Nothing to move');
