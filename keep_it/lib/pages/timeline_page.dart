@@ -19,12 +19,15 @@ class TimeLinePage extends StatelessWidget {
   final int collectionId;
 
   @override
-  Widget build(BuildContext context) => GetCollection(
-        id: collectionId,
-        buildOnData: (collection) => GetMediaByCollectionId(
-          collectionId: collectionId,
-          buildOnData: (items) =>
-              TimeLinePage0(collection: collection, items: items),
+  Widget build(BuildContext context) => CLFullscreenBox(
+        useSafeArea: true,
+        child: GetCollection(
+          id: collectionId,
+          buildOnData: (collection) => GetMediaByCollectionId(
+            collectionId: collectionId,
+            buildOnData: (items) =>
+                TimeLinePage0(collection: collection, items: items),
+          ),
         ),
       );
 }

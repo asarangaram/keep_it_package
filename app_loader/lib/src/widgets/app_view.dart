@@ -56,12 +56,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         name: e.name,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: AppTheme(
-            child: CLFullscreenBox(
-              useSafeArea: true,
-              child: e.builder(context, state),
-            ),
-          ),
+          child: AppTheme(child: e.builder(context, state)),
           transitionsBuilder: app.transitionBuilder,
         ),
       ),
@@ -73,6 +68,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         parentNavigatorKey: parentNavigatorKey,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
+          
           child: AppTheme(
             child: IncomingMediaMonitor(
               onMedia: app.incomingMediaViewBuilder,
@@ -149,6 +145,7 @@ class _RaLRouterState extends ConsumerState<AppView>
       name: name,
       pageBuilder: (context, state) => CustomTransitionPage<void>(
         key: state.pageKey,
+        
         child: builder(context, state),
         transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
       ),
