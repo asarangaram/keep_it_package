@@ -20,49 +20,45 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
   bool excludeEmpty = true;
 
   @override
-  Widget build(BuildContext context) => CLFullscreenBox(
-        useSafeArea: true,
-        child: GetTag(
-          id: widget.tagId,
-          buildOnData: (tag) {
-            return GetCollectionMultiple(
-              excludeEmpty: excludeEmpty,
-              tagId: widget.tagId,
-              buildOnData: (collections) {
-                final tagPrefix =
-                    'FolderView Collections tagId: ${widget.tagId}'
-                    ' excludeEmpty: $excludeEmpty';
-                final galleryGroups = <GalleryGroup<Collection>>[];
-                for (final rows in collections.convertTo2D(3)) {
-                  galleryGroups.add(GalleryGroup(rows));
-                }
-                return CLSimpleGalleryView(
-                  key: ValueKey(tagPrefix),
-                  title: tag?.label ?? 'Collections',
-                  columns: 3,
-                  galleryMap: galleryGroups,
-                  emptyState: const EmptyState(),
-                  itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-                      CollectionAsFolder(
-                    collection: item,
-                    quickMenuScopeKey: quickMenuScopeKey,
-                  ),
-                  tagPrefix: tagPrefix,
-                  onPickFiles: (widget.tagId != null)
-                      ? null
-                      : () async {
-                          await onPickFiles(
-                            context,
-                            ref,
-                          );
-                        },
-                  onRefresh: () async {
-                    ref.invalidate(dbManagerProvider);
-                  },
-                );
-              },
-            );
-          },
-        ),
+  Widget build(BuildContext context) => GetTag(
+        id: widget.tagId,
+        buildOnData: (tag) {
+          return GetCollectionMultiple(
+            excludeEmpty: excludeEmpty,
+            tagId: widget.tagId,
+            buildOnData: (collections) {
+              final tagPrefix = 'FolderView Collections tagId: ${widget.tagId}'
+                  ' excludeEmpty: $excludeEmpty';
+              final galleryGroups = <GalleryGroup<Collection>>[];
+              for (final rows in collections.convertTo2D(3)) {
+                galleryGroups.add(GalleryGroup(rows));
+              }
+              return CLSimpleGalleryView(
+                key: ValueKey(tagPrefix),
+                title: tag?.label ?? 'Collections',
+                columns: 3,
+                galleryMap: galleryGroups,
+                emptyState: const EmptyState(),
+                itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+                    CollectionAsFolder(
+                  collection: item,
+                  quickMenuScopeKey: quickMenuScopeKey,
+                ),
+                tagPrefix: tagPrefix,
+                onPickFiles: (widget.tagId != null)
+                    ? null
+                    : () async {
+                        await onPickFiles(
+                          context,
+                          ref,
+                        );
+                      },
+                onRefresh: () async {
+                  ref.invalidate(dbManagerProvider);
+                },
+              );
+            },
+          );
+        },
       );
 }
