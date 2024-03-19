@@ -124,7 +124,7 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'items/:collectionId',
-          builder: (context, GoRouterState state) => TimeLinePage(
+          builder: (context, GoRouterState state) => CollectionTimeLinePage(
             collectionId: int.parse(state.pathParameters['collectionId']!),
           ),
         ),

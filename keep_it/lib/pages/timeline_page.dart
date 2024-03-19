@@ -13,37 +13,48 @@ import '../providers/gallery_group_provider.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
 
-class TimeLinePage extends StatelessWidget {
-  const TimeLinePage({required this.collectionId, super.key});
+class CollectionTimeLinePage extends ConsumerWidget {
+  const CollectionTimeLinePage({required this.collectionId, super.key});
 
   final int collectionId;
 
   @override
-  Widget build(BuildContext context) => GetCollection(
+  Widget build(BuildContext context, WidgetRef ref) => GetCollection(
         id: collectionId,
         buildOnData: (collection) => GetMediaByCollectionId(
           collectionId: collectionId,
-          buildOnData: (items) =>
-              TimeLinePage0(collection: collection, items: items),
+          buildOnData: (items) => TimeLineView(
+            label: collection?.label ?? 'All Media',
+            items: items,
+            tagPrefix: 'Gallery View Media CollectionId: ${collection?.id}',
+            onPickFiles: () async => onPickFiles(
+              context,
+              ref,
+              collection: collection,
+            ),
+          ),
         ),
       );
 }
 
-class TimeLinePage0 extends ConsumerWidget {
-  const TimeLinePage0({
-    required this.collection,
+class TimeLineView extends ConsumerWidget {
+  const TimeLineView({
+    required this.label,
+    required this.tagPrefix,
     required this.items,
+    this.onPickFiles,
     super.key,
   });
 
-  final Collection? collection;
+  final String label;
+  final String tagPrefix;
   final List<CLMedia> items;
+  final void Function()? onPickFiles;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
-    final label = collection?.label ?? 'All Media';
-    final tagPrefix = 'Gallery View Media CollectionId: ${collection?.id} ';
+
     return GetDBManager(
       builder: (dbManager) {
         return CLSimpleGalleryView(
@@ -60,11 +71,7 @@ class TimeLinePage0 extends ConsumerWidget {
               quickMenuScopeKey: quickMenuScopeKey,
             ),
           ),
-          onPickFiles: () async => onPickFiles(
-            context,
-            ref,
-            collection: collection,
-          ),
+          onPickFiles: onPickFiles,
           onRefresh: () async => ref.invalidate(dbManagerProvider),
           selectionActions: (context, items) {
             return [
