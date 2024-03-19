@@ -12,15 +12,18 @@ import 'folders_and_files/media_as_file.dart';
 class TimeLineView extends ConsumerWidget {
   const TimeLineView({
     required this.label,
-    required this.tagPrefix,
+    required this.parentIdentifier,
     required this.items,
+    required this.onTapMedia,
     this.onPickFiles,
     super.key,
   });
 
   final String label;
-  final String tagPrefix;
+  final String parentIdentifier;
   final List<CLMedia> items;
+  final Future<bool?> Function(int id, {required String parentIdentifier})
+      onTapMedia;
   final void Function()? onPickFiles;
 
   @override
@@ -32,14 +35,16 @@ class TimeLineView extends ConsumerWidget {
         return CLSimpleGalleryView(
           key: ValueKey(label),
           title: label,
-          tagPrefix: tagPrefix,
+          tagPrefix: parentIdentifier,
           columns: 4,
           galleryMap: galleryGroups,
           emptyState: const EmptyState(),
           itemBuilder: (context, item, {required quickMenuScopeKey}) => Hero(
-            tag: '/item/${item.id}',
+            tag: '$parentIdentifier /item/${item.id}',
             child: MediaAsFile(
               media: item,
+              onTap: () =>
+                  onTapMedia(item.id!, parentIdentifier: parentIdentifier),
               quickMenuScopeKey: quickMenuScopeKey,
             ),
           ),

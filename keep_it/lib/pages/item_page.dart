@@ -10,16 +10,76 @@ import 'package:store/store.dart';
 
 import '../widgets/pop_fullscreen.dart';
 
-class ItemPage extends ConsumerStatefulWidget {
-  const ItemPage({required this.id, required this.collectionId, super.key});
+class CollectionItemPage extends ConsumerWidget {
+  const CollectionItemPage({
+    required this.id,
+    required this.collectionId,
+    required this.parentIdentifier,
+    super.key,
+  });
   final int collectionId;
   final int id;
+  final String parentIdentifier;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ItemPageState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetMediaByCollectionId(
+      buildOnData: (media) {
+        final initialMedia = media.where((e) => e.id == id).first;
+        final initialMediaIndex = media.indexOf(initialMedia);
+        return MediaInPageView(
+          media: media,
+          parentIdentifier: parentIdentifier,
+          initialMediaIndex: initialMediaIndex,
+        );
+      },
+    );
+  }
 }
 
-class _ItemPageState extends ConsumerState<ItemPage> {
+class TagItemPage extends ConsumerWidget {
+  const TagItemPage({
+    required this.id,
+    required this.tagId,
+    required this.parentIdentifier,
+    super.key,
+  });
+  final int tagId;
+  final int id;
+  final String parentIdentifier;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetMediaByTagId(
+      buildOnData: (media) {
+        final initialMedia = media.where((e) => e.id == id).first;
+        final initialMediaIndex = media.indexOf(initialMedia);
+        return MediaInPageView(
+          media: media,
+          initialMediaIndex: initialMediaIndex,
+          parentIdentifier: parentIdentifier,
+        );
+      },
+    );
+  }
+}
+
+class MediaInPageView extends ConsumerStatefulWidget {
+  const MediaInPageView({
+    required this.initialMediaIndex,
+    required this.media,
+    required this.parentIdentifier,
+    super.key,
+  });
+  final List<CLMedia> media;
+  final int initialMediaIndex;
+  final String parentIdentifier;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => MediaInPageViewState();
+}
+
+class MediaInPageViewState extends ConsumerState<MediaInPageView> {
   @override
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(
@@ -50,49 +110,44 @@ class _ItemPageState extends ConsumerState<ItemPage> {
         overlays: SystemUiOverlay.values,
       );
     }
+
     return FullscreenLayout(
       useSafeArea: false,
-      child: GetMediaByCollectionId(
-        collectionId: widget.collectionId,
-        buildOnData: (List<CLMedia> items) {
-          final media = items.where((e) => e.id == widget.id).first;
-          final index = items.indexOf(media);
-          return GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              ref.read(showControlsProvider.notifier).toggleControls();
-            },
-            child: Stack(
-              children: [
-                const MediaBackground(),
-                SafeArea(
-                  //bottom: false,
-                  child: Stack(
-                    children: [
-                      LayoutBuilder(
-                        builder: (context, boxConstraints) {
-                          return SizedBox(
-                            width: boxConstraints.maxWidth,
-                            height: boxConstraints.maxHeight,
-                            child: ItemView(
-                              items: items,
-                              startIndex: index,
-                            ),
-                          );
-                        },
-                      ),
-                      const Positioned(
-                        top: 8,
-                        right: 8,
-                        child: ShowControl(),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          ref.read(showControlsProvider.notifier).toggleControls();
         },
+        child: Stack(
+          children: [
+            const MediaBackground(),
+            SafeArea(
+              //bottom: false,
+              child: Stack(
+                children: [
+                  LayoutBuilder(
+                    builder: (context, boxConstraints) {
+                      return SizedBox(
+                        width: boxConstraints.maxWidth,
+                        height: boxConstraints.maxHeight,
+                        child: ItemView(
+                          items: widget.media,
+                          startIndex: widget.initialMediaIndex,
+                          parentIdentifier: widget.parentIdentifier,
+                        ),
+                      );
+                    },
+                  ),
+                  const Positioned(
+                    top: 8,
+                    right: 8,
+                    child: ShowControl(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -132,8 +187,14 @@ class MediaBackground extends ConsumerWidget {
 }
 
 class ItemView extends StatefulWidget {
-  const ItemView({required this.items, required this.startIndex, super.key});
+  const ItemView({
+    required this.items,
+    required this.startIndex,
+    required this.parentIdentifier,
+    super.key,
+  });
   final List<CLMedia> items;
+  final String parentIdentifier;
   final int startIndex;
 
   @override
@@ -167,7 +228,7 @@ class _ItemViewState extends State<ItemView> {
             : DateFormat('dd MMMM yyyy').format(media.originalDate!);
 
         return Hero(
-          tag: '/item/${media.id}',
+          tag: '${widget.parentIdentifier} /item/${media.id}',
           child: switch (media.type) {
             CLMediaType.image => CLzImage(file: File(media.path)),
             CLMediaType.video => Center(

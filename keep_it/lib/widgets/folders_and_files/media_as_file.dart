@@ -12,9 +12,11 @@ class MediaAsFile extends ConsumerWidget {
   const MediaAsFile({
     required this.media,
     required this.quickMenuScopeKey,
+    required this.onTap,
     super.key,
   });
   final CLMedia media;
+  final Future<bool?> Function()? onTap;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
 
   @override
@@ -30,56 +32,29 @@ class MediaAsFile extends ConsumerWidget {
               ),
             );
             return true;
-            /* final confirmed = await showDialog<bool>(
-              context: context,
-              builder: (BuildContext context) {
-                return ConfirmAction(
-                  title: 'Confirm delete',
-                  message: 'Are you sure you want to move '
-                      'this ${media.type.name}?',
-                  child: CLMediaPreview(media: media),
-                  onConfirm: ({required confirmed}) =>
-                      Navigator.of(context).pop(confirmed),
-                );
-              },
-            ); 
-            if (confirmed ?? false) {
-              unawaited(
-                context.push(
-                  '/move/${media.collectionId}/${media.id}',
-                ),
-              );
-            }
-            return confirmed ?? false;*/
           },
-          onDelete: () async {
-            final confirmed = await showDialog<bool>(
-              context: context,
-              builder: (BuildContext context) {
-                return ConfirmAction(
-                  title: 'Confirm delete',
-                  message: 'Are you sure you want to delete '
-                      'this ${media.type.name}?',
-                  child: CLMediaPreview(media: media),
-                  onConfirm: ({required confirmed}) =>
-                      Navigator.of(context).pop(confirmed),
-                );
-              },
-            );
-            if (confirmed ?? false) {
-              await dbManager.deleteMedia(
-                media,
-                onDeleteFile: (f) async => f.deleteIfExists(),
-              );
-            }
-            return confirmed ?? false;
-          },
-          onTap: () async {
-            unawaited(
-              context.push('/item/${media.collectionId}/${media.id}'),
-            );
-            return true;
-          },
+          onDelete: () async => await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ConfirmAction(
+                      title: 'Confirm delete',
+                      message: 'Are you sure you want to delete '
+                          'this ${media.type.name}?',
+                      child: CLMediaPreview(media: media),
+                      onConfirm: ({required confirmed}) async {
+                        await dbManager.deleteMedia(
+                          media,
+                          onDeleteFile: (f) async => f.deleteIfExists(),
+                        );
+                        if (context.mounted) {
+                          Navigator.of(context).pop(confirmed);
+                        }
+                      },
+                    );
+                  },
+                ) ??
+                false,
+          onTap: onTap,
           child: CLMediaPreview(
             media: media,
             keepAspectRatio: false,

@@ -12,12 +12,12 @@ import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
 import 'pages/collection_editor_page.dart';
+import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/tag_timeline_page.dart';
 import 'pages/tags_page.dart';
-import 'pages/collection_timeline_page.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -83,9 +83,26 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'item/:collectionId/:item_id',
           builder: (context, GoRouterState state) {
-            return ItemPage(
+            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+              throw Exception('missing parentIdentifier');
+            }
+            return CollectionItemPage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
               id: int.parse(state.pathParameters['item_id']!),
+              parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'item_by_tag/:tagId/:item_id',
+          builder: (context, GoRouterState state) {
+            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+              throw Exception('missing parentIdentifier');
+            }
+            return TagItemPage(
+              tagId: int.parse(state.pathParameters['tagId']!),
+              id: int.parse(state.pathParameters['item_id']!),
+              parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
             );
           },
         ),
