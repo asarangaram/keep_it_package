@@ -67,7 +67,6 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               incomingMedia: candiates,
               onDone: onDone,
               onCancel: () => onDiscard(result: false),
-              title: const CLText.large('Moving...'),
             ),
           _ => SaveCollection(
               incomingMedia: candidates!,
@@ -89,7 +88,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     candidates = null;
     isSaving = true;
     setState(() {});
-    ref.read(notificationMessageProvider.notifier).push('Saved');
+    ref.read(notificationMessageProvider.notifier).push('Done.');
 
     onDiscard(result: true);
   }
@@ -99,7 +98,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
       candidates = null;
       isSaving = true;
       setState(() {});
-      ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
+      ref.read(notificationMessageProvider.notifier).push('Nothing to do.');
       onDiscard(result: false);
       return;
     }
