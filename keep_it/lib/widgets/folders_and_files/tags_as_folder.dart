@@ -73,7 +73,7 @@ class TagAsFolder extends ConsumerWidget {
           onTap: () async {
             unawaited(
               context.push(
-                '/collections/${tag.id}',
+                '/items_by_tag/${tag.id}',
               ),
             );
             return true;

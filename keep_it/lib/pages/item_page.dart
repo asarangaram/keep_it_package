@@ -167,7 +167,7 @@ class _ItemViewState extends State<ItemView> {
             : DateFormat('dd MMMM yyyy').format(media.originalDate!);
 
         return Hero(
-          tag: '/item/${media.collectionId}/${media.id}',
+          tag: '/item/${media.id}',
           child: switch (media.type) {
             CLMediaType.image => CLzImage(file: File(media.path)),
             CLMediaType.video => Center(

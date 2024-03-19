@@ -86,7 +86,7 @@ class CollectionAsFolder extends ConsumerWidget {
           onTap: () async {
             unawaited(
               context.push(
-                '/items/${collection.id}',
+                '/items_by_collection/${collection.id}',
               ),
             );
             return true;

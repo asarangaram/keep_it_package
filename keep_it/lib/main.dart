@@ -15,8 +15,9 @@ import 'pages/collection_editor_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
 import 'pages/move_media_page.dart';
+import 'pages/tag_timeline_page.dart';
 import 'pages/tags_page.dart';
-import 'pages/timeline_page.dart';
+import 'pages/collection_timeline_page.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -123,9 +124,15 @@ class KeepItApp implements AppDescriptor {
           ),
         ),
         CLRouteDescriptor(
-          name: 'items/:collectionId',
+          name: 'items_by_collection/:collectionId',
           builder: (context, GoRouterState state) => CollectionTimeLinePage(
             collectionId: int.parse(state.pathParameters['collectionId']!),
+          ),
+        ),
+        CLRouteDescriptor(
+          name: 'items_by_tag/:tagId',
+          builder: (context, GoRouterState state) => TagTimeLinePage(
+            tagId: int.parse(state.pathParameters['tagId']!),
           ),
         ),
       ];
