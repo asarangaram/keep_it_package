@@ -12,6 +12,7 @@ dependencies:
   adaptive_dialog: ^2.1.0
   app_loader:
     path: ../app_loader
+  camera: ^0.10.5+9
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
@@ -42,6 +43,7 @@ dependencies:
   store: 
     path: ../store
  
+  video_player: ^2.8.3
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding
