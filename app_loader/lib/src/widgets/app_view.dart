@@ -68,7 +68,6 @@ class _RaLRouterState extends ConsumerState<AppView>
         parentNavigatorKey: parentNavigatorKey,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          
           child: AppTheme(
             child: IncomingMediaMonitor(
               onMedia: app.incomingMediaViewBuilder,
@@ -122,7 +121,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         ...fullScreenRoutes,
       ],
       redirect: (context, state) {
-        return null;
+        return '/camera';
       },
     );
 
@@ -145,7 +144,6 @@ class _RaLRouterState extends ConsumerState<AppView>
       name: name,
       pageBuilder: (context, state) => CustomTransitionPage<void>(
         key: state.pageKey,
-        
         child: builder(context, state),
         transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
       ),

@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
+import 'pages/camera_page.dart';
 import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
@@ -18,7 +19,6 @@ import 'pages/item_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/tag_timeline_page.dart';
 import 'pages/tags_page.dart';
-import 'widgets/camera.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
