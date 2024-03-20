@@ -10,25 +10,21 @@ class CameraState {
   CameraState({
     required this.cameras,
     required this.cameraSettings,
-    required this.cameraController,
     CameraDescription? currentCamera,
   }) : currentCamera = currentCamera ?? cameras[0];
   final List<CameraDescription> cameras;
   final CameraDescription currentCamera;
   final CameraSettings cameraSettings;
-  final CameraController cameraController;
 
   CameraState copyWith({
     List<CameraDescription>? cameras,
     CameraDescription? currentCamera,
     CameraSettings? cameraSettings,
-    CameraController? cameraController,
   }) {
     return CameraState(
       cameras: cameras ?? this.cameras,
       currentCamera: currentCamera ?? this.currentCamera,
       cameraSettings: cameraSettings ?? this.cameraSettings,
-      cameraController: cameraController ?? this.cameraController,
     );
   }
 
@@ -39,22 +35,17 @@ class CameraState {
 
     return listEquals(other.cameras, cameras) &&
         other.currentCamera == currentCamera &&
-        other.cameraSettings == cameraSettings &&
-        other.cameraController == cameraController;
+        other.cameraSettings == cameraSettings;
   }
 
   @override
-  int get hashCode {
-    return cameras.hashCode ^
-        currentCamera.hashCode ^
-        cameraSettings.hashCode ^
-        cameraController.hashCode;
-  }
+  int get hashCode =>
+      cameras.hashCode ^ currentCamera.hashCode ^ cameraSettings.hashCode;
 
   @override
-  String toString() {
-    return 'CameraState(cameras: $cameras, currentCamera: $currentCamera, cameraSettings: $cameraSettings, cameraController: $cameraController)';
-  }
+  String toString() =>
+      'CameraState(cameras: $cameras, currentCamera: $currentCamera, '
+      'cameraSettings: $cameraSettings)';
 
   CameraState zoomLevel(double value) =>
       copyWith(cameraSettings: cameraSettings.zoomLevel(value));

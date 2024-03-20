@@ -7,8 +7,8 @@ import '../get_cameras.dart';
 import '../models/camera_settings.dart';
 import '../models/camera_state.dart';
 
-class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
-  CameraControllerNotifier(this.cameras) : super(const AsyncValue.loading()) {
+class CameraStateNotifier extends StateNotifier<AsyncValue<CameraState>> {
+  CameraStateNotifier(this.cameras) : super(const AsyncValue.loading()) {
     cameras.whenOrNull(data: init);
   }
   AsyncValue<List<CameraDescription>> cameras;
@@ -41,28 +41,13 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
     CameraDescription currCamera,
     CameraSettings settings,
   ) async {
-    final cameraController = CameraController(
-      currCamera,
-      settings.resolutionPreset,
-      enableAudio: settings.enableAudio,
-      imageFormatGroup: ImageFormatGroup.jpeg,
-    );
-    await cameraController.initialize();
-
-    final minAvailableZoom = await cameraController.getMinZoomLevel();
-    final maxAvailableZoom = await cameraController.getMaxZoomLevel();
-
     final cameraState = CameraState(
       cameras: cameras,
       currentCamera: currCamera,
-      cameraSettings: settings.copyWith(
-        minAvailableZoom: minAvailableZoom,
-        maxAvailableZoom: maxAvailableZoom,
-      ),
-      cameraController: cameraController,
+      cameraSettings: settings,
     );
 
-    cameraController.addListener(controllerListener);
+    
     print('Controller ${cameraState.hashCode} Created');
     return cameraState;
   }
@@ -128,7 +113,7 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
   double get zoomLevel => 0;
 }
 
-final cameraControllerProvider =
+final cameraStateProvider =
     StateNotifierProvider<CameraControllerNotifier, AsyncValue<CameraState>>(
         (ref) {
   final camerasAsync = ref.watch(camearasProvider);
