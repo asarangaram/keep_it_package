@@ -6,19 +6,18 @@ import '../models/camera_settings.dart';
 import '../models/camera_state.dart';
 
 class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
-  CameraControllerNotifier(this.ref) : super(const AsyncValue.loading()) {
-    init();
+  CameraControllerNotifier(this.cameras) : super(const AsyncValue.loading()) {
+    cameras.whenOrNull(data: init);
   }
-  final Ref ref;
-  late final CameraController cameraController;
-  Future<void> init() async {
+  AsyncValue<List<CameraDescription>> cameras;
+
+  Future<void> init(List<CameraDescription> cameras) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final cameras = await ref.read(camearasProvider.future);
       const initialSettings = CameraSettings();
-      cameraController = CameraController(
-        cameras[1],
-        ResolutionPreset.ultraHigh,
+      final cameraController = CameraController(
+        cameras[initialSettings.cameraIndex],
+        initialSettings.resolutionPreset,
         enableAudio: initialSettings.enableAudio,
         imageFormatGroup: ImageFormatGroup.jpeg,
       );
@@ -28,7 +27,10 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
 
       final cameraState = CameraState(
         cameras: cameras,
-        cameraSettings: initialSettings,
+        cameraSettings: initialSettings.copyWith(
+          minAvailableZoom: minAvailableZoom,
+          maxAvailableZoom: maxAvailableZoom,
+        ),
         cameraController: cameraController,
       );
 
@@ -39,20 +41,29 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
   }
 
   void controllerListener() {
-    try {
-      if (cameraController.value.hasError) {
-        throw Exception(cameraController.value.errorDescription);
-      }
-    } catch (e, st) {
-      state = AsyncError<CameraState>(e, st);
-    }
+    state.whenOrNull(
+      data: (cameraState) async {
+        state = const AsyncValue.loading();
+        state = await AsyncValue.guard(() async {
+          if (cameraState.cameraController.value.hasError) {
+            throw Exception(
+              cameraState.cameraController.value.errorDescription,
+            );
+          }
+          return cameraState;
+        });
+      },
+    );
   }
 
   @override
   void dispose() {
-    cameraController
-      ..removeListener(controllerListener)
-      ..dispose();
+    state.whenOrNull(
+      data: (cameraState) async {
+        cameraState.cameraController.removeListener(controllerListener);
+        await cameraState.cameraController.dispose();
+      },
+    );
     super.dispose();
   }
 
@@ -73,8 +84,8 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
 final cameraControllerProvider =
     StateNotifierProvider<CameraControllerNotifier, AsyncValue<CameraState>>(
         (ref) {
-  ref.watch(camearasProvider);
-  final notifier = CameraControllerNotifier(ref);
+  final camerasAsync = ref.watch(camearasProvider);
+  final notifier = CameraControllerNotifier(camerasAsync);
 
   return notifier;
 });
