@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 @immutable
 class CameraSettings {
   const CameraSettings({
-    this.cameraIndex = 1,
-    this.resolutionPreset = ResolutionPreset.max,
+    this.resolutionPreset = ResolutionPreset.ultraHigh,
     this.enableAudio = true,
     this.minAvailableZoom = 1,
     this.maxAvailableZoom = 1,
-    this.zoomLevel0 = 1.0,
+    this.zoomLevel0 = 1,
   });
-  final int cameraIndex;
+
   final ResolutionPreset resolutionPreset;
   final bool enableAudio;
   final double minAvailableZoom;
@@ -20,7 +19,6 @@ class CameraSettings {
   final double zoomLevel0;
 
   CameraSettings copyWith({
-    int? cameraIndex,
     ResolutionPreset? resolutionPreset,
     bool? enableAudio,
     double? minAvailableZoom,
@@ -28,7 +26,6 @@ class CameraSettings {
     double? zoomLevel0,
   }) {
     return CameraSettings(
-      cameraIndex: cameraIndex ?? this.cameraIndex,
       resolutionPreset: resolutionPreset ?? this.resolutionPreset,
       enableAudio: enableAudio ?? this.enableAudio,
       minAvailableZoom: minAvailableZoom ?? this.minAvailableZoom,
@@ -41,8 +38,7 @@ class CameraSettings {
   bool operator ==(covariant CameraSettings other) {
     if (identical(this, other)) return true;
 
-    return other.cameraIndex == cameraIndex &&
-        other.resolutionPreset == resolutionPreset &&
+    return other.resolutionPreset == resolutionPreset &&
         other.enableAudio == enableAudio &&
         other.minAvailableZoom == minAvailableZoom &&
         other.maxAvailableZoom == maxAvailableZoom &&
@@ -51,8 +47,7 @@ class CameraSettings {
 
   @override
   int get hashCode {
-    return cameraIndex.hashCode ^
-        resolutionPreset.hashCode ^
+    return resolutionPreset.hashCode ^
         enableAudio.hashCode ^
         minAvailableZoom.hashCode ^
         maxAvailableZoom.hashCode ^
@@ -61,7 +56,7 @@ class CameraSettings {
 
   @override
   String toString() {
-    return 'CameraSettings(cameraIndex: $cameraIndex, '
+    return 'CameraSettings( '
         'resolutionPreset: $resolutionPreset, enableAudio: $enableAudio, '
         'minAvailableZoom: $minAvailableZoom, '
         'maxAvailableZoom: $maxAvailableZoom, zoomLevel0: $zoomLevel0)';
@@ -70,4 +65,16 @@ class CameraSettings {
   CameraSettings zoomLevel(double value) => copyWith(
         zoomLevel0: value.clamp(minAvailableZoom, maxAvailableZoom),
       );
+
+  CameraSettings nextResolution() {
+    return copyWith(resolutionPreset: resolutionPreset.next());
+  }
+}
+
+extension EXTResolutionPreset on ResolutionPreset {
+  ResolutionPreset next() => ResolutionPreset.values.next(this);
+}
+
+extension EXTNextOnList<T> on List<T> {
+  T next(T item) => this[(indexOf(item) + 1) % length];
 }

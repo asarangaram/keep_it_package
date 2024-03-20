@@ -12,10 +12,13 @@ dependencies:
   adaptive_dialog: ^2.1.0
   app_loader:
     path: ../app_loader
+  better_open_file: ^3.6.5
   camera: ^0.10.5+9
+  camerawesome: ^2.0.1
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
+  cross_file: ^0.3.4+1
   crypto: ^3.0.3
   cupertino_icons: ^1.0.2
   exif: ^3.3.0

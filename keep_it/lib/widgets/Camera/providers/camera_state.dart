@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,29 +17,54 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       const initialSettings = CameraSettings();
-      final cameraController = CameraController(
-        cameras[initialSettings.cameraIndex],
-        initialSettings.resolutionPreset,
-        enableAudio: initialSettings.enableAudio,
-        imageFormatGroup: ImageFormatGroup.jpeg,
-      );
-      await cameraController.initialize();
-      final minAvailableZoom = await cameraController.getMinZoomLevel();
-      final maxAvailableZoom = await cameraController.getMaxZoomLevel();
-
-      final cameraState = CameraState(
-        cameras: cameras,
-        cameraSettings: initialSettings.copyWith(
-          minAvailableZoom: minAvailableZoom,
-          maxAvailableZoom: maxAvailableZoom,
-        ),
-        cameraController: cameraController,
-      );
-
-      cameraController.addListener(controllerListener);
-
-      return cameraState;
+      return create(cameras, cameras[0], initialSettings);
     });
+  }
+
+  Future<CameraState> recreate(
+    CameraState cameraState,
+    List<CameraDescription> cameras,
+    CameraSettings settings,
+  ) async {
+    final newState = await create(cameras, cameras[0], settings);
+    unawaited(
+      Future<void>.delayed(const Duration(milliseconds: 1), () {
+        destroyController(cameraState);
+      }),
+    );
+
+    return newState;
+  }
+
+  Future<CameraState> create(
+    List<CameraDescription> cameras,
+    CameraDescription currCamera,
+    CameraSettings settings,
+  ) async {
+    final cameraController = CameraController(
+      currCamera,
+      settings.resolutionPreset,
+      enableAudio: settings.enableAudio,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
+    await cameraController.initialize();
+
+    final minAvailableZoom = await cameraController.getMinZoomLevel();
+    final maxAvailableZoom = await cameraController.getMaxZoomLevel();
+
+    final cameraState = CameraState(
+      cameras: cameras,
+      currentCamera: currCamera,
+      cameraSettings: settings.copyWith(
+        minAvailableZoom: minAvailableZoom,
+        maxAvailableZoom: maxAvailableZoom,
+      ),
+      cameraController: cameraController,
+    );
+
+    cameraController.addListener(controllerListener);
+    print('Controller ${cameraState.hashCode} Created');
+    return cameraState;
   }
 
   void controllerListener() {
@@ -58,13 +85,20 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
 
   @override
   void dispose() {
+    print('Dispose Called');
     state.whenOrNull(
       data: (cameraState) async {
         cameraState.cameraController.removeListener(controllerListener);
-        await cameraState.cameraController.dispose();
+        await destroyController(cameraState);
       },
     );
     super.dispose();
+  }
+
+  Future<void> destroyController(CameraState cameraState) async {
+    print('Controller ${cameraState.hashCode} Disposed');
+    cameraState.cameraController.removeListener(controllerListener);
+    await cameraState.cameraController.dispose();
   }
 
   set zoomLevel(double value) {
@@ -73,6 +107,19 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraState>> {
         state = const AsyncValue.loading();
         state = await AsyncValue.guard(() async {
           return cameraState.zoomLevel(value);
+        });
+      },
+    );
+  }
+
+  void nextResolution() {
+    state.whenOrNull(
+      data: (cameraState) async {
+        state = const AsyncValue.loading();
+        state = await AsyncValue.guard(() async {
+          final newSettings = cameraState.cameraSettings.nextResolution();
+
+          return recreate(cameraState, cameraState.cameras, newSettings);
         });
       },
     );
