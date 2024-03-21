@@ -37,12 +37,13 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
         color: Theme.of(context).colorScheme.onBackground,
         border: widget.isFullScreen
             ? null
-            : Border.all(
+            : null /* Border.all(
                 color: controller.value.isRecordingVideo
                     ? Colors.redAccent
                     : Colors.grey,
                 width: 3,
-              ),
+              ) */
+        ,
       ),
       child: Padding(
         padding: const EdgeInsets.all(1),

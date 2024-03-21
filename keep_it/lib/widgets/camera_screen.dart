@@ -1,5 +1,8 @@
 import 'package:camera/camera.dart';
+import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -198,44 +201,92 @@ class CameraTopMenu extends StatelessWidget {
   const CameraTopMenu({
     required this.cameras,
     required this.controller,
+    required this.showMenu,
+    required this.onToggleFullScreen,
     super.key,
   });
   final CameraController controller;
   final List<CameraDescription> cameras;
+  final bool showMenu;
+  final void Function() onToggleFullScreen;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        CircularButton(
-          onPressed: () {
-            controller.setFlashMode(
-              FlashMode.values.next(controller.value.flashMode),
-            );
-          },
-          size: 24,
-          hasDecoration: false,
-          icon: switch (controller.value.flashMode) {
-            FlashMode.off => Icons.flash_off,
-            FlashMode.auto => Icons.flash_auto,
-            FlashMode.always => Icons.flash_on,
-            FlashMode.torch => Icons.highlight,
-          },
-        ),
-        CircularButton(
-          onPressed: () {
-            controller.setDescription(cameras.next(controller.description));
-          },
-          icon: Icons.switch_camera,
-          size: 24,
-          hasDecoration: false,
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-        ),
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: showMenu
+          ? CircularButton(
+              onPressed: onCaptureOrientationLockButtonPressed,
+              icon: controller.value.isCaptureOrientationLocked
+                  ? Icons.screen_lock_rotation
+                  : Icons.screen_rotation,
+              foregroundColor: Colors.yellow,
+              size: 24,
+              hasDecoration: false,
+            )
+          : null,
+      actions: [
+        if (showMenu) ...[
+          CircularButton(
+            onPressed: () {
+              controller.setFlashMode(
+                FlashMode.values.next(controller.value.flashMode),
+              );
+            },
+            size: 24,
+            hasDecoration: false,
+            icon: switch (controller.value.flashMode) {
+              FlashMode.off => Icons.flash_off,
+              FlashMode.auto => Icons.flash_auto,
+              FlashMode.always => Icons.flash_on,
+              FlashMode.torch => Icons.highlight,
+            },
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+          ),
+        ],
+        if (showMenu) ...[
+          CircularButton(
+            onPressed: () {
+              controller.setDescription(cameras.next(controller.description));
+            },
+            icon: Icons.switch_camera,
+            size: 24,
+            hasDecoration: false,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+          ),
+        ],
+        ...[
+          CircularButton(
+            onPressed: onToggleFullScreen,
+            icon: showMenu ? MdiIcons.arrowExpand : MdiIcons.arrowCollapse,
+            size: 24,
+            foregroundColor: Colors.yellow,
+            hasDecoration: false,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+          ),
+        ],
       ],
     );
+  }
+
+  Future<void> onCaptureOrientationLockButtonPressed() async {
+    try {
+      final cameraController = controller;
+      if (cameraController.value.isCaptureOrientationLocked) {
+        await cameraController.unlockCaptureOrientation();
+      } else {
+        await cameraController.lockCaptureOrientation();
+      }
+    } on CameraException catch (e) {
+      /** */
+    }
   }
 }
 
@@ -248,14 +299,32 @@ class TakePhotoControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CircularButton(
-        onPressed: () async {
-          final xFile = await controller.takePicture();
-        },
-        icon: MdiIcons.camera,
-        size: 44,
-      ),
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            child: CLButtonIconLabelled.verySmall(
+              MdiIcons.image,
+              'Photo',
+              color: Colors.yellowAccent,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Center(
+            child: CircularButton(
+              onPressed: () async {
+                if (!controller.value.isTakingPicture) {
+                  final xFile = await controller.takePicture();
+                }
+              },
+              icon: MdiIcons.camera,
+              size: 44,
+            ),
+          ),
+        ),
+        Expanded(child: Container()),
+      ],
     );
   }
 }

@@ -168,11 +168,6 @@ class _CameraViewState extends State<_CameraView>
       child: SafeArea(
         child: Column(
           children: <Widget>[
-            if (showControl)
-              CameraTopMenu(
-                controller: controller!,
-                cameras: widget.cameras,
-              ),
             Expanded(
               child: CameraPreviewWidget(
                 isFullScreen: !showControl,
@@ -181,34 +176,30 @@ class _CameraViewState extends State<_CameraView>
                 maxAvailableZoom: _maxAvailableZoom,
                 children: [
                   Positioned(
+                    child: CameraTopMenu(
+                      controller: controller!,
+                      cameras: widget.cameras,
+                      showMenu: showControl,
+                      onToggleFullScreen: () {
+                        setState(() {
+                          isFullScreen = !isFullScreen;
+                        });
+                      },
+                    ),
+                  ),
+                  Positioned(
                     bottom: 8,
                     left: 0,
                     right: 0,
-                    child: VideoControl(controller: controller!),
+                    child: isVideoMode
+                        ? VideoControl(controller: controller!)
+                        : TakePhotoControl(controller: controller!),
                   ),
-                  if (!controller!.value.isRecordingVideo)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: CircularButton(
-                        onPressed: () {
-                          setState(() {
-                            isFullScreen = !isFullScreen;
-                          });
-                        },
-                        icon: isFullScreen
-                            ? MdiIcons.fullscreenExit
-                            : MdiIcons.fullscreen,
-                        size: 24,
-                        foregroundColor: Colors.yellow,
-                        hasDecoration: false,
-                      ),
-                    ),
                 ],
               ),
             ),
-            if (showControl) _captureControlRowWidget(),
-            if (showControl) _modeControlRowWidget(),
+            //if (showControl) _captureControlRowWidget(),
+            _modeControlRowWidget(),
           ],
         ),
       ),
@@ -282,22 +273,8 @@ class _CameraViewState extends State<_CameraView>
                     ),
                   ]
                 : <Widget>[],
-            IconButton(
-              icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
-              color: Colors.blue,
-              onPressed: controller != null ? onAudioModeButtonPressed : null,
-            ),
-            IconButton(
-              icon: Icon(
-                controller?.value.isCaptureOrientationLocked ?? false
-                    ? Icons.screen_lock_rotation
-                    : Icons.screen_rotation,
-              ),
-              color: Colors.blue,
-              onPressed: controller != null
-                  ? onCaptureOrientationLockButtonPressed
-                  : null,
-            ),
+            Container(),
+            Container(),
           ],
         ),
         _exposureModeControlRowWidget(),
