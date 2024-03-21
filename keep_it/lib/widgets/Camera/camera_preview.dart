@@ -4,21 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'camera_preview_core.dart';
+import 'models/camera_state.dart';
 
 class CameraPreviewWidget extends StatefulWidget {
   const CameraPreviewWidget({
-    required this.controller,
-    required this.maxAvailableZoom,
-    required this.minAvailableZoom,
-    required this.isFullScreen,
+    required this.cameraState,
     this.children = const [],
     super.key,
   });
-  final CameraController controller;
-  final double minAvailableZoom;
-  final double maxAvailableZoom;
+  final CameraState cameraState;
   final List<Widget> children;
-  final bool isFullScreen;
 
   @override
   State<StatefulWidget> createState() => CameraPreviewWidgetState();
@@ -29,10 +24,10 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
   int _pointers = 0;
   double _currentScale = 1;
   double _baseScale = 1;
-  bool keepAspectRatio = true;
 
   @override
   Widget build(BuildContext context) {
+    final controller = widget.cameraState.controller;
     return Container(
       decoration: const BoxDecoration(
         color: Colors.transparent,
@@ -42,46 +37,32 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
           onPointerDown: (_) => _pointers++,
           onPointerUp: (_) => _pointers--,
           child: ValueListenableBuilder<CameraValue>(
-            valueListenable: widget.controller,
+            valueListenable: controller,
             builder: (BuildContext context, Object? value, Widget? child) {
               return AspectRatioConditional(
-                aspectRatio: keepAspectRatio && widget.isFullScreen
-                    ? null
-                    : _isLandscape()
-                        ? widget.controller.value.aspectRatio
-                        : 1 / widget.controller.value.aspectRatio,
+                aspectRatio: _isLandscape()
+                    ? controller.value.aspectRatio
+                    : 1 / controller.value.aspectRatio,
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
-                    Center(
-                      child: LayoutBuilder(
-                        builder: (
-                          BuildContext context,
-                          BoxConstraints constraints,
-                        ) {
-                          return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onScaleStart: _handleScaleStart,
-                            onScaleUpdate: _handleScaleUpdate,
-                            onTapDown: (TapDownDetails details) =>
-                                onViewFinderTap(details, constraints),
-                            child: AspectRatioConditional(
-                              aspectRatio: keepAspectRatio
-                                  ? _isLandscape()
-                                      ? widget.controller.value.aspectRatio
-                                      : 1 / widget.controller.value.aspectRatio
-                                  : null,
-                              child: _wrapInRotatedBox(
-                                child: CameraPreviewCore(
-                                  controller: widget.controller,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    CameraPreviewCore(
+                      cameraState: widget.cameraState,
                     ),
-                    ...widget.children,
+                    LayoutBuilder(
+                      builder: (
+                        BuildContext context,
+                        BoxConstraints constraints,
+                      ) {
+                        return GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onScaleStart: _handleScaleStart,
+                          onScaleUpdate: _handleScaleUpdate,
+                          onTapDown: (TapDownDetails details) =>
+                              onViewFinderTap(details, constraints),
+                        );
+                      },
+                    ),
                   ],
                 ),
               );
@@ -102,17 +83,19 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
       return;
     }
 
-    _currentScale = (_baseScale * details.scale)
-        .clamp(widget.minAvailableZoom, widget.maxAvailableZoom);
+    _currentScale = (_baseScale * details.scale).clamp(
+      widget.cameraState.minAvailableZoom,
+      widget.cameraState.maxAvailableZoom,
+    );
 
-    await widget.controller.setZoomLevel(_currentScale);
+    await widget.cameraState.controller.setZoomLevel(_currentScale);
   }
 
   Future<void> onViewFinderTap(
     TapDownDetails details,
     BoxConstraints constraints,
   ) async {
-    final cameraController = widget.controller;
+    final cameraController = widget.cameraState.controller;
 
     final offset = Offset(
       details.localPosition.dx / constraints.maxWidth,
@@ -156,11 +139,11 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
   }
 
   DeviceOrientation _getApplicableOrientation() {
-    return widget.controller.value.isRecordingVideo
-        ? widget.controller.value.recordingOrientation!
-        : (widget.controller.value.previewPauseOrientation ??
-            widget.controller.value.lockedCaptureOrientation ??
-            widget.controller.value.deviceOrientation);
+    return widget.cameraState.controller.value.isRecordingVideo
+        ? widget.cameraState.controller.value.recordingOrientation!
+        : (widget.cameraState.controller.value.previewPauseOrientation ??
+            widget.cameraState.controller.value.lockedCaptureOrientation ??
+            widget.cameraState.controller.value.deviceOrientation);
   }
 }
 

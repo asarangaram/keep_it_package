@@ -1,42 +1,10 @@
-import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:keep_it/widgets/Camera/models/camera_state.dart';
 
 class CameraPreviewCore extends StatelessWidget {
-  const CameraPreviewCore({required this.controller, super.key});
-  final CameraController controller;
+  const CameraPreviewCore({required this.cameraState, super.key});
+  final CameraState cameraState;
 
   @override
-  Widget build(BuildContext context) =>
-      _wrapInRotatedBox(child: controller.buildPreview());
-
-  Widget _wrapInRotatedBox({required Widget child}) {
-    /* if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
-      return child;
-    } */
-
-    return RotatedBox(
-      quarterTurns: _getQuarterTurns(),
-      child: child,
-    );
-  }
-
-  int _getQuarterTurns() {
-    final turns = <DeviceOrientation, int>{
-      DeviceOrientation.portraitUp: 0,
-      DeviceOrientation.landscapeRight: 1,
-      DeviceOrientation.portraitDown: 2,
-      DeviceOrientation.landscapeLeft: 3,
-    };
-    return turns[_getApplicableOrientation()]!;
-  }
-
-  DeviceOrientation _getApplicableOrientation() {
-    return controller.value.isRecordingVideo
-        ? controller.value.recordingOrientation!
-        : (controller.value.previewPauseOrientation ??
-            controller.value.lockedCaptureOrientation ??
-            controller.value.deviceOrientation);
-  }
+  Widget build(BuildContext context) => cameraState.controller.buildPreview();
 }

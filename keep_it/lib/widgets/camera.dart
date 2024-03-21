@@ -11,40 +11,9 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import 'Camera/camera_preview.dart';
 import 'Camera/camera_preview_core.dart';
+import 'Camera/mixin.dart';
 import 'Camera/models/camera_state.dart';
 import 'camera_screen.dart';
-
-mixin CameraControl<T extends StatefulWidget> on State<T> {
-  void showInSnackBar(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  void onAppLifecycleStateChange({
-    required AppLifecycleState appState,
-    required CameraDescription description,
-    required CameraState? cameraState,
-    required void Function(CameraState? cameraState) updateCameraState,
-    required void Function(String) onCameraError,
-  }) {
-    if (appState == AppLifecycleState.inactive) {
-      cameraState?.dispose();
-      updateCameraState(null);
-    } else if (appState == AppLifecycleState.resumed) {
-      if (cameraState == null) {
-        CameraState.createAsync(
-          description,
-          onCameraStateReady: updateCameraState,
-          onCameraError: onCameraError,
-        );
-      } else {
-        // Does this required?
-        cameraState.controller
-            .setDescription(cameraState.controller.description);
-      }
-    }
-  }
-}
 
 class CameraView extends StatelessWidget {
   const CameraView({
@@ -103,16 +72,9 @@ class _CameraViewState extends State<_CameraView>
   CameraState? cameraState;
   String? errorString;
 
-  late AnimationController bottomMenuAnimationController;
-  late Animation<double> bottomMenuAnimation;
-
   bool isFullScreen = true;
   bool isVideoMode = false;
-  /* void refresh() {
-    if (mounted) {
-      setState(() {});
-    }
-  } */
+
   void onCameraStateChanged(CameraState? newCameraState) {
     cameraState = newCameraState;
     if (mounted) {
@@ -132,14 +94,6 @@ class _CameraViewState extends State<_CameraView>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    bottomMenuAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    bottomMenuAnimation = CurvedAnimation(
-      parent: bottomMenuAnimationController,
-      curve: Curves.easeInCubic,
-    );
     CameraState.createAsync(
       widget.cameras[widget.defaultCameraIndex],
       onCameraStateReady: onCameraStateChanged,
@@ -150,7 +104,7 @@ class _CameraViewState extends State<_CameraView>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    bottomMenuAnimationController.dispose();
+
     cameraState?.dispose();
     super.dispose();
   }
@@ -196,7 +150,7 @@ class _CameraViewState extends State<_CameraView>
         fit: StackFit.expand,
         children: [
           CameraPreviewCore(
-            controller: cameraState0.controller,
+            cameraState: cameraState0,
           ),
           Positioned.fill(
             child: BackdropFilter(
@@ -208,11 +162,9 @@ class _CameraViewState extends State<_CameraView>
             ),
           ),
           CameraPreviewWidget(
+            cameraState: cameraState0,
             isFullScreen: !showControl,
-            controller: controller,
-            minAvailableZoom: cameraState0.minAvailableZoom,
-            maxAvailableZoom: cameraState0.maxAvailableZoom,
-          ),
+            
           /* SafeArea(
             child: Column(
               children: [
