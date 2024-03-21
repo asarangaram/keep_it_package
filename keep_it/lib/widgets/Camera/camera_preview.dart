@@ -2,8 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-
+import 'package:flutter/widgets.dart';
 
 class CameraPreviewWidget extends StatefulWidget {
   const CameraPreviewWidget({
@@ -58,30 +57,37 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
                   fit: StackFit.expand,
                   children: <Widget>[
                     Center(
-                      child: keepAspectRatio
-                          ? AspectRatio(
-                              aspectRatio: _isLandscape()
-                                  ? widget.controller.value.aspectRatio
-                                  : 1 / widget.controller.value.aspectRatio,
-                              child: _wrapInRotatedBox(
-                                child: widget.controller.buildPreview(),
-                              ),
-                            )
-                          : _wrapInRotatedBox(
-                              child: widget.controller.buildPreview(),
-                            ),
-                    ),
-                    LayoutBuilder(
-                      builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                        return GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onScaleStart: _handleScaleStart,
-                          onScaleUpdate: _handleScaleUpdate,
-                          onTapDown: (TapDownDetails details) =>
-                              onViewFinderTap(details, constraints),
-                        );
-                      },
+                      child: LayoutBuilder(
+                        builder:
+                            (BuildContext context, BoxConstraints constraints) {
+                          return keepAspectRatio
+                              ? AspectRatio(
+                                  aspectRatio: _isLandscape()
+                                      ? widget.controller.value.aspectRatio
+                                      : 1 / widget.controller.value.aspectRatio,
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onScaleStart: _handleScaleStart,
+                                    onScaleUpdate: _handleScaleUpdate,
+                                    onTapDown: (TapDownDetails details) =>
+                                        onViewFinderTap(details, constraints),
+                                    child: _wrapInRotatedBox(
+                                      child: widget.controller.buildPreview(),
+                                    ),
+                                  ),
+                                )
+                              : GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onScaleStart: _handleScaleStart,
+                                  onScaleUpdate: _handleScaleUpdate,
+                                  onTapDown: (TapDownDetails details) =>
+                                      onViewFinderTap(details, constraints),
+                                  child: _wrapInRotatedBox(
+                                    child: widget.controller.buildPreview(),
+                                  ),
+                                );
+                        },
+                      ),
                     ),
                     ...widget.children,
                   ],

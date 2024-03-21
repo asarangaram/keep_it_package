@@ -238,3 +238,98 @@ class CameraTopMenu extends StatelessWidget {
     );
   }
 }
+
+class TakePhotoControl extends StatelessWidget {
+  const TakePhotoControl({
+    required this.controller,
+    super.key,
+  });
+  final CameraController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CircularButton(
+        onPressed: () async {
+          final xFile = await controller.takePicture();
+        },
+        icon: MdiIcons.camera,
+        size: 44,
+      ),
+    );
+  }
+}
+
+class VideoControl extends StatefulWidget {
+  const VideoControl({
+    required this.controller,
+    super.key,
+  });
+  final CameraController controller;
+
+  @override
+  State<VideoControl> createState() => _VideoControlState();
+}
+
+class _VideoControlState extends State<VideoControl> {
+  bool waiting = false;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Container(),
+        ),
+        CircularButton(
+          onPressed: () async {
+            setState(() {
+              waiting = true;
+            });
+            if (!widget.controller.value.isRecordingVideo) {
+              await widget.controller.startVideoRecording();
+            } else if (widget.controller.value.isRecordingPaused) {
+              await widget.controller.resumeVideoRecording();
+            } else {
+              await widget.controller.pauseVideoRecording();
+            }
+            setState(() {
+              waiting = false;
+            });
+          },
+          icon: widget.controller.value.isRecordingVideo
+              ? widget.controller.value.isRecordingPaused
+                  ? MdiIcons.circle
+                  : MdiIcons.pause
+              : MdiIcons.video,
+          size: 44,
+          backgroundColor: widget.controller.value.isRecordingVideo &&
+                  !widget.controller.value.isRecordingPaused
+              ? Theme.of(context).colorScheme.error
+              : null,
+          foregroundColor: widget.controller.value.isRecordingVideo
+              ? Theme.of(context).colorScheme.onError
+              : null,
+        ),
+        if (widget.controller.value.isRecordingVideo && !waiting)
+          Flexible(
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: CircularButton(
+                  onPressed: () async {
+                    await widget.controller.stopVideoRecording();
+                  },
+                  icon: MdiIcons.stop,
+                  size: 32,
+                ),
+              ),
+            ),
+          )
+        else
+          Flexible(child: Container()),
+      ],
+    );
+  }
+}

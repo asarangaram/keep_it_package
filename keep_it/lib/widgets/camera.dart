@@ -80,7 +80,7 @@ class _CameraViewState extends State<_CameraView>
   double _maxAvailableExposureOffset = 0;
   double _currentExposureOffset = 0;
   late AnimationController _flashModeControlRowAnimationController;
-  late Animation<double> _flashModeControlRowAnimation;
+
   late AnimationController _exposureModeControlRowAnimationController;
   late Animation<double> _exposureModeControlRowAnimation;
   late AnimationController _focusModeControlRowAnimationController;
@@ -88,6 +88,7 @@ class _CameraViewState extends State<_CameraView>
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
   bool isFullScreen = true;
+  bool isVideoMode = false;
 
   @override
   void initState() {
@@ -98,10 +99,7 @@ class _CameraViewState extends State<_CameraView>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _flashModeControlRowAnimation = CurvedAnimation(
-      parent: _flashModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
+
     _exposureModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -153,7 +151,9 @@ class _CameraViewState extends State<_CameraView>
       return widget.onLoading();
     }
 
-    if (isFullScreen) {
+    final showControl = !isFullScreen && !controller!.value.isRecordingVideo;
+
+    if (showControl) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     } else {
       SystemChrome.setEnabledSystemUIMode(
@@ -168,40 +168,47 @@ class _CameraViewState extends State<_CameraView>
       child: SafeArea(
         child: Column(
           children: <Widget>[
-            if (!isFullScreen)
+            if (showControl)
               CameraTopMenu(
                 controller: controller!,
                 cameras: widget.cameras,
               ),
             Expanded(
               child: CameraPreviewWidget(
-                isFullScreen: isFullScreen,
+                isFullScreen: !showControl,
                 controller: controller!,
                 minAvailableZoom: _minAvailableZoom,
                 maxAvailableZoom: _maxAvailableZoom,
                 children: [
                   Positioned(
-                    top: 0,
+                    bottom: 8,
+                    left: 0,
                     right: 0,
-                    child: CircularButton(
-                      onPressed: () {
-                        setState(() {
-                          isFullScreen = !isFullScreen;
-                        });
-                      },
-                      icon: isFullScreen
-                          ? MdiIcons.fullscreenExit
-                          : MdiIcons.fullscreen,
-                      size: 24,
-                      foregroundColor: Colors.yellow,
-                      hasDecoration: false,
-                    ),
+                    child: VideoControl(controller: controller!),
                   ),
+                  if (!controller!.value.isRecordingVideo)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: CircularButton(
+                        onPressed: () {
+                          setState(() {
+                            isFullScreen = !isFullScreen;
+                          });
+                        },
+                        icon: isFullScreen
+                            ? MdiIcons.fullscreenExit
+                            : MdiIcons.fullscreen,
+                        size: 24,
+                        foregroundColor: Colors.yellow,
+                        hasDecoration: false,
+                      ),
+                    ),
                 ],
               ),
             ),
-            if (!isFullScreen) _captureControlRowWidget(),
-            if (!isFullScreen) _modeControlRowWidget(),
+            if (showControl) _captureControlRowWidget(),
+            if (showControl) _modeControlRowWidget(),
           ],
         ),
       ),
@@ -443,15 +450,6 @@ class _CameraViewState extends State<_CameraView>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.camera_alt),
-          color: Colors.blue,
-          onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo
-              ? onTakePictureButtonPressed
-              : null,
-        ),
         IconButton(
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
