@@ -105,3 +105,102 @@ class _CameraPreviewWithScale extends ConsumerState<CameraPreviewWithZoom> {
 }
 
  */
+
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+
+import 'preview.dart';
+
+class CameraPreviewWidget extends StatefulWidget {
+  const CameraPreviewWidget({
+    required this.controller,
+    required this.maxAvailableZoom,
+    required this.minAvailableZoom,
+    super.key,
+  });
+  final CameraController controller;
+  final double minAvailableZoom;
+  final double maxAvailableZoom;
+
+  @override
+  State<StatefulWidget> createState() => CameraPreviewWidgetState();
+}
+
+class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
+  // Counting pointers (number of user fingers on screen)
+  int _pointers = 0;
+  double _currentScale = 1;
+  double _baseScale = 1;
+  @override
+  Widget build(BuildContext context) {
+    final controller = widget.controller;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        border: Border.all(
+          color: controller.value.isRecordingVideo
+              ? Colors.redAccent
+              : Colors.grey,
+          width: 3,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(1),
+        child: Center(
+          child: Listener(
+            onPointerDown: (_) => _pointers++,
+            onPointerUp: (_) => _pointers--,
+            child: CameraPreview2(
+              controller,
+              children: [
+                LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onScaleStart: _handleScaleStart,
+                      onScaleUpdate: _handleScaleUpdate,
+                      onTapDown: (TapDownDetails details) =>
+                          onViewFinderTap(details, constraints),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleScaleStart(ScaleStartDetails details) {
+    _baseScale = _currentScale;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (_pointers != 2) {
+      return;
+    }
+
+    _currentScale = (_baseScale * details.scale)
+        .clamp(widget.minAvailableZoom, widget.maxAvailableZoom);
+
+    await widget.controller.setZoomLevel(_currentScale);
+  }
+
+  Future<void> onViewFinderTap(
+    TapDownDetails details,
+    BoxConstraints constraints,
+  ) async {
+    final cameraController = widget.controller;
+
+    final offset = Offset(
+      details.localPosition.dx / constraints.maxWidth,
+      details.localPosition.dy / constraints.maxHeight,
+    );
+    try {
+      await cameraController.setExposurePoint(offset);
+      await cameraController.setFocusPoint(offset);
+    } catch (e) {/** */}
+  }
+}

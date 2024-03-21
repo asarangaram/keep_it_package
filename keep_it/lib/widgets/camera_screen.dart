@@ -174,7 +174,7 @@ class CircularButton extends StatelessWidget {
             size: size,
             color: hasDecoration
                 ? Theme.of(context).colorScheme.onBackground
-                : Theme.of(context).colorScheme.background,
+                : Theme.of(context).colorScheme.onBackground,
           ),
         ),
       ),
@@ -182,38 +182,40 @@ class CircularButton extends StatelessWidget {
   }
 }
 
+extension EXTNextOnList<T> on List<T> {
+  T next(T item) => this[(indexOf(item) + 1) % length];
+}
+
 class CameraTopMenu extends StatelessWidget {
   const CameraTopMenu({
-    this.onAspectRatioPressed,
-    this.onFlashModePressed,
-    this.onSwitchCameraPressed,
+    required this.cameras,
+    required this.controller,
     super.key,
   });
-  final VoidCallback? onAspectRatioPressed;
-  final VoidCallback? onFlashModePressed;
-  final VoidCallback? onSwitchCameraPressed;
+  final CameraController controller;
+  final List<CameraDescription> cameras;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      //backgroundColor: Colors.transparent,
-      //elevation: 0,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         CircularButton(
-          onPressed: onAspectRatioPressed,
+          onPressed: () {/*onAspectRatioPressed */},
           icon: MdiIcons.arrowExpandVertical,
           size: 24,
           hasDecoration: false,
         ),
         CircularButton(
-          onPressed: onFlashModePressed,
+          onPressed: () {/* onFlashModePressed */},
           icon: Icons.flash_on,
           size: 24,
           hasDecoration: false,
         ),
         CircularButton(
-          onPressed: onSwitchCameraPressed,
+          onPressed: () {
+            controller.setDescription(cameras.next(controller.description));
+          },
           icon: Icons.switch_camera,
           size: 24,
           hasDecoration: false,

@@ -1,7 +1,3 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'dart:async';
@@ -14,7 +10,8 @@ import 'package:flutter/material.dart';
 
 import 'package:video_player/video_player.dart';
 
-import 'Camera/preview.dart';
+import 'Camera/camera_preview.dart';
+
 import 'camera_screen.dart';
 
 class CameraView extends StatelessWidget {
@@ -68,27 +65,6 @@ class _CameraView extends StatefulWidget {
   }
 }
 
-/// Returns a suitable camera icon for [direction].
-IconData getCameraLensIcon(CameraLensDirection direction) {
-  switch (direction) {
-    case CameraLensDirection.back:
-      return Icons.camera_rear;
-    case CameraLensDirection.front:
-      return Icons.camera_front;
-    case CameraLensDirection.external:
-      return Icons.camera;
-  }
-  // This enum is from a different package, so a new value could be added at
-  // any time. The example should keep working if that happens.
-  // ignore: dead_code
-  return Icons.camera;
-}
-
-void _logError(String code, String? message) {
-  // ignore: avoid_print
-  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
-}
-
 class _CameraViewState extends State<_CameraView>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
@@ -108,11 +84,6 @@ class _CameraViewState extends State<_CameraView>
   late Animation<double> _focusModeControlRowAnimation;
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
-  double _currentScale = 1;
-  double _baseScale = 1;
-
-  // Counting pointers (number of user fingers on screen)
-  int _pointers = 0;
 
   @override
   void initState() {
@@ -143,7 +114,7 @@ class _CameraViewState extends State<_CameraView>
       parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
-    onNewCameraSelected(widget.cameras[widget.defaultCameraIndex]);
+    _initializeCameraController(widget.cameras[widget.defaultCameraIndex]);
   }
 
   @override
@@ -179,79 +150,21 @@ class _CameraViewState extends State<_CameraView>
     }
     return Column(
       children: <Widget>[
+        CameraTopMenu(
+          controller: controller!,
+          cameras: widget.cameras,
+        ),
         Expanded(
-          child: _cameraPreviewWidget(),
+          child: CameraPreviewWidget(
+            controller: controller!,
+            minAvailableZoom: _minAvailableZoom,
+            maxAvailableZoom: _maxAvailableZoom,
+          ),
         ),
         _captureControlRowWidget(),
         _modeControlRowWidget(),
       ],
     );
-  }
-
-  /// Display the preview from the camera (or a message if the preview is not available).
-  Widget _cameraPreviewWidget() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black,
-        border: Border.all(
-          color: controller != null && controller!.value.isRecordingVideo
-              ? Colors.redAccent
-              : Colors.grey,
-          width: 3,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(1),
-        child: Center(
-          child: Listener(
-            onPointerDown: (_) => _pointers++,
-            onPointerUp: (_) => _pointers--,
-            child: CameraPreview2(
-              controller!,
-              children: [
-                LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onScaleStart: _handleScaleStart,
-                      onScaleUpdate: _handleScaleUpdate,
-                      onTapDown: (TapDownDetails details) =>
-                          onViewFinderTap(details, constraints),
-                    );
-                  },
-                ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.yellow)),
-                    child: const CameraTopMenu(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _handleScaleStart(ScaleStartDetails details) {
-    _baseScale = _currentScale;
-  }
-
-  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
-    // When there are not exactly two fingers on screen don't scale
-    if (controller == null || _pointers != 2) {
-      return;
-    }
-
-    _currentScale = (_baseScale * details.scale)
-        .clamp(_minAvailableZoom, _maxAvailableZoom);
-
-    await controller!.setZoomLevel(_currentScale);
   }
 
   /// Display the thumbnail of the captured image or video.
@@ -605,30 +518,6 @@ class _CameraViewState extends State<_CameraView>
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
-    if (controller == null) {
-      return;
-    }
-
-    final cameraController = controller!;
-
-    final offset = Offset(
-      details.localPosition.dx / constraints.maxWidth,
-      details.localPosition.dy / constraints.maxHeight,
-    );
-    cameraController
-      ..setExposurePoint(offset)
-      ..setFocusPoint(offset);
-  }
-
-  Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
-    if (controller != null) {
-      return controller!.setDescription(cameraDescription);
-    } else {
-      return _initializeCameraController(cameraDescription);
-    }
-  }
-
   Future<void> _initializeCameraController(
     CameraDescription cameraDescription,
   ) async {
@@ -750,9 +639,6 @@ class _CameraViewState extends State<_CameraView>
 
   void onAudioModeButtonPressed() {
     enableAudio = !enableAudio;
-    if (controller != null) {
-      onNewCameraSelected(controller!.description);
-    }
   }
 
   Future<void> onCaptureOrientationLockButtonPressed() async {
@@ -1036,4 +922,9 @@ class _CameraViewState extends State<_CameraView>
     _logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
   }
+}
+
+void _logError(String code, String? message) {
+  // ignore: avoid_print
+  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
 }
