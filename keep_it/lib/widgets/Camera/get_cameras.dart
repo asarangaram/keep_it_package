@@ -12,15 +12,13 @@ class GetCameras extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final camerasAsync = ref.watch(camearasProvider);
 
-    try {
-      return camerasAsync.when(
+    return FullscreenLayout(
+      child: camerasAsync.when(
         data: builder,
         error: (e, st) => CameraError(errorMessage: e.toString()),
         loading: CameraLoading.new,
-      );
-    } catch (e) {
-      return CameraError(errorMessage: e.toString());
-    }
+      ),
+    );
   }
 }
 
@@ -58,23 +56,37 @@ class CameraError extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CLErrorView(
-          errorMessage: errorMessage,
-        ),
-        CLButtonText.large(
-          'Go Back',
-          onTap: () {
-            if (context.canPop()) {
-              context.pop();
-            }
-          },
-          color: Colors.blue.shade600,
-        ),
-      ],
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CLIcon.veryLarge(
+            Icons.warning,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              errorMessage,
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontSize: CLScaleType.standard.fontSize,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+          CLButtonText.large(
+            'Go Back',
+            onTap: () {
+              if (context.canPop()) {
+                context.pop();
+              }
+            },
+            color: Colors.blue.shade600,
+          ),
+        ],
+      ),
     );
   }
 }

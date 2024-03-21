@@ -7,12 +7,16 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'Camera/camera_fullscreen.dart';
+import 'Camera/camera_gesture.dart';
 import 'Camera/camera_preview.dart';
 import 'Camera/camera_preview_core.dart';
 import 'Camera/mixin.dart';
 import 'Camera/models/camera_state.dart';
+import 'Camera/providers/camera_state.dart';
 import 'camera_screen.dart';
 
 class CameraView extends StatelessWidget {
@@ -128,188 +132,16 @@ class _CameraViewState extends State<_CameraView>
 
   @override
   Widget build(BuildContext context) {
-    if (cameraState == null) {
-      return widget.onLoading();
-    }
+    return widget.onError('This is a error. ' * 5);
 
-    final cameraState0 = cameraState!;
+    /* final cameraState0 = cameraState!;
 
-    if (!showControl) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    } else {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.manual,
-        overlays: SystemUiOverlay.values,
-      );
-    }
-
-    return DecoratedBox(
-      decoration:
-          BoxDecoration(color: Theme.of(context).colorScheme.onBackground),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          CameraPreviewCore(
-            cameraState: cameraState0,
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                color:
-                    Colors.black.withOpacity(0.5), // Adjust opacity as needed
-              ),
-            ),
-          ),
-          CameraPreviewWidget(
-            cameraState: cameraState0,
-          ),
-
-          /* SafeArea(
-            child: Column(
-              children: [
-                CameraTopMenu(
-                  controller: controller,
-                  cameras: widget.cameras,
-                  showMenu: showControl,
-                  onToggleFullScreen: () {
-                    setState(() {
-                      isFullScreen = !isFullScreen;
-                    });
-                  },
-                ),
-                Expanded(
-                  child: CameraPreviewWidget(
-                    isFullScreen: !showControl,
-                    controller: controller,
-                    minAvailableZoom: cameraState0.minAvailableZoom,
-                    maxAvailableZoom: cameraState0.maxAvailableZoom,
-                  ),
-                ),
-                if (isVideoMode)
-                  VideoControl(controller: controller)
-                else
-                  TakePhotoControl(controller: controller),
-                //_modeControlRowWidget(),
-              ],
-            ),
-          ), */
-        ],
-      ),
-    );
-  }
-
-  /// Display a bar with buttons to change the flash and exposure modes
-  Widget _modeControlRowWidget() {
-    if (cameraState == null) {
-      return Container();
-    }
-    final controller = cameraState!.controller;
-    return Container(
-      //   decoration: const BoxDecoration(color: Colors.blue),
-      child: Column(
-        children: <Widget>[
-          Align(
-            alignment: showControl ? Alignment.centerRight : Alignment.center,
-            child: CircularButton(
-              onPressed: () {},
-              icon: showControl ? Icons.close : MdiIcons.menuUp,
-              size: 44,
-              hasDecoration: false,
-            ),
-          ),
-          if (showControl) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                CLButtonIconLabelled.verySmall(
-                  MdiIcons.camera,
-                  'Camera Mode\n${isVideoMode ? "Video" : "Photo"}',
-                  onTap: () {
-                    setState(() {
-                      isVideoMode = !isVideoMode;
-                    });
-                  },
-                  color: Theme.of(context).colorScheme.background,
-                ),
-                CLButtonIconLabelled.verySmall(
-                  Icons.filter_center_focus,
-                  switch (controller.value.exposureMode) {
-                    ExposureMode.auto => 'Exposure Mode\nAuto',
-                    ExposureMode.locked => 'Exposure Mode\nLocked',
-                  },
-                  onTap: () {
-                    controller.setExposureMode(
-                      ExposureMode.values.next(controller.value.exposureMode),
-                    );
-                  },
-                  color: controller.value.exposureMode == ExposureMode.auto
-                      ? Colors.orange
-                      : Colors.blue,
-                ),
-                CLButtonIconLabelled.verySmall(
-                  Icons.filter_center_focus,
-                  switch (controller.value.focusMode) {
-                    FocusMode.auto => 'Focus Mode\nAuto',
-                    FocusMode.locked => 'Focus Mode\nLocked',
-                  },
-                  onTap: () {
-                    controller.setFocusMode(
-                      FocusMode.values.next(controller.value.focusMode),
-                    );
-                  },
-                  color: controller.value.focusMode == FocusMode.auto
-                      ? Colors.orange
-                      : Colors.blue,
-                ),
-              ],
-            ),
-            const Divider(
-              indent: 16,
-              endIndent: 16,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                CLText.verySmall(
-                  'Exposure\nOffset:',
-                  color: Theme.of(context).colorScheme.background,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CLText.small(
-                      cameraState!.minAvailableExposureOffset.toString(),
-                      color: Theme.of(context).colorScheme.background,
-                    ),
-                    Slider(
-                      value: cameraState!.currentExposureOffset,
-                      min: cameraState!.minAvailableExposureOffset,
-                      max: cameraState!.maxAvailableExposureOffset,
-                      label: cameraState!.currentExposureOffset.toString(),
-                      onChanged: cameraState!.minAvailableExposureOffset ==
-                              cameraState!.maxAvailableExposureOffset
-                          ? null
-                          : (value) {
-                              cameraState?.setExposureOffset(
-                                value,
-                                updateCameraState: onCameraStateChanged,
-                                onCameraError: onError,
-                              );
-                            },
-                    ),
-                    CLText.small(
-                      cameraState!.maxAvailableExposureOffset.toString(),
-                      color: Theme.of(context).colorScheme.background,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
+    return ProviderScope(
+      overrides: [
+        cameraStateProvider
+            .overrideWith((ref) => CameraStateNotifier(cameraState0)),
+      ],
+      child: CameraFullScreen(cameraState: cameraState0),
+    ); */
   }
 }

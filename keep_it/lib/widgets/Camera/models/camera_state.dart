@@ -176,4 +176,23 @@ class CameraState {
     }
     return onCameraError(errorString);
   }
+
+  Future<void> setZoomLevel(double value) async {
+    final currentScale = value.clamp(minAvailableZoom, maxAvailableZoom);
+    print(
+      'minAvailableZoom:$minAvailableZoom, maxAvailableZoom:$maxAvailableZoom ',
+    );
+    print('Scale : $value -> $currentScale');
+    await controller.setZoomLevel(currentScale);
+  }
+
+  Future<void> setFocusPoint(Offset value) async {
+    try {
+      await controller.setExposurePoint(value);
+      await controller.setFocusPoint(value);
+    } catch (e) {
+      /** */
+      print('unable to set offset');
+    }
+  }
 }
