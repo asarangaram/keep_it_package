@@ -257,11 +257,6 @@ class _CameraViewState extends State<_CameraView>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.flash_on),
-              color: Colors.blue,
-              onPressed: controller != null ? onFlashModeButtonPressed : null,
-            ),
             // The exposure and focus mode are currently not supported on the web.
             ...!kIsWeb
                 ? <Widget>[
@@ -298,59 +293,9 @@ class _CameraViewState extends State<_CameraView>
             ),
           ],
         ),
-        _flashModeControlRowWidget(),
         _exposureModeControlRowWidget(),
         _focusModeControlRowWidget(),
       ],
-    );
-  }
-
-  Widget _flashModeControlRowWidget() {
-    return SizeTransition(
-      sizeFactor: _flashModeControlRowAnimation,
-      child: ClipRect(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.flash_off),
-              color: controller?.value.flashMode == FlashMode.off
-                  ? Colors.orange
-                  : Colors.blue,
-              onPressed: controller != null
-                  ? () => onSetFlashModeButtonPressed(FlashMode.off)
-                  : null,
-            ),
-            IconButton(
-              icon: const Icon(Icons.flash_auto),
-              color: controller?.value.flashMode == FlashMode.auto
-                  ? Colors.orange
-                  : Colors.blue,
-              onPressed: controller != null
-                  ? () => onSetFlashModeButtonPressed(FlashMode.auto)
-                  : null,
-            ),
-            IconButton(
-              icon: const Icon(Icons.flash_on),
-              color: controller?.value.flashMode == FlashMode.always
-                  ? Colors.orange
-                  : Colors.blue,
-              onPressed: controller != null
-                  ? () => onSetFlashModeButtonPressed(FlashMode.always)
-                  : null,
-            ),
-            IconButton(
-              icon: const Icon(Icons.highlight),
-              color: controller?.value.flashMode == FlashMode.torch
-                  ? Colors.orange
-                  : Colors.blue,
-              onPressed: controller != null
-                  ? () => onSetFlashModeButtonPressed(FlashMode.torch)
-                  : null,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -646,16 +591,6 @@ class _CameraViewState extends State<_CameraView>
         }
       }
     });
-  }
-
-  void onFlashModeButtonPressed() {
-    if (_flashModeControlRowAnimationController.value == 1) {
-      _flashModeControlRowAnimationController.reverse();
-    } else {
-      _flashModeControlRowAnimationController.forward();
-      _exposureModeControlRowAnimationController.reverse();
-      _focusModeControlRowAnimationController.reverse();
-    }
   }
 
   void onExposureModeButtonPressed() {
