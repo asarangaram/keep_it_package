@@ -131,7 +131,7 @@ class _CameraViewState extends State<_CameraView>
     if (cameraState == null) {
       return widget.onLoading();
     }
-    final controller = cameraState!.controller;
+
     final cameraState0 = cameraState!;
 
     if (!showControl) {
@@ -163,8 +163,8 @@ class _CameraViewState extends State<_CameraView>
           ),
           CameraPreviewWidget(
             cameraState: cameraState0,
-            isFullScreen: !showControl,
-            
+          ),
+
           /* SafeArea(
             child: Column(
               children: [
