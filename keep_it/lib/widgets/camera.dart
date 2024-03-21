@@ -7,6 +7,8 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'package:video_player/video_player.dart';
 
@@ -32,6 +34,7 @@ class CameraView extends StatelessWidget {
         throw Exception('No camera found.');
       }
       return FullscreenLayout(
+        useSafeArea: false,
         child: _CameraView(
           cameras: cameras,
           onError: onError,
@@ -84,6 +87,7 @@ class _CameraViewState extends State<_CameraView>
   late Animation<double> _focusModeControlRowAnimation;
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
+  bool isFullScreen = true;
 
   @override
   void initState() {
@@ -148,22 +152,59 @@ class _CameraViewState extends State<_CameraView>
     if (controller == null || !controller!.value.isInitialized) {
       return widget.onLoading();
     }
-    return Column(
-      children: <Widget>[
-        CameraTopMenu(
-          controller: controller!,
-          cameras: widget.cameras,
+
+    if (isFullScreen) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
+    }
+
+    return DecoratedBox(
+      decoration:
+          BoxDecoration(color: Theme.of(context).colorScheme.onBackground),
+      child: SafeArea(
+        child: Column(
+          children: <Widget>[
+            if (!isFullScreen)
+              CameraTopMenu(
+                controller: controller!,
+                cameras: widget.cameras,
+              ),
+            Expanded(
+              child: CameraPreviewWidget(
+                isFullScreen: isFullScreen,
+                controller: controller!,
+                minAvailableZoom: _minAvailableZoom,
+                maxAvailableZoom: _maxAvailableZoom,
+                children: [
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: CircularButton(
+                      onPressed: () {
+                        setState(() {
+                          isFullScreen = !isFullScreen;
+                        });
+                      },
+                      icon: isFullScreen
+                          ? MdiIcons.fullscreenExit
+                          : MdiIcons.fullscreen,
+                      size: 24,
+                      foregroundColor: Colors.yellow,
+                      hasDecoration: false,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (!isFullScreen) _captureControlRowWidget(),
+            if (!isFullScreen) _modeControlRowWidget(),
+          ],
         ),
-        Expanded(
-          child: CameraPreviewWidget(
-            controller: controller!,
-            minAvailableZoom: _minAvailableZoom,
-            maxAvailableZoom: _maxAvailableZoom,
-          ),
-        ),
-        _captureControlRowWidget(),
-        _modeControlRowWidget(),
-      ],
+      ),
     );
   }
 

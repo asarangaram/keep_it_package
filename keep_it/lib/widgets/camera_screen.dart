@@ -133,17 +133,21 @@ if (useAspectRatio)
 class CircularButton extends StatelessWidget {
   const CircularButton({
     required this.icon,
+    super.key,
     this.size = 34,
     this.onPressed,
     this.hasDecoration = true,
     this.isOpaque = false,
-    super.key,
+    this.foregroundColor,
+    this.backgroundColor,
   });
   final VoidCallback? onPressed;
   final double size;
   final IconData icon;
   final bool hasDecoration;
   final bool isOpaque;
+  final Color? foregroundColor;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +160,11 @@ class CircularButton extends StatelessWidget {
               ? BoxDecoration(
                   shape: BoxShape.circle,
                   color: isOpaque
-                      ? Theme.of(context).colorScheme.background
-                      : Theme.of(context).colorScheme.background.withAlpha(128),
+                      ? backgroundColor ??
+                          Theme.of(context).colorScheme.background
+                      : (backgroundColor ??
+                              Theme.of(context).colorScheme.background)
+                          .withAlpha(128),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.3),
@@ -172,9 +179,10 @@ class CircularButton extends StatelessWidget {
           child: Icon(
             icon,
             size: size,
-            color: hasDecoration
-                ? Theme.of(context).colorScheme.onBackground
-                : Theme.of(context).colorScheme.onBackground,
+            color: foregroundColor ??
+                (hasDecoration
+                    ? Theme.of(context).colorScheme.onBackground
+                    : Theme.of(context).colorScheme.background),
           ),
         ),
       ),
@@ -201,16 +209,19 @@ class CameraTopMenu extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         CircularButton(
-          onPressed: () {/*onAspectRatioPressed */},
-          icon: MdiIcons.arrowExpandVertical,
+          onPressed: () {
+            controller.setFlashMode(
+              FlashMode.values.next(controller.value.flashMode),
+            );
+          },
           size: 24,
           hasDecoration: false,
-        ),
-        CircularButton(
-          onPressed: () {/* onFlashModePressed */},
-          icon: Icons.flash_on,
-          size: 24,
-          hasDecoration: false,
+          icon: switch (controller.value.flashMode) {
+            FlashMode.off => Icons.flash_off,
+            FlashMode.auto => Icons.flash_auto,
+            FlashMode.always => Icons.flash_on,
+            FlashMode.torch => Icons.highlight,
+          },
         ),
         CircularButton(
           onPressed: () {
