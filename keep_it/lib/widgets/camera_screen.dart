@@ -1,8 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -157,7 +154,7 @@ class CircularButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Padding(
-        padding: EdgeInsets.all(hasDecoration ? 4 : 0),
+        padding: EdgeInsets.all(hasDecoration ? 8 : 4),
         child: Container(
           decoration: hasDecoration
               ? BoxDecoration(
@@ -178,7 +175,9 @@ class CircularButton extends StatelessWidget {
                   ],
                 )
               : null,
-          padding: EdgeInsets.all(hasDecoration ? 16 : 8),
+          height: hasDecoration ? size + 8 : null,
+          width: hasDecoration ? size + 8 : null,
+          //  padding: EdgeInsets.all(hasDecoration ? 8 : 4),
           child: Icon(
             icon,
             size: size,
@@ -213,7 +212,7 @@ class CameraTopMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
