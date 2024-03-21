@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'Camera/camera_preview.dart';
 import 'Camera/preview.dart';
 
 class CameraInterface extends StatefulWidget {
@@ -130,3 +129,99 @@ class _CameraInterfaceState extends State<CameraInterface> {
 if (useAspectRatio)
                 ,
  */
+
+class CircularButton extends StatelessWidget {
+  const CircularButton({
+    required this.icon,
+    this.size = 34,
+    this.onPressed,
+    this.hasDecoration = true,
+    this.isOpaque = false,
+    super.key,
+  });
+  final VoidCallback? onPressed;
+  final double size;
+  final IconData icon;
+  final bool hasDecoration;
+  final bool isOpaque;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Padding(
+        padding: EdgeInsets.all(hasDecoration ? 4 : 0),
+        child: Container(
+          decoration: hasDecoration
+              ? BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isOpaque
+                      ? Theme.of(context).colorScheme.background
+                      : Theme.of(context).colorScheme.background.withAlpha(128),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                )
+              : null,
+          padding: EdgeInsets.all(hasDecoration ? 16 : 8),
+          child: Icon(
+            icon,
+            size: size,
+            color: hasDecoration
+                ? Theme.of(context).colorScheme.onBackground
+                : Theme.of(context).colorScheme.background,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CameraTopMenu extends StatelessWidget {
+  const CameraTopMenu({
+    this.onAspectRatioPressed,
+    this.onFlashModePressed,
+    this.onSwitchCameraPressed,
+    super.key,
+  });
+  final VoidCallback? onAspectRatioPressed;
+  final VoidCallback? onFlashModePressed;
+  final VoidCallback? onSwitchCameraPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      //backgroundColor: Colors.transparent,
+      //elevation: 0,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        CircularButton(
+          onPressed: onAspectRatioPressed,
+          icon: MdiIcons.arrowExpandVertical,
+          size: 24,
+          hasDecoration: false,
+        ),
+        CircularButton(
+          onPressed: onFlashModePressed,
+          icon: Icons.flash_on,
+          size: 24,
+          hasDecoration: false,
+        ),
+        CircularButton(
+          onPressed: onSwitchCameraPressed,
+          icon: Icons.switch_camera,
+          size: 24,
+          hasDecoration: false,
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+        ),
+      ],
+    );
+  }
+}

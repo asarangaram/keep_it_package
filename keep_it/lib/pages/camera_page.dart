@@ -11,7 +11,11 @@ class CameraPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetCameras(
       builder: (cameras) {
-        return CameraView(cameras: cameras);
+        return CameraView(
+          cameras: cameras,
+          onError: (e) => CameraError(errorMessage: e),
+          onLoading: CameraLoading.new,
+        );
       },
     );
   }

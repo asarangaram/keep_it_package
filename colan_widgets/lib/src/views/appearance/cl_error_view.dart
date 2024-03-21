@@ -27,7 +27,7 @@ class CLErrorView extends StatelessWidget {
                   Icons.warning,
                   color: Theme.of(context).colorScheme.error,
                 ),
-                CLText.veryLarge(
+                CLText.large(
                   errorMessage,
                   color: Theme.of(context).colorScheme.error,
                 ),

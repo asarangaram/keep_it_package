@@ -59,6 +59,8 @@ class CameraError extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         CLErrorView(
           errorMessage: errorMessage,

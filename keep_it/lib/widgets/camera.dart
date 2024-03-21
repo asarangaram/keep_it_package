@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'dart:async';
 import 'dart:io';
 
@@ -9,22 +11,85 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+
 import 'package:video_player/video_player.dart';
 
-/// Camera example home widget.
-class CameraView extends StatefulWidget {
-  /// Default Constructor
-  const CameraView({required this.cameras, super.key});
+import 'Camera/preview.dart';
+import 'camera_screen.dart';
+
+class CameraView extends StatelessWidget {
+  const CameraView({
+    required this.cameras,
+    required this.onError,
+    required this.onLoading,
+    super.key,
+  });
   final List<CameraDescription> cameras;
+  final Widget Function(String) onError;
+  final Widget Function() onLoading;
 
   @override
-  State<CameraView> createState() {
+  Widget build(BuildContext context) {
+    try {
+      if (cameras.isEmpty) {
+        throw Exception('No camera found.');
+      }
+      return FullscreenLayout(
+        child: _CameraView(
+          cameras: cameras,
+          onError: onError,
+          onLoading: onLoading,
+        ),
+      );
+    } catch (e) {
+      return onError(e.toString());
+    }
+  }
+}
+
+/// Camera example home widget.
+class _CameraView extends StatefulWidget {
+  /// Default Constructor
+  const _CameraView({
+    required this.cameras,
+    required this.onError,
+    required this.onLoading,
+    // ignore: unused_element
+    this.defaultCameraIndex = 0,
+  });
+  final List<CameraDescription> cameras;
+  final int defaultCameraIndex;
+  final Widget Function(String) onError;
+  final Widget Function() onLoading;
+
+  @override
+  State<_CameraView> createState() {
     return _CameraViewState();
   }
 }
 
-class _CameraViewState extends State<CameraView>
+/// Returns a suitable camera icon for [direction].
+IconData getCameraLensIcon(CameraLensDirection direction) {
+  switch (direction) {
+    case CameraLensDirection.back:
+      return Icons.camera_rear;
+    case CameraLensDirection.front:
+      return Icons.camera_front;
+    case CameraLensDirection.external:
+      return Icons.camera;
+  }
+  // This enum is from a different package, so a new value could be added at
+  // any time. The example should keep working if that happens.
+  // ignore: dead_code
+  return Icons.camera;
+}
+
+void _logError(String code, String? message) {
+  // ignore: avoid_print
+  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
+}
+
+class _CameraViewState extends State<_CameraView>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
   XFile? imageFile;
@@ -78,6 +143,7 @@ class _CameraViewState extends State<CameraView>
       parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
+    onNewCameraSelected(widget.cameras[widget.defaultCameraIndex]);
   }
 
   @override
@@ -108,78 +174,68 @@ class _CameraViewState extends State<CameraView>
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenLayout(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(
-                  color:
-                      controller != null && controller!.value.isRecordingVideo
-                          ? Colors.redAccent
-                          : Colors.grey,
-                  width: 3,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(1),
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
-              ),
-            ),
-          ),
-          _captureControlRowWidget(),
-          _modeControlRowWidget(),
-          Padding(
-            padding: const EdgeInsets.all(5),
-            child: Row(
-              children: <Widget>[
-                _cameraTogglesRowWidget(),
-                _thumbnailWidget(),
-              ],
-            ),
-          ),
-        ],
-      ),
+    if (controller == null || !controller!.value.isInitialized) {
+      return widget.onLoading();
+    }
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: _cameraPreviewWidget(),
+        ),
+        _captureControlRowWidget(),
+        _modeControlRowWidget(),
+      ],
     );
   }
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
-    final cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return const Text(
-        'Tap a camera',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-          fontWeight: FontWeight.w900,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        border: Border.all(
+          color: controller != null && controller!.value.isRecordingVideo
+              ? Colors.redAccent
+              : Colors.grey,
+          width: 3,
         ),
-      );
-    } else {
-      return Listener(
-        onPointerDown: (_) => _pointers++,
-        onPointerUp: (_) => _pointers--,
-        child: CameraPreview(
-          controller!,
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onScaleStart: _handleScaleStart,
-                onScaleUpdate: _handleScaleUpdate,
-                onTapDown: (TapDownDetails details) =>
-                    onViewFinderTap(details, constraints),
-              );
-            },
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(1),
+        child: Center(
+          child: Listener(
+            onPointerDown: (_) => _pointers++,
+            onPointerUp: (_) => _pointers--,
+            child: CameraPreview2(
+              controller!,
+              children: [
+                LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onScaleStart: _handleScaleStart,
+                      onScaleUpdate: _handleScaleUpdate,
+                      onTapDown: (TapDownDetails details) =>
+                          onViewFinderTap(details, constraints),
+                    );
+                  },
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration:
+                        BoxDecoration(border: Border.all(color: Colors.yellow)),
+                    child: const CameraTopMenu(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 
   void _handleScaleStart(ScaleStartDetails details) {
@@ -230,7 +286,6 @@ class _CameraViewState extends State<CameraView>
                         child: Center(
                           child: AspectRatio(
                             aspectRatio: localVideoController.value.aspectRatio,
-                            //TODO
                           ),
                         ),
                       ),
@@ -543,42 +598,6 @@ class _CameraViewState extends State<CameraView>
     );
   }
 
-  /// Display a row of toggle to select the camera (or a message if no camera is available).
-  Widget _cameraTogglesRowWidget() {
-    final toggles = <Widget>[];
-
-    void onChanged(CameraDescription? description) {
-      if (description == null) {
-        return;
-      }
-
-      onNewCameraSelected(description);
-    }
-
-    if (widget.cameras.isEmpty) {
-      SchedulerBinding.instance.addPostFrameCallback((_) async {
-        showInSnackBar('No camera found.');
-      });
-      return const Text('None');
-    } else {
-      for (final cameraDescription in widget.cameras) {
-        toggles.add(
-          SizedBox(
-            width: 90,
-            child: RadioListTile<CameraDescription>(
-              title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller?.description,
-              value: cameraDescription,
-              onChanged: onChanged,
-            ),
-          ),
-        );
-      }
-    }
-
-    return Row(children: toggles);
-  }
-
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
@@ -597,8 +616,9 @@ class _CameraViewState extends State<CameraView>
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    cameraController.setExposurePoint(offset);
-    cameraController.setFocusPoint(offset);
+    cameraController
+      ..setExposurePoint(offset)
+      ..setFocusPoint(offset);
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
@@ -940,7 +960,7 @@ class _CameraViewState extends State<CameraView>
       _currentExposureOffset = offset;
     });
     try {
-      offset = await controller!.setExposureOffset(offset);
+      await controller!.setExposureOffset(offset);
     } on CameraException catch (e) {
       _showCameraException(e);
       rethrow;
@@ -961,12 +981,34 @@ class _CameraViewState extends State<CameraView>
   }
 
   Future<void> _startVideoPlayer() async {
-    imageFile = null;
-    videoFile = null;
-
-    if (mounted) {
-      setState(() {});
+    if (videoFile == null) {
+      return;
     }
+
+    final vController = kIsWeb
+        ? VideoPlayerController.networkUrl(Uri.parse(videoFile!.path))
+        : VideoPlayerController.file(File(videoFile!.path));
+
+    videoPlayerListener = () {
+      if (videoController != null) {
+        // Refreshing the state to update video player with the correct ratio.
+        if (mounted) {
+          setState(() {});
+        }
+        videoController!.removeListener(videoPlayerListener!);
+      }
+    };
+    vController.addListener(videoPlayerListener!);
+    await vController.setLooping(true);
+    await vController.initialize();
+    await videoController?.dispose();
+    if (mounted) {
+      setState(() {
+        imageFile = null;
+        videoController = vController;
+      });
+    }
+    await vController.play();
   }
 
   Future<XFile?> takePicture() async {
@@ -981,33 +1023,17 @@ class _CameraViewState extends State<CameraView>
       return null;
     }
 
-    final file = await cameraController.takePicture();
-    return file;
+    try {
+      final file = await cameraController.takePicture();
+      return file;
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
   }
 
   void _showCameraException(CameraException e) {
     _logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
   }
-}
-
-/// Returns a suitable camera icon for [direction].
-IconData getCameraLensIcon(CameraLensDirection direction) {
-  switch (direction) {
-    case CameraLensDirection.back:
-      return Icons.camera_rear;
-    case CameraLensDirection.front:
-      return Icons.camera_front;
-    case CameraLensDirection.external:
-      return Icons.camera;
-  }
-  // This enum is from a different package, so a new value could be added at
-  // any time. The example should keep working if that happens.
-  // ignore: dead_code
-  return Icons.camera;
-}
-
-void _logError(String code, String? message) {
-  // ignore: avoid_print
-  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
 }
