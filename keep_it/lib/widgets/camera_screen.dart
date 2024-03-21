@@ -212,67 +212,75 @@ class CameraTopMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      leading: showMenu
-          ? CircularButton(
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showMenu)
+            CircularButton(
               onPressed: onCaptureOrientationLockButtonPressed,
               icon: controller.value.isCaptureOrientationLocked
                   ? Icons.screen_lock_rotation
                   : Icons.screen_rotation,
-              foregroundColor: Colors.yellow,
               size: 24,
               hasDecoration: false,
-            )
-          : null,
-      actions: [
-        if (showMenu) ...[
-          CircularButton(
-            onPressed: () {
-              controller.setFlashMode(
-                FlashMode.values.next(controller.value.flashMode),
-              );
-            },
-            size: 24,
-            hasDecoration: false,
-            icon: switch (controller.value.flashMode) {
-              FlashMode.off => Icons.flash_off,
-              FlashMode.auto => Icons.flash_auto,
-              FlashMode.always => Icons.flash_on,
-              FlashMode.torch => Icons.highlight,
-            },
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (showMenu) ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  CircularButton(
+                    onPressed: () {
+                      controller.setFlashMode(
+                        FlashMode.values.next(controller.value.flashMode),
+                      );
+                    },
+                    size: 24,
+                    hasDecoration: false,
+                    icon: switch (controller.value.flashMode) {
+                      FlashMode.off => Icons.flash_off,
+                      FlashMode.auto => Icons.flash_auto,
+                      FlashMode.always => Icons.flash_on,
+                      FlashMode.torch => Icons.highlight,
+                    },
+                  ),
+                ],
+                if (showMenu) ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  CircularButton(
+                    onPressed: () {
+                      controller
+                          .setDescription(cameras.next(controller.description));
+                    },
+                    icon: Icons.switch_camera,
+                    size: 24,
+                    hasDecoration: false,
+                  ),
+                ],
+                ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  CircularButton(
+                    onPressed: onToggleFullScreen,
+                    icon: showMenu ? MdiIcons.eyeOff : MdiIcons.eye,
+                    size: 24,
+                    foregroundColor: showMenu ? null : Colors.yellow,
+                    hasDecoration: false,
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
-        if (showMenu) ...[
-          CircularButton(
-            onPressed: () {
-              controller.setDescription(cameras.next(controller.description));
-            },
-            icon: Icons.switch_camera,
-            size: 24,
-            hasDecoration: false,
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-          ),
-        ],
-        ...[
-          CircularButton(
-            onPressed: onToggleFullScreen,
-            icon: showMenu ? MdiIcons.arrowExpand : MdiIcons.arrowCollapse,
-            size: 24,
-            foregroundColor: Colors.yellow,
-            hasDecoration: false,
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-          ),
-        ],
-      ],
+      ),
     );
   }
 
@@ -299,32 +307,16 @@ class TakePhotoControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            child: CLButtonIconLabelled.verySmall(
-              MdiIcons.image,
-              'Photo',
-              color: Colors.yellowAccent,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Center(
-            child: CircularButton(
-              onPressed: () async {
-                if (!controller.value.isTakingPicture) {
-                  final xFile = await controller.takePicture();
-                }
-              },
-              icon: MdiIcons.camera,
-              size: 44,
-            ),
-          ),
-        ),
-        Expanded(child: Container()),
-      ],
+    return Center(
+      child: CircularButton(
+        onPressed: () async {
+          if (!controller.value.isTakingPicture) {
+            final xFile = await controller.takePicture();
+          }
+        },
+        icon: MdiIcons.camera,
+        size: 44,
+      ),
     );
   }
 }

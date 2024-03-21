@@ -29,6 +29,7 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
   double _currentScale = 1;
   double _baseScale = 1;
   bool keepAspectRatio = true;
+
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
@@ -54,44 +55,45 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
             child: ValueListenableBuilder<CameraValue>(
               valueListenable: widget.controller,
               builder: (BuildContext context, Object? value, Widget? child) {
-                return Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    Center(
-                      child: LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return keepAspectRatio
-                              ? AspectRatio(
-                                  aspectRatio: _isLandscape()
-                                      ? widget.controller.value.aspectRatio
-                                      : 1 / widget.controller.value.aspectRatio,
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onScaleStart: _handleScaleStart,
-                                    onScaleUpdate: _handleScaleUpdate,
-                                    onTapDown: (TapDownDetails details) =>
-                                        onViewFinderTap(details, constraints),
-                                    child: _wrapInRotatedBox(
-                                      child: widget.controller.buildPreview(),
-                                    ),
-                                  ),
-                                )
-                              : GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  onScaleStart: _handleScaleStart,
-                                  onScaleUpdate: _handleScaleUpdate,
-                                  onTapDown: (TapDownDetails details) =>
-                                      onViewFinderTap(details, constraints),
-                                  child: _wrapInRotatedBox(
-                                    child: widget.controller.buildPreview(),
-                                  ),
-                                );
-                        },
+                return AspectRatioConditional(
+                  aspectRatio: keepAspectRatio && widget.isFullScreen
+                      ? null
+                      : _isLandscape()
+                          ? widget.controller.value.aspectRatio
+                          : 1 / widget.controller.value.aspectRatio,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      Center(
+                        child: LayoutBuilder(
+                          builder: (
+                            BuildContext context,
+                            BoxConstraints constraints,
+                          ) {
+                            return GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onScaleStart: _handleScaleStart,
+                              onScaleUpdate: _handleScaleUpdate,
+                              onTapDown: (TapDownDetails details) =>
+                                  onViewFinderTap(details, constraints),
+                              child: AspectRatioConditional(
+                                aspectRatio: keepAspectRatio
+                                    ? _isLandscape()
+                                        ? widget.controller.value.aspectRatio
+                                        : 1 /
+                                            widget.controller.value.aspectRatio
+                                    : null,
+                                child: _wrapInRotatedBox(
+                                  child: widget.controller.buildPreview(),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    ...widget.children,
-                  ],
+                      ...widget.children,
+                    ],
+                  ),
                 );
               },
             ),
@@ -167,5 +169,26 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
         : (widget.controller.value.previewPauseOrientation ??
             widget.controller.value.lockedCaptureOrientation ??
             widget.controller.value.deviceOrientation);
+  }
+}
+
+class AspectRatioConditional extends StatelessWidget {
+  const AspectRatioConditional({
+    required this.child,
+    super.key,
+    this.aspectRatio,
+  });
+  final double? aspectRatio;
+  final Widget child;
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    if (aspectRatio == null) return child;
+    return AspectRatio(
+      aspectRatio: aspectRatio!,
+      child: child,
+    );
   }
 }

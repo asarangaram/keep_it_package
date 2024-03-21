@@ -153,7 +153,7 @@ class _CameraViewState extends State<_CameraView>
 
     final showControl = !isFullScreen && !controller!.value.isRecordingVideo;
 
-    if (showControl) {
+    if (!showControl) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     } else {
       SystemChrome.setEnabledSystemUIMode(
@@ -165,28 +165,31 @@ class _CameraViewState extends State<_CameraView>
     return DecoratedBox(
       decoration:
           BoxDecoration(color: Theme.of(context).colorScheme.onBackground),
-      child: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: CameraPreviewWidget(
+      child: Center(
+        child: SafeArea(
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              CameraPreviewWidget(
                 isFullScreen: !showControl,
                 controller: controller!,
                 minAvailableZoom: _minAvailableZoom,
                 maxAvailableZoom: _maxAvailableZoom,
                 children: [
-                  Positioned(
-                    child: CameraTopMenu(
-                      controller: controller!,
-                      cameras: widget.cameras,
-                      showMenu: showControl,
-                      onToggleFullScreen: () {
-                        setState(() {
-                          isFullScreen = !isFullScreen;
-                        });
-                      },
+                  if (!showControl)
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: CameraTopMenu(
+                        controller: controller!,
+                        cameras: widget.cameras,
+                        showMenu: showControl,
+                        onToggleFullScreen: () {
+                          setState(() {
+                            isFullScreen = !isFullScreen;
+                          });
+                        },
+                      ),
                     ),
-                  ),
                   Positioned(
                     bottom: 8,
                     left: 0,
@@ -197,10 +200,24 @@ class _CameraViewState extends State<_CameraView>
                   ),
                 ],
               ),
-            ),
-            //if (showControl) _captureControlRowWidget(),
-            _modeControlRowWidget(),
-          ],
+              //if (showControl) _captureControlRowWidget(),
+              // if (showControl) _modeControlRowWidget(),
+              if (showControl)
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: CameraTopMenu(
+                    controller: controller!,
+                    cameras: widget.cameras,
+                    showMenu: showControl,
+                    onToggleFullScreen: () {
+                      setState(() {
+                        isFullScreen = !isFullScreen;
+                      });
+                    },
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
