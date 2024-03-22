@@ -1,33 +1,55 @@
+import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'providers/camera_state.dart';
-
-class CaptureControls extends ConsumerStatefulWidget {
+class CaptureControls extends StatefulWidget {
   const CaptureControls({
+    required this.controller,
+    required this.isVideoCamera,
+    required this.isInUse,
+    required this.isTakingPicture,
+    required this.isRecordingVideo,
+    required this.onChanageCameraMode,
+    required this.isRecordingVideoPaused,
+    required this.onPauseVideoRecording,
+    required this.onStartVideoRecording,
+    required this.onStopVideoRecording,
+    required this.onResumeVideoRecording,
+    required this.onTakePicture,
     super.key,
   });
+  final CameraController controller;
+  final bool isVideoCamera;
+  final bool isInUse;
+  final bool isTakingPicture;
+  final bool isRecordingVideo;
+  final bool isRecordingVideoPaused;
+  final void Function({required bool isVideoCamera}) onChanageCameraMode;
+  final VoidCallback onStartVideoRecording;
+  final VoidCallback onStopVideoRecording;
+  final VoidCallback onPauseVideoRecording;
+  final VoidCallback onResumeVideoRecording;
+  final VoidCallback onTakePicture;
 
   @override
-  ConsumerState<CaptureControls> createState() => _CaptureControlsState();
+  State<CaptureControls> createState() => _CaptureControlsState();
 }
 
-class _CaptureControlsState extends ConsumerState<CaptureControls> {
+class _CaptureControlsState extends State<CaptureControls> {
   @override
   Widget build(BuildContext context) {
-    final cameraState = ref.watch(cameraStateProvider);
-    final controller = cameraState.controller;
-    final isVideo = cameraState.isVideo;
-    final busy = cameraState.isTakingPicture || cameraState.isRecordingVideo;
+    final controller = widget.controller;
+
+    /* final busy =
+        controller.value.isTakingPicture || controller.value.isRecordingVideo; */
     return LayoutBuilder(
       builder: (context, constrains) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (!busy)
+            if (!widget.isInUse)
               SizedBox(
                 width: constrains.maxWidth,
                 height: kMinInteractiveDimension,
@@ -39,24 +61,20 @@ class _CaptureControlsState extends ConsumerState<CaptureControls> {
                     children: [
                       CLButtonText.standard(
                         'Photo',
-                        color: !isVideo ? Colors.yellow.shade300 : Colors.grey,
+                        color: !widget.isVideoCamera
+                            ? Colors.yellow.shade300
+                            : Colors.grey,
                         onTap: () {
-                          ref
-                              .read(
-                                cameraStateProvider.notifier,
-                              )
-                              .setPhotoMode();
+                          widget.onChanageCameraMode(isVideoCamera: false);
                         },
                       ),
                       CLButtonText.standard(
                         'Video',
-                        color: isVideo ? Colors.yellow.shade300 : Colors.grey,
+                        color: widget.isVideoCamera
+                            ? Colors.yellow.shade300
+                            : Colors.grey,
                         onTap: () {
-                          ref
-                              .read(
-                                cameraStateProvider.notifier,
-                              )
-                              .setVideoMode();
+                          widget.onChanageCameraMode(isVideoCamera: true);
                         },
                       ),
                     ]
@@ -77,12 +95,18 @@ class _CaptureControlsState extends ConsumerState<CaptureControls> {
                   child: Container(),
                 ),
                 CircularButton(
-                  onPressed: ref
-                      .read(cameraStateProvider.notifier)
-                      .primaryButtonAction,
-                  icon: cameraState.isVideo
-                      ? cameraState.isRecordingVideo
-                          ? cameraState.isRecordingPaused
+                  onPressed: widget.isRecordingVideo
+                      ? null
+                      : widget.isVideoCamera
+                          ? widget.isRecordingVideo
+                              ? widget.isRecordingVideoPaused
+                                  ? widget.onResumeVideoRecording
+                                  : widget.onPauseVideoRecording
+                              : widget.onStartVideoRecording
+                          : widget.onTakePicture,
+                  icon: widget.isVideoCamera
+                      ? widget.isRecordingVideo
+                          ? widget.isRecordingVideoPaused
                               ? MdiIcons.circle
                               : MdiIcons.pause
                           : MdiIcons.video
@@ -95,16 +119,14 @@ class _CaptureControlsState extends ConsumerState<CaptureControls> {
                       ? Theme.of(context).colorScheme.onError
                       : null,
                 ),
-                if (cameraState.canPause)
+                if (widget.isVideoCamera && widget.isRecordingVideo)
                   Flexible(
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16),
                         child: CircularButton(
-                          onPressed: ref
-                              .read(cameraStateProvider.notifier)
-                              .secondaryButtonAction,
+                          onPressed: widget.onStopVideoRecording,
                           icon: MdiIcons.stop,
                           size: 32,
                         ),

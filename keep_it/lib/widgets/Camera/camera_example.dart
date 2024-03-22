@@ -8,10 +8,11 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:store/store.dart';
+
+import 'capture_controls.dart';
 
 /// Camera example home widget.
 class CameraExampleHome extends StatefulWidget {
@@ -43,6 +44,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   double _maxAvailableZoom = 1;
   double _currentScale = 1;
   double _baseScale = 1;
+  bool isVideoCamera = false;
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -106,11 +108,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Camera example'),
-      ),
-      body: Column(
+    return FullscreenLayout(
+      child: Column(
         children: <Widget>[
           Expanded(
             child: Container(
@@ -167,16 +166,40 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         onPointerUp: (_) => _pointers--,
         child: CameraPreview(
           controller!,
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onScaleStart: _handleScaleStart,
-                onScaleUpdate: _handleScaleUpdate,
-                onTapDown: (TapDownDetails details) =>
-                    onViewFinderTap(details, constraints),
-              );
-            },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onScaleStart: _handleScaleStart,
+                    onScaleUpdate: _handleScaleUpdate,
+                    onTapDown: (TapDownDetails details) =>
+                        onViewFinderTap(details, constraints),
+                  );
+                },
+              ),
+              CaptureControls(
+                controller: controller!,
+                isVideoCamera: isVideoCamera,
+                isInUse: controller!.value.isTakingPicture ||
+                    controller!.value.isRecordingVideo,
+                isTakingPicture: controller!.value.isTakingPicture,
+                isRecordingVideo: controller!.value.isRecordingVideo,
+                onChanageCameraMode: ({required isVideoCamera}) {
+                  setState(() {
+                    this.isVideoCamera = isVideoCamera;
+                  });
+                },
+                isRecordingVideoPaused: controller!.value.isRecordingPaused,
+                onStartVideoRecording: onVideoRecordButtonPressed,
+                onStopVideoRecording: onStopButtonPressed,
+                onPauseVideoRecording: onPauseButtonPressed,
+                onResumeVideoRecording: onResumeButtonPressed,
+                onTakePicture: onTakePictureButtonPressed,
+              ),
+            ],
           ),
         ),
       );
@@ -246,23 +269,17 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               onPressed: controller != null ? onFlashModeButtonPressed : null,
             ),
             // The exposure and focus mode are currently not supported on the web.
-            ...!kIsWeb
-                ? <Widget>[
-                    IconButton(
-                      icon: const Icon(Icons.exposure),
-                      color: Colors.blue,
-                      onPressed: controller != null
-                          ? onExposureModeButtonPressed
-                          : null,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.filter_center_focus),
-                      color: Colors.blue,
-                      onPressed:
-                          controller != null ? onFocusModeButtonPressed : null,
-                    ),
-                  ]
-                : <Widget>[],
+            IconButton(
+              icon: const Icon(Icons.exposure),
+              color: Colors.blue,
+              onPressed:
+                  controller != null ? onExposureModeButtonPressed : null,
+            ),
+            IconButton(
+              icon: const Icon(Icons.filter_center_focus),
+              color: Colors.blue,
+              onPressed: controller != null ? onFocusModeButtonPressed : null,
+            ),
 
             IconButton(
               icon: Icon(
@@ -608,7 +625,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   ) async {
     final cameraController = CameraController(
       cameraDescription,
-      kIsWeb ? ResolutionPreset.max : ResolutionPreset.medium,
+      ResolutionPreset.ultraHigh,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
@@ -630,16 +647,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await cameraController.initialize();
       await Future.wait(<Future<Object?>>[
         // The exposure mode is currently not supported on the web.
-        ...!kIsWeb
-            ? <Future<Object?>>[
-                cameraController.getMinExposureOffset().then(
-                      (double value) => _minAvailableExposureOffset = value,
-                    ),
-                cameraController.getMaxExposureOffset().then(
-                      (double value) => _maxAvailableExposureOffset = value,
-                    ),
-              ]
-            : <Future<Object?>>[],
+        cameraController.getMinExposureOffset().then(
+              (double value) => _minAvailableExposureOffset = value,
+            ),
+        cameraController.getMaxExposureOffset().then(
+              (double value) => _maxAvailableExposureOffset = value,
+            ),
         cameraController
             .getMaxZoomLevel()
             .then((double value) => _maxAvailableZoom = value),

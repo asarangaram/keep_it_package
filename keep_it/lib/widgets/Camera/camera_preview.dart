@@ -40,7 +40,7 @@ class CameraPreviewWidget extends ConsumerWidget {
                   CameraGesture(),
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: CaptureControls(),
+                    // TODO(anandas):   child: CaptureControls(),
                   ),
                 ],
               ),
@@ -51,10 +51,6 @@ class CameraPreviewWidget extends ConsumerWidget {
     );
   }
 }
-
-
-
-
 
 class AspectRatioConditional extends StatelessWidget {
   const AspectRatioConditional({
