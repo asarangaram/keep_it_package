@@ -13,6 +13,7 @@ class GetCameras extends ConsumerWidget {
     final camerasAsync = ref.watch(camearasProvider);
 
     return FullscreenLayout(
+      useSafeArea: false,
       child: camerasAsync.when(
         data: builder,
         error: (e, st) => CameraError(errorMessage: e.toString()),

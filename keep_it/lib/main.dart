@@ -19,6 +19,7 @@ import 'pages/item_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/tag_timeline_page.dart';
 import 'pages/tags_page.dart';
+import 'widgets/Camera/camera_example.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -85,6 +86,12 @@ class KeepItApp implements AppDescriptor {
           name: 'camera',
           builder: (context, GoRouterState state) {
             return const CameraPage();
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'cameraExample',
+          builder: (context, GoRouterState state) {
+            return const CameraExample();
           },
         ),
         CLRouteDescriptor(
@@ -213,7 +220,7 @@ class KeepItApp implements AppDescriptor {
   @override
   CLRedirector get redirector => (String location) async {
         //if (location == '/') return '/collections';
-        return null;
+        return '/cameraExample';
       };
 }
 

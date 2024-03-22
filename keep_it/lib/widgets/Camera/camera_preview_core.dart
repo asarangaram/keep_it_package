@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:keep_it/widgets/Camera/models/camera_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CameraPreviewCore extends StatelessWidget {
-  const CameraPreviewCore({required this.cameraState, super.key});
-  final CameraState cameraState;
+import 'providers/camera_state.dart';
+
+class CameraPreviewCore extends ConsumerWidget {
+  const CameraPreviewCore({super.key});
 
   @override
-  Widget build(BuildContext context) => cameraState.controller.buildPreview();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller =
+        ref.watch(cameraStateProvider.select((value) => value.controller));
+    return controller.buildPreview();
+  }
 }

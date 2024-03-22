@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+/* import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -130,67 +130,7 @@ if (useAspectRatio)
                 ,
  */
 
-class CircularButton extends StatelessWidget {
-  const CircularButton({
-    required this.icon,
-    super.key,
-    this.size = 34,
-    this.onPressed,
-    this.hasDecoration = true,
-    this.isOpaque = false,
-    this.foregroundColor,
-    this.backgroundColor,
-  });
-  final VoidCallback? onPressed;
-  final double size;
-  final IconData icon;
-  final bool hasDecoration;
-  final bool isOpaque;
-  final Color? foregroundColor;
-  final Color? backgroundColor;
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Padding(
-        padding: EdgeInsets.all(hasDecoration ? 8 : 4),
-        child: Container(
-          decoration: hasDecoration
-              ? BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isOpaque
-                      ? backgroundColor ??
-                          Theme.of(context).colorScheme.background
-                      : (backgroundColor ??
-                              Theme.of(context).colorScheme.background)
-                          .withAlpha(128),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                )
-              : null,
-          height: hasDecoration ? size + 8 : null,
-          width: hasDecoration ? size + 8 : null,
-          //  padding: EdgeInsets.all(hasDecoration ? 8 : 4),
-          child: Icon(
-            icon,
-            size: size,
-            color: foregroundColor ??
-                (hasDecoration
-                    ? Theme.of(context).colorScheme.onBackground
-                    : Theme.of(context).colorScheme.background),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 extension EXTNextOnList<T> on List<T> {
   T next(T item) => this[(indexOf(item) + 1) % length];
@@ -291,105 +231,10 @@ class CameraTopMenu extends StatelessWidget {
       } else {
         await cameraController.lockCaptureOrientation();
       }
+      // ignore: unused_catch_clause
     } on CameraException catch (e) {
       /** */
     }
   }
 }
-
-class TakePhotoControl extends StatelessWidget {
-  const TakePhotoControl({
-    required this.controller,
-    super.key,
-  });
-  final CameraController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CircularButton(
-        onPressed: () async {
-          if (!controller.value.isTakingPicture) {
-            final xFile = await controller.takePicture();
-          }
-        },
-        icon: MdiIcons.camera,
-        size: 44,
-      ),
-    );
-  }
-}
-
-class VideoControl extends StatefulWidget {
-  const VideoControl({
-    required this.controller,
-    super.key,
-  });
-  final CameraController controller;
-
-  @override
-  State<VideoControl> createState() => _VideoControlState();
-}
-
-class _VideoControlState extends State<VideoControl> {
-  bool waiting = false;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Flexible(
-          child: Container(),
-        ),
-        CircularButton(
-          onPressed: () async {
-            setState(() {
-              waiting = true;
-            });
-            if (!widget.controller.value.isRecordingVideo) {
-              await widget.controller.startVideoRecording();
-            } else if (widget.controller.value.isRecordingPaused) {
-              await widget.controller.resumeVideoRecording();
-            } else {
-              await widget.controller.pauseVideoRecording();
-            }
-            setState(() {
-              waiting = false;
-            });
-          },
-          icon: widget.controller.value.isRecordingVideo
-              ? widget.controller.value.isRecordingPaused
-                  ? MdiIcons.circle
-                  : MdiIcons.pause
-              : MdiIcons.video,
-          size: 44,
-          backgroundColor: widget.controller.value.isRecordingVideo &&
-                  !widget.controller.value.isRecordingPaused
-              ? Theme.of(context).colorScheme.error
-              : null,
-          foregroundColor: widget.controller.value.isRecordingVideo
-              ? Theme.of(context).colorScheme.onError
-              : null,
-        ),
-        if (widget.controller.value.isRecordingVideo && !waiting)
-          Flexible(
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: CircularButton(
-                  onPressed: () async {
-                    await widget.controller.stopVideoRecording();
-                  },
-                  icon: MdiIcons.stop,
-                  size: 32,
-                ),
-              ),
-            ),
-          )
-        else
-          Flexible(child: Container()),
-      ],
-    );
-  }
-}
+ */

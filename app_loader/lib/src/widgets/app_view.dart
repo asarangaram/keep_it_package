@@ -121,7 +121,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         ...fullScreenRoutes,
       ],
       redirect: (context, state) {
-        return '/camera';
+        return app.redirector(state.uri.path);
       },
     );
 

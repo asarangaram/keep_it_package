@@ -2,20 +2,19 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'camera_preview.dart';
 import 'camera_preview_core.dart';
-import 'models/camera_state.dart';
 
-class CameraFullScreen extends StatefulWidget {
-  const CameraFullScreen({required this.cameraState, super.key});
-  final CameraState cameraState;
+class CameraFullScreen extends ConsumerStatefulWidget {
+  const CameraFullScreen({super.key});
 
   @override
-  State<CameraFullScreen> createState() => _CameraFullScreenState();
+  ConsumerState<CameraFullScreen> createState() => _CameraFullScreenState();
 }
 
-class _CameraFullScreenState extends State<CameraFullScreen> {
+class _CameraFullScreenState extends ConsumerState<CameraFullScreen> {
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
@@ -33,13 +32,10 @@ class _CameraFullScreenState extends State<CameraFullScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cameraState = widget.cameraState;
     return Stack(
       fit: StackFit.expand,
       children: [
-        CameraPreviewCore(
-          cameraState: cameraState,
-        ),
+        const CameraPreviewCore(),
         Positioned.fill(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -48,9 +44,7 @@ class _CameraFullScreenState extends State<CameraFullScreen> {
             ),
           ),
         ),
-        CameraPreviewWidget(
-          cameraState: cameraState,
-        ),
+        const CameraPreviewWidget(),
       ],
     );
   }

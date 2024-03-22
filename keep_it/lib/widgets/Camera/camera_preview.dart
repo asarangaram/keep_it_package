@@ -1,31 +1,28 @@
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'camera_gesture.dart';
 import 'camera_preview_core.dart';
-import 'models/camera_state.dart';
+import 'capture_controls.dart';
+import 'providers/camera_state.dart';
 
-class CameraPreviewWidget extends StatefulWidget {
+class CameraPreviewWidget extends ConsumerWidget {
   const CameraPreviewWidget({
-    required this.cameraState,
     this.children = const [],
     super.key,
   });
-  final CameraState cameraState;
+
   final List<Widget> children;
 
   @override
-  State<StatefulWidget> createState() => CameraPreviewWidgetState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller =
+        ref.watch(cameraStateProvider.select((value) => value.controller));
 
-class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
-  // Counting pointers (number of user fingers on screen)
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = widget.cameraState.controller;
     return Container(
       decoration: const BoxDecoration(
         color: Colors.transparent,
@@ -36,13 +33,15 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
           builder: (BuildContext context, Object? value, Widget? child) {
             return AspectRatio(
               aspectRatio: 1 / controller.value.aspectRatio,
-              child: Stack(
+              child: const Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  CameraPreviewCore(
-                    cameraState: widget.cameraState,
+                  CameraPreviewCore(),
+                  CameraGesture(),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: CaptureControls(),
                   ),
-                  ...widget.children,
                 ],
               ),
             );
@@ -52,6 +51,10 @@ class CameraPreviewWidgetState extends State<CameraPreviewWidget> {
     );
   }
 }
+
+
+
+
 
 class AspectRatioConditional extends StatelessWidget {
   const AspectRatioConditional({

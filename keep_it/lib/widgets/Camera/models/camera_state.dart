@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,11 @@ class CameraState {
     this.currentExposureOffset = 0,
     this.minAvailableZoom = 0,
     this.maxAvailableZoom = 0,
+    this.currentScale = 1.0,
+    this.isVideo = false,
+    this.isTakingPicture = false,
+    this.isRecordingVideo = false,
+    this.isRecordingPaused = false,
   });
 
   static Future<void> createAsync(
@@ -19,7 +25,7 @@ class CameraState {
   }) async {
     final cameraController = CameraController(
       cameraDescription,
-      ResolutionPreset.ultraHigh,
+      ResolutionPreset.max,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
@@ -74,10 +80,18 @@ class CameraState {
 
   final double minAvailableZoom;
   final double maxAvailableZoom;
+  final double currentScale;
+
+  final bool isVideo;
+  final bool isTakingPicture;
+  final bool isRecordingVideo;
+  final bool isRecordingPaused;
 
   void dispose() {
     controller.dispose();
   }
+
+  bool get canPause => isVideo && controller.value.isRecordingVideo;
 
   CameraState copyWith({
     CameraController? controller,
@@ -86,6 +100,11 @@ class CameraState {
     double? currentExposureOffset,
     double? minAvailableZoom,
     double? maxAvailableZoom,
+    double? currentScale,
+    bool? isVideo,
+    bool? isTakingPicture,
+    bool? isRecordingVideo,
+    bool? isRecordingPaused,
   }) {
     return CameraState(
       controller: controller ?? this.controller,
@@ -97,6 +116,11 @@ class CameraState {
           currentExposureOffset ?? this.currentExposureOffset,
       minAvailableZoom: minAvailableZoom ?? this.minAvailableZoom,
       maxAvailableZoom: maxAvailableZoom ?? this.maxAvailableZoom,
+      currentScale: currentScale ?? this.currentScale,
+      isVideo: isVideo ?? this.isVideo,
+      isTakingPicture: isTakingPicture ?? this.isTakingPicture,
+      isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
+      isRecordingPaused: isRecordingPaused ?? this.isRecordingPaused,
     );
   }
 
@@ -109,7 +133,12 @@ class CameraState {
         other.maxAvailableExposureOffset == maxAvailableExposureOffset &&
         other.currentExposureOffset == currentExposureOffset &&
         other.minAvailableZoom == minAvailableZoom &&
-        other.maxAvailableZoom == maxAvailableZoom;
+        other.maxAvailableZoom == maxAvailableZoom &&
+        other.currentScale == currentScale &&
+        other.isVideo == isVideo &&
+        other.isTakingPicture == isTakingPicture &&
+        other.isRecordingVideo == isRecordingVideo &&
+        other.isRecordingPaused == isRecordingPaused;
   }
 
   @override
@@ -119,12 +148,17 @@ class CameraState {
         maxAvailableExposureOffset.hashCode ^
         currentExposureOffset.hashCode ^
         minAvailableZoom.hashCode ^
-        maxAvailableZoom.hashCode;
+        maxAvailableZoom.hashCode ^
+        currentScale.hashCode ^
+        isVideo.hashCode ^
+        isTakingPicture.hashCode ^
+        isRecordingVideo.hashCode ^
+        isRecordingPaused.hashCode;
   }
 
   @override
   String toString() {
-    return 'CameraState(controller: $controller, minAvailableExposureOffset: $minAvailableExposureOffset, maxAvailableExposureOffset: $maxAvailableExposureOffset, currentExposureOffset: $currentExposureOffset, minAvailableZoom: $minAvailableZoom, maxAvailableZoom: $maxAvailableZoom)';
+    return 'CameraState(controller: $controller, minAvailableExposureOffset: $minAvailableExposureOffset, maxAvailableExposureOffset: $maxAvailableExposureOffset, currentExposureOffset: $currentExposureOffset, minAvailableZoom: $minAvailableZoom, maxAvailableZoom: $maxAvailableZoom, currentScale: $currentScale, isVideo: $isVideo, isTakingPicture: $isTakingPicture, isRecordingVideo: $isRecordingVideo, isRecordingPaused: $isRecordingPaused)';
   }
 
   Future<void> setExposureOffset(
@@ -177,22 +211,29 @@ class CameraState {
     return onCameraError(errorString);
   }
 
-  Future<void> setZoomLevel(double value) async {
-    final currentScale = value.clamp(minAvailableZoom, maxAvailableZoom);
-    print(
-      'minAvailableZoom:$minAvailableZoom, maxAvailableZoom:$maxAvailableZoom ',
-    );
-    print('Scale : $value -> $currentScale');
-    await controller.setZoomLevel(currentScale);
+  Future<CameraState> setZoomLevel(double value) async {
+    try {
+      final currentScale = value.clamp(minAvailableZoom, maxAvailableZoom);
+      await controller.setZoomLevel(currentScale);
+      return copyWith(currentScale: currentScale);
+    } catch (e) {
+      return this;
+    }
   }
 
-  Future<void> setFocusPoint(Offset value) async {
+  Future<CameraState> setFocusPoint(Offset value) async {
     try {
       await controller.setExposurePoint(value);
+    } catch (e) {
+      /* Some Cameras don't support. Ignore it. */
+    }
+    try {
       await controller.setFocusPoint(value);
     } catch (e) {
-      /** */
-      print('unable to set offset');
+      /* Some Cameras don't support. Ignore it. */
     }
+
+    /// Should we store this offset? do we need to implement anything else?
+    return this;
   }
 }

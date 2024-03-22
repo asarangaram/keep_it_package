@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/Camera/get_cameras.dart';
 
-import '../widgets/camera.dart';
+import '../widgets/Camera/camera.dart';
 
 class CameraPage extends ConsumerWidget {
   const CameraPage({super.key});
