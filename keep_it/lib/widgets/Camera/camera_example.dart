@@ -166,7 +166,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         onPointerDown: (_) => _pointers++,
         onPointerUp: (_) => _pointers--,
         child: CameraPreview(
-          controller!.controller,
+          controller!,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -182,7 +182,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 },
               ),
               CaptureControls(
-                controller: controller!.controller,
+                controller: controller!,
                 isVideoCamera: isVideoCamera,
                 isPreviewPaused: cameraController.isPreviewPaused,
                 isInUse:
@@ -558,6 +558,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       }
 
       onNewCameraSelected(description);
+      setState(() {});
     }
 
     if (widget.cameras.isEmpty) {
@@ -618,11 +619,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       return controller!.setDescription(cameraDescription);
     } else {
-      return _initializeCameraController(cameraDescription);
+      final c = await _initializeCameraController(cameraDescription);
+      controller = c;
+      if (mounted) {
+        setState(() {});
+      }
+      return;
     }
   }
 
-  Future<void> _initializeCameraController(
+  Future<CameraControllerWrapper?> _initializeCameraController(
     CameraDescription cameraDescription,
   ) async {
     final cameraController = CameraControllerWrapper(
@@ -631,13 +637,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
-    controller = cameraController;
-
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
-      /* if (mounted) {
+      if (mounted) {
         setState(() {});
-      } */
+      }
       if (cameraController.hasError) {
         showInSnackBar(
           'Camera error ${cameraController.errorDescription}',
@@ -654,6 +658,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           await cameraController.getMaxExposureOffset();
       _maxAvailableZoom = await cameraController.getMaxZoomLevel();
       _minAvailableZoom = await cameraController.getMinZoomLevel();
+      await Future<void>.delayed(const Duration(seconds: 2));
+      return cameraController;
     } on CameraException catch (e) {
       switch (e.code) {
         case 'CameraAccessDenied':
@@ -676,10 +682,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           _showCameraException(e);
           break;
       }
-    }
-
-    if (mounted) {
-      setState(() {});
+      return null;
     }
   }
 

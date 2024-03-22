@@ -1,71 +1,181 @@
 import 'package:camera/camera.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/services.dart';
 
-class CameraControllerWrapper {
+class CameraControllerWrapper extends CameraController {
   CameraControllerWrapper(
-    CameraDescription description,
-    ResolutionPreset resolutionPreset, {
-    ImageFormatGroup? imageFormatGroup,
-  }) : controller = CameraController(
-          description,
-          resolutionPreset,
-          imageFormatGroup: imageFormatGroup,
-        );
+    super.description,
+    super.resolutionPreset, {
+    super.imageFormatGroup,
+  });
 
-  final CameraController controller;
+  bool get isInitialized => super.value.isInitialized;
+  bool get isPreviewPaused => super.value.isPreviewPaused;
+  bool get isRecordingVideo => super.value.isRecordingVideo;
+  bool get isRecordingPaused => super.value.isRecordingPaused;
+  String? get errorDescription => super.value.errorDescription;
+  bool get isTakingPicture => super.value.isTakingPicture;
+  bool get isCaptureOrientationLocked => super.value.isCaptureOrientationLocked;
+  bool get hasError => super.value.hasError;
+  FlashMode get flashMode => super.value.flashMode;
+  ExposureMode get exposureMode => super.value.exposureMode;
+  FocusMode get focusMode => super.value.focusMode;
+  @override
+  CameraDescription get description => super.value.description;
 
-  bool get isInitialized => controller.value.isInitialized;
-  bool get isPreviewPaused => controller.value.isPreviewPaused;
-  bool get isRecordingVideo => controller.value.isRecordingVideo;
-  bool get isRecordingPaused => controller.value.isRecordingPaused;
-  String? get errorDescription => controller.value.errorDescription;
-  bool get isTakingPicture => controller.value.isTakingPicture;
-  bool get isCaptureOrientationLocked =>
-      controller.value.isCaptureOrientationLocked;
-  bool get hasError => controller.value.hasError;
-  FlashMode get flashMode => controller.value.flashMode;
-  ExposureMode get exposureMode => controller.value.exposureMode;
-  FocusMode get focusMode => controller.value.focusMode;
-  Future<void> dispose() => controller.dispose();
+  DeviceOrientation? get lockedCaptureOrientation {
+    _infoLogger('get lockedCaptureOrientation');
+    return super.value.lockedCaptureOrientation;
+  }
 
-  CameraDescription get description => controller.value.description;
+  @override
+  Future<void> setExposurePoint(Offset? point) async {
+    _infoLogger('setExposurePoint: $point');
+    return super.setExposurePoint(point);
+  }
 
-  Future<void> setZoomLevel(double zoom) => controller.setZoomLevel(zoom);
-  Future<void> setExposurePoint(Offset? point) =>
-      controller.setExposurePoint(point);
-  Future<double> setExposureOffset(double offset) =>
-      controller.setExposureOffset(offset);
-  Future<void> setFocusPoint(Offset? point) => controller.setFocusPoint(point);
-  Future<void> setDescription(CameraDescription description) =>
-      controller.setDescription(description);
+  @override
+  Future<double> setExposureOffset(double offset) async {
+    _infoLogger('setExposureOffset');
+    return super.setExposureOffset(offset);
+  }
 
-  Future<void> initialize() => controller.initialize();
+  @override
+  Future<void> setFocusPoint(Offset? point) async {
+    _infoLogger('setFocusPoint');
+    return super.setFocusPoint(point);
+  }
 
-  Future<double> getMinExposureOffset() => controller.getMinExposureOffset();
+  @override
+  Future<void> setDescription(CameraDescription description) async {
+    _infoLogger('setDescription');
+    return super.setDescription(description);
+  }
 
-  DeviceOrientation? get lockedCaptureOrientation =>
-      controller.value.lockedCaptureOrientation;
-  void addListener(void Function() listener) =>
-      controller.addListener(listener);
-  void removeListener(void Function() listener) =>
-      controller.removeListener(listener);
+  @override
+  Future<void> initialize() async {
+    _infoLogger('initialize');
+    return super.initialize();
+  }
 
-  Future<double> getMaxExposureOffset() => controller.getMaxExposureOffset();
-  Future<double> getMaxZoomLevel() => controller.getMaxZoomLevel();
-  Future<double> getMinZoomLevel() => controller.getMinZoomLevel();
-  Future<void> unlockCaptureOrientation() =>
-      controller.unlockCaptureOrientation();
-  Future<void> lockCaptureOrientation() => controller.lockCaptureOrientation();
+  @override
+  void addListener(void Function() listener) {
+    _infoLogger('addListener');
+    super.addListener(listener);
+  }
 
-  Future<void> resumePreview() => controller.resumePreview();
-  Future<void> pausePreview() => controller.pausePreview();
-  Future<void> startVideoRecording() => controller.startVideoRecording();
-  Future<XFile> stopVideoRecording() => controller.stopVideoRecording();
-  Future<void> pauseVideoRecording() => controller.pauseVideoRecording();
-  Future<void> resumeVideoRecording() => controller.resumeVideoRecording();
-  Future<XFile> takePicture() => controller.takePicture();
-  Future<void> setFlashMode(FlashMode mode) => controller.setFlashMode(mode);
-  Future<void> setExposureMode(ExposureMode mode) =>
-      controller.setExposureMode(mode);
-  Future<void> setFocusMode(FocusMode mode) => controller.setFocusMode(mode);
+  @override
+  void removeListener(void Function() listener) {
+    _infoLogger('removeListener');
+    super.removeListener(listener);
+  }
+
+  @override
+  Future<double> getMinExposureOffset() async {
+    _infoLogger('getMinExposureOffset');
+    return super.getMinExposureOffset();
+  }
+
+  @override
+  Future<double> getMaxExposureOffset() async {
+    _infoLogger('getMaxExposureOffset');
+    return super.getMaxExposureOffset();
+  }
+
+  @override
+  Future<double> getMaxZoomLevel() async {
+    _infoLogger('getMaxZoomLevel');
+    return super.getMaxZoomLevel();
+  }
+
+  @override
+  Future<double> getMinZoomLevel() async {
+    _infoLogger('getMinZoomLevel');
+    return super.getMinZoomLevel();
+  }
+
+  @override
+  Future<void> setFlashMode(FlashMode mode) async {
+    _infoLogger('setFlashMode: $mode');
+    return super.setFlashMode(mode);
+  }
+
+  @override
+  Future<void> setExposureMode(ExposureMode mode) {
+    _infoLogger('setExposureMode: $mode');
+    return super.setExposureMode(mode);
+  }
+
+  @override
+  Future<void> setFocusMode(FocusMode mode) async {
+    _infoLogger('setFocusMode: $mode');
+    return super.setFocusMode(mode);
+  }
+
+  @override
+  Future<void> unlockCaptureOrientation() async {
+    _infoLogger('unlockCaptureOrientation');
+    return super.unlockCaptureOrientation();
+  }
+
+  @override
+  Future<void> lockCaptureOrientation([DeviceOrientation? orientation]) async {
+    _infoLogger('lockCaptureOrientation');
+    return super.lockCaptureOrientation(orientation);
+  }
+
+  @override
+  Future<void> resumePreview() async {
+    _infoLogger('resumePreview');
+    return super.resumePreview();
+  }
+
+  @override
+  Future<void> pausePreview() async {
+    _infoLogger('pausePreview');
+    return super.pausePreview();
+  }
+
+  @override
+  Future<void> startVideoRecording({
+    onLatestImageAvailable? onAvailable,
+  }) async {
+    _infoLogger('startVideoRecording');
+    final res = await super.startVideoRecording(onAvailable: onAvailable);
+    _infoLogger('startVideoRecording - Done');
+    return res;
+  }
+
+  @override
+  Future<XFile> stopVideoRecording() async {
+    _infoLogger('stopVideoRecording');
+    return super.stopVideoRecording();
+  }
+
+  @override
+  Future<void> pauseVideoRecording() async {
+    _infoLogger('pauseVideoRecording');
+    return super.pauseVideoRecording();
+  }
+
+  @override
+  Future<void> resumeVideoRecording() async {
+    _infoLogger('resumeVideoRecording');
+    return super.resumeVideoRecording();
+  }
+
+  @override
+  Future<XFile> takePicture() async {
+    _infoLogger('takePicture');
+    return super.takePicture();
+  }
+}
+
+const _filePrefix = 'Camera Controller: ';
+bool _disableInfoLogger = false;
+// ignore: unused_element
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i('$_filePrefix$msg');
+  }
 }
