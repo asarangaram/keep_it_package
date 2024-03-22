@@ -114,8 +114,8 @@ class _CaptureControlsState extends State<CaptureControls> {
                       waiting: true,
                       icon: MdiIcons.camera,
                       size: 44,
-                    ),
-                  if (!widget.isVideoCamera)
+                    )
+                  else if (!widget.isVideoCamera)
                     CircularButton(
                       onPressed:
                           widget.isTakingPicture ? null : widget.onTakePicture,
