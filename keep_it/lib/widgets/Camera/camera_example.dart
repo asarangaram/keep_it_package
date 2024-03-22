@@ -30,7 +30,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   XFile? imageFile;
   XFile? videoFile;
 
-  bool enableAudio = true;
   double _minAvailableExposureOffset = 0;
   double _maxAvailableExposureOffset = 0;
   double _currentExposureOffset = 0;
@@ -264,11 +263,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                     ),
                   ]
                 : <Widget>[],
-            IconButton(
-              icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
-              color: Colors.blue,
-              onPressed: controller != null ? onAudioModeButtonPressed : null,
-            ),
+
             IconButton(
               icon: Icon(
                 controller?.value.isCaptureOrientationLocked ?? false
@@ -590,8 +585,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    cameraController.setExposurePoint(offset);
-    cameraController.setFocusPoint(offset);
+    /* try {
+      cameraController.setExposurePoint(offset);
+      cameraController.setFocusPoint(offset);
+    } catch (e) {
+      showInSnackBar(
+        'Camera error $e',
+      );
+    } */
   }
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
@@ -608,7 +609,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     final cameraController = CameraController(
       cameraDescription,
       kIsWeb ? ResolutionPreset.max : ResolutionPreset.medium,
-      enableAudio: enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
@@ -716,13 +716,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       _focusModeControlRowAnimationController.forward();
       _flashModeControlRowAnimationController.reverse();
       _exposureModeControlRowAnimationController.reverse();
-    }
-  }
-
-  void onAudioModeButtonPressed() {
-    enableAudio = !enableAudio;
-    if (controller != null) {
-      onNewCameraSelected(controller!.description);
     }
   }
 
