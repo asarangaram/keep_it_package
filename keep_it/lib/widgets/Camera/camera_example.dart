@@ -183,6 +183,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               CaptureControls(
                 controller: controller!,
                 isVideoCamera: isVideoCamera,
+                isPreviewPaused: cameraController.value.isPreviewPaused,
                 isInUse: controller!.value.isTakingPicture ||
                     controller!.value.isRecordingVideo,
                 isTakingPicture: controller!.value.isTakingPicture,
@@ -198,6 +199,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 onPauseVideoRecording: onPauseButtonPressed,
                 onResumeVideoRecording: onResumeButtonPressed,
                 onTakePicture: onTakePictureButtonPressed,
+                onPausePreview: onPausePreviewButtonPressed,
               ),
             ],
           ),

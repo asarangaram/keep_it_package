@@ -8,6 +8,7 @@ class CaptureControls extends StatefulWidget {
     required this.controller,
     required this.isVideoCamera,
     required this.isInUse,
+    required this.isPreviewPaused,
     required this.isTakingPicture,
     required this.isRecordingVideo,
     required this.onChanageCameraMode,
@@ -17,11 +18,13 @@ class CaptureControls extends StatefulWidget {
     required this.onStopVideoRecording,
     required this.onResumeVideoRecording,
     required this.onTakePicture,
+    required this.onPausePreview,
     super.key,
   });
   final CameraController controller;
   final bool isVideoCamera;
   final bool isInUse;
+  final bool isPreviewPaused;
   final bool isTakingPicture;
   final bool isRecordingVideo;
   final bool isRecordingVideoPaused;
@@ -31,6 +34,7 @@ class CaptureControls extends StatefulWidget {
   final VoidCallback onPauseVideoRecording;
   final VoidCallback onResumeVideoRecording;
   final VoidCallback onTakePicture;
+  final VoidCallback onPausePreview;
 
   @override
   State<CaptureControls> createState() => _CaptureControlsState();
@@ -92,44 +96,66 @@ class _CaptureControlsState extends State<CaptureControls> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Flexible(
-                  child: Container(),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircularButton(
+                      onPressed: widget.onPausePreview,
+                      icon: MdiIcons.pauseCircle,
+                      hasDecoration: false,
+                      foregroundColor: widget.isPreviewPaused
+                          ? Theme.of(context).colorScheme.error
+                          : null,
+                    ),
+                  ),
                 ),
-                CircularButton(
-                  onPressed: widget.isRecordingVideo
-                      ? null
-                      : widget.isVideoCamera
-                          ? widget.isRecordingVideo
-                              ? widget.isRecordingVideoPaused
-                                  ? widget.onResumeVideoRecording
-                                  : widget.onPauseVideoRecording
-                              : widget.onStartVideoRecording
-                          : widget.onTakePicture,
-                  icon: widget.isVideoCamera
-                      ? widget.isRecordingVideo
-                          ? widget.isRecordingVideoPaused
-                              ? MdiIcons.circle
-                              : MdiIcons.pause
-                          : MdiIcons.video
-                      : MdiIcons.camera,
-                  size: 44,
-                  backgroundColor: controller.value.isRecordingVideo
-                      ? Theme.of(context).colorScheme.error
-                      : null,
-                  foregroundColor: controller.value.isRecordingVideo
-                      ? Theme.of(context).colorScheme.onError
-                      : null,
-                ),
+                ...[
+                  if (widget.isTakingPicture)
+                    CircularButton(
+                      waiting: true,
+                      icon: MdiIcons.camera,
+                      size: 44,
+                    ),
+                  if (!widget.isVideoCamera)
+                    CircularButton(
+                      onPressed:
+                          widget.isTakingPicture ? null : widget.onTakePicture,
+                      icon: MdiIcons.camera,
+                      size: 44,
+                    )
+                  else if (!widget.isRecordingVideo)
+                    CircularButton(
+                      onPressed: widget.onStartVideoRecording,
+                      icon: MdiIcons.video,
+                      size: 44,
+                    )
+                  else
+                    CircularButton(
+                      onPressed: widget.onStopVideoRecording,
+                      icon: MdiIcons.stop,
+                      size: 44,
+                      backgroundColor: controller.value.isRecordingVideo
+                          ? Theme.of(context).colorScheme.error
+                          : null,
+                      foregroundColor: controller.value.isRecordingVideo
+                          ? Theme.of(context).colorScheme.onError
+                          : null,
+                    ),
+                ],
                 if (widget.isVideoCamera && widget.isRecordingVideo)
                   Flexible(
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16),
-                        child: CircularButton(
-                          onPressed: widget.onStopVideoRecording,
-                          icon: MdiIcons.stop,
-                          size: 32,
-                        ),
+                        child: (!widget.isRecordingVideoPaused)
+                            ? CircularButton(
+                                onPressed: widget.onPauseVideoRecording,
+                                icon: MdiIcons.pause,
+                              )
+                            : CircularButton(
+                                onPressed: widget.onResumeVideoRecording,
+                                icon: MdiIcons.circle,
+                              ),
                       ),
                     ),
                   )
