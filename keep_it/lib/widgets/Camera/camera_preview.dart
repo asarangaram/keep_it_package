@@ -1,13 +1,9 @@
 import 'package:camera/camera.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'camera_gesture.dart';
 import 'camera_preview_core.dart';
-import 'capture_controls.dart';
 import 'providers/camera_state.dart';
 
 class CameraPreviewWidget extends ConsumerWidget {
@@ -40,7 +36,7 @@ class CameraPreviewWidget extends ConsumerWidget {
                   CameraGesture(),
                   Align(
                     alignment: Alignment.bottomCenter,
-                    // TODO(anandas):   child: CaptureControls(),
+                    // TO DO(anandas):   child: CaptureControls(),
                   ),
                 ],
               ),

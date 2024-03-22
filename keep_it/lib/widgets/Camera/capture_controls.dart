@@ -46,7 +46,8 @@ class _CaptureControlsState extends State<CaptureControls> {
     final controller = widget.controller;
 
     /* final busy =
-        controller.value.isTakingPicture || controller.value.isRecordingVideo; */
+        controller.value.isTakingPicture 
+        || controller.value.isRecordingVideo; */
     return LayoutBuilder(
       builder: (context, constrains) {
         return Column(
@@ -128,17 +129,17 @@ class _CaptureControlsState extends State<CaptureControls> {
                       icon: MdiIcons.video,
                       size: 44,
                     )
+                  else if (!widget.isRecordingVideoPaused)
+                    CircularButton(
+                      onPressed: widget.onPauseVideoRecording,
+                      icon: MdiIcons.pause,
+                      size: 44,
+                    )
                   else
                     CircularButton(
-                      onPressed: widget.onStopVideoRecording,
-                      icon: MdiIcons.stop,
+                      onPressed: widget.onResumeVideoRecording,
+                      icon: MdiIcons.circle,
                       size: 44,
-                      backgroundColor: controller.value.isRecordingVideo
-                          ? Theme.of(context).colorScheme.error
-                          : null,
-                      foregroundColor: controller.value.isRecordingVideo
-                          ? Theme.of(context).colorScheme.onError
-                          : null,
                     ),
                 ],
                 if (widget.isVideoCamera && widget.isRecordingVideo)
@@ -147,15 +148,16 @@ class _CaptureControlsState extends State<CaptureControls> {
                       alignment: Alignment.bottomLeft,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16),
-                        child: (!widget.isRecordingVideoPaused)
-                            ? CircularButton(
-                                onPressed: widget.onPauseVideoRecording,
-                                icon: MdiIcons.pause,
-                              )
-                            : CircularButton(
-                                onPressed: widget.onResumeVideoRecording,
-                                icon: MdiIcons.circle,
-                              ),
+                        child: CircularButton(
+                          onPressed: widget.onStopVideoRecording,
+                          icon: MdiIcons.stop,
+                          backgroundColor: controller.value.isRecordingVideo
+                              ? Theme.of(context).colorScheme.error
+                              : null,
+                          foregroundColor: controller.value.isRecordingVideo
+                              ? Theme.of(context).colorScheme.onError
+                              : null,
+                        ),
                       ),
                     ),
                   )

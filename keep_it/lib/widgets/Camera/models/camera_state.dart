@@ -158,7 +158,16 @@ class CameraState {
 
   @override
   String toString() {
-    return 'CameraState(controller: $controller, minAvailableExposureOffset: $minAvailableExposureOffset, maxAvailableExposureOffset: $maxAvailableExposureOffset, currentExposureOffset: $currentExposureOffset, minAvailableZoom: $minAvailableZoom, maxAvailableZoom: $maxAvailableZoom, currentScale: $currentScale, isVideo: $isVideo, isTakingPicture: $isTakingPicture, isRecordingVideo: $isRecordingVideo, isRecordingPaused: $isRecordingPaused)';
+    return 'CameraState(controller: $controller, '
+        'minAvailableExposureOffset: $minAvailableExposureOffset,'
+        ' maxAvailableExposureOffset: $maxAvailableExposureOffset, '
+        'currentExposureOffset: $currentExposureOffset, '
+        'minAvailableZoom: $minAvailableZoom, '
+        'maxAvailableZoom: $maxAvailableZoom, '
+        'currentScale: $currentScale, isVideo: $isVideo, '
+        'isTakingPicture: $isTakingPicture, '
+        'isRecordingVideo: $isRecordingVideo, '
+        'isRecordingPaused: $isRecordingPaused)';
   }
 
   Future<void> setExposureOffset(

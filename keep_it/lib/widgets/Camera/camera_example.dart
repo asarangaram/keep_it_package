@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:store/store.dart';
 
+import '../camera_controller_wrap.dart';
 import 'capture_controls.dart';
 
 /// Camera example home widget.
@@ -27,7 +28,7 @@ class CameraExampleHome extends StatefulWidget {
 
 class _CameraExampleHomeState extends State<CameraExampleHome>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  CameraController? controller;
+  CameraControllerWrapper? controller;
   XFile? imageFile;
   XFile? videoFile;
 
@@ -85,6 +86,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     WidgetsBinding.instance.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
+    _focusModeControlRowAnimationController.dispose();
     super.dispose();
   }
 
@@ -94,7 +96,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     final cameraController = controller;
 
     // App state changed before we got the chance to initialize.
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    if (cameraController == null || !cameraController.isInitialized) {
       return;
     }
 
@@ -116,10 +118,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               decoration: BoxDecoration(
                 color: Colors.black,
                 border: Border.all(
-                  color:
-                      controller != null && controller!.value.isRecordingVideo
-                          ? Colors.redAccent
-                          : Colors.grey,
+                  color: controller != null && controller!.isRecordingVideo
+                      ? Colors.redAccent
+                      : Colors.grey,
                   width: 3,
                 ),
               ),
@@ -151,7 +152,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Widget _cameraPreviewWidget() {
     final cameraController = controller;
 
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    if (cameraController == null || !cameraController.isInitialized) {
       return const Text(
         'Tap a camera',
         style: TextStyle(
@@ -165,7 +166,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         onPointerDown: (_) => _pointers++,
         onPointerUp: (_) => _pointers--,
         child: CameraPreview(
-          controller!,
+          controller!.controller,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -181,19 +182,19 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 },
               ),
               CaptureControls(
-                controller: controller!,
+                controller: controller!.controller,
                 isVideoCamera: isVideoCamera,
-                isPreviewPaused: cameraController.value.isPreviewPaused,
-                isInUse: controller!.value.isTakingPicture ||
-                    controller!.value.isRecordingVideo,
-                isTakingPicture: controller!.value.isTakingPicture,
-                isRecordingVideo: controller!.value.isRecordingVideo,
+                isPreviewPaused: cameraController.isPreviewPaused,
+                isInUse:
+                    controller!.isTakingPicture || controller!.isRecordingVideo,
+                isTakingPicture: controller!.isTakingPicture,
+                isRecordingVideo: controller!.isRecordingVideo,
                 onChanageCameraMode: ({required isVideoCamera}) {
                   setState(() {
                     this.isVideoCamera = isVideoCamera;
                   });
                 },
-                isRecordingVideoPaused: controller!.value.isRecordingPaused,
+                isRecordingVideoPaused: controller!.isRecordingPaused,
                 onStartVideoRecording: onVideoRecordButtonPressed,
                 onStopVideoRecording: onStopButtonPressed,
                 onPauseVideoRecording: onPauseButtonPressed,
@@ -285,7 +286,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
             IconButton(
               icon: Icon(
-                controller?.value.isCaptureOrientationLocked ?? false
+                controller?.isCaptureOrientationLocked ?? false
                     ? Icons.screen_lock_rotation
                     : Icons.screen_rotation,
               ),
@@ -312,7 +313,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           children: <Widget>[
             IconButton(
               icon: const Icon(Icons.flash_off),
-              color: controller?.value.flashMode == FlashMode.off
+              color: controller?.flashMode == FlashMode.off
                   ? Colors.orange
                   : Colors.blue,
               onPressed: controller != null
@@ -321,7 +322,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
             IconButton(
               icon: const Icon(Icons.flash_auto),
-              color: controller?.value.flashMode == FlashMode.auto
+              color: controller?.flashMode == FlashMode.auto
                   ? Colors.orange
                   : Colors.blue,
               onPressed: controller != null
@@ -330,7 +331,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
             IconButton(
               icon: const Icon(Icons.flash_on),
-              color: controller?.value.flashMode == FlashMode.always
+              color: controller?.flashMode == FlashMode.always
                   ? Colors.orange
                   : Colors.blue,
               onPressed: controller != null
@@ -339,7 +340,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
             IconButton(
               icon: const Icon(Icons.highlight),
-              color: controller?.value.flashMode == FlashMode.torch
+              color: controller?.flashMode == FlashMode.torch
                   ? Colors.orange
                   : Colors.blue,
               onPressed: controller != null
@@ -354,12 +355,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Widget _exposureModeControlRowWidget() {
     final styleAuto = TextButton.styleFrom(
-      foregroundColor: controller?.value.exposureMode == ExposureMode.auto
+      foregroundColor: controller?.exposureMode == ExposureMode.auto
           ? Colors.orange
           : Colors.blue,
     );
     final styleLocked = TextButton.styleFrom(
-      foregroundColor: controller?.value.exposureMode == ExposureMode.locked
+      foregroundColor: controller?.exposureMode == ExposureMode.locked
           ? Colors.orange
           : Colors.blue,
     );
@@ -437,12 +438,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Widget _focusModeControlRowWidget() {
     final styleAuto = TextButton.styleFrom(
-      foregroundColor: controller?.value.focusMode == FocusMode.auto
-          ? Colors.orange
-          : Colors.blue,
+      foregroundColor:
+          controller?.focusMode == FocusMode.auto ? Colors.orange : Colors.blue,
     );
     final styleLocked = TextButton.styleFrom(
-      foregroundColor: controller?.value.focusMode == FocusMode.locked
+      foregroundColor: controller?.focusMode == FocusMode.locked
           ? Colors.orange
           : Colors.blue,
     );
@@ -500,8 +500,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
           onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo
+                  cameraController.isInitialized &&
+                  !cameraController.isRecordingVideo
               ? onTakePictureButtonPressed
               : null,
         ),
@@ -509,21 +509,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
           onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo
+                  cameraController.isInitialized &&
+                  !cameraController.isRecordingVideo
               ? onVideoRecordButtonPressed
               : null,
         ),
         IconButton(
-          icon: cameraController != null &&
-                  cameraController.value.isRecordingPaused
+          icon: cameraController != null && cameraController.isRecordingPaused
               ? const Icon(Icons.play_arrow)
               : const Icon(Icons.pause),
           color: Colors.blue,
           onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  cameraController.value.isRecordingVideo
-              ? (cameraController.value.isRecordingPaused)
+                  cameraController.isInitialized &&
+                  cameraController.isRecordingVideo
+              ? (cameraController.isRecordingPaused)
                   ? onResumeButtonPressed
                   : onPauseButtonPressed
               : null,
@@ -532,17 +531,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.stop),
           color: Colors.red,
           onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  cameraController.value.isRecordingVideo
+                  cameraController.isInitialized &&
+                  cameraController.isRecordingVideo
               ? onStopButtonPressed
               : null,
         ),
         IconButton(
           icon: const Icon(Icons.pause_presentation),
-          color:
-              cameraController != null && cameraController.value.isPreviewPaused
-                  ? Colors.red
-                  : Colors.blue,
+          color: cameraController != null && cameraController.isPreviewPaused
+              ? Colors.red
+              : Colors.blue,
           onPressed:
               cameraController == null ? null : onPausePreviewButtonPressed,
         ),
@@ -589,6 +587,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
+    _infoLogger(message);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
@@ -598,13 +597,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return;
     }
 
+    /* 
     final cameraController = controller!;
 
     final offset = Offset(
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    /* try {
+    try {
       cameraController.setExposurePoint(offset);
       cameraController.setFocusPoint(offset);
     } catch (e) {
@@ -625,7 +625,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> _initializeCameraController(
     CameraDescription cameraDescription,
   ) async {
-    final cameraController = CameraController(
+    final cameraController = CameraControllerWrapper(
       cameraDescription,
       ResolutionPreset.ultraHigh,
       imageFormatGroup: ImageFormatGroup.jpeg,
@@ -635,33 +635,25 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
-      if (mounted) {
+      /* if (mounted) {
         setState(() {});
-      }
-      if (cameraController.value.hasError) {
+      } */
+      if (cameraController.hasError) {
         showInSnackBar(
-          'Camera error ${cameraController.value.errorDescription}',
+          'Camera error ${cameraController.errorDescription}',
         );
       }
     });
 
     try {
       await cameraController.initialize();
-      await Future.wait(<Future<Object?>>[
-        // The exposure mode is currently not supported on the web.
-        cameraController.getMinExposureOffset().then(
-              (double value) => _minAvailableExposureOffset = value,
-            ),
-        cameraController.getMaxExposureOffset().then(
-              (double value) => _maxAvailableExposureOffset = value,
-            ),
-        cameraController
-            .getMaxZoomLevel()
-            .then((double value) => _maxAvailableZoom = value),
-        cameraController
-            .getMinZoomLevel()
-            .then((double value) => _minAvailableZoom = value),
-      ]);
+      await Future<void>.delayed(const Duration(microseconds: 10));
+      _minAvailableExposureOffset =
+          await cameraController.getMinExposureOffset();
+      _maxAvailableExposureOffset =
+          await cameraController.getMaxExposureOffset();
+      _maxAvailableZoom = await cameraController.getMaxZoomLevel();
+      _minAvailableZoom = await cameraController.getMinZoomLevel();
     } on CameraException catch (e) {
       switch (e.code) {
         case 'CameraAccessDenied':
@@ -738,13 +730,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     try {
       if (controller != null) {
         final cameraController = controller!;
-        if (cameraController.value.isCaptureOrientationLocked) {
+        if (cameraController.isCaptureOrientationLocked) {
           await cameraController.unlockCaptureOrientation();
           showInSnackBar('Capture orientation unlocked');
         } else {
           await cameraController.lockCaptureOrientation();
           showInSnackBar(
-            'Capture orientation locked to ${cameraController.value.lockedCaptureOrientation.toString().split('.').last}',
+            'Capture orientation locked to ${cameraController.lockedCaptureOrientation.toString().split('.').last}',
           );
         }
       }
@@ -806,12 +798,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> onPausePreviewButtonPressed() async {
     final cameraController = controller;
 
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    if (cameraController == null || !cameraController.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return;
     }
 
-    if (cameraController.value.isPreviewPaused) {
+    if (cameraController.isPreviewPaused) {
       await cameraController.resumePreview();
     } else {
       await cameraController.pausePreview();
@@ -843,12 +835,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> startVideoRecording() async {
     final cameraController = controller;
 
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    if (cameraController == null || !cameraController.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return;
     }
 
-    if (cameraController.value.isRecordingVideo) {
+    if (cameraController.isRecordingVideo) {
       // A recording is already started, do nothing.
       return;
     }
@@ -864,7 +856,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<XFile?> stopVideoRecording() async {
     final cameraController = controller;
 
-    if (cameraController == null || !cameraController.value.isRecordingVideo) {
+    if (cameraController == null || !cameraController.isRecordingVideo) {
       return null;
     }
 
@@ -879,7 +871,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> pauseVideoRecording() async {
     final cameraController = controller;
 
-    if (cameraController == null || !cameraController.value.isRecordingVideo) {
+    if (cameraController == null || !cameraController.isRecordingVideo) {
       return;
     }
 
@@ -894,7 +886,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> resumeVideoRecording() async {
     final cameraController = controller;
 
-    if (cameraController == null || !cameraController.value.isRecordingVideo) {
+    if (cameraController == null || !cameraController.isRecordingVideo) {
       return;
     }
 
@@ -963,12 +955,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Future<XFile?> takePicture() async {
     final cameraController = controller;
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    if (cameraController == null || !cameraController.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return null;
     }
 
-    if (cameraController.value.isTakingPicture) {
+    if (cameraController.isTakingPicture) {
       // A capture is already pending, do nothing.
       return null;
     }
@@ -983,7 +975,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void _showCameraException(CameraException e) {
-    _logError(e.code, e.description);
+    _infoLogger('${e.code}, ${e.description}');
     showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 }
@@ -1031,7 +1023,11 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
   return Icons.camera;
 }
 
-void _logError(String code, String? message) {
-  // ignore: avoid_print
-  print('Error: $code${message == null ? '' : '\nError Message: $message'}');
+const _filePrefix = 'Camera ';
+bool _disableInfoLogger = false;
+// ignore: unused_element
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i('$_filePrefix$msg');
+  }
 }
