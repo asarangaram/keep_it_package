@@ -1,4 +1,4 @@
-import 'package:store/store.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 List<Tag> suggestedTags = [
   const Tag(
@@ -63,6 +63,33 @@ List<Tag> suggestedTags = [
     label: 'Work',
     description: 'Images relating to work like work jobs, work ideas, ect...',
   ),
+  const Tag(
+    label: 'Entertainment',
+    description:
+      'Entertainment relating to fun like arcade, going out to some fun place ',
+  ),
+  const Tag(
+    label: 'Pets',
+    description: 'Pets relating to dogs, cats, and any other pets ',
+  ),
+  const Tag(
+    label: 'Recipes',
+    description:
+        'Recipes relating to food ingredients (They are taken in web) ',
+  ),
+
+  const Tag(
+    label: 'Gaming',
+    description:
+        'Gaming relating to games on computers and on ground ',
+  ),
+
+  const Tag(
+    label: 'Art',
+    description:
+        'Art relating to drawing on campas or on a book! ',
+  ),
+
   const Tag(
     label: 'Others',
     description: 'Images that do not work an A.I. will be sent to this folder',

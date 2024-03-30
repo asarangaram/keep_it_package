@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../models/app_descriptor.dart';
 import '../models/cl_route_descriptor.dart';
+import '../shared_media/widgets/incoming_media_monitor.dart';
 import 'bottom_nav_page.dart';
 
 class AppView extends ConsumerStatefulWidget {
@@ -55,11 +56,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         name: e.name,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: AppTheme(
-            child: FullscreenLayout(
-              child: e.builder(context, state),
-            ),
-          ),
+          child: AppTheme(child: e.builder(context, state)),
           transitionsBuilder: app.transitionBuilder,
         ),
       ),
@@ -71,8 +68,10 @@ class _RaLRouterState extends ConsumerState<AppView>
         parentNavigatorKey: parentNavigatorKey,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
+          
           child: AppTheme(
-            child: FullscreenLayout(
+            child: IncomingMediaMonitor(
+              onMedia: app.incomingMediaViewBuilder,
               child: e.builder(context, state),
             ),
           ),
@@ -90,6 +89,7 @@ class _RaLRouterState extends ConsumerState<AppView>
             path: '/${route.name}',
             pageBuilder: (context, GoRouterState state) {
               return MaterialPage(
+                key: state.pageKey,
                 child: route.builder(context, state),
               );
             },
@@ -145,6 +145,7 @@ class _RaLRouterState extends ConsumerState<AppView>
       name: name,
       pageBuilder: (context, state) => CustomTransitionPage<void>(
         key: state.pageKey,
+        
         child: builder(context, state),
         transitionsBuilder: transitionBuilder ?? defaultTransitionBuilder,
       ),
@@ -171,7 +172,7 @@ void printGoRouterState(GoRouterState state) {
       '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
 }
 
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);

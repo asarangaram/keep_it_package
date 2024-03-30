@@ -1,20 +1,23 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import 'analyse.dart';
-import 'duplicates.dart';
-import 'shared_items_page.dart';
+import 'step1_analyse.dart';
+import 'step2_duplicates.dart';
+import 'step3_which_collection.dart';
+import 'step4_save_collection.dart';
 
 class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
     required this.incomingMedia,
     required this.onDiscard,
     super.key,
+    this.moving = false,
   });
-  final CLMediaInfoGroup incomingMedia;
-  final void Function() onDiscard;
+  final CLSharedMedia incomingMedia;
+  final void Function({required bool result}) onDiscard;
+  final bool moving;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -22,55 +25,53 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
 }
 
 class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
-  CLMediaInfoGroup? candidates;
-
+  CLSharedMedia? candidates;
+  bool isSaving = false;
   @override
   void didChangeDependencies() {
     candidates = null;
+    if (widget.moving) {
+      // No need to analyze
+      candidates = widget.incomingMedia;
+    }
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    _infoLogger('build IncomingMediaHandler $candidates');
+    final Widget widget0;
+    if (isSaving) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     try {
-      return FullscreenLayout(
-        onClose: onDiscard,
+      widget0 = FullscreenLayout(
+        onClose: () => onDiscard(result: false),
         child: switch (candidates) {
           null => AnalysePage(
               incomingMedia: widget.incomingMedia,
               onDone: onDone,
-              onCancel: onDiscard,
+              onCancel: () => onDiscard(result: false),
             ),
-          (final candiates) when candidates!.hasTargetMismatchedItems =>
+          (final candiates)
+              when candidates!.hasTargetMismatchedItems && !widget.moving =>
             DuplicatePage(
               incomingMedia: candiates,
               onDone: onDone,
-              onCancel: onDiscard,
+              onCancel: () => onDiscard(result: false),
             ),
-          (final candiates) when candidates!.targetID == null =>
-            SharedItemsPage(
-              media: candiates,
-              onAccept: onDone,
-              onDiscard: onDiscard,
+          (final candiates) when candidates!.collection == null =>
+            WhichCollection(
+              incomingMedia: candiates,
+              onDone: onDone,
+              onCancel: () => onDiscard(result: false),
             ),
-          _ => StreamProgressView(
-              stream: () => CLMediaProcess.acceptMedia(
-                media: candidates!,
-                onDone: (CLMediaInfoGroup mg) async {
-                  ref.read(itemsProvider(mg.targetID!));
-                  await ref
-                      .read(itemsProvider(mg.targetID!).notifier)
-                      .upsertItems(mg.list);
-                  await ref
-                      .read(notificationMessageProvider.notifier)
-                      .push('Saved.');
-                  onDiscard();
-                  setState(() {
-                    candidates = null;
-                  });
-                },
-              ),
-              onCancel: onDiscard,
+          _ => SaveCollection(
+              incomingMedia: candidates!,
+              onDone: onSave,
+              onCancel: () => onDiscard(result: false),
             )
         },
       );
@@ -79,12 +80,26 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
         child: CLErrorView(errorMessage: e.toString()),
       );
     }
+    _infoLogger('build IncomingMediaHandler - Done');
+    return widget0;
   }
 
-  void onDone({CLMediaInfoGroup? mg}) {
+  void onSave({required CLSharedMedia? mg}) {
+    candidates = null;
+    isSaving = true;
+    setState(() {});
+    ref.read(notificationMessageProvider.notifier).push('Done.');
+
+    onDiscard(result: true);
+  }
+
+  void onDone({CLSharedMedia? mg}) {
     if (mg == null || mg.isEmpty) {
-      ref.read(notificationMessageProvider.notifier).push('Nothing to save.');
-      onDiscard();
+      candidates = null;
+      isSaving = true;
+      setState(() {});
+      ref.read(notificationMessageProvider.notifier).push('Nothing to do.');
+      onDiscard(result: false);
       return;
     }
     setState(() {
@@ -92,69 +107,20 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     });
   }
 
-  void onDiscard() {
+  void onDiscard({required bool result}) {
     candidates = null;
-    widget.onDiscard();
+
+    widget.onDiscard(result: result);
+    isSaving = false;
     if (mounted) {
       setState(() {});
     }
   }
 }
 
-/* 
-import 'dart:math';
-
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:mime/mime.dart';
-import 'package:percent_indicator/percent_indicator.dart';
-
-import 'app_descriptor.dart';
-import 'models/cl_media_process.dart';
-import 'stream_progress.dart';
-class IncomingProgress extends ConsumerStatefulWidget {
-  const IncomingProgress({
-    required this.incomingMedia,
-    required this.incomingMediaViewBuilder,
-    required this.onDiscard,
-    required this.onAccept,
-    super.key,
-  });
-  final CLMediaInfoGroup incomingMedia;
-  final void Function() onDiscard;
-  final Future<void> Function(
-    int collectionID, {
-    required Future<void> Function(List<CLMedia> items) updateDB,
-  }) onAccept;
-  final IncomingMediaViewBuilder incomingMediaViewBuilder;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _IncomingProgressState();
-}
-
-class _IncomingProgressState extends ConsumerState<IncomingProgress> {
-  CLMediaInfoGroup? clMediaInfoGroup;
-
-  @override
-  Widget build(BuildContext context) {
-    if (clMediaInfoGroup != null) {
-      return widget.incomingMediaViewBuilder(
-        context,
-        ref,
-        media: clMediaInfoGroup!,
-        onDiscard: widget.onDiscard,
-        onAccept: widget.onAccept,
-      );
-    }
-    return StreamProgress(
-      stream: () => CLMediaProcess.analyseMedia(widget.incomingMedia,
-          (CLMediaInfoGroup mg) {
-        setState(() {
-          clMediaInfoGroup = mg;
-        });
-      }),
-      onCancel: widget.onDiscard,
-    );
+bool _disableInfoLogger = true;
+void _infoLogger(String msg) {
+  if (!_disableInfoLogger) {
+    logger.i(msg);
   }
 }
- */

@@ -18,7 +18,8 @@ class CLMediaPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (media.type.isFile && !File(media.path).existsSync()) {
-      throw Exception('File not found ${media.path}');
+      //throw Exception('File not found ${media.path}');
+      return const BrokenImage();
     }
     final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
 
@@ -41,42 +42,6 @@ class CLMediaPreview extends StatelessWidget {
               );
             },
           ),
-        /* CLMediaType.url => FutureBuilder(
-            future: URLHandler.getMimeType(media.path),
-            builder: (context, snapShot) {
-              if (snapShot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return switch (snapShot.data) {
-                (final mimeType) when mimeType == CLMediaType.image =>
-                  Image.network(
-                    media.path,
-                    fit: fit,
-                  ),
-                (final mimeType) when mimeType == CLMediaType.video =>
-                  VideoPreviewBuilder(
-                    videoPath: media.path,
-                    builder: (context, path) {
-                      return path.when(
-                        data: (path) => UnCachedImagePreview(
-                          previewImagePath: path,
-                          fit: fit,
-                          overlayIcon: Icons.play_arrow_sharp,
-                        ),
-                        error: (_, __) => CLIcon.large(
-                          Icons.broken_image_outlined,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        loading: CircularProgressIndicator.new,
-                      );
-                    },
-                  ),
-                _ => const MissingPreview()
-              };
-            },
-          ), */
         _ => const BrokenImage()
       },
     );

@@ -7,7 +7,9 @@ import 'dart:isolate';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image/image.dart';
+import 'package:heif_converter/heif_converter.dart';
+import 'package:image/image.dart' as img;
+import 'package:mime/mime.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -210,15 +212,37 @@ class ThumbnailService {
         try {
           if (File(dataIn.path).existsSync()) {
             if (dataIn.isVideo) {
-              await VideoThumbnail.thumbnailFile(
+              if (File(dataIn.thumbnailPath).existsSync()) {
+                File(dataIn.thumbnailPath).deleteSync();
+              }
+              final path = await VideoThumbnail.thumbnailFile(
                 video: dataIn.path,
-                thumbnailPath: dataIn.thumbnailPath,
+                //thumbnailPath: dataIn.thumbnailPath,
                 maxWidth: dataIn.dimension,
                 imageFormat: ImageFormat.JPEG,
               );
+              if (path == null) {
+                throw const FileSystemException(
+                  'Unable to create video thumbnail',
+                );
+              }
+              File(path).copySync(dataIn.thumbnailPath);
+              File(path).deleteSync();
             } else {
-              final inputImage =
-                  decodeImage(File(dataIn.path).readAsBytesSync());
+              final img.Image? inputImage;
+              if (lookupMimeType(dataIn.path) == 'image/heic') {
+                final jpegPath = await HeifConverter.convert(
+                  dataIn.path,
+                  output: '${dataIn.path}.jpeg',
+                );
+                if (jpegPath == null) {
+                  throw Exception(' Failed to convert HEIC file to JPEG');
+                }
+                inputImage = img.decodeImage(File(jpegPath).readAsBytesSync());
+              } else {
+                inputImage =
+                    img.decodeImage(File(dataIn.path).readAsBytesSync());
+              }
               if (inputImage != null) {
                 final int thumbnailHeight;
                 final int thumbnailWidth;
@@ -231,13 +255,16 @@ class ThumbnailService {
                   thumbnailHeight =
                       (thumbnailWidth * inputImage.height) ~/ inputImage.width;
                 }
-                final thumbnail = copyResize(
+                final thumbnail = img.copyResize(
                   inputImage,
                   width: thumbnailWidth,
                   height: thumbnailHeight,
                 );
-                File(dataIn.thumbnailPath)
-                    .writeAsBytesSync(Uint8List.fromList(encodeJpg(thumbnail)));
+                File(dataIn.thumbnailPath).writeAsBytesSync(
+                  Uint8List.fromList(img.encodeJpg(thumbnail)),
+                );
+              } else {
+                throw Exception('unable to decode');
               }
             }
             final dataOut = ThumbnailServiceDataOut(

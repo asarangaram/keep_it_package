@@ -11,7 +11,6 @@ class KeepItMainView extends ConsumerStatefulWidget {
     super.key,
     this.actionsBuilder,
     this.title,
-    this.onPop,
   });
   final Widget Function(
     BuildContext context,
@@ -24,7 +23,6 @@ class KeepItMainView extends ConsumerStatefulWidget {
       )>? actionsBuilder;
 
   final String? title;
-  final void Function()? onPop;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => KeepItMainViewState();
@@ -47,7 +45,7 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
               actionsBuilders: widget.actionsBuilder,
               quickMenuScopeKey: quickMenuScopeKey,
               title: widget.title?.uptoLength(15),
-              onPop: widget.onPop,
+              
               /* mainActionItems: const [
                 [
                   CLMenuItem(

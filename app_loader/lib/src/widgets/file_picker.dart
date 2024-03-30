@@ -3,12 +3,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/incoming_media.dart';
+import '../shared_media/models/cl_shared_media.dart';
+import '../shared_media/providers/incoming_media.dart';
 
 Future<bool> onPickFiles(
   BuildContext context,
   WidgetRef ref, {
-  int? collectionId,
+  Collection? collection,
 }) async {
   final result = await FilePicker.platform.pickFiles(
     allowMultiple: true,
@@ -21,8 +22,7 @@ Future<bool> onPickFiles(
           (path) => CLMedia(path: path!, type: CLMediaType.file),
         )
         .toList();
-    final sharedMedia =
-        CLMediaInfoGroup(list: items, targetID: collectionId);
+    final sharedMedia = CLSharedMedia(entries: items, collection: collection);
 
     if (items.isNotEmpty) {
       ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);

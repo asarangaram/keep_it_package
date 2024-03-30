@@ -11,10 +11,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
+import 'pages/collection_editor_page.dart';
+import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
+import 'pages/move_media_page.dart';
+import 'pages/tag_timeline_page.dart';
 import 'pages/tags_page.dart';
-import 'pages/timeline_page.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -78,11 +81,52 @@ class KeepItApp implements AppDescriptor {
   @override
   List<CLRouteDescriptor> get fullscreenBuilders => [
         CLRouteDescriptor(
-          name: 'item/:collection_id/:item_id',
+          name: 'item/:collectionId/:item_id',
           builder: (context, GoRouterState state) {
-            return ItemPage(
-              collectionId: int.parse(state.pathParameters['collection_id']!),
+            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+              throw Exception('missing parentIdentifier');
+            }
+            return CollectionItemPage(
+              collectionId: int.parse(state.pathParameters['collectionId']!),
               id: int.parse(state.pathParameters['item_id']!),
+              parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'item_by_tag/:tagId/:item_id',
+          builder: (context, GoRouterState state) {
+            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+              throw Exception('missing parentIdentifier');
+            }
+            return TagItemPage(
+              tagId: int.parse(state.pathParameters['tagId']!),
+              id: int.parse(state.pathParameters['item_id']!),
+              parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'edit/:collectionId',
+          builder: (context, GoRouterState state) {
+            return CollectionEditorPage(
+              collectionId: int.parse(state.pathParameters['collectionId']!),
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'move',
+          builder: (context, GoRouterState state) {
+            if (!state.uri.queryParameters.containsKey('ids')) {
+              throw Exception('Nothing to move');
+            }
+            final idsToMove = state.uri.queryParameters['ids']!
+                .split(',')
+                .map(int.parse)
+                .toList();
+
+            return MoveMediaPage(
+              idsToMove: idsToMove,
             );
           },
         ),
@@ -91,15 +135,21 @@ class KeepItApp implements AppDescriptor {
   @override
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
-          name: 'collections/:tag_id',
+          name: 'collections/:tagId',
           builder: (context, GoRouterState state) => CollectionsPage(
-            tagId: int.parse(state.pathParameters['tag_id']!),
+            tagId: int.parse(state.pathParameters['tagId']!),
           ),
         ),
         CLRouteDescriptor(
-          name: 'items/:collection_id',
-          builder: (context, GoRouterState state) => TimeLinePage(
-            collectionID: int.parse(state.pathParameters['collection_id']!),
+          name: 'items_by_collection/:collectionId',
+          builder: (context, GoRouterState state) => CollectionTimeLinePage(
+            collectionId: int.parse(state.pathParameters['collectionId']!),
+          ),
+        ),
+        CLRouteDescriptor(
+          name: 'items_by_tag/:tagId',
+          builder: (context, GoRouterState state) => TagTimeLinePage(
+            tagId: int.parse(state.pathParameters['tagId']!),
           ),
         ),
       ];
@@ -107,8 +157,8 @@ class KeepItApp implements AppDescriptor {
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
         BuildContext context, {
-        required CLMediaInfoGroup incomingMedia,
-        required void Function() onDiscard,
+        required CLSharedMedia incomingMedia,
+        required void Function({required bool result}) onDiscard,
       }) =>
           IncomingMediaHandler(
             incomingMedia: incomingMedia,
@@ -188,7 +238,7 @@ void printGoRouterState(GoRouterState state) {
       '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
 }
 
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);

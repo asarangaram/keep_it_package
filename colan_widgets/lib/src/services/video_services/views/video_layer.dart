@@ -1,12 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
+import '../providers/show_controls.dart';
 import 'video_controls.dart';
 
-class VideoLayer extends ConsumerStatefulWidget {
+class VideoLayer extends ConsumerWidget {
   const VideoLayer({
     required this.controller,
     this.fit,
@@ -23,89 +22,59 @@ class VideoLayer extends ConsumerStatefulWidget {
   final List<Widget>? children;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => VideoLayerState();
-}
-
-class VideoLayerState extends ConsumerState<VideoLayer> {
-  bool isHovering = false;
-
-  Timer? disableControls;
-  bool isFocussed = false;
-
-  @override
-  void dispose() {
-    disableControls?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = widget.controller;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
 
     return GestureDetector(
-      onTap: () {
+      onDoubleTap: () {
         if (controller.value.isPlaying) {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 3));
           controller.pause();
         } else {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 1));
           controller.play();
         }
       },
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (_) {
-          disableControls?.cancel();
-          setState(() {
-            isHovering = true;
-          });
-        },
-        onPointerUp: (_) {
-          // If the video is playing, pause it.
-
-          disableControls = Timer(
-            const Duration(seconds: 3),
-            () {
-              if (mounted) {
-                setState(() => isHovering = false);
-              }
-            },
-          );
-        },
-        onPointerHover: (_) {
-          setState(() => isHovering = true);
-          disableControls?.cancel();
-          disableControls = Timer(
-            const Duration(seconds: 2),
-            () {
-              if (mounted) {
-                setState(() => isHovering = false);
-              }
-            },
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: Stack(
-            alignment: AlignmentDirectional.bottomCenter,
-            children: [
-              VideoPlayer(controller),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: (isHovering || !controller.value.isPlaying)
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (widget.children != null) ...widget.children!,
-                          VideoControls(
-                            controller: controller,
-                            onTapFullScreen: widget.onTapFullScreen,
-                            isPlayingFullScreen: widget.isPlayingFullScreen,
-                          ),
-                        ],
-                      )
-                    : Container(),
-              ),
-            ],
-          ),
+      onTap: () {
+        if (controller.value.isPlaying) {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 3));
+          // controller.pause();
+        } else {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 1));
+          controller.play();
+        }
+      },
+      child: AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+          children: [
+            VideoPlayer(controller),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: showControl
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (children != null) ...children!,
+                        VideoControls(
+                          controller: controller,
+                          onTapFullScreen: onTapFullScreen,
+                          isPlayingFullScreen: isPlayingFullScreen,
+                        ),
+                      ],
+                    )
+                  : Container(),
+            ),
+          ],
         ),
       ),
     );

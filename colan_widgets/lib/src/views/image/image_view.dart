@@ -10,8 +10,10 @@ class ImageViewerBasic extends StatelessWidget {
     this.overlayIcon,
     this.fit,
     super.key,
+    this.isFullScreen = false,
   });
   final File file;
+  final bool isFullScreen;
 
   final BoxFit? fit;
   final IconData? overlayIcon;
@@ -26,14 +28,14 @@ class ImageViewerBasic extends StatelessWidget {
                   file,
                   fit: fit,
                 )
-              : const BrokenImage(),
+              : const Center(child: BrokenImage()),
         ),
         if (overlayIcon != null)
           Positioned.fill(
             child: Center(
               child: FractionallySizedBox(
-                widthFactor: 0.2,
-                heightFactor: 0.2,
+                widthFactor: 0.3,
+                heightFactor: 0.3,
                 child: FittedBox(
                   child: DecoratedBox(
                     decoration: BoxDecoration(

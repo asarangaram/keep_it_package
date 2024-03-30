@@ -1,76 +1,59 @@
-import 'dart:async';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../widgets/dialogs.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/folders_and_files/tags_as_folder.dart';
 
-import '../widgets/keepit_grid/cl_folder_view.dart';
+class TagsPage extends ConsumerStatefulWidget {
+  const TagsPage({super.key, this.collectionId});
+  final int? collectionId;
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => TagsPageState();
+}
 
-class TagsPage extends ConsumerWidget {
-  const TagsPage({super.key});
+class TagsPageState extends ConsumerState<TagsPage> {
+  bool isLoading = false;
+  bool excludeEmpty = true;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => LoadTags(
-        buildOnData: (tags) => FolderView(
-          label: 'Tags',
-          entities: tags.entries,
-          availableSuggestions: suggestedTags.where((element) {
-            return !tags.entries.map((e) => e.label).contains(element.label);
-          }).toList(),
-          itemSize: const Size(100, 120),
-          onSelect: (BuildContext context, CollectionBase entity) async {
-            unawaited(
-              context.push(
-                '/collections/${entity.id}',
-              ),
-            );
-            return true;
-          },
-          onUpdate: (tags) => onUpdate(context, ref, tags),
-          onDelete: (List<CollectionBase> selectedTags) async {
-            ref
-                .read(tagsProvider(null).notifier)
-                .deleteTags(selectedTags.map(Tag.fromBase).toList());
-            return true;
-          },
-          previewGenerator: (BuildContext context, CollectionBase tag) {
-            return LoadItemsInTag(
-              id: tag.id!,
-              limit: 4,
-              buildOnData: (clMediaList) {
-                return CLMediaCollage.byMatrixSize(
-                  clMediaList ?? [],
-                  hCount: 2,
-                  vCount: 2,
-                  itemBuilder: (context, index) => CLMediaPreview(
-                    media: clMediaList![index],
+  Widget build(BuildContext context) => GetCollection(
+        id: widget.collectionId,
+        buildOnData: (collection) {
+          return GetTagMultiple(
+            excludeEmpty: excludeEmpty,
+            collectionId: widget.collectionId,
+            buildOnData: (tags) {
+              final tagPrefix =
+                  'FolderView Tags CollectionId: ${widget.collectionId} '
+                  ' excludeEmpty: $excludeEmpty';
+              final galleryGroups = <GalleryGroup<Tag>>[];
+              for (final rows in tags.convertTo2D(3)) {
+                galleryGroups.add(
+                  GalleryGroup(
+                    rows,
                   ),
-                  whenNopreview: CLText.veryLarge(tag.label.characters.first),
                 );
-              },
-            );
-          },
-          onCreateNew: (BuildContext context, WidgetRef ref) async {
-            final tag = await KeepItDialogs.upsert(context);
-            if (tag != null && context.mounted) {
-              return onUpdate(context, ref, [tag]);
-            }
-            return false;
-          },
-        ),
+              }
+              return CLSimpleGalleryView(
+                key: ValueKey(tagPrefix),
+                title: collection?.label ?? 'Tags',
+                columns: 3,
+                galleryMap: galleryGroups,
+                emptyState: const EmptyState(),
+                itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+                    TagAsFolder(
+                  tag: item,
+                  quickMenuScopeKey: quickMenuScopeKey,
+                ),
+                tagPrefix: tagPrefix,
+                onRefresh: () async {
+                  ref.invalidate(dbManagerProvider);
+                },
+              );
+            },
+          );
+        },
       );
-  Future<bool> onUpdate(
-    BuildContext context,
-    WidgetRef ref,
-    List<CollectionBase> selectedTags,
-  ) async {
-    ref
-        .read(tagsProvider(null).notifier)
-        .upsertTags(selectedTags.map(Tag.fromBase).toList());
-    return true;
-  }
 }

@@ -9,3 +9,10 @@ var loggerStack = Logger(
   printer: PrettyPrinter(),
 );
  */
+
+void exceptionLogger(String exception, String details) {
+  logger
+    ..i(exception)
+    ..i('details: $details');
+  throw Exception(exception);
+}

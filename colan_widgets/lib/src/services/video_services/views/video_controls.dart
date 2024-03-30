@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
+import '../providers/show_controls.dart';
 
 extension on Duration {
   String get timestamp => "${inMinutes.toString().padLeft(2, '0')}:"
@@ -73,72 +74,87 @@ class VideoControlsState extends ConsumerState<VideoControls> {
   @override
   Widget build(BuildContext context) => IconTheme(
         data: const IconThemeData(color: Colors.white),
-        child: ColoredBox(
-          color: const Color.fromRGBO(0, 0, 0, 0.5),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                children: [
-                  // required only for network
-                  SliderTheme(
-                    data: SliderThemeData(
-                      thumbShape: SliderComponentShape.noThumb,
+        child: Listener(
+          onPointerDown: (_) {
+            ref
+                .read(showControlsProvider.notifier)
+                .briefHover(timeout: const Duration(seconds: 3));
+          },
+          onPointerHover: (_) {
+            ref
+                .read(showControlsProvider.notifier)
+                .briefHover(timeout: const Duration(seconds: 3));
+          },
+          child: ColoredBox(
+            color: const Color.fromRGBO(0, 0, 0, 0.5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Material(
+                  color: Colors.transparent,
+                  child: Stack(
+                    children: [
+                      // required only for network
+                      SliderTheme(
+                        data: SliderThemeData(
+                          thumbShape: SliderComponentShape.noThumb,
+                        ),
+                        child: Slider(
+                          max: durationToDouble(video.duration),
+                          value: durationToDouble(bufferedPosition),
+                          onChanged: null,
+                        ),
+                      ),
+                      Slider(
+                        max: durationToDouble(video.duration),
+                        value: seekValue ?? durationToDouble(video.position),
+                        onChanged: (double value) =>
+                            setState(() => seekValue = value),
+                        onChangeEnd: (double value) {
+                          setState(() => seekValue = null);
+                          widget.controller.seekTo(doubleToDuration(value));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        video.isPlaying ? Icons.pause : Icons.play_arrow,
+                      ),
+                      onPressed: onPlayPause,
                     ),
-                    child: Slider(
-                      max: durationToDouble(video.duration),
-                      value: durationToDouble(bufferedPosition),
-                      onChanged: null,
+                    IconButton(
+                      icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
+                      onPressed: onMuteToggle,
                     ),
-                  ),
-                  Slider(
-                    max: durationToDouble(video.duration),
-                    value: seekValue ?? durationToDouble(video.position),
-                    onChanged: (double value) =>
-                        setState(() => seekValue = value),
-                    onChangeEnd: (double value) {
-                      setState(() => seekValue = null);
-                      widget.controller.seekTo(doubleToDuration(value));
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    icon:
-                        Icon(video.isPlaying ? Icons.pause : Icons.play_arrow),
-                    onPressed: onPlayPause,
-                  ),
-                  IconButton(
-                    icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
-                    onPressed: onMuteToggle,
-                  ),
-                  Flexible(
-                    child: Slider(
-                      value: widget.controller.value.volume,
-                      onChanged: onAdjustVolume,
-                      onChangeEnd: onAdjustVolume,
+                    const Spacer(),
+                    Flexible(
+                      child: FittedBox(
+                        child: Text(
+                          timestamp,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: Colors.white),
+                        ),
+                      ),
                     ),
-                  ),
-                  Text(
-                    timestamp,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: Colors.white),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      widget.isPlayingFullScreen
-                          ? Icons.close_fullscreen_outlined
-                          : Icons.fullscreen_outlined,
+                    IconButton(
+                      icon: Icon(
+                        widget.isPlayingFullScreen
+                            ? Icons.close_fullscreen_outlined
+                            : Icons.fullscreen_outlined,
+                      ),
+                      onPressed: widget.onTapFullScreen,
                     ),
-                    onPressed: widget.onTapFullScreen,
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );

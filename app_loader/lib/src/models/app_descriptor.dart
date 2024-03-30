@@ -1,7 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../shared_media/models/cl_shared_media.dart';
 import 'cl_route_descriptor.dart';
 
 typedef CLAppInitializer = Future<bool> Function(Ref ref);
@@ -15,8 +15,8 @@ typedef CLRedirector = Future<String?> Function(String location);
 
 typedef IncomingMediaViewBuilder = Widget Function(
   BuildContext context, {
-  required CLMediaInfoGroup incomingMedia,
-  required void Function() onDiscard,
+  required CLSharedMedia incomingMedia,
+  required void Function({required bool result}) onDiscard,
 });
 
 abstract class AppDescriptor {

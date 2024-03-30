@@ -4,12 +4,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
-import 'package:store/src/extensions/item.dart';
-
 import 'package:uuid/uuid.dart';
 
-import '../../../from_store/from_store.dart';
-import '../../../providers/uuid.dart';
+import '../../../store/providers/uuid.dart';
+import '../../../store/widgets/w1_get_app_settings.dart';
 import '../model/thumbnail_services.dart';
 import '../provider/thumbnail_services.dart';
 
@@ -30,6 +28,8 @@ class ImageThumbnail extends ConsumerStatefulWidget {
 }
 
 class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
+  Object? error;
+  StackTrace? st;
   @override
   void initState() {
     super.initState();
@@ -37,15 +37,31 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
 
   @override
   Widget build(BuildContext context) {
-    return WhenDeviceDirectoriesAccessible(
-      builder: (directories) {
+    if (error != null) {
+      return widget.builder(context, AsyncError(error!, st!));
+    }
+    if (!File(widget.media.path).existsSync()) {
+      try {
+        throw Exception('file not found');
+      } catch (e, st) {
+        setState(() {
+          error = e;
+          this.st = st;
+        });
+      }
+    }
+    return GetAppSettings(
+      builder: (resources, {onNewMedia}) {
         final uuidGenerator = ref.watch(uuidProvider);
-        final uuid = uuidGenerator.v5(
-          Uuid.NAMESPACE_URL,
-          widget.media.relativePath(directories),
+        final relativePath = CLMedia.relativePath(
+          widget.media.path,
+          pathPrefix: resources.directories.docDir.path,
+          validate: false,
         );
+
+        final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, relativePath);
         final previewFileName =
-            path.join(directories.cacheDir.path, '$uuid.jpg');
+            path.join(resources.directories.cacheDir.path, '$uuid.tn.jpeg');
 
         final hasThumbnail =
             !widget.refresh && File(previewFileName).existsSync();
@@ -72,6 +88,16 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
                 onData: () {
                   if (mounted) {
                     setState(() {});
+                  }
+                },
+                onError: (errorString) {
+                  try {
+                    throw Exception('errorString');
+                  } catch (e, st) {
+                    setState(() {
+                      error = e;
+                      this.st = st;
+                    });
                   }
                 },
               ),

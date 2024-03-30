@@ -12,25 +12,24 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
-  file_picker: ^6.1.1
+  file_picker: ^6.2.0
   flutter:
     sdk: flutter
-  flutter_riverpod: ^2.4.9
+  flutter_riverpod: ^2.5.1
   flutter_slidable: ^3.0.1
   go_router: ^12.1.1
   
   http: ^1.1.0
   http_parser: ^4.0.2
-  logger: ^2.0.2+1
+  logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
   path: ^1.8.3
   path_provider: ^2.1.1
   percent_indicator: ^4.2.3
   scroll_to_index: ^3.0.1
-  share_handler: ^0.0.19
-  store:
-    path: ../store
+  share_handler: ^0.0.21
+  
   
   very_good_analysis: ^5.1.0
     

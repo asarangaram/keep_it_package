@@ -1,25 +1,17 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class WizardBuilder extends ConsumerWidget {
-  const WizardBuilder({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Container();
-  }
-}
-
-abstract class WizardPageOld extends ConsumerWidget {
-  const WizardPageOld({
+abstract class SharedMediaWizard extends ConsumerWidget {
+  const SharedMediaWizard({
     required this.incomingMedia,
     required this.onDone,
     required this.onCancel,
     super.key,
   });
-  final CLMediaInfoGroup incomingMedia;
-  final void Function({required CLMediaInfoGroup? mg}) onDone;
+  final CLSharedMedia incomingMedia;
+  final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
   static Widget buildWizard(
