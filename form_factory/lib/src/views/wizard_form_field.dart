@@ -34,7 +34,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
   @override
   void initState() {
     state = switch (widget.descriptor.runtimeType) {
-      CLFormSelectMultipleDescriptors => CLFormSelectMultipleState(
+      const (CLFormSelectMultipleDescriptors) => CLFormSelectMultipleState(
           scrollController: ScrollController(),
           wrapKey: wrapKey,
           searchController: SearchController(),
@@ -42,21 +42,21 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
               (widget.descriptor as CLFormSelectMultipleDescriptors)
                   .initialValues,
         ),
-      CLFormSelectSingleDescriptors => CLFormSelectSingleState(
+      const (CLFormSelectSingleDescriptors) => CLFormSelectSingleState(
           searchController: SearchController(),
           selectedEntitry: [
             (widget.descriptor as CLFormSelectSingleDescriptors).initialValues
           ],
         ),
-      CLFormTextFieldDescriptor => CLFormTextFieldState(
+      const (CLFormTextFieldDescriptor) => CLFormTextFieldState(
           controller: TextEditingController(), focusNode: FocusNode()),
       _ => throw UnimplementedError()
     };
     switch (widget.descriptor.runtimeType) {
-      case CLFormSelectMultipleDescriptors:
-      case CLFormSelectSingleDescriptors:
+      case const (CLFormSelectMultipleDescriptors):
+      case const (CLFormSelectSingleDescriptors):
         break;
-      case CLFormTextFieldDescriptor:
+      case const (CLFormTextFieldDescriptor):
         (state as CLFormTextFieldState).focusNode?.requestFocus();
     }
 
@@ -79,11 +79,13 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
             final menuItem = widget.actionMenu!(context, () async {
               if (formKey.currentState?.validate() ?? false) {
                 widget.onSubmit(switch (widget.descriptor.runtimeType) {
-                  CLFormSelectMultipleDescriptors => CLFormSelectMultipleResult(
-                      (state as CLFormSelectMultipleState).selectedEntities),
-                  CLFormSelectSingleDescriptors => CLFormSelectSingleResult(
-                      (state as CLFormSelectSingleState).selectedEntitry[0]!),
-                  CLFormTextFieldDescriptor => CLFormTextFieldResult(
+                  const (CLFormSelectMultipleDescriptors) =>
+                    CLFormSelectMultipleResult(
+                        (state as CLFormSelectMultipleState).selectedEntities),
+                  const (CLFormSelectSingleDescriptors) =>
+                    CLFormSelectSingleResult(
+                        (state as CLFormSelectSingleState).selectedEntitry[0]!),
+                  const (CLFormTextFieldDescriptor) => CLFormTextFieldResult(
                       (state as CLFormTextFieldState).controller.text),
                   _ => throw Exception("Unsupported")
                 });
@@ -122,7 +124,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
           width: double.infinity,
           height: kMinInteractiveDimension * 3,
           child: switch (widget.descriptor.runtimeType) {
-            CLFormSelectMultipleDescriptors => CLFormSelectMultiple(
+            const (CLFormSelectMultipleDescriptors) => CLFormSelectMultiple(
                 descriptors:
                     widget.descriptor as CLFormSelectMultipleDescriptors,
                 state: (state as CLFormSelectMultipleState),
@@ -130,7 +132,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                   setState(() {});
                 },
                 actionBuilder: actionBuilder),
-            CLFormSelectSingleDescriptors => CLFormSelectSingle(
+            const (CLFormSelectSingleDescriptors) => CLFormSelectSingle(
                 descriptors: widget.descriptor as CLFormSelectSingleDescriptors,
                 state: state as CLFormSelectSingleState,
                 onRefresh: () {
@@ -138,7 +140,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                 },
                 actionBuilder: actionBuilder,
               ),
-            CLFormTextFieldDescriptor => CLFormTextField(
+            const (CLFormTextFieldDescriptor) => CLFormTextField(
                 descriptors: widget.descriptor as CLFormTextFieldDescriptor,
                 state: state as CLFormTextFieldState,
                 onRefresh: () {
