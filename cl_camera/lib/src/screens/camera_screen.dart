@@ -7,14 +7,35 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../extensions.dart';
 import '../image_services/view/cl_media_preview.dart';
 import '../widgets/camera_gesture.dart';
 import '../widgets/camera_selectors.dart';
+import '../widgets/captured_media.dart';
 
-class CameraScreen extends StatefulWidget {
+mixin CameraMixin {
+  String getCameraName(
+    List<CameraDescription> cameras,
+    CameraDescription description,
+  ) {
+    final directionCameras = cameras
+        .where((element) => element.lensDirection == description.lensDirection)
+        .toList();
+
+    if (directionCameras.length == 1) {
+      return description.lensDirection.name.toUpperCase();
+    } else {
+      return '${description.lensDirection.name.toUpperCase()}'
+          '-${directionCameras.indexOf(description)}';
+    }
+  }
+}
+
+class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({
     required this.cameras,
     required this.directory,
@@ -27,15 +48,14 @@ class CameraScreen extends StatefulWidget {
   CameraScreenState createState() => CameraScreenState();
 }
 
-class CameraScreenState extends State<CameraScreen>
-    with WidgetsBindingObserver {
+class CameraScreenState extends ConsumerState<CameraScreen>
+    with WidgetsBindingObserver, CameraMixin {
   CameraController? controller;
   CameraDescription? currDescription;
 
   // Initial values
   bool _isCameraInitialized = false;
   bool _isCameraPermissionGranted = false;
-  bool _isRearCameraSelected = true;
   bool _isVideoCameraSelected = false;
   bool _isRecordingInProgress = false;
   double _minAvailableExposureOffset = 0;
@@ -47,9 +67,7 @@ class CameraScreenState extends State<CameraScreen>
   // Current values
   double _currentZoomLevel = 1;
   double _currentExposureOffset = 0;
-  FlashMode? _currentFlashMode;
-
-  List<CLMedia> allFileList = [];
+  FlashMode _currentFlashMode = FlashMode.off;
 
   final resolutionPresets = ResolutionPreset.values;
 
@@ -72,14 +90,14 @@ class CameraScreenState extends State<CameraScreen>
   }
 
   Future<void> refreshAlreadyCapturedImages(String recentFileName) async {
-    print(recentFileName);
-    if (recentFileName.contains('.mp4')) {
-      allFileList.add(CLMedia(path: recentFileName, type: CLMediaType.video));
-    } else {
-      allFileList.add(CLMedia(path: recentFileName, type: CLMediaType.image));
-    }
-
-    setState(() {});
+    ref.read(capturedMediaProvider.notifier).add(
+          CLMedia(
+            path: recentFileName,
+            type: recentFileName.contains('.mp4')
+                ? CLMediaType.video
+                : CLMediaType.image,
+          ),
+        );
   }
 
   Future<XFile?> takePicture() async {
@@ -276,12 +294,12 @@ class CameraScreenState extends State<CameraScreen>
   @override
   void dispose() {
     controller?.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.cameras);
     return SafeArea(
       child: CLFullscreenBox(
         backgroundColor: Colors.black,
@@ -459,64 +477,43 @@ class CameraScreenState extends State<CameraScreen>
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                InkWell(
-                                                  onTap: _isRecordingInProgress
-                                                      ? () async {
-                                                          if (controller!.value
-                                                              .isRecordingPaused) {
-                                                            await resumeVideoRecording();
-                                                          } else {
-                                                            await pauseVideoRecording();
-                                                          }
-                                                        }
-                                                      : () {
-                                                          setState(() {
-                                                            _isCameraInitialized =
-                                                                false;
-                                                          });
-                                                          onNewCameraSelected();
-                                                          setState(() {
-                                                            _isRearCameraSelected =
-                                                                !_isRearCameraSelected;
-                                                          });
-                                                        },
-                                                  child: Stack(
-                                                    alignment: Alignment.center,
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.circle,
-                                                        color: Colors.black38,
-                                                        size: 60,
-                                                      ),
-                                                      if (_isRecordingInProgress)
-                                                        controller!.value
-                                                                .isRecordingPaused
-                                                            ? const Icon(
-                                                                Icons
-                                                                    .play_arrow,
-                                                                color: Colors
-                                                                    .white,
-                                                                size: 30,
-                                                              )
-                                                            : const Icon(
-                                                                Icons.pause,
-                                                                color: Colors
-                                                                    .white,
-                                                                size: 30,
-                                                              )
-                                                      else
-                                                        Icon(
-                                                          _isRearCameraSelected
-                                                              ? Icons
-                                                                  .camera_front
-                                                              : Icons
-                                                                  .camera_rear,
-                                                          color: Colors.white,
-                                                          size: 30,
+                                                if (_isRecordingInProgress)
+                                                  InkWell(
+                                                    onTap: () async {
+                                                      if (controller!.value
+                                                          .isRecordingPaused) {
+                                                        await resumeVideoRecording();
+                                                      } else {
+                                                        await pauseVideoRecording();
+                                                      }
+                                                    },
+                                                    child: Stack(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.circle,
+                                                          color: Colors.black38,
+                                                          size: 60,
                                                         ),
-                                                    ],
-                                                  ),
-                                                ),
+                                                        if (controller!.value
+                                                            .isRecordingPaused)
+                                                          const Icon(
+                                                            Icons.play_arrow,
+                                                            color: Colors.white,
+                                                            size: 30,
+                                                          )
+                                                        else
+                                                          const Icon(
+                                                            Icons.pause,
+                                                            color: Colors.white,
+                                                            size: 30,
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                else
+                                                  Container(),
                                                 InkWell(
                                                   onTap: _isVideoCameraSelected
                                                       ? () async {
@@ -579,39 +576,7 @@ class CameraScreenState extends State<CameraScreen>
                                                     ],
                                                   ),
                                                 ),
-                                                InkWell(
-                                                  onTap: () {},
-                                                  child: Container(
-                                                    width: 60,
-                                                    height: 60,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.black,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        10,
-                                                      ),
-                                                      border: Border.all(
-                                                        color: Colors.white,
-                                                        width: 2,
-                                                      ),
-                                                    ),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                        8,
-                                                      ),
-                                                      child: (allFileList
-                                                              .isEmpty)
-                                                          ? null
-                                                          : CLMediaPreview(
-                                                              directory: widget
-                                                                  .directory,
-                                                              media: allFileList
-                                                                  .last,
-                                                            ),
-                                                    ),
-                                                  ),
-                                                ),
+                                                Container(),
                                               ],
                                             ),
                                           ),
@@ -626,92 +591,52 @@ class CameraScreenState extends State<CameraScreen>
                         ),
                       ),
                       Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Column(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            16,
+                            8,
+                            16,
+                            8,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  16,
-                                  8,
-                                  16,
-                                  8,
-                                ),
+                              Expanded(
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    InkWell(
-                                      onTap: () async {
-                                        setState(() {
-                                          _currentFlashMode = FlashMode.off;
-                                        });
-                                        await controller!.setFlashMode(
-                                          FlashMode.off,
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons.flash_off,
-                                        color:
-                                            _currentFlashMode == FlashMode.off
-                                                ? Colors.amber
-                                                : Colors.white,
+                                    FlashControl(controller: controller!),
+                                    CLButtonIconLabelled.small(
+                                      currDescription!.lensDirection ==
+                                              CameraLensDirection.front
+                                          ? Icons.camera_front
+                                          : Icons.camera_rear,
+                                      getCameraName(
+                                        widget.cameras,
+                                        currDescription!,
                                       ),
-                                    ),
-                                    InkWell(
-                                      onTap: () async {
+                                      onTap: () {
                                         setState(() {
-                                          _currentFlashMode = FlashMode.auto;
+                                          _isCameraInitialized = false;
                                         });
-                                        await controller!.setFlashMode(
-                                          FlashMode.auto,
-                                        );
+                                        onNewCameraSelected();
                                       },
-                                      child: Icon(
-                                        Icons.flash_auto,
-                                        color:
-                                            _currentFlashMode == FlashMode.auto
-                                                ? Colors.amber
-                                                : Colors.white,
-                                      ),
+                                      color: Colors.white,
                                     ),
-                                    InkWell(
-                                      onTap: () async {
-                                        setState(() {
-                                          _currentFlashMode = FlashMode.always;
-                                        });
-                                        await controller!.setFlashMode(
-                                          FlashMode.always,
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons.flash_on,
-                                        color: _currentFlashMode ==
-                                                FlashMode.always
-                                            ? Colors.amber
-                                            : Colors.white,
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () async {
-                                        setState(() {
-                                          _currentFlashMode = FlashMode.torch;
-                                        });
-                                        await controller!.setFlashMode(
-                                          FlashMode.torch,
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons.highlight,
-                                        color:
-                                            _currentFlashMode == FlashMode.torch
-                                                ? Colors.amber
-                                                : Colors.white,
-                                      ),
-                                    ),
-                                  ],
+                                  ]
+                                      .map(
+                                        (e) => Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 4,
+                                            ),
+                                            child: e,
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
                                 ),
                               ),
+                              CapturedMedia(directory: widget.directory),
                             ],
                           ),
                         ),
@@ -752,6 +677,40 @@ class CameraScreenState extends State<CameraScreen>
                 ],
               ),
       ),
+    );
+  }
+}
+
+class FlashControl extends StatelessWidget {
+  const FlashControl({required this.controller, super.key});
+  final CameraController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return CLButtonIconLabelled.small(
+      switch (controller.value.flashMode) {
+        FlashMode.off => Icons.flash_off,
+        FlashMode.auto => Icons.flash_auto,
+        FlashMode.always => Icons.flash_on,
+        FlashMode.torch => Icons.highlight,
+      },
+      switch (controller.value.flashMode) {
+        FlashMode.off => 'Off',
+        FlashMode.auto => 'Auto',
+        FlashMode.always => 'On',
+        FlashMode.torch => 'Torch',
+      },
+      color: switch (controller.value.flashMode) {
+        FlashMode.off => Colors.white,
+        FlashMode.auto => Colors.amber,
+        FlashMode.always => Colors.amber,
+        FlashMode.torch => Colors.amber,
+      },
+      onTap: () async {
+        await controller.setFlashMode(
+          FlashMode.values.next(controller.value.flashMode),
+        );
+      },
     );
   }
 }
