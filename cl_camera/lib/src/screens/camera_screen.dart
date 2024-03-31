@@ -5,12 +5,15 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
 import '../image_services/view/cl_media_preview.dart';
+import '../widgets/camera_selectors.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({
@@ -301,294 +304,289 @@ class CameraScreenState extends State<CameraScreen>
                                 height: 150,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                16,
-                                8,
-                                16,
-                                8,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black87,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 8,
-                                          right: 8,
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black87,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 8,
+                                    right: 8,
+                                  ),
+                                  child: DropdownButton<ResolutionPreset>(
+                                    dropdownColor: Colors.black87,
+                                    underline: Container(),
+                                    value: currentResolutionPreset,
+                                    items: [
+                                      for (final ResolutionPreset preset
+                                          in resolutionPresets)
+                                        DropdownMenuItem(
+                                          value: preset,
+                                          child: Text(
+                                            preset
+                                                .toString()
+                                                .split('.')[1]
+                                                .toUpperCase(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
-                                        child: DropdownButton<ResolutionPreset>(
-                                          dropdownColor: Colors.black87,
-                                          underline: Container(),
-                                          value: currentResolutionPreset,
-                                          items: [
-                                            for (final ResolutionPreset preset
-                                                in resolutionPresets)
-                                              DropdownMenuItem(
-                                                value: preset,
-                                                child: Text(
-                                                  preset
-                                                      .toString()
-                                                      .split('.')[1]
-                                                      .toUpperCase(),
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        currentResolutionPreset = value!;
+                                        _isCameraInitialized = false;
+                                      });
+                                      onNewCameraSelected(
+                                        controller!.description,
+                                      );
+                                    },
+                                    hint: const Text('Select item'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: LayoutBuilder(
+                                builder: (context, constrains) {
+                                  return DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withAlpha(64),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        if (_isRecordingInProgress ||
+                                            (controller
+                                                    ?.value.isTakingPicture ??
+                                                false))
+                                          Container()
+                                        else
+                                          Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                SizedBox(
+                                                  width: constrains.maxWidth,
+                                                  height:
+                                                      kMinInteractiveDimension,
+                                                  child: CameraMode(
+                                                    menuItems: [
+                                                      CLMenuItem(
+                                                        title: 'Photo',
+                                                        icon: Icons.camera,
+                                                        onTap: () async {
+                                                          setState(() {
+                                                            _isVideoCameraSelected =
+                                                                false;
+                                                          });
+                                                          return true;
+                                                        },
+                                                      ),
+                                                      CLMenuItem(
+                                                        title: 'Video',
+                                                        icon: Icons
+                                                            .video_camera_back,
+                                                        onTap: () async {
+                                                          setState(() {
+                                                            _isVideoCameraSelected =
+                                                                true;
+                                                          });
+                                                          return true;
+                                                        },
+                                                      ),
+                                                    ],
+                                                    currIndex:
+                                                        _isVideoCameraSelected
+                                                            ? 1
+                                                            : 0,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            16,
+                                            8,
+                                            16,
+                                            8,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              InkWell(
+                                                onTap: _isRecordingInProgress
+                                                    ? () async {
+                                                        if (controller!.value
+                                                            .isRecordingPaused) {
+                                                          await resumeVideoRecording();
+                                                        } else {
+                                                          await pauseVideoRecording();
+                                                        }
+                                                      }
+                                                    : () {
+                                                        setState(() {
+                                                          _isCameraInitialized =
+                                                              false;
+                                                        });
+                                                        onNewCameraSelected(
+                                                          widget.cameras[
+                                                              _isRearCameraSelected
+                                                                  ? 1
+                                                                  : 0],
+                                                        );
+                                                        setState(() {
+                                                          _isRearCameraSelected =
+                                                              !_isRearCameraSelected;
+                                                        });
+                                                      },
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.circle,
+                                                      color: Colors.black38,
+                                                      size: 60,
+                                                    ),
+                                                    if (_isRecordingInProgress)
+                                                      controller!.value
+                                                              .isRecordingPaused
+                                                          ? const Icon(
+                                                              Icons.play_arrow,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 30,
+                                                            )
+                                                          : const Icon(
+                                                              Icons.pause,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 30,
+                                                            )
+                                                    else
+                                                      Icon(
+                                                        _isRearCameraSelected
+                                                            ? Icons.camera_front
+                                                            : Icons.camera_rear,
+                                                        color: Colors.white,
+                                                        size: 30,
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: _isVideoCameraSelected
+                                                    ? () async {
+                                                        if (_isRecordingInProgress) {
+                                                          final rawVideo =
+                                                              await stopVideoRecording();
+                                                          if (rawVideo !=
+                                                              null) {
+                                                            await refreshAlreadyCapturedImages(
+                                                              rawVideo.path,
+                                                            );
+                                                          }
+                                                        } else {
+                                                          await startVideoRecording();
+                                                        }
+                                                      }
+                                                    : () async {
+                                                        if (!controller!.value
+                                                            .isTakingPicture) {
+                                                          final rawImage =
+                                                              await takePicture();
+
+                                                          if (rawImage !=
+                                                              null) {
+                                                            await refreshAlreadyCapturedImages(
+                                                              rawImage.path,
+                                                            );
+                                                          }
+                                                        }
+                                                      },
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.circle,
+                                                      color:
+                                                          _isVideoCameraSelected
+                                                              ? Colors.white
+                                                              : Colors.white38,
+                                                      size: 80,
+                                                    ),
+                                                    Icon(
+                                                      Icons.circle,
+                                                      color:
+                                                          _isVideoCameraSelected
+                                                              ? Colors.red
+                                                              : Colors.white,
+                                                      size: 65,
+                                                    ),
+                                                    if (_isVideoCameraSelected &&
+                                                        _isRecordingInProgress)
+                                                      const Icon(
+                                                        Icons.stop_rounded,
+                                                        color: Colors.white,
+                                                        size: 32,
+                                                      )
+                                                    else
+                                                      Container(),
+                                                  ],
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: () {},
+                                                child: Container(
+                                                  width: 60,
+                                                  height: 60,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      10,
+                                                    ),
+                                                    border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      8,
+                                                    ),
+                                                    child: (allFileList.isEmpty)
+                                                        ? null
+                                                        : CLMediaPreview(
+                                                            directory: widget
+                                                                .directory,
+                                                            media: allFileList
+                                                                .last,
+                                                          ),
                                                   ),
                                                 ),
                                               ),
-                                          ],
-                                          onChanged: (value) {
-                                            setState(() {
-                                              currentResolutionPreset = value!;
-                                              _isCameraInitialized = false;
-                                            });
-                                            onNewCameraSelected(
-                                              controller!.description,
-                                            );
-                                          },
-                                          hint: const Text('Select item'),
+                                            ],
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ),
-                                  // Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      right: 8,
-                                      top: 16,
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          '${_currentExposureOffset.toStringAsFixed(1)}x',
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: RotatedBox(
-                                      quarterTurns: 3,
-                                      child: SizedBox(
-                                        height: 30,
-                                        child: Slider(
-                                          value: _currentExposureOffset,
-                                          min: _minAvailableExposureOffset,
-                                          max: _maxAvailableExposureOffset,
-                                          activeColor: Colors.white,
-                                          inactiveColor: Colors.white30,
-                                          onChanged: (value) async {
-                                            setState(() {
-                                              _currentExposureOffset = value;
-                                            });
-                                            await controller!
-                                                .setExposureOffset(value);
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Slider(
-                                          value: _currentZoomLevel,
-                                          min: _minAvailableZoom,
-                                          max: _maxAvailableZoom,
-                                          activeColor: Colors.white,
-                                          inactiveColor: Colors.white30,
-                                          onChanged: (value) async {
-                                            setState(() {
-                                              _currentZoomLevel = value;
-                                            });
-                                            await controller!
-                                                .setZoomLevel(value);
-                                          },
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 8),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.black87,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Text(
-                                              '${_currentZoomLevel.toStringAsFixed(1)}x',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      InkWell(
-                                        onTap: _isRecordingInProgress
-                                            ? () async {
-                                                if (controller!
-                                                    .value.isRecordingPaused) {
-                                                  await resumeVideoRecording();
-                                                } else {
-                                                  await pauseVideoRecording();
-                                                }
-                                              }
-                                            : () {
-                                                setState(() {
-                                                  _isCameraInitialized = false;
-                                                });
-                                                onNewCameraSelected(
-                                                  widget.cameras[
-                                                      _isRearCameraSelected
-                                                          ? 1
-                                                          : 0],
-                                                );
-                                                setState(() {
-                                                  _isRearCameraSelected =
-                                                      !_isRearCameraSelected;
-                                                });
-                                              },
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            const Icon(
-                                              Icons.circle,
-                                              color: Colors.black38,
-                                              size: 60,
-                                            ),
-                                            if (_isRecordingInProgress)
-                                              controller!
-                                                      .value.isRecordingPaused
-                                                  ? const Icon(
-                                                      Icons.play_arrow,
-                                                      color: Colors.white,
-                                                      size: 30,
-                                                    )
-                                                  : const Icon(
-                                                      Icons.pause,
-                                                      color: Colors.white,
-                                                      size: 30,
-                                                    )
-                                            else
-                                              Icon(
-                                                _isRearCameraSelected
-                                                    ? Icons.camera_front
-                                                    : Icons.camera_rear,
-                                                color: Colors.white,
-                                                size: 30,
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: _isVideoCameraSelected
-                                            ? () async {
-                                                if (_isRecordingInProgress) {
-                                                  final rawVideo =
-                                                      await stopVideoRecording();
-                                                  if (rawVideo != null) {
-                                                    await refreshAlreadyCapturedImages(
-                                                      rawVideo.path,
-                                                    );
-                                                  }
-                                                } else {
-                                                  await startVideoRecording();
-                                                }
-                                              }
-                                            : () async {
-                                                if (!controller!
-                                                    .value.isTakingPicture) {
-                                                  final rawImage =
-                                                      await takePicture();
-
-                                                  if (rawImage != null) {
-                                                    await refreshAlreadyCapturedImages(
-                                                      rawImage.path,
-                                                    );
-                                                  }
-                                                }
-                                              },
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.circle,
-                                              color: _isVideoCameraSelected
-                                                  ? Colors.white
-                                                  : Colors.white38,
-                                              size: 80,
-                                            ),
-                                            Icon(
-                                              Icons.circle,
-                                              color: _isVideoCameraSelected
-                                                  ? Colors.red
-                                                  : Colors.white,
-                                              size: 65,
-                                            ),
-                                            if (_isVideoCameraSelected &&
-                                                _isRecordingInProgress)
-                                              const Icon(
-                                                Icons.stop_rounded,
-                                                color: Colors.white,
-                                                size: 32,
-                                              )
-                                            else
-                                              Container(),
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () {},
-                                        child: Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            child: (allFileList.isEmpty)
-                                                ? null
-                                                : CLMediaPreview(
-                                                    directory: widget.directory,
-                                                    media: allFileList.last,
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
                             ),
                           ],
@@ -599,72 +597,6 @@ class CameraScreenState extends State<CameraScreen>
                           physics: const BouncingScrollPhysics(),
                           child: Column(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 8,
-                                          right: 4,
-                                        ),
-                                        child: TextButton(
-                                          onPressed: _isRecordingInProgress
-                                              ? null
-                                              : () {
-                                                  if (_isVideoCameraSelected) {
-                                                    setState(() {
-                                                      _isVideoCameraSelected =
-                                                          false;
-                                                    });
-                                                  }
-                                                },
-                                          style: TextButton.styleFrom(
-                                            foregroundColor:
-                                                _isVideoCameraSelected
-                                                    ? Colors.black54
-                                                    : Colors.black,
-                                            backgroundColor:
-                                                _isVideoCameraSelected
-                                                    ? Colors.white30
-                                                    : Colors.white,
-                                          ),
-                                          child: const Text('IMAGE'),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 4,
-                                          right: 8,
-                                        ),
-                                        child: TextButton(
-                                          onPressed: () {
-                                            if (!_isVideoCameraSelected) {
-                                              setState(() {
-                                                _isVideoCameraSelected = true;
-                                              });
-                                            }
-                                          },
-                                          style: TextButton.styleFrom(
-                                            foregroundColor:
-                                                _isVideoCameraSelected
-                                                    ? Colors.black
-                                                    : Colors.black54,
-                                            backgroundColor:
-                                                _isVideoCameraSelected
-                                                    ? Colors.white
-                                                    : Colors.white30,
-                                          ),
-                                          child: const Text('VIDEO'),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(
                                   16,
