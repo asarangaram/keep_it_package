@@ -42,6 +42,7 @@ class CameraScreenState extends State<CameraScreen>
   double _maxAvailableExposureOffset = 0;
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
+  final bool _cameraAim = false;
 
   // Current values
   double _currentZoomLevel = 1;
@@ -310,18 +311,18 @@ class CameraScreenState extends State<CameraScreen>
                                 });
                               },
                             ),
-                            // comment to hide the preview overlay
-                            IgnorePointer(
-                              ignoring: false,
-                              child: Center(
-                                child: Image.asset(
-                                  'assets/camera_aim.png',
-                                  color: Colors.greenAccent,
-                                  width: 150,
-                                  height: 150,
+                            if (_cameraAim)
+                              IgnorePointer(
+                                ignoring: false,
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/camera_aim.png',
+                                    color: Colors.greenAccent,
+                                    width: 150,
+                                    height: 150,
+                                  ),
                                 ),
                               ),
-                            ),
                             Align(
                               alignment: Alignment.topRight,
                               child: Container(
