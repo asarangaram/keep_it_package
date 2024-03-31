@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
+import 'pages/camera_page.dart';
 import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
@@ -42,7 +43,7 @@ class KeepItApp implements AppDescriptor {
   CLAppInitializer get appInitializer => (ref) async {
         // TODO(anandas): Delete only if saved preference is set to reset.
         // ignore: dead_code, literal_only_boolean_expressions
-        if (false) {
+        if (true) {
           for (final dir in [
             await getApplicationDocumentsDirectory(),
             await getApplicationCacheDirectory(),
@@ -80,6 +81,12 @@ class KeepItApp implements AppDescriptor {
 
   @override
   List<CLRouteDescriptor> get fullscreenBuilders => [
+        CLRouteDescriptor(
+          name: 'camera',
+          builder: (context, GoRouterState state) {
+            return const CameraPage();
+          },
+        ),
         CLRouteDescriptor(
           name: 'item/:collectionId/:item_id',
           builder: (context, GoRouterState state) {
@@ -205,6 +212,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
+        if (location != '/camera') return '/camera';
         //if (location == '/') return '/collections';
         return null;
       };
