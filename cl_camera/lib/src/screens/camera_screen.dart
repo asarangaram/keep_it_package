@@ -28,9 +28,9 @@ mixin CameraMixin {
         .toList();
 
     if (directionCameras.length == 1) {
-      return description.lensDirection.name.toUpperCase();
+      return description.lensDirection.name.capitalizeFirstLetter();
     } else {
-      return '${description.lensDirection.name.toUpperCase()}'
+      return '${description.lensDirection.name.capitalizeFirstLetter()}'
           '-${directionCameras.indexOf(description)}';
     }
   }

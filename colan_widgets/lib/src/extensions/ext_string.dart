@@ -20,6 +20,11 @@ extension ColonExtensionOnString on String {
   String uptoLength(int N) {
     return substring(0, min(length, N));
   }
+
+  String capitalizeFirstLetter() {
+    if (isEmpty) return this; // Return the string as is if it's empty
+    return '${this[0].toUpperCase()}${substring(1)}';
+  }
 }
 
 bool _disableInfoLogger = true;
