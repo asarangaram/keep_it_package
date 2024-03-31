@@ -7,10 +7,9 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-
 import 'package:permission_handler/permission_handler.dart';
 
+import '../extensions.dart';
 import '../image_services/view/cl_media_preview.dart';
 import '../widgets/camera_gesture.dart';
 import '../widgets/camera_selectors.dart';
@@ -31,6 +30,7 @@ class CameraScreen extends StatefulWidget {
 class CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
   CameraController? controller;
+  CameraDescription? currDescription;
 
   // Initial values
   bool _isCameraInitialized = false;
@@ -65,7 +65,7 @@ class CameraScreenState extends State<CameraScreen>
         _isCameraPermissionGranted = true;
       });
       // Set and initialize the new camera
-      await onNewCameraSelected(widget.cameras[0]);
+      await onNewCameraSelected();
     } else {
       log('Camera Permission: DENIED');
     }
@@ -167,11 +167,23 @@ class CameraScreenState extends State<CameraScreen>
     _currentExposureOffset = 0.0;
   }
 
-  Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
+  Future<void> onNewCameraSelected({
+    bool restore = false,
+  }) async {
+    if (restore) {
+      currDescription =
+          controller?.description ?? currDescription ?? widget.cameras[0];
+    } else {
+      if (currDescription == null) {
+        currDescription = widget.cameras[0];
+      } else {
+        currDescription = widget.cameras.next(currDescription!);
+      }
+    }
     final previousCameraController = controller;
 
     final cameraController = CameraController(
-      cameraDescription,
+      currDescription!,
       currentResolutionPreset,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
@@ -257,7 +269,7 @@ class CameraScreenState extends State<CameraScreen>
     if (state == AppLifecycleState.inactive) {
       cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      onNewCameraSelected(cameraController.description);
+      onNewCameraSelected(restore: true);
     }
   }
 
@@ -360,9 +372,7 @@ class CameraScreenState extends State<CameraScreen>
                                         currentResolutionPreset = value!;
                                         _isCameraInitialized = false;
                                       });
-                                      onNewCameraSelected(
-                                        controller!.description,
-                                      );
+                                      onNewCameraSelected(restore: true);
                                     },
                                     hint: const Text('Select item'),
                                   ),
@@ -464,12 +474,7 @@ class CameraScreenState extends State<CameraScreen>
                                                             _isCameraInitialized =
                                                                 false;
                                                           });
-                                                          onNewCameraSelected(
-                                                            widget.cameras[
-                                                                _isRearCameraSelected
-                                                                    ? 1
-                                                                    : 0],
-                                                          );
+                                                          onNewCameraSelected();
                                                           setState(() {
                                                             _isRearCameraSelected =
                                                                 !_isRearCameraSelected;
