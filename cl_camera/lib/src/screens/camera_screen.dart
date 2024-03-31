@@ -14,8 +14,9 @@ import 'package:permission_handler/permission_handler.dart';
 import '../extensions.dart';
 import '../image_services/view/cl_media_preview.dart';
 import '../widgets/camera_gesture.dart';
-import '../widgets/camera_selectors.dart';
+import '../widgets/camera_mode.dart';
 import '../widgets/captured_media.dart';
+import '../widgets/flash_control.dart';
 
 mixin CameraMixin {
   String getCameraName(
@@ -677,40 +678,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                 ],
               ),
       ),
-    );
-  }
-}
-
-class FlashControl extends StatelessWidget {
-  const FlashControl({required this.controller, super.key});
-  final CameraController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return CLButtonIconLabelled.small(
-      switch (controller.value.flashMode) {
-        FlashMode.off => Icons.flash_off,
-        FlashMode.auto => Icons.flash_auto,
-        FlashMode.always => Icons.flash_on,
-        FlashMode.torch => Icons.highlight,
-      },
-      switch (controller.value.flashMode) {
-        FlashMode.off => 'Off',
-        FlashMode.auto => 'Auto',
-        FlashMode.always => 'On',
-        FlashMode.torch => 'Torch',
-      },
-      color: switch (controller.value.flashMode) {
-        FlashMode.off => Colors.white,
-        FlashMode.auto => Colors.amber,
-        FlashMode.always => Colors.amber,
-        FlashMode.torch => Colors.amber,
-      },
-      onTap: () async {
-        await controller.setFlashMode(
-          FlashMode.values.next(controller.value.flashMode),
-        );
-      },
     );
   }
 }
