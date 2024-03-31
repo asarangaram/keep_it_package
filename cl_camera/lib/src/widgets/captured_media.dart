@@ -36,6 +36,7 @@ class CapturedMedia extends ConsumerWidget {
               : CLMediaPreview(
                   directory: directory,
                   media: capturedMedia.last,
+                  keepAspectRatio: false,
                 ),
         ),
       ),

@@ -280,6 +280,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     return SafeArea(
       child: CLFullscreenBox(
         backgroundColor: Colors.black,
+        hasBackground: false,
         child: _isCameraPermissionGranted
             ? _isCameraInitialized
                 ? Column(
@@ -551,65 +552,62 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          16,
-                          8,
-                          16,
-                          8,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  FlashControl(controller: controller!),
-                                  CameraSelect(
-                                    cameras: widget.cameras,
-                                    currentCamera: currDescription!,
-                                    onNextCamera: () {
-                                      setState(() {
-                                        _isCameraInitialized = false;
-                                      });
-                                      onNewCameraSelected();
-                                    },
-                                  ),
-                                  CLButtonIconLabelled.small(
-                                    Icons.photo_size_select_large,
-                                    getResolutionString(
-                                      controller!.value.previewSize,
-                                    ),
-                                    color: Colors.white,
-                                    onTap: () {
-                                      setState(() {
-                                        currentResolutionPreset =
-                                            ResolutionPreset.values.next(
-                                          controller!.resolutionPreset,
-                                        );
-                                        _isCameraInitialized = false;
-                                      });
-                                      onNewCameraSelected(restore: true);
-                                    },
-                                  ),
-                                ]
-                                    .map(
-                                      (e) => Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                          ),
-                                          child: e,
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
+                      if (_isRecordingInProgress ||
+                          controller!.value.isTakingPicture)
+                        Container()
+                      else
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            16,
+                            8,
+                            16,
+                            8,
+                          ),
+                          child: Row(
+                            children: [
+                              FlashControl(controller: controller!),
+                              CameraSelect(
+                                cameras: widget.cameras,
+                                currentCamera: currDescription!,
+                                onNextCamera: () {
+                                  setState(() {
+                                    _isCameraInitialized = false;
+                                  });
+                                  onNewCameraSelected();
+                                },
                               ),
-                            ),
-                            CapturedMedia(directory: widget.directory),
-                          ],
+                              CLButtonIconLabelled.small(
+                                Icons.photo_size_select_large,
+                                getResolutionString(
+                                  controller!.value.previewSize,
+                                ),
+                                color: Colors.white,
+                                onTap: () {
+                                  setState(() {
+                                    currentResolutionPreset =
+                                        ResolutionPreset.values.next(
+                                      controller!.resolutionPreset,
+                                    );
+                                    _isCameraInitialized = false;
+                                  });
+                                  onNewCameraSelected(restore: true);
+                                },
+                              ),
+                              CapturedMedia(directory: widget.directory),
+                            ]
+                                .map(
+                                  (e) => Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                      ),
+                                      child: e,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
                         ),
-                      ),
                     ],
                   )
                 : const Center(
