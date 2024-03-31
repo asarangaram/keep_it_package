@@ -3,6 +3,7 @@ import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CameraPage extends ConsumerWidget {
   const CameraPage({super.key});
@@ -12,8 +13,20 @@ class CameraPage extends ConsumerWidget {
     final camerasAsync = ref.watch(camerasProvider);
 
     return camerasAsync.when(
-      data: (cameras) => CameraScreen(
-        cameras: cameras,
+      data: (cameras) => FutureBuilder(
+        future: getApplicationCacheDirectory(),
+        builder: (context, snapShot) {
+          if (snapShot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          if (snapShot.hasData && snapShot.data != null) {
+            return CameraScreen(
+              cameras: cameras,
+              directory: snapShot.data!.path,
+            );
+          }
+          return CLErrorView(errorMessage: snapShot.error.toString());
+        },
       ),
       error: (e, st) => CLErrorView(errorMessage: e.toString()),
       loading: CLLoadingView.new,

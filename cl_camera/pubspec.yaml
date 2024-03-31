@@ -13,13 +13,22 @@ dependencies:
   camera: ^0.10.5+9
   colan_widgets:
     path: ../colan_widgets
+  event_bus: ^2.0.0
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.5.1
+  heif_converter: ^1.0.0
+  image: ^4.1.7
   material_design_icons_flutter: ^7.0.7296
+  mime: ^1.0.5
+  path: ^1.9.0
   path_provider: ^2.1.2
   permission_handler: ^11.3.1
+  stream_channel: ^2.1.2
+  uuid: ^4.3.3
   very_good_analysis: ^5.1.0
   video_player: ^2.8.3
+  video_thumbnail: ^0.5.3
 
 dev_dependencies:
   flutter_lints: ^3.0.2

@@ -4,17 +4,22 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:video_player/video_player.dart';
 
-import 'preview_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../image_services/view/cl_media_preview.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({required this.cameras, super.key});
+  const CameraScreen({
+    required this.cameras,
+    required this.directory,
+    super.key,
+  });
   final List<CameraDescription> cameras;
+  final String directory;
 
   @override
   CameraScreenState createState() => CameraScreenState();
@@ -23,7 +28,6 @@ class CameraScreen extends StatefulWidget {
 class CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
   CameraController? controller;
-  VideoPlayerController? videoController;
 
   File? _imageFile;
   File? _videoFile;
@@ -44,7 +48,7 @@ class CameraScreenState extends State<CameraScreen>
   double _currentExposureOffset = 0;
   FlashMode? _currentFlashMode;
 
-  List<File> allFileList = [];
+  List<CLMedia> allFileList = [];
 
   final resolutionPresets = ResolutionPreset.values;
 
@@ -61,45 +65,25 @@ class CameraScreenState extends State<CameraScreen>
       });
       // Set and initialize the new camera
       await onNewCameraSelected(widget.cameras[0]);
-      await refreshAlreadyCapturedImages();
     } else {
       log('Camera Permission: DENIED');
     }
   }
 
-  Future<void> refreshAlreadyCapturedImages() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final fileList = await directory.list().toList();
-    allFileList.clear();
-    final fileNames = <Map<int, dynamic>>[];
+  Future<void> refreshAlreadyCapturedImages(String recentFileName) async {
+    print(recentFileName);
+    if (recentFileName.contains('.mp4')) {
+      _videoFile = File(recentFileName);
+      allFileList.add(CLMedia(path: recentFileName, type: CLMediaType.video));
+      _imageFile = null;
+    } else {
+      _imageFile = File(recentFileName);
 
-    for (final file in fileList) {
-      if (file.path.contains('.jpg') || file.path.contains('.mp4')) {
-        allFileList.add(File(file.path));
-
-        final name = file.path.split('/').last.split('.').first;
-        fileNames.add({0: int.parse(name), 1: file.path.split('/').last});
-      }
+      allFileList.add(CLMedia(path: recentFileName, type: CLMediaType.image));
+      _videoFile = null;
     }
 
-    if (fileNames.isNotEmpty) {
-      final recentFile =
-          // ignore: avoid_dynamic_calls
-          fileNames.reduce(
-        (curr, next) => ((curr[0] as int) > (next[0] as int)) ? curr : next,
-      );
-      final recentFileName = recentFile[1] as String;
-      if (recentFileName.contains('.mp4')) {
-        _videoFile = File('${directory.path}/$recentFileName');
-        _imageFile = null;
-        await _startVideoPlayer();
-      } else {
-        _imageFile = File('${directory.path}/$recentFileName');
-        _videoFile = null;
-      }
-
-      setState(() {});
-    }
+    setState(() {});
   }
 
   Future<XFile?> takePicture() async {
@@ -116,19 +100,6 @@ class CameraScreenState extends State<CameraScreen>
     } on CameraException catch (e) {
       print('Error occured while taking picture: $e');
       return null;
-    }
-  }
-
-  Future<void> _startVideoPlayer() async {
-    if (_videoFile != null) {
-      videoController = VideoPlayerController.file(_videoFile!);
-      await videoController!.initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized,
-        // even before the play button has been pressed.
-        setState(() {});
-      });
-      await videoController!.setLooping(true);
-      await videoController!.play();
     }
   }
 
@@ -297,7 +268,7 @@ class CameraScreenState extends State<CameraScreen>
   @override
   void dispose() {
     controller?.dispose();
-    videoController?.dispose();
+
     super.dispose();
   }
 
@@ -545,56 +516,27 @@ class CameraScreenState extends State<CameraScreen>
                                                 if (_isRecordingInProgress) {
                                                   final rawVideo =
                                                       await stopVideoRecording();
-                                                  final videoFile =
-                                                      File(rawVideo!.path);
-
-                                                  final currentUnix = DateTime
-                                                          .now()
-                                                      .millisecondsSinceEpoch;
-
-                                                  final directory =
-                                                      await getApplicationDocumentsDirectory();
-
-                                                  final fileFormat = videoFile
-                                                      .path
-                                                      .split('.')
-                                                      .last;
-
-                                                  _videoFile =
-                                                      await videoFile.copy(
-                                                    '${directory.path}/$currentUnix.$fileFormat',
-                                                  );
-
-                                                  await _startVideoPlayer();
+                                                  if (rawVideo != null) {
+                                                    await refreshAlreadyCapturedImages(
+                                                      rawVideo.path,
+                                                    );
+                                                  }
                                                 } else {
                                                   await startVideoRecording();
                                                 }
                                               }
                                             : () async {
-                                                final rawImage =
-                                                    await takePicture();
-                                                final imageFile =
-                                                    File(rawImage!.path);
+                                                if (!controller!
+                                                    .value.isTakingPicture) {
+                                                  final rawImage =
+                                                      await takePicture();
 
-                                                final currentUnix =
-                                                    DateTime.now()
-                                                        .millisecondsSinceEpoch;
-
-                                                final directory =
-                                                    await getApplicationDocumentsDirectory();
-
-                                                final fileFormat = imageFile
-                                                    .path
-                                                    .split('.')
-                                                    .last;
-
-                                                print(fileFormat);
-
-                                                await imageFile.copy(
-                                                  '${directory.path}/$currentUnix.$fileFormat',
-                                                );
-
-                                                await refreshAlreadyCapturedImages();
+                                                  if (rawImage != null) {
+                                                    await refreshAlreadyCapturedImages(
+                                                      rawImage.path,
+                                                    );
+                                                  }
+                                                }
                                               },
                                         child: Stack(
                                           alignment: Alignment.center,
@@ -626,20 +568,7 @@ class CameraScreenState extends State<CameraScreen>
                                         ),
                                       ),
                                       InkWell(
-                                        onTap: _imageFile != null ||
-                                                _videoFile != null
-                                            ? () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute<void>(
-                                                    builder: (context) =>
-                                                        PreviewScreen(
-                                                      imageFile: _imageFile!,
-                                                      fileList: allFileList,
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            : null,
+                                        onTap: () {},
                                         child: Container(
                                           width: 60,
                                           height: 60,
@@ -659,24 +588,17 @@ class CameraScreenState extends State<CameraScreen>
                                                   )
                                                 : null,
                                           ),
-                                          child: videoController != null &&
-                                                  videoController!
-                                                      .value.isInitialized
-                                              ? ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    8,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            child: (allFileList.isEmpty)
+                                                ? null
+                                                : CLMediaPreview(
+                                                    directory: widget.directory,
+                                                    media: allFileList.last,
                                                   ),
-                                                  child: AspectRatio(
-                                                    aspectRatio:
-                                                        videoController!
-                                                            .value.aspectRatio,
-                                                    child: VideoPlayer(
-                                                      videoController!,
-                                                    ),
-                                                  ),
-                                                )
-                                              : Container(),
+                                          ),
                                         ),
                                       ),
                                     ],

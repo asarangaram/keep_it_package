@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'preview_screen.dart';
+
 
 class CapturesScreen extends StatelessWidget {
   const CapturesScreen({required this.imageFileList, super.key});
@@ -40,14 +40,14 @@ class CapturesScreen extends StatelessWidget {
                     ),
                     child: InkWell(
                       onTap: () {
-                        Navigator.of(context).pushReplacement(
+                        /*  Navigator.of(context).pushReplacement(
                           MaterialPageRoute<void>(
                             builder: (context) => PreviewScreen(
                               fileList: imageFileList,
                               imageFile: imageFile,
                             ),
                           ),
-                        );
+                        ); */
                       },
                       child: Image.file(
                         imageFile,
