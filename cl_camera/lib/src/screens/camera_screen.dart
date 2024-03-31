@@ -29,9 +29,6 @@ class CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
   CameraController? controller;
 
-  File? _imageFile;
-  File? _videoFile;
-
   // Initial values
   bool _isCameraInitialized = false;
   bool _isCameraPermissionGranted = false;
@@ -73,14 +70,9 @@ class CameraScreenState extends State<CameraScreen>
   Future<void> refreshAlreadyCapturedImages(String recentFileName) async {
     print(recentFileName);
     if (recentFileName.contains('.mp4')) {
-      _videoFile = File(recentFileName);
       allFileList.add(CLMedia(path: recentFileName, type: CLMediaType.video));
-      _imageFile = null;
     } else {
-      _imageFile = File(recentFileName);
-
       allFileList.add(CLMedia(path: recentFileName, type: CLMediaType.image));
-      _videoFile = null;
     }
 
     setState(() {});
@@ -275,9 +267,9 @@ class CameraScreenState extends State<CameraScreen>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
+      child: CLFullscreenBox(
         backgroundColor: Colors.black,
-        body: _isCameraPermissionGranted
+        child: _isCameraPermissionGranted
             ? _isCameraInitialized
                 ? Column(
                     children: [
@@ -580,13 +572,6 @@ class CameraScreenState extends State<CameraScreen>
                                               color: Colors.white,
                                               width: 2,
                                             ),
-                                            image: _imageFile != null
-                                                ? DecorationImage(
-                                                    image:
-                                                        FileImage(_imageFile!),
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : null,
                                           ),
                                           child: ClipRRect(
                                             borderRadius: BorderRadius.circular(

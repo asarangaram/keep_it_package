@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../model/thumbnail_services.dart';
@@ -40,9 +39,6 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
   @override
   Widget build(BuildContext context) {
     if (error != null) {
-      print(
-        '$error',
-      );
       return widget.builder(context, AsyncError(error!, st!));
     }
     if (!File(widget.media.path).existsSync()) {
