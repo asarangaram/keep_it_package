@@ -20,10 +20,12 @@ class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({
     required this.cameras,
     required this.directory,
+    this.currentResolutionPreset = ResolutionPreset.high,
     super.key,
   });
   final List<CameraDescription> cameras;
   final String directory;
+  final ResolutionPreset currentResolutionPreset;
 
   @override
   CameraScreenState createState() => CameraScreenState();
@@ -49,9 +51,8 @@ class CameraScreenState extends ConsumerState<CameraScreen>
   double _currentZoomLevel = 1;
   double _currentExposureOffset = 0;
 
-  final resolutionPresets = ResolutionPreset.values;
-
-  ResolutionPreset currentResolutionPreset = ResolutionPreset.high;
+  //final resolutionPresets = ResolutionPreset.values;
+  late ResolutionPreset currentResolutionPreset;
 
   Future<void> getPermissionStatus() async {
     await Permission.camera.request();
@@ -244,10 +245,9 @@ class CameraScreenState extends ConsumerState<CameraScreen>
   @override
   void initState() {
     // Hide the status bar in Android
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: SystemUiOverlay.values,
-    );
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+    currentResolutionPreset = widget.currentResolutionPreset;
 
     getPermissionStatus();
     super.initState();
@@ -271,6 +271,10 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   @override
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
     controller?.dispose();
     super.dispose();
   }
@@ -576,13 +580,9 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                   onNewCameraSelected();
                                 },
                               ),
-                              CLButtonIconLabelled.small(
-                                Icons.photo_size_select_large,
-                                getResolutionString(
-                                  controller!.value.previewSize,
-                                ),
-                                color: Colors.white,
-                                onTap: () {
+                              CameraResolution(
+                                currResolution: controller!.value.previewSize,
+                                onNextResolution: () {
                                   setState(() {
                                     currentResolutionPreset =
                                         ResolutionPreset.values.next(
@@ -644,6 +644,28 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                 ],
               ),
       ),
+    );
+  }
+}
+
+class CameraResolution extends StatelessWidget with CameraMixin {
+  const CameraResolution({
+    required this.onNextResolution,
+    super.key,
+    this.currResolution,
+  });
+  final VoidCallback onNextResolution;
+  final Size? currResolution;
+
+  @override
+  Widget build(BuildContext context) {
+    return CLButtonIconLabelled.small(
+      Icons.photo_size_select_large,
+      getResolutionString(
+        currResolution,
+      ),
+      color: Colors.white,
+      onTap: onNextResolution,
     );
   }
 }
