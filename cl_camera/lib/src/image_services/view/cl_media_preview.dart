@@ -21,7 +21,6 @@ class CLMediaPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     if (media.type.isFile && !File(media.path).existsSync()) {
       //throw Exception('File not found ${media.path}');
-      print('File not found ${media.path}');
       return const BrokenImage();
     }
     final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
