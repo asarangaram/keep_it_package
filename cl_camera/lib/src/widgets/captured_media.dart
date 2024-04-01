@@ -11,7 +11,7 @@ class CapturedMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final capturedMedia = ref.watch(capturedMediaProvider);
-
+    if (capturedMedia.isEmpty) return Container();
     return InkWell(
       onTap: () {},
       child: Container(

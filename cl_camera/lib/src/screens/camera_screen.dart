@@ -1,5 +1,6 @@
 // ignore_for_file:  lines_longer_than_80_chars, avoid_print
 
+import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
@@ -7,6 +8,7 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,14 +37,15 @@ class CameraScreen extends ConsumerStatefulWidget {
 }
 
 class CameraScreenState extends ConsumerState<CameraScreen>
-    with WidgetsBindingObserver, CameraMixin {
+    with WidgetsBindingObserver, CameraMixin, SingleTickerProviderStateMixin {
   CameraController? controller;
   CameraDescription? currDescription;
 
   // Initial values
   bool _isCameraInitialized = false;
   bool _isCameraPermissionGranted = false;
-  bool _isVideoCameraSelected = false;
+
+  CameraMode cameraMode = CameraMode.photo; // default
   bool _isRecordingInProgress = false;
   double _minAvailableExposureOffset = 0;
   double _maxAvailableExposureOffset = 0;
@@ -54,6 +57,10 @@ class CameraScreenState extends ConsumerState<CameraScreen>
   // Current values
   double _currentZoomLevel = 1;
   double _currentExposureOffset = 0;
+
+  bool showSettings = false;
+  late AnimationController settingsController;
+  late Animation<double> settingsAnimation;
 
   //final resolutionPresets = ResolutionPreset.values;
   late ResolutionPreset currentResolutionPreset;
@@ -232,6 +239,13 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   @override
   void initState() {
+    settingsController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    settingsAnimation =
+        Tween<double>(begin: 0, end: 1).animate(settingsController);
+
     // Hide the status bar in Android
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
@@ -263,8 +277,33 @@ class CameraScreenState extends ConsumerState<CameraScreen>
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
+    settingsController.dispose();
     controller?.dispose();
     super.dispose();
+  }
+
+  void toggleSettingsVisibility() {
+    setState(() {
+      showSettings = !showSettings;
+    });
+    if (showSettings) {
+      settingsController.forward();
+    } else {
+      settingsController.reverse();
+    }
+  }
+
+  void hideSettings() {
+    if (showSettings == true) {
+      setState(() {
+        showSettings = false;
+      });
+      if (showSettings) {
+        settingsController.forward();
+      } else {
+        settingsController.reverse();
+      }
+    }
   }
 
   @override
@@ -274,6 +313,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
       hasBackground: false,
       child: SafeArea(
         top: false,
+        bottom: false,
         child: _isCameraPermissionGranted
             ? _isCameraInitialized
                 ? Stack(
@@ -355,178 +395,140 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                       .onSurface
                                       .withAlpha(64),
                                 ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                child: Stack(
                                   children: [
-                                    if (_isRecordingInProgress ||
-                                        (controller?.value.isTakingPicture ??
-                                            false))
-                                      Container()
-                                    else
-                                      Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 16),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          if (_isRecordingInProgress ||
+                                              (controller
+                                                      ?.value.isTakingPicture ??
+                                                  false))
+                                            Container()
+                                          else
                                             SizedBox(
                                               width: constrains.maxWidth,
                                               height: kMinInteractiveDimension,
-                                              child: CameraMode(
-                                                menuItems: [
-                                                  CLMenuItem(
-                                                    title: 'Photo',
-                                                    icon: Icons.camera,
-                                                    onTap: () async {
-                                                      setState(() {
-                                                        _isVideoCameraSelected =
-                                                            false;
-                                                      });
-                                                      return true;
-                                                    },
-                                                  ),
-                                                  CLMenuItem(
-                                                    title: 'Video',
-                                                    icon: Icons.video_label,
-                                                    onTap: () async {
-                                                      setState(() {
-                                                        _isVideoCameraSelected =
-                                                            true;
-                                                      });
-                                                      return true;
-                                                    },
-                                                  ),
-                                                ],
-                                                currIndex:
-                                                    _isVideoCameraSelected
-                                                        ? 1
-                                                        : 0,
+                                              child: MenuCameraMode(
+                                                currMode: cameraMode,
+                                                onUpdateMode: (mode) {
+                                                  setState(() {
+                                                    cameraMode = mode;
+                                                  });
+                                                },
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        8,
-                                        8,
-                                        8,
-                                        8,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          if (_isRecordingInProgress)
-                                            CircularButton(
-                                              icon: MdiIcons.stop,
-                                              onPressed: stopVideoRecording,
-                                            )
-                                          else
-                                            Container(),
-                                          CircularButton(
-                                            size: 44,
-                                            icon: switch ((
-                                              _isVideoCameraSelected,
-                                              controller!
-                                                  .value.isRecordingVideo,
-                                              controller!
-                                                  .value.isRecordingPaused
-                                            )) {
-                                              (false, _, _) => MdiIcons.camera,
-                                              (true, false, _) =>
-                                                MdiIcons.video,
-                                              (true, true, false) =>
-                                                MdiIcons.pause,
-                                              (true, true, true) =>
-                                                MdiIcons.circle
-                                            },
-                                            onPressed: switch ((
-                                              _isVideoCameraSelected,
-                                              controller!
-                                                  .value.isRecordingVideo,
-                                              controller!
-                                                  .value.isRecordingPaused
-                                            )) {
-                                              (false, _, _) => takePicture,
-                                              (true, false, _) =>
-                                                startVideoRecording,
-                                              (true, true, false) =>
-                                                pauseVideoRecording,
-                                              (true, true, true) =>
-                                                resumeVideoRecording
-                                            },
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                              8,
+                                              8,
+                                              8,
+                                              8,
+                                            ),
+                                            child: SizedBox(
+                                              height:
+                                                  kMinInteractiveDimension * 2,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child:
+                                                        _isRecordingInProgress
+                                                            ? CircularButton(
+                                                                icon: MdiIcons
+                                                                    .stop,
+                                                                onPressed:
+                                                                    stopVideoRecording,
+                                                              )
+                                                            : (_isRecordingInProgress ||
+                                                                    controller!
+                                                                        .value
+                                                                        .isTakingPicture)
+                                                                ? Container()
+                                                                : CLButtonIcon
+                                                                    .standard(
+                                                                    Icons
+                                                                        .settings_rounded,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    onTap:
+                                                                        toggleSettingsVisibility,
+                                                                  ),
+                                                  ),
+                                                  Expanded(
+                                                    child: CircularButton(
+                                                      size: 44,
+                                                      icon: switch ((
+                                                        cameraMode.isVideo,
+                                                        controller!.value
+                                                            .isRecordingVideo,
+                                                        controller!.value
+                                                            .isRecordingPaused
+                                                      )) {
+                                                        (false, _, _) =>
+                                                          MdiIcons.camera,
+                                                        (true, false, _) =>
+                                                          MdiIcons.video,
+                                                        (true, true, false) =>
+                                                          MdiIcons.pause,
+                                                        (true, true, true) =>
+                                                          MdiIcons.circle
+                                                      },
+                                                      onPressed: switch ((
+                                                        cameraMode.isVideo,
+                                                        controller!.value
+                                                            .isRecordingVideo,
+                                                        controller!.value
+                                                            .isRecordingPaused
+                                                      )) {
+                                                        (false, _, _) =>
+                                                          takePicture,
+                                                        (true, false, _) =>
+                                                          startVideoRecording,
+                                                        (true, true, false) =>
+                                                          pauseVideoRecording,
+                                                        (true, true, true) =>
+                                                          resumeVideoRecording
+                                                      },
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Align(
+                                                      alignment:
+                                                          Alignment.topRight,
+                                                      child:
+                                                          Transform.translate(
+                                                        offset: const Offset(
+                                                          0,
+                                                          -40,
+                                                        ),
+                                                        child: AspectRatio(
+                                                          aspectRatio: 1.0 /
+                                                              controller!.value
+                                                                  .aspectRatio,
+                                                          child: CapturedMedia(
+                                                            directory: widget
+                                                                .directory,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                          Container(),
                                         ],
                                       ),
                                     ),
-                                    if (_isRecordingInProgress ||
-                                        controller!.value.isTakingPicture)
-                                      Container()
-                                    else
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          16,
-                                          8,
-                                          16,
-                                          8,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            FlashControl(
-                                              controller: controller!,
-                                            ),
-                                            CameraSelect(
-                                              cameras: widget.cameras,
-                                              currentCamera: currDescription!,
-                                              onNextCamera: () {
-                                                setState(() {
-                                                  _isCameraInitialized = false;
-                                                });
-                                                onNewCameraSelected();
-                                              },
-                                            ),
-                                            if (allowResolutionChange)
-                                              CameraResolution(
-                                                currResolution: controller!
-                                                    .value.previewSize,
-                                                onNextResolution: () {
-                                                  setState(() {
-                                                    currentResolutionPreset =
-                                                        ResolutionPreset.values
-                                                            .next(
-                                                      controller!
-                                                          .resolutionPreset,
-                                                    );
-                                                    _isCameraInitialized =
-                                                        false;
-                                                  });
-                                                  onNewCameraSelected(
-                                                    restore: true,
-                                                  );
-                                                },
-                                              )
-                                            else
-                                              Container(),
-                                            CapturedMedia(
-                                              directory: widget.directory,
-                                            ),
-                                          ]
-                                              .map(
-                                                (e) => Expanded(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 4,
-                                                    ),
-                                                    child: e,
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        ),
-                                      ),
+                                    if (showSettings) buildSettings(),
                                   ],
                                 ),
                               );
@@ -572,26 +574,151 @@ class CameraScreenState extends ConsumerState<CameraScreen>
       ),
     );
   }
-}
 
-class CameraResolution extends StatelessWidget with CameraMixin {
-  const CameraResolution({
-    required this.onNextResolution,
-    super.key,
-    this.currResolution,
-  });
-  final VoidCallback onNextResolution;
-  final Size? currResolution;
-
-  @override
-  Widget build(BuildContext context) {
-    return CLButtonIconLabelled.small(
-      Icons.photo_size_select_large,
-      getResolutionString(
-        currResolution,
+  Positioned buildSettings() {
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: settingsAnimation,
+        builder: (context, child) {
+          return Opacity(
+            opacity: settingsAnimation.value,
+            child: Transform.translate(
+              offset: Offset(
+                0,
+                50 * (1 - settingsAnimation.value),
+              ),
+              child: CameraSettings(
+                onClose: hideSettings,
+                controller: controller!,
+                children: [
+                  FlashControl(
+                    controller: controller!,
+                  ),
+                  CameraSelect(
+                    cameras: widget.cameras,
+                    currentCamera: currDescription!,
+                    onNextCamera: () {
+                      setState(() {
+                        _isCameraInitialized = false;
+                      });
+                      onNewCameraSelected();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
-      color: Colors.white,
-      onTap: onNextResolution,
     );
   }
 }
+
+class CameraSettings extends StatelessWidget {
+  const CameraSettings({
+    required this.onClose,
+    required this.controller,
+    required this.children,
+    super.key,
+  });
+  final VoidCallback onClose;
+  final CameraController controller;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    const foregroundColor = Colors.white;
+    return Dismissible(
+      key: UniqueKey(),
+      direction: DismissDirection.down,
+      onDismissed: (direction) {
+        if (direction == DismissDirection.down) {
+          onClose();
+        }
+      },
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: foregroundColor)),
+          /* borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ), */
+          color: Colors.black,
+        ),
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: CLButtonIcon.standard(
+                Icons.close,
+                onTap: onClose,
+                color: foregroundColor,
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: children,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/*
+Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          8,
+                                          16,
+                                          8,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            
+                                            
+                                            if (allowResolutionChange)
+                                              CameraResolution(
+                                                currResolution: controller!
+                                                    .value.previewSize,
+                                                onNextResolution: () {
+                                                  setState(() {
+                                                    currentResolutionPreset =
+                                                        ResolutionPreset.values
+                                                            .next(
+                                                      controller!
+                                                          .resolutionPreset,
+                                                    );
+                                                    _isCameraInitialized =
+                                                        false;
+                                                  });
+                                                  onNewCameraSelected(
+                                                    restore: true,
+                                                  );
+                                                },
+                                              )
+                                            else
+                                              Container(),
+                                          ]
+                                              .map(
+                                                (e) => Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 4,
+                                                    ),
+                                                    child: e,
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                        ),
+                                      ),
+ */

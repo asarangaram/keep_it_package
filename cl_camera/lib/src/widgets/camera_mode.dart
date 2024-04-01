@@ -1,39 +1,50 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-class CameraMode extends StatelessWidget {
-  const CameraMode({
-    required this.menuItems,
-    required this.currIndex,
+enum CameraMode {
+  photo,
+  video;
+
+  bool get isVideo => [video].contains(this);
+}
+
+class MenuCameraMode extends StatelessWidget {
+  const MenuCameraMode({
+    required this.onUpdateMode,
+    required this.currMode,
     super.key,
   });
-  final List<CLMenuItem> menuItems;
-  final int currIndex;
+
+  final CameraMode currMode;
+  final void Function(CameraMode type) onUpdateMode;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ListView(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        children: [
-          for (final (index, item) in menuItems.indexed)
-            CLButtonText.standard(
-              item.title,
-              color: index == currIndex
-                  ? Colors.yellow.shade300
-                  : Colors.yellow.shade100,
-              onTap: item.onTap,
-            ),
-        ]
-            .map(
-              (e) => Padding(
-                padding: const EdgeInsets.all(8),
-                child: e,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: ListView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          children: [
+            for (final type in CameraMode.values)
+              CLButtonText.standard(
+                type.name.capitalizeFirstLetter(),
+                color: type == currMode
+                    ? Colors.yellow.shade300
+                    : Colors.yellow.shade100,
+                onTap: () => onUpdateMode(type),
               ),
-            )
-            .toList(),
+          ]
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: e,
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }
