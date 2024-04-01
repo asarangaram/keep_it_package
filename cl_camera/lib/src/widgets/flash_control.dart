@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../extensions.dart';
 
-
 class FlashControl extends StatelessWidget {
   const FlashControl({required this.controller, super.key});
   final CameraController controller;
@@ -32,9 +31,22 @@ class FlashControl extends StatelessWidget {
         FlashMode.torch => Colors.amber,
       },
       onTap: () async {
-        await controller.setFlashMode(
-          FlashMode.values.next(controller.value.flashMode),
-        );
+        var currentFlashMode = controller.value.flashMode;
+        var success = false;
+        for (var i = 0; i < FlashMode.values.length; i++) {
+          if (!success) {
+            try {
+              await controller.setFlashMode(
+                FlashMode.values.next(currentFlashMode),
+              );
+              success = true;
+              break;
+            } catch (e) {
+              currentFlashMode =
+                  FlashMode.values.next(controller.value.flashMode);
+            }
+          }
+        }
       },
     );
   }
