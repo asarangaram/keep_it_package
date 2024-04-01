@@ -16,9 +16,7 @@ class CameraSelect extends StatelessWidget with CameraMixin {
   @override
   Widget build(BuildContext context) {
     return CLButtonIconLabelled.small(
-      currentCamera.lensDirection == CameraLensDirection.front
-          ? Icons.camera_front
-          : Icons.camera_rear,
+      Icons.cameraswitch,
       getCameraName(
         cameras,
         currentCamera,

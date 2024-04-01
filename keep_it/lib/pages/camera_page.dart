@@ -11,6 +11,9 @@ class CameraPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final camerasAsync = ref.watch(camerasProvider);
+    // TODO(anandas): Read these values from settings
+    const defaultFrontCameraIndex = 0;
+    const defaultBackCameraIndex = 0;
 
     return camerasAsync.when(
       data: (cameras) => FutureBuilder(
@@ -21,7 +24,14 @@ class CameraPage extends ConsumerWidget {
           }
           if (snapShot.hasData && snapShot.data != null) {
             return CameraScreen(
-              cameras: cameras,
+              cameras: [
+                cameras
+                    .where((e) => e.lensDirection == CameraLensDirection.front)
+                    .toList()[defaultFrontCameraIndex],
+                cameras
+                    .where((e) => e.lensDirection == CameraLensDirection.back)
+                    .toList()[defaultBackCameraIndex],
+              ],
               directory: snapShot.data!.path,
             );
           }
