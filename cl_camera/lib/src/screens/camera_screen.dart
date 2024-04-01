@@ -8,6 +8,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../extensions.dart';
@@ -15,6 +16,7 @@ import '../widgets/camera_gesture.dart';
 import '../widgets/camera_mode.dart';
 import '../widgets/camera_select.dart';
 import '../widgets/captured_media.dart';
+import '../widgets/cl_circular_button.dart';
 import '../widgets/flash_control.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -72,94 +74,78 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     }
   }
 
-  Future<void> refreshAlreadyCapturedImages(String recentFileName) async {
-    ref.read(capturedMediaProvider.notifier).add(
-          CLMedia(
-            path: recentFileName,
-            type: recentFileName.contains('.mp4')
-                ? CLMediaType.video
-                : CLMediaType.image,
-          ),
-        );
-  }
-
-  Future<XFile?> takePicture() async {
+  Future<void> takePicture() async {
     final cameraController = controller;
 
     if (cameraController!.value.isTakingPicture) {
       // A capture is already pending, do nothing.
-      return null;
     }
 
     try {
       final file = await cameraController.takePicture();
-      return file;
+      ref.read(capturedMediaProvider.notifier).add(
+            CLMedia(
+              path: file.path,
+              type: CLMediaType.image,
+            ),
+          );
     } on CameraException catch (e) {
       print('Error occured while taking picture: $e');
-      return null;
     }
   }
 
   Future<void> startVideoRecording() async {
-    final cameraController = controller;
-
-    if (controller!.value.isRecordingVideo) {
-      // A recording has already started, do nothing.
-      return;
-    }
-
-    try {
-      await cameraController!.startVideoRecording();
-      setState(() {
-        _isRecordingInProgress = true;
-        print(_isRecordingInProgress);
-      });
-    } on CameraException catch (e) {
-      print('Error starting to record video: $e');
+    final cameraController = controller!;
+    if (!cameraController.value.isRecordingVideo) {
+      try {
+        await cameraController.startVideoRecording();
+        setState(() {
+          _isRecordingInProgress = true;
+        });
+      } on CameraException catch (e) {
+        print('Error starting to record video: $e');
+      }
     }
   }
 
-  Future<XFile?> stopVideoRecording() async {
-    if (!controller!.value.isRecordingVideo) {
-      // Recording is already is stopped state
-      return null;
-    }
-
-    try {
-      final file = await controller!.stopVideoRecording();
-      setState(() {
-        _isRecordingInProgress = false;
-      });
-      return file;
-    } on CameraException catch (e) {
-      print('Error stopping video recording: $e');
-      return null;
+  Future<void> stopVideoRecording() async {
+    if (controller!.value.isRecordingVideo) {
+      try {
+        final file = await controller!.stopVideoRecording();
+        ref.read(capturedMediaProvider.notifier).add(
+              CLMedia(
+                path: file.path,
+                type: CLMediaType.video,
+              ),
+            );
+        setState(() {
+          _isRecordingInProgress = false;
+        });
+      } on CameraException catch (e) {
+        print('Error stopping video recording: $e');
+      }
     }
   }
 
   Future<void> pauseVideoRecording() async {
-    if (!controller!.value.isRecordingVideo) {
-      // Video recording is not in progress
-      return;
-    }
-
-    try {
-      await controller!.pauseVideoRecording();
-    } on CameraException catch (e) {
-      print('Error pausing video recording: $e');
+    if (controller!.value.isRecordingVideo) {
+      try {
+        await controller!.pauseVideoRecording();
+      } on CameraException catch (e) {
+        print('Error pausing video recording: $e');
+      }
     }
   }
 
   Future<void> resumeVideoRecording() async {
-    if (!controller!.value.isRecordingVideo) {
-      // No video recording was in progress
+    if (controller!.value.isRecordingVideo) {
+      try {
+        await controller!.resumeVideoRecording();
+        setState(() {});
+      } on CameraException catch (e) {
+        print('Error resuming video recording: $e');
+      }
       return;
-    }
-
-    try {
-      await controller!.resumeVideoRecording();
-    } on CameraException catch (e) {
-      print('Error resuming video recording: $e');
     }
   }
 
@@ -432,97 +418,44 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           if (_isRecordingInProgress)
-                                            InkWell(
-                                              onTap: () async {
-                                                if (controller!
-                                                    .value.isRecordingPaused) {
-                                                  await resumeVideoRecording();
-                                                } else {
-                                                  await pauseVideoRecording();
-                                                }
-                                              },
-                                              child: Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.circle,
-                                                    color: Colors.black38,
-                                                    size: 60,
-                                                  ),
-                                                  if (controller!
-                                                      .value.isRecordingPaused)
-                                                    const Icon(
-                                                      Icons.play_arrow,
-                                                      color: Colors.white,
-                                                      size: 30,
-                                                    )
-                                                  else
-                                                    const Icon(
-                                                      Icons.pause,
-                                                      color: Colors.white,
-                                                      size: 30,
-                                                    ),
-                                                ],
-                                              ),
+                                            CircularButton(
+                                              icon: MdiIcons.stop,
+                                              onPressed: stopVideoRecording,
                                             )
                                           else
                                             Container(),
-                                          InkWell(
-                                            onTap: _isVideoCameraSelected
-                                                ? () async {
-                                                    if (_isRecordingInProgress) {
-                                                      final rawVideo =
-                                                          await stopVideoRecording();
-                                                      if (rawVideo != null) {
-                                                        await refreshAlreadyCapturedImages(
-                                                          rawVideo.path,
-                                                        );
-                                                      }
-                                                    } else {
-                                                      await startVideoRecording();
-                                                    }
-                                                  }
-                                                : () async {
-                                                    if (!controller!.value
-                                                        .isTakingPicture) {
-                                                      final rawImage =
-                                                          await takePicture();
-
-                                                      if (rawImage != null) {
-                                                        await refreshAlreadyCapturedImages(
-                                                          rawImage.path,
-                                                        );
-                                                      }
-                                                    }
-                                                  },
-                                            child: Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                Icon(
-                                                  Icons.circle,
-                                                  color: _isVideoCameraSelected
-                                                      ? Colors.white
-                                                      : Colors.white38,
-                                                  size: 80,
-                                                ),
-                                                Icon(
-                                                  Icons.circle,
-                                                  color: _isVideoCameraSelected
-                                                      ? Colors.red
-                                                      : Colors.white,
-                                                  size: 65,
-                                                ),
-                                                if (_isVideoCameraSelected &&
-                                                    _isRecordingInProgress)
-                                                  const Icon(
-                                                    Icons.stop_rounded,
-                                                    color: Colors.white,
-                                                    size: 32,
-                                                  )
-                                                else
-                                                  Container(),
-                                              ],
-                                            ),
+                                          CircularButton(
+                                            size: 44,
+                                            icon: switch ((
+                                              _isVideoCameraSelected,
+                                              controller!
+                                                  .value.isRecordingVideo,
+                                              controller!
+                                                  .value.isRecordingPaused
+                                            )) {
+                                              (false, _, _) => MdiIcons.camera,
+                                              (true, false, _) =>
+                                                MdiIcons.video,
+                                              (true, true, false) =>
+                                                MdiIcons.pause,
+                                              (true, true, true) =>
+                                                MdiIcons.circle
+                                            },
+                                            onPressed: switch ((
+                                              _isVideoCameraSelected,
+                                              controller!
+                                                  .value.isRecordingVideo,
+                                              controller!
+                                                  .value.isRecordingPaused
+                                            )) {
+                                              (false, _, _) => takePicture,
+                                              (true, false, _) =>
+                                                startVideoRecording,
+                                              (true, true, false) =>
+                                                pauseVideoRecording,
+                                              (true, true, true) =>
+                                                resumeVideoRecording
+                                            },
                                           ),
                                           Container(),
                                         ],
