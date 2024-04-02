@@ -47,8 +47,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   CameraMode cameraMode = CameraMode.photo; // default
   bool _isRecordingInProgress = false;
-  double _minAvailableExposureOffset = 0;
-  double _maxAvailableExposureOffset = 0;
+
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
   final bool _cameraAim = false;
@@ -56,7 +55,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   // Current values
   double _currentZoomLevel = 1;
-  double _currentExposureOffset = 0;
 
   bool showSettings = false;
   late AnimationController settingsController;
@@ -158,7 +156,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   Future<void> resetCameraValues() async {
     _currentZoomLevel = 1.0;
-    _currentExposureOffset = 0.0;
   }
 
   Future<void> onNewCameraSelected({
@@ -200,12 +197,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     try {
       await cameraController.initialize();
       await Future.wait([
-        cameraController
-            .getMinExposureOffset()
-            .then((value) => _minAvailableExposureOffset = value),
-        cameraController
-            .getMaxExposureOffset()
-            .then((value) => _maxAvailableExposureOffset = value),
         cameraController
             .getMaxZoomLevel()
             .then((value) => _maxAvailableZoom = value),
@@ -378,6 +369,11 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                     ),
                                   ),
                                 ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 16, top: 8),
+                                child: FlashControl(controller: controller!),
+                              ),
                             ],
                           ),
                         ),
@@ -447,20 +443,20 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                                                 onPressed:
                                                                     stopVideoRecording,
                                                               )
-                                                            : (_isRecordingInProgress ||
-                                                                    controller!
-                                                                        .value
-                                                                        .isTakingPicture)
-                                                                ? Container()
-                                                                : CLButtonIcon
-                                                                    .standard(
-                                                                    Icons
-                                                                        .settings_rounded,
-                                                                    color: Colors
-                                                                        .white,
-                                                                    onTap:
-                                                                        toggleSettingsVisibility,
-                                                                  ),
+                                                            : CameraSelect(
+                                                                cameras: widget
+                                                                    .cameras,
+                                                                currentCamera:
+                                                                    currDescription!,
+                                                                onNextCamera:
+                                                                    () {
+                                                                  setState(() {
+                                                                    _isCameraInitialized =
+                                                                        false;
+                                                                  });
+                                                                  onNewCameraSelected();
+                                                                },
+                                                              ),
                                                   ),
                                                   Expanded(
                                                     child: CircularButton(
@@ -528,7 +524,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                         ],
                                       ),
                                     ),
-                                    if (showSettings) buildSettings(),
                                   ],
                                 ),
                               );

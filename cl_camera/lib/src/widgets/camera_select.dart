@@ -15,12 +15,8 @@ class CameraSelect extends StatelessWidget with CameraMixin {
 
   @override
   Widget build(BuildContext context) {
-    return CLButtonIconLabelled.small(
+    return CLButtonIcon.small(
       Icons.cameraswitch,
-      getCameraName(
-        cameras,
-        currentCamera,
-      ),
       onTap: onNextCamera,
       color: Colors.white,
     );

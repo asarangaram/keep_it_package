@@ -37,14 +37,14 @@ class CircularButton extends StatelessWidget {
                       : (backgroundColor ??
                               Theme.of(context).colorScheme.background)
                           .withAlpha(128),
-                  boxShadow: [
+                  /*  boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.3),
                       spreadRadius: 2,
                       blurRadius: 5,
                       offset: const Offset(0, 3),
                     ),
-                  ],
+                  ], */
                 )
               : null,
           padding: EdgeInsets.all(hasDecoration ? 16 : 4),
