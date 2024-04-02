@@ -206,41 +206,71 @@ class CameraScreenState extends ConsumerState<CameraScreen>
         message: 'Initialzing',
       );
     }
-
-    return Stack(
-      children: [
-        CameraBackgroundLayer(controller: controller!),
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: CameraPreviewLayer(
-              controller: controller!,
-              currentZoomLevel: _currentZoomLevel,
-              onChangeZoomLevel: (scale) {
-                if (scale < _minAvailableZoom) {
-                  scale = _minAvailableZoom;
-                } else if (scale > _maxAvailableZoom) {
-                  scale = _maxAvailableZoom;
-                }
-                controller!.setZoomLevel(scale).then((value) {
-                  setState(() {
-                    _currentZoomLevel = scale;
+    final capturedMedia = ref.watch(capturedMediaProvider);
+    return GestureDetector(
+      onHorizontalDragEnd: (details) async {
+        if (details.primaryVelocity == null) return;
+        // pop on Swipe
+        if (details.primaryVelocity! > 0) {
+          if (capturedMedia.isNotEmpty) {
+            final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ConfirmAction(
+                      title: 'Discard?',
+                      message:
+                          'Do you want to discard all the images and video captured?',
+                      child: null,
+                      onConfirm: ({required confirmed}) =>
+                          Navigator.of(context).pop(confirmed),
+                    );
+                  },
+                ) ??
+                false;
+            if (confirmed) {
+              ref.read(capturedMediaProvider.notifier).onDiscard();
+              widget.onCancel();
+            }
+          } else {
+            widget.onCancel();
+          }
+        }
+      },
+      child: Stack(
+        children: [
+          CameraBackgroundLayer(controller: controller!),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: CameraPreviewLayer(
+                controller: controller!,
+                currentZoomLevel: _currentZoomLevel,
+                onChangeZoomLevel: (scale) {
+                  if (scale < _minAvailableZoom) {
+                    scale = _minAvailableZoom;
+                  } else if (scale > _maxAvailableZoom) {
+                    scale = _maxAvailableZoom;
+                  }
+                  controller!.setZoomLevel(scale).then((value) {
+                    setState(() {
+                      _currentZoomLevel = scale;
+                    });
                   });
-                });
-              },
+                },
+              ),
             ),
           ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: IgnorePointer(
-            ignoring: false,
-            child: LayoutBuilder(
-              builder: buildBottomControl,
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: IgnorePointer(
+              ignoring: false,
+              child: LayoutBuilder(
+                builder: buildBottomControl,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -394,6 +424,57 @@ class CameraScreenState extends ConsumerState<CameraScreen>
           ),
         ],
       ),
+    );
+  }
+}
+
+class ConfirmAction extends StatelessWidget {
+  const ConfirmAction({
+    required this.title,
+    required this.message,
+    required this.child,
+    required this.onConfirm,
+    super.key,
+  });
+
+  final String title;
+  final String message;
+  final Widget? child;
+  final void Function({
+    required bool confirmed,
+  }) onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      alignment: Alignment.center,
+      title: const Text('Confirm Delete'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (child != null)
+            SizedBox.square(
+              dimension: 200,
+              child: child,
+            ),
+          CLText.large(message),
+        ],
+      ),
+      actions: [
+        ButtonBar(
+          alignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () => onConfirm(confirmed: false),
+              child: const Text('No'),
+            ),
+            ElevatedButton(
+              child: const Text('Yes'),
+              onPressed: () => onConfirm(confirmed: true),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
