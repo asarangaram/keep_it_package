@@ -14,6 +14,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:permission_handler/permission_handler.dart';
 
 import '../extensions.dart';
+import '../layers/layer1_background.dart';
 import '../widgets/camera_gesture.dart';
 import '../widgets/camera_mode.dart';
 import '../widgets/camera_select.dart';
@@ -310,17 +311,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
             ? _isCameraInitialized
                 ? Stack(
                     children: [
-                      controller!.buildPreview(),
-                      Positioned.fill(
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Container(
-                            color: Colors.black.withOpacity(
-                              0.5,
-                            ), // Adjust opacity as needed
-                          ),
-                        ),
-                      ),
+                      CameraBackgroundLayer(controller: controller!),
                       Center(
                         child: AspectRatio(
                           aspectRatio: 1 / controller!.value.aspectRatio,
@@ -597,56 +588,3 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     );
   }
 }
-
-
-
-/*
-Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          16,
-                                          8,
-                                          16,
-                                          8,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            
-                                            
-                                            if (allowResolutionChange)
-                                              CameraResolution(
-                                                currResolution: controller!
-                                                    .value.previewSize,
-                                                onNextResolution: () {
-                                                  setState(() {
-                                                    currentResolutionPreset =
-                                                        ResolutionPreset.values
-                                                            .next(
-                                                      controller!
-                                                          .resolutionPreset,
-                                                    );
-                                                    _isCameraInitialized =
-                                                        false;
-                                                  });
-                                                  onNewCameraSelected(
-                                                    restore: true,
-                                                  );
-                                                },
-                                              )
-                                            else
-                                              Container(),
-                                          ]
-                                              .map(
-                                                (e) => Expanded(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 4,
-                                                    ),
-                                                    child: e,
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        ),
-                                      ),
- */
