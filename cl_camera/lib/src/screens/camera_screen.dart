@@ -51,7 +51,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
-  final bool _cameraAim = false;
+
   final bool allowResolutionChange = false;
 
   // Current values
@@ -358,18 +358,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                   });
                                 },
                               ),
-                              if (_cameraAim)
-                                IgnorePointer(
-                                  ignoring: false,
-                                  child: Center(
-                                    child: Image.asset(
-                                      'assets/camera_aim.png',
-                                      color: Colors.greenAccent,
-                                      width: 150,
-                                      height: 150,
-                                    ),
-                                  ),
-                                ),
                               Padding(
                                 padding:
                                     const EdgeInsets.only(left: 16, top: 8),
