@@ -6,8 +6,10 @@ import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -15,6 +17,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../extensions.dart';
 import '../layers/layer1_background.dart';
+import '../layers/layer2_preview.dart';
 import '../widgets/camera_gesture.dart';
 import '../widgets/camera_mode.dart';
 import '../widgets/camera_select.dart';
@@ -217,18 +220,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     }
   }
 
-  void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
-    if (controller == null) {
-      return;
-    }
-
-    final offset = Offset(
-      details.localPosition.dx / constraints.maxWidth,
-      details.localPosition.dy / constraints.maxHeight,
-    );
-    controller!.setExposurePoint(offset);
-    controller!.setFocusPoint(offset);
-  }
+  
 
   @override
   void initState() {
@@ -312,49 +304,25 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                 ? Stack(
                     children: [
                       CameraBackgroundLayer(controller: controller!),
-                      Center(
-                        child: AspectRatio(
-                          aspectRatio: 1 / controller!.value.aspectRatio,
-                          child: Stack(
-                            children: [
-                              CameraPreview(
-                                controller!,
-                                child: LayoutBuilder(
-                                  builder: (
-                                    BuildContext context,
-                                    BoxConstraints constraints,
-                                  ) {
-                                    return GestureDetector(
-                                      behavior: HitTestBehavior.opaque,
-                                      onTapDown: (details) => onViewFinderTap(
-                                        details,
-                                        constraints,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              CameraGesture(
-                                currentZoomLevel: _currentZoomLevel,
-                                onChangeZoomLevel: (scale) {
-                                  if (scale < _minAvailableZoom) {
-                                    scale = _minAvailableZoom;
-                                  } else if (scale > _maxAvailableZoom) {
-                                    scale = _maxAvailableZoom;
-                                  }
-                                  controller!.setZoomLevel(scale).then((value) {
-                                    setState(() {
-                                      _currentZoomLevel = scale;
-                                    });
-                                  });
-                                },
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 16, top: 8),
-                                child: FlashControl(controller: controller!),
-                              ),
-                            ],
+                      SafeArea(
+                        bottom: false,
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: CameraPreviewLayer(
+                            controller: controller!,
+                            currentZoomLevel: _currentZoomLevel,
+                            onChangeZoomLevel: (scale) {
+                              if (scale < _minAvailableZoom) {
+                                scale = _minAvailableZoom;
+                              } else if (scale > _maxAvailableZoom) {
+                                scale = _maxAvailableZoom;
+                              }
+                              controller!.setZoomLevel(scale).then((value) {
+                                setState(() {
+                                  _currentZoomLevel = scale;
+                                });
+                              });
+                            },
                           ),
                         ),
                       ),
