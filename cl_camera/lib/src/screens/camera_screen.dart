@@ -20,18 +20,23 @@ import '../widgets/camera_select.dart';
 import '../widgets/captured_media.dart';
 import '../widgets/cl_circular_button.dart';
 
-
-
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({
     required this.cameras,
     required this.directory,
-    this.currentResolutionPreset = ResolutionPreset.high,
+    required this.currentResolutionPreset,
+    required this.onDone,
+    required this.onCancel,
     super.key,
   });
   final List<CameraDescription> cameras;
-  final String directory;
   final ResolutionPreset currentResolutionPreset;
+  final String directory;
+  final void Function() onCancel;
+  final void Function(
+    List<CLMedia> capturedMedia, {
+    required void Function() onDiscard,
+  }) onDone;
 
   @override
   CameraScreenState createState() => CameraScreenState();
@@ -376,6 +381,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                             alignment: Alignment.centerRight,
                             child: CapturedMedia(
                               directory: widget.directory,
+                              onSendCapturedMedia: widget.onDone,
                             ),
                           ),
                         ),

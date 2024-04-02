@@ -5,15 +5,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../image_services/view/cl_media_preview.dart';
 
 class CapturedMedia extends ConsumerWidget {
-  const CapturedMedia({required this.directory, super.key});
+  const CapturedMedia({
+    required this.directory,
+    required this.onSendCapturedMedia,
+    super.key,
+  });
   final String directory;
+
+  final void Function(
+    List<CLMedia> capturedMedia, {
+    required void Function() onDiscard,
+  }) onSendCapturedMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final capturedMedia = ref.watch(capturedMediaProvider);
     if (capturedMedia.isEmpty) return Container();
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        onSendCapturedMedia(
+          capturedMedia,
+          onDiscard: ref.read(capturedMediaProvider.notifier).onDiscard,
+        );
+      },
       child: Container(
         width: 60,
         height: 60,
@@ -49,6 +63,13 @@ class CapturedMediaNotifier extends StateNotifier<List<CLMedia>> {
 
   void add(CLMedia media) {
     state = [...state, media];
+  }
+
+  void onDiscard() {
+    for (final e in state) {
+      e.deleteFile();
+    }
+    state = [];
   }
 }
 

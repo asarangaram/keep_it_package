@@ -36,7 +36,10 @@ class CameraPage extends ConsumerWidget {
                       .where((e) => e.lensDirection == CameraLensDirection.back)
                       .toList()[defaultBackCameraIndex],
                 ],
+                currentResolutionPreset: ResolutionPreset.high,
                 directory: snapShot.data!.path,
+                onCancel: () {},
+                onDone: (capturedMedia, {required onDiscard}) {},
               ),
             );
           }
