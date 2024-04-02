@@ -1,3 +1,6 @@
+// TODO(anandas): : Remove prints
+// ignore_for_file: avoid_print
+
 import 'package:camera/camera.dart';
 
 extension EXTNextOnList<T> on List<T> {
