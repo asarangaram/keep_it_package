@@ -20,6 +20,8 @@ import '../widgets/camera_select.dart';
 import '../widgets/captured_media.dart';
 import '../widgets/cl_circular_button.dart';
 
+
+
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({
     required this.cameras,
@@ -74,86 +76,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     }
   }
 
-  Future<void> takePicture() async {
-    final cameraController = controller;
-
-    if (cameraController!.value.isTakingPicture) {
-      // A capture is already pending, do nothing.
-    }
-
-    try {
-      final file = await cameraController.takePicture();
-      ref.read(capturedMediaProvider.notifier).add(
-            CLMedia(
-              path: file.path,
-              type: CLMediaType.image,
-            ),
-          );
-    } on CameraException catch (e) {
-      print('Error occured while taking picture: $e');
-    }
-  }
-
-  Future<void> startVideoRecording() async {
-    final cameraController = controller!;
-    if (!cameraController.value.isRecordingVideo) {
-      try {
-        await cameraController.startVideoRecording();
-        setState(() {
-          _isRecordingInProgress = true;
-        });
-      } on CameraException catch (e) {
-        print('Error starting to record video: $e');
-      }
-    }
-  }
-
-  Future<void> stopVideoRecording() async {
-    if (controller!.value.isRecordingVideo) {
-      try {
-        final file = await controller!.stopVideoRecording();
-        ref.read(capturedMediaProvider.notifier).add(
-              CLMedia(
-                path: file.path,
-                type: CLMediaType.video,
-              ),
-            );
-        setState(() {
-          _isRecordingInProgress = false;
-        });
-      } on CameraException catch (e) {
-        print('Error stopping video recording: $e');
-      }
-    }
-  }
-
-  Future<void> pauseVideoRecording() async {
-    if (controller!.value.isRecordingVideo) {
-      try {
-        await controller!.pauseVideoRecording();
-        setState(() {});
-      } on CameraException catch (e) {
-        print('Error pausing video recording: $e');
-      }
-    }
-  }
-
-  Future<void> resumeVideoRecording() async {
-    if (controller!.value.isRecordingVideo) {
-      try {
-        await controller!.resumeVideoRecording();
-        setState(() {});
-      } on CameraException catch (e) {
-        print('Error resuming video recording: $e');
-      }
-      return;
-    }
-  }
-
-  Future<void> resetCameraValues() async {
-    _currentZoomLevel = 1.0;
-  }
-
   Future<void> onNewCameraSelected({
     bool restore = false,
   }) async {
@@ -177,13 +99,8 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
     await previousCameraController?.dispose();
 
-    await resetCameraValues();
-
-    if (mounted) {
-      setState(() {
-        controller = cameraController;
-      });
-    }
+    // resetCameraValues
+    _currentZoomLevel = 1.0;
 
     // Update UI if controller updated
     cameraController.addListener(() {
@@ -206,6 +123,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     print('size: ${cameraController.value.previewSize}');
     if (mounted) {
       setState(() {
+        controller = cameraController;
         _isCameraInitialized = controller!.value.isInitialized;
       });
     }
@@ -249,227 +167,226 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    return CLFullscreenBox(
-      backgroundColor: Colors.black,
-      hasBackground: false,
-      child: SafeArea(
-        top: false,
-        bottom: false,
-        child: _isCameraPermissionGranted
-            ? _isCameraInitialized
-                ? Stack(
-                    children: [
-                      CameraBackgroundLayer(controller: controller!),
-                      SafeArea(
-                        bottom: false,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: CameraPreviewLayer(
-                            controller: controller!,
-                            currentZoomLevel: _currentZoomLevel,
-                            onChangeZoomLevel: (scale) {
-                              if (scale < _minAvailableZoom) {
-                                scale = _minAvailableZoom;
-                              } else if (scale > _maxAvailableZoom) {
-                                scale = _maxAvailableZoom;
-                              }
-                              controller!.setZoomLevel(scale).then((value) {
-                                setState(() {
-                                  _currentZoomLevel = scale;
-                                });
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: IgnorePointer(
-                          ignoring: false,
-                          child: LayoutBuilder(
-                            builder: (context, constrains) {
-                              return DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withAlpha(64),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 16),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          if (_isRecordingInProgress ||
-                                              (controller
-                                                      ?.value.isTakingPicture ??
-                                                  false))
-                                            Container()
-                                          else
-                                            SizedBox(
-                                              width: constrains.maxWidth,
-                                              height: kMinInteractiveDimension,
-                                              child: MenuCameraMode(
-                                                currMode: cameraMode,
-                                                onUpdateMode: (mode) {
-                                                  setState(() {
-                                                    cameraMode = mode;
-                                                  });
-                                                },
-                                              ),
-                                            ),
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                              8,
-                                              8,
-                                              8,
-                                              8,
-                                            ),
-                                            child: SizedBox(
-                                              height:
-                                                  kMinInteractiveDimension * 2,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Expanded(
-                                                    child:
-                                                        _isRecordingInProgress
-                                                            ? CircularButton(
-                                                                icon: MdiIcons
-                                                                    .stop,
-                                                                onPressed:
-                                                                    stopVideoRecording,
-                                                              )
-                                                            : CameraSelect(
-                                                                cameras: widget
-                                                                    .cameras,
-                                                                currentCamera:
-                                                                    currDescription!,
-                                                                onNextCamera:
-                                                                    () {
-                                                                  setState(() {
-                                                                    _isCameraInitialized =
-                                                                        false;
-                                                                  });
-                                                                  onNewCameraSelected();
-                                                                },
-                                                              ),
-                                                  ),
-                                                  Expanded(
-                                                    child: CircularButton(
-                                                      size: 44,
-                                                      icon: switch ((
-                                                        cameraMode.isVideo,
-                                                        controller!.value
-                                                            .isRecordingVideo,
-                                                        controller!.value
-                                                            .isRecordingPaused
-                                                      )) {
-                                                        (false, _, _) =>
-                                                          MdiIcons.camera,
-                                                        (true, false, _) =>
-                                                          MdiIcons.video,
-                                                        (true, true, false) =>
-                                                          MdiIcons.pause,
-                                                        (true, true, true) =>
-                                                          MdiIcons.circle
-                                                      },
-                                                      onPressed: switch ((
-                                                        cameraMode.isVideo,
-                                                        controller!.value
-                                                            .isRecordingVideo,
-                                                        controller!.value
-                                                            .isRecordingPaused
-                                                      )) {
-                                                        (false, _, _) =>
-                                                          takePicture,
-                                                        (true, false, _) =>
-                                                          startVideoRecording,
-                                                        (true, true, false) =>
-                                                          pauseVideoRecording,
-                                                        (true, true, true) =>
-                                                          resumeVideoRecording
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Align(
-                                                      alignment:
-                                                          Alignment.topRight,
-                                                      child:
-                                                          Transform.translate(
-                                                        offset: const Offset(
-                                                          0,
-                                                          -40,
-                                                        ),
-                                                        child: AspectRatio(
-                                                          aspectRatio: 1.0 /
-                                                              controller!.value
-                                                                  .aspectRatio,
-                                                          child: CapturedMedia(
-                                                            directory: widget
-                                                                .directory,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : const Center(
-                    child: Text(
-                      'LOADING',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Row(),
-                  const Text(
-                    'Permission denied',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: getPermissionStatus,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        'Give permission',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+    if (!_isCameraPermissionGranted) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Row(),
+          const Text(
+            'Permission denied',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: getPermissionStatus,
+            child: const Padding(
+              padding: EdgeInsets.all(8),
+              child: Text(
+                'Give permission',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
               ),
+            ),
+          ),
+        ],
+      );
+    }
+    if (!_isCameraInitialized) {
+      return const CLLoadingView(
+        message: 'Initialzing',
+      );
+    }
+
+    return Stack(
+      children: [
+        CameraBackgroundLayer(controller: controller!),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: CameraPreviewLayer(
+              controller: controller!,
+              currentZoomLevel: _currentZoomLevel,
+              onChangeZoomLevel: (scale) {
+                if (scale < _minAvailableZoom) {
+                  scale = _minAvailableZoom;
+                } else if (scale > _maxAvailableZoom) {
+                  scale = _maxAvailableZoom;
+                }
+                controller!.setZoomLevel(scale).then((value) {
+                  setState(() {
+                    _currentZoomLevel = scale;
+                  });
+                });
+              },
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: IgnorePointer(
+            ignoring: false,
+            child: LayoutBuilder(
+              builder: buildBottomControl,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void startVideoRecording() {
+    controller!.onStartVideoRecording(
+      onSuccess: () {
+        setState(() {
+          _isRecordingInProgress = true;
+        });
+      },
+    );
+  }
+
+  void stopVideoRecording() => controller!.onStopVideoRecording(
+        onSuccess: (videoFilePath) {
+          ref.read(capturedMediaProvider.notifier).add(
+                CLMedia(
+                  path: videoFilePath,
+                  type: CLMediaType.video,
+                ),
+              );
+          setState(() {
+            _isRecordingInProgress = false;
+          });
+        },
+      );
+
+  void pauseVideoRecording() {
+    controller!.onPauseVideoRecording(
+      onSuccess: () {
+        setState(() {});
+      },
+    );
+  }
+
+  void resumeVideoRecording() {
+    controller!.onResumeVideoRecording(
+      onSuccess: () {
+        setState(() {});
+      },
+    );
+  }
+
+  void takePicture() {
+    controller!.onTakePicture(
+      onSuccess: (imageFilePath) {
+        ref.read(capturedMediaProvider.notifier).add(
+              CLMedia(
+                path: imageFilePath,
+                type: CLMediaType.image,
+              ),
+            );
+      },
+    );
+  }
+
+  Widget buildBottomControl(BuildContext context, BoxConstraints constrains) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(64),
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                SizedBox(
+                  width: constrains.maxWidth,
+                  height: kMinInteractiveDimension,
+                  child: (_isRecordingInProgress ||
+                          (controller?.value.isTakingPicture ?? false))
+                      ? null
+                      : MenuCameraMode(
+                          currMode: cameraMode,
+                          onUpdateMode: (mode) {
+                            setState(() {
+                              cameraMode = mode;
+                            });
+                          },
+                        ),
+                ),
+                SizedBox(
+                  width: constrains.maxWidth,
+                  height: kMinInteractiveDimension * 2,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: _isRecordingInProgress
+                              ? CircularButton(
+                                  icon: MdiIcons.stop,
+                                  onPressed: stopVideoRecording,
+                                )
+                              : CameraSelect(
+                                  cameras: widget.cameras,
+                                  currentCamera: currDescription!,
+                                  onNextCamera: () {
+                                    setState(() {
+                                      _isCameraInitialized = false;
+                                    });
+                                    onNewCameraSelected();
+                                  },
+                                ),
+                        ),
+                        Expanded(
+                          child: CircularButton(
+                            size: 44,
+                            icon: switch ((
+                              cameraMode.isVideo,
+                              controller!.value.isRecordingVideo,
+                              controller!.value.isRecordingPaused
+                            )) {
+                              (false, _, _) => MdiIcons.camera,
+                              (true, false, _) => MdiIcons.video,
+                              (true, true, false) => MdiIcons.pause,
+                              (true, true, true) => MdiIcons.circle
+                            },
+                            onPressed: switch ((
+                              cameraMode.isVideo,
+                              controller!.value.isRecordingVideo,
+                              controller!.value.isRecordingPaused
+                            )) {
+                              (false, _, _) => takePicture,
+                              (true, false, _) => startVideoRecording,
+                              (true, true, false) => pauseVideoRecording,
+                              (true, true, true) => resumeVideoRecording
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: CapturedMedia(
+                              directory: widget.directory,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

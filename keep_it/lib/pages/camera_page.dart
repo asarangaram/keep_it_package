@@ -23,16 +23,21 @@ class CameraPage extends ConsumerWidget {
             return const CircularProgressIndicator();
           }
           if (snapShot.hasData && snapShot.data != null) {
-            return CameraScreen(
-              cameras: [
-                cameras
-                    .where((e) => e.lensDirection == CameraLensDirection.front)
-                    .toList()[defaultFrontCameraIndex],
-                cameras
-                    .where((e) => e.lensDirection == CameraLensDirection.back)
-                    .toList()[defaultBackCameraIndex],
-              ],
-              directory: snapShot.data!.path,
+            return FullscreenLayout(
+              useSafeArea: false,
+              child: CameraScreen(
+                cameras: [
+                  cameras
+                      .where(
+                        (e) => e.lensDirection == CameraLensDirection.front,
+                      )
+                      .toList()[defaultFrontCameraIndex],
+                  cameras
+                      .where((e) => e.lensDirection == CameraLensDirection.back)
+                      .toList()[defaultBackCameraIndex],
+                ],
+                directory: snapShot.data!.path,
+              ),
             );
           }
           return CLErrorView(errorMessage: snapShot.error.toString());
