@@ -13,9 +13,8 @@ class CapturedMedia extends ConsumerWidget {
   final String directory;
 
   final void Function(
-    List<CLMedia> capturedMedia, {
-    required void Function() onDiscard,
-  }) onSendCapturedMedia;
+    List<CLMedia> capturedMedia,
+  ) onSendCapturedMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,10 +22,8 @@ class CapturedMedia extends ConsumerWidget {
     if (capturedMedia.isEmpty) return Container();
     return InkWell(
       onTap: () {
-        onSendCapturedMedia(
-          capturedMedia,
-          onDiscard: ref.read(capturedMediaProvider.notifier).onDiscard,
-        );
+        onSendCapturedMedia(List.from(capturedMedia));
+        ref.read(capturedMediaProvider.notifier).clear();
       },
       child: Container(
         width: 60,
@@ -69,6 +66,12 @@ class CapturedMediaNotifier extends StateNotifier<List<CLMedia>> {
     for (final e in state) {
       e.deleteFile();
     }
+    state = [];
+  }
+
+  void clear() {
+    // Called after handing over the files to some other module.
+    // We can ignore as deleting those files is the new owners responsibility
     state = [];
   }
 }

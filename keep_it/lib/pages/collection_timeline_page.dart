@@ -42,6 +42,9 @@ class CollectionTimeLinePage extends ConsumerWidget {
               ref,
               collection: collection,
             ),
+            onCameraCapture: () {
+              context.push('/camera?collectionId=$collectionId');
+            },
           ),
         ),
       );

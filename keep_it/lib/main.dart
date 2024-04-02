@@ -43,7 +43,7 @@ class KeepItApp implements AppDescriptor {
   CLAppInitializer get appInitializer => (ref) async {
         // TODO(anandas): Delete only if saved preference is set to reset.
         // ignore: dead_code, literal_only_boolean_expressions
-        if (true) {
+        if (false) {
           for (final dir in [
             await getApplicationDocumentsDirectory(),
             await getApplicationCacheDirectory(),
@@ -84,7 +84,14 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'camera',
           builder: (context, GoRouterState state) {
-            return const CameraPage();
+            final int? collectionId;
+            if (state.uri.queryParameters.keys.contains('collectionId')) {
+              collectionId =
+                  int.parse(state.uri.queryParameters['collectionId']!);
+            } else {
+              collectionId = null;
+            }
+            return CameraPage(collectionId: collectionId);
           },
         ),
         CLRouteDescriptor(
@@ -212,7 +219,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        if (location != '/camera') return '/camera';
+        // if (location != '/camera') return '/camera';
         //if (location == '/') return '/collections';
         return null;
       };

@@ -33,10 +33,7 @@ class CameraScreen extends ConsumerStatefulWidget {
   final ResolutionPreset currentResolutionPreset;
   final String directory;
   final void Function() onCancel;
-  final void Function(
-    List<CLMedia> capturedMedia, {
-    required void Function() onDiscard,
-  }) onDone;
+  final void Function(List<CLMedia> capturedMedia) onDone;
 
   @override
   CameraScreenState createState() => CameraScreenState();
@@ -277,31 +274,37 @@ class CameraScreenState extends ConsumerState<CameraScreen>
   void startVideoRecording() {
     controller!.onStartVideoRecording(
       onSuccess: () {
-        setState(() {
-          _isRecordingInProgress = true;
-        });
+        if (mounted) {
+          setState(() {
+            _isRecordingInProgress = true;
+          });
+        }
       },
     );
   }
 
   void stopVideoRecording() => controller!.onStopVideoRecording(
         onSuccess: (videoFilePath) {
-          ref.read(capturedMediaProvider.notifier).add(
-                CLMedia(
-                  path: videoFilePath,
-                  type: CLMediaType.video,
-                ),
-              );
-          setState(() {
-            _isRecordingInProgress = false;
-          });
+          if (mounted) {
+            ref.read(capturedMediaProvider.notifier).add(
+                  CLMedia(
+                    path: videoFilePath,
+                    type: CLMediaType.video,
+                  ),
+                );
+            setState(() {
+              _isRecordingInProgress = false;
+            });
+          }
         },
       );
 
   void pauseVideoRecording() {
     controller!.onPauseVideoRecording(
       onSuccess: () {
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       },
     );
   }
@@ -309,7 +312,9 @@ class CameraScreenState extends ConsumerState<CameraScreen>
   void resumeVideoRecording() {
     controller!.onResumeVideoRecording(
       onSuccess: () {
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       },
     );
   }
@@ -317,12 +322,14 @@ class CameraScreenState extends ConsumerState<CameraScreen>
   void takePicture() {
     controller!.onTakePicture(
       onSuccess: (imageFilePath) {
-        ref.read(capturedMediaProvider.notifier).add(
-              CLMedia(
-                path: imageFilePath,
-                type: CLMediaType.image,
-              ),
-            );
+        if (mounted) {
+          ref.read(capturedMediaProvider.notifier).add(
+                CLMedia(
+                  path: imageFilePath,
+                  type: CLMediaType.image,
+                ),
+              );
+        }
       },
     );
   }
