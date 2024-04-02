@@ -12,6 +12,9 @@ dependencies:
   adaptive_dialog: ^2.1.0
   app_loader:
     path: ../app_loader
+  camera: ^0.10.5+9
+  cl_camera:
+    path: ../cl_camera
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
@@ -48,7 +51,7 @@ dependencies:
       path: plugins/window_size
   
 dev_dependencies:
-  flutter_lints: ^3.0.1
+  flutter_lints: ^3.0.2
   flutter_test:
     sdk: flutter
   very_good_analysis: ^5.1.0
@@ -64,3 +67,5 @@ flutter:
     - assets/image3.jpg
     - assets/image4.jpg
     - assets/image5.jpg
+    - assets/camera_aim.png
+    

@@ -87,7 +87,9 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
   void onSave({required CLSharedMedia? mg}) {
     candidates = null;
     isSaving = true;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     ref.read(notificationMessageProvider.notifier).push('Done.');
 
     onDiscard(result: true);

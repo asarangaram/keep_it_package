@@ -2,6 +2,7 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
@@ -53,6 +54,9 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                           ref,
                         );
                       },
+                onCameraCapture: () {
+                  context.push('/camera');
+                },
                 onRefresh: () async {
                   ref.invalidate(dbManagerProvider);
                 },

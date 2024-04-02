@@ -96,5 +96,13 @@
 		<string>To view and edit Photos and Videos</string>
 		<key>LSSupportsOpeningDocumentsInPlace</key>
 		<true></true>
+		<key>NSCameraUsageDescription</key>
+		<string>Your own description</string>
+
+		<key>NSMicrophoneUsageDescription</key>
+		<string>To enable microphone access when recording video</string>
+
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>To enable GPS location access for Exif data</string>
 	</dict>
 </plist>

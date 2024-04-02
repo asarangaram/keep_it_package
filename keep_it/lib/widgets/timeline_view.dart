@@ -16,6 +16,7 @@ class TimeLineView extends ConsumerWidget {
     required this.items,
     required this.onTapMedia,
     this.onPickFiles,
+    this.onCameraCapture,
     super.key,
   });
 
@@ -25,6 +26,7 @@ class TimeLineView extends ConsumerWidget {
   final Future<bool?> Function(int id, {required String parentIdentifier})
       onTapMedia;
   final void Function()? onPickFiles;
+  final void Function()? onCameraCapture;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,6 +51,7 @@ class TimeLineView extends ConsumerWidget {
             ),
           ),
           onPickFiles: onPickFiles,
+          onCameraCapture: onCameraCapture,
           onRefresh: () async => ref.invalidate(dbManagerProvider),
           selectionActions: (context, items) {
             return [

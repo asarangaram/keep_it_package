@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
+import 'pages/camera_page.dart';
 import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
@@ -80,6 +81,19 @@ class KeepItApp implements AppDescriptor {
 
   @override
   List<CLRouteDescriptor> get fullscreenBuilders => [
+        CLRouteDescriptor(
+          name: 'camera',
+          builder: (context, GoRouterState state) {
+            final int? collectionId;
+            if (state.uri.queryParameters.keys.contains('collectionId')) {
+              collectionId =
+                  int.parse(state.uri.queryParameters['collectionId']!);
+            } else {
+              collectionId = null;
+            }
+            return CameraPage(collectionId: collectionId);
+          },
+        ),
         CLRouteDescriptor(
           name: 'item/:collectionId/:item_id',
           builder: (context, GoRouterState state) {
@@ -205,6 +219,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
+        // if (location != '/camera') return '/camera';
         //if (location == '/') return '/collections';
         return null;
       };
