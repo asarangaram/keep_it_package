@@ -2,14 +2,11 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -18,13 +15,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../extensions.dart';
 import '../layers/layer1_background.dart';
 import '../layers/layer2_preview.dart';
-import '../widgets/camera_gesture.dart';
 import '../widgets/camera_mode.dart';
 import '../widgets/camera_select.dart';
-import '../widgets/camera_settings.dart';
 import '../widgets/captured_media.dart';
 import '../widgets/cl_circular_button.dart';
-import '../widgets/flash_control.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({
@@ -60,10 +54,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
 
   // Current values
   double _currentZoomLevel = 1;
-
-  bool showSettings = false;
-  late AnimationController settingsController;
-  late Animation<double> settingsAnimation;
 
   //final resolutionPresets = ResolutionPreset.values;
   late ResolutionPreset currentResolutionPreset;
@@ -141,6 +131,7 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     if (controller!.value.isRecordingVideo) {
       try {
         await controller!.pauseVideoRecording();
+        setState(() {});
       } on CameraException catch (e) {
         print('Error pausing video recording: $e');
       }
@@ -220,19 +211,8 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     }
   }
 
-  
-
   @override
   void initState() {
-    settingsController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    settingsAnimation =
-        Tween<double>(begin: 0, end: 1).animate(settingsController);
-
-    // Hide the status bar in Android
-
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     currentResolutionPreset = widget.currentResolutionPreset;
 
@@ -262,33 +242,9 @@ class CameraScreenState extends ConsumerState<CameraScreen>
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
-    settingsController.dispose();
+
     controller?.dispose();
     super.dispose();
-  }
-
-  void toggleSettingsVisibility() {
-    setState(() {
-      showSettings = !showSettings;
-    });
-    if (showSettings) {
-      settingsController.forward();
-    } else {
-      settingsController.reverse();
-    }
-  }
-
-  void hideSettings() {
-    if (showSettings == true) {
-      setState(() {
-        showSettings = false;
-      });
-      if (showSettings) {
-        settingsController.forward();
-      } else {
-        settingsController.reverse();
-      }
-    }
   }
 
   @override
@@ -514,44 +470,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                   ),
                 ],
               ),
-      ),
-    );
-  }
-
-  Positioned buildSettings() {
-    return Positioned.fill(
-      child: AnimatedBuilder(
-        animation: settingsAnimation,
-        builder: (context, child) {
-          return Opacity(
-            opacity: settingsAnimation.value,
-            child: Transform.translate(
-              offset: Offset(
-                0,
-                50 * (1 - settingsAnimation.value),
-              ),
-              child: CameraSettings(
-                onClose: hideSettings,
-                controller: controller!,
-                children: [
-                  FlashControl(
-                    controller: controller!,
-                  ),
-                  CameraSelect(
-                    cameras: widget.cameras,
-                    currentCamera: currDescription!,
-                    onNextCamera: () {
-                      setState(() {
-                        _isCameraInitialized = false;
-                      });
-                      onNewCameraSelected();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }
