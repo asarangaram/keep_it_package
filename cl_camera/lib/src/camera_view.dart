@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:camera/camera.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -51,6 +50,7 @@ class CLCamera extends StatefulWidget {
 class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
   CameraController? controller;
   CameraDescription? currDescription;
+  int quarterTurns = 0;
 
   // Initial values
   bool _isCameraInitialized = false;
@@ -66,6 +66,14 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+    /*  SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+    ); */
     cameraMode = widget.cameraMode;
     getPermissionStatus();
 
@@ -93,6 +101,9 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
+    );
+    SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
     );
 
     controller?.dispose();
@@ -131,30 +142,43 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
       );
     }
     if (!_isCameraInitialized) {
-      return widget.onInitializing();
+      return Container(
+        decoration: const BoxDecoration(color: Colors.black),
+      );
+      //  return widget.onInitializing();
     }
-
+    quarterTurns = _getQuarterTurns(_getApplicableOrientation(controller!));
     return Stack(
       children: [
-        CameraBackgroundLayer(controller: controller!),
+        RotatedBox(
+          quarterTurns: quarterTurns,
+          child: CameraBackgroundLayer(controller: controller!),
+        ),
         SafeArea(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: CameraPreviewLayer(
-              controller: controller!,
-              currentZoomLevel: _currentZoomLevel,
-              onChangeZoomLevel: (scale) {
-                if (scale < _minAvailableZoom) {
-                  scale = _minAvailableZoom;
-                } else if (scale > _maxAvailableZoom) {
-                  scale = _maxAvailableZoom;
-                }
-                controller!.setZoomLevel(scale).then((value) {
-                  setState(() {
-                    _currentZoomLevel = scale;
+          child: RotatedBox(
+            quarterTurns: quarterTurns,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: CameraPreviewLayer(
+                controller: controller!,
+                currentZoomLevel: _currentZoomLevel,
+                onChangeZoomLevel: (scale) {
+                  if (scale < _minAvailableZoom) {
+                    scale = _minAvailableZoom;
+                  } else if (scale > _maxAvailableZoom) {
+                    scale = _maxAvailableZoom;
+                  }
+                  controller!.setZoomLevel(scale).then((value) {
+                    setState(() {
+                      _currentZoomLevel = scale;
+                    });
                   });
-                });
-              },
+                },
+                aspectRatio:
+                    _isLandscape(_getApplicableOrientation(controller!))
+                        ? controller!.value.aspectRatio
+                        : 1 / controller!.value.aspectRatio,
+              ),
             ),
           ),
         ),
@@ -269,7 +293,9 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
     cameraController.addListener(() {
       if (mounted) setState(() {});
     });
-
+    setState(() {
+      _isCameraInitialized = false;
+    });
     try {
       await cameraController.initialize();
       await Future.wait([
@@ -333,24 +359,21 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
                         Expanded(
                           child: _isRecordingInProgress
                               ? CircularButton(
+                                  quarterTurns: quarterTurns,
                                   icon: Icons.stop,
                                   onPressed: stopVideoRecording,
                                 )
-                              : IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isCameraInitialized = false;
-                                    });
-                                    onNewCameraSelected();
-                                  },
-                                  icon: const Icon(
-                                    Icons.cameraswitch,
-                                    color: Colors.white,
-                                  ),
+                              : CircularButton(
+                                  quarterTurns: quarterTurns,
+                                  onPressed: onNewCameraSelected,
+                                  icon: Icons.cameraswitch,
+                                  foregroundColor: Colors.white,
+                                  hasDecoration: false,
                                 ),
                         ),
                         Expanded(
                           child: CircularButton(
+                            quarterTurns: quarterTurns,
                             size: 44,
                             icon: switch ((
                               cameraMode.isVideo,
@@ -380,7 +403,10 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
                         Expanded(
                           child: Align(
                             alignment: Alignment.centerRight,
-                            child: widget.onGeneratePreview(),
+                            child: RotatedBox(
+                              quarterTurns: quarterTurns,
+                              child: widget.onGeneratePreview(),
+                            ),
                           ),
                         ),
                       ],
@@ -393,5 +419,40 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
         ],
       ),
     );
+  }
+
+  /* Widget _wrapInRotatedBox({
+    required Widget child,
+    required DeviceOrientation oritentation,
+  }) {
+    return RotatedBox(
+      quarterTurns: _getQuarterTurns(oritentation),
+      child: child,
+    );
+  } */
+
+  bool _isLandscape(DeviceOrientation oritentation) {
+    return <DeviceOrientation>[
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ].contains(oritentation);
+  }
+
+  int _getQuarterTurns(DeviceOrientation oritentation) {
+    final turns = <DeviceOrientation, int>{
+      DeviceOrientation.portraitUp: 0,
+      DeviceOrientation.landscapeRight: 3,
+      DeviceOrientation.portraitDown: 2,
+      DeviceOrientation.landscapeLeft: 1,
+    };
+    return turns[oritentation]!;
+  }
+
+  DeviceOrientation _getApplicableOrientation(CameraController controller) {
+    return controller.value.isRecordingVideo
+        ? controller.value.recordingOrientation!
+        : (controller.value.previewPauseOrientation ??
+            controller.value.lockedCaptureOrientation ??
+            controller.value.deviceOrientation);
   }
 }

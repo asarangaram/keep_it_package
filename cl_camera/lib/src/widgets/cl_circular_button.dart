@@ -12,6 +12,7 @@ class CircularButton extends StatelessWidget {
     this.backgroundColor,
     this.waiting = false,
     this.hasShadow = false,
+    this.quarterTurns = 0,
   });
   final VoidCallback? onPressed;
   final double size;
@@ -22,6 +23,7 @@ class CircularButton extends StatelessWidget {
   final Color? backgroundColor;
   final bool waiting;
   final bool hasShadow;
+  final int quarterTurns;
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +56,16 @@ class CircularButton extends StatelessWidget {
           padding: EdgeInsets.all(hasDecoration ? 16 : 4),
           child: waiting
               ? const CircularProgressIndicator()
-              : Icon(
-                  icon,
-                  size: size,
-                  color: foregroundColor ??
-                      (hasDecoration
-                          ? Theme.of(context).colorScheme.onBackground
-                          : Theme.of(context).colorScheme.background),
+              : RotatedBox(
+                  quarterTurns: quarterTurns,
+                  child: Icon(
+                    icon,
+                    size: size,
+                    color: foregroundColor ??
+                        (hasDecoration
+                            ? Theme.of(context).colorScheme.onBackground
+                            : Theme.of(context).colorScheme.background),
+                  ),
                 ),
         ),
       ),
