@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CameraGesture extends ConsumerStatefulWidget {
+class CameraGesture extends StatefulWidget {
   const CameraGesture({
     required this.currentZoomLevel,
     required this.onChangeZoomLevel,
@@ -11,10 +10,10 @@ class CameraGesture extends ConsumerStatefulWidget {
   final void Function(double scale) onChangeZoomLevel;
 
   @override
-  ConsumerState<CameraGesture> createState() => _CameraGestureState();
+  State<CameraGesture> createState() => _CameraGestureState();
 }
 
-class _CameraGestureState extends ConsumerState<CameraGesture> {
+class _CameraGestureState extends State<CameraGesture> {
   int pointers = 0;
   double baseScale = 1;
   @override

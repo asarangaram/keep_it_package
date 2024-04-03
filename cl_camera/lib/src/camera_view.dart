@@ -7,43 +7,46 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 
+import 'models/camera_icons.dart';
 import 'models/camera_mode.dart';
 import 'models/extensions.dart';
 import 'widgets/camera_mode.dart';
-import 'widgets/captured_media.dart';
+
 import 'widgets/cl_circular_button.dart';
-import 'widgets/confirm_action.dart';
+
 import 'widgets/layer1_background.dart';
 import 'widgets/layer2_preview.dart';
 
-class CameraView extends ConsumerStatefulWidget {
+class CameraView extends StatefulWidget {
   const CameraView({
     required this.cameras,
     required this.currentResolutionPreset,
     required this.onGeneratePreview,
     required this.onDone,
     required this.onCancel,
+    required this.cameraIcons,
+    required this.onGetPermission,
+    required this.onCapture,
     this.cameraMode = CameraMode.photo,
     super.key,
   });
   final List<CameraDescription> cameras;
   final ResolutionPreset currentResolutionPreset;
   final CameraMode cameraMode;
+  final CameraIcons cameraIcons;
 
   final void Function() onCancel;
   final void Function(List<CLMedia> capturedMedia) onDone;
-  final Widget Function(List<CLMedia>) onGeneratePreview;
+  final Widget Function() onGeneratePreview;
+  final Future<bool> Function() onGetPermission;
+  final void Function(String path, {required bool isVideo}) onCapture;
 
   @override
   CameraScreenState createState() => CameraScreenState();
 }
 
-class CameraScreenState extends ConsumerState<CameraView>
-    with WidgetsBindingObserver {
+class CameraScreenState extends State<CameraView> with WidgetsBindingObserver {
   CameraController? controller;
   CameraDescription? currDescription;
 
@@ -130,34 +133,13 @@ class CameraScreenState extends ConsumerState<CameraView>
         message: 'Initialzing',
       );
     }
-    final capturedMedia = ref.watch(capturedMediaProvider);
+
     return GestureDetector(
       onHorizontalDragEnd: (details) async {
         if (details.primaryVelocity == null) return;
         // pop on Swipe
         if (details.primaryVelocity! > 0) {
-          if (capturedMedia.isNotEmpty) {
-            final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ConfirmAction(
-                      title: 'Discard?',
-                      message:
-                          'Do you want to discard all the images and video captured?',
-                      child: null,
-                      onConfirm: ({required confirmed}) =>
-                          Navigator.of(context).pop(confirmed),
-                    );
-                  },
-                ) ??
-                false;
-            if (confirmed) {
-              ref.read(capturedMediaProvider.notifier).onDiscard();
-              widget.onCancel();
-            }
-          } else {
-            widget.onCancel();
-          }
+          widget.onCancel();
         }
       },
       child: Stack(
@@ -213,12 +195,7 @@ class CameraScreenState extends ConsumerState<CameraView>
   void stopVideoRecording() => controller!.onStopVideoRecording(
         onSuccess: (videoFilePath) {
           if (mounted) {
-            ref.read(capturedMediaProvider.notifier).add(
-                  CLMedia(
-                    path: videoFilePath,
-                    type: CLMediaType.video,
-                  ),
-                );
+            widget.onCapture(videoFilePath, isVideo: true);
             setState(() {
               _isRecordingInProgress = false;
             });
@@ -250,22 +227,16 @@ class CameraScreenState extends ConsumerState<CameraView>
     controller!.onTakePicture(
       onSuccess: (imageFilePath) {
         if (mounted) {
-          ref.read(capturedMediaProvider.notifier).add(
-                CLMedia(
-                  path: imageFilePath,
-                  type: CLMediaType.image,
-                ),
-              );
+          widget.onCapture(imageFilePath, isVideo: false);
         }
       },
     );
   }
 
   Future<void> getPermissionStatus() async {
-    await Permission.camera.request();
-    final status = await Permission.camera.status;
+    final isGranted = await widget.onGetPermission();
 
-    if (status.isGranted) {
+    if (isGranted) {
       log('Camera Permission: GRANTED');
       setState(() {
         _isCameraPermissionGranted = true;
@@ -370,7 +341,7 @@ class CameraScreenState extends ConsumerState<CameraView>
                         Expanded(
                           child: _isRecordingInProgress
                               ? CircularButton(
-                                  icon: MdiIcons.stop,
+                                  icon: Icons.stop,
                                   onPressed: stopVideoRecording,
                                 )
                               : CLButtonIcon.small(
@@ -392,10 +363,13 @@ class CameraScreenState extends ConsumerState<CameraView>
                               controller!.value.isRecordingVideo,
                               controller!.value.isRecordingPaused
                             )) {
-                              (false, _, _) => MdiIcons.camera,
-                              (true, false, _) => MdiIcons.video,
-                              (true, true, false) => MdiIcons.pause,
-                              (true, true, true) => MdiIcons.circle
+                              (false, _, _) => widget.cameraIcons.imageCamera,
+                              (true, false, _) =>
+                                widget.cameraIcons.videoCamera,
+                              (true, true, false) =>
+                                widget.cameraIcons.pauseRecording,
+                              (true, true, true) =>
+                                widget.cameraIcons.resumeRecording
                             },
                             onPressed: switch ((
                               cameraMode.isVideo,
@@ -412,10 +386,7 @@ class CameraScreenState extends ConsumerState<CameraView>
                         Expanded(
                           child: Align(
                             alignment: Alignment.centerRight,
-                            child: CapturedMedia(
-                              onSendCapturedMedia: widget.onDone,
-                              onGeneratePreview: widget.onGeneratePreview,
-                            ),
+                            child: widget.onGeneratePreview(),
                           ),
                         ),
                       ],

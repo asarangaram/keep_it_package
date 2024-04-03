@@ -5,8 +5,13 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:store/store.dart';
+
+import '../camera/captured_media.dart';
+import '../camera/providers/captured_media.dart';
 
 class CameraPage extends ConsumerWidget {
   const CameraPage({super.key, this.collectionId});
@@ -45,11 +50,8 @@ class CameraPage extends ConsumerWidget {
                           .toList()[defaultFrontCameraIndex],
                     ],
                     currentResolutionPreset: ResolutionPreset.high,
-                    onGeneratePreview: (capturedMedia) {
-                      return CLMediaPreview(
-                        media: capturedMedia.last,
-                        keepAspectRatio: false,
-                      );
+                    onGeneratePreview: () {
+                      return const CapturedMedia();
                     },
                     onCancel: () {
                       if (context.canPop()) {
@@ -66,6 +68,27 @@ class CameraPage extends ConsumerWidget {
                       if (context.canPop()) {
                         context.pop();
                       }
+                    },
+                    cameraIcons: CameraIcons(
+                      imageCamera: MdiIcons.camera,
+                      videoCamera: MdiIcons.video,
+                      pauseRecording: MdiIcons.pause,
+                      resumeRecording: MdiIcons.circle,
+                    ),
+                    onGetPermission: () async {
+                      await Permission.camera.request();
+                      final status = await Permission.camera.status;
+                      return status.isGranted;
+                    },
+                    onCapture: (path, {required isVideo}) {
+                      ref.read(capturedMediaProvider.notifier).add(
+                            CLMedia(
+                              path: path,
+                              type: isVideo
+                                  ? CLMediaType.video
+                                  : CLMediaType.image,
+                            ),
+                          );
                     },
                   ),
                 );
