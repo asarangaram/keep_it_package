@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:camera/camera.dart';
-import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -23,25 +23,27 @@ class CameraView extends StatefulWidget {
     required this.cameras,
     required this.currentResolutionPreset,
     required this.onGeneratePreview,
-    required this.onDone,
     required this.onCancel,
     required this.cameraIcons,
     required this.onGetPermission,
     required this.onCapture,
+    required this.onInitializing,
     this.cameraMode = CameraMode.photo,
+    this.textStyle,
     super.key,
   });
   final List<CameraDescription> cameras;
   final ResolutionPreset currentResolutionPreset;
   final CameraMode cameraMode;
   final CameraIcons cameraIcons;
+  final TextStyle? textStyle;
 
   final void Function() onCancel;
-  final void Function(List<CLMedia> capturedMedia) onDone;
+
   final Widget Function() onGeneratePreview;
   final Future<bool> Function() onGetPermission;
   final void Function(String path, {required bool isVideo}) onCapture;
-
+  final Widget Function() onInitializing;
   @override
   CameraScreenState createState() => CameraScreenState();
 }
@@ -129,9 +131,7 @@ class CameraScreenState extends State<CameraView> with WidgetsBindingObserver {
       );
     }
     if (!_isCameraInitialized) {
-      return const CLLoadingView(
-        message: 'Initialzing',
-      );
+      return widget.onInitializing();
     }
 
     return GestureDetector(
@@ -327,6 +327,7 @@ class CameraScreenState extends State<CameraView> with WidgetsBindingObserver {
                               cameraMode = mode;
                             });
                           },
+                          textStyle: widget.textStyle,
                         ),
                 ),
                 SizedBox(
@@ -344,15 +345,17 @@ class CameraScreenState extends State<CameraView> with WidgetsBindingObserver {
                                   icon: Icons.stop,
                                   onPressed: stopVideoRecording,
                                 )
-                              : CLButtonIcon.small(
-                                  Icons.cameraswitch,
-                                  onTap: () {
+                              : IconButton(
+                                  onPressed: () {
                                     setState(() {
                                       _isCameraInitialized = false;
                                     });
                                     onNewCameraSelected();
                                   },
-                                  color: Colors.white,
+                                  icon: const Icon(
+                                    Icons.cameraswitch,
+                                    color: Colors.white,
+                                  ),
                                 ),
                         ),
                         Expanded(

@@ -4,34 +4,12 @@
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 
 extension EXTNextOnList<T> on List<T> {
   T next(T item) => this[(indexOf(item) + 1) % length];
 }
 
-mixin CameraMixin {
-  static String getCameraName(
-    List<CameraDescription> cameras,
-    CameraDescription description,
-  ) {
-    final directionCameras = cameras
-        .where((element) => element.lensDirection == description.lensDirection)
-        .toList();
 
-    if (directionCameras.length == 1) {
-      return description.lensDirection.name.capitalizeFirstLetter();
-    } else {
-      return '${description.lensDirection.name.capitalizeFirstLetter()}'
-          '-${directionCameras.indexOf(description)}';
-    }
-  }
-
-  static String getResolutionString(Size? previewSize) {
-    if (previewSize == null) return 'Unknown';
-    return '${previewSize.width.toInt()}x${previewSize.height.toInt()}';
-  }
-}
 
 extension ExtCameraController on CameraController {
   Future<void> onStartVideoRecording({

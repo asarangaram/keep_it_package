@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmAction extends StatelessWidget {
@@ -30,7 +29,7 @@ class ConfirmAction extends StatelessWidget {
               dimension: 200,
               child: child,
             ),
-          CLText.large(message),
+          Text(message),
         ],
       ),
       actions: [

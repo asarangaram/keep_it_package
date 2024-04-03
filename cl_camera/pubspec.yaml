@@ -11,8 +11,6 @@ environment:
 
 dependencies:
   camera: ^0.10.5+9
-  colan_widgets:
-    path: ../colan_widgets
   flutter:
     sdk: flutter
   very_good_analysis: ^5.1.0

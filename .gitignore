@@ -16,3 +16,5 @@ colan_widgets/example/macos/Flutter/GeneratedPluginRegistrant.swift
 .idea
 form_factory/.flutter-plugins
 form_factory/.flutter-plugins-dependencies
+cl_camera/.flutter-plugins
+cl_camera/.flutter-plugins-dependencies

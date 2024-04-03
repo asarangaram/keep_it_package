@@ -51,23 +51,19 @@ class CameraPage extends ConsumerWidget {
                     ],
                     currentResolutionPreset: ResolutionPreset.high,
                     onGeneratePreview: () {
-                      return const CapturedMedia();
+                      return CapturedMedia(
+                        collection: collection,
+                      );
                     },
                     onCancel: () {
                       if (context.canPop()) {
                         context.pop();
                       }
                     },
-                    onDone: (capturedMedia) {
-                      onReceiveCapturedMedia(
-                        context,
-                        ref,
-                        entries: capturedMedia,
-                        collection: collection,
+                    onInitializing: () {
+                      return const CLLoadingView(
+                        message: 'Initialzing',
                       );
-                      if (context.canPop()) {
-                        context.pop();
-                      }
                     },
                     cameraIcons: CameraIcons(
                       imageCamera: MdiIcons.camera,
@@ -90,6 +86,10 @@ class CameraPage extends ConsumerWidget {
                             ),
                           );
                     },
+                    textStyle: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontSize: CLScaleType.small.fontSize),
                   ),
                 );
               }
