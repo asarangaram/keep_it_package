@@ -18,8 +18,8 @@ import 'widgets/cl_circular_button.dart';
 import 'widgets/layer1_background.dart';
 import 'widgets/layer2_preview.dart';
 
-class CameraView extends StatefulWidget {
-  const CameraView({
+class CLCamera extends StatefulWidget {
+  const CLCamera({
     required this.cameras,
     required this.currentResolutionPreset,
     required this.onGeneratePreview,
@@ -48,7 +48,7 @@ class CameraView extends StatefulWidget {
   CameraScreenState createState() => CameraScreenState();
 }
 
-class CameraScreenState extends State<CameraView> with WidgetsBindingObserver {
+class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
   CameraController? controller;
   CameraDescription? currDescription;
 
@@ -134,49 +134,40 @@ class CameraScreenState extends State<CameraView> with WidgetsBindingObserver {
       return widget.onInitializing();
     }
 
-    return GestureDetector(
-      onHorizontalDragEnd: (details) async {
-        if (details.primaryVelocity == null) return;
-        // pop on Swipe
-        if (details.primaryVelocity! > 0) {
-          widget.onCancel();
-        }
-      },
-      child: Stack(
-        children: [
-          CameraBackgroundLayer(controller: controller!),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: CameraPreviewLayer(
-                controller: controller!,
-                currentZoomLevel: _currentZoomLevel,
-                onChangeZoomLevel: (scale) {
-                  if (scale < _minAvailableZoom) {
-                    scale = _minAvailableZoom;
-                  } else if (scale > _maxAvailableZoom) {
-                    scale = _maxAvailableZoom;
-                  }
-                  controller!.setZoomLevel(scale).then((value) {
-                    setState(() {
-                      _currentZoomLevel = scale;
-                    });
+    return Stack(
+      children: [
+        CameraBackgroundLayer(controller: controller!),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: CameraPreviewLayer(
+              controller: controller!,
+              currentZoomLevel: _currentZoomLevel,
+              onChangeZoomLevel: (scale) {
+                if (scale < _minAvailableZoom) {
+                  scale = _minAvailableZoom;
+                } else if (scale > _maxAvailableZoom) {
+                  scale = _maxAvailableZoom;
+                }
+                controller!.setZoomLevel(scale).then((value) {
+                  setState(() {
+                    _currentZoomLevel = scale;
                   });
-                },
-              ),
+                });
+              },
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: IgnorePointer(
-              ignoring: false,
-              child: LayoutBuilder(
-                builder: buildBottomControl,
-              ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: IgnorePointer(
+            ignoring: false,
+            child: LayoutBuilder(
+              builder: buildBottomControl,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

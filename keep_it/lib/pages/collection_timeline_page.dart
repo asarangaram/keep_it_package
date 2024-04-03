@@ -38,7 +38,6 @@ class CollectionTimeLinePage extends ConsumerWidget {
               );
               return true;
             },
-            //TODO!!
             onPickFiles: (BuildContext c) async {
               await Permission.photos.request();
               await Permission.storage.request();
