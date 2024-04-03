@@ -2,15 +2,14 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../image_services/view/cl_media_preview.dart';
-
 class CapturedMedia extends ConsumerWidget {
   const CapturedMedia({
-    required this.directory,
     required this.onSendCapturedMedia,
+    required this.onGeneratePreview,
     super.key,
   });
-  final String directory;
+
+  final Widget Function(List<CLMedia>) onGeneratePreview;
 
   final void Function(
     List<CLMedia> capturedMedia,
@@ -42,13 +41,8 @@ class CapturedMedia extends ConsumerWidget {
           borderRadius: BorderRadius.circular(
             8,
           ),
-          child: (capturedMedia.isEmpty)
-              ? null
-              : CLMediaPreview(
-                  directory: directory,
-                  media: capturedMedia.last,
-                  keepAspectRatio: false,
-                ),
+          child:
+              (capturedMedia.isEmpty) ? null : onGeneratePreview(capturedMedia),
         ),
       ),
     );

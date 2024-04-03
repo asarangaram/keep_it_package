@@ -1,4 +1,5 @@
 /// Camera Page for KeepIt
 library cl_camera;
 
-export 'src/screens/camera_screen.dart';
+export 'src/camera_view.dart';
+export 'src/models/camera_mode.dart';

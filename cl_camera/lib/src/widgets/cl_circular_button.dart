@@ -11,6 +11,7 @@ class CircularButton extends StatelessWidget {
     this.foregroundColor,
     this.backgroundColor,
     this.waiting = false,
+    this.hasShadow = false,
   });
   final VoidCallback? onPressed;
   final double size;
@@ -20,6 +21,7 @@ class CircularButton extends StatelessWidget {
   final Color? foregroundColor;
   final Color? backgroundColor;
   final bool waiting;
+  final bool hasShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +39,16 @@ class CircularButton extends StatelessWidget {
                       : (backgroundColor ??
                               Theme.of(context).colorScheme.background)
                           .withAlpha(128),
-                  /*  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ], */
+                  boxShadow: hasShadow
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : null,
                 )
               : null,
           padding: EdgeInsets.all(hasDecoration ? 16 : 4),

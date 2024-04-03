@@ -1,8 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/camera_gesture.dart';
-import '../widgets/flash_control.dart';
+import 'camera_gesture.dart';
+import 'flash_control.dart';
 
 class CameraPreviewLayer extends StatelessWidget {
   const CameraPreviewLayer({

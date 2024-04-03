@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 
 import 'package:flutter/material.dart';
 
-import '../extensions.dart';
+import '../models/extensions.dart';
 import 'cl_circular_button.dart';
 
 class FlashControl extends StatelessWidget {

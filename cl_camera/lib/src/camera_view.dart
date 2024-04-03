@@ -7,40 +7,43 @@ import 'package:camera/camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../extensions.dart';
-import '../layers/layer1_background.dart';
-import '../layers/layer2_preview.dart';
-import '../widgets/camera_mode.dart';
-import '../widgets/camera_select.dart';
-import '../widgets/captured_media.dart';
-import '../widgets/cl_circular_button.dart';
+import 'models/camera_mode.dart';
+import 'models/extensions.dart';
+import 'widgets/camera_mode.dart';
+import 'widgets/captured_media.dart';
+import 'widgets/cl_circular_button.dart';
+import 'widgets/confirm_action.dart';
+import 'widgets/layer1_background.dart';
+import 'widgets/layer2_preview.dart';
 
-class CameraScreen extends ConsumerStatefulWidget {
-  const CameraScreen({
+class CameraView extends ConsumerStatefulWidget {
+  const CameraView({
     required this.cameras,
-    required this.directory,
     required this.currentResolutionPreset,
+    required this.onGeneratePreview,
     required this.onDone,
     required this.onCancel,
+    this.cameraMode = CameraMode.photo,
     super.key,
   });
   final List<CameraDescription> cameras;
   final ResolutionPreset currentResolutionPreset;
-  final String directory;
+  final CameraMode cameraMode;
+
   final void Function() onCancel;
   final void Function(List<CLMedia> capturedMedia) onDone;
+  final Widget Function(List<CLMedia>) onGeneratePreview;
 
   @override
   CameraScreenState createState() => CameraScreenState();
 }
 
-class CameraScreenState extends ConsumerState<CameraScreen>
-    with WidgetsBindingObserver, CameraMixin, SingleTickerProviderStateMixin {
+class CameraScreenState extends ConsumerState<CameraView>
+    with WidgetsBindingObserver {
   CameraController? controller;
   CameraDescription? currDescription;
 
@@ -48,95 +51,19 @@ class CameraScreenState extends ConsumerState<CameraScreen>
   bool _isCameraInitialized = false;
   bool _isCameraPermissionGranted = false;
 
-  CameraMode cameraMode = CameraMode.photo; // default
+  late CameraMode cameraMode; // default
   bool _isRecordingInProgress = false;
 
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
-
-  final bool allowResolutionChange = false;
-
-  // Current values
   double _currentZoomLevel = 1;
-
-  //final resolutionPresets = ResolutionPreset.values;
-  late ResolutionPreset currentResolutionPreset;
-
-  Future<void> getPermissionStatus() async {
-    await Permission.camera.request();
-    final status = await Permission.camera.status;
-
-    if (status.isGranted) {
-      log('Camera Permission: GRANTED');
-      setState(() {
-        _isCameraPermissionGranted = true;
-      });
-      // Set and initialize the new camera
-      await onNewCameraSelected();
-    } else {
-      log('Camera Permission: DENIED');
-    }
-  }
-
-  Future<void> onNewCameraSelected({
-    bool restore = false,
-  }) async {
-    if (restore) {
-      currDescription =
-          controller?.description ?? currDescription ?? widget.cameras[0];
-    } else {
-      if (currDescription == null) {
-        currDescription = widget.cameras[0];
-      } else {
-        currDescription = widget.cameras.next(currDescription!);
-      }
-    }
-    final previousCameraController = controller;
-
-    final cameraController = CameraController(
-      currDescription!,
-      currentResolutionPreset,
-      imageFormatGroup: ImageFormatGroup.jpeg,
-    );
-
-    await previousCameraController?.dispose();
-
-    // resetCameraValues
-    _currentZoomLevel = 1.0;
-
-    // Update UI if controller updated
-    cameraController.addListener(() {
-      if (mounted) setState(() {});
-    });
-
-    try {
-      await cameraController.initialize();
-      await Future.wait([
-        cameraController
-            .getMaxZoomLevel()
-            .then((value) => _maxAvailableZoom = value),
-        cameraController
-            .getMinZoomLevel()
-            .then((value) => _minAvailableZoom = value),
-      ]);
-    } on CameraException catch (e) {
-      print('Error initializing camera: $e');
-    }
-    print('size: ${cameraController.value.previewSize}');
-    if (mounted) {
-      setState(() {
-        controller = cameraController;
-        _isCameraInitialized = controller!.value.isInitialized;
-      });
-    }
-  }
 
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    currentResolutionPreset = widget.currentResolutionPreset;
-
+    cameraMode = widget.cameraMode;
     getPermissionStatus();
+
     super.initState();
   }
 
@@ -334,6 +261,75 @@ class CameraScreenState extends ConsumerState<CameraScreen>
     );
   }
 
+  Future<void> getPermissionStatus() async {
+    await Permission.camera.request();
+    final status = await Permission.camera.status;
+
+    if (status.isGranted) {
+      log('Camera Permission: GRANTED');
+      setState(() {
+        _isCameraPermissionGranted = true;
+      });
+      // Set and initialize the new camera
+      await onNewCameraSelected();
+    } else {
+      log('Camera Permission: DENIED');
+    }
+  }
+
+  Future<void> onNewCameraSelected({
+    bool restore = false,
+  }) async {
+    if (restore) {
+      currDescription =
+          controller?.description ?? currDescription ?? widget.cameras[0];
+    } else {
+      if (currDescription == null) {
+        currDescription = widget.cameras[0];
+      } else {
+        currDescription = widget.cameras.next(currDescription!);
+      }
+    }
+    final previousCameraController = controller;
+
+    final cameraController = CameraController(
+      currDescription!,
+      widget.currentResolutionPreset,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
+
+    await previousCameraController?.dispose();
+
+    // resetCameraValues
+    _currentZoomLevel = 1.0;
+
+    // Update UI if controller updated
+    cameraController.addListener(() {
+      if (mounted) setState(() {});
+    });
+
+    try {
+      await cameraController.initialize();
+      await Future.wait([
+        cameraController
+            .getMaxZoomLevel()
+            .then((value) => _maxAvailableZoom = value),
+        cameraController
+            .getMinZoomLevel()
+            .then((value) => _minAvailableZoom = value),
+      ]);
+    } on CameraException catch (e) {
+      print('Error initializing camera: $e');
+    }
+    print('size: ${cameraController.value.previewSize}');
+    if (mounted) {
+      setState(() {
+        controller = cameraController;
+        _isCameraInitialized = controller!.value.isInitialized;
+      });
+    }
+  }
+
   Widget buildBottomControl(BuildContext context, BoxConstraints constrains) {
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -377,15 +373,15 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                                   icon: MdiIcons.stop,
                                   onPressed: stopVideoRecording,
                                 )
-                              : CameraSelect(
-                                  cameras: widget.cameras,
-                                  currentCamera: currDescription!,
-                                  onNextCamera: () {
+                              : CLButtonIcon.small(
+                                  Icons.cameraswitch,
+                                  onTap: () {
                                     setState(() {
                                       _isCameraInitialized = false;
                                     });
                                     onNewCameraSelected();
                                   },
+                                  color: Colors.white,
                                 ),
                         ),
                         Expanded(
@@ -417,8 +413,8 @@ class CameraScreenState extends ConsumerState<CameraScreen>
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: CapturedMedia(
-                              directory: widget.directory,
                               onSendCapturedMedia: widget.onDone,
+                              onGeneratePreview: widget.onGeneratePreview,
                             ),
                           ),
                         ),
@@ -431,57 +427,6 @@ class CameraScreenState extends ConsumerState<CameraScreen>
           ),
         ],
       ),
-    );
-  }
-}
-
-class ConfirmAction extends StatelessWidget {
-  const ConfirmAction({
-    required this.title,
-    required this.message,
-    required this.child,
-    required this.onConfirm,
-    super.key,
-  });
-
-  final String title;
-  final String message;
-  final Widget? child;
-  final void Function({
-    required bool confirmed,
-  }) onConfirm;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      alignment: Alignment.center,
-      title: const Text('Confirm Delete'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (child != null)
-            SizedBox.square(
-              dimension: 200,
-              child: child,
-            ),
-          CLText.large(message),
-        ],
-      ),
-      actions: [
-        ButtonBar(
-          alignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed: () => onConfirm(confirmed: false),
-              child: const Text('No'),
-            ),
-            ElevatedButton(
-              child: const Text('Yes'),
-              onPressed: () => onConfirm(confirmed: true),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

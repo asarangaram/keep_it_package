@@ -1,12 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-enum CameraMode {
-  photo,
-  video;
-
-  bool get isVideo => [video].contains(this);
-}
+import '../models/camera_mode.dart';
 
 class MenuCameraMode extends StatelessWidget {
   const MenuCameraMode({

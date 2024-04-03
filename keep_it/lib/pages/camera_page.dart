@@ -31,7 +31,7 @@ class CameraPage extends ConsumerWidget {
               if (snapShot.hasData && snapShot.data != null) {
                 return FullscreenLayout(
                   useSafeArea: false,
-                  child: CameraScreen(
+                  child: CameraView(
                     cameras: [
                       cameras
                           .where(
@@ -45,7 +45,12 @@ class CameraPage extends ConsumerWidget {
                           .toList()[defaultFrontCameraIndex],
                     ],
                     currentResolutionPreset: ResolutionPreset.high,
-                    directory: snapShot.data!.path,
+                    onGeneratePreview: (capturedMedia) {
+                      return CLMediaPreview(
+                        media: capturedMedia.last,
+                        keepAspectRatio: false,
+                      );
+                    },
                     onCancel: () {
                       if (context.canPop()) {
                         context.pop();
