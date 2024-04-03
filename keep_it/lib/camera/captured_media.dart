@@ -23,6 +23,7 @@ class CapturedMedia extends ConsumerWidget {
           entries: capturedMedia,
           collection: collection,
         );
+        ref.read(capturedMediaProvider.notifier).clear();
         if (context.canPop()) {
           context.pop();
         }
