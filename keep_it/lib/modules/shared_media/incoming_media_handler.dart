@@ -90,8 +90,9 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     if (mounted) {
       setState(() {});
     }
-    ref.read(notificationMessageProvider.notifier).push('Done.');
-
+    if (mounted) {
+      ref.read(notificationMessageProvider.notifier).push('Done.');
+    }
     onDiscard(result: true);
   }
 

@@ -9,16 +9,18 @@ class CameraPreviewLayer extends StatelessWidget {
     required this.controller,
     required this.currentZoomLevel,
     required this.onChangeZoomLevel,
+    required this.aspectRatio,
     super.key,
   });
   final CameraController controller;
   final double currentZoomLevel;
   final void Function(double) onChangeZoomLevel;
+  final double aspectRatio;
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1 / controller.value.aspectRatio,
+      aspectRatio: aspectRatio,
       child: Stack(
         children: [
           CameraPreview(
