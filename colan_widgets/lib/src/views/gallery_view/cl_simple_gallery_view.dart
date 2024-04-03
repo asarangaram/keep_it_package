@@ -45,7 +45,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
 
   final Widget emptyState;
   final String tagPrefix;
-  final void Function()? onPickFiles;
+  final void Function(BuildContext context)? onPickFiles;
   final void Function()? onCameraCapture;
 
   final Future<void> Function()? onRefresh;
@@ -68,7 +68,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
           if (onPickFiles != null)
             (context, quickMenuScopeKey) => CLButtonIcon.standard(
                   Icons.add,
-                  onTap: onPickFiles,
+                  onTap: () => onPickFiles?.call(context),
                 ),
         ],
         pageBuilder: (context, quickMenuScopeKey) => emptyState,
@@ -114,7 +114,7 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
   final int columns;
 
   final String tagPrefix;
-  final void Function()? onPickFiles;
+  final void Function(BuildContext context)? onPickFiles;
   final void Function()? onCameraCapture;
 
   final Future<void> Function()? onRefresh;
@@ -191,7 +191,7 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
         if (!isSelectionMode && widget.onPickFiles != null)
           (context, quickMenuScopeKey) => CLButtonIcon.standard(
                 Icons.add,
-                onTap: widget.onPickFiles,
+                onTap: () => widget.onPickFiles?.call(context),
               ),
         if (!isSelectionMode && widget.onCameraCapture != null)
           (context, quickMenuScopeKey) => CLButtonIcon.small(

@@ -25,7 +25,7 @@ class TimeLineView extends ConsumerWidget {
   final List<CLMedia> items;
   final Future<bool?> Function(int id, {required String parentIdentifier})
       onTapMedia;
-  final void Function()? onPickFiles;
+  final void Function(BuildContext context)? onPickFiles;
   final void Function()? onCameraCapture;
 
   @override

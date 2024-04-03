@@ -1,4 +1,3 @@
-import 'package:app_loader/app_loader.dart';
 import 'package:camera/camera.dart';
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';

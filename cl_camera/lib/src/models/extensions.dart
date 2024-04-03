@@ -1,7 +1,6 @@
 // TODO(anandas): : Remove prints
 // ignore_for_file: avoid_print
 
-import 'dart:ui';
 
 import 'package:camera/camera.dart';
 
