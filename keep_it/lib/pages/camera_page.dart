@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:store/store.dart';
 
 import '../camera/captured_media.dart';
@@ -62,9 +61,11 @@ class CameraPage extends ConsumerWidget {
                     resumeRecording: MdiIcons.circle,
                   ),
                   onGetPermission: () async {
-                    await Permission.camera.request();
+                    // Todo: Fix
+                    /* await Permission.camera.request();
                     final status = await Permission.camera.status;
-                    return status.isGranted;
+                    return status.isGranted; */
+                    return true;
                   },
                   onCapture: (path, {required isVideo}) {
                     ref.read(capturedMediaProvider.notifier).add(

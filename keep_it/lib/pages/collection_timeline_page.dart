@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:store/store.dart';
 
 import '../widgets/timeline_view.dart';
@@ -39,12 +38,12 @@ class CollectionTimeLinePage extends ConsumerWidget {
               return true;
             },
             onPickFiles: (BuildContext c) async {
-              await Permission.photos.request();
-              await Permission.storage.request();
+             // await Permission.photos.request();
+             // await Permission.storage.request();
               if (c.mounted) {
-                final photosStatus = await Permission.photos.status;
-                final storageStatus = await Permission.storage.status;
-                if (photosStatus.isGranted && storageStatus.isGranted) {
+                //final photosStatus = await Permission.photos.status;
+               // final storageStatus = await Permission.storage.status;
+                //if (photosStatus.isGranted && storageStatus.isGranted) {
                   if (c.mounted) {
                     await onPickFiles(
                       c,
@@ -52,7 +51,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
                       collection: collection,
                     );
                   }
-                }
+                //}
               }
             },
             onCameraCapture: () {

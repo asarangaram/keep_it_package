@@ -3,7 +3,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
@@ -50,20 +49,20 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                 onPickFiles: (widget.tagId != null)
                     ? null
                     : (BuildContext c) async {
-                        await Permission.photos.request();
-                        await Permission.storage.request();
+                        // await Permission.photos.request();
+                        // await Permission.storage.request();
                         if (c.mounted) {
-                          final photosStatus = await Permission.photos.status;
-                          final storageStatus = await Permission.storage.status;
-                          if (photosStatus.isGranted &&
-                              storageStatus.isGranted) {
-                            if (c.mounted) {
-                              await onPickFiles(
-                                c,
-                                ref,
-                              );
-                            }
+                          //  final photosStatus = await Permission.photos.status;
+                          // final storageStatus = await Permission.storage.status;
+                          //if (photosStatus.isGranted &&
+                          //    storageStatus.isGranted) {
+                          if (c.mounted) {
+                            await onPickFiles(
+                              c,
+                              ref,
+                            );
                           }
+                          // }
                         }
                       },
                 onCameraCapture: () {
