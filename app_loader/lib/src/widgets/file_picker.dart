@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../shared_media/models/cl_shared_media.dart';
 import '../shared_media/providers/incoming_media.dart';
@@ -11,15 +11,13 @@ Future<bool> onPickFiles(
   WidgetRef ref, {
   Collection? collection,
 }) async {
-  final result = await FilePicker.platform.pickFiles(
-    allowMultiple: true,
-    type: FileType.media,
-  );
+  final picker = ImagePicker();
+  final pickedFileList = await picker.pickMultipleMedia();
 
-  if (result != null) {
-    final items = result.paths
+  if (pickedFileList.isNotEmpty) {
+    final items = pickedFileList
         .map(
-          (path) => CLMedia(path: path!, type: CLMediaType.file),
+          (xfile) => CLMedia(path: xfile.path, type: CLMediaType.file),
         )
         .toList();
     final sharedMedia = CLSharedMedia(entries: items, collection: collection);

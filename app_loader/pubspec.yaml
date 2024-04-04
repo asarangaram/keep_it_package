@@ -12,7 +12,7 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
-  file_picker: ^8.0.0+1 
+  
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
@@ -21,6 +21,7 @@ dependencies:
   
   http: ^1.1.0
   http_parser: ^4.0.2
+  image_picker: ^1.0.7
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
