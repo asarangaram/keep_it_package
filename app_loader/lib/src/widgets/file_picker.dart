@@ -1,5 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,6 +10,8 @@ Future<bool> onPickFiles(
   WidgetRef ref, {
   Collection? collection,
 }) async {
+  throw UnimplementedError();
+/* 
   final result = await FilePicker.platform.pickFiles(
     allowMultiple: true,
     type: FileType.media,
@@ -31,8 +32,8 @@ Future<bool> onPickFiles(
     return items.isNotEmpty;
   } else {
     return false;
-    // User canceled the picker
-  }
+    // User canceled the picker 
+  }*/
 }
 
 Future<bool> onReceiveCapturedMedia(
