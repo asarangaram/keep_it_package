@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
 import '../providers/gallery_group_provider.dart';
@@ -91,6 +92,26 @@ class TimeLineView extends ConsumerWidget {
                   );
 
                   return result;
+                },
+              ),
+              CLMenuItem(
+                title: 'Share',
+                icon: MdiIcons.shareAll,
+                onTap: () async {
+                  final box = context.findRenderObject() as RenderBox?;
+                  final files = items.map((e) => XFile(e.path)).toList();
+                  final shareResult = await Share.shareXFiles(
+                    files,
+                    // text: 'Share from KeepIT',
+                    subject: 'Find the media from KeepIt',
+                    sharePositionOrigin:
+                        box!.localToGlobal(Offset.zero) & box.size,
+                  );
+                  return switch (shareResult.status) {
+                    ShareResultStatus.dismissed => false,
+                    ShareResultStatus.unavailable => false,
+                    ShareResultStatus.success => true,
+                  };
                 },
               ),
             ];
