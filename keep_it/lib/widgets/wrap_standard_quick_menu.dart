@@ -11,6 +11,7 @@ class WrapStandardQuickMenu extends StatelessWidget {
     this.onDelete,
     this.onTap,
     this.onMove,
+    this.onShare,
   });
   final Widget child;
 
@@ -19,6 +20,7 @@ class WrapStandardQuickMenu extends StatelessWidget {
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;
   final Future<bool?> Function()? onMove;
+  final Future<bool?> Function()? onShare;
   final Future<bool?> Function()? onTap;
 
   @override
@@ -61,6 +63,15 @@ class WrapStandardQuickMenu extends StatelessWidget {
                   title: 'Move',
                   icon: MdiIcons.imageMove,
                   onTap: onMove,
+                ),
+              if (onShare != null)
+                CLMenuItem(
+                  title: 'Share',
+                  icon: MdiIcons.share,
+                  onTap: () async {
+                    print('Calling Share');
+                    return onShare!();
+                  },
                 ),
             ]
           ].insertOnDone(onDone),
