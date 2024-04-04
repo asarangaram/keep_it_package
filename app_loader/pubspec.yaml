@@ -12,7 +12,7 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
-  #file_picker: ^8.0.0+1 
+  
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1

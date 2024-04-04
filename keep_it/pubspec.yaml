@@ -22,7 +22,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   exif: ^3.3.0
   ffmpeg_kit_flutter: ^6.0.3
-  #file_picker: ^8.0.0+1 
+  
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
