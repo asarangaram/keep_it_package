@@ -21,6 +21,7 @@ dependencies:
   
   http: ^1.1.0
   http_parser: ^4.0.2
+  image_picker: ^1.0.7
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
