@@ -61,10 +61,6 @@ class CameraPage extends ConsumerWidget {
                     resumeRecording: MdiIcons.circle,
                   ),
                   onGetPermission: () async {
-                    // Todo: Fix
-                    /* await Permission.camera.request();
-                    final status = await Permission.camera.status;
-                    return status.isGranted; */
                     return true;
                   },
                   onCapture: (path, {required isVideo}) {

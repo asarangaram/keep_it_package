@@ -69,7 +69,6 @@ class WrapStandardQuickMenu extends StatelessWidget {
                   title: 'Share',
                   icon: MdiIcons.share,
                   onTap: () async {
-                    print('Calling Share');
                     return onShare!();
                   },
                 ),

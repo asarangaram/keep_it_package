@@ -48,23 +48,10 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                 tagPrefix: tagPrefix,
                 onPickFiles: (widget.tagId != null)
                     ? null
-                    : (BuildContext c) async {
-                        // await Permission.photos.request();
-                        // await Permission.storage.request();
-                        if (c.mounted) {
-                          //  final photosStatus = await Permission.photos.status;
-                          // final storageStatus = await Permission.storage.status;
-                          //if (photosStatus.isGranted &&
-                          //    storageStatus.isGranted) {
-                          if (c.mounted) {
-                            await onPickFiles(
-                              c,
-                              ref,
-                            );
-                          }
-                          // }
-                        }
-                      },
+                    : (BuildContext c) async => onPickFiles(
+                          c,
+                          ref,
+                        ),
                 onCameraCapture: () {
                   context.push('/camera');
                 },

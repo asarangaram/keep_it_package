@@ -16,10 +16,10 @@ import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
+import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/tag_timeline_page.dart';
 import 'pages/tags_page.dart';
-import 'widgets/editors/video/trimmer.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -105,7 +105,7 @@ class KeepItApp implements AppDescriptor {
               mediaId = null;
             }
 
-            return MediaEditor(
+            return MediaEditorPage(
               mediaId: mediaId,
             );
           },
