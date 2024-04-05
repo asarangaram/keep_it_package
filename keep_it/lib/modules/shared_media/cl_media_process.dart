@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:crypto/crypto.dart';
 import 'package:exif/exif.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:mime/mime.dart';
@@ -24,17 +23,7 @@ class CLMediaProcess {
       currentItem: path.basename(media.entries[0].path),
       fractCompleted: 0,
     );
-    Future<String> getFileChecksum(File file) async {
-      try {
-        final stream = file.openRead();
-        final hash = await md5.bind(stream).first;
-
-        // NOTE: You might not need to convert it to base64
-        return hash.toString();
-      } catch (exception) {
-        throw Exception('unable to determine md5');
-      }
-    }
+   
 
     for (final (i, item0) in media.entries.indexed) {
       final item1 = await tryDownloadMedia(item0, appSettings: appSettings);
@@ -45,7 +34,7 @@ class CLMediaProcess {
       if (item.type.isFile) {
         final file = File(item.path);
         if (file.existsSync()) {
-          final md5String = await getFileChecksum(file);
+          final md5String = await file.checksum;
           final duplicate = await findItemByMD5(md5String);
           if (duplicate != null) {
             candidates.add(duplicate);

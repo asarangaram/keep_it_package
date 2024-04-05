@@ -19,6 +19,7 @@ import 'pages/item_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/tag_timeline_page.dart';
 import 'pages/tags_page.dart';
+import 'widgets/editors/video/trimmer.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -92,6 +93,21 @@ class KeepItApp implements AppDescriptor {
               collectionId = null;
             }
             return CameraPage(collectionId: collectionId);
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'mediaEditor',
+          builder: (context, GoRouterState state) {
+            final int? mediaId;
+            if (state.uri.queryParameters.keys.contains('id')) {
+              mediaId = int.parse(state.uri.queryParameters['id']!);
+            } else {
+              mediaId = null;
+            }
+
+            return MediaEditor(
+              mediaId: mediaId,
+            );
           },
         ),
         CLRouteDescriptor(
@@ -219,6 +235,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
+        // if (location != '/mediaEditor') return '/mediaEditor?id=7';
         // if (location != '/camera') return '/camera';
         //if (location == '/') return '/collections';
         return null;

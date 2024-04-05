@@ -14,7 +14,7 @@ abstract class Store {
     required List<Tag>? newTagsListToReplace,
   });
   Future<void> upsertMedia({
-    required Collection collection,
+    required int collectionId,
     required CLMedia media,
     required Future<CLMedia> Function(
       CLMedia media, {
@@ -22,7 +22,7 @@ abstract class Store {
     }) onPrepareMedia,
   });
   Future<void> upsertMediaMultiple({
-    required Collection collection,
+    required int collectionId,
     required List<CLMedia>? media,
     required Future<CLMedia> Function(
       CLMedia media, {
@@ -88,7 +88,7 @@ class DBManager extends Store {
 
   @override
   Future<void> upsertMediaMultiple({
-    required Collection collection,
+    required int collectionId,
     required List<CLMedia>? media,
     required Future<CLMedia> Function(
       CLMedia media, {
@@ -101,8 +101,8 @@ class DBManager extends Store {
       for (final item in media!) {
         try {
           final updated = await onPrepareMedia(
-            item.copyWith(collectionId: collection.id),
-            targetDir: dbWriter.appSettings.validPrefix(collection.id!),
+            item.copyWith(collectionId: collectionId),
+            targetDir: dbWriter.appSettings.validPrefix(collectionId),
           );
           updatedMedia.add(updated);
         } catch (e) {/* */}
@@ -113,7 +113,7 @@ class DBManager extends Store {
 
   @override
   Future<void> upsertMedia({
-    required Collection collection,
+    required int collectionId,
     required CLMedia media,
     required Future<CLMedia> Function(
       CLMedia media, {
@@ -123,8 +123,8 @@ class DBManager extends Store {
     await db.writeTransaction((tx) async {
       try {
         final updated = await onPrepareMedia(
-          media.copyWith(collectionId: collection.id),
-          targetDir: dbWriter.appSettings.validPrefix(collection.id!),
+          media.copyWith(collectionId: collectionId),
+          targetDir: dbWriter.appSettings.validPrefix(collectionId),
         );
         await dbWriter.upsertMedia(tx, updated);
       } catch (e) {/* */}

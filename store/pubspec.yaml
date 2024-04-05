@@ -19,7 +19,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   heif_converter: ^1.0.0
   image: ^4.1.7
-  intl: ^0.19.0
+  intl: ^0.18.0
   mime: ^1.0.5
   path: ^1.8.3
   path_provider: ^2.1.1
