@@ -58,6 +58,8 @@ class WrapStandardQuickMenu extends StatelessWidget {
                   icon: Icons.delete_rounded,
                   onTap: onDelete,
                 ),
+            ],
+            [
               if (onMove != null)
                 CLMenuItem(
                   title: 'Move',
