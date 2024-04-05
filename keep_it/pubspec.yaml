@@ -18,6 +18,7 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
+  crop_image: ^1.0.12
   crypto: ^3.0.3
   cupertino_icons: ^1.0.2
   exif: ^3.3.0
@@ -30,6 +31,7 @@ dependencies:
   form_factory:
     path: ../form_factory
   go_router: ^12.1.1
+  image_editor_plus: ^1.0.5
   intl: ^0.18.0
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296

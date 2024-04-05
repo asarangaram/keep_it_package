@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
@@ -93,6 +94,16 @@ class KeepItApp implements AppDescriptor {
               collectionId = null;
             }
             return CameraPage(collectionId: collectionId);
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'imageEditor',
+          builder: (context, GoRouterState state) {
+            final data = state.extra as Uint8List?;
+
+            return ImageEditor(
+              image: data,
+            );
           },
         ),
         CLRouteDescriptor(
