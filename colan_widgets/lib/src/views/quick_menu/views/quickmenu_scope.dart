@@ -166,7 +166,11 @@ class _MenuLayoutDelegate extends MultiChildLayoutDelegate {
       // Move to down.
       contentOffset = Offset(
         contentOffset.dx,
-        anchorOffset.dy - parentOffset.dy + anchorSize.height - 2,
+        anchorOffset.dy -
+            parentOffset.dy +
+            anchorSize.height -
+            2 -
+            anchorSize.height * 0.3,
       );
     }
 

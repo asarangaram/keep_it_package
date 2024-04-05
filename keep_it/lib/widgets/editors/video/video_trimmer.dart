@@ -2,80 +2,8 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:keep_it/modules/shared_media/cl_media_process.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:store/store.dart';
 import 'package:video_trimmer/video_trimmer.dart';
-
-class MediaEditor extends ConsumerWidget {
-  const MediaEditor({
-    required this.mediaId,
-    super.key,
-  });
-  final int? mediaId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    print('mediaId $mediaId');
-    if (mediaId == null) {
-      return const CLErrorView(errorMessage: 'No Media Provided');
-    }
-    return GetDBManager(
-      builder: (dbManager) {
-        return GetMedia(
-          id: mediaId!,
-          buildOnData: (media) {
-            if (media.isValidMedia && media.type == CLMediaType.video) {
-              return TrimmerView(
-                File(media.path),
-                onSave: (outFile, {required overwrite}) async {
-                  final md5String = await File(outFile).checksum;
-                  final CLMedia updatedMedia;
-                  if (overwrite) {
-                    updatedMedia =
-                        media.copyWith(path: outFile, md5String: md5String);
-                  } else {
-                    updatedMedia = CLMedia(
-                      path: outFile,
-                      type: CLMediaType.video,
-                      collectionId: media.collectionId,
-                      md5String: md5String,
-                      originalDate: media.originalDate,
-                      createdDate: media.createdDate,
-                    );
-                  }
-                  await dbManager.upsertMedia(
-                    collectionId: media.collectionId!,
-                    media: updatedMedia,
-                    onPrepareMedia: (m, {required targetDir}) async {
-                      final updated = (await m.moveFile(targetDir: targetDir))
-                          .getMetadata();
-
-                      return updated;
-                    },
-                  );
-                  if (context.mounted) {
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  }
-                },
-                onDiscard: () {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
-                },
-              );
-            }
-            return const CLErrorView(errorMessage: 'Not supported yet');
-          },
-        );
-      },
-    );
-  }
-}
 
 class TrimmerView extends StatefulWidget {
   const TrimmerView(
@@ -137,7 +65,6 @@ class _TrimmerViewState extends State<TrimmerView> {
 
   @override
   Widget build(BuildContext context) {
-    print('trim: _startValue: $_startValue _endValue:$_endValue');
     return FullscreenLayout(
       child: Center(
         child: Column(
@@ -206,8 +133,6 @@ class _TrimmerViewState extends State<TrimmerView> {
                       MdiIcons.check,
                     ),
                     onSelected: (String value) {
-                      // Handle your action on selection here
-                      print('Selected: $value');
                       if (value == 'Save') {
                         _saveVideo();
                       } else if (value == 'Save Copy') {

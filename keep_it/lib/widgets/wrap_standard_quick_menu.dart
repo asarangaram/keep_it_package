@@ -58,6 +58,8 @@ class WrapStandardQuickMenu extends StatelessWidget {
                   icon: Icons.delete_rounded,
                   onTap: onDelete,
                 ),
+            ],
+            [
               if (onMove != null)
                 CLMenuItem(
                   title: 'Move',
@@ -69,7 +71,6 @@ class WrapStandardQuickMenu extends StatelessWidget {
                   title: 'Share',
                   icon: MdiIcons.share,
                   onTap: () async {
-                    print('Calling Share');
                     return onShare!();
                   },
                 ),
