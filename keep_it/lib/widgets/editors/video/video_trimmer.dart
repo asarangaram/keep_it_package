@@ -13,7 +13,11 @@ class TrimmerView extends StatefulWidget {
     super.key,
   });
   final File file;
-  final void Function(String outFile, {required bool overwrite}) onSave;
+  final void Function(
+    BuildContext context,
+    String outFile, {
+    required bool overwrite,
+  }) onSave;
   final void Function() onDiscard;
 
   @override
@@ -50,7 +54,11 @@ class _TrimmerViewState extends State<TrimmerView> {
       endValue: _endValue,
       onSave: (outputPath) {
         if (outputPath != null) {
-          widget.onSave(outputPath, overwrite: overwrite);
+          widget.onSave(
+            context,
+            outputPath,
+            overwrite: overwrite,
+          );
         } else {
           // Error Handle
         }
@@ -133,7 +141,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                       MdiIcons.check,
                     ),
                     onSelected: (String value) {
-                      if (value == 'Save') {
+                      if (value == 'Replace Original') {
                         _saveVideo();
                       } else if (value == 'Save Copy') {
                         _saveVideo(overwrite: false);
@@ -142,7 +150,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                       }
                     },
                     itemBuilder: (BuildContext context) {
-                      return {'Save', 'Save Copy', 'Discard'}
+                      return {'Replace Original', 'Save Copy', 'Discard'}
                           .map((String choice) {
                         return PopupMenuItem<String>(
                           value: choice,

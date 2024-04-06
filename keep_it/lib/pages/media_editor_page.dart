@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:keep_it/modules/shared_media/cl_media_process.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:store/store.dart';
 
 import '../widgets/editors/video/video_trimmer.dart';
@@ -31,45 +32,14 @@ class MediaEditorPage extends ConsumerWidget {
           buildOnData: (media) {
             if (media.isValidMedia && media.type == CLMediaType.image) {
               return ImageCropperWrap(
-                File(
-                  media.path,
-                ),
-                onSave: (string, {required bool overwrite}) {},
-                onDiscard: () {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
-                },
-              );
-            }
-            if (media.isValidMedia && media.type == CLMediaType.video) {
-              return TrimmerView(
                 File(media.path),
-                onSave: (outFile, {required overwrite}) async {
-                  final md5String = await File(outFile).checksum;
-                  final CLMedia updatedMedia;
-                  if (overwrite) {
-                    updatedMedia =
-                        media.copyWith(path: outFile, md5String: md5String);
-                  } else {
-                    updatedMedia = CLMedia(
-                      path: outFile,
-                      type: CLMediaType.video,
-                      collectionId: media.collectionId,
-                      md5String: md5String,
-                      originalDate: media.originalDate,
-                      createdDate: media.createdDate,
-                    );
-                  }
-                  await dbManager.upsertMedia(
-                    collectionId: media.collectionId!,
-                    media: updatedMedia,
-                    onPrepareMedia: (m, {required targetDir}) async {
-                      final updated = (await m.moveFile(targetDir: targetDir))
-                          .getMetadata();
-
-                      return updated;
-                    },
+                onSave: (c, outFile, {required overwrite}) async {
+                  await onSave(
+                    c,
+                    overwrite: overwrite,
+                    dbManager: dbManager,
+                    originalMedia: media,
+                    editedFile: outFile,
                   );
                   if (context.mounted) {
                     if (context.canPop()) {
@@ -84,9 +54,61 @@ class MediaEditorPage extends ConsumerWidget {
                 },
               );
             }
+            if (media.isValidMedia && media.type == CLMediaType.video) {
+              return TrimmerView(
+                File(media.path),
+                onSave: (context, outFile, {required overwrite}) async {
+                  await onSave(
+                    context,
+                    overwrite: overwrite,
+                    dbManager: dbManager,
+                    originalMedia: media,
+                    editedFile: outFile,
+                  );
+                },
+                onDiscard: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                },
+              );
+            }
             return const CLErrorView(errorMessage: 'Not supported yet');
           },
         );
+      },
+    );
+  }
+
+  Future<void> onSave(
+    BuildContext context, {
+    required bool overwrite,
+    required CLMedia originalMedia,
+    required DBManager dbManager,
+    required String editedFile,
+  }) async {
+    final md5String = await File(editedFile).checksum;
+    final CLMedia updatedMedia;
+    if (overwrite) {
+      updatedMedia =
+          originalMedia.copyWith(path: editedFile, md5String: md5String);
+    } else {
+      updatedMedia = CLMedia(
+        path: editedFile,
+        type: originalMedia.type,
+        collectionId: originalMedia.collectionId,
+        md5String: md5String,
+        originalDate: originalMedia.originalDate,
+        createdDate: originalMedia.createdDate,
+      );
+    }
+    await dbManager.upsertMedia(
+      collectionId: originalMedia.collectionId!,
+      media: updatedMedia,
+      onPrepareMedia: (m, {required targetDir}) async {
+        final updated = (await m.moveFile(targetDir: targetDir)).getMetadata();
+
+        return updated;
       },
     );
   }
@@ -100,7 +122,11 @@ class ImageCropperWrap extends StatelessWidget {
     super.key,
   });
   final File image;
-  final void Function(String, {required bool overwrite}) onSave;
+  final void Function(
+    BuildContext context,
+    String, {
+    required bool overwrite,
+  }) onSave;
   final void Function() onDiscard;
 
   static Future<Uint8List?> editImage(BuildContext c, File file) async {
@@ -162,7 +188,11 @@ class HandleEdittedImage extends StatefulWidget {
   });
   final Uint8List edittedImage;
   final File originalImage;
-  final void Function(String, {required bool overwrite}) onSave;
+  final void Function(
+    BuildContext context,
+    String, {
+    required bool overwrite,
+  }) onSave;
   final void Function() onDiscard;
   @override
   State<HandleEdittedImage> createState() => _HandleEdittedImageState();
@@ -237,15 +267,35 @@ class _HandleEdittedImageState extends State<HandleEdittedImage> {
                       child: CLIcon.standard(
                         MdiIcons.check,
                       ),
-                      onSelected: (String value) {
-                        if (value == 'Save') {
+                      onSelected: (String value) async {
+                        if (value == 'Replace Original') {
+                          final file = await saveImageToCache(edittedImage!);
+                          if (context.mounted) {
+                            if (file != null) {
+                              widget.onSave(
+                                context,
+                                file,
+                                overwrite: true,
+                              );
+                            }
+                          }
                         } else if (value == 'Save Copy') {
+                          final file = await saveImageToCache(edittedImage!);
+                          if (context.mounted) {
+                            if (file != null) {
+                              widget.onSave(
+                                context,
+                                file,
+                                overwrite: false,
+                              );
+                            }
+                          }
                         } else if (value == 'Discard') {
                           widget.onDiscard();
                         }
                       },
                       itemBuilder: (BuildContext context) {
-                        return {'Save', 'Save Copy', 'Discard'}
+                        return {'Replace Original', 'Save Copy', 'Discard'}
                             .map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,
@@ -266,5 +316,20 @@ class _HandleEdittedImageState extends State<HandleEdittedImage> {
           ),
       ],
     );
+  }
+
+  Future<String?> saveImageToCache(Uint8List imageBytes) async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+
+      final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final imageFile = File('${cacheDir.path}/$fileName');
+
+      await imageFile.writeAsBytes(imageBytes);
+      return imageFile.path;
+    } catch (e) {
+      /*** */
+      return null;
+    }
   }
 }
