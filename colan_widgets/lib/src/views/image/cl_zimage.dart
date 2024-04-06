@@ -33,7 +33,6 @@ class _CLzImageState extends State<CLzImage> {
                 maxScale: 10,
                 gestureDetailsIsChanged: (details) {
                   if (details == null) return;
-                  print(details.totalScale);
                   if (details.totalScale != null &&
                       details.totalScale! <= 1.0) {
                     if (isZooming) {
