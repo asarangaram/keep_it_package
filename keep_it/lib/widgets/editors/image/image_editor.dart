@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -97,18 +98,18 @@ class CropperControls extends ConsumerWidget {
     final editorOptions = ref.watch(editorOptionsProvider);
     final aspectRatio = editorOptions.aspectRatio;
 
-    return Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .onBackground
-            .withAlpha(128), // Color for the circular container
-      ),
-      alignment: Alignment.center,
-      child: Column(
-        children: [
-          SingleChildScrollView(
+    return Column(
+      children: [
+        Container(
+          // height: 80,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Theme.of(context)
+                .colorScheme
+                .onBackground
+                .withAlpha(128), // Color for the circular container
+          ),
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Center(
               child: Row(
@@ -135,16 +136,6 @@ class CropperControls extends ConsumerWidget {
                               );
                             },
                           ),
-                          if (aspectRatio.ratio == ratio.ratio &&
-                              aspectRatio.hasOrientation)
-                            const SizedBox(
-                              height: 40,
-                              child: AspectRatioUpdater(),
-                            )
-                          else
-                            const SizedBox(
-                              height: 40,
-                            ),
                         ],
                       ),
                     ),
@@ -152,8 +143,12 @@ class CropperControls extends ConsumerWidget {
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 40,
+          child: AspectRatioUpdater(),
+        ),
+      ],
     );
   }
 }
@@ -171,10 +166,51 @@ class AspectRatioUpdater extends ConsumerWidget {
       scaleY: isLandscape ? 1 : 16 / 9,
       child: CLButtonIcon.verySmall(
         Icons.image,
-        color: Colors.white,
-        onTap: () {
-          ref.read(editorOptionsProvider.notifier).isAspectRatioLandscape =
-              !isLandscape;
+        color: aspectRatio.hasOrientation
+            ? Colors.white
+            : Theme.of(context).disabledColor,
+        onTap: aspectRatio.hasOrientation
+            ? () {
+                ref
+                    .read(editorOptionsProvider.notifier)
+                    .isAspectRatioLandscape = !isLandscape;
+              }
+            : null,
+      ),
+    );
+  }
+}
+
+class SaveImage extends ConsumerWidget {
+  const SaveImage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 80,
+      decoration: BoxDecoration(
+        color: Theme.of(context)
+            .colorScheme
+            .onBackground
+            .withAlpha(128), // Color for the circular container
+      ),
+      child: PopupMenuButton<String>(
+        child: CLIcon.standard(
+          MdiIcons.check,
+          color: Colors.white,
+        ),
+        onSelected: (String value) {
+          if (value == 'Save') {
+          } else if (value == 'Save Copy') {
+          } else if (value == 'Discard') {}
+        },
+        itemBuilder: (BuildContext context) {
+          return {'Save', 'Save Copy', 'Discard'}.map((String choice) {
+            return PopupMenuItem<String>(
+              value: choice,
+              child: Text(choice),
+            );
+          }).toList();
         },
       ),
     );
