@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'providers/editor_options.dart';
 
@@ -16,7 +18,15 @@ class CLImageEditor extends ConsumerStatefulWidget {
 }
 
 class _CLImageEditorState extends ConsumerState<CLImageEditor> {
-  bool isLandscape = false;
+  final GlobalKey<ExtendedImageEditorState> _controller =
+      GlobalKey<ExtendedImageEditorState>();
+  int rotateAngle = 0;
+
+  @override
+  void initState() {
+    _controller.currentState?.rotate();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +43,7 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                 children: [
                   Positioned.fill(
                     child: ExtendedImage.file(
+                      extendedImageEditorKey: _controller,
                       widget.file,
                       fit: BoxFit.contain,
                       mode: ExtendedImageMode.editor,
@@ -41,6 +52,30 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                           cropAspectRatio: aspectRatio,
                         );
                       },
+                    ),
+                  ),
+                  Positioned(
+                    right: 8,
+                    bottom: 8,
+                    child: Center(
+                      child: CLButtonIcon.small(
+                        MdiIcons.rotateRight,
+                        onTap: () {
+                          _controller.currentState?.rotate();
+                        },
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 8,
+                    bottom: 8,
+                    child: Center(
+                      child: CLButtonIcon.small(
+                        MdiIcons.rotateLeft,
+                        onTap: () {
+                          _controller.currentState?.rotate(right: false);
+                        },
+                      ),
                     ),
                   ),
                 ],
