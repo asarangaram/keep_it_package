@@ -23,7 +23,6 @@ class CollectionItemPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('$collectionId $id');
     return GetMediaByCollectionId(
       buildOnData: (media) {
         final initialMedia = media.where((e) => e.id == id).first;

@@ -1,14 +1,9 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'providers/editor_options.dart';
 

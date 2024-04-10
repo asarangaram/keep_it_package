@@ -15,7 +15,7 @@ class EditorOptionsNotifier extends StateNotifier<EditorOptions> {
 
   set isAspectRatioLandscape(bool val) {
     state = state.copyWith(
-      aspectRatio: state.aspectRatio?.copyWith(isLandscape: val),
+      aspectRatio: state.aspectRatio.copyWith(isLandscape: val),
     );
   }
 }
