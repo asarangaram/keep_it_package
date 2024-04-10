@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -21,13 +19,6 @@ class CLImageEditor extends ConsumerStatefulWidget {
 class _CLImageEditorState extends ConsumerState<CLImageEditor> {
   final GlobalKey<ExtendedImageEditorState> _controller =
       GlobalKey<ExtendedImageEditorState>();
-  int rotateAngle = 0;
-
-  @override
-  void initState() {
-    _controller.currentState?.rotate();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +54,9 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                         MdiIcons.rotateRight,
                         onTap: () {
                           _controller.currentState?.rotate();
+                          ref
+                              .read(editorOptionsProvider.notifier)
+                              .rotateRight();
                         },
                       ),
                     ),
@@ -75,6 +69,7 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                         MdiIcons.rotateLeft,
                         onTap: () {
                           _controller.currentState?.rotate(right: false);
+                          ref.read(editorOptionsProvider.notifier).rotateLeft();
                         },
                       ),
                     ),
@@ -98,57 +93,86 @@ class CropperControls extends ConsumerWidget {
     final editorOptions = ref.watch(editorOptionsProvider);
     final aspectRatio = editorOptions.aspectRatio;
 
-    return Column(
-      children: [
-        Container(
-          // height: 80,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .onBackground
-                .withAlpha(128), // Color for the circular container
-          ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  for (final ratio in editorOptions.availableAspectRatio)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context)
+            .colorScheme
+            .onBackground
+            .withAlpha(128), // Color for the circular container
+      ),
+      child: Row(
+        children: [
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: CLText.large(
+                          'Crop',
+                          color: Colors.white,
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          CLButtonText.standard(
-                            ratio.title,
-                            color: aspectRatio.ratio == ratio.ratio
-                                ? Colors.white
-                                : Colors.grey,
-                            onTap: () {
-                              ref
-                                  .read(editorOptionsProvider.notifier)
-                                  .aspectRatio = ratio.copyWith(
-                                isLandscape: aspectRatio.isLandscape,
-                              );
-                            },
+                      const Align(
+                        child: AspectRatioUpdater(),
+                      ),
+                      Container(),
+                    ].map((e) => Expanded(child: e)).toList(),
+                  ),
+                ),
+                Container(
+                  // height: 80,
+                  alignment: Alignment.center,
+
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        for (final ratio in editorOptions.availableAspectRatio)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: 16,
+                              top: 4,
+                              bottom: 4,
+                            ),
+                            child: Column(
+                              children: [
+                                CLButtonText.standard(
+                                  ratio.title,
+                                  color: aspectRatio.ratio == ratio.ratio
+                                      ? Colors.white
+                                      : Colors.grey,
+                                  onTap: () {
+                                    ref
+                                        .read(editorOptionsProvider.notifier)
+                                        .aspectRatio = ratio.copyWith(
+                                      isLandscape: aspectRatio.isLandscape,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
+                      ],
                     ),
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        const SizedBox(
-          height: 40,
-          child: AspectRatioUpdater(),
-        ),
-      ],
+          const SizedBox(
+            width: 4,
+            child: DecoratedBox(decoration: BoxDecoration(color: Colors.white)),
+          ),
+          const SaveImage(),
+        ],
+      ),
     );
   }
 }
@@ -186,33 +210,33 @@ class SaveImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .onBackground
-            .withAlpha(128), // Color for the circular container
+    final editorOptions = ref.watch(editorOptionsProvider);
+
+    if (!editorOptions.hasData) {
+      return CLButtonIcon.standard(
+        MdiIcons.close,
+        color: Colors.white,
+        onTap: () {},
+      );
+    }
+    return PopupMenuButton<String>(
+      child: CLIcon.standard(
+        MdiIcons.check,
+        color: Colors.white,
       ),
-      child: PopupMenuButton<String>(
-        child: CLIcon.standard(
-          MdiIcons.check,
-          color: Colors.white,
-        ),
-        onSelected: (String value) {
-          if (value == 'Save') {
-          } else if (value == 'Save Copy') {
-          } else if (value == 'Discard') {}
-        },
-        itemBuilder: (BuildContext context) {
-          return {'Save', 'Save Copy', 'Discard'}.map((String choice) {
-            return PopupMenuItem<String>(
-              value: choice,
-              child: Text(choice),
-            );
-          }).toList();
-        },
-      ),
+      onSelected: (String value) {
+        if (value == 'Save') {
+        } else if (value == 'Save Copy') {
+        } else if (value == 'Discard') {}
+      },
+      itemBuilder: (BuildContext context) {
+        return {'Save', 'Save Copy', 'Discard'}.map((String choice) {
+          return PopupMenuItem<String>(
+            value: choice,
+            child: Text(choice),
+          );
+        }).toList();
+      },
     );
   }
 }
