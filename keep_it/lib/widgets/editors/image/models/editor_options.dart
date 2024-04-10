@@ -8,17 +8,21 @@ class AspectRatio {
   const AspectRatio({
     required this.title,
     this.ratio,
+    this.isLandscape = false,
   });
   final String title;
   final double? ratio;
+  final bool isLandscape;
 
   AspectRatio copyWith({
     String? title,
     double? ratio,
+    bool? isLandscape,
   }) {
     return AspectRatio(
       title: title ?? this.title,
       ratio: ratio ?? this.ratio,
+      isLandscape: isLandscape ?? this.isLandscape,
     );
   }
 
@@ -26,6 +30,7 @@ class AspectRatio {
     return <String, dynamic>{
       'title': title,
       'ratio': ratio,
+      'isLandscape': isLandscape,
     };
   }
 
@@ -33,6 +38,7 @@ class AspectRatio {
     return AspectRatio(
       title: map['title'] as String,
       ratio: map['ratio'] != null ? map['ratio'] as double : null,
+      isLandscape: map['isLandscape'] as bool,
     );
   }
 
@@ -42,27 +48,36 @@ class AspectRatio {
       AspectRatio.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'AspectRatio(title: $title, ratio: $ratio)';
+  String toString() =>
+      'AspectRatio(title: $title, ratio: $ratio, isLandscape: $isLandscape)';
 
   @override
   bool operator ==(covariant AspectRatio other) {
     if (identical(this, other)) return true;
 
-    return other.title == title && other.ratio == ratio;
+    return other.title == title &&
+        other.ratio == ratio &&
+        other.isLandscape == isLandscape;
   }
 
   @override
-  int get hashCode => title.hashCode ^ ratio.hashCode;
+  int get hashCode => title.hashCode ^ ratio.hashCode ^ isLandscape.hashCode;
+
+  bool get hasOrientation => ratio != null && ratio != 1;
+
+  double? get aspectRatio => ratio == null
+      ? null
+      : isLandscape
+          ? ratio!
+          : (1 / ratio!);
 }
 
 @immutable
 class EditorOptions {
   const EditorOptions({
-    this.aspectRatio,
-    this.isAspectRatioLandscape = true,
+    this.aspectRatio = const AspectRatio(title: 'unspecified'),
   });
-  final AspectRatio? aspectRatio;
-  final bool isAspectRatioLandscape;
+  final AspectRatio aspectRatio;
 
   List<AspectRatio> get availableAspectRatio => const [
         AspectRatio(title: 'Freeform'),
@@ -75,25 +90,22 @@ class EditorOptions {
 
   EditorOptions copyWith({
     AspectRatio? aspectRatio,
-    bool? isAspectRatioLandscape,
   }) {
     return EditorOptions(
       aspectRatio: aspectRatio ?? this.aspectRatio,
-      isAspectRatioLandscape: isAspectRatioLandscape ?? this.isAspectRatioLandscape,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'aspectRatio': aspectRatio?.toMap(),
-      'isAspectRatioLandscape': isAspectRatioLandscape,
+      'aspectRatio': aspectRatio.toMap(),
     };
   }
 
   factory EditorOptions.fromMap(Map<String, dynamic> map) {
     return EditorOptions(
-      aspectRatio: map['aspectRatio'] != null ? AspectRatio.fromMap(map['aspectRatio'] as Map<String,dynamic>) : null,
-      isAspectRatioLandscape: map['isAspectRatioLandscape'] as bool,
+      aspectRatio:
+          AspectRatio.fromMap(map['aspectRatio'] as Map<String, dynamic>),
     );
   }
 
@@ -103,17 +115,15 @@ class EditorOptions {
       EditorOptions.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'EditorOptions(aspectRatio: $aspectRatio, isAspectRatioLandscape: $isAspectRatioLandscape)';
+  String toString() => 'EditorOptions(aspectRatio: $aspectRatio)';
 
   @override
   bool operator ==(covariant EditorOptions other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.aspectRatio == aspectRatio &&
-      other.isAspectRatioLandscape == isAspectRatioLandscape;
+
+    return other.aspectRatio == aspectRatio;
   }
 
   @override
-  int get hashCode => aspectRatio.hashCode ^ isAspectRatioLandscape.hashCode;
+  int get hashCode => aspectRatio.hashCode;
 }

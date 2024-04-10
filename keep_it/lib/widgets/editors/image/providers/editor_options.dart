@@ -10,10 +10,13 @@ class EditorOptionsNotifier extends StateNotifier<EditorOptions> {
     state = state.copyWith(aspectRatio: value);
   }
 
-  bool get isAspectRatioLandscape => state.isAspectRatioLandscape;
+  bool get isAspectRatioLandscape =>
+      throw Exception('Unexpected; keeping only for lint');
 
   set isAspectRatioLandscape(bool val) {
-    state = state.copyWith(isAspectRatioLandscape: val);
+    state = state.copyWith(
+      aspectRatio: state.aspectRatio?.copyWith(isLandscape: val),
+    );
   }
 }
 

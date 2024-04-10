@@ -1,8 +1,14 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'providers/editor_options.dart';
 
@@ -20,27 +26,35 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
   @override
   Widget build(BuildContext context) {
     final editorOptions = ref.watch(editorOptionsProvider);
-    final aspectRatio = editorOptions.aspectRatio?.ratio == null
-        ? null
-        : editorOptions.isAspectRatioLandscape
-            ? editorOptions.aspectRatio?.ratio!
-            : (1 / (editorOptions.aspectRatio?.ratio)!);
-    return Column(
-      children: [
-        Expanded(
-          child: ExtendedImage.file(
-            widget.file,
-            fit: BoxFit.contain,
-            mode: ExtendedImageMode.editor,
-            initEditorConfigHandler: (state) {
-              return EditorConfig(
-                cropAspectRatio: aspectRatio,
-              );
-            },
-          ),
+    final aspectRatio = editorOptions.aspectRatio.aspectRatio;
+    return FullscreenLayout(
+      useSafeArea: false,
+      child: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ExtendedImage.file(
+                      widget.file,
+                      fit: BoxFit.contain,
+                      mode: ExtendedImageMode.editor,
+                      initEditorConfigHandler: (state) {
+                        return EditorConfig(
+                          cropAspectRatio: aspectRatio,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const CropperControls(),
+          ],
         ),
-        const CropperControls(),
-      ],
+      ),
     );
   }
 }
@@ -51,20 +65,15 @@ class CropperControls extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final editorOptions = ref.watch(editorOptionsProvider);
-    final aspectRatio = editorOptions.aspectRatio?.ratio == null
-        ? null
-        : editorOptions.isAspectRatioLandscape
-            ? editorOptions.aspectRatio?.ratio!
-            : (1 / (editorOptions.aspectRatio?.ratio)!);
+    final aspectRatio = editorOptions.aspectRatio;
 
-    final isLandscape = editorOptions.isAspectRatioLandscape;
     return Container(
       height: 80,
       decoration: BoxDecoration(
         color: Theme.of(context)
             .colorScheme
             .onBackground
-            .withAlpha(192), // Color for the circular container
+            .withAlpha(128), // Color for the circular container
       ),
       alignment: Alignment.center,
       child: Column(
@@ -73,43 +82,40 @@ class CropperControls extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             child: Center(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  if (aspectRatio != null && aspectRatio != 1)
-                    IconButton(
+                  for (final ratio in editorOptions.availableAspectRatio)
+                    Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 4,
                       ),
-                      icon: Icon(
-                        Icons.portrait,
-                        color: isLandscape ? Colors.white : Colors.grey,
-                      ),
-                      onPressed: () {
-                        ref
-                            .read(editorOptionsProvider.notifier)
-                            .isAspectRatioLandscape = !isLandscape;
-                      },
-                    ),
-                  for (final ratio in editorOptions.availableAspectRatio)
-                    TextButton(
-                      onPressed: () {
-                        ref.read(editorOptionsProvider.notifier).aspectRatio =
-                            ratio;
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        child: Text(
-                          ratio.title,
-                          style: TextStyle(
-                            color: aspectRatio == ratio.ratio
+                      child: Column(
+                        children: [
+                          CLButtonText.standard(
+                            ratio.title,
+                            color: aspectRatio.ratio == ratio.ratio
                                 ? Colors.white
                                 : Colors.grey,
+                            onTap: () {
+                              ref
+                                  .read(editorOptionsProvider.notifier)
+                                  .aspectRatio = ratio.copyWith(
+                                isLandscape: aspectRatio.isLandscape,
+                              );
+                            },
                           ),
-                        ),
+                          if (aspectRatio.ratio == ratio.ratio &&
+                              aspectRatio.hasOrientation)
+                            const SizedBox(
+                              height: 40,
+                              child: AspectRatioUpdater(),
+                            )
+                          else
+                            const SizedBox(
+                              height: 40,
+                            ),
+                        ],
                       ),
                     ),
                 ],
@@ -117,6 +123,29 @@ class CropperControls extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AspectRatioUpdater extends ConsumerWidget {
+  const AspectRatioUpdater({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final editorOptions = ref.watch(editorOptionsProvider);
+    final aspectRatio = editorOptions.aspectRatio;
+    final isLandscape = aspectRatio.isLandscape;
+    return Transform.scale(
+      scaleX: isLandscape ? 16 / 9 : 1,
+      scaleY: isLandscape ? 1 : 16 / 9,
+      child: CLButtonIcon.verySmall(
+        Icons.image,
+        color: Colors.white,
+        onTap: () {
+          ref.read(editorOptionsProvider.notifier).isAspectRatioLandscape =
+              !isLandscape;
+        },
       ),
     );
   }
