@@ -235,7 +235,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        // if (location != '/mediaEditor') return '/mediaEditor?id=7';
+        if (location != '/mediaEditor') return '/mediaEditor?id=23';
         // if (location != '/camera') return '/camera';
         //if (location == '/') return '/collections';
         return null;

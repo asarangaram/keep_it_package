@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:keep_it/modules/shared_media/cl_media_process.dart';
 import 'package:store/store.dart';
 
+import '../widgets/editors/image/image_editor.dart';
 import '../widgets/editors/video/video_trimmer.dart';
 
 class MediaEditorPage extends ConsumerWidget {
@@ -26,6 +27,12 @@ class MediaEditorPage extends ConsumerWidget {
         return GetMedia(
           id: mediaId!,
           buildOnData: (media) {
+            if (media.isValidMedia && media.type == CLMediaType.image) {
+              return CLImageEditor(
+                file: File(media.path),
+              );
+            }
+
             if (media.isValidMedia && media.type == CLMediaType.video) {
               return TrimmerView(
                 File(media.path),
