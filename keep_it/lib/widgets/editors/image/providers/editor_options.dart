@@ -7,18 +7,27 @@ import '../models/editor_options.dart';
 
 class EditorOptionsNotifier extends StateNotifier<EditorOptions> {
   EditorOptionsNotifier()
-      : super(EditorOptions(controller: GlobalKey<ExtendedImageEditorState>()));
+      : super(
+          EditorOptions(controller: GlobalKey<ExtendedImageEditorState>()),
+        ) {
+    state.controller?.currentState?.rotate();
+  }
 
   aratio.AspectRatio? get aspectRatio => state.aspectRatio;
   set aspectRatio(aratio.AspectRatio? value) {
     state = state.copyWith(aspectRatio: value);
   }
 
-  void rotateLeft() =>
-      state = state.copyWith(rotation: (state.rotation + 1) % 4);
+  void rotateLeft() => state = state.copyWith(rotation: state.rotation - 1);
+  void rotateRight() => state = state.copyWith(rotation: state.rotation + 1);
 
-  void rotateRight() =>
-      state = state.copyWith(rotation: (state.rotation - 1) % 4);
+  void cropRect(Rect? rect) {
+    if (rect == null) {
+      state = state.clearCrop();
+    } else {
+      state = state.copyWith(rect: rect);
+    }
+  }
 
   bool get isAspectRatioLandscape =>
       throw Exception('Unexpected; keeping only for lint');

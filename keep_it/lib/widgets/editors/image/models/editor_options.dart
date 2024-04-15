@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:extended_image/extended_image.dart';
-
 import 'package:flutter/material.dart';
 
 import 'aspect_ratio.dart' as aratio;
@@ -9,14 +8,16 @@ import 'aspect_ratio.dart' as aratio;
 @immutable
 class EditorOptions {
   const EditorOptions({
-    this.controller,
     this.aspectRatio = const aratio.AspectRatio(title: 'unspecified'),
     this.rotation = 0,
+    this.controller,
+    this.rect,
   });
 
   final aratio.AspectRatio aspectRatio;
   final int rotation;
   final GlobalKey<ExtendedImageEditorState>? controller;
+  final Rect? rect;
 
   List<aratio.AspectRatio> get availableAspectRatio => const [
         aratio.AspectRatio(title: 'Freeform'),
@@ -31,30 +32,46 @@ class EditorOptions {
     aratio.AspectRatio? aspectRatio,
     int? rotation,
     GlobalKey<ExtendedImageEditorState>? controller,
+    Rect? rect,
   }) {
     return EditorOptions(
       aspectRatio: aspectRatio ?? this.aspectRatio,
       rotation: rotation ?? this.rotation,
       controller: controller ?? this.controller,
+      rect: rect ?? this.rect,
     );
   }
 
   @override
-  String toString() =>
-      'EditorOptions(aspectRatio: $aspectRatio, rotation: $rotation)';
+  String toString() {
+    return 'EditorOptions(aspectRatio: $aspectRatio, rotation: $rotation, '
+        'controller: $controller, rect: $rect)';
+  }
 
   @override
   bool operator ==(covariant EditorOptions other) {
     if (identical(this, other)) return true;
 
-    return other.aspectRatio == aspectRatio && other.rotation == rotation;
+    return other.aspectRatio == aspectRatio &&
+        other.rotation == rotation &&
+        other.rect == rect;
   }
 
   @override
-  int get hashCode =>
-      aspectRatio.hashCode ^ rotation.hashCode ^ controller.hashCode;
+  int get hashCode {
+    return aspectRatio.hashCode ^ rotation.hashCode ^ rect.hashCode;
+  }
 
   bool get hasData {
-    return !(this == const EditorOptions());
+    return !(this == const EditorOptions()) &&
+        controller?.currentState?.getCropRect() != null;
+  }
+
+  EditorOptions clearCrop() {
+    return EditorOptions(
+      aspectRatio: aspectRatio,
+      rotation: rotation,
+      controller: controller ?? controller,
+    );
   }
 }

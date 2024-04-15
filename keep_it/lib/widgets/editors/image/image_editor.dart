@@ -5,21 +5,49 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:open_file/open_file.dart';
 
+import 'process/image_processing.dart';
 import 'providers/editor_options.dart';
 
-class CLImageEditor extends ConsumerStatefulWidget {
-  const CLImageEditor({required this.file, super.key});
-  final File file;
+extension PrintEditActionDetails on EditActionDetails {
+  void printAll() {
+    /* print(cropAspectRatio);
+    print(cropRect);
+    print(cropRectPadding);
+    print(delta);
+    print(flipX);
+    print(flipY);
+    
+    
+    print(isHalfPi);
+    print(isPi);
+    print(isTwoPi);
+    print(layerDestinationRect);
+    print(layoutTopLeft); */
+    print('needCrop:$needCrop');
+    print('needFlip:$needFlip');
+    print('hasEditAction:$hasEditAction');
+    print('hasRotateAngle:$hasRotateAngle');
+  }
+}
 
+class CLImageEditor extends ConsumerStatefulWidget {
+  const CLImageEditor({
+    required this.file,
+    required this.onSave,
+    required this.onDiscard,
+    super.key,
+  });
+  final File file;
+  final void Function(String outFile, {required bool overwrite}) onSave;
+  final void Function() onDiscard;
   @override
   ConsumerState<CLImageEditor> createState() => _CLImageEditorState();
 }
 
 class _CLImageEditorState extends ConsumerState<CLImageEditor> {
-  final GlobalKey<ExtendedImageEditorState> _controller =
-      GlobalKey<ExtendedImageEditorState>();
-
+  EditActionDetails? editActionDetails;
   @override
   Widget build(BuildContext context) {
     final editorOptions = ref.watch(editorOptionsProvider);
@@ -35,15 +63,22 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                 children: [
                   Positioned.fill(
                     child: ExtendedImage.file(
-                      extendedImageEditorKey: _controller,
+                      extendedImageEditorKey: editorOptions.controller,
                       widget.file,
                       fit: BoxFit.contain,
                       mode: ExtendedImageMode.editor,
                       initEditorConfigHandler: (state) {
                         return EditorConfig(
                           cropAspectRatio: aspectRatio,
+                          editActionDetailsIsChanged: (editActionDetails) {
+                            editActionDetails?.printAll();
+                            setState(() {
+                              this.editActionDetails = editActionDetails;
+                            });
+                          },
                         );
                       },
+                      cacheRawData: true,
                     ),
                   ),
                   Positioned(
@@ -53,10 +88,7 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                       child: CLButtonIcon.small(
                         MdiIcons.rotateRight,
                         onTap: () {
-                          _controller.currentState?.rotate();
-                          ref
-                              .read(editorOptionsProvider.notifier)
-                              .rotateRight();
+                          editorOptions.controller?.currentState?.rotate();
                         },
                       ),
                     ),
@@ -68,8 +100,8 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                       child: CLButtonIcon.small(
                         MdiIcons.rotateLeft,
                         onTap: () {
-                          _controller.currentState?.rotate(right: false);
-                          ref.read(editorOptionsProvider.notifier).rotateLeft();
+                          editorOptions.controller?.currentState
+                              ?.rotate(right: false);
                         },
                       ),
                     ),
@@ -77,7 +109,10 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
                 ],
               ),
             ),
-            const CropperControls(),
+            CropperControls(
+              onSave: widget.onSave,
+              onDiscard: widget.onDiscard,
+            ),
           ],
         ),
       ),
@@ -86,7 +121,13 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
 }
 
 class CropperControls extends ConsumerWidget {
-  const CropperControls({super.key});
+  const CropperControls({
+    required this.onSave,
+    required this.onDiscard,
+    super.key,
+  });
+  final void Function(String outFile, {required bool overwrite}) onSave;
+  final void Function() onDiscard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -170,7 +211,10 @@ class CropperControls extends ConsumerWidget {
             width: 4,
             child: DecoratedBox(decoration: BoxDecoration(color: Colors.white)),
           ),
-          const SaveImage(),
+          SaveImage(
+            onSave: onSave,
+            onDiscard: onDiscard,
+          ),
         ],
       ),
     );
@@ -185,49 +229,75 @@ class AspectRatioUpdater extends ConsumerWidget {
     final editorOptions = ref.watch(editorOptionsProvider);
     final aspectRatio = editorOptions.aspectRatio;
     final isLandscape = aspectRatio.isLandscape;
-    return Transform.scale(
-      scaleX: isLandscape ? 16 / 9 : 1,
-      scaleY: isLandscape ? 1 : 16 / 9,
-      child: CLButtonIcon.verySmall(
-        Icons.image,
-        color: aspectRatio.hasOrientation
-            ? Colors.white
-            : Theme.of(context).disabledColor,
-        onTap: aspectRatio.hasOrientation
-            ? () {
-                ref
-                    .read(editorOptionsProvider.notifier)
-                    .isAspectRatioLandscape = !isLandscape;
-              }
-            : null,
+    return GestureDetector(
+      onTap: aspectRatio.hasOrientation
+          ? () {
+              ref.read(editorOptionsProvider.notifier).isAspectRatioLandscape =
+                  !isLandscape;
+            }
+          : null,
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Transform.scale(
+              scaleX: isLandscape ? 16 / 9 : 1,
+              scaleY: isLandscape ? 1 : 16 / 9,
+              child: CLIcon.verySmall(
+                Icons.image,
+                color: aspectRatio.hasOrientation
+                    ? isLandscape
+                        ? Theme.of(context).disabledColor
+                        : Colors.white
+                    : Theme.of(context).disabledColor,
+              ),
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            Transform.scale(
+              scaleX: !isLandscape ? 16 / 9 : 1,
+              scaleY: !isLandscape ? 1 : 16 / 9,
+              child: CLIcon.verySmall(
+                Icons.image,
+                color: aspectRatio.hasOrientation
+                    ? !isLandscape
+                        ? Theme.of(context).disabledColor
+                        : Colors.white
+                    : Theme.of(context).disabledColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class SaveImage extends ConsumerWidget {
-  const SaveImage({super.key});
+  const SaveImage({required this.onSave, required this.onDiscard, super.key});
+  final void Function(String outFile, {required bool overwrite}) onSave;
+  final void Function() onDiscard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final editorOptions = ref.watch(editorOptionsProvider);
-
-    if (!editorOptions.hasData) {
-      return CLButtonIcon.standard(
-        MdiIcons.close,
-        color: Colors.white,
-        onTap: () {},
-      );
-    }
+    
     return PopupMenuButton<String>(
       child: CLIcon.standard(
         MdiIcons.check,
         color: Colors.white,
       ),
-      onSelected: (String value) {
-        if (value == 'Save') {
-        } else if (value == 'Save Copy') {
-        } else if (value == 'Discard') {}
+      onSelected: (String value) async {
+        if (value == 'Save' || value == 'Save Copy') {
+          final path =
+              await ImageProcessing.process(editorOptions: editorOptions);
+          if (path != null) {
+            onSave(path, overwrite: value == 'Save');
+          }
+        } else if (value == 'Discard') {
+          onDiscard();
+        }
       },
       itemBuilder: (BuildContext context) {
         return {'Save', 'Save Copy', 'Discard'}.map((String choice) {

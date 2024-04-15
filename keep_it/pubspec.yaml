@@ -31,10 +31,12 @@ dependencies:
   form_factory:
     path: ../form_factory
   go_router: ^12.1.1
+  image: ^4.1.7
   intl: ^0.18.0
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
+  open_file: ^3.3.2
   path: ^1.8.3
   path_provider: ^2.1.1
   scroll_to_index: ^3.0.1
