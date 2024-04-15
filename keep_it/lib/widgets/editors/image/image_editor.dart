@@ -3,27 +3,38 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'providers/editor_options.dart';
+import 'crop_control.dart';
+import 'models/aspect_ratio.dart' as aratio;
+import 'save_control.dart';
 
-class CLImageEditor extends ConsumerStatefulWidget {
-  const CLImageEditor({required this.file, super.key});
+class CLImageEditor extends StatefulWidget {
+  const CLImageEditor({
+    required this.file,
+    required this.onSave,
+    required this.onDiscard,
+    super.key,
+  });
   final File file;
+  final void Function(String outFile, {required bool overwrite}) onSave;
+  final void Function() onDiscard;
 
   @override
-  ConsumerState<CLImageEditor> createState() => _CLImageEditorState();
+  State<CLImageEditor> createState() => _CLImageEditorState();
 }
 
-class _CLImageEditorState extends ConsumerState<CLImageEditor> {
-  final GlobalKey<ExtendedImageEditorState> _controller =
+class _CLImageEditorState extends State<CLImageEditor> {
+  GlobalKey<ExtendedImageEditorState> controller =
       GlobalKey<ExtendedImageEditorState>();
+  EditActionDetails? editActionDetails;
+  //double rotationAngle = 0;
+  aratio.AspectRatio? aspectRatio;
 
   @override
   Widget build(BuildContext context) {
-    final editorOptions = ref.watch(editorOptionsProvider);
-    final aspectRatio = editorOptions.aspectRatio.aspectRatio;
     return FullscreenLayout(
       useSafeArea: false,
       child: SafeArea(
@@ -34,50 +45,79 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: ExtendedImage.file(
-                      extendedImageEditorKey: _controller,
+                    child: EditableImageView(
+                      key: ValueKey(aspectRatio),
                       widget.file,
-                      fit: BoxFit.contain,
-                      mode: ExtendedImageMode.editor,
-                      initEditorConfigHandler: (state) {
-                        return EditorConfig(
-                          cropAspectRatio: aspectRatio,
-                        );
+                      controller: controller,
+                      rotateAngle: editActionDetails?.rotateAngle ?? 0.0,
+                      aspectRatio: aspectRatio?.aspectRatio,
+                      editActionDetailsIsChanged: (actions) {
+                        setState(() {
+                          editActionDetails = actions;
+                        });
+
+                        /* print('edit action: ${actions.hasEditAction}');
+                        if (actions.hasEditAction) {
+                          if (actions.hasRotateAngle) {
+                            setState(() {
+                              rotationAngle = actions.rotateAngle;
+                            });
+                          }
+                          if (actions.needCrop) {}
+                        } else {
+                          setState(() {
+                            rotationAngle = 0;
+                          });
+                        } */
                       },
                     ),
                   ),
-                  Positioned(
-                    right: 8,
-                    bottom: 8,
-                    child: Center(
-                      child: CLButtonIcon.small(
-                        MdiIcons.rotateRight,
-                        onTap: () {
-                          _controller.currentState?.rotate();
-                          ref
-                              .read(editorOptionsProvider.notifier)
-                              .rotateRight();
-                        },
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 8,
-                    bottom: 8,
-                    child: Center(
-                      child: CLButtonIcon.small(
-                        MdiIcons.rotateLeft,
-                        onTap: () {
-                          _controller.currentState?.rotate(right: false);
-                          ref.read(editorOptionsProvider.notifier).rotateLeft();
-                        },
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CLButtonIcon.small(
+                            MdiIcons.rotateRight,
+                            onTap: () {
+                              controller.currentState?.rotate();
+                            },
+                          ),
+                          CLButtonIcon.small(
+                            MdiIcons.flipHorizontal,
+                            onTap: () {
+                              controller.currentState?.flip();
+                            },
+                          ),
+                          CLButtonIcon.small(
+                            MdiIcons.rotateLeft,
+                            onTap: () {
+                              controller.currentState?.rotate(right: false);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            const CropperControls(),
+            CropperControls(
+              aspectRatio: aspectRatio,
+              rotateAngle: editActionDetails?.rotateAngle ?? 0.0,
+              onChangeAspectRatio: (aspectRatio) {
+                setState(() {
+                  this.aspectRatio = aspectRatio;
+                });
+              },
+              saveWidget: SaveImage(
+                controller: controller,
+                onSave: widget.onSave,
+                onDiscard: widget.onDiscard,
+              ),
+            ),
           ],
         ),
       ),
@@ -85,157 +125,54 @@ class _CLImageEditorState extends ConsumerState<CLImageEditor> {
   }
 }
 
-class CropperControls extends ConsumerWidget {
-  const CropperControls({super.key});
+class EditableImageView extends ConsumerStatefulWidget {
+  const EditableImageView(
+    this.file, {
+    required this.controller,
+    required this.editActionDetailsIsChanged,
+    super.key,
+    this.aspectRatio,
+    this.rotateAngle = 0,
+  });
+  final File file;
+  final GlobalKey<ExtendedImageEditorState> controller;
+  final double? aspectRatio;
+  final double rotateAngle;
+  final void Function(EditActionDetails) editActionDetailsIsChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final editorOptions = ref.watch(editorOptionsProvider);
-    final aspectRatio = editorOptions.aspectRatio;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .onBackground
-            .withAlpha(128), // Color for the circular container
-      ),
-      child: Row(
-        children: [
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: CLText.large(
-                          'Crop',
-                          color: Colors.white,
-                        ),
-                      ),
-                      const Align(
-                        child: AspectRatioUpdater(),
-                      ),
-                      Container(),
-                    ].map((e) => Expanded(child: e)).toList(),
-                  ),
-                ),
-                Container(
-                  // height: 80,
-                  alignment: Alignment.center,
-
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        for (final ratio in editorOptions.availableAspectRatio)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              right: 16,
-                              top: 4,
-                              bottom: 4,
-                            ),
-                            child: Column(
-                              children: [
-                                CLButtonText.standard(
-                                  ratio.title,
-                                  color: aspectRatio.ratio == ratio.ratio
-                                      ? Colors.white
-                                      : Colors.grey,
-                                  onTap: () {
-                                    ref
-                                        .read(editorOptionsProvider.notifier)
-                                        .aspectRatio = ratio.copyWith(
-                                      isLandscape: aspectRatio.isLandscape,
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            width: 4,
-            child: DecoratedBox(decoration: BoxDecoration(color: Colors.white)),
-          ),
-          const SaveImage(),
-        ],
-      ),
-    );
-  }
+  ConsumerState<EditableImageView> createState() => _EditableImageViewState();
 }
 
-class AspectRatioUpdater extends ConsumerWidget {
-  const AspectRatioUpdater({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final editorOptions = ref.watch(editorOptionsProvider);
-    final aspectRatio = editorOptions.aspectRatio;
-    final isLandscape = aspectRatio.isLandscape;
-    return Transform.scale(
-      scaleX: isLandscape ? 16 / 9 : 1,
-      scaleY: isLandscape ? 1 : 16 / 9,
-      child: CLButtonIcon.verySmall(
-        Icons.image,
-        color: aspectRatio.hasOrientation
-            ? Colors.white
-            : Theme.of(context).disabledColor,
-        onTap: aspectRatio.hasOrientation
-            ? () {
-                ref
-                    .read(editorOptionsProvider.notifier)
-                    .isAspectRatioLandscape = !isLandscape;
-              }
-            : null,
-      ),
-    );
-  }
-}
-
-class SaveImage extends ConsumerWidget {
-  const SaveImage({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final editorOptions = ref.watch(editorOptionsProvider);
-
-    if (!editorOptions.hasData) {
-      return CLButtonIcon.standard(
-        MdiIcons.close,
-        color: Colors.white,
-        onTap: () {},
-      );
+class _EditableImageViewState extends ConsumerState<EditableImageView> {
+  void restoreState() {
+    if (widget.controller.currentState?.editAction?.rotateAngle !=
+        widget.rotateAngle) {
+      for (var i = 0; i < (widget.rotateAngle / 90); i++) {
+        widget.controller.currentState?.rotate();
+      }
     }
-    return PopupMenuButton<String>(
-      child: CLIcon.standard(
-        MdiIcons.check,
-        color: Colors.white,
-      ),
-      onSelected: (String value) {
-        if (value == 'Save') {
-        } else if (value == 'Save Copy') {
-        } else if (value == 'Discard') {}
-      },
-      itemBuilder: (BuildContext context) {
-        return {'Save', 'Save Copy', 'Discard'}.map((String choice) {
-          return PopupMenuItem<String>(
-            value: choice,
-            child: Text(choice),
-          );
-        }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      restoreState();
+    });
+    return ExtendedImage.file(
+      extendedImageEditorKey: widget.controller,
+      widget.file,
+      fit: BoxFit.contain,
+      mode: ExtendedImageMode.editor,
+      cacheRawData: true,
+      initEditorConfigHandler: (state) {
+        return EditorConfig(
+          cropAspectRatio: widget.aspectRatio,
+          editActionDetailsIsChanged: (editActionDetails) {
+            if (editActionDetails == null) return;
+            widget.editActionDetailsIsChanged(editActionDetails);
+          },
+        );
       },
     );
   }

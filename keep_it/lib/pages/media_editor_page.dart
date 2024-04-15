@@ -9,6 +9,7 @@ import 'package:store/store.dart';
 
 import '../widgets/editors/image/image_editor.dart';
 import '../widgets/editors/video/video_trimmer.dart';
+import '../widgets/folders_and_files/media_as_file.dart';
 
 class MediaEditorPage extends ConsumerWidget {
   const MediaEditorPage({
@@ -30,6 +31,58 @@ class MediaEditorPage extends ConsumerWidget {
             if (media.isValidMedia && media.type == CLMediaType.image) {
               return CLImageEditor(
                 file: File(media.path),
+                onSave: (outFile, {required overwrite}) async {
+                  final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmAction(
+                            title: 'Confirm '
+                                '${overwrite ? "Replace" : "Save New"} ',
+                            message: 'Save this image? ',
+                            child: Image.file(File(outFile)),
+                            onConfirm: ({required confirmed}) =>
+                                Navigator.of(context).pop(confirmed),
+                          );
+                        },
+                      ) ??
+                      false;
+                  if (!confirmed) return;
+                  final md5String = await File(outFile).checksum;
+                  final CLMedia updatedMedia;
+                  if (overwrite) {
+                    updatedMedia =
+                        media.copyWith(path: outFile, md5String: md5String);
+                  } else {
+                    updatedMedia = CLMedia(
+                      path: outFile,
+                      type: CLMediaType.video,
+                      collectionId: media.collectionId,
+                      md5String: md5String,
+                      originalDate: media.originalDate,
+                      createdDate: media.createdDate,
+                    );
+                  }
+                  await dbManager.upsertMedia(
+                    collectionId: media.collectionId!,
+                    media: updatedMedia,
+                    onPrepareMedia: (m, {required targetDir}) async {
+                      final updated = (await m.moveFile(targetDir: targetDir))
+                          .getMetadata();
+
+                      return updated;
+                    },
+                  );
+                  if (context.mounted) {
+                    if (context.canPop()) {
+                      context.pop();
+                    }
+                  }
+                },
+                onDiscard: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                },
               );
             }
 
