@@ -1,14 +1,11 @@
 // TODO(anandas): : Remove prints
 // ignore_for_file: avoid_print
 
-
 import 'package:camera/camera.dart';
 
 extension EXTNextOnList<T> on List<T> {
   T next(T item) => this[(indexOf(item) + 1) % length];
 }
-
-
 
 extension ExtCameraController on CameraController {
   Future<void> onStartVideoRecording({

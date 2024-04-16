@@ -21,6 +21,7 @@ dependencies:
   crypto: ^3.0.3
   cupertino_icons: ^1.0.2
   exif: ^3.3.0
+  extended_image: ^8.2.0
   ffmpeg_kit_flutter: ^6.0.3
   
   flutter:
@@ -30,6 +31,7 @@ dependencies:
   form_factory:
     path: ../form_factory
   go_router: ^12.1.1
+  image: ^4.1.7
   intl: ^0.18.0
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296

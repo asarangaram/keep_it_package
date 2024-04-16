@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
@@ -80,6 +81,7 @@ class MediaInPageView extends ConsumerStatefulWidget {
 }
 
 class MediaInPageViewState extends ConsumerState<MediaInPageView> {
+  bool lockPage = false;
   @override
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(
@@ -116,13 +118,16 @@ class MediaInPageViewState extends ConsumerState<MediaInPageView> {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          ref.read(showControlsProvider.notifier).toggleControls();
+          if (!lockPage) {
+            ref.read(showControlsProvider.notifier).toggleControls();
+          }
         },
         child: Stack(
           children: [
             const MediaBackground(),
             SafeArea(
-              //bottom: false,
+              bottom: !lockPage,
+              top: !lockPage,
               child: Stack(
                 children: [
                   LayoutBuilder(
@@ -134,6 +139,21 @@ class MediaInPageViewState extends ConsumerState<MediaInPageView> {
                           items: widget.media,
                           startIndex: widget.initialMediaIndex,
                           parentIdentifier: widget.parentIdentifier,
+                          isLocked: lockPage,
+                          onLockPage: ({required bool lock}) {
+                            setState(() {
+                              lockPage = lock;
+                              if (lock) {
+                                ref
+                                    .read(showControlsProvider.notifier)
+                                    .hideControls();
+                              } else {
+                                ref
+                                    .read(showControlsProvider.notifier)
+                                    .showControls();
+                              }
+                            });
+                          },
                         ),
                       );
                     },
@@ -191,11 +211,15 @@ class ItemView extends StatefulWidget {
     required this.items,
     required this.startIndex,
     required this.parentIdentifier,
+    required this.isLocked,
+    this.onLockPage,
     super.key,
   });
   final List<CLMedia> items;
   final String parentIdentifier;
   final int startIndex;
+  final bool isLocked;
+  final void Function({required bool lock})? onLockPage;
 
   @override
   State<ItemView> createState() => _ItemViewState();
@@ -204,6 +228,7 @@ class ItemView extends StatefulWidget {
 class _ItemViewState extends State<ItemView> {
   late final PageController _pageController;
   late int currIndex;
+
   @override
   void initState() {
     currIndex = widget.startIndex;
@@ -216,6 +241,7 @@ class _ItemViewState extends State<ItemView> {
     return PageView.builder(
       controller: _pageController,
       itemCount: widget.items.length,
+      physics: widget.isLocked ? const NeverScrollableScrollPhysics() : null,
       onPageChanged: (index) {
         setState(() {
           currIndex = index;
@@ -230,7 +256,15 @@ class _ItemViewState extends State<ItemView> {
         return Hero(
           tag: '${widget.parentIdentifier} /item/${media.id}',
           child: switch (media.type) {
-            CLMediaType.image => CLzImage(file: File(media.path)),
+            CLMediaType.image => CLzImage(
+                file: File(media.path),
+                onLockPage: widget.onLockPage,
+                onEdit: media.id == null
+                    ? null
+                    : () {
+                        context.push('/mediaEditor?id=${media.id}');
+                      },
+              ),
             CLMediaType.video => Center(
                 child: VideoPlayer(
                   media: media,

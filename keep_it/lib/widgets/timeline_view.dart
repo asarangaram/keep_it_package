@@ -103,7 +103,7 @@ class TimeLineView extends ConsumerWidget {
                   final shareResult = await Share.shareXFiles(
                     files,
                     // text: 'Share from KeepIT',
-                    subject: 'Find the media from KeepIt',
+                    subject: 'Media from KeepIt',
                     sharePositionOrigin:
                         box!.localToGlobal(Offset.zero) & box.size,
                   );
