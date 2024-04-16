@@ -2,9 +2,12 @@
 library store;
 
 export 'src/services/camera_service/camera_service.dart' show CameraService;
-export 'src/services/image_edit_service/views/image_editor.dart';
+export 'src/services/image_edit_service/views/image_editor.dart'
+    show ImageEditService;
 export 'src/services/image_services/view/cl_media_preview.dart'
     show CLMediaPreview;
+export 'src/services/video_edit_service/video_trimmer.dart'
+    show VideoEditServices;
 export 'src/store/models/m2_db_manager.dart';
 export 'src/store/providers/p2_db_manager.dart';
 export 'src/store/widgets/media_file_handler.dart';

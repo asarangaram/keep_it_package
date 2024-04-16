@@ -14,13 +14,6 @@ enum EditorFinalActions {
       };
 }
 
-/**
- 
-CLIcon.standard(
-        MdiIcons.check,
-        color: Colors.white,
-      )
- */
 class EditorFinalizer extends StatelessWidget {
   const EditorFinalizer({
     required this.onSave,
@@ -38,13 +31,13 @@ class EditorFinalizer extends StatelessWidget {
       onSelected: (EditorFinalActions value) async {
         switch (value) {
           case EditorFinalActions.save:
-            onSave(overwrite: true);
+            await onSave(overwrite: true);
           case EditorFinalActions.saveAsNew:
-            onSave(overwrite: false);
+            await onSave(overwrite: false);
           case EditorFinalActions.revertToOriginal:
-            onDiscard(done: false);
+            await onDiscard(done: false);
           case EditorFinalActions.discard:
-            onDiscard(done: true);
+            await onDiscard(done: true);
         }
       },
       itemBuilder: (BuildContext context) {

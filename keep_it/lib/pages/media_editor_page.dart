@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:store/store.dart';
 
 import '../modules/shared_media/cl_media_process.dart';
-import '../widgets/editors/video/video_trimmer.dart';
 
 class MediaEditorPage extends StatelessWidget {
   const MediaEditorPage({
