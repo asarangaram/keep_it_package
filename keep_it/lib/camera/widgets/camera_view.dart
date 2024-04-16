@@ -10,6 +10,7 @@ class CameraView extends StatelessWidget {
     required this.frontCamera,
     required this.backCamera,
     required this.onCapture,
+    required this.onError,
     super.key,
   });
 
@@ -17,6 +18,7 @@ class CameraView extends StatelessWidget {
   final CameraDescription frontCamera;
   final CameraDescription backCamera;
   final void Function(String, {required bool isVideo}) onCapture;
+  final void Function(String message, {required dynamic error})? onError;
   @override
   Widget build(BuildContext context) {
     return FullscreenLayout(
@@ -50,6 +52,7 @@ class CameraView extends StatelessWidget {
             .textTheme
             .bodyLarge
             ?.copyWith(fontSize: CLScaleType.small.fontSize),
+        onError: onError,
       ),
     );
   }

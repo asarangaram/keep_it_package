@@ -27,6 +27,7 @@ class CLCamera extends StatefulWidget {
     required this.onGetPermission,
     required this.onCapture,
     required this.onInitializing,
+    required this.onError,
     this.cameraMode = CameraMode.photo,
     this.textStyle,
     super.key,
@@ -43,6 +44,7 @@ class CLCamera extends StatefulWidget {
   final Future<bool> Function() onGetPermission;
   final void Function(String path, {required bool isVideo}) onCapture;
   final Widget Function() onInitializing;
+  final void Function(String message, {required dynamic error})? onError;
   @override
   CameraScreenState createState() => CameraScreenState();
 }
@@ -197,6 +199,7 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
 
   void startVideoRecording() {
     controller!.onStartVideoRecording(
+      onError: widget.onError,
       onSuccess: () {
         if (mounted) {
           setState(() {
@@ -208,6 +211,7 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
   }
 
   void stopVideoRecording() => controller!.onStopVideoRecording(
+        onError: widget.onError,
         onSuccess: (videoFilePath) {
           if (mounted) {
             widget.onCapture(videoFilePath, isVideo: true);
@@ -220,6 +224,7 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
 
   void pauseVideoRecording() {
     controller!.onPauseVideoRecording(
+      onError: widget.onError,
       onSuccess: () {
         if (mounted) {
           setState(() {});
@@ -230,6 +235,7 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
 
   void resumeVideoRecording() {
     controller!.onResumeVideoRecording(
+      onError: widget.onError,
       onSuccess: () {
         if (mounted) {
           setState(() {});
@@ -240,6 +246,7 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
 
   void takePicture() {
     controller!.onTakePicture(
+      onError: widget.onError,
       onSuccess: (imageFilePath) {
         if (mounted) {
           widget.onCapture(imageFilePath, isVideo: false);

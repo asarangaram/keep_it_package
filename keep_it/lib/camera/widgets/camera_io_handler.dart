@@ -12,9 +12,10 @@ class CameraIOHandler extends ConsumerWidget {
     super.key,
   });
 
-  final Widget Function(
-    void Function(String, {required bool isVideo}) onCapture,
-  ) builder;
+  final Widget Function({
+    required void Function(String, {required bool isVideo}) onCapture,
+    required void Function(String message, {required dynamic error})? onError,
+  }) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,14 +55,21 @@ class CameraIOHandler extends ConsumerWidget {
           }
         }
       },
-      child: builder((path, {required isVideo}) {
-        ref.read(capturedMediaProvider.notifier).add(
-              CLMedia(
-                path: path,
-                type: isVideo ? CLMediaType.video : CLMediaType.image,
-              ),
-            );
-      }),
+      child: builder(
+        onError: (message, {required error}) {
+          ref
+              .read(notificationMessageProvider.notifier)
+              .push('$message: $error');
+        },
+        onCapture: (path, {required isVideo}) {
+          ref.read(capturedMediaProvider.notifier).add(
+                CLMedia(
+                  path: path,
+                  type: isVideo ? CLMediaType.video : CLMediaType.image,
+                ),
+              );
+        },
+      ),
     );
   }
 }
