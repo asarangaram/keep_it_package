@@ -1,10 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'models/aspect_ratio.dart' as aratio;
 
-class CropOrientation extends ConsumerWidget {
+class CropOrientation extends StatelessWidget {
   const CropOrientation({
     required this.rotateAngle,
     required this.aspectRatio,
@@ -25,7 +24,7 @@ class CropOrientation extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isLandscape = isAspectLandScape();
     final hasOrientation = aspectRatio?.hasOrientation ?? false;
     return GestureDetector(

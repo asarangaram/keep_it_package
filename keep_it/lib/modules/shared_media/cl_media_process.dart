@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:exif/exif.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
+import 'package:image/image.dart' as img;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 
@@ -23,7 +26,6 @@ class CLMediaProcess {
       currentItem: path.basename(media.entries[0].path),
       fractCompleted: 0,
     );
-   
 
     for (final (i, item0) in media.entries.indexed) {
       final item1 = await tryDownloadMedia(item0, appSettings: appSettings);
@@ -184,6 +186,39 @@ extension ExtProcess on CLMedia {
     const encoder =
         JsonEncoder.withIndent('  '); // Use two spaces for indentation
     return encoder.convert(json.decode(jsonString));
+  }
+
+  static Future<bool> imageCropper(
+    Uint8List imageBytes, {
+    required String outFile,
+    Rect? cropRect,
+    bool needFlip = false,
+    double? rotateAngle,
+  }) async {
+    try {
+      var image = img.decodeImage(imageBytes);
+      if (image == null) return false;
+
+      if (cropRect != null) {
+        image = img.copyCrop(
+          image,
+          x: cropRect.left.ceil(),
+          y: cropRect.top.ceil(),
+          width: (cropRect.right - cropRect.left).ceil(),
+          height: (cropRect.bottom - cropRect.top).ceil(),
+        );
+      }
+      if (needFlip) {
+        image = img.flipHorizontal(image);
+      }
+      if (rotateAngle != null) {
+        image = img.copyRotate(image, angle: rotateAngle);
+      }
+      await img.encodeJpgFile(outFile, image);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
 

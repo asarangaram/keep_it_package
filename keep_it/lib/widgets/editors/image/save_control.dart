@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image/image.dart' as img;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../../../modules/shared_media/cl_media_process.dart';
 
 class SaveImage extends ConsumerWidget {
   const SaveImage({
@@ -19,13 +22,6 @@ class SaveImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    /* if (editActionDetails != null) {
-      print('hasEditAction: ${editActionDetails!.hasEditAction}');
-      print('hasRotateAngle: ${editActionDetails!.hasRotateAngle}');
-      print('needCrop: ${editActionDetails!.needCrop}');
-      print('needFlip: ${editActionDetails!.needFlip}');
-    } */
-
     return PopupMenuButton<String>(
       child: CLIcon.standard(
         MdiIcons.check,
@@ -61,55 +57,21 @@ class SaveImage extends ConsumerWidget {
       return null;
     }
 
-    var image = img.decodeImage(state.rawImageData);
-    if (image == null) return null;
-
-    final cropRect = state.getCropRect();
-    if (editActionDetails.needCrop &&
-        cropRect != null &&
-        !cropRect.isSameAs(
-          Rect.fromLTRB(
-            0,
-            0,
-            image.width.ceilToDouble(),
-            image.height.ceilToDouble(),
-          ),
-        )) {
-      image = img.copyCrop(
-        image,
-        x: cropRect.left.ceil(),
-        y: cropRect.top.ceil(),
-        width: (cropRect.right - cropRect.left).ceil(),
-        height: (cropRect.bottom - cropRect.top).ceil(),
-      );
-    }
-    if (editActionDetails.needFlip) {
-      image = img.flipHorizontal(image);
-    }
-    if (editActionDetails.hasRotateAngle) {
-      image = img.copyRotate(image, angle: editActionDetails.rotateAngle);
-    }
-    return saveFile(image);
-  }
-
-  static Future<String?> saveFile(img.Image? image) async {
-    if (image == null) return null;
     final cacheDir = await getTemporaryDirectory();
-
     final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final imageFile = '${cacheDir.path}/$fileName';
 
-    await img.encodeJpgFile(imageFile, image);
+    File(imageFile).createSync(recursive: true);
 
+    await ExtProcess.imageCropper(
+      state.rawImageData,
+      cropRect: editActionDetails.needCrop ? state.getCropRect() : null,
+      needFlip: editActionDetails.needFlip,
+      rotateAngle: editActionDetails.hasRotateAngle
+          ? editActionDetails.rotateAngle
+          : null,
+      outFile: imageFile,
+    );
     return imageFile;
-  }
-}
-
-extension IntCompareRect on Rect {
-  bool isSameAs(Rect other) {
-    return left.ceil() == other.left.ceil() &&
-        right.ceil() == other.right.ceil() &&
-        top.ceil() == other.top.ceil() &&
-        bottom.ceil() == other.bottom.ceil();
   }
 }

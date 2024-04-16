@@ -1,11 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'crop_orientation_control.dart';
 import 'models/aspect_ratio.dart' as aratio;
 
-class CropperControls extends ConsumerWidget {
+class CropperControls extends StatelessWidget {
   const CropperControls({
     required this.rotateAngle,
     required this.aspectRatio,
@@ -30,7 +29,7 @@ class CropperControls extends ConsumerWidget {
       ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context)
