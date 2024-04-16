@@ -29,7 +29,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
     required this.galleryMap,
     required this.title,
     required this.emptyState,
-    required this.tagPrefix,
+    required this.identifier,
     required this.itemBuilder,
     required this.columns,
     this.onPickFiles,
@@ -44,7 +44,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
   final int columns;
 
   final Widget emptyState;
-  final String tagPrefix;
+  final String identifier;
   final void Function(BuildContext context)? onPickFiles;
   final void Function()? onCameraCapture;
 
@@ -57,7 +57,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     if (galleryMap.isEmpty) {
       return KeepItMainView(
-        key: ValueKey('KeepItMainView $tagPrefix'),
+        key: ValueKey('KeepItMainView $identifier'),
         title: title,
         actionsBuilder: [
           if (onCameraCapture != null)
@@ -86,7 +86,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
           galleryMap: galleryMap,
           itemBuilder: itemBuilder,
           columns: columns,
-          tagPrefix: tagPrefix,
+          tagPrefix: identifier,
           onRefresh: onRefresh,
           selectionActions: selectionActions,
         ),

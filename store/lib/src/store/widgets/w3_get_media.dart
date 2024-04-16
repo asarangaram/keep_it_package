@@ -31,40 +31,6 @@ class GetMedia extends ConsumerWidget {
   }
 }
 
-class GetMediaByTagId extends ConsumerWidget {
-  const GetMediaByTagId({
-    required this.buildOnData,
-    this.tagID,
-    super.key,
-  });
-  final Widget Function(List<CLMedia> items) buildOnData;
-
-  final int? tagID;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final qid = (tagID == null) ? DBQueries.mediaAll : DBQueries.mediaByTagId;
-
-    return GetFromStore<CLMedia>(
-      query: (qid.sql as DBQuery<CLMedia>).copyWith(
-        parameters: (tagID == null) ? [] : [tagID],
-      ),
-      builder: (media) {
-        media.sort((a, b) {
-          final aDate = a.originalDate ?? a.createdDate;
-          final bDate = b.originalDate ?? b.createdDate;
-
-          if (aDate != null && bDate != null) {
-            return bDate.compareTo(aDate);
-          }
-          return 0;
-        });
-        return buildOnData(media);
-      },
-    );
-  }
-}
-
 class GetMediaByCollectionId extends ConsumerWidget {
   const GetMediaByCollectionId({
     required this.buildOnData,

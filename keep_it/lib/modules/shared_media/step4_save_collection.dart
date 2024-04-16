@@ -24,9 +24,6 @@ class SaveCollection extends SharedMediaWizard {
           stream: () => acceptMedia(
             dbManager,
             collection: incomingMedia.collection!,
-            newTagsListToReplace: incomingMedia.tags == null
-                ? null
-                : List.from(incomingMedia.tags!),
             media: List.from(incomingMedia.entries),
             onDone: () {
               onDone(mg: null);
@@ -41,7 +38,6 @@ class SaveCollection extends SharedMediaWizard {
   static Stream<Progress> acceptMedia(
     DBManager dbManager, {
     required Collection collection,
-    required List<Tag>? newTagsListToReplace,
     required List<CLMedia>? media,
     required void Function() onDone,
   }) async* {
@@ -53,7 +49,6 @@ class SaveCollection extends SharedMediaWizard {
       );
       updatedCollection = await dbManager.upsertCollection(
         collection: collection,
-        newTagsListToReplace: newTagsListToReplace,
       );
     } else {
       updatedCollection = collection;

@@ -52,10 +52,6 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
                 label: 'Collections',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'search',
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
                 label: 'settings',
               ),
@@ -70,7 +66,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
                   if (context.canPop()) {
                     context.pop();
                   } else {
-                   /*  if (widget.child.currentIndex == 1) {
+                    /*  if (widget.child.currentIndex == 1) {
                       widget.child.goBranch(
                         0,
                       );
@@ -85,7 +81,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
 
                 // Swiping in left direction.
                 if (details.primaryVelocity! < 0) {
-                 /*  if (widget.child.currentIndex == 0) {
+                  /*  if (widget.child.currentIndex == 0) {
                     widget.child.goBranch(
                       1,
                     );

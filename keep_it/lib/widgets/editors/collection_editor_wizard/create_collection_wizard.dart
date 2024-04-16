@@ -1,12 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:store/store.dart';
 
 import 'edit_collection_description.dart';
 import 'label_viewer.dart';
 import 'pick_collection.dart';
-import 'pick_tags.dart';
 
 class CreateCollectionWizard extends StatefulWidget {
   const CreateCollectionWizard({
@@ -16,7 +14,6 @@ class CreateCollectionWizard extends StatefulWidget {
 
   final void Function({
     required Collection collection,
-    required List<Tag>? tags,
   }) onDone;
 
   @override
@@ -26,13 +23,13 @@ class CreateCollectionWizard extends StatefulWidget {
 class PickCollectionState extends State<CreateCollectionWizard> {
   bool onEditLabel = true;
   Collection? collection;
-  List<Tag>? selectedTags;
+
   late bool hasDescription;
 
   @override
   void initState() {
     collection = null;
-    selectedTags = null;
+
     hasDescription = false;
     super.initState();
   }
@@ -45,22 +42,17 @@ class PickCollectionState extends State<CreateCollectionWizard> {
   @override
   Widget build(BuildContext context) {
     if (collection == null || onEditLabel) {
-      return GetTagMultiple(
-        buildOnData: (currTags) {
-          return PickCollection(
-            collection: collection,
-            onDone: (collection) {
-              if (collection.id != null) {
-                widget.onDone(collection: collection, tags: null);
-                hasDescription = true;
-                selectedTags = currTags;
-              }
-              setState(() {
-                onEditLabel = false;
-                this.collection = collection;
-              });
-            },
-          );
+      return PickCollection(
+        collection: collection,
+        onDone: (collection) {
+          if (collection.id != null) {
+            widget.onDone(collection: collection);
+            hasDescription = true;
+          }
+          setState(() {
+            onEditLabel = false;
+            this.collection = collection;
+          });
         },
       );
     } else if (!hasDescription) {
@@ -83,32 +75,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
                   this.collection = collection;
                   hasDescription = true;
                 });
-              },
-            ),
-          ),
-        ],
-      );
-    } else if (selectedTags == null) {
-      return Column(
-        children: [
-          LabelViewer(
-            label: 'Collection: ${collection!.label}',
-            icon: MdiIcons.pencil,
-            onTap: () {
-              setState(() {
-                onEditLabel = true;
-                hasDescription = false;
-              });
-            },
-          ),
-          Flexible(
-            child: PickTags(
-              collection: collection!,
-              onDone: (tags) {
-                widget.onDone(collection: collection!, tags: tags);
-                setState(() {
-                  selectedTags = tags;
-                });
+                widget.onDone(collection: this.collection!);
               },
             ),
           ),

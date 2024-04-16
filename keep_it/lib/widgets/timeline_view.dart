@@ -38,7 +38,7 @@ class TimeLineView extends ConsumerWidget {
         return CLSimpleGalleryView(
           key: ValueKey(label),
           title: label,
-          tagPrefix: parentIdentifier,
+          identifier: parentIdentifier,
           columns: 4,
           galleryMap: galleryGroups,
           emptyState: const EmptyState(),

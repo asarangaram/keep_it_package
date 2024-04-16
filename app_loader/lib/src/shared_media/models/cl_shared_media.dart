@@ -3,27 +3,24 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class CLSharedMedia {
-  const CLSharedMedia({required this.entries, this.collection, this.tags});
+  const CLSharedMedia({required this.entries, this.collection});
   final List<CLMedia> entries;
   final Collection? collection;
-  final List<Tag>? tags;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
 
   @override
   String toString() => 'CLMediaList(entries: $entries, '
-      'collection: $collection tags: $tags)';
+      'collection: $collection)';
 
   CLSharedMedia copyWith({
     List<CLMedia>? entries,
     Collection? collection,
-    List<Tag>? tags,
   }) {
     return CLSharedMedia(
       entries: entries ?? this.entries,
       collection: collection ?? this.collection,
-      tags: tags ?? this.tags,
     );
   }
 

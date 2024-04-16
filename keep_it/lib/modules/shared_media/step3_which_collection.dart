@@ -18,47 +18,44 @@ class WhichCollection extends SharedMediaWizard {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetTagMultiple(
-      buildOnData: (tags) => Column(
-        children: [
-          if (title != null) title!,
-          if (incomingMedia.entries.length == 1)
-            Flexible(
-              child: CLMediaPreview(
-                media: incomingMedia.entries[0],
+    return Column(
+      children: [
+        if (title != null) title!,
+        if (incomingMedia.entries.length == 1)
+          Flexible(
+            child: CLMediaPreview(
+              media: incomingMedia.entries[0],
+            ),
+          )
+        else
+          Flexible(
+            child: CLMediaCollage.byMatrixSize(
+              incomingMedia.entries,
+              hCount: switch (incomingMedia.entries.length) { _ => 2 },
+              itemBuilder: (context, index) => CLMediaPreview(
+                media: incomingMedia.entries[index],
               ),
-            )
-          else
-            Flexible(
-              child: CLMediaCollage.byMatrixSize(
-                incomingMedia.entries,
-                hCount: switch (incomingMedia.entries.length) { _ => 2 },
-                itemBuilder: (context, index) => CLMediaPreview(
-                  media: incomingMedia.entries[index],
+            ),
+          ),
+        const Divider(
+          thickness: 4,
+        ),
+        SizedBox(
+          height: kMinInteractiveDimension * 4,
+          child: CreateCollectionWizard(
+            onDone: ({required collection}) {
+              onDone(
+                mg: incomingMedia.copyWith(
+                  collection: collection,
+                  entries: incomingMedia.entries
+                      .map((e) => e.copyWith(collectionId: collection.id))
+                      .toList(),
                 ),
-              ),
-            ),
-          const Divider(
-            thickness: 4,
+              );
+            },
           ),
-          SizedBox(
-            height: kMinInteractiveDimension * 4,
-            child: CreateCollectionWizard(
-              onDone: ({required collection, required tags}) {
-                onDone(
-                  mg: incomingMedia.copyWith(
-                    collection: collection,
-                    tags: tags,
-                    entries: incomingMedia.entries
-                        .map((e) => e.copyWith(collectionId: collection.id))
-                        .toList(),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -17,7 +17,7 @@ class CollectionEditorPage extends StatelessWidget {
       width: min(MediaQuery.of(context).size.width, 450),
       child: CollectionEditor(
         collectionId: collectionId,
-        onSubmit: (collection, tags) {},
+        onSubmit: (collection) {},
         onCancel: () {
           if (context.canPop()) {
             context.pop();

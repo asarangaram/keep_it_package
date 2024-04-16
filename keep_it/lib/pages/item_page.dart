@@ -38,33 +38,6 @@ class CollectionItemPage extends ConsumerWidget {
   }
 }
 
-class TagItemPage extends ConsumerWidget {
-  const TagItemPage({
-    required this.id,
-    required this.tagId,
-    required this.parentIdentifier,
-    super.key,
-  });
-  final int tagId;
-  final int id;
-  final String parentIdentifier;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GetMediaByTagId(
-      buildOnData: (media) {
-        final initialMedia = media.where((e) => e.id == id).first;
-        final initialMediaIndex = media.indexOf(initialMedia);
-        return MediaInPageView(
-          media: media,
-          initialMediaIndex: initialMediaIndex,
-          parentIdentifier: parentIdentifier,
-        );
-      },
-    );
-  }
-}
-
 class MediaInPageView extends ConsumerStatefulWidget {
   const MediaInPageView({
     required this.initialMediaIndex,
