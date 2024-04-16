@@ -7,10 +7,20 @@ class FullscreenLayout extends StatelessWidget {
     super.key,
     this.onClose,
     this.useSafeArea = true,
+    this.backgroundColor,
+    this.hasBorder = false,
+    this.backgroundBrightness = 0.25,
+    this.hasBackground = true,
+    this.bottomNavigationBar,
   });
   final Widget child;
   final void Function()? onClose;
   final bool useSafeArea;
+  final Color? backgroundColor;
+  final bool hasBorder;
+  final double backgroundBrightness;
+  final bool hasBackground;
+  final Widget? bottomNavigationBar;
 
   @override
   Widget build(
@@ -47,6 +57,11 @@ class FullscreenLayout extends StatelessWidget {
       ),
     ); */
     return CLFullscreenBox(
+      hasBackground: hasBackground,
+      backgroundColor: backgroundColor,
+      hasBorder: hasBorder,
+      backgroundBrightness: backgroundBrightness,
+      bottomNavigationBar: bottomNavigationBar,
       useSafeArea: useSafeArea,
       child: NotificationService(
         child: Column(

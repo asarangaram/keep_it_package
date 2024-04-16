@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,14 +30,24 @@ class CLImageEditor extends StatefulWidget {
 class _CLImageEditorState extends State<CLImageEditor> {
   GlobalKey<ExtendedImageEditorState> controller =
       GlobalKey<ExtendedImageEditorState>();
-  EditActionDetails? editActionDetails;
-  //double rotationAngle = 0;
+
+  double rotateAngle = 0;
   aratio.AspectRatio? aspectRatio;
+
+  void reset() {
+    setState(() {
+      aspectRatio = null;
+      rotateAngle = 0.0;
+      controller.currentState?.reset();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return FullscreenLayout(
       useSafeArea: false,
+      hasBackground: false,
+      backgroundColor: Theme.of(context).colorScheme.onSurface,
       child: SafeArea(
         top: false,
         child: Column(
@@ -49,11 +60,11 @@ class _CLImageEditorState extends State<CLImageEditor> {
                       key: ValueKey(aspectRatio),
                       widget.file,
                       controller: controller,
-                      rotateAngle: editActionDetails?.rotateAngle ?? 0.0,
+                      rotateAngle: rotateAngle,
                       aspectRatio: aspectRatio?.aspectRatio,
                       editActionDetailsIsChanged: (actions) {
                         setState(() {
-                          editActionDetails = actions;
+                          rotateAngle = actions.rotateAngle;
                         });
 
                         /* print('edit action: ${actions.hasEditAction}');
@@ -106,7 +117,7 @@ class _CLImageEditorState extends State<CLImageEditor> {
             ),
             CropperControls(
               aspectRatio: aspectRatio,
-              rotateAngle: editActionDetails?.rotateAngle ?? 0.0,
+              rotateAngle: rotateAngle,
               onChangeAspectRatio: (aspectRatio) {
                 setState(() {
                   this.aspectRatio = aspectRatio;
@@ -115,7 +126,12 @@ class _CLImageEditorState extends State<CLImageEditor> {
               saveWidget: SaveImage(
                 controller: controller,
                 onSave: widget.onSave,
-                onDiscard: widget.onDiscard,
+                onDiscard: ({required bool done}) {
+                  reset();
+                  if (done) {
+                    widget.onDiscard();
+                  }
+                },
               ),
             ),
           ],

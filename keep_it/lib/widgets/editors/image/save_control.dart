@@ -18,7 +18,7 @@ class SaveImage extends ConsumerWidget {
   });
   final GlobalKey<ExtendedImageEditorState> controller;
   final void Function(String outFile, {required bool overwrite}) onSave;
-  final void Function() onDiscard;
+  final void Function({required bool done}) onDiscard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,10 +33,15 @@ class SaveImage extends ConsumerWidget {
           if (path != null) {
             onSave(path, overwrite: value == 'Save');
           }
-        } else if (value == 'Discard') {}
+        } else if (value == 'Discard') {
+          onDiscard(done: true);
+        } else if (value == 'Reset to Original') {
+          onDiscard(done: false);
+        }
       },
       itemBuilder: (BuildContext context) {
-        return {'Save', 'Save Copy', 'Discard'}.map((String choice) {
+        return {'Save', 'Save Copy', 'Discard', 'Reset to Original'}
+            .map((String choice) {
           return PopupMenuItem<String>(
             value: choice,
             child: Text(choice),
