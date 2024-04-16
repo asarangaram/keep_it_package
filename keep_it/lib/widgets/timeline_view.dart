@@ -63,7 +63,7 @@ class TimeLineView extends ConsumerWidget {
                   final confirmed = await showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
-                          return ConfirmAction(
+                          return CLConfirmAction(
                             title: 'Confirm delete',
                             message: 'Are you sure you want to delete '
                                 '${items.length} items?',

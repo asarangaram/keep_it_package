@@ -9,7 +9,6 @@ import 'package:store/store.dart';
 
 import '../widgets/editors/image/image_editor.dart';
 import '../widgets/editors/video/video_trimmer.dart';
-import '../widgets/folders_and_files/media_as_file.dart';
 
 class MediaEditorPage extends ConsumerWidget {
   const MediaEditorPage({
@@ -35,7 +34,7 @@ class MediaEditorPage extends ConsumerWidget {
                   final confirmed = await showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
-                          return ConfirmAction(
+                          return CLConfirmAction(
                             title: 'Confirm '
                                 '${overwrite ? "Replace" : "Save New"} ',
                             message: 'Save this image? ',

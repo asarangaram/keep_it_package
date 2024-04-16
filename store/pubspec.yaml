@@ -8,6 +8,9 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  camera: ^0.10.5+9
+  cl_camera:
+    path: ../cl_camera
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.18.0
@@ -20,6 +23,7 @@ dependencies:
   heif_converter: ^1.0.0
   image: ^4.1.7
   intl: ^0.18.0
+  material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
   path: ^1.8.3
   path_provider: ^2.1.1

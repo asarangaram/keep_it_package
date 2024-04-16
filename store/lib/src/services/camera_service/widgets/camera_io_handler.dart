@@ -1,21 +1,33 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../widgets/folders_and_files/media_as_file.dart';
+import 'package:store/store.dart';
+
 import '../providers/captured_media.dart';
 
 class CameraIOHandler extends ConsumerWidget {
   const CameraIOHandler({
     required this.builder,
+    required this.collection,
+    required this.onDone,
+    required this.onReceiveCapturedMedia,
     super.key,
   });
 
+  final Collection? collection;
   final Widget Function({
     required void Function(String, {required bool isVideo}) onCapture,
     required void Function(String message, {required dynamic error})? onError,
+    required Widget previewWidget,
   }) builder;
+  final VoidCallback onDone;
+  final Future<bool> Function(
+    BuildContext context,
+    WidgetRef ref, {
+    required List<CLMedia> entries,
+    Collection? collection,
+  }) onReceiveCapturedMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,7 +41,7 @@ class CameraIOHandler extends ConsumerWidget {
             final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext context) {
-                    return ConfirmAction(
+                    return CLConfirmAction(
                       title: 'Discard?',
                       message: 'Do you want to discard all '
                           'the images and video captured?',
@@ -42,16 +54,10 @@ class CameraIOHandler extends ConsumerWidget {
                 false;
             if (confirmed) {
               ref.read(capturedMediaProvider.notifier).onDiscard();
-              if (context.mounted) {
-                if (context.canPop()) {
-                  context.pop();
-                }
-              }
+              onDone();
             }
           } else {
-            if (context.canPop()) {
-              context.pop();
-            }
+            onDone();
           }
         }
       },
@@ -69,6 +75,59 @@ class CameraIOHandler extends ConsumerWidget {
                 ),
               );
         },
+        previewWidget: InkWell(
+          onTap: () async {
+            await onReceiveCapturedMedia(
+              context,
+              ref,
+              entries: capturedMedia,
+              collection: collection,
+            );
+            ref.read(capturedMediaProvider.notifier).clear();
+            onDone();
+          },
+          child: capturedMedia.isEmpty
+              ? Container()
+              : CapturedMediaDecorator(
+                  child: CLMediaPreview(
+                    media: capturedMedia.last,
+                    keepAspectRatio: false,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+class CapturedMediaDecorator extends StatelessWidget {
+  const CapturedMediaDecorator({
+    required this.child,
+    super.key,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(
+          10,
+        ),
+        border: Border.all(
+          color: Colors.white,
+          width: 2,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(
+          8,
+        ),
+        child: child,
       ),
     );
   }

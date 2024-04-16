@@ -1,6 +1,7 @@
 /// store
 library store;
 
+export 'src/services/camera_service/camera_service.dart' show CameraService;
 export 'src/services/image_services/view/cl_media_preview.dart'
     show CLMediaPreview;
 export 'src/store/models/m2_db_manager.dart';

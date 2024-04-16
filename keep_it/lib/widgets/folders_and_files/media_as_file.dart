@@ -38,7 +38,7 @@ class MediaAsFile extends ConsumerWidget {
               await showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) {
-                  return ConfirmAction(
+                  return CLConfirmAction(
                     title: 'Confirm delete',
                     message: 'Are you sure you want to delete '
                         'this ${media.type.name}?',
@@ -88,56 +88,6 @@ class MediaAsFile extends ConsumerWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class ConfirmAction extends StatelessWidget {
-  const ConfirmAction({
-    required this.title,
-    required this.message,
-    required this.child,
-    required this.onConfirm,
-    super.key,
-  });
-
-  final String title;
-  final String message;
-  final Widget? child;
-  final void Function({
-    required bool confirmed,
-  }) onConfirm;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      alignment: Alignment.center,
-      title: const Text('Confirm Delete'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox.square(
-            dimension: 200,
-            child: child,
-          ),
-          CLText.large(message),
-        ],
-      ),
-      actions: [
-        ButtonBar(
-          alignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed: () => onConfirm(confirmed: false),
-              child: const Text('No'),
-            ),
-            ElevatedButton(
-              child: const Text('Yes'),
-              onPressed: () => onConfirm(confirmed: true),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
