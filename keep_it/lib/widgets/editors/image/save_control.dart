@@ -57,7 +57,7 @@ class SaveImage extends ConsumerWidget {
     final state = controller.currentState!;
     final editActionDetails = state.editAction;
 
-    if (editActionDetails == null || !editActionDetails.hasEditAction) {
+    if (editActionDetails == null) {
       return null;
     }
 
