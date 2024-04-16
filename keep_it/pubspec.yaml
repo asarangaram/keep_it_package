@@ -63,14 +63,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/nature-sky-water-sea-natural-landscape-ocean-1520813-pxhere.com.jpg
-    - assets/wallpaperflare.com_wallpaper-2.jpg
-    - assets/wallpaperflare.com_wallpaper.jpg
-    - assets/image1.jpg
-    - assets/image2.jpg
-    - assets/image3.jpg
-    - assets/image4.jpg
-    - assets/image5.jpg
-    - assets/camera_aim.png
+
     
