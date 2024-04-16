@@ -2,13 +2,12 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 
-import 'package:keep_it/widgets/editors/tag_editor.dart';
 import 'package:store/store.dart';
 
 class CollectionEditor extends StatelessWidget {
   factory CollectionEditor({
     required int collectionId,
-    required void Function(Collection collection, List<Tag> tags) onSubmit,
+    required void Function(Collection collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -22,7 +21,7 @@ class CollectionEditor extends StatelessWidget {
   }
   factory CollectionEditor.dialog({
     required int collectionId,
-    required void Function(Collection collection, List<Tag> tags) onSubmit,
+    required void Function(Collection collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -44,7 +43,7 @@ class CollectionEditor extends StatelessWidget {
 
   final int collectionId;
 
-  final void Function(Collection collection, List<Tag> tags) onSubmit;
+  final void Function(Collection collection) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
@@ -56,81 +55,40 @@ class CollectionEditor extends StatelessWidget {
         buildOnData: (collections) {
           final collection =
               collections.where((e) => e.id == collectionId).first;
-          return GetTagMultiple(
-            buildOnData: (existingTags) {
-              return GetTagMultiple(
-                collectionId: collection.id,
-                buildOnData: (currentTags) {
-                  return CLForm(
-                    explicitScrollDownOption: !isDialog,
-                    descriptors: {
-                      'label': CLFormTextFieldDescriptor(
-                        title: 'Name',
-                        label: 'Collection Name',
-                        initialValue: collection.label,
-                        onValidate: (value) => validateName(
-                          newLabel: value,
-                          existingLabel: collection.label,
-                          collections: collections,
-                        ),
-                      ),
-                      'description': CLFormTextFieldDescriptor(
-                        title: 'About',
-                        label: 'Describe about this collection',
-                        initialValue: collection.description ?? '',
-                        onValidate: (_) => null,
-                        maxLines: 4,
-                      ),
-                      'tags': CLFormSelectMultipleDescriptors(
-                        title: 'Tags',
-                        label: 'Select Tags',
-                        suggestionsAvailable: [
-                          ...existingTags,
-                          ...suggestedTags.excludeByLabel(
-                            existingTags,
-                            (Tag e) => e.label,
-                          ),
-                        ],
-                        initialValues: collection.id == null ? [] : currentTags,
-                        labelBuilder: (e) => (e as Tag).label,
-                        descriptionBuilder: (e) => (e as Tag).description,
-                        onSelectSuggestion: (Object item) async {
-                          return create(context, item as Tag);
-                        },
-                        onCreateByLabel: (label) async {
-                          return create(context, Tag(label: label));
-                        },
-                        onValidate: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return 'Atleast one value should be provided';
-                          }
-                          return null;
-                        },
-                      ),
-                    },
-                    onSubmit: (result) async {
-                      final label =
-                          (result['label']! as CLFormTextFieldResult).value;
-                      final desc =
-                          (result['description']! as CLFormTextFieldResult)
-                              .value;
-
-                      final updated = collection.copyWith(
-                        label: label,
-                        description: desc.isEmpty ? null : desc,
-                      );
-                      final tags =
-                          (result['tags']! as CLFormSelectMultipleResult)
-                              .selectedEntities
-                              .map((e) => e as Tag)
-                              .toList();
-                      onSubmit(updated, tags);
-                    },
-                    onCancel: isDialog ? null : onCancel,
-                  );
-                },
-              );
+          return CLForm(
+            explicitScrollDownOption: !isDialog,
+            descriptors: {
+              'label': CLFormTextFieldDescriptor(
+                title: 'Name',
+                label: 'Collection Name',
+                initialValue: collection.label,
+                onValidate: (value) => validateName(
+                  newLabel: value,
+                  existingLabel: collection.label,
+                  collections: collections,
+                ),
+              ),
+              'description': CLFormTextFieldDescriptor(
+                title: 'About',
+                label: 'Describe about this collection',
+                initialValue: collection.description ?? '',
+                onValidate: (_) => null,
+                maxLines: 4,
+              ),
             },
+            onSubmit: (result) async {
+              final label = (result['label']! as CLFormTextFieldResult).value;
+              final desc =
+                  (result['description']! as CLFormTextFieldResult).value;
+
+              final updated = collection.copyWith(
+                label: label,
+                description: desc.isEmpty ? null : desc,
+              );
+
+              onSubmit(updated);
+            },
+            onCancel: isDialog ? null : onCancel,
           );
         },
       ),
@@ -158,31 +116,16 @@ class CollectionEditor extends StatelessWidget {
     return null;
   }
 
-  Future<Tag?> create(BuildContext context, Tag tag) async {
-    final Tag entityUpdated;
-    if (tag.id == null) {
-      final res = await TagEditor.popupDialog(context, tag: tag);
-      if (res == null) {
-        return null;
-      }
-      entityUpdated = res;
-    } else {
-      entityUpdated = tag;
-    }
-
-    return entityUpdated;
-  }
-
-  static Future<(Collection, List<Tag>)?> popupDialog(
+  static Future<Collection?> popupDialog(
     BuildContext context, {
     required Collection collection,
   }) async =>
-      showDialog<(Collection, List<Tag>)>(
+      showDialog<Collection>(
         context: context,
         builder: (BuildContext context) => CollectionEditor.dialog(
           collectionId: collection.id!,
-          onSubmit: (collection, tags) {
-            Navigator.of(context).pop((collection, tags));
+          onSubmit: (collection) {
+            Navigator.of(context).pop(collection);
           },
           onCancel: () => Navigator.of(context).pop(),
         ),

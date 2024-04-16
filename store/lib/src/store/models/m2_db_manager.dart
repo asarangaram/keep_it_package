@@ -11,7 +11,6 @@ import 'm4_db_writer.dart';
 abstract class Store {
   Future<Collection> upsertCollection({
     required Collection collection,
-    required List<Tag>? newTagsListToReplace,
   });
   Future<void> upsertMedia({
     required int collectionId,
@@ -29,9 +28,7 @@ abstract class Store {
       required String targetDir,
     }) onPrepareMedia,
   });
-  Future<void> deleteTag(
-    Tag tag,
-  );
+
   Future<void> deleteCollection(
     Collection collection, {
     required Future<void> Function(Directory dir) onDeleteDir,
@@ -77,11 +74,9 @@ class DBManager extends Store {
   @override
   Future<Collection> upsertCollection({
     required Collection collection,
-    required List<Tag>? newTagsListToReplace,
   }) async {
     return db.writeTransaction<Collection>((tx) async {
       final collectionWithId = await dbWriter.upsertCollection(tx, collection);
-      await dbWriter.replaceTags(tx, collectionWithId, newTagsListToReplace);
       return collectionWithId;
     });
   }
@@ -128,15 +123,6 @@ class DBManager extends Store {
         );
         await dbWriter.upsertMedia(tx, updated);
       } catch (e) {/* */}
-    });
-  }
-
-  @override
-  Future<void> deleteTag(
-    Tag tag,
-  ) async {
-    await db.writeTransaction((tx) async {
-      await dbWriter.deleteTag(tx, tag);
     });
   }
 
@@ -206,24 +192,6 @@ final migrations = SqliteMigrations()
   ..add(
     SqliteMigration(1, (tx) async {
       await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Tag (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        label TEXT NOT NULL UNIQUE,
-        description TEXT,
-        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    ''');
-      await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_tag
-        AFTER UPDATE ON Tag
-        BEGIN
-            UPDATE Tag
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-    ''');
-      await tx.execute('''
       CREATE TABLE IF NOT EXISTS Collection (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         description TEXT,
@@ -263,15 +231,6 @@ final migrations = SqliteMigrations()
             SET updatedDate = CURRENT_TIMESTAMP
             WHERE id = NEW.id;
         END;
-    ''');
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS TagCollection (
-        tagId INTEGER,
-        collectionId INTEGER,
-        FOREIGN KEY (tagId) REFERENCES Tag(id),
-        FOREIGN KEY (collectionId) REFERENCES Collection(id),
-        PRIMARY KEY (tagId, collectionId)
-      )
     ''');
     }),
   );

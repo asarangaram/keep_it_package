@@ -36,23 +36,17 @@ class GetCollectionMultiple extends ConsumerWidget {
     required this.buildOnData,
     super.key,
     this.excludeEmpty = false,
-    this.tagId,
   });
   final Widget Function(List<Collection> collections) buildOnData;
   final bool excludeEmpty;
-  final int? tagId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qid = excludeEmpty
-        ? (tagId == null)
-            ? DBQueries.collectionsExcludeEmpty
-            : DBQueries.collectionsByTagIDExcludeEmpty
-        : (tagId == null)
-            ? DBQueries.collectionsAll
-            : DBQueries.collectionsByTagId;
+        ? DBQueries.collectionsExcludeEmpty
+        : DBQueries.collectionsAll;
     final q = qid.sql as DBQuery<Collection>;
-    final qWithParam = q.copyWith(parameters: (tagId == null) ? [] : [tagId]);
+    final qWithParam = q.copyWith(parameters: []);
     return GetFromStore<Collection>(
       query: qWithParam,
       builder: buildOnData,

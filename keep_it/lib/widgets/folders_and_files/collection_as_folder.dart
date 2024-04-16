@@ -30,10 +30,9 @@ class CollectionAsFolder extends ConsumerWidget {
               collection: collection,
             );
             if (res != null) {
-              final (collection, tags) = res;
+              final (collection) = res;
               await dbManager.upsertCollection(
                 collection: collection,
-                newTagsListToReplace: tags,
               );
 
               await ref

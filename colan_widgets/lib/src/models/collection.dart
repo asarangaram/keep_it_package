@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'm1_app_settings.dart';
-import 'tag.dart';
 
 @immutable
 class Collection {
@@ -79,9 +78,9 @@ class Collection {
 
 class Collections {
   final List<Collection> entries;
-  final Tag? tag;
+
   final int? lastupdatedID;
-  Collections(this.entries, {this.lastupdatedID, this.tag});
+  Collections(this.entries, {this.lastupdatedID});
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
@@ -89,12 +88,10 @@ class Collections {
   Collections copyWith({
     List<Collection>? entries,
     int? lastupdatedID,
-    Tag? tag,
   }) {
     return Collections(
       entries ?? this.entries,
       lastupdatedID: lastupdatedID ?? this.lastupdatedID,
-      tag: tag ?? this.tag,
     );
   }
 

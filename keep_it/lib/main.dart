@@ -18,8 +18,6 @@ import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
-import 'pages/tag_timeline_page.dart';
-import 'pages/tags_page.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -44,7 +42,7 @@ class KeepItApp implements AppDescriptor {
   CLAppInitializer get appInitializer => (ref) async {
         // TODO(anandas): Delete only if saved preference is set to reset.
         // ignore: dead_code, literal_only_boolean_expressions
-        if (false) {
+        if (true) {
           for (final dir in [
             await getApplicationDocumentsDirectory(),
             await getApplicationCacheDirectory(),
@@ -63,12 +61,6 @@ class KeepItApp implements AppDescriptor {
           builder: (context, GoRouterState state) => const CollectionsPage(),
           iconData: Icons.home,
           label: 'Collections',
-        ),
-        CLShellRouteDescriptor(
-          name: 'tags',
-          builder: (context, state) => const TagsPage(),
-          iconData: Icons.search,
-          label: 'Search',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
@@ -124,19 +116,6 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'item_by_tag/:tagId/:item_id',
-          builder: (context, GoRouterState state) {
-            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
-              throw Exception('missing parentIdentifier');
-            }
-            return TagItemPage(
-              tagId: int.parse(state.pathParameters['tagId']!),
-              id: int.parse(state.pathParameters['item_id']!),
-              parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
-            );
-          },
-        ),
-        CLRouteDescriptor(
           name: 'edit/:collectionId',
           builder: (context, GoRouterState state) {
             return CollectionEditorPage(
@@ -165,21 +144,13 @@ class KeepItApp implements AppDescriptor {
   @override
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
-          name: 'collections/:tagId',
-          builder: (context, GoRouterState state) => CollectionsPage(
-            tagId: int.parse(state.pathParameters['tagId']!),
-          ),
+          name: 'collections',
+          builder: (context, GoRouterState state) => const CollectionsPage(),
         ),
         CLRouteDescriptor(
           name: 'items_by_collection/:collectionId',
           builder: (context, GoRouterState state) => CollectionTimeLinePage(
             collectionId: int.parse(state.pathParameters['collectionId']!),
-          ),
-        ),
-        CLRouteDescriptor(
-          name: 'items_by_tag/:tagId',
-          builder: (context, GoRouterState state) => TagTimeLinePage(
-            tagId: int.parse(state.pathParameters['tagId']!),
           ),
         ),
       ];

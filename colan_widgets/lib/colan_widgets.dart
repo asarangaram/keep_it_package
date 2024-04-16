@@ -32,7 +32,6 @@ export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
 export 'src/models/collection.dart';
 export 'src/models/m1_app_settings.dart';
-export 'src/models/tag.dart';
 export 'src/services/notification/notification_service.dart';
 export 'src/services/notification/provider/notify.dart';
 export 'src/services/selection/cl_selection_wrapper.dart';

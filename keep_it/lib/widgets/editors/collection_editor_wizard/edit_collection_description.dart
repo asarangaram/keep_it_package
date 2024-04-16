@@ -17,7 +17,7 @@ class EditCollectionDescription extends StatelessWidget {
     return CLWizardFormField(
       actionMenu: (context, onTap) => CLMenuItem(
         icon: MdiIcons.arrowRight,
-        title: 'Select Tags',
+        title: 'Save',
         onTap: onTap,
       ),
       descriptor: CLFormTextFieldDescriptor(

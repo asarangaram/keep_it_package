@@ -7,7 +7,6 @@ import 'package:store/src/store/models/m3_db_query.dart';
 
 import 'm3_db_queries.dart';
 import 'm4_db_exec.dart';
-import 'tags_in_collection.dart';
 
 @immutable
 class DBWriter {
@@ -31,20 +30,7 @@ class DBWriter {
       );
     },
   );
-  final DBExec<Tag> tagTable = DBExec<Tag>(
-    table: 'Tag',
-    toMap: (obj, {required appSettings, required validate}) {
-      return obj.toMap();
-    },
-    readBack: (tx, tag, {required appSettings, required validate}) {
-      return (DBQueries.tagByLabel.sql as DBQuery<Tag>)
-          .copyWith(parameters: [tag.label]).read(
-        tx,
-        appSettings: appSettings,
-        validate: validate,
-      );
-    },
-  );
+
   final DBExec<CLMedia> mediaTable = DBExec<CLMedia>(
     table: 'Item',
     toMap: (CLMedia obj, {required appSettings, required validate}) {
@@ -87,35 +73,8 @@ class DBWriter {
       );
     },
   );
-  final DBExec<TagCollection> tagCollectionTable = DBExec<TagCollection>(
-    table: 'TagCollection',
-    toMap: (obj, {required appSettings, required validate}) {
-      return obj.toMap();
-    },
-    readBack: null,
-  );
-  final AppSettings appSettings;
 
-  Future<Tag> upsertTag(
-    SqliteWriteContext tx,
-    Tag tag,
-  ) async {
-    _infoLogger('upsertTag: $tag');
-    final updated = await tagTable.upsert(
-      tx,
-      tag,
-      appSettings: appSettings,
-      validate: true,
-    );
-    _infoLogger('upsertTag: Done :  $updated');
-    if (updated == null) {
-      exceptionLogger(
-        '$_filePrefix: DB Failure',
-        '$_filePrefix: Failed to write / retrive Tag',
-      );
-    }
-    return updated!;
-  }
+  final AppSettings appSettings;
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
@@ -177,41 +136,6 @@ class DBWriter {
     return updated!;
   }
 
-  Future<void> replaceTags(
-    SqliteWriteContext tx,
-    Collection collection,
-    List<Tag>? newTagsListToReplace,
-  ) async {
-    if (newTagsListToReplace?.isNotEmpty ?? false) {
-      final newTags = newTagsListToReplace!.where((e) => e.id == null).toList();
-      final tags = newTagsListToReplace.where((e) => e.id != null).toList();
-
-      for (final tag in newTags) {
-        tags.add(await upsertTag(tx, tag));
-      }
-      await tagCollectionTable
-          .delete(tx, {'collectionId': collection.id.toString()});
-      await tagCollectionTable.upsertAll(
-        tx,
-        tags
-            .map(
-              (e) => TagCollection(tagID: e.id!, collectionId: collection.id!),
-            )
-            .toList(),
-        appSettings: appSettings,
-        validate: true,
-      );
-    }
-  }
-
-  Future<void> deleteTag(
-    SqliteWriteContext tx,
-    Tag tag,
-  ) async {
-    await tagCollectionTable.delete(tx, {'tagId': tag.id.toString()});
-    await tagTable.delete(tx, {'id': tag.id.toString()});
-  }
-
   Future<void> deleteCollection(
     SqliteWriteContext tx,
     Collection collection, {
@@ -219,8 +143,7 @@ class DBWriter {
   }) async {
     if (collection.id == null) return;
     await onDeleteDir(Directory(appSettings.validPrefix(collection.id!)));
-    await tagCollectionTable
-        .delete(tx, {'collectionId': collection.id.toString()});
+
     await mediaTable.delete(tx, {'collectionId': collection.id.toString()});
     await collectionTable.delete(tx, {'id': collection.id.toString()});
   }
@@ -247,26 +170,6 @@ class DBWriter {
     }
   }
 }
-
-/*
-Future<void> mergeTag(SqliteWriteContext tx, int toTag) async {
-    await tx.execute(
-      '''
-          INSERT OR REPLACE INTO TagCollection (tagId, collectionId)
-          SELECT 
-              CASE 
-                  WHEN tagId = ? THEN ?
-                  ELSE tagId
-              END AS new_tagId,
-              collectionId
-          FROM TagCollection
-          WHERE tagId = ?
-        ''',
-      [id, toTag, id],
-    );
-    await tx.execute('DELETE FROM Tag WHERE id = ?', [id]);
-  }
-*/
 
 const _filePrefix = 'DB Write: ';
 bool _disableInfoLogger = true;
