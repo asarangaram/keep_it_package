@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,12 +6,15 @@ import 'package:go_router/go_router.dart';
 import '../../widgets/folders_and_files/media_as_file.dart';
 import '../providers/captured_media.dart';
 
-class CloseCameraOnSwipe extends ConsumerWidget {
-  const CloseCameraOnSwipe({
-    required this.child,
+class CameraIOHandler extends ConsumerWidget {
+  const CameraIOHandler({
+    required this.builder,
     super.key,
   });
-  final Widget child;
+
+  final Widget Function(
+    void Function(String, {required bool isVideo}) onCapture,
+  ) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,7 +54,14 @@ class CloseCameraOnSwipe extends ConsumerWidget {
           }
         }
       },
-      child: child,
+      child: builder((path, {required isVideo}) {
+        ref.read(capturedMediaProvider.notifier).add(
+              CLMedia(
+                path: path,
+                type: isVideo ? CLMediaType.video : CLMediaType.image,
+              ),
+            );
+      }),
     );
   }
 }

@@ -1,87 +1,48 @@
 import 'package:camera/camera.dart';
-import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../camera/captured_media.dart';
-import '../camera/providers/camera_provider.dart';
 import '../camera/providers/captured_media.dart';
-import '../camera/views/close_camera.dart';
+import '../camera/widgets/camera_view.dart';
+import '../camera/widgets/captured_media.dart';
+import '../camera/widgets/camera_io_handler.dart';
+import '../camera/widgets/get_cameras.dart';
 
-class CameraPage extends ConsumerWidget {
+class CameraPage extends StatelessWidget {
   const CameraPage({super.key, this.collectionId});
   final int? collectionId;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final camerasAsync = ref.watch(camerasProvider);
-    // TODO(anandas): Read these values from settings
-    const defaultFrontCameraIndex = 0;
-    const defaultBackCameraIndex = 0;
 
+  @override
+  Widget build(BuildContext context) {
     return GetCollection(
       id: collectionId,
       buildOnData: (collection) {
-        return camerasAsync.when(
-          data: (cameras) {
-            return FullscreenLayout(
-              useSafeArea: false,
-              child: CloseCameraOnSwipe(
-                child: CLCamera(
-                  cameras: [
-                    cameras
-                        .where(
-                          (e) => e.lensDirection == CameraLensDirection.back,
-                        )
-                        .toList()[defaultBackCameraIndex],
-                    cameras
-                        .where(
-                          (e) => e.lensDirection == CameraLensDirection.front,
-                        )
-                        .toList()[defaultFrontCameraIndex],
-                  ],
-                  currentResolutionPreset: ResolutionPreset.high,
-                  onGeneratePreview: () {
-                    return CapturedMedia(
-                      collection: collection,
-                    );
+        return GetCameras(
+          builder: ({
+            required CameraDescription frontCamera,
+            required CameraDescription backCamera,
+          }) {
+            return CameraIOHandler(
+              builder: (onCapture) => CameraView(
+                frontCamera: frontCamera,
+                backCamera: backCamera,
+                previewWidget: CapturedMedia(
+                  collection: collection,
+                  onDone: () {
+                    if (context.mounted) {
+                      if (context.canPop()) {
+                        context.pop();
+                      }
+                    }
                   },
-                  onCancel: () {},
-                  onInitializing: () {
-                    return const CLLoadingView(
-                      message: 'Initialzing',
-                    );
-                  },
-                  cameraIcons: CameraIcons(
-                    imageCamera: MdiIcons.camera,
-                    videoCamera: MdiIcons.video,
-                    pauseRecording: MdiIcons.pause,
-                    resumeRecording: MdiIcons.circle,
-                  ),
-                  onGetPermission: () async {
-                    return true;
-                  },
-                  onCapture: (path, {required isVideo}) {
-                    ref.read(capturedMediaProvider.notifier).add(
-                          CLMedia(
-                            path: path,
-                            type:
-                                isVideo ? CLMediaType.video : CLMediaType.image,
-                          ),
-                        );
-                  },
-                  textStyle: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontSize: CLScaleType.small.fontSize),
                 ),
+                onCapture: onCapture,
               ),
             );
           },
-          error: (e, st) => CLErrorView(errorMessage: e.toString()),
-          loading: CLLoadingView.new,
         );
       },
     );

@@ -2,31 +2,29 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import 'providers/captured_media.dart';
+import '../providers/captured_media.dart';
 
 class CapturedMedia extends ConsumerWidget {
-  const CapturedMedia({super.key, this.collection});
+  const CapturedMedia({super.key, this.collection, this.onDone});
   final Collection? collection;
+  final VoidCallback? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final capturedMedia = ref.watch(capturedMediaProvider);
     if (capturedMedia.isEmpty) return Container();
     return InkWell(
-      onTap: () {
-        onReceiveCapturedMedia(
+      onTap: () async {
+        await onReceiveCapturedMedia(
           context,
           ref,
           entries: capturedMedia,
           collection: collection,
         );
         ref.read(capturedMediaProvider.notifier).clear();
-        if (context.canPop()) {
-          context.pop();
-        }
+        onDone?.call();
       },
       child: Container(
         width: 60,
