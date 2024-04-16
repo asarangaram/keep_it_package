@@ -55,7 +55,7 @@ class MediaEditorPage extends ConsumerWidget {
                   } else {
                     updatedMedia = CLMedia(
                       path: outFile,
-                      type: CLMediaType.video,
+                      type: CLMediaType.image,
                       collectionId: media.collectionId,
                       md5String: md5String,
                       originalDate: media.originalDate,
