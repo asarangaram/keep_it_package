@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'crop_orientation_control.dart';
-import 'models/aspect_ratio.dart' as aratio;
+import '../models/aspect_ratio.dart' as aratio;
 
 class CropperControls extends StatelessWidget {
   const CropperControls({

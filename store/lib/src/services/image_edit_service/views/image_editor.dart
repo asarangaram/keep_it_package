@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
@@ -6,26 +7,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../../store/widgets/editor_finalizer.dart';
+import '../models/aspect_ratio.dart' as aratio;
 import 'crop_control.dart';
-import 'models/aspect_ratio.dart' as aratio;
-import 'save_control.dart';
 
-class CLImageEditor extends StatefulWidget {
-  const CLImageEditor({
+class ImageEditService extends StatefulWidget {
+  const ImageEditService({
     required this.file,
-    required this.onSave,
-    required this.onDiscard,
+    required this.onDone,
+    required this.onEditAndSave,
     super.key,
   });
   final File file;
-  final void Function(String outFile, {required bool overwrite}) onSave;
-  final void Function() onDiscard;
+
+  final Future<void> Function() onDone;
+  final Future<void> Function(
+    Uint8List imageBytes, {
+    required bool overwrite,
+    bool? needFlip,
+    Rect? cropRect,
+    double? rotateAngle,
+  }) onEditAndSave;
 
   @override
-  State<CLImageEditor> createState() => _CLImageEditorState();
+  State<ImageEditService> createState() => _ImageEditServiceState();
 }
 
-class _CLImageEditorState extends State<CLImageEditor> {
+class _ImageEditServiceState extends State<ImageEditService> {
   GlobalKey<ExtendedImageEditorState> controller =
       GlobalKey<ExtendedImageEditorState>();
 
@@ -121,13 +129,34 @@ class _CLImageEditorState extends State<CLImageEditor> {
                   this.aspectRatio = aspectRatio;
                 });
               },
-              saveWidget: SaveImage(
-                controller: controller,
-                onSave: widget.onSave,
-                onDiscard: ({required bool done}) {
+              saveWidget: EditorFinalizer(
+                onSave: ({required overwrite}) async {
+                  if (controller.currentState == null) {
+                    return;
+                  }
+                  final state = controller.currentState!;
+                  final editActionDetails = state.editAction;
+
+                  if (editActionDetails == null) {
+                    return;
+                  }
+
+                  await widget.onEditAndSave(
+                    state.rawImageData,
+                    cropRect:
+                        editActionDetails.needCrop ? state.getCropRect() : null,
+                    needFlip: editActionDetails.needFlip,
+                    rotateAngle: editActionDetails.hasRotateAngle
+                        ? editActionDetails.rotateAngle
+                        : null,
+                    overwrite: overwrite,
+                  );
+                  await widget.onDone();
+                },
+                onDiscard: ({required done}) async {
                   reset();
                   if (done) {
-                    widget.onDiscard();
+                    await widget.onDone();
                   }
                 },
               ),

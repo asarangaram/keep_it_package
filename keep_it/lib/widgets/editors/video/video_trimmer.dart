@@ -5,22 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
-class TrimmerView extends StatefulWidget {
-  const TrimmerView(
+class VideoEditServices extends StatefulWidget {
+  const VideoEditServices(
     this.file, {
     required this.onSave,
-    required this.onDiscard,
+    required this.onDone,
     super.key,
   });
   final File file;
   final void Function(String outFile, {required bool overwrite}) onSave;
-  final void Function() onDiscard;
+  final void Function() onDone;
 
   @override
-  State<TrimmerView> createState() => _TrimmerViewState();
+  State<VideoEditServices> createState() => _VideoEditServicesState();
 }
 
-class _TrimmerViewState extends State<TrimmerView> {
+class _VideoEditServicesState extends State<VideoEditServices> {
   final Trimmer _trimmer = Trimmer();
 
   double _startValue = 0;
@@ -141,7 +141,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                       } else if (value == 'Save Copy') {
                         _saveVideo(overwrite: false);
                       } else if (value == 'Discard') {
-                        widget.onDiscard();
+                        widget.onDone();
                       }
                     },
                     itemBuilder: (BuildContext context) {
