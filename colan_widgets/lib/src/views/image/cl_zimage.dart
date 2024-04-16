@@ -7,9 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class CLzImage extends ConsumerStatefulWidget {
-  const CLzImage({required this.file, super.key, this.onLockPage});
+  const CLzImage({required this.file, super.key, this.onLockPage, this.onEdit});
   final File file;
   final void Function({required bool lock})? onLockPage;
+  final VoidCallback? onEdit;
 
   @override
   ConsumerState<CLzImage> createState() => _CLzImageState();
@@ -17,7 +18,6 @@ class CLzImage extends ConsumerStatefulWidget {
 
 class _CLzImageState extends ConsumerState<CLzImage> {
   bool isZooming = false;
-  bool isEditing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -78,11 +78,7 @@ class _CLzImageState extends ConsumerState<CLzImage> {
                           .colorScheme
                           .background
                           .withAlpha(192),
-                      onTap: () {
-                        setState(() {
-                          isEditing = true;
-                        });
-                      },
+                      onTap: widget.onEdit,
                     ),
                   ),
                 ),

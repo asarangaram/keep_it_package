@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:store/store.dart';
 
@@ -258,6 +259,11 @@ class _ItemViewState extends State<ItemView> {
             CLMediaType.image => CLzImage(
                 file: File(media.path),
                 onLockPage: widget.onLockPage,
+                onEdit: media.id == null
+                    ? null
+                    : () {
+                        context.push('/mediaEditor?id=${media.id}');
+                      },
               ),
             CLMediaType.video => Center(
                 child: VideoPlayer(
