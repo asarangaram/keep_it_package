@@ -66,6 +66,8 @@ class _TrimmerViewState extends State<TrimmerView> {
   @override
   Widget build(BuildContext context) {
     return FullscreenLayout(
+      backgroundColor: Theme.of(context).colorScheme.onSurface,
+      hasBackground: false,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -131,6 +133,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                   child: PopupMenuButton<String>(
                     child: CLIcon.standard(
                       MdiIcons.check,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                     onSelected: (String value) {
                       if (value == 'Save') {
