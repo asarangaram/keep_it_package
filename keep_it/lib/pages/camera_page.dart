@@ -8,16 +8,19 @@ class CameraPage extends StatelessWidget {
   final int? collectionId;
   @override
   Widget build(BuildContext context) {
-    return CameraService(
-      collectionId: collectionId,
-      onReceiveCapturedMedia: onReceiveCapturedMedia,
-      onDone: () {
-        if (context.mounted) {
-          if (context.canPop()) {
-            context.pop();
+    return FullscreenLayout(
+      useSafeArea: false,
+      child: CameraService(
+        collectionId: collectionId,
+        onReceiveCapturedMedia: onReceiveCapturedMedia,
+        onDone: () {
+          if (context.mounted) {
+            if (context.canPop()) {
+              context.pop();
+            }
           }
-        }
-      },
+        },
+      ),
     );
   }
 }
