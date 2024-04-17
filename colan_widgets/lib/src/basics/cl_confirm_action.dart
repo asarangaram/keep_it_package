@@ -26,11 +26,8 @@ class CLConfirmAction extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox.square(
-            dimension: 200,
-            child: child,
-          ),
-          CLText.large(message),
+          if (child != null) child!,
+          if (message.isNotEmpty) CLText.large(message),
         ],
       ),
       actions: [

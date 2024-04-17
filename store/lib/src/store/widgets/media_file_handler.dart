@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/image_services/view/cl_media_preview.dart';
 import 'w2_get_db_manager.dart';
 import 'w3_get_media.dart';
 
@@ -43,21 +44,51 @@ class MediaFileHandler extends StatelessWidget {
               media.path,
               mediaType: media.type,
               onSave: (outFile, {required overwrite}) async {
-                final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return CLConfirmAction(
-                          title: 'Confirm '
-                              '${overwrite ? "Replace" : "Save New"} ',
-                          message: '',
-                          child: Image.file(File(outFile)),
-                          onConfirm: ({required confirmed}) =>
-                              Navigator.of(context).pop(confirmed),
-                        );
-                      },
-                    ) ??
-                    false;
-                if (!confirmed) return;
+                if (overwrite) {
+                  final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CLConfirmAction(
+                            title: 'Confirm '
+                                '${overwrite ? "Replace" : "Save New"} ',
+                            message: '',
+                            child: SizedBox.square(
+                              dimension: 200,
+                              child: Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(
+                                      10,
+                                    ),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                      8,
+                                    ),
+                                    child: CLMediaPreview(
+                                      media: CLMedia(
+                                        path: outFile,
+                                        type: media.type,
+                                      ),
+                                      keepAspectRatio: false,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onConfirm: ({required confirmed}) =>
+                                Navigator.of(context).pop(confirmed),
+                          );
+                        },
+                      ) ??
+                      false;
+                  if (!confirmed) return;
+                }
                 final md5String = await File(outFile).checksum;
                 final CLMedia updatedMedia;
                 if (overwrite) {
