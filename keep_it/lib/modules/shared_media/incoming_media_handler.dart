@@ -49,32 +49,56 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     }
     try {
       widget0 = FullscreenLayout(
-        onClose: () => onDiscard(result: false),
-        child: switch (candidates) {
-          null => AnalysePage(
-              incomingMedia: widget.incomingMedia,
-              onDone: onDone,
-              onCancel: () => onDiscard(result: false),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withAlpha(192), // Color for the circular container
+                  ),
+                  child: CLButtonIcon.small(
+                    Icons.close,
+                    color:
+                        Theme.of(context).colorScheme.background.withAlpha(192),
+                    onTap: () => onDiscard(result: false),
+                  ),
+                ),
+              ),
             ),
-          (final candiates)
-              when candidates!.hasTargetMismatchedItems && !widget.moving =>
-            DuplicatePage(
-              incomingMedia: candiates,
-              onDone: onDone,
-              onCancel: () => onDiscard(result: false),
-            ),
-          (final candiates) when candidates!.collection == null =>
-            WhichCollection(
-              incomingMedia: candiates,
-              onDone: onDone,
-              onCancel: () => onDiscard(result: false),
-            ),
-          _ => SaveCollection(
-              incomingMedia: candidates!,
-              onDone: onSave,
-              onCancel: () => onDiscard(result: false),
-            )
-        },
+            switch (candidates) {
+              null => AnalysePage(
+                  incomingMedia: widget.incomingMedia,
+                  onDone: onDone,
+                  onCancel: () => onDiscard(result: false),
+                ),
+              (final candiates)
+                  when candidates!.hasTargetMismatchedItems && !widget.moving =>
+                DuplicatePage(
+                  incomingMedia: candiates,
+                  onDone: onDone,
+                  onCancel: () => onDiscard(result: false),
+                ),
+              (final candiates) when candidates!.collection == null =>
+                WhichCollection(
+                  incomingMedia: candiates,
+                  onDone: onDone,
+                  onCancel: () => onDiscard(result: false),
+                ),
+              _ => SaveCollection(
+                  incomingMedia: candidates!,
+                  onDone: onSave,
+                  onCancel: () => onDiscard(result: false),
+                )
+            },
+          ],
+        ),
       );
     } catch (e) {
       return FullscreenLayout(
