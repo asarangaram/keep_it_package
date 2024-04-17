@@ -72,31 +72,34 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
                 ),
               ),
             ),
-            switch (candidates) {
-              null => AnalysePage(
-                  incomingMedia: widget.incomingMedia,
-                  onDone: onDone,
-                  onCancel: () => onDiscard(result: false),
-                ),
-              (final candiates)
-                  when candidates!.hasTargetMismatchedItems && !widget.moving =>
-                DuplicatePage(
-                  incomingMedia: candiates,
-                  onDone: onDone,
-                  onCancel: () => onDiscard(result: false),
-                ),
-              (final candiates) when candidates!.collection == null =>
-                WhichCollection(
-                  incomingMedia: candiates,
-                  onDone: onDone,
-                  onCancel: () => onDiscard(result: false),
-                ),
-              _ => SaveCollection(
-                  incomingMedia: candidates!,
-                  onDone: onSave,
-                  onCancel: () => onDiscard(result: false),
-                )
-            },
+            Flexible(
+              child: switch (candidates) {
+                null => AnalysePage(
+                    incomingMedia: widget.incomingMedia,
+                    onDone: onDone,
+                    onCancel: () => onDiscard(result: false),
+                  ),
+                (final candiates)
+                    when candidates!.hasTargetMismatchedItems &&
+                        !widget.moving =>
+                  DuplicatePage(
+                    incomingMedia: candiates,
+                    onDone: onDone,
+                    onCancel: () => onDiscard(result: false),
+                  ),
+                (final candiates) when candidates!.collection == null =>
+                  WhichCollection(
+                    incomingMedia: candiates,
+                    onDone: onDone,
+                    onCancel: () => onDiscard(result: false),
+                  ),
+                _ => SaveCollection(
+                    incomingMedia: candidates!,
+                    onDone: onSave,
+                    onCancel: () => onDiscard(result: false),
+                  )
+              },
+            ),
           ],
         ),
       );
