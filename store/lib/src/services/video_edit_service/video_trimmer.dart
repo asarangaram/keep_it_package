@@ -13,8 +13,8 @@ class VideoEditServices extends StatefulWidget {
     super.key,
   });
   final File file;
-  final void Function(String outFile, {required bool overwrite}) onSave;
-  final void Function() onDone;
+  final Future<void> Function(String outFile, {required bool overwrite}) onSave;
+  final Future<void> Function() onDone;
 
   @override
   State<VideoEditServices> createState() => _VideoEditServicesState();
@@ -48,9 +48,9 @@ class _VideoEditServicesState extends State<VideoEditServices> {
     await _trimmer.saveTrimmedVideo(
       startValue: _startValue,
       endValue: _endValue,
-      onSave: (outputPath) {
+      onSave: (outputPath) async {
         if (outputPath != null) {
-          widget.onSave(outputPath, overwrite: overwrite);
+          await widget.onSave(outputPath, overwrite: overwrite);
         } else {
           // Error Handle
         }
@@ -59,11 +59,10 @@ class _VideoEditServicesState extends State<VideoEditServices> {
           _progressVisibility = false;
         });
         debugPrint('OUTPUT PATH: $outputPath');
+        await widget.onDone();
       },
     );
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
