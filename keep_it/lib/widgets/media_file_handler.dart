@@ -50,34 +50,12 @@ class MediaFileHandler extends StatelessWidget {
                             title: 'Confirm '
                                 '${overwrite ? "Replace" : "Save New"} ',
                             message: '',
-                            child: SizedBox.square(
-                              dimension: 200,
-                              child: Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(
-                                      10,
-                                    ),
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                      8,
-                                    ),
-                                    child: PreviewService(
-                                      media: CLMedia(
-                                        path: outFile,
-                                        type: media.type,
-                                      ),
-                                      keepAspectRatio: false,
-                                    ),
-                                  ),
-                                ),
+                            child: PreviewService(
+                              media: CLMedia(
+                                path: outFile,
+                                type: media.type,
                               ),
+                              keepAspectRatio: false,
                             ),
                             onConfirm: ({required confirmed}) =>
                                 Navigator.of(context).pop(confirmed),

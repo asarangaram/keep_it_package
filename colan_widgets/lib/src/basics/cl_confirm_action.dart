@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'cl_text.dart';
 
@@ -23,13 +24,34 @@ class CLConfirmAction extends StatelessWidget {
     return AlertDialog(
       alignment: Alignment.center,
       title: Text(title),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (child != null) child!,
-          if (message.isNotEmpty) CLText.large(message),
-        ],
-      ),
+      content: (child != null || message.isNotEmpty)
+          ? SizedBox.square(
+              dimension: 200,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(
+                    10,
+                  ),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    8,
+                  ),
+                  child: Column(
+                    children: [
+                      Flexible(child: child ?? const SizedBox.shrink()),
+                      if (message.isNotEmpty) CLText.large(message),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          : const SizedBox.shrink(),
       actions: [
         ButtonBar(
           alignment: MainAxisAlignment.spaceEvenly,

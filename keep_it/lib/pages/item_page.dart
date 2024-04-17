@@ -31,8 +31,10 @@ class CollectionItemPage extends ConsumerWidget {
     return GetMediaByCollectionId(
       collectionId: collectionId,
       buildOnData: (items) {
-        final initialMedia = items.where((e) => e.id == id).first;
-        final initialMediaIndex = items.indexOf(initialMedia);
+        final initialMedia = items.where((e) => e.id == id).firstOrNull;
+        final initialMediaIndex =
+            initialMedia == null ? 0 : items.indexOf(initialMedia);
+
         return MediaInPageView(
           media: items,
           parentIdentifier: parentIdentifier,
