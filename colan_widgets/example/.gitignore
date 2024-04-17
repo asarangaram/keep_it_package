@@ -43,3 +43,5 @@ app.*.map.json
 /android/app/release
 
 pubspec.lock
+.flutter-plugins-dependencies
+.flutter-plugins
