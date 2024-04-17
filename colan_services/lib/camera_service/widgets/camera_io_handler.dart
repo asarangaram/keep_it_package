@@ -2,8 +2,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:store/store.dart';
 
+import '../../notification_services/provider/notify.dart';
+import '../../preview_service/view/preview.dart';
 import '../providers/captured_media.dart';
 
 class CameraIOHandler extends ConsumerWidget {
@@ -89,7 +90,7 @@ class CameraIOHandler extends ConsumerWidget {
           child: capturedMedia.isEmpty
               ? Container()
               : CapturedMediaDecorator(
-                  child: CLMediaPreview(
+                  child: PreviewService(
                     media: capturedMedia.last,
                     keepAspectRatio: false,
                   ),

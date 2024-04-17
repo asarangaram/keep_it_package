@@ -4,12 +4,12 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
+import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../store/providers/uuid.dart';
-import '../../../store/widgets/w1_get_app_settings.dart';
 import '../model/thumbnail_services.dart';
 import '../provider/thumbnail_services.dart';
+import '../provider/uuid.dart';
 
 class ImageThumbnail extends ConsumerStatefulWidget {
   const ImageThumbnail({

@@ -1,7 +1,7 @@
 import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:store/store.dart';
 
 class CameraPage extends StatelessWidget {
   const CameraPage({super.key, this.collectionId});

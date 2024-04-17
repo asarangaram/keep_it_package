@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +43,7 @@ class MediaAsFile extends ConsumerWidget {
                     title: 'Confirm delete',
                     message: 'Are you sure you want to delete '
                         'this ${media.type.name}?',
-                    child: CLMediaPreview(media: media),
+                    child: PreviewService(media: media),
                     onConfirm: ({required confirmed}) async {
                       await dbManager.deleteMedia(
                         media,
@@ -82,7 +83,7 @@ class MediaAsFile extends ConsumerWidget {
                   );
                   return true;
                 },
-          child: CLMediaPreview(
+          child: PreviewService(
             media: media,
             keepAspectRatio: false,
           ),

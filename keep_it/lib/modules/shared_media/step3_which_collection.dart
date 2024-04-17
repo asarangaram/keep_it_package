@@ -1,7 +1,7 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 import '../../widgets/editors/collection_editor_wizard/create_collection_wizard.dart';
 import 'wizard_page.dart';
@@ -23,7 +23,7 @@ class WhichCollection extends SharedMediaWizard {
         if (title != null) title!,
         if (incomingMedia.entries.length == 1)
           Flexible(
-            child: CLMediaPreview(
+            child: PreviewService(
               media: incomingMedia.entries[0],
             ),
           )
@@ -32,7 +32,7 @@ class WhichCollection extends SharedMediaWizard {
             child: CLMediaCollage.byMatrixSize(
               incomingMedia.entries,
               hCount: switch (incomingMedia.entries.length) { _ => 2 },
-              itemBuilder: (context, index) => CLMediaPreview(
+              itemBuilder: (context, index) => PreviewService(
                 media: incomingMedia.entries[index],
               ),
             ),

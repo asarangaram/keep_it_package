@@ -1,4 +1,5 @@
 import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -195,7 +196,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                           aspectRatio: 1,
                           child: Padding(
                             padding: const EdgeInsets.all(2),
-                            child: CLMediaPreview(
+                            child: PreviewService(
                               media: m,
                               keepAspectRatio: false,
                             ),

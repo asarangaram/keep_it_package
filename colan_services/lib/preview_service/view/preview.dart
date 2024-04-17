@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'image_thumbnail.dart';
 
-class CLMediaPreview extends StatelessWidget {
-  const CLMediaPreview({
+class PreviewService extends StatelessWidget {
+  const PreviewService({
     required this.media,
     this.keepAspectRatio = true,
     super.key,

@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:store/store.dart';
 
 import '../modules/shared_media/cl_media_process.dart';
+import '../widgets/media_file_handler.dart';
 
 class MediaEditorPage extends StatelessWidget {
   const MediaEditorPage({
@@ -34,43 +36,52 @@ class MediaEditorPage extends StatelessWidget {
         }
         switch (mediaType) {
           case CLMediaType.image:
-            return ImageEditService(
-              file: File(filePath),
-              onDone: () async {
-                if (context.mounted) {
-                  if (context.canPop()) {
-                    context.pop();
+            return FullscreenLayout(
+              useSafeArea: false,
+              hasBackground: false,
+              backgroundColor: Theme.of(context).colorScheme.onSurface,
+              child: ImageEditService(
+                file: File(filePath),
+                onDone: () async {
+                  if (context.mounted) {
+                    if (context.canPop()) {
+                      context.pop();
+                    }
                   }
-                }
-              },
-              onEditAndSave: (
-                Uint8List imageBytes, {
-                required bool overwrite,
-                Rect? cropRect,
-                bool? needFlip,
-                double? rotateAngle,
-              }) async {
-                await editAndSave(
-                  imageBytes,
-                  onSave: onSave,
-                  overwrite: overwrite,
-                  cropRect: cropRect,
-                  needFlip: needFlip,
-                  rotateAngle: rotateAngle,
-                );
-              },
+                },
+                onEditAndSave: (
+                  Uint8List imageBytes, {
+                  required bool overwrite,
+                  Rect? cropRect,
+                  bool? needFlip,
+                  double? rotateAngle,
+                }) async {
+                  await editAndSave(
+                    imageBytes,
+                    onSave: onSave,
+                    overwrite: overwrite,
+                    cropRect: cropRect,
+                    needFlip: needFlip,
+                    rotateAngle: rotateAngle,
+                  );
+                },
+              ),
             );
           case CLMediaType.video:
-            return VideoEditServices(
-              File(filePath),
-              onSave: onSave,
-              onDone: () async {
-                if (context.mounted) {
-                  if (context.canPop()) {
-                    context.pop();
+            return FullscreenLayout(
+              backgroundColor: Theme.of(context).colorScheme.onSurface,
+              hasBackground: false,
+              child: VideoEditServices(
+                File(filePath),
+                onSave: onSave,
+                onDone: () async {
+                  if (context.mounted) {
+                    if (context.canPop()) {
+                      context.pop();
+                    }
                   }
-                }
-              },
+                },
+              ),
             );
           case CLMediaType.text:
           case CLMediaType.url:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,7 +122,7 @@ class PreviewGenerator extends StatelessWidget {
             items,
             hCount: 2,
             vCount: 2,
-            itemBuilder: (context, index) => CLMediaPreview(
+            itemBuilder: (context, index) => PreviewService(
               media: items[index],
               keepAspectRatio: false,
             ),

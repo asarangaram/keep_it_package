@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -241,7 +243,7 @@ class _ItemViewState extends State<ItemView> {
             CLMediaType.video => Center(
                 child: VideoPlayer(
                   media: media,
-                  alternate: CLMediaPreview(
+                  alternate: PreviewService(
                     media: media,
                   ),
                   isSelected: currIndex == index,

@@ -9,6 +9,8 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  colan_services:
+    path: ../colan_services
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.17.2
