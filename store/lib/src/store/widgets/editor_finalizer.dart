@@ -1,4 +1,6 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 enum EditorFinalActions {
   save,
@@ -27,7 +29,11 @@ class EditorFinalizer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<EditorFinalActions>(
-      child: child,
+      child: child ??
+          CLIcon.small(
+            MdiIcons.check,
+            color: Theme.of(context).colorScheme.background,
+          ),
       onSelected: (EditorFinalActions value) async {
         switch (value) {
           case EditorFinalActions.save:
