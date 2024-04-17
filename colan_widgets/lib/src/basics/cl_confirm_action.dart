@@ -22,7 +22,7 @@ class CLConfirmAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       alignment: Alignment.center,
-      title: const Text('Confirm Delete'),
+      title: Text(title),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

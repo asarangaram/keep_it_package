@@ -44,43 +44,27 @@ class CollectionAsFolder extends ConsumerWidget {
           },
           onDelete: () async {
             final confirmed = await showDialog<bool>(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Confirm Delete'),
-                  content: CLText.large(
-                    'Are you sure you want to delete '
-                    '"${collection.label}" and its content?',
-                  ),
-                  actions: [
-                    ButtonBar(
-                      alignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          child: const Text('No'),
-                          onPressed: () {
-                            Navigator.of(context).pop(false);
-                          },
-                        ),
-                        ElevatedButton(
-                          child: const Text('Yes'),
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              },
-            );
-            if (confirmed ?? false) {
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CLConfirmAction(
+                      title: 'Confirm Delete',
+                      message: 'Are you sure you want to delete '
+                          '"${collection.label}" and its content?',
+                      child: null,
+                      onConfirm: ({required confirmed}) =>
+                          Navigator.of(context).pop(confirmed),
+                    );
+                  },
+                ) ??
+                false;
+
+            if (confirmed) {
               await dbManager.deleteCollection(
                 collection,
                 onDeleteDir: (dir) async => dir.deleteSync(recursive: true),
               );
             }
-            return confirmed ?? false;
+            return confirmed;
           },
           onTap: () async {
             unawaited(
