@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import 'providers/video_player_state.dart';
 import 'views/video_layer.dart';
@@ -12,12 +13,11 @@ class VideoPlayerService extends ConsumerWidget {
     super.key,
     this.onSelect,
     this.isSelected = false,
-    this.children,
   });
   final CLMedia media;
   final void Function()? onSelect;
   final bool isSelected;
-  final List<Widget>? children;
+
   final Widget alternate;
 
   @override
@@ -33,10 +33,26 @@ class VideoPlayerService extends ConsumerWidget {
     }
 
     final state = ref.watch(videoPlayerStateProvider);
+    final formattedDate = media.originalDate == null
+        ? 'Err: No date'
+        : DateFormat('dd MMMM yyyy').format(media.originalDate!);
     return switch (state.path == media.path) {
       true => state.controllerAsync.when(
-          data: (controller) =>
-              VideoLayer(controller: controller, children: children),
+          data: (controller) => VideoLayer(
+            controller: controller,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.centerLeft,
+                child: CLText.standard(
+                  formattedDate,
+                  textAlign: TextAlign.start,
+                  color:
+                      Theme.of(context).colorScheme.background.withAlpha(192),
+                ),
+              ),
+            ],
+          ),
           error: (_, __) => Container(),
           loading: () => Stack(
             children: [

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+
 import 'package:store/store.dart';
 
 import '../widgets/pop_fullscreen.dart';
@@ -225,9 +225,6 @@ class _ItemViewState extends State<ItemView> {
       },
       itemBuilder: (context, index) {
         final media = widget.items[index];
-        final formattedDate = media.originalDate == null
-            ? 'Err: No date'
-            : DateFormat('dd MMMM yyyy').format(media.originalDate!);
 
         return Hero(
           tag: '${widget.parentIdentifier} /item/${media.id}',
@@ -248,20 +245,6 @@ class _ItemViewState extends State<ItemView> {
                     media: media,
                   ),
                   isSelected: currIndex == index,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      alignment: Alignment.centerLeft,
-                      child: CLText.standard(
-                        formattedDate,
-                        textAlign: TextAlign.start,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .background
-                            .withAlpha(192),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             _ => throw UnimplementedError('Not yet implemented')

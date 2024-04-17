@@ -22,6 +22,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   heif_converter: ^1.0.0
   image: ^4.1.7
+  intl: ^0.18.1
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
   path: ^1.9.0
