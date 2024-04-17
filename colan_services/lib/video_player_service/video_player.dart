@@ -1,13 +1,12 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../models/cl_media.dart';
 
 import 'providers/video_player_state.dart';
 import 'views/video_layer.dart';
 
-class VideoPlayer extends ConsumerWidget {
-  const VideoPlayer({
+class VideoPlayerService extends ConsumerWidget {
+  const VideoPlayerService({
     required this.media,
     required this.alternate,
     super.key,

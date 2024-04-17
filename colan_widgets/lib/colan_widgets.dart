@@ -35,8 +35,7 @@ export 'src/models/collection.dart';
 export 'src/models/m1_app_settings.dart';
 
 export 'src/services/selection/cl_selection_wrapper.dart';
-export 'src/services/video_services/providers/show_controls.dart';
-export 'src/services/video_services/video_player.dart';
+
 export 'src/utils/rand_image_generator.dart';
 export 'src/views/appearance/cl_error_view.dart';
 export 'src/views/appearance/cl_fullscreen_box.dart';
@@ -47,7 +46,6 @@ export 'src/views/collage_view/cl_media_collage.dart';
 export 'src/views/gallery_view/cl_simple_gallery_view.dart';
 export 'src/views/gallery_view/model/gallery_group.dart';
 export 'src/views/image/cl_image_viewer.dart';
-export 'src/views/image/cl_zimage.dart';
-export 'src/views/image/image_view.dart';
+
 export 'src/views/quick_menu/cl_quickmenu.dart';
 export 'src/views/stream_progress_view.dart';
