@@ -9,7 +9,7 @@ import '../../pages/item_page.dart';
 
 class MediaControls extends ConsumerWidget {
   const MediaControls({
-    required this.child,
+    required this.media,
     super.key,
     this.onEdit,
     this.onDelete,
@@ -17,7 +17,8 @@ class MediaControls extends ConsumerWidget {
     this.onShare,
     this.onTap,
   });
-  final Widget child;
+  final CLMedia media;
+
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;
   final Future<bool?> Function()? onMove;
@@ -27,95 +28,116 @@ class MediaControls extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    return Column(
-      children: [
-        Flexible(
-          child: Stack(
-            children: [
-              child,
-              if (showControl) ...[
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8, top: 8),
-                      child: CircledIcon(
-                        MdiIcons.notebook,
-                      ),
-                    ),
-                  ),
+    if (!showControl) return const IgnorePointer();
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 500),
+      child: Stack(
+        children: [
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, top: 8),
+                child: CircledIcon(
+                  MdiIcons.notebook,
                 ),
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8, top: 8),
-                      child: CircledIcon(
-                        MdiIcons.close,
-                        onTap: () {
-                          if (context.mounted && context.canPop()) {
-                            context.pop();
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: ColoredBox(
-                    color:
-                        Theme.of(context).colorScheme.onSurface.withAlpha(128),
-                    child: SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 16),
-                              child: CLButtonIcon.small(
-                                MdiIcons.pencil,
-                                color: Theme.of(context).colorScheme.surface,
-                                onTap: onEdit,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 16),
-                              child: CLButtonIcon.small(
-                                color: Theme.of(context).colorScheme.surface,
-                                Icons.delete_rounded,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 16),
-                              child: CLButtonIcon.small(
-                                MdiIcons.imageMove,
-                                color: Theme.of(context).colorScheme.surface,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 16),
-                              child: CLButtonIcon.small(
-                                MdiIcons.share,
-                                color: Theme.of(context).colorScheme.surface,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ],
+              ),
+            ),
           ),
-        ),
-      ],
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8, top: 8),
+                child: CircledIcon(
+                  MdiIcons.close,
+                  onTap: () {
+                    if (context.mounted && context.canPop()) {
+                      context.pop();
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+          if ([onEdit, onDelete, onMove, onShare].any((e) => e != null) ||
+              (media.type == CLMediaType.video))
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: ColoredBox(
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(128),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (media.type == CLMediaType.video)
+                        VideoPlayerService.controlMenu(
+                          media: media,
+                        ),
+                      if ([onEdit, onDelete, onMove, onShare]
+                          .any((e) => e != null))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (onEdit == null)
+                                Container()
+                              else
+                                CLButtonIcon.small(
+                                  MdiIcons.pencil,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  onTap: onEdit,
+                                ),
+                              if (onDelete == null)
+                                Container()
+                              else
+                                CLButtonIcon.small(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  Icons.delete_rounded,
+                                  onTap: onDelete,
+                                ),
+                              if (onMove == null)
+                                Container()
+                              else
+                                CLButtonIcon.small(
+                                  MdiIcons.imageMove,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  onTap: onMove,
+                                ),
+                              if (onShare == null)
+                                Container()
+                              else
+                                CLButtonIcon.small(
+                                  MdiIcons.share,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  onTap: onShare,
+                                ),
+                            ]
+                                .map(
+                                  (e) => Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: 16,
+                                    ),
+                                    child: e,
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

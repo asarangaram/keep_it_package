@@ -8,12 +8,12 @@ class MediaViewer extends StatelessWidget {
   const MediaViewer({
     required this.media,
     required this.onLockPage,
-    required this.isSelected,
+    required this.autoStart,
     super.key,
   });
   final CLMedia media;
   final void Function({required bool lock})? onLockPage;
-  final bool isSelected;
+  final bool autoStart;
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,12 @@ class MediaViewer extends StatelessWidget {
           file: File(media.path),
           onLockPage: onLockPage,
         ),
-      CLMediaType.video => VideoPlayerService(
+      CLMediaType.video => VideoPlayerService.player(
           media: media,
           alternate: PreviewService(
             media: media,
           ),
-          isSelected: isSelected,
+          autoStart: autoStart,
         ),
       _ => throw UnimplementedError('Not yet implemented')
     };

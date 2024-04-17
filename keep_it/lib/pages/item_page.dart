@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -5,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:store/store.dart';
 
@@ -213,29 +217,93 @@ class _ItemViewState extends State<ItemView> {
 
   @override
   Widget build(BuildContext context) {
-    return MediaControls(
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: widget.items.length,
-        physics: widget.isLocked ? const NeverScrollableScrollPhysics() : null,
-        onPageChanged: (index) {
-          setState(() {
-            currIndex = index;
-          });
-        },
-        itemBuilder: (context, index) {
-          final media = widget.items[index];
+    final media = widget.items[currIndex];
+    return Stack(
+      children: [
+        PageView.builder(
+          controller: _pageController,
+          itemCount: widget.items.length,
+          physics:
+              widget.isLocked ? const NeverScrollableScrollPhysics() : null,
+          onPageChanged: (index) {
+            setState(() {
+              currIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            final media = widget.items[index];
 
-          return Hero(
-            tag: '${widget.parentIdentifier} /item/${media.id}',
-            child: MediaViewer(
-              media: media,
-              isSelected: currIndex == index,
-              onLockPage: widget.onLockPage,
-            ),
-          );
-        },
-      ),
+            return Hero(
+              tag: '${widget.parentIdentifier} /item/${media.id}',
+              child: MediaViewer(
+                media: media,
+                autoStart: currIndex == index,
+                onLockPage: widget.onLockPage,
+              ),
+            );
+          },
+        ),
+        MediaControls(
+          onMove: () async {
+            unawaited(
+              context.push(
+                '/move?ids=${media.id}',
+              ),
+            );
+            return true;
+          },
+          onDelete: () async =>
+              await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return GetDBManager(
+                    builder: (dbManager) {
+                      return CLConfirmAction(
+                        title: 'Confirm delete',
+                        message: 'Are you sure you want to delete '
+                            'this ${media.type.name}?',
+                        child: PreviewService(media: media),
+                        onConfirm: ({required confirmed}) async {
+                          await dbManager.deleteMedia(
+                            media,
+                            onDeleteFile: (f) async => f.deleteIfExists(),
+                          );
+                          if (context.mounted) {
+                            Navigator.of(context).pop(confirmed);
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              ) ??
+              false,
+          onShare: () async {
+            final box = context.findRenderObject() as RenderBox?;
+            final files = [XFile(media.path)];
+            final shareResult = await Share.shareXFiles(
+              files,
+              // text: 'Share from KeepIT',
+              subject: 'Exporting media from KeepIt',
+              sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+            );
+            return switch (shareResult.status) {
+              ShareResultStatus.dismissed => false,
+              ShareResultStatus.unavailable => false,
+              ShareResultStatus.success => true,
+            };
+          },
+          onEdit: () async {
+            unawaited(
+              context.push(
+                '/mediaEditor?id=${media.id}',
+              ),
+            );
+            return true;
+          },
+          media: widget.items[currIndex],
+        ),
+      ],
     );
   }
 }
