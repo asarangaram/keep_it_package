@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../image_view_service/image_view.dart';
-import '../../internal/widgets/broken_image.dart';
+import '../../../internal/widgets/broken_image.dart';
 import 'image_thumbnail.dart';
 
 class PreviewService extends StatelessWidget {

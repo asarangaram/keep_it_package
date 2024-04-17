@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../internal/widgets/broken_image.dart';
+import '../../internal/widgets/broken_image.dart';
 
 class ImageViewerBasic extends StatelessWidget {
   const ImageViewerBasic({

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../internal/widgets/editor_finalizer.dart';
+import '../../../internal/widgets/editor_finalizer.dart';
 import '../models/aspect_ratio.dart' as aratio;
 import 'crop_control.dart';
 
