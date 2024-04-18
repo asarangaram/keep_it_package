@@ -3,13 +3,15 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:app_loader/app_loader.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:exif/exif.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:image/image.dart' as img;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
+
+import '../models/cl_shared_media.dart';
 
 class CLMediaProcess {
   static Stream<Progress> analyseMedia({
@@ -115,7 +117,7 @@ class CLMediaProcess {
   }
 }
 
-extension ExtProcess on CLMedia {
+extension ExtProcessCLMedia on CLMedia {
   Future<CLMedia> getMetadata({bool? regenerate}) async {
     if (type == CLMediaType.image) {
       try {

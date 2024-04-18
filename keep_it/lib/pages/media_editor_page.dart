@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../modules/shared_media/cl_media_process.dart';
 import '../widgets/media_file_handler.dart';
 
 class MediaEditorPage extends StatelessWidget {
@@ -107,7 +106,7 @@ class MediaEditorPage extends StatelessWidget {
 
     File(imageFile).createSync(recursive: true);
 
-    await ExtProcess.imageCropper(
+    await ExtProcessCLMedia.imageCropper(
       imageBytes,
       cropRect: cropRect,
       needFlip: needFlip ?? false,

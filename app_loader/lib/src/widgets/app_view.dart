@@ -2,6 +2,7 @@
 // Reference : https://gist.github.com/onatcipli/aed0372c987b4ae32311fe32bb4c1209
 
 import 'package:app_loader/src/widgets/app_theme.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../models/app_descriptor.dart';
 import '../models/cl_route_descriptor.dart';
-import '../shared_media/widgets/incoming_media_monitor.dart';
+
 import 'bottom_nav_page.dart';
 
 class AppView extends ConsumerStatefulWidget {

@@ -1,7 +1,8 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../shared_media/models/cl_shared_media.dart';
+
 import 'cl_route_descriptor.dart';
 
 typedef CLAppInitializer = Future<bool> Function(Ref ref);

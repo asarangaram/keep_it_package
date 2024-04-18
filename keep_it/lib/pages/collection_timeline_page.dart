@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,19 +38,19 @@ class CollectionTimeLinePage extends ConsumerWidget {
               return true;
             },
             onPickFiles: (BuildContext c) async {
-             // await Permission.photos.request();
-             // await Permission.storage.request();
+              // await Permission.photos.request();
+              // await Permission.storage.request();
               if (c.mounted) {
                 //final photosStatus = await Permission.photos.status;
-               // final storageStatus = await Permission.storage.status;
+                // final storageStatus = await Permission.storage.status;
                 //if (photosStatus.isGranted && storageStatus.isGranted) {
-                  if (c.mounted) {
-                    await onPickFiles(
-                      c,
-                      ref,
-                      collection: collection,
-                    );
-                  }
+                if (c.mounted) {
+                  await onPickFiles(
+                    c,
+                    ref,
+                    collection: collection,
+                  );
+                }
                 //}
               }
             },

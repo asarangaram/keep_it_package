@@ -1,10 +1,10 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../shared_media/models/cl_shared_media.dart';
-import '../shared_media/providers/incoming_media.dart';
+import '../providers/incoming_media.dart';
 
 Future<bool> onPickFiles(
   BuildContext context,
