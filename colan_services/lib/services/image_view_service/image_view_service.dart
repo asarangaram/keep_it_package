@@ -22,41 +22,34 @@ class _CLzImageState extends ConsumerState<ImageViewService> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: ExtendedImage.file(
-            widget.file,
-            fit: BoxFit.contain,
-            mode: ExtendedImageMode.gesture,
-            initGestureConfigHandler: (ExtendedImageState state) {
-              return GestureConfig(
-                inPageView: true,
-                animationMaxScale: 10,
-                minScale: 1,
-                maxScale: 10,
-                gestureDetailsIsChanged: (details) {
-                  if (details == null) return;
-                  if (details.totalScale != null &&
-                      details.totalScale! <= 1.0) {
-                    if (isZooming) {
-                      isZooming = false;
-                      widget.onLockPage?.call(lock: false);
-                    }
-                  } else {
-                    setState(() {
-                      if (!isZooming) {
-                        isZooming = true;
-                        widget.onLockPage?.call(lock: true);
-                      }
-                    });
-                  }
-                },
-              );
-            },
-          ),
-        ),
-      ],
+    return ExtendedImage.file(
+      widget.file,
+      fit: BoxFit.contain,
+      mode: ExtendedImageMode.gesture,
+      initGestureConfigHandler: (ExtendedImageState state) {
+        return GestureConfig(
+          inPageView: true,
+          animationMaxScale: 10,
+          minScale: 1,
+          maxScale: 10,
+          gestureDetailsIsChanged: (details) {
+            if (details == null) return;
+            if (details.totalScale != null && details.totalScale! <= 1.0) {
+              if (isZooming) {
+                isZooming = false;
+                widget.onLockPage?.call(lock: false);
+              }
+            } else {
+              setState(() {
+                if (!isZooming) {
+                  isZooming = true;
+                  widget.onLockPage?.call(lock: true);
+                }
+              });
+            }
+          },
+        );
+      },
     );
   }
 }

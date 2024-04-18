@@ -5,6 +5,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -231,28 +232,30 @@ class _ItemViewState extends State<ItemView> {
     final media = widget.items[currIndex];
     return Stack(
       children: [
-        PageView.builder(
-          controller: _pageController,
-          itemCount: widget.items.length,
-          physics:
-              widget.isLocked ? const NeverScrollableScrollPhysics() : null,
-          onPageChanged: (index) {
-            setState(() {
-              currIndex = index;
-            });
-          },
-          itemBuilder: (context, index) {
-            final media = widget.items[index];
+        Positioned.fill(
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.items.length,
+            physics:
+                widget.isLocked ? const NeverScrollableScrollPhysics() : null,
+            onPageChanged: (index) {
+              setState(() {
+                currIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              final media = widget.items[index];
 
-            return Hero(
-              tag: '${widget.parentIdentifier} /item/${media.id}',
-              child: MediaViewer(
-                media: media,
-                autoStart: currIndex == index,
-                onLockPage: widget.onLockPage,
-              ),
-            );
-          },
+              return Hero(
+                tag: '${widget.parentIdentifier} /item/${media.id}',
+                child: MediaViewer(
+                  media: media,
+                  autoStart: currIndex == index,
+                  onLockPage: widget.onLockPage,
+                ),
+              );
+            },
+          ),
         ),
         MediaControls(
           onMove: () async {
