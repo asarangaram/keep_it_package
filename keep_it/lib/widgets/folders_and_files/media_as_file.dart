@@ -73,16 +73,14 @@ class MediaAsFile extends ConsumerWidget {
               ShareResultStatus.success => true,
             };
           },
-          onEdit: media.type != CLMediaType.video
-              ? null
-              : () async {
-                  unawaited(
-                    context.push(
-                      '/mediaEditor?id=${media.id}',
-                    ),
-                  );
-                  return true;
-                },
+          onEdit: () async {
+            unawaited(
+              context.push(
+                '/mediaEditor?id=${media.id}',
+              ),
+            );
+            return true;
+          },
           child: PreviewService(
             media: media,
             keepAspectRatio: false,

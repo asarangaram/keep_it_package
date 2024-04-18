@@ -9,21 +9,21 @@ import 'package:video_player/video_player.dart';
 import '../providers/show_controls.dart';
 
 extension on Duration {
-  String get timestamp => "${inMinutes.toString().padLeft(2, '0')}:"
-      "${(inSeconds % 60).toString().padLeft(2, '0')}";
+  String get timestamp {
+    final hh = inHours > 0 ? "${inHours.toString().padLeft(2, '0')}:" : '';
+    return '$hh'
+        "${inMinutes.toString().padLeft(2, '0')}:"
+        "${(inSeconds % 60).toString().padLeft(2, '0')}";
+  }
 }
 
 class VideoControls extends ConsumerStatefulWidget {
   const VideoControls({
     required this.controller,
-    required this.isPlayingFullScreen,
     super.key,
-    this.onTapFullScreen,
   });
 
   final VideoPlayerController controller;
-  final void Function()? onTapFullScreen;
-  final bool isPlayingFullScreen;
 
   @override
   VideoControlsState createState() => VideoControlsState();
@@ -72,92 +72,86 @@ class VideoControlsState extends ConsumerState<VideoControls> {
       Duration(minutes: position ~/ 60, seconds: (position % 60).truncate());
 
   @override
-  Widget build(BuildContext context) => IconTheme(
-        data: const IconThemeData(color: Colors.white),
-        child: Listener(
-          onPointerDown: (_) {
-            ref
-                .read(showControlsProvider.notifier)
-                .briefHover(timeout: const Duration(seconds: 3));
-          },
-          onPointerHover: (_) {
-            ref
-                .read(showControlsProvider.notifier)
-                .briefHover(timeout: const Duration(seconds: 3));
-          },
-          child: ColoredBox(
-            color: const Color.fromRGBO(0, 0, 0, 0.5),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Material(
-                  color: Colors.transparent,
-                  child: Stack(
-                    children: [
-                      // required only for network
-                      SliderTheme(
-                        data: SliderThemeData(
-                          thumbShape: SliderComponentShape.noThumb,
-                        ),
-                        child: Slider(
-                          max: durationToDouble(video.duration),
-                          value: durationToDouble(bufferedPosition),
-                          onChanged: null,
-                        ),
-                      ),
-                      Slider(
-                        max: durationToDouble(video.duration),
-                        value: seekValue ?? durationToDouble(video.position),
-                        onChanged: (double value) =>
-                            setState(() => seekValue = value),
-                        onChangeEnd: (double value) {
-                          setState(() => seekValue = null);
-                          widget.controller.seekTo(doubleToDuration(value));
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
+  Widget build(BuildContext context) {
+    return IconTheme(
+      data: const IconThemeData(color: Colors.white),
+      child: Listener(
+        onPointerDown: (_) {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 3));
+        },
+        onPointerHover: (_) {
+          ref
+              .read(showControlsProvider.notifier)
+              .briefHover(timeout: const Duration(seconds: 3));
+        },
+        child: ColoredBox(
+          color: const Color.fromRGBO(0, 0, 0, 0.5),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Material(
+                color: Colors.transparent,
+                child: Stack(
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        video.isPlaying ? Icons.pause : Icons.play_arrow,
+                    // required only for network
+                    SliderTheme(
+                      data: SliderThemeData(
+                        thumbShape: SliderComponentShape.noThumb,
                       ),
-                      onPressed: onPlayPause,
-                    ),
-                    IconButton(
-                      icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
-                      onPressed: onMuteToggle,
-                    ),
-                    const Spacer(),
-                    Flexible(
-                      child: FittedBox(
-                        child: Text(
-                          timestamp,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(color: Colors.white),
-                        ),
+                      child: Slider(
+                        max: durationToDouble(video.duration),
+                        value: durationToDouble(bufferedPosition),
+                        onChanged: null,
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        widget.isPlayingFullScreen
-                            ? Icons.close_fullscreen_outlined
-                            : Icons.fullscreen_outlined,
-                      ),
-                      onPressed: widget.onTapFullScreen,
+                    Slider(
+                      max: durationToDouble(video.duration),
+                      value: seekValue ?? durationToDouble(video.position),
+                      onChanged: (double value) =>
+                          setState(() => seekValue = value),
+                      onChangeEnd: (double value) {
+                        setState(() => seekValue = null);
+                        widget.controller.seekTo(doubleToDuration(value));
+                      },
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      video.isPlaying ? Icons.pause : Icons.play_arrow,
+                    ),
+                    onPressed: onPlayPause,
+                  ),
+                  IconButton(
+                    icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
+                    onPressed: onMuteToggle,
+                  ),
+                  const Spacer(),
+                  Flexible(
+                    child: FittedBox(
+                      child: Text(
+                        timestamp,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 
   void onAdjustVolume(
     double value,

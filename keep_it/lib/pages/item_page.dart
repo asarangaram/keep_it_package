@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
@@ -8,10 +8,12 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:store/store.dart';
 
-import '../widgets/pop_fullscreen.dart';
+import '../widgets/media_view/media_controls.dart';
+import '../widgets/media_view/media_viewer.dart';
 
 class CollectionItemPage extends ConsumerWidget {
   const CollectionItemPage({
@@ -29,8 +31,10 @@ class CollectionItemPage extends ConsumerWidget {
     return GetMediaByCollectionId(
       collectionId: collectionId,
       buildOnData: (items) {
-        final initialMedia = items.where((e) => e.id == id).first;
-        final initialMediaIndex = items.indexOf(initialMedia);
+        final initialMedia = items.where((e) => e.id == id).firstOrNull;
+        final initialMediaIndex =
+            initialMedia == null ? 0 : items.indexOf(initialMedia);
+
         return MediaInPageView(
           media: items,
           parentIdentifier: parentIdentifier,
@@ -101,46 +105,33 @@ class MediaInPageViewState extends ConsumerState<MediaInPageView> {
         child: Stack(
           children: [
             const MediaBackground(),
-            SafeArea(
-              bottom: !lockPage,
-              top: !lockPage,
-              child: Stack(
-                children: [
-                  LayoutBuilder(
-                    builder: (context, boxConstraints) {
-                      return SizedBox(
-                        width: boxConstraints.maxWidth,
-                        height: boxConstraints.maxHeight,
-                        child: ItemView(
-                          items: widget.media,
-                          startIndex: widget.initialMediaIndex,
-                          parentIdentifier: widget.parentIdentifier,
-                          isLocked: lockPage,
-                          onLockPage: ({required bool lock}) {
-                            setState(() {
-                              lockPage = lock;
-                              if (lock) {
-                                ref
-                                    .read(showControlsProvider.notifier)
-                                    .hideControls();
-                              } else {
-                                ref
-                                    .read(showControlsProvider.notifier)
-                                    .showControls();
-                              }
-                            });
-                          },
-                        ),
-                      );
+            LayoutBuilder(
+              builder: (context, boxConstraints) {
+                return SizedBox(
+                  width: boxConstraints.maxWidth,
+                  height: boxConstraints.maxHeight,
+                  child: ItemView(
+                    items: widget.media,
+                    startIndex: widget.initialMediaIndex,
+                    parentIdentifier: widget.parentIdentifier,
+                    isLocked: lockPage,
+                    onLockPage: ({required bool lock}) {
+                      setState(() {
+                        lockPage = lock;
+                        if (lock) {
+                          ref
+                              .read(showControlsProvider.notifier)
+                              .hideControls();
+                        } else {
+                          ref
+                              .read(showControlsProvider.notifier)
+                              .showControls();
+                        }
+                      });
                     },
                   ),
-                  const Positioned(
-                    top: 8,
-                    right: 8,
-                    child: ShowControl(),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),
@@ -149,18 +140,32 @@ class MediaInPageViewState extends ConsumerState<MediaInPageView> {
   }
 }
 
-class ShowControl extends ConsumerWidget {
-  const ShowControl({super.key});
-
+class CircledIcon extends ConsumerWidget {
+  const CircledIcon(this.iconData, {super.key, this.onTap});
+  final IconData iconData;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
-
-    if (showControl) {
-      return const PopFullScreen();
-    } else {
-      return const IgnorePointer();
-    }
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Theme.of(context)
+              .colorScheme
+              .onBackground
+              .withAlpha(192), // Color for the circular container
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: CLButtonIcon.verySmall(
+            iconData,
+            color: Theme.of(context).colorScheme.background.withAlpha(192),
+            onTap: onTap,
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -214,43 +219,93 @@ class _ItemViewState extends State<ItemView> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: _pageController,
-      itemCount: widget.items.length,
-      physics: widget.isLocked ? const NeverScrollableScrollPhysics() : null,
-      onPageChanged: (index) {
-        setState(() {
-          currIndex = index;
-        });
-      },
-      itemBuilder: (context, index) {
-        final media = widget.items[index];
-
-        return Hero(
-          tag: '${widget.parentIdentifier} /item/${media.id}',
-          child: switch (media.type) {
-            CLMediaType.image => ImageViewService(
-                file: File(media.path),
-                onLockPage: widget.onLockPage,
-                onEdit: media.id == null
-                    ? null
-                    : () {
-                        context.push('/mediaEditor?id=${media.id}');
-                      },
-              ),
-            CLMediaType.video => Center(
-                child: VideoPlayerService(
-                  media: media,
-                  alternate: PreviewService(
-                    media: media,
-                  ),
-                  isSelected: currIndex == index,
-                ),
-              ),
-            _ => throw UnimplementedError('Not yet implemented')
+    final media = widget.items[currIndex];
+    return Stack(
+      children: [
+        PageView.builder(
+          controller: _pageController,
+          itemCount: widget.items.length,
+          physics:
+              widget.isLocked ? const NeverScrollableScrollPhysics() : null,
+          onPageChanged: (index) {
+            setState(() {
+              currIndex = index;
+            });
           },
-        );
-      },
+          itemBuilder: (context, index) {
+            final media = widget.items[index];
+
+            return Hero(
+              tag: '${widget.parentIdentifier} /item/${media.id}',
+              child: MediaViewer(
+                media: media,
+                autoStart: currIndex == index,
+                onLockPage: widget.onLockPage,
+              ),
+            );
+          },
+        ),
+        MediaControls(
+          onMove: () async {
+            unawaited(
+              context.push(
+                '/move?ids=${media.id}',
+              ),
+            );
+            return true;
+          },
+          onDelete: () async =>
+              await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return GetDBManager(
+                    builder: (dbManager) {
+                      return CLConfirmAction(
+                        title: 'Confirm delete',
+                        message: 'Are you sure you want to delete '
+                            'this ${media.type.name}?',
+                        child: PreviewService(media: media),
+                        onConfirm: ({required confirmed}) async {
+                          await dbManager.deleteMedia(
+                            media,
+                            onDeleteFile: (f) async => f.deleteIfExists(),
+                          );
+                          if (context.mounted) {
+                            Navigator.of(context).pop(confirmed);
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              ) ??
+              false,
+          onShare: () async {
+            final box = context.findRenderObject() as RenderBox?;
+            final files = [XFile(media.path)];
+            final shareResult = await Share.shareXFiles(
+              files,
+              // text: 'Share from KeepIT',
+              subject: 'Exporting media from KeepIt',
+              sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+            );
+            return switch (shareResult.status) {
+              ShareResultStatus.dismissed => false,
+              ShareResultStatus.unavailable => false,
+              ShareResultStatus.success => true,
+            };
+          },
+          onEdit: () async {
+            unawaited(
+              context.push(
+                '/mediaEditor?id=${media.id}',
+              ),
+            );
+            return true;
+          },
+          media: widget.items[currIndex],
+        ),
+      ],
     );
   }
 }
