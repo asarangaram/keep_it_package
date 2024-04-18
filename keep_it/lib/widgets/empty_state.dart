@@ -5,9 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class EmptyState extends StatelessWidget {
-  const EmptyState({super.key});
-  static Widget? cache;
-  static Widget? pageCache;
+  const EmptyState({super.key, this.message = 'Empty'});
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -19,29 +18,27 @@ class EmptyState extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Expanded(
-                  child: Center(
-                    child: CLText.large(
-                      'Empty',
-                    ),
+                Center(
+                  child: CLText.large(
+                    message,
                   ),
                 ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    if (context.canPop())
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (context.canPop())
+                        CLButtonIcon.large(
+                          MdiIcons.arrowLeft,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       CLButtonIcon.large(
-                        MdiIcons.arrowLeft,
+                        MdiIcons.home,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                    CLButtonIcon.large(
-                      MdiIcons.home,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ].map((e) => Expanded(child: Center(child: e))).toList(),
+                    ].map((e) => Expanded(child: Center(child: e))).toList(),
+                  ),
                 ),
               ],
             ),
@@ -49,7 +46,7 @@ class EmptyState extends StatelessWidget {
         ),
       );
     }
-    return cache ??= const Center(
+    return const Center(
       child: Padding(
         padding: EdgeInsets.all(8),
         child: CLText.large(

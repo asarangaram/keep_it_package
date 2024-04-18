@@ -222,10 +222,11 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        const redirectTo = '/empty_state_view';
-        if (location != redirectTo) return redirectTo;
-        // if (location != '/camera') return '/camera';
-        //if (location == '/') return '/collections';
+        const redirectTo = '';
+        if (redirectTo.isNotEmpty) {
+          if (location != redirectTo) return redirectTo;
+        }
+
         return null;
       };
 }
