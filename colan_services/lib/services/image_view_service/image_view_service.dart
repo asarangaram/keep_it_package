@@ -6,17 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class CLzImage extends ConsumerStatefulWidget {
-  const CLzImage({required this.file, super.key, this.onLockPage, this.onEdit});
+import '../video_player_service/providers/show_controls.dart';
+
+class ImageViewService extends ConsumerStatefulWidget {
+  const ImageViewService({
+    required this.file,
+    super.key,
+    this.onLockPage,
+    this.onEdit,
+  });
   final File file;
   final void Function({required bool lock})? onLockPage;
   final VoidCallback? onEdit;
 
   @override
-  ConsumerState<CLzImage> createState() => _CLzImageState();
+  ConsumerState<ImageViewService> createState() => _CLzImageState();
 }
 
-class _CLzImageState extends ConsumerState<CLzImage> {
+class _CLzImageState extends ConsumerState<ImageViewService> {
   bool isZooming = false;
 
   @override

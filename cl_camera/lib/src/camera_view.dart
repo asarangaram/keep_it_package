@@ -328,7 +328,7 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
   Widget buildBottomControl(BuildContext context, BoxConstraints constrains) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onSurface.withAlpha(64),
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(10),
       ),
       child: Stack(
         children: [

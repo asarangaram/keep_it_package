@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../../basics/cl_icon.dart';
+import '../../internal/widgets/broken_image.dart';
 
 class ImageViewerBasic extends StatelessWidget {
   const ImageViewerBasic({
@@ -62,37 +63,7 @@ class ImageViewerBasic extends StatelessWidget {
   }
 }
 
-class BrokenImage extends StatelessWidget {
-  const BrokenImage({
-    super.key,
-  });
-  static Widget? placeHolder;
 
-  @override
-  Widget build(BuildContext context) {
-    return placeHolder ??= AspectRatio(
-      aspectRatio: 1,
-      child: FittedBox(
-        fit: BoxFit.fill,
-        child: SizedBox.square(
-          dimension: 64,
-          child: Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(1),
-              child: Center(
-                child: CLIcon.large(
-                  Icons.broken_image_outlined,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 /* 
 class MediaPlaceHolder extends StatelessWidget {

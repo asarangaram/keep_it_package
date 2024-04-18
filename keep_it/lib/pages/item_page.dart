@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+
 import 'package:store/store.dart';
 
 import '../widgets/pop_fullscreen.dart';
@@ -25,11 +27,12 @@ class CollectionItemPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMediaByCollectionId(
-      buildOnData: (media) {
-        final initialMedia = media.where((e) => e.id == id).first;
-        final initialMediaIndex = media.indexOf(initialMedia);
+      collectionId: collectionId,
+      buildOnData: (items) {
+        final initialMedia = items.where((e) => e.id == id).first;
+        final initialMediaIndex = items.indexOf(initialMedia);
         return MediaInPageView(
-          media: media,
+          media: items,
           parentIdentifier: parentIdentifier,
           initialMediaIndex: initialMediaIndex,
         );
@@ -222,14 +225,11 @@ class _ItemViewState extends State<ItemView> {
       },
       itemBuilder: (context, index) {
         final media = widget.items[index];
-        final formattedDate = media.originalDate == null
-            ? 'Err: No date'
-            : DateFormat('dd MMMM yyyy').format(media.originalDate!);
 
         return Hero(
           tag: '${widget.parentIdentifier} /item/${media.id}',
           child: switch (media.type) {
-            CLMediaType.image => CLzImage(
+            CLMediaType.image => ImageViewService(
                 file: File(media.path),
                 onLockPage: widget.onLockPage,
                 onEdit: media.id == null
@@ -239,26 +239,12 @@ class _ItemViewState extends State<ItemView> {
                       },
               ),
             CLMediaType.video => Center(
-                child: VideoPlayer(
+                child: VideoPlayerService(
                   media: media,
-                  alternate: CLMediaPreview(
+                  alternate: PreviewService(
                     media: media,
                   ),
                   isSelected: currIndex == index,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      alignment: Alignment.centerLeft,
-                      child: CLText.standard(
-                        formattedDate,
-                        textAlign: TextAlign.start,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .background
-                            .withAlpha(192),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             _ => throw UnimplementedError('Not yet implemented')

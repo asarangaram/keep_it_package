@@ -1,11 +1,9 @@
 import 'dart:io';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
-import '../../services/image_services/view/cl_media_preview.dart';
-import 'w2_get_db_manager.dart';
-import 'w3_get_media.dart';
+import 'package:store/store.dart';
 
 /// For the given media ID, this widget, calls the builder with the media file
 /// and also provides a call back to get the modifiled file.
@@ -70,7 +68,7 @@ class MediaFileHandler extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(
                                       8,
                                     ),
-                                    child: CLMediaPreview(
+                                    child: PreviewService(
                                       media: CLMedia(
                                         path: outFile,
                                         type: media.type,

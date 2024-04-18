@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -5,7 +6,7 @@ class FullscreenLayout extends StatelessWidget {
   const FullscreenLayout({
     required this.child,
     super.key,
-    this.onClose,
+    // this.onClose,
     this.useSafeArea = true,
     this.backgroundColor,
     this.hasBorder = false,
@@ -14,7 +15,7 @@ class FullscreenLayout extends StatelessWidget {
     this.bottomNavigationBar,
   });
   final Widget child;
-  final void Function()? onClose;
+  // final void Function()? onClose;
   final bool useSafeArea;
   final Color? backgroundColor;
   final bool hasBorder;
@@ -66,7 +67,7 @@ class FullscreenLayout extends StatelessWidget {
       child: NotificationService(
         child: Column(
           children: [
-            if (onClose != null)
+            /* if (onClose != null)
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
@@ -89,7 +90,7 @@ class FullscreenLayout extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
+              ), */
             Flexible(child: child),
           ],
         ),
