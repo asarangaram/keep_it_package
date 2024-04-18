@@ -12,6 +12,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:store/store.dart';
 
+import '../widgets/empty_state.dart';
 import '../widgets/media_view/media_controls.dart';
 import '../widgets/media_view/media_viewer.dart';
 
@@ -31,6 +32,9 @@ class CollectionItemPage extends ConsumerWidget {
     return GetMediaByCollectionId(
       collectionId: collectionId,
       buildOnData: (items) {
+        if (items.isEmpty) {
+          return const EmptyState();
+        }
         final initialMedia = items.where((e) => e.id == id).firstOrNull;
         final initialMediaIndex =
             initialMedia == null ? 0 : items.indexOf(initialMedia);

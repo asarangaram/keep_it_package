@@ -2,6 +2,8 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
+import 'validate_layout.dart';
+
 class FullscreenLayout extends StatelessWidget {
   const FullscreenLayout({
     required this.child,
@@ -27,36 +29,6 @@ class FullscreenLayout extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) {
-    /* return CLFullscreenBox(
-      useSafeArea: true,
-      child: NotificationService(
-        child: Stack(
-          children: [
-            child,
-            if (onClose != null)
-              Positioned(
-                top: 4,
-                right: 12,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onBackground
-                        .withAlpha(192), // Color for the circular container
-                  ),
-                  child: CLButtonIcon.small(
-                    Icons.close,
-                    color:
-                        Theme.of(context).colorScheme.background.withAlpha(192),
-                    onTap: onClose,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    ); */
     return CLFullscreenBox(
       hasBackground: hasBackground,
       backgroundColor: backgroundColor,
@@ -65,36 +37,14 @@ class FullscreenLayout extends StatelessWidget {
       bottomNavigationBar: bottomNavigationBar,
       useSafeArea: useSafeArea,
       child: NotificationService(
-        child: Column(
-          children: [
-            /* if (onClose != null)
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onBackground
-                          .withAlpha(192), // Color for the circular container
-                    ),
-                    child: CLButtonIcon.small(
-                      Icons.close,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .background
-                          .withAlpha(192),
-                      onTap: onClose,
-                    ),
-                  ),
-                ),
-              ), */
-            Flexible(child: child),
-          ],
+        child: ValidateLayout(
+          validLayout: true,
+          child: child,
         ),
       ),
     );
   }
+
+  static bool foundInContext(BuildContext context) =>
+      ValidateLayout.isValidLayout(context);
 }

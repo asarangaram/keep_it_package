@@ -19,6 +19,7 @@ import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
+import 'widgets/empty_state.dart';
 
 extension ExtDirectory on Directory {
   void clear() {
@@ -140,6 +141,20 @@ class KeepItApp implements AppDescriptor {
             );
           },
         ),
+
+        // For Testing
+        CLRouteDescriptor(
+          name: 'empty_state_page',
+          builder: (context, GoRouterState state) {
+            return const EmptyState();
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'empty_state_view',
+          builder: (context, GoRouterState state) {
+            return const FullscreenLayout(child: EmptyState());
+          },
+        ),
       ];
 
   @override
@@ -207,7 +222,8 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        // if (location != '/mediaEditor') return '/mediaEditor?id=23';
+        const redirectTo = '/empty_state_view';
+        if (location != redirectTo) return redirectTo;
         // if (location != '/camera') return '/camera';
         //if (location == '/') return '/collections';
         return null;
