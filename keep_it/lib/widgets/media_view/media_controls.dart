@@ -72,7 +72,7 @@ class MediaControls extends ConsumerWidget {
                 child: SafeArea(
                   top: false,
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: 16),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -159,6 +159,9 @@ class MediaControls extends ConsumerWidget {
                               );
                             },
                           ),
+                        const SizedBox(
+                          height: 16,
+                        ),
                       ],
                     ),
                   ),
