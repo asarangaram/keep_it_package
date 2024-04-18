@@ -36,7 +36,7 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
     return PopScope(
       canPop: false,
       onPopInvoked: (val) {
-        print('pop invoked $val;');
+        //print('pop invoked $val;');
       },
       child: Scaffold(
         backgroundColor: widget.backgroundColor,
