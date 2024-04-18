@@ -33,7 +33,12 @@ class CollectionItemPage extends ConsumerWidget {
       collectionId: collectionId,
       buildOnData: (items) {
         if (items.isEmpty) {
-          return const EmptyState();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.canPop()) {
+              context.pop();
+            }
+          });
+          return const EmptyState(message: 'All items are Deleted');
         }
         final initialMedia = items.where((e) => e.id == id).firstOrNull;
         final initialMediaIndex =

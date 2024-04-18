@@ -71,67 +71,96 @@ class MediaControls extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.onSurface.withAlpha(128),
                 child: SafeArea(
                   top: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (media.type == CLMediaType.video)
-                        VideoPlayerService.controlMenu(
-                          media: media,
-                        ),
-                      if ([onEdit, onDelete, onMove, onShare]
-                          .any((e) => e != null))
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (onEdit == null)
-                                Container()
-                              else
-                                CLButtonIcon.small(
-                                  MdiIcons.pencil,
-                                  color: Theme.of(context).colorScheme.surface,
-                                  onTap: onEdit,
-                                ),
-                              if (onDelete == null)
-                                Container()
-                              else
-                                CLButtonIcon.small(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  Icons.delete_rounded,
-                                  onTap: onDelete,
-                                ),
-                              if (onMove == null)
-                                Container()
-                              else
-                                CLButtonIcon.small(
-                                  MdiIcons.imageMove,
-                                  color: Theme.of(context).colorScheme.surface,
-                                  onTap: onMove,
-                                ),
-                              if (onShare == null)
-                                Container()
-                              else
-                                CLButtonIcon.small(
-                                  MdiIcons.share,
-                                  color: Theme.of(context).colorScheme.surface,
-                                  onTap: onShare,
-                                ),
-                            ]
-                                .map(
-                                  (e) => Padding(
-                                    padding: const EdgeInsets.only(
-                                      right: 16,
-                                    ),
-                                    child: e,
-                                  ),
-                                )
-                                .toList(),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (media.type == CLMediaType.video)
+                          VideoPlayerService.controlMenu(
+                            media: media,
                           ),
-                        ),
-                    ],
+                        if ([onEdit, onDelete, onMove, onShare]
+                            .any((e) => e != null))
+                          VideoPlayerService.playStateBuilder(
+                            media: media,
+                            builder: ({required bool isPlaying}) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (onEdit == null)
+                                      Container()
+                                    else
+                                      CLButtonIcon.small(
+                                        MdiIcons.pencil,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        disabledColor: isPlaying
+                                            ? Theme.of(context).disabledColor
+                                            : null,
+                                        onTap: isPlaying ? null : onEdit,
+                                      ),
+                                    if (onDelete == null)
+                                      Container()
+                                    else
+                                      CLButtonIcon.small(
+                                        Icons.delete_rounded,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        disabledColor: isPlaying
+                                            ? Theme.of(context).disabledColor
+                                            : null,
+                                        onTap: isPlaying ? null : onDelete,
+                                      ),
+                                    if (onMove == null)
+                                      Container()
+                                    else
+                                      CLButtonIcon.small(
+                                        MdiIcons.imageMove,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        disabledColor: isPlaying
+                                            ? Theme.of(context).disabledColor
+                                            : null,
+                                        onTap: isPlaying ? null : onMove,
+                                      ),
+                                    if (onShare == null)
+                                      Container()
+                                    else
+                                      CLButtonIcon.small(
+                                        MdiIcons.share,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                        disabledColor: isPlaying
+                                            ? Theme.of(context).disabledColor
+                                            : null,
+                                        onTap: isPlaying ? null : onShare,
+                                      ),
+                                  ]
+                                      .map(
+                                        (e) => Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: 16,
+                                          ),
+                                          child: e,
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
