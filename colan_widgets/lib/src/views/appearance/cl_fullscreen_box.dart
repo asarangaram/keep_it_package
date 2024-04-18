@@ -33,28 +33,37 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: widget.backgroundColor,
-      body: _CLBackground(
-        hasBackground: widget.hasBackground,
-        backgroundBrightness: widget.backgroundBrightness,
-        child: SafeArea(
-          top: widget.useSafeArea,
-          left: widget.useSafeArea,
-          right: widget.useSafeArea,
-          bottom: widget.useSafeArea,
-          child: ClipRect(
-            clipBehavior: Clip.antiAlias,
-            child: _ScaffoldBorder(
-              hasBorder: widget.hasBorder,
-              child: LayoutBuilder(
-                builder: (context, constraints) => widget.child,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (val) {
+        print('pop invoked $val;');
+      },
+      child: Scaffold(
+        backgroundColor: widget.backgroundColor,
+        body: _CLBackground(
+          hasBackground: widget.hasBackground,
+          backgroundBrightness: widget.backgroundBrightness,
+          child: SafeArea(
+            top: widget.useSafeArea,
+            left: widget.useSafeArea,
+            right: widget.useSafeArea,
+            bottom: widget.useSafeArea,
+            child: ClipRect(
+              clipBehavior: Clip.antiAlias,
+              child: _ScaffoldBorder(
+                hasBorder: widget.hasBorder,
+                child: LayoutBuilder(
+                  builder: (context, constraints) => Padding(
+                    padding: EdgeInsets.zero,
+                    child: widget.child,
+                  ),
+                ),
               ),
             ),
           ),
         ),
+        bottomNavigationBar: widget.bottomNavigationBar,
       ),
-      bottomNavigationBar: widget.bottomNavigationBar,
     );
   }
 }
