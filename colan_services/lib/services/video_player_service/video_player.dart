@@ -48,16 +48,72 @@ class VideoPlayerService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (playerService == PlayerServices.player) {
-      if (autoStart) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (context.mounted) {
-            await ref
-                .read(videoPlayerStateProvider.notifier)
-                .playVideo(media.path);
-          }
-        });
-      }
+    switch (playerService) {
+      case PlayerServices.player:
+        if (autoStart) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (context.mounted) {
+              await ref
+                  .read(videoPlayerStateProvider.notifier)
+                  .playVideo(media.path);
+            }
+          });
+        }
+        return GetVideoController(
+          builder: (
+            VideoPlayerState state,
+            VideoPlayerController controller,
+          ) {
+            if (state.path == media.path) {
+              return VideoLayer(
+                controller: controller,
+              );
+            } else {
+              return GestureDetector(
+                onTap: onSelect,
+                child: alternate,
+              );
+            }
+          },
+          errorBuilder: (message, e) {
+            return GestureDetector(
+              onTap: onSelect,
+              child: alternate,
+            );
+          },
+          loadingBuilder: () {
+            return Stack(
+              children: [
+                if (alternate != null) alternate!,
+                const Center(child: CircularProgressIndicator()),
+              ],
+            );
+          },
+        );
+      case PlayerServices.controlMenu:
+        return GetVideoController(
+          builder: (
+            VideoPlayerState state,
+            VideoPlayerController controller,
+          ) {
+            if (state.path == media.path) {
+              return VideoControls(controller: controller);
+            } else {
+              return Container();
+            }
+          },
+          errorBuilder: (message, e) {
+            return Container();
+          },
+          loadingBuilder: () {
+            return Container();
+          },
+        );
+      case PlayerServices.playStateBuilder:
+        if (media.type != CLMediaType.video) {
+          return builder!(isPlaying: false);
+        }
+      // TODO: Handle this case.
     }
 
     return GetVideoController(
@@ -66,60 +122,19 @@ class VideoPlayerService extends ConsumerWidget {
         VideoPlayerController controller,
       ) {
         if (state.path == media.path) {
-          switch (playerService) {
-            case PlayerServices.player:
-              return VideoLayer(
-                controller: controller,
-              );
-            case PlayerServices.controlMenu:
-              return VideoControls(controller: controller);
-            case PlayerServices.playStateBuilder:
-              return PlayerStateMonitor(
-                controller: controller,
-                builder: builder!,
-              );
-          }
+          return PlayerStateMonitor(
+            controller: controller,
+            builder: builder!,
+          );
         } else {
-          switch (playerService) {
-            case PlayerServices.player:
-              return GestureDetector(
-                onTap: onSelect,
-                child: alternate,
-              );
-            case PlayerServices.controlMenu:
-              return Container();
-            case PlayerServices.playStateBuilder:
-              return Container();
-          }
+          return builder!(isPlaying: false);
         }
       },
       errorBuilder: (message, e) {
-        switch (playerService) {
-          case PlayerServices.player:
-            return GestureDetector(
-              onTap: onSelect,
-              child: alternate,
-            );
-          case PlayerServices.controlMenu:
-            return Container();
-          case PlayerServices.playStateBuilder:
-            return Container();
-        }
+        return builder!(isPlaying: false);
       },
       loadingBuilder: () {
-        switch (playerService) {
-          case PlayerServices.player:
-            return Stack(
-              children: [
-                if (alternate != null) alternate!,
-                const Center(child: CircularProgressIndicator()),
-              ],
-            );
-          case PlayerServices.controlMenu:
-            return Container();
-          case PlayerServices.playStateBuilder:
-            return Container();
-        }
+        return builder!(isPlaying: false);
       },
     );
   }
