@@ -77,9 +77,8 @@ class CameraIOHandler extends ConsumerWidget {
               if (media == null) {
                 throw Exception('Failed to store Media');
               } else if (!File(media.path).existsSync()) {
-                print('Soemthing seems wrong here!!!');
+                //print('Soemthing seems wrong here!!!');
               }
-              print('media');
 
               ref.read(capturedMediaProvider.notifier).add(media);
             },
