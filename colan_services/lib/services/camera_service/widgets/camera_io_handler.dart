@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
@@ -33,6 +34,8 @@ class CameraIOHandler extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // TODO(anandas): Read from Settings
+    const tempCollectionName = '*** Recently Captured';
     return GetDBManager(
       builder: (dbManager) {
         return SafeExit(
@@ -53,8 +56,6 @@ class CameraIOHandler extends ConsumerWidget {
               );
               final Collection tempCollection;
               if (collection == null) {
-                // TODO(anandas): Read from Settings
-                const tempCollectionName = '*** Recently Captured';
                 tempCollection =
                     await dbManager.getCollectionByLabel(tempCollectionName) ??
                         await dbManager.upsertCollection(
@@ -85,11 +86,13 @@ class CameraIOHandler extends ConsumerWidget {
             previewWidget: PreviewCapturedMedia(
               sendMedia: (mediaList) async {
                 if (collection == null) {
-                  await onReceiveCapturedMedia(
-                    context,
-                    ref,
-                    entries: mediaList,
-                    collection: collection,
+                  unawaited(
+                    onReceiveCapturedMedia(
+                      context,
+                      ref,
+                      entries: mediaList,
+                      collection: collection,
+                    ),
                   );
                 }
                 ref.read(capturedMediaProvider.notifier).clear();

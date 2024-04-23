@@ -77,17 +77,21 @@ class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
     state = [...state, item];
   }
 
-  void pop() {
+  bool pop() {
     final media = state.firstOrNull;
-    if (media?.isNotEmpty ?? false) {
-      for (final item in media!.entries) {
-        item.deleteFile();
+    if (media != null) {
+      if (media.isNotEmpty) {
+        for (final item in media.entries) {
+          if (item.id == null) {
+            item.deleteFile();
+          }
+        }
       }
+      state = state.removeFirstItem();
+      return true;
     }
-    state = state.removeFirstItem();
+    return false;
   }
-
-  void onDiscard() => pop();
 }
 
 final incomingMediaStreamProvider =
