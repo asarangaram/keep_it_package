@@ -71,6 +71,10 @@ class DBManager extends Store {
     return dbReader.getMediaByMD5(db, md5String);
   }
 
+  Future<Collection?> getCollectionByLabel(String label) async {
+    return dbReader.getCollectionByLabel(db, label);
+  }
+
   @override
   Future<Collection> upsertCollection({
     required Collection collection,
