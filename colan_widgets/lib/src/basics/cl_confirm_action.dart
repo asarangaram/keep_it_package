@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'cl_text.dart';
 
 class CLConfirmAction extends StatelessWidget {
   const CLConfirmAction({
@@ -26,28 +25,30 @@ class CLConfirmAction extends StatelessWidget {
       content: (child != null || message.isNotEmpty)
           ? SizedBox.square(
               dimension: 200,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(
-                    10,
+              child: Column(
+                children: [
+                  Flexible(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          8,
+                        ),
+                        child: child ?? const SizedBox.shrink(),
+                      ),
+                    ),
                   ),
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    8,
-                  ),
-                  child: Column(
-                    children: [
-                      Flexible(child: child ?? const SizedBox.shrink()),
-                      if (message.isNotEmpty) CLText.large(message),
-                    ],
-                  ),
-                ),
+                  if (message.isNotEmpty) Text(message),
+                ],
               ),
             )
           : const SizedBox.shrink(),
