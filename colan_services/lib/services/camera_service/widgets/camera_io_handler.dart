@@ -51,22 +51,35 @@ class CameraIOHandler extends ConsumerWidget {
                 collectionId: collection?.id,
                 md5String: md5String,
               );
-              if (collection != null) {
-                media = await dbManager.upsertMedia(
-                  collectionId: collection!.id!,
-                  media: media,
-                  onPrepareMedia: (m, {required targetDir}) async {
-                    final updated =
-                        (await m.moveFile(targetDir: targetDir)).getMetadata();
-                    return updated;
-                  },
-                );
-                if (media == null) {
-                  throw Exception('Failed to store Media');
-                } else if (!File(media.path).existsSync()) {
-                  print('Soemthing seems wrong here!!!');
-                }
+              final Collection tempCollection;
+              if (collection == null) {
+                // TODO(anandas): Read from Settings
+                const tempCollectionName = '*** Recently Captured';
+                tempCollection =
+                    await dbManager.getCollectionByLabel(tempCollectionName) ??
+                        await dbManager.upsertCollection(
+                          collection:
+                              const Collection(label: tempCollectionName),
+                        );
+              } else {
+                tempCollection = collection!;
               }
+              media = await dbManager.upsertMedia(
+                collectionId: tempCollection.id!,
+                media: media,
+                onPrepareMedia: (m, {required targetDir}) async {
+                  final updated =
+                      (await m.moveFile(targetDir: targetDir)).getMetadata();
+                  return updated;
+                },
+              );
+
+              if (media == null) {
+                throw Exception('Failed to store Media');
+              } else if (!File(media.path).existsSync()) {
+                print('Soemthing seems wrong here!!!');
+              }
+              print('media');
 
               ref.read(capturedMediaProvider.notifier).add(media);
             },
