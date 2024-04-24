@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:gal/gal.dart';
 
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -125,6 +126,8 @@ class DBManager extends Store {
           media.copyWith(collectionId: collectionId),
           targetDir: dbWriter.appSettings.validPrefix(collectionId),
         );
+        await Gal.putImage(updated.path);
+
         return await dbWriter.upsertMedia(tx, updated);
       } catch (e) {
         return null;
