@@ -113,7 +113,6 @@ class VideoPlayerService extends ConsumerWidget {
         if (media.type != CLMediaType.video) {
           return builder!(isPlaying: false);
         }
-      // TODO: Handle this case.
     }
 
     return GetVideoController(

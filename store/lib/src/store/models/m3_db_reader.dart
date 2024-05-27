@@ -32,4 +32,16 @@ class DBReader {
       validate: true,
     );
   }
+
+  Future<Collection?> getCollectionByLabel(
+    SqliteWriteContext tx,
+    String label,
+  ) async {
+    return (DBQueries.collectionByLabel.sql as DBQuery<Collection>)
+        .copyWith(parameters: [label]).read(
+      tx,
+      appSettings: appSettings,
+      validate: true,
+    );
+  }
 }

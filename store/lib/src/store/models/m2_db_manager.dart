@@ -12,7 +12,7 @@ abstract class Store {
   Future<Collection> upsertCollection({
     required Collection collection,
   });
-  Future<void> upsertMedia({
+  Future<CLMedia?> upsertMedia({
     required int collectionId,
     required CLMedia media,
     required Future<CLMedia> Function(
@@ -71,6 +71,10 @@ class DBManager extends Store {
     return dbReader.getMediaByMD5(db, md5String);
   }
 
+  Future<Collection?> getCollectionByLabel(String label) async {
+    return dbReader.getCollectionByLabel(db, label);
+  }
+
   @override
   Future<Collection> upsertCollection({
     required Collection collection,
@@ -107,7 +111,7 @@ class DBManager extends Store {
   }
 
   @override
-  Future<void> upsertMedia({
+  Future<CLMedia?> upsertMedia({
     required int collectionId,
     required CLMedia media,
     required Future<CLMedia> Function(
@@ -115,15 +119,18 @@ class DBManager extends Store {
       required String targetDir,
     }) onPrepareMedia,
   }) async {
-    await db.writeTransaction((tx) async {
+    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
       try {
         final updated = await onPrepareMedia(
           media.copyWith(collectionId: collectionId),
           targetDir: dbWriter.appSettings.validPrefix(collectionId),
         );
-        await dbWriter.upsertMedia(tx, updated);
-      } catch (e) {/* */}
+        return await dbWriter.upsertMedia(tx, updated);
+      } catch (e) {
+        return null;
+      }
     });
+    return dbMedia;
   }
 
   @override
