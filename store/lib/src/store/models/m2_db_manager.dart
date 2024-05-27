@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:gal/gal.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -104,6 +104,14 @@ class DBManager extends Store {
             item.copyWith(collectionId: collectionId),
             targetDir: dbWriter.appSettings.validPrefix(collectionId),
           );
+          final result = await SaverGallery.saveFile(
+            file: updated.path,
+            androidExistNotSave: true,
+            name: updated.basename,
+            androidRelativePath: 'KeepIt',
+          );
+          print(result);
+
           updatedMedia.add(updated);
         } catch (e) {/* */}
       }
@@ -126,7 +134,18 @@ class DBManager extends Store {
           media.copyWith(collectionId: collectionId),
           targetDir: dbWriter.appSettings.validPrefix(collectionId),
         );
-        await Gal.putImage(updated.path);
+        try {
+          final result = await SaverGallery.saveFile(
+            file: updated.path,
+            androidExistNotSave: true,
+            name: updated.basename,
+            androidRelativePath: 'Pictures/KeepIt',
+          );
+          print(result);
+        } catch (e) {
+          print(e);
+        }
+      
 
         return await dbWriter.upsertMedia(tx, updated);
       } catch (e) {
