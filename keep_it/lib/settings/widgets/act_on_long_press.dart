@@ -72,7 +72,6 @@ class LongPressButtonState extends State<LongPressButton> {
       _remainingTime = widget.seconds;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      print(_remainingTime);
       setState(() {
         if (_remainingTime > 0) {
           _remainingTime--;
