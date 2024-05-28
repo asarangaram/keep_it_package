@@ -19,22 +19,10 @@ import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
+import 'settings/pages/settings_main.dart';
 import 'widgets/empty_state.dart';
 
-extension ExtDirectory on Directory {
-  void clear() {
-    if (existsSync()) {
-      final contents = listSync();
-      for (final content in contents) {
-        if (content is File) {
-          content.deleteSync();
-        } else if (content is Directory) {
-          content.deleteSync(recursive: true);
-        }
-      }
-    }
-  }
-}
+
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -66,9 +54,7 @@ class KeepItApp implements AppDescriptor {
         ),
         CLShellRouteDescriptor(
           name: 'settings',
-          builder: (context, state) => const Center(
-            child: Text('Settings'),
-          ),
+          builder: (context, state) => const SettingsMain(),
           iconData: Icons.settings,
           label: 'Settings',
         ),
