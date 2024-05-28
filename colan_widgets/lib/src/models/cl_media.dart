@@ -48,7 +48,7 @@ class CLMedia {
     // ignore: avoid_unused_constructor_parameters
     required AppSettings appSettings,
   }) {
-    final pathPrefix = appSettings.directories.docDir.path;
+    final pathPrefix = appSettings.pathPrefix;
     if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
     }

@@ -35,7 +35,7 @@ class DBWriter {
     table: 'Item',
     toMap: (CLMedia obj, {required appSettings, required validate}) {
       final map = obj.toMap(
-        pathPrefix: appSettings.directories.docDir.path,
+        pathPrefix: appSettings.pathPrefix,
         validate: true,
       );
       if (validate) {
@@ -61,7 +61,7 @@ class DBWriter {
     readBack: (tx, item, {required appSettings, required validate}) {
       final pathExpected = CLMedia.relativePath(
         item.path,
-        pathPrefix: appSettings.directories.docDir.path,
+        pathPrefix: appSettings.pathPrefix,
         validate: true,
       );
 

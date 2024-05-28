@@ -4,8 +4,6 @@ import 'package:path_provider/path_provider.dart';
 
 final appSettingsProvider = FutureProvider<AppSettings>((ref) async {
   final directories = DeviceDirectories(
-    //container: (await getLibraryDirectory()).parent,
-    container: (await getApplicationDocumentsDirectory()).parent,
     docDir: await getApplicationDocumentsDirectory(),
     cacheDir: await getApplicationCacheDirectory(),
   );

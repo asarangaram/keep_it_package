@@ -55,13 +55,13 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
         final uuidGenerator = ref.watch(uuidProvider);
         final relativePath = CLMedia.relativePath(
           widget.media.path,
-          pathPrefix: resources.directories.docDir.path,
+          pathPrefix: resources.pathPrefix,
           validate: false,
         );
 
         final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, relativePath);
         final previewFileName =
-            path.join(resources.directories.cacheDir.path, '$uuid.tn.jpeg');
+            path.join(resources.cacheDir.path, '$uuid.tn.jpeg');
 
         final hasThumbnail =
             !widget.refresh && File(previewFileName).existsSync();
