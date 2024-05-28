@@ -21,6 +21,7 @@ class SettingsMain extends StatelessWidget {
                   builder: (dbManager) {
                     return ActOnLongPress(
                       action: () async {
+                        // TODO(anandas): Confirm with appropriate message
                         await dbManager.resetStore();
                         for (final dir in [
                           await getApplicationDocumentsDirectory(),
