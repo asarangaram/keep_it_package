@@ -36,7 +36,7 @@ class AppSettings {
 
   final String _dbName = 'keepIt.db';
   File get databaseFile {
-    final dir = Directory(join(_persistentStorage.path, _parentFolder));
+    final dir = Directory(join(_persistentStorage.path, 'keep_it_db'));
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
     }
@@ -77,7 +77,7 @@ class AppSettings {
       cacheDir,
       downloadDir,
     ]) {
-      dir.clear();
+      dir.deleteSync(recursive: true);
     }
   }
 }
