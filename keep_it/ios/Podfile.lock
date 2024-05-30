@@ -9,9 +9,6 @@ PODS:
     - ffmpeg-kit-ios-https (= 6.0)
     - Flutter
   - Flutter (1.0.0)
-  - gal (1.0.0):
-    - Flutter
-    - FlutterMacOS
   - heif_converter (1.0.0):
     - Flutter
   - image_picker_ios (0.0.1):
@@ -41,18 +38,18 @@ PODS:
   - share_handler_ios_models (0.0.9)
   - share_plus (0.0.1):
     - Flutter
-  - sqlite3 (3.45.1):
-    - sqlite3/common (= 3.45.1)
-  - sqlite3/common (3.45.1)
-  - sqlite3/fts5 (3.45.1):
+  - sqlite3 (3.46.0):
+    - sqlite3/common (= 3.46.0)
+  - sqlite3/common (3.46.0)
+  - sqlite3/fts5 (3.46.0):
     - sqlite3/common
-  - sqlite3/perf-threadsafe (3.45.1):
+  - sqlite3/perf-threadsafe (3.46.0):
     - sqlite3/common
-  - sqlite3/rtree (3.45.1):
+  - sqlite3/rtree (3.46.0):
     - sqlite3/common
   - sqlite3_flutter_libs (0.0.1):
     - Flutter
-    - sqlite3 (~> 3.45.1)
+    - sqlite3 (~> 3.46.0)
     - sqlite3/fts5
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
@@ -67,7 +64,6 @@ DEPENDENCIES:
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - ffmpeg_kit_flutter (from `.symlinks/plugins/ffmpeg_kit_flutter/ios`)
   - Flutter (from `Flutter`)
-  - gal (from `.symlinks/plugins/gal/darwin`)
   - heif_converter (from `.symlinks/plugins/heif_converter/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -91,8 +87,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/ffmpeg_kit_flutter/ios"
   Flutter:
     :path: Flutter
-  gal:
-    :path: ".symlinks/plugins/gal/darwin"
   heif_converter:
     :path: ".symlinks/plugins/heif_converter/ios"
   image_picker_ios:
@@ -117,17 +111,16 @@ SPEC CHECKSUMS:
   ffmpeg-kit-ios-https: f9c838aa5400a6c5ba12324c6b798f52197ba354
   ffmpeg_kit_flutter: b4ca70cac3fc1d8ac14cdc660754b60870358732
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gal: 61e868295d28fe67ffa297fae6dacebf56fd53e1
   heif_converter: e3802659e4104e27e28c4d7bff07903da2f69318
-  image_picker_ios: b545a5f16c0fa88e3ecbbce3ed4de45567a8ec18
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   share_handler_ios: 088138c17ce73333b4875a35860cd52604041521
   share_handler_ios_models: fc638c9b4330dc7f082586c92aee9dfa0b87b871
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
-  sqlite3: 73b7fc691fdc43277614250e04d183740cb15078
-  sqlite3_flutter_libs: af0e8fe9bce48abddd1ffdbbf839db0302d72d80
-  video_player_avfoundation: 2b4384f3b157206b5e150a0083cdc0c905d260d3
+  sqlite3: 154b084339ede06960a5b3c8160066adc9176b7d
+  sqlite3_flutter_libs: 0d611efdf6d1c9297d5ab03dab21b75aeebdae31
+  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
 
 PODFILE CHECKSUM: c1e587fec67796a6d9abf5ac72586146c2c3c354
