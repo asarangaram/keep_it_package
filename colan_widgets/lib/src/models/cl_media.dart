@@ -15,14 +15,17 @@ class CLMedia {
   CLMedia({
     required this.path,
     required this.type,
-    this.md5String,
     this.ref,
     this.id,
     this.collectionId,
     this.previewWidth,
+    this.originalDate,
     this.createdDate,
     this.updatedDate,
-    this.originalDate,
+    this.md5String,
+    this.isDeleted,
+    this.isHidden,
+    this.isPinned,
   }) {
     switch (type) {
       case CLMediaType.text:
@@ -83,6 +86,9 @@ class CLMedia {
           ? DateTime.parse(map['originalDate'] as String)
           : null,
       md5String: map['md5String'] as String,
+      isDeleted: (map['isDeleted'] as int) != 0,
+      isHidden: (map['isHidden'] as int) != 0,
+      isPinned: (map['isPinned'] as int) != 0,
     );
   }
 
@@ -96,6 +102,9 @@ class CLMedia {
   final DateTime? createdDate;
   final DateTime? updatedDate;
   final String? md5String;
+  final bool? isDeleted;
+  final bool? isHidden;
+  final bool? isPinned;
 
   CLMedia copyWith({
     String? path,
@@ -108,6 +117,9 @@ class CLMedia {
     DateTime? createdDate,
     DateTime? updatedDate,
     String? md5String,
+    bool? isDeleted,
+    bool? isHidden,
+    bool? isPinned,
   }) {
     return CLMedia(
       path: path ?? this.path,
@@ -120,6 +132,9 @@ class CLMedia {
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
       md5String: md5String ?? this.md5String,
+      isDeleted: isDeleted ?? this.isDeleted,
+      isHidden: isHidden ?? this.isHidden,
+      isPinned: isPinned ?? this.isPinned,
     );
   }
 
@@ -151,7 +166,10 @@ class CLMedia {
         other.originalDate == originalDate &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
-        other.md5String == md5String;
+        other.md5String == md5String &&
+        other.isDeleted == isDeleted &&
+        other.isHidden == isHidden &&
+        other.isPinned == isPinned;
   }
 
   @override
@@ -165,7 +183,10 @@ class CLMedia {
         originalDate.hashCode ^
         createdDate.hashCode ^
         updatedDate.hashCode ^
-        md5String.hashCode;
+        md5String.hashCode ^
+        isDeleted.hashCode ^
+        isHidden.hashCode ^
+        isPinned.hashCode;
   }
 
   @override
@@ -173,7 +194,8 @@ class CLMedia {
     return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id,'
         ' collectionId: $collectionId, previewWidth: $previewWidth,'
         ' originalDate: $originalDate, createdDate: $createdDate,'
-        ' updatedDate: $updatedDate, md5String: $md5String)';
+        ' updatedDate: $updatedDate, md5String: $md5String,'
+        ' isDeleted: $isDeleted, isHidden: $isHidden, isPinned: $isPinned)';
   }
 
   Map<String, dynamic> toMap({
@@ -193,6 +215,9 @@ class CLMedia {
       'previewWidth': previewWidth,
       'originalDate': originalDate?.toSQL(),
       'md5String': md5String,
+      'isDeleted': (isDeleted ?? false) ? 1 : 0,
+      'isHidden': (isHidden ?? false) ? 1 : 0,
+      'isPinned': (isPinned ?? false) ? 1 : 0,
     };
   }
 
