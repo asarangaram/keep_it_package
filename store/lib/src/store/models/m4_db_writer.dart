@@ -169,6 +169,37 @@ class DBWriter {
       }
     }
   }
+
+  Future<void> pinMedia(
+    SqliteWriteContext tx,
+    CLMedia media, {
+    required Future<bool> Function(
+      File file, {
+      required String name,
+      required bool activePin,
+    }) onPinMedia,
+  }) async {
+    if (media.id == null) return;
+    final pinnedMedia = media.copyWith(isPinned: !(media.isPinned ?? false));
+    final res = await onPinMedia(
+      File(pinnedMedia.path),
+      name: 'test here',
+      activePin: pinnedMedia.isPinned!,
+    );
+    if (res) {
+      await upsertMedia(tx, pinnedMedia);
+    }
+  }
+
+  Future<void> pinMediaMultiple(
+    SqliteWriteContext tx,
+    List<CLMedia> media, {
+    required Future<bool> Function(
+      File file, {
+      required String name,
+      required bool activePin,
+    }) onPinMedia,
+  }) async {}
 }
 
 const _filePrefix = 'DB Write: ';

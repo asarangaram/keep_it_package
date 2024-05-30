@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ class MediaControls extends ConsumerWidget {
     this.onMove,
     this.onShare,
     this.onTap,
+    this.onPin,
   });
   final CLMedia media;
 
@@ -24,6 +27,7 @@ class MediaControls extends ConsumerWidget {
   final Future<bool?> Function()? onMove;
   final Future<bool?> Function()? onShare;
   final Future<bool?> Function()? onTap;
+  final Future<bool?> Function()? onPin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,7 +65,8 @@ class MediaControls extends ConsumerWidget {
               ),
             ),
           ),
-          if ([onEdit, onDelete, onMove, onShare].any((e) => e != null) ||
+          if ([onEdit, onDelete, onMove, onShare, onPin]
+                  .any((e) => e != null) ||
               (media.type == CLMediaType.video))
             Positioned(
               bottom: 0,
@@ -81,7 +86,7 @@ class MediaControls extends ConsumerWidget {
                           VideoPlayerService.controlMenu(
                             media: media,
                           ),
-                        if ([onEdit, onDelete, onMove, onShare]
+                        if ([onEdit, onDelete, onMove, onShare, onPin]
                             .any((e) => e != null))
                           VideoPlayerService.playStateBuilder(
                             media: media,
@@ -144,6 +149,30 @@ class MediaControls extends ConsumerWidget {
                                             ? Theme.of(context).disabledColor
                                             : null,
                                         onTap: isPlaying ? null : onShare,
+                                      ),
+                                    if (onPin == null)
+                                      Container()
+                                    else
+                                      Transform.rotate(
+                                        angle: math.pi / 4,
+                                        child: CLButtonIcon.small(
+                                          (media.isPinned == null)
+                                              ? MdiIcons.pinOff
+                                              : media.isPinned!
+                                                  ? MdiIcons.pin
+                                                  : MdiIcons.pinOutline,
+                                          color: (media.isPinned == null)
+                                              ? Theme.of(context).disabledColor
+                                              : media.isPinned!
+                                                  ? Colors.blue
+                                                  : Theme.of(context)
+                                                      .colorScheme
+                                                      .surface,
+                                          disabledColor: isPlaying
+                                              ? Theme.of(context).disabledColor
+                                              : null,
+                                          onTap: isPlaying ? null : onPin,
+                                        ),
                                       ),
                                   ]
                                       .map(
