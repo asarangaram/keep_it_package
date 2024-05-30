@@ -45,4 +45,17 @@ final migrations = SqliteMigrations()
         END;
     ''');
     }),
+  )
+  ..add(
+    SqliteMigration(2, (tx) async {
+      await tx
+          .execute('ALTER TABLE Item ADD COLUMN isDeleted INTEGER DEFAULT 0');
+      await tx
+          .execute('ALTER TABLE Item ADD COLUMN isHidden INTEGER DEFAULT 0');
+      await tx
+          .execute('ALTER TABLE Item ADD COLUMN isPinned INTEGER DEFAULT 0');
+      await tx.execute('UPDATE Item SET isDeleted = 0');
+      await tx.execute('UPDATE Item SET isHidden = 0');
+      await tx.execute('UPDATE Item SET isPinned = 0');
+    }),
   );
