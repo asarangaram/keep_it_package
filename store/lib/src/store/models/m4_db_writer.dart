@@ -206,7 +206,12 @@ class DBWriter {
       String? desc,
     }) onPin,
     required Future<bool> Function(String id) onRemovePin,
-  }) async {}
+  }) async {
+    final unpinned = media.where((e) => e.pin == null).toList();
+    for (final item in unpinned) {
+      await togglePin(tx, item, onPin: onPin, onRemovePin: onRemovePin);
+    }
+  }
 }
 
 const _filePrefix = 'DB Write: ';

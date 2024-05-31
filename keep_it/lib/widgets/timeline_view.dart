@@ -114,6 +114,18 @@ class TimeLineView extends ConsumerWidget {
                   };
                 },
               ),
+              CLMenuItem(
+                title: 'Pin',
+                icon: MdiIcons.pin,
+                onTap: () async {
+                  await dbManager.pinMediaMultiple(
+                    items,
+                    onPin: AlbumManager(albumName: 'KeepIt').addMedia,
+                    onRemovePin: AlbumManager(albumName: 'KeepIt').removeMedia,
+                  );
+                  return true;
+                },
+              ),
             ];
           },
         );
