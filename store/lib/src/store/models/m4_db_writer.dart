@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/src/store/models/m3_db_query.dart';
 
@@ -126,7 +127,7 @@ class DBWriter {
       appSettings: appSettings,
       validate: true,
     );
-    _infoLogger('upsertCollection: Done :  $updated');
+    _infoLogger('upsertMedia: Done :  $updated');
     if (updated == null) {
       exceptionLogger(
         '$_filePrefix: DB Failure',
@@ -173,32 +174,38 @@ class DBWriter {
   Future<void> pinMedia(
     SqliteWriteContext tx,
     CLMedia media, {
-    required Future<bool> Function(
-      File file, {
-      required String name,
-      required bool activePin,
-    }) onPinMedia,
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {
     if (media.id == null) return;
-    final pinnedMedia = media.copyWith(isPinned: !(media.isPinned ?? false));
-    final res = await onPinMedia(
-      File(pinnedMedia.path),
-      name: 'test here',
-      activePin: pinnedMedia.isPinned!,
-    );
-    if (res) {
+
+    if (media.pin == null || media.pin!.isEmpty) {
+      final pin = await onPin(File(media.path), title: basename(media.path));
+      if (pin == null) return;
+      final pinnedMedia = media.copyWith(pin: pin);
       await upsertMedia(tx, pinnedMedia);
+    } else {
+      final id = media.pin!;
+      if (await onRemovePin(id)) {
+        final pinnedMedia = media.removePin();
+        await upsertMedia(tx, pinnedMedia);
+      }
     }
   }
 
   Future<void> pinMediaMultiple(
     SqliteWriteContext tx,
     List<CLMedia> media, {
-    required Future<bool> Function(
-      File file, {
-      required String name,
-      required bool activePin,
-    }) onPinMedia,
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {}
 }
 

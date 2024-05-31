@@ -33,7 +33,7 @@ class MediaControls extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
     if (!showControl) return const IgnorePointer();
-
+    print(media);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
       child: Stack(
@@ -156,18 +156,14 @@ class MediaControls extends ConsumerWidget {
                                       Transform.rotate(
                                         angle: math.pi / 4,
                                         child: CLButtonIcon.small(
-                                          (media.isPinned == null)
-                                              ? MdiIcons.pinOff
-                                              : media.isPinned!
-                                                  ? MdiIcons.pin
-                                                  : MdiIcons.pinOutline,
-                                          color: (media.isPinned == null)
-                                              ? Theme.of(context).disabledColor
-                                              : media.isPinned!
-                                                  ? Colors.blue
-                                                  : Theme.of(context)
-                                                      .colorScheme
-                                                      .surface,
+                                          media.pin != null
+                                              ? MdiIcons.pin
+                                              : MdiIcons.pinOutline,
+                                          color: media.pin != null
+                                              ? Colors.blue
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
                                           disabledColor: isPlaying
                                               ? Theme.of(context).disabledColor
                                               : null,

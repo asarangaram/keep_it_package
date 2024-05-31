@@ -147,7 +147,7 @@ class DBExec<T> {
     if (map.containsKey('id') && map['id'] != null) {
       id = map['id']!.toString();
     }
-    final keys = map.keys.where((e) => e != 'id' && map[e] != null);
+    final keys = map.keys.where((e) => e != 'id');
     final values = keys.map((e) => map[e].toString()).toList();
     final String sql;
     if (id != null) {

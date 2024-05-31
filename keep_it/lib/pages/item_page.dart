@@ -314,15 +314,10 @@ class _ItemViewState extends State<ItemView> {
                 return true;
               },
               onPin: () async {
-                await dbManager.pinMedia(
+                await dbManager.togglePin(
                   media,
-                  onPinMedia: (
-                    file, {
-                    required name,
-                    required activePin,
-                  }) async {
-                    return true;
-                  },
+                  onPin: AlbumManager(albumName: 'KeepIt').addMedia,
+                  onRemovePin: AlbumManager(albumName: 'KeepIt').removeMedia,
                 );
                 return true;
               },

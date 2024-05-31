@@ -2,13 +2,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../app_logger.dart';
 import '../extensions/ext_datetime.dart';
-import '../extensions/ext_string.dart';
-import 'cl_media_type.dart';
-import 'm1_app_settings.dart';
 
 @immutable
 class CLMedia {
@@ -18,14 +15,13 @@ class CLMedia {
     this.ref,
     this.id,
     this.collectionId,
-    this.previewWidth,
     this.originalDate,
     this.createdDate,
     this.updatedDate,
     this.md5String,
     this.isDeleted,
     this.isHidden,
-    this.isPinned,
+    this.pin,
   }) {
     switch (type) {
       case CLMediaType.text:
@@ -47,18 +43,18 @@ class CLMedia {
   }
 
   factory CLMedia.fromMap(
-    Map<String, dynamic> map, {
+    Map<String, dynamic> map1, {
     // ignore: avoid_unused_constructor_parameters
     required AppSettings appSettings,
   }) {
     final pathPrefix = appSettings.directories.docDir.path;
-    if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
+    if (CLMediaType.values.asNameMap()[map1['type'] as String] == null) {
       throw Exception('Incorrect type');
     }
     // ignore: unnecessary_null_comparison
     final path = ((pathPrefix != null)
-        ? '$pathPrefix/${map['path']}'
-        : map['path'] as String)
+        ? '$pathPrefix/${map1['path']}'
+        : map1['path'] as String)
       ..replaceAll('//', '/');
     if (appSettings.shouldValidate && !File(path).existsSync()) {
       exceptionLogger(
@@ -66,7 +62,8 @@ class CLMedia {
         'CL Media file path read from database is not found',
       );
     }
-
+    final map = Map<String, dynamic>.from(map1)
+      ..removeWhere((key, value) => value == 'null');
     return CLMedia(
       path: path,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
@@ -74,21 +71,21 @@ class CLMedia {
       id: map['id'] != null ? map['id'] as int : null,
       collectionId:
           map['collectionId'] != null ? map['collectionId'] as int : null,
-      previewWidth:
-          map['previewWidth'] != null ? map['previewWidth'] as int : null,
-      createdDate: map['createdDate'] != null
+      /* createdDate: map['createdDate'] != null
           ? DateTime.parse(map['createdDate'] as String)
-          : null,
+          : DateTime.now(),
       updatedDate: map['updatedDate'] != null
           ? DateTime.parse(map['updatedDate'] as String)
-          : null,
+          : null, // May cause issue? */
       originalDate: map['originalDate'] != null
           ? DateTime.parse(map['originalDate'] as String)
-          : null,
+          : map['createdDate'] != null
+              ? DateTime.parse(map['createdDate'] as String)
+              : DateTime.now(),
       md5String: map['md5String'] as String,
       isDeleted: (map['isDeleted'] as int) != 0,
       isHidden: (map['isHidden'] as int) != 0,
-      isPinned: (map['isPinned'] as int) != 0,
+      pin: map['pin'] != null ? map['pin'] as String : null,
     );
   }
 
@@ -97,14 +94,14 @@ class CLMedia {
   final String? ref;
   final int? id;
   final int? collectionId;
-  final int? previewWidth;
+
   final DateTime? originalDate;
   final DateTime? createdDate;
   final DateTime? updatedDate;
   final String? md5String;
   final bool? isDeleted;
   final bool? isHidden;
-  final bool? isPinned;
+  final String? pin;
 
   CLMedia copyWith({
     String? path,
@@ -112,14 +109,13 @@ class CLMedia {
     String? ref,
     int? id,
     int? collectionId,
-    int? previewWidth,
     DateTime? originalDate,
     DateTime? createdDate,
     DateTime? updatedDate,
     String? md5String,
     bool? isDeleted,
     bool? isHidden,
-    bool? isPinned,
+    String? pin,
   }) {
     return CLMedia(
       path: path ?? this.path,
@@ -127,14 +123,13 @@ class CLMedia {
       ref: ref ?? this.ref,
       id: id ?? this.id,
       collectionId: collectionId ?? this.collectionId,
-      previewWidth: previewWidth ?? this.previewWidth,
       originalDate: originalDate ?? this.originalDate,
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
       md5String: md5String ?? this.md5String,
       isDeleted: isDeleted ?? this.isDeleted,
       isHidden: isHidden ?? this.isHidden,
-      isPinned: isPinned ?? this.isPinned,
+      pin: pin ?? this.pin,
     );
   }
 
@@ -145,11 +140,13 @@ class CLMedia {
       ref: ref,
       id: id,
       collectionId: newCollectionId,
-      previewWidth: previewWidth,
       originalDate: originalDate,
       createdDate: createdDate,
       updatedDate: updatedDate,
       md5String: md5String,
+      isDeleted: isDeleted,
+      isHidden: isHidden,
+      pin: pin,
     );
   }
 
@@ -162,14 +159,13 @@ class CLMedia {
         other.ref == ref &&
         other.id == id &&
         other.collectionId == collectionId &&
-        other.previewWidth == previewWidth &&
         other.originalDate == originalDate &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
         other.md5String == md5String &&
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
-        other.isPinned == isPinned;
+        other.pin == pin;
   }
 
   @override
@@ -179,23 +175,23 @@ class CLMedia {
         ref.hashCode ^
         id.hashCode ^
         collectionId.hashCode ^
-        previewWidth.hashCode ^
         originalDate.hashCode ^
         createdDate.hashCode ^
         updatedDate.hashCode ^
         md5String.hashCode ^
         isDeleted.hashCode ^
         isHidden.hashCode ^
-        isPinned.hashCode;
+        pin.hashCode;
   }
 
   @override
   String toString() {
-    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id,'
-        ' collectionId: $collectionId, previewWidth: $previewWidth,'
-        ' originalDate: $originalDate, createdDate: $createdDate,'
-        ' updatedDate: $updatedDate, md5String: $md5String,'
-        ' isDeleted: $isDeleted, isHidden: $isHidden, isPinned: $isPinned)';
+    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, '
+        'collectionId: $collectionId, '
+        'originalDate: $originalDate, createdDate: $createdDate, '
+        'updatedDate: $updatedDate, md5String: $md5String, '
+        'isDeleted: $isDeleted, isHidden: $isHidden, '
+        ' pin: $pin)';
   }
 
   Map<String, dynamic> toMap({
@@ -212,12 +208,11 @@ class CLMedia {
       'ref': ref,
       'id': id,
       'collectionId': collectionId,
-      'previewWidth': previewWidth,
       'originalDate': originalDate?.toSQL(),
       'md5String': md5String,
       'isDeleted': (isDeleted ?? false) ? 1 : 0,
       'isHidden': (isHidden ?? false) ? 1 : 0,
-      'isPinned': (isPinned ?? false) ? 1 : 0,
+      'pin': pin,
     };
   }
 
@@ -243,4 +238,20 @@ class CLMedia {
       ); */
 
   String toJson() => json.encode(toMap(validate: true));
+
+  CLMedia removePin() {
+    return CLMedia(
+      path: path,
+      type: type,
+      ref: ref,
+      id: id,
+      collectionId: collectionId,
+      originalDate: originalDate,
+      createdDate: createdDate,
+      updatedDate: updatedDate,
+      md5String: md5String,
+      isDeleted: isDeleted,
+      isHidden: isHidden,
+    );
+  }
 }

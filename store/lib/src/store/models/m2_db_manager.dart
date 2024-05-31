@@ -42,21 +42,23 @@ abstract class Store {
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
   });
-  Future<void> pinMedia(
+  Future<void> togglePin(
     CLMedia media, {
-    required Future<bool> Function(
-      File file, {
-      required String name,
-      required bool activePin,
-    }) onPinMedia,
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
   });
   Future<void> pinMediaMultiple(
     List<CLMedia> media, {
-    required Future<bool> Function(
-      File file, {
-      required String name,
-      required bool activePin,
-    }) onPinMedia,
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
   });
 }
 
@@ -185,30 +187,42 @@ class DBManager extends Store {
   }
 
   @override
-  Future<void> pinMedia(
+  Future<void> togglePin(
     CLMedia media, {
-    required Future<bool> Function(
-      File file, {
-      required String name,
-      required bool activePin,
-    }) onPinMedia,
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.pinMedia(tx, media, onPinMedia: onPinMedia);
+      await dbWriter.pinMedia(
+        tx,
+        media,
+        onPin: onPin,
+        onRemovePin: onRemovePin,
+      );
     });
   }
 
   @override
   Future<void> pinMediaMultiple(
     List<CLMedia> media, {
-    required Future<bool> Function(
-      File file, {
-      required String name,
-      required bool activePin,
-    }) onPinMedia,
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.pinMediaMultiple(tx, media, onPinMedia: onPinMedia);
+      await dbWriter.pinMediaMultiple(
+        tx,
+        media,
+        onPin: onPin,
+        onRemovePin: onRemovePin,
+      );
     });
   }
 }

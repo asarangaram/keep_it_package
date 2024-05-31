@@ -58,4 +58,10 @@ final migrations = SqliteMigrations()
       await tx.execute('UPDATE Item SET isHidden = 0');
       await tx.execute('UPDATE Item SET isPinned = 0');
     }),
+  )
+  ..add(
+    SqliteMigration(3, (tx) async {
+      await tx.execute('ALTER TABLE Item ADD COLUMN pin TEXT DEFAULT NULL');
+      await tx.execute('UPDATE Item SET pin = NULL');
+    }),
   );
