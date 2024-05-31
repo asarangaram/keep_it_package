@@ -48,27 +48,9 @@ class PinnedMediaPage extends ConsumerWidget {
                                   AlbumManager(albumName: 'KeepIt').removeMedia,
                             );
                           },
-                          child: Stack(
-                            children: [
-                              PreviewService(
-                                media: item,
-                                keepAspectRatio: false,
-                              ),
-                              Positioned.fill(
-                                child: Center(
-                                  child: FractionallySizedBox(
-                                    widthFactor: 0.3,
-                                    heightFactor: 0.3,
-                                    child: FittedBox(
-                                      child: CLIcon.veryLarge(
-                                        MdiIcons.pin,
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          child: PreviewService(
+                            media: item,
+                            keepAspectRatio: false,
                           ),
                         ),
                       ),
