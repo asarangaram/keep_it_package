@@ -80,6 +80,7 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
               .overrideWith((ref) => MenuControlNotifier()),
         ],
         child: CLSimpleGalleryView0(
+          key: ValueKey(galleryMap),
           title: title,
           onPickFiles: onPickFiles,
           onCameraCapture: onCameraCapture,
@@ -134,8 +135,13 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
   bool isSelectionMode = false;
   @override
   void initState() {
-    selectionMap = createBooleanList(widget.galleryMap);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    selectionMap = createBooleanList(widget.galleryMap);
+    super.didChangeDependencies();
   }
 
   List<GalleryGroupMutable<bool>> createBooleanList(

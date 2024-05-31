@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../providers/gallery_group_provider.dart';
+
 class PinnedMediaPage extends ConsumerWidget {
   const PinnedMediaPage({super.key});
 
@@ -71,12 +73,7 @@ class PinnedMediaPage extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    galleryMap: [
-                      if (media.isNotEmpty)
-                        GalleryGroup(
-                          media,
-                        ),
-                    ],
+                    galleryMap: ref.watch(singleGroupItemProvider(media)),
                     emptyState: const Center(
                       child: CLText.large(
                         'The medias pinned to show in gallery are listed here.',
