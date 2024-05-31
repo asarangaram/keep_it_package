@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,8 +79,15 @@ class TimeLineView extends ConsumerWidget {
                     await dbManager.deleteMediaMultiple(
                       items,
                       onDeleteFile: (f) async => f.deleteIfExists(),
-                      onRemovePin:
-                          AlbumManager(albumName: 'KeepIt').removeMedia,
+                      onRemovePin: (id) async {
+                        final res = await AlbumManager(albumName: 'KeepIt')
+                            .removeMedia(id);
+                        if (!res) {
+                          await ref.read(notificationMessageProvider.notifier).push(
+                              "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                        }
+                        return res;
+                      },
                     );
                   }
                   return confirmed;

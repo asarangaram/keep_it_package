@@ -79,8 +79,12 @@ class AlbumManager {
     final auth = await checkRequest();
     if (!auth) return false;
     try {
-      await PhotoManager.editor.deleteWithIds([id]);
-      return true;
+      final asset = await AssetEntity.fromId(id);
+
+      /// IF asset not found, it is already deleted.
+      if (asset == null) return true;
+      final res = await PhotoManager.editor.deleteWithIds([id]);
+      return res.isNotEmpty;
     } catch (e) {
       return false;
     }

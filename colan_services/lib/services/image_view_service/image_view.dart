@@ -15,13 +15,15 @@ class ImageViewerBasic extends StatelessWidget {
     super.key,
     this.isFullScreen = false,
     this.isPinned = false,
-  });
+    this.isPinBroken = false,
+ });
   final File file;
   final bool isFullScreen;
 
   final BoxFit? fit;
   final IconData? overlayIcon;
   final bool isPinned;
+  final bool isPinBroken;
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +48,8 @@ class ImageViewerBasic extends StatelessWidget {
                   child: Transform.rotate(
                     angle: math.pi / 4,
                     child: CLIcon.veryLarge(
-                      MdiIcons.pin,
-                      color: Colors.blue,
+                      isPinBroken ? MdiIcons.pinOffOutline :MdiIcons.pin,
+                      color: isPinBroken? Colors.red: Colors.blue,
                     ),
                   ),
                 ),

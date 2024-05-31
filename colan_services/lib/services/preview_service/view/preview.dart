@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 import '../../../internal/widgets/broken_image.dart';
 import '../../image_view_service/image_view.dart';
@@ -16,6 +17,14 @@ class PreviewService extends StatelessWidget {
   });
   final CLMedia media;
   final bool keepAspectRatio;
+  // TODO(anandas): :  Make this reactive??
+  Future<bool> isPinBroken() async {
+    if (media.pin != null) {
+      final asset = await AssetEntity.fromId(media.pin!);
+      return asset == null;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +41,19 @@ class PreviewService extends StatelessWidget {
             media: media,
             builder: (context, thumbnailFile) {
               return thumbnailFile.when(
-                data: (file) => ImageViewerBasic(
-                  file: file,
-                  fit: fit,
-                  isPinned: media.pin != null,
-                  overlayIcon: (media.type == CLMediaType.video)
-                      ? Icons.play_arrow_sharp
-                      : null,
+                data: (file) => FutureBuilder(
+                  future: isPinBroken(),
+                  builder: (context, snapshot) {
+                    return ImageViewerBasic(
+                      file: file,
+                      fit: fit,
+                      isPinned: media.pin != null,
+                      isPinBroken: snapshot.data ?? false,
+                      overlayIcon: (media.type == CLMediaType.video)
+                          ? Icons.play_arrow_sharp
+                          : null,
+                    );
+                  },
                 ),
                 error: (_, __) => const BrokenImage(),
                 loading: () => const Center(child: CircularProgressIndicator()),

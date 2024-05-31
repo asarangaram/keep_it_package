@@ -280,8 +280,18 @@ class _ItemViewState extends ConsumerState<ItemView> {
                           await dbManager.deleteMedia(
                             media,
                             onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePin:
-                                AlbumManager(albumName: 'KeepIt').removeMedia,
+                            onRemovePin: (id) async {
+                              final res =
+                                  await AlbumManager(albumName: 'KeepIt')
+                                      .removeMedia(id);
+                              if (!res) {
+                                await ref
+                                    .read(notificationMessageProvider.notifier)
+                                    .push(
+                                        "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                              }
+                              return res;
+                            },
                           );
                           if (context.mounted) {
                             Navigator.of(context).pop(confirmed);
@@ -326,7 +336,15 @@ class _ItemViewState extends ConsumerState<ItemView> {
                 await dbManager.togglePin(
                   media,
                   onPin: AlbumManager(albumName: 'KeepIt').addMedia,
-                  onRemovePin: AlbumManager(albumName: 'KeepIt').removeMedia,
+                  onRemovePin: (id) async {
+                    final res =
+                        await AlbumManager(albumName: 'KeepIt').removeMedia(id);
+                    if (!res) {
+                      await ref.read(notificationMessageProvider.notifier).push(
+                          "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                    }
+                    return res;
+                  },
                 );
                 return true;
               },

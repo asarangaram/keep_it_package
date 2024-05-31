@@ -44,8 +44,20 @@ class PinnedMediaPage extends ConsumerWidget {
                             await dbManager.togglePin(
                               item,
                               onPin: AlbumManager(albumName: 'KeepIt').addMedia,
-                              onRemovePin:
-                                  AlbumManager(albumName: 'KeepIt').removeMedia,
+                              onRemovePin: (id) async {
+                                final res =
+                                    await AlbumManager(albumName: 'KeepIt')
+                                        .removeMedia(id);
+                                if (!res) {
+                                  await ref
+                                      .read(
+                                        notificationMessageProvider.notifier,
+                                      )
+                                      .push(
+                                          "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                                }
+                                return res;
+                              },
                             );
                           },
                           child: PreviewService(

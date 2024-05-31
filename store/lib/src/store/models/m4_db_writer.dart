@@ -200,7 +200,8 @@ class DBWriter {
       await upsertMedia(tx, pinnedMedia);
     } else {
       final id = media.pin!;
-      if (await onRemovePin(id)) {
+      final res = await onRemovePin(id);
+      if (res) {
         final pinnedMedia = media.removePin();
         await upsertMedia(tx, pinnedMedia);
       }
