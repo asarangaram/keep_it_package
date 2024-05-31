@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../internal/widgets/broken_image.dart';
 
@@ -12,12 +14,14 @@ class ImageViewerBasic extends StatelessWidget {
     this.fit,
     super.key,
     this.isFullScreen = false,
+    this.isPinned = false,
   });
   final File file;
   final bool isFullScreen;
 
   final BoxFit? fit;
   final IconData? overlayIcon;
+  final bool isPinned;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +35,25 @@ class ImageViewerBasic extends StatelessWidget {
                 )
               : const Center(child: BrokenImage()),
         ),
+        if (isPinned)
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: FractionallySizedBox(
+                widthFactor: 0.3,
+                heightFactor: 0.3,
+                child: FittedBox(
+                  child: Transform.rotate(
+                    angle: math.pi / 4,
+                    child: CLIcon.veryLarge(
+                      MdiIcons.pin,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         if (overlayIcon != null)
           Positioned.fill(
             child: Center(
