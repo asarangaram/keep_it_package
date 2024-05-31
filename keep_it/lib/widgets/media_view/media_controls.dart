@@ -33,7 +33,7 @@ class MediaControls extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
     if (!showControl) return const IgnorePointer();
-    print(media);
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
       child: Stack(
