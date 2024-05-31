@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/src/store/models/m3_db_query.dart';
 
@@ -126,7 +127,7 @@ class DBWriter {
       appSettings: appSettings,
       validate: true,
     );
-    _infoLogger('upsertCollection: Done :  $updated');
+    _infoLogger('upsertMedia: Done :  $updated');
     if (updated == null) {
       exceptionLogger(
         '$_filePrefix: DB Failure',
@@ -166,6 +167,63 @@ class DBWriter {
     for (final m in media) {
       if (m.id != null) {
         await deleteMedia(tx, m, onDeleteFile: onDeleteFile);
+      }
+    }
+  }
+
+  Future<void> togglePin(
+    SqliteWriteContext tx,
+    CLMedia media, {
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
+  }) async {
+    if (media.id == null) return;
+
+    if (media.pin == null || media.pin!.isEmpty) {
+      final pin = await onPin(File(media.path), title: basename(media.path));
+      if (pin == null) return;
+      final pinnedMedia = media.copyWith(pin: pin);
+      await upsertMedia(tx, pinnedMedia);
+    } else {
+      final id = media.pin!;
+      if (await onRemovePin(id)) {
+        final pinnedMedia = media.removePin();
+        await upsertMedia(tx, pinnedMedia);
+      }
+    }
+  }
+
+  Future<void> pinMediaMultiple(
+    SqliteWriteContext tx,
+    List<CLMedia> media, {
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
+  }) async {
+    final unpinned = media.where((e) => e.pin == null).toList();
+    for (final item in unpinned) {
+      await togglePin(tx, item, onPin: onPin, onRemovePin: onRemovePin);
+    }
+  }
+
+  Future<void> unpinMediaMultiple(
+    SqliteWriteContext tx,
+    List<CLMedia> media, {
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
+  }) async {
+    final pinned = media.where((e) => e.pin != null).toList();
+    final res = await onRemovePinMultiple(pinned.map((e) => e.pin!).toList());
+    if (res) {
+      for (final item in pinned) {
+        final pinnedMedia = item.removePin();
+        await upsertMedia(tx, pinnedMedia);
       }
     }
   }

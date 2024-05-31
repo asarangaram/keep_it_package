@@ -113,6 +113,7 @@ class _RaLRouterState extends ConsumerState<AppView>
             return MaterialPage(
               child: BottomNavigationPage(
                 onMedia: app.incomingMediaViewBuilder,
+                routes: app.shellRoutes,
                 child: navigationShell,
               ),
             );

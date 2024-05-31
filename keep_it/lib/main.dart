@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
@@ -19,6 +20,7 @@ import 'pages/collections_page.dart';
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
+import 'pages/pinned_media_page.dart';
 import 'widgets/empty_state.dart';
 
 extension ExtDirectory on Directory {
@@ -61,15 +63,21 @@ class KeepItApp implements AppDescriptor {
         CLShellRouteDescriptor(
           name: '',
           builder: (context, GoRouterState state) => const CollectionsPage(),
-          iconData: Icons.home,
+          iconData: MdiIcons.home,
           label: 'Collections',
+        ),
+        CLShellRouteDescriptor(
+          name: 'Pinned',
+          builder: (context, state) => const PinnedMediaPage(),
+          iconData: MdiIcons.pin,
+          label: 'Pinned',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
           builder: (context, state) => const Center(
             child: Text('Settings'),
           ),
-          iconData: Icons.settings,
+          iconData: MdiIcons.cog,
           label: 'Settings',
         ),
       ];

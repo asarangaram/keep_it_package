@@ -15,3 +15,12 @@ final groupedItemsProvider =
   }
   return galleryGroups;
 });
+
+final singleGroupItemProvider =
+    StateProvider.family<List<GalleryGroup<CLMedia>>, List<CLMedia>>(
+        (ref, items) {
+  final galleryGroups = <GalleryGroup<CLMedia>>[];
+  if (items.isEmpty) return galleryGroups;
+  galleryGroups.add(GalleryGroup(items));
+  return galleryGroups;
+});

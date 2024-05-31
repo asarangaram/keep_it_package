@@ -35,6 +35,7 @@ class PreviewService extends StatelessWidget {
                 data: (file) => ImageViewerBasic(
                   file: file,
                   fit: fit,
+                  isPinned: media.pin != null,
                   overlayIcon: (media.type == CLMediaType.video)
                       ? Icons.play_arrow_sharp
                       : null,

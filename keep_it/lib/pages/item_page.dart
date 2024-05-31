@@ -256,21 +256,21 @@ class _ItemViewState extends State<ItemView> {
             },
           ),
         ),
-        MediaControls(
-          onMove: () async {
-            unawaited(
-              context.push(
-                '/move?ids=${media.id}',
-              ),
-            );
-            return true;
-          },
-          onDelete: () async =>
-              await showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return GetDBManager(
-                    builder: (dbManager) {
+        GetDBManager(
+          builder: (dbManager) {
+            return MediaControls(
+              onMove: () async {
+                unawaited(
+                  context.push(
+                    '/move?ids=${media.id}',
+                  ),
+                );
+                return true;
+              },
+              onDelete: () async =>
+                  await showDialog<bool>(
+                    context: context,
+                    builder: (BuildContext context) {
                       return CLConfirmAction(
                         title: 'Confirm delete',
                         message: 'Are you sure you want to delete '
@@ -287,34 +287,43 @@ class _ItemViewState extends State<ItemView> {
                         },
                       );
                     },
-                  );
-                },
-              ) ??
-              false,
-          onShare: () async {
-            final box = context.findRenderObject() as RenderBox?;
-            final files = [XFile(media.path)];
-            final shareResult = await Share.shareXFiles(
-              files,
-              // text: 'Share from KeepIT',
-              subject: 'Exporting media from KeepIt',
-              sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+                  ) ??
+                  false,
+              onShare: () async {
+                final box = context.findRenderObject() as RenderBox?;
+                final files = [XFile(media.path)];
+                final shareResult = await Share.shareXFiles(
+                  files,
+                  // text: 'Share from KeepIT',
+                  subject: 'Exporting media from KeepIt',
+                  sharePositionOrigin:
+                      box!.localToGlobal(Offset.zero) & box.size,
+                );
+                return switch (shareResult.status) {
+                  ShareResultStatus.dismissed => false,
+                  ShareResultStatus.unavailable => false,
+                  ShareResultStatus.success => true,
+                };
+              },
+              onEdit: () async {
+                unawaited(
+                  context.push(
+                    '/mediaEditor?id=${media.id}',
+                  ),
+                );
+                return true;
+              },
+              onPin: () async {
+                await dbManager.togglePin(
+                  media,
+                  onPin: AlbumManager(albumName: 'KeepIt').addMedia,
+                  onRemovePin: AlbumManager(albumName: 'KeepIt').removeMedia,
+                );
+                return true;
+              },
+              media: widget.items[currIndex],
             );
-            return switch (shareResult.status) {
-              ShareResultStatus.dismissed => false,
-              ShareResultStatus.unavailable => false,
-              ShareResultStatus.success => true,
-            };
           },
-          onEdit: () async {
-            unawaited(
-              context.push(
-                '/mediaEditor?id=${media.id}',
-              ),
-            );
-            return true;
-          },
-          media: widget.items[currIndex],
         ),
       ],
     );

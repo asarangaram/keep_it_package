@@ -5,6 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
+import 'm2_db_migration.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_writer.dart';
 
@@ -40,6 +41,28 @@ abstract class Store {
   Future<void> deleteMediaMultiple(
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
+  });
+  Future<void> togglePin(
+    CLMedia media, {
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
+  });
+  Future<void> pinMediaMultiple(
+    List<CLMedia> media, {
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
+  });
+  Future<void> unpinMediaMultiple(
+    List<CLMedia> media, {
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   });
 }
 
@@ -166,6 +189,61 @@ class DBManager extends Store {
       await dbWriter.deleteMediaList(tx, media, onDeleteFile: onDeleteFile);
     });
   }
+
+  @override
+  Future<void> togglePin(
+    CLMedia media, {
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
+  }) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.togglePin(
+        tx,
+        media,
+        onPin: onPin,
+        onRemovePin: onRemovePin,
+      );
+    });
+  }
+
+  @override
+  Future<void> pinMediaMultiple(
+    List<CLMedia> media, {
+    required Future<String?> Function(
+      File mediaPath, {
+      required String title,
+      String? desc,
+    }) onPin,
+    required Future<bool> Function(String id) onRemovePin,
+  }) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.pinMediaMultiple(
+        tx,
+        media,
+        onPin: onPin,
+        onRemovePin: onRemovePin,
+      );
+    });
+  }
+
+  @override
+  Future<void> unpinMediaMultiple(
+    List<CLMedia> media, {
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
+  }) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.unpinMediaMultiple(
+        tx,
+        media,
+        
+        onRemovePinMultiple: onRemovePinMultiple,
+      );
+    });
+  }
 }
 
 extension ExtSqliteDatabase on SqliteDatabase {
@@ -194,50 +272,3 @@ extension ExtSqliteDatabase on SqliteDatabase {
     }
   }
 }
-
-final migrations = SqliteMigrations()
-  ..add(
-    SqliteMigration(1, (tx) async {
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Collection (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        description TEXT,
-        label TEXT NOT NULL UNIQUE,
-        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    ''');
-      await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_collection
-        AFTER UPDATE ON Collection
-        BEGIN
-            UPDATE Collection
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-    ''');
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Item (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        path TEXT NOT NULL UNIQUE,
-        ref TEXT,
-        collectionId INTEGER,
-        type TEXT NOT NULL,
-        md5String TEXT NOT NULL,
-        originalDate DATETIME,
-        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (collectionId) REFERENCES Collection(id)
-      )
-    ''');
-      await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_item
-        AFTER UPDATE ON Item
-        BEGIN
-            UPDATE Item
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-    ''');
-    }),
-  );

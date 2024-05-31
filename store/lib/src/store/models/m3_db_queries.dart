@@ -16,6 +16,7 @@ enum DBQueries {
   mediaByCollectionId,
   mediaByPath,
   mediaByMD5,
+  mediaPinned,
   mediaByIdList;
 
   DBQuery<dynamic> get sql => switch (this) {
@@ -64,6 +65,11 @@ enum DBQueries {
           ),
         mediaByMD5 => DBQuery<CLMedia>(
             sql: 'SELECT * FROM Item WHERE md5String = ?',
+            triggerOnTables: const {'Item'},
+            fromMap: CLMedia.fromMap,
+          ),
+        mediaPinned => DBQuery<CLMedia>(
+            sql: "SELECT * FROM Item WHERE NULLIF(pin, 'null') IS NOT NULL",
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),

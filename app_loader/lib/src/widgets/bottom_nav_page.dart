@@ -6,14 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app_loader.dart';
+
 class BottomNavigationPage extends ConsumerStatefulWidget {
   const BottomNavigationPage({
     required this.child,
+    required this.routes,
     required this.onMedia,
     super.key,
   });
 
   final StatefulNavigationShell child;
+  final List<CLShellRouteDescriptor> routes;
   final Widget Function(
     BuildContext context, {
     required CLSharedMedia incomingMedia,
@@ -47,15 +51,13 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
                 );
                 setState(() {});
               },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.folder_special_rounded),
-                  label: 'Collections',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: 'settings',
-                ),
+              items: [
+                ...widget.routes.map((e) {
+                  return BottomNavigationBarItem(
+                    icon: Icon(e.iconData),
+                    label: e.label,
+                  );
+                }),
               ],
             ),
             child: NotificationService(
