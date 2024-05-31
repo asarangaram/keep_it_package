@@ -171,7 +171,7 @@ class DBWriter {
     }
   }
 
-  Future<void> pinMedia(
+  Future<void> togglePin(
     SqliteWriteContext tx,
     CLMedia media, {
     required Future<String?> Function(

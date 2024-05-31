@@ -197,7 +197,7 @@ class DBManager extends Store {
     required Future<bool> Function(String id) onRemovePin,
   }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.pinMedia(
+      await dbWriter.togglePin(
         tx,
         media,
         onPin: onPin,
