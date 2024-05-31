@@ -31,20 +31,23 @@ enum DBQueries {
             fromMap: Collection.fromMap,
           ),
         collectionsAll => DBQuery<Collection>(
-            sql: 'SELECT * FROM Collection',
+            sql: 'SELECT * FROM Collection '
+                "WHERE label NOT LIKE '***%'",
             triggerOnTables: const {'Collection'},
             fromMap: Collection.fromMap,
           ),
         collectionsExcludeEmpty => DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* FROM Collection '
-                'JOIN Item ON Collection.id = Item.collectionId;',
+                'JOIN Item ON Collection.id = Item.collectionId '
+                "WHERE label NOT LIKE '***%'",
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
         collectionsEmpty => DBQuery<Collection>(
             sql: 'SELECT Collection.* FROM Collection '
                 'LEFT JOIN Item ON Collection.id = Item.collectionId '
-                'WHERE Item.collectionId IS NULL;',
+                'WHERE Item.collectionId IS NULL AND '
+                "label NOT LIKE '***%'",
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),

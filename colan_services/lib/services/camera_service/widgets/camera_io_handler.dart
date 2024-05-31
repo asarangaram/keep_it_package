@@ -54,26 +54,35 @@ class CameraIOHandler extends ConsumerWidget {
                 collectionId: collection?.id,
                 md5String: md5String,
               );
-              final Collection tempCollection;
+
               if (collection == null) {
+                final Collection tempCollection;
                 tempCollection =
                     await dbManager.getCollectionByLabel(tempCollectionName) ??
                         await dbManager.upsertCollection(
                           collection:
                               const Collection(label: tempCollectionName),
                         );
+                media = await dbManager.upsertMedia(
+                  collectionId: tempCollection.id!,
+                  media: media.copyWith(isHidden: true),
+                  onPrepareMedia: (m, {required targetDir}) async {
+                    final updated =
+                        (await m.moveFile(targetDir: targetDir)).getMetadata();
+                    return updated;
+                  },
+                );
               } else {
-                tempCollection = collection!;
+                media = await dbManager.upsertMedia(
+                  collectionId: collection!.id!,
+                  media: media,
+                  onPrepareMedia: (m, {required targetDir}) async {
+                    final updated =
+                        (await m.moveFile(targetDir: targetDir)).getMetadata();
+                    return updated;
+                  },
+                );
               }
-              media = await dbManager.upsertMedia(
-                collectionId: tempCollection.id!,
-                media: media,
-                onPrepareMedia: (m, {required targetDir}) async {
-                  final updated =
-                      (await m.moveFile(targetDir: targetDir)).getMetadata();
-                  return updated;
-                },
-              );
 
               if (media == null) {
                 throw Exception('Failed to store Media');
