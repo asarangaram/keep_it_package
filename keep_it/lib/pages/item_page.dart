@@ -196,7 +196,7 @@ class MediaBackground extends ConsumerWidget {
   }
 }
 
-class ItemView extends StatefulWidget {
+class ItemView extends ConsumerStatefulWidget {
   const ItemView({
     required this.items,
     required this.startIndex,
@@ -212,10 +212,10 @@ class ItemView extends StatefulWidget {
   final void Function({required bool lock})? onLockPage;
 
   @override
-  State<ItemView> createState() => _ItemViewState();
+  ConsumerState<ItemView> createState() => _ItemViewState();
 }
 
-class _ItemViewState extends State<ItemView> {
+class _ItemViewState extends ConsumerState<ItemView> {
   late final PageController _pageController;
   late int currIndex;
 
@@ -305,14 +305,21 @@ class _ItemViewState extends State<ItemView> {
                   ShareResultStatus.success => true,
                 };
               },
-              onEdit: () async {
-                unawaited(
-                  context.push(
-                    '/mediaEditor?id=${media.id}',
-                  ),
-                );
-                return true;
-              },
+              onEdit: (media.pin != null)
+                  ? () async {
+                      await ref.read(notificationMessageProvider.notifier).push(
+                            "Unpin to edit.\n Pinned items can't be edited",
+                          );
+                      return true;
+                    }
+                  : () async {
+                      unawaited(
+                        context.push(
+                          '/mediaEditor?id=${media.id}',
+                        ),
+                      );
+                      return true;
+                    },
               onPin: () async {
                 await dbManager.togglePin(
                   media,

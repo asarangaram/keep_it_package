@@ -73,14 +73,21 @@ class MediaAsFile extends ConsumerWidget {
               ShareResultStatus.success => true,
             };
           },
-          onEdit: () async {
-            unawaited(
-              context.push(
-                '/mediaEditor?id=${media.id}',
-              ),
-            );
-            return true;
-          },
+          onEdit: (media.pin != null)
+              ? () async {
+                  await ref.read(notificationMessageProvider.notifier).push(
+                        "Unpin to edit.\n Pinned items can't be edited",
+                      );
+                  return true;
+                }
+              : () async {
+                  unawaited(
+                    context.push(
+                      '/mediaEditor?id=${media.id}',
+                    ),
+                  );
+                  return true;
+                },
           child: PreviewService(
             media: media,
             keepAspectRatio: false,
