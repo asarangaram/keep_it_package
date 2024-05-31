@@ -45,7 +45,7 @@ abstract class Store {
   Future<void> togglePin(
     CLMedia media, {
     required Future<String?> Function(
-      File mediaPath, {
+      CLMedia media, {
       required String title,
       String? desc,
     }) onPin,
@@ -54,7 +54,7 @@ abstract class Store {
   Future<void> pinMediaMultiple(
     List<CLMedia> media, {
     required Future<String?> Function(
-      File mediaPath, {
+      CLMedia media, {
       required String title,
       String? desc,
     }) onPin,
@@ -194,7 +194,7 @@ class DBManager extends Store {
   Future<void> togglePin(
     CLMedia media, {
     required Future<String?> Function(
-      File mediaPath, {
+      CLMedia media, {
       required String title,
       String? desc,
     }) onPin,
@@ -214,7 +214,7 @@ class DBManager extends Store {
   Future<void> pinMediaMultiple(
     List<CLMedia> media, {
     required Future<String?> Function(
-      File mediaPath, {
+      CLMedia media, {
       required String title,
       String? desc,
     }) onPin,
@@ -239,7 +239,6 @@ class DBManager extends Store {
       await dbWriter.unpinMediaMultiple(
         tx,
         media,
-        
         onRemovePinMultiple: onRemovePinMultiple,
       );
     });

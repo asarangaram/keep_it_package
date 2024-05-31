@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class AlbumManager {
@@ -34,41 +35,44 @@ class AlbumManager {
   }
 
   Future<String?> addMedia(
-    File mediaPath, {
+    CLMedia media, {
     required String title,
     String? desc,
   }) async {
     final auth = await checkRequest();
     if (!auth) return null;
-    if (Platform.isAndroid) {
-      /// Unfortunately, it is not possible to keep inside a FOLDER OR ALBUM
-      /// with this approach. Lets investigate later
-      // TODO(anandas): : Investigate album in Android
-      final assetEntity = await PhotoManager.editor.saveImageWithPath(
-        mediaPath.path,
+
+    /// Unfortunately, it is not possible to keep inside a FOLDER OR ALBUM
+    /// with this approach. Lets investigate later
+    // TODO(anandas): : Investigate album in Android
+    final AssetEntity? assetEntity;
+    if (media.type == CLMediaType.image) {
+      assetEntity = await PhotoManager.editor.saveImageWithPath(
+        media.path,
         title: title,
         desc: desc,
       );
-
-      return assetEntity?.id;
+    } else if (media.type == CLMediaType.video) {
+      assetEntity =
+          await PhotoManager.editor.saveVideo(File(media.path), title: title);
+    } else {
+      assetEntity = null;
     }
 
-    try {
-      final album = await retriveAlbum();
-      if (album == null) return null;
+    if (assetEntity == null) return null;
 
-      final assetEntity = await PhotoManager.editor.saveImageWithPath(
-        mediaPath.path,
-        title: title,
-        desc: desc,
-      );
-      if (assetEntity == null) return null;
-      await PhotoManager.editor
-          .copyAssetToPath(asset: assetEntity, pathEntity: album);
-      return assetEntity.id;
-    } catch (e) {
-      return null;
+    if (Platform.isIOS || Platform.isMacOS) {
+      try {
+        final album = await retriveAlbum();
+        if (album != null) {
+          await PhotoManager.editor
+              .copyAssetToPath(asset: assetEntity, pathEntity: album);
+        }
+      } catch (e) {
+        /** */
+      }
     }
+    return assetEntity.id;
   }
 
   Future<bool> removeMedia(String id) async {

@@ -175,7 +175,7 @@ class DBWriter {
     SqliteWriteContext tx,
     CLMedia media, {
     required Future<String?> Function(
-      File mediaPath, {
+      CLMedia media, {
       required String title,
       String? desc,
     }) onPin,
@@ -184,7 +184,7 @@ class DBWriter {
     if (media.id == null) return;
 
     if (media.pin == null || media.pin!.isEmpty) {
-      final pin = await onPin(File(media.path), title: basename(media.path));
+      final pin = await onPin(media, title: basename(media.path));
       if (pin == null) return;
       final pinnedMedia = media.copyWith(pin: pin);
       await upsertMedia(tx, pinnedMedia);
@@ -201,7 +201,7 @@ class DBWriter {
     SqliteWriteContext tx,
     List<CLMedia> media, {
     required Future<String?> Function(
-      File mediaPath, {
+      CLMedia media, {
       required String title,
       String? desc,
     }) onPin,
