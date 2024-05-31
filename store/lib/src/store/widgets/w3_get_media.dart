@@ -98,3 +98,32 @@ class GetMediaMultiple extends ConsumerWidget {
     );
   }
 }
+
+class GetPinnedMedia extends ConsumerWidget {
+  const GetPinnedMedia({
+    required this.buildOnData,
+    super.key,
+  });
+  final Widget Function(List<CLMedia> items) buildOnData;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const qid = DBQueries.mediaPinned;
+
+    return GetFromStore<CLMedia>(
+      query: qid.sql as DBQuery<CLMedia>,
+      builder: (media) {
+        media.sort((a, b) {
+          final aDate = a.originalDate ?? a.createdDate;
+          final bDate = b.originalDate ?? b.createdDate;
+
+          if (aDate != null && bDate != null) {
+            return bDate.compareTo(aDate);
+          }
+          return 0;
+        });
+        return buildOnData(media);
+      },
+    );
+  }
+}
