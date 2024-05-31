@@ -40,6 +40,18 @@ class AlbumManager {
   }) async {
     final auth = await checkRequest();
     if (!auth) return null;
+    if (Platform.isAndroid) {
+      /// Unfortunately, it is not possible to keep inside a FOLDER OR ALBUM
+      /// with this approach. Lets investigate later
+      // TODO(anandas): : Investigate album in Android
+      final assetEntity = await PhotoManager.editor.saveImageWithPath(
+        mediaPath.path,
+        title: title,
+        desc: desc,
+      );
+
+      return assetEntity?.id;
+    }
 
     try {
       final album = await retriveAlbum();
