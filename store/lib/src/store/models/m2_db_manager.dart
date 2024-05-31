@@ -60,6 +60,10 @@ abstract class Store {
     }) onPin,
     required Future<bool> Function(String id) onRemovePin,
   });
+  Future<void> unpinMediaMultiple(
+    List<CLMedia> media, {
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
+  });
 }
 
 class DBManager extends Store {
@@ -222,6 +226,21 @@ class DBManager extends Store {
         media,
         onPin: onPin,
         onRemovePin: onRemovePin,
+      );
+    });
+  }
+
+  @override
+  Future<void> unpinMediaMultiple(
+    List<CLMedia> media, {
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
+  }) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.unpinMediaMultiple(
+        tx,
+        media,
+        
+        onRemovePinMultiple: onRemovePinMultiple,
       );
     });
   }

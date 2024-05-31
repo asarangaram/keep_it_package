@@ -212,6 +212,21 @@ class DBWriter {
       await togglePin(tx, item, onPin: onPin, onRemovePin: onRemovePin);
     }
   }
+
+  Future<void> unpinMediaMultiple(
+    SqliteWriteContext tx,
+    List<CLMedia> media, {
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
+  }) async {
+    final pinned = media.where((e) => e.pin != null).toList();
+    final res = await onRemovePinMultiple(pinned.map((e) => e.pin!).toList());
+    if (res) {
+      for (final item in pinned) {
+        final pinnedMedia = item.removePin();
+        await upsertMedia(tx, pinnedMedia);
+      }
+    }
+  }
 }
 
 const _filePrefix = 'DB Write: ';

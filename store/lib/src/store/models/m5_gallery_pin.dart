@@ -69,4 +69,15 @@ class AlbumManager {
       return false;
     }
   }
+
+  Future<bool> removeMultipleMedia(List<String> ids) async {
+    final auth = await checkRequest();
+    if (!auth) return false;
+    try {
+      await PhotoManager.editor.deleteWithIds(ids);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
