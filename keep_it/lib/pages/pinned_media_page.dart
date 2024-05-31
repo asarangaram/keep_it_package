@@ -76,7 +76,7 @@ class PinnedMediaPage extends ConsumerWidget {
                     galleryMap: ref.watch(singleGroupItemProvider(media)),
                     emptyState: const Center(
                       child: CLText.large(
-                        'The medias pinned to show in gallery are listed here.',
+                        'The medias pinned to show in gallery are shown here.',
                       ),
                     ),
                     identifier: 'Pinned Media',
