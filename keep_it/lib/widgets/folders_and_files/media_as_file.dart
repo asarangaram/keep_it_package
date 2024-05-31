@@ -48,6 +48,8 @@ class MediaAsFile extends ConsumerWidget {
                       await dbManager.deleteMedia(
                         media,
                         onDeleteFile: (f) async => f.deleteIfExists(),
+                        onRemovePin:
+                            AlbumManager(albumName: 'KeepIt').removeMedia,
                       );
                       if (context.mounted) {
                         Navigator.of(context).pop(confirmed);

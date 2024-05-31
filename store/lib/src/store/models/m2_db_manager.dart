@@ -37,10 +37,12 @@ abstract class Store {
   Future<void> deleteMedia(
     CLMedia media, {
     required Future<void> Function(File file) onDeleteFile,
+    required Future<bool> Function(String id) onRemovePin,
   });
   Future<void> deleteMediaMultiple(
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
+    required Future<bool> Function(String id) onRemovePin,
   });
   Future<void> togglePin(
     CLMedia media, {
@@ -174,9 +176,16 @@ class DBManager extends Store {
   Future<void> deleteMedia(
     CLMedia media, {
     required Future<void> Function(File file) onDeleteFile,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteMedia(tx, media, onDeleteFile: onDeleteFile);
+      if (media.pin != null) {}
+      await dbWriter.deleteMedia(
+        tx,
+        media,
+        onDeleteFile: onDeleteFile,
+        onRemovePin: onRemovePin,
+      );
     });
   }
 
@@ -184,9 +193,15 @@ class DBManager extends Store {
   Future<void> deleteMediaMultiple(
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteMediaList(tx, media, onDeleteFile: onDeleteFile);
+      await dbWriter.deleteMediaList(
+        tx,
+        media,
+        onDeleteFile: onDeleteFile,
+        onRemovePin: onRemovePin,
+      );
     });
   }
 

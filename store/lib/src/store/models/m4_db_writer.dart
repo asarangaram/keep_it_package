@@ -153,8 +153,12 @@ class DBWriter {
     SqliteWriteContext tx,
     CLMedia media, {
     required Future<void> Function(File file) onDeleteFile,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {
     if (media.id == null) return;
+    if (media.pin != null) {
+      await onRemovePin(media.pin!);
+    }
     await onDeleteFile(File(media.path));
     await mediaTable.delete(tx, {'id': media.id.toString()});
   }
@@ -163,10 +167,16 @@ class DBWriter {
     SqliteWriteContext tx,
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
+    required Future<bool> Function(String id) onRemovePin,
   }) async {
     for (final m in media) {
       if (m.id != null) {
-        await deleteMedia(tx, m, onDeleteFile: onDeleteFile);
+        await deleteMedia(
+          tx,
+          m,
+          onDeleteFile: onDeleteFile,
+          onRemovePin: onRemovePin,
+        );
       }
     }
   }

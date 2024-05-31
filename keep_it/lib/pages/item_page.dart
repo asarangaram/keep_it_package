@@ -280,6 +280,8 @@ class _ItemViewState extends ConsumerState<ItemView> {
                           await dbManager.deleteMedia(
                             media,
                             onDeleteFile: (f) async => f.deleteIfExists(),
+                            onRemovePin:
+                                AlbumManager(albumName: 'KeepIt').removeMedia,
                           );
                           if (context.mounted) {
                             Navigator.of(context).pop(confirmed);

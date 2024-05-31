@@ -78,6 +78,8 @@ class TimeLineView extends ConsumerWidget {
                     await dbManager.deleteMediaMultiple(
                       items,
                       onDeleteFile: (f) async => f.deleteIfExists(),
+                      onRemovePin:
+                          AlbumManager(albumName: 'KeepIt').removeMedia,
                     );
                   }
                   return confirmed;
