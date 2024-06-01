@@ -24,7 +24,9 @@ class DeleteMediaPage extends ConsumerWidget {
             buildOnData: (media) {
               if (media.isEmpty) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  context.pop();
+                  if (context.canPop()) {
+                    context.pop();
+                  }
                 });
               }
               return Column(
