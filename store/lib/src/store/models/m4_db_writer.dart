@@ -159,8 +159,12 @@ class DBWriter {
     if (media.pin != null) {
       await onRemovePin(media.pin!);
     }
-    await onDeleteFile(File(media.path));
-    await mediaTable.delete(tx, {'id': media.id.toString()});
+    if (media.isDeleted ?? false) {
+      await onDeleteFile(File(media.path));
+      await mediaTable.delete(tx, {'id': media.id.toString()});
+    } else {
+      await upsertMedia(tx, media.copyWith(isDeleted: true));
+    }
   }
 
   Future<void> deleteMediaList(

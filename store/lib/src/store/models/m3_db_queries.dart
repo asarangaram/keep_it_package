@@ -58,12 +58,13 @@ enum DBQueries {
             fromMap: CLMedia.fromMap,
           ),
         mediaAll => DBQuery<CLMedia>(
-            sql: 'SELECT * FROM Item',
+            sql: 'SELECT * FROM Item WHERE isHidden IS 0 AND isDeleted IS 0',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
         mediaByCollectionId => DBQuery<CLMedia>(
-            sql: 'SELECT * FROM Item WHERE collectionId = ?',
+            sql:
+                'SELECT * FROM Item WHERE collectionId = ? AND isHidden IS 0 AND isDeleted IS 0',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
@@ -73,12 +74,14 @@ enum DBQueries {
             fromMap: CLMedia.fromMap,
           ),
         mediaPinned => DBQuery<CLMedia>(
-            sql: "SELECT * FROM Item WHERE NULLIF(pin, 'null') IS NOT NULL",
+            sql:
+                "SELECT * FROM Item WHERE NULLIF(pin, 'null') IS NOT NULL AND isHidden IS 0 AND isDeleted IS 0",
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
         mediaStaled => DBQuery<CLMedia>(
-            sql: 'SELECT * FROM Item WHERE isHidden IS NOT 0',
+            sql:
+                'SELECT * FROM Item WHERE isHidden IS NOT 0 AND isDeleted IS 0',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
