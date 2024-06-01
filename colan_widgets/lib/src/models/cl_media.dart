@@ -71,12 +71,12 @@ class CLMedia {
       id: map['id'] != null ? map['id'] as int : null,
       collectionId:
           map['collectionId'] != null ? map['collectionId'] as int : null,
-      /* createdDate: map['createdDate'] != null
+      createdDate: map['createdDate'] != null
           ? DateTime.parse(map['createdDate'] as String)
           : DateTime.now(),
       updatedDate: map['updatedDate'] != null
           ? DateTime.parse(map['updatedDate'] as String)
-          : null, // May cause issue? */
+          : null,
       originalDate: map['originalDate'] != null
           ? DateTime.parse(map['originalDate'] as String)
           : map['createdDate'] != null
