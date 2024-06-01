@@ -153,12 +153,7 @@ class DBWriter {
     SqliteWriteContext tx,
     CLMedia media, {
     required Future<void> Function(File file) onDeleteFile,
-    required Future<bool> Function(String id) onRemovePin,
   }) async {
-    if (media.id == null) return;
-    if (media.pin != null) {
-      await onRemovePin(media.pin!);
-    }
     if (media.isDeleted ?? false) {
       await onDeleteFile(File(media.path));
       await mediaTable.delete(tx, {'id': media.id.toString()});
@@ -171,7 +166,6 @@ class DBWriter {
     SqliteWriteContext tx,
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
-    required Future<bool> Function(String id) onRemovePin,
   }) async {
     for (final m in media) {
       if (m.id != null) {
@@ -179,13 +173,12 @@ class DBWriter {
           tx,
           m,
           onDeleteFile: onDeleteFile,
-          onRemovePin: onRemovePin,
         );
       }
     }
   }
 
-  Future<void> togglePin(
+  Future<bool> togglePin(
     SqliteWriteContext tx,
     CLMedia media, {
     required Future<String?> Function(
@@ -195,13 +188,14 @@ class DBWriter {
     }) onPin,
     required Future<bool> Function(String id) onRemovePin,
   }) async {
-    if (media.id == null) return;
+    if (media.id == null) return false;
 
     if (media.pin == null || media.pin!.isEmpty) {
       final pin = await onPin(media, title: basename(media.path));
-      if (pin == null) return;
+      if (pin == null) return false;
       final pinnedMedia = media.copyWith(pin: pin);
       await upsertMedia(tx, pinnedMedia);
+      return true;
     } else {
       final id = media.pin!;
       final res = await onRemovePin(id);
@@ -209,6 +203,7 @@ class DBWriter {
         final pinnedMedia = media.removePin();
         await upsertMedia(tx, pinnedMedia);
       }
+      return res;
     }
   }
 
@@ -228,19 +223,26 @@ class DBWriter {
     }
   }
 
-  Future<void> unpinMediaMultiple(
+  Future<bool> unpinMediaMultiple(
     SqliteWriteContext tx,
     List<CLMedia> media, {
     required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   }) async {
     final pinned = media.where((e) => e.pin != null).toList();
-    final res = await onRemovePinMultiple(pinned.map((e) => e.pin!).toList());
+    final bool res;
+    if (pinned.isNotEmpty) {
+      res = await onRemovePinMultiple(pinned.map((e) => e.pin!).toList());
+    } else {
+      res = true;
+    }
+
     if (res) {
       for (final item in pinned) {
         final pinnedMedia = item.removePin();
         await upsertMedia(tx, pinnedMedia);
       }
     }
+    return res;
   }
 }
 

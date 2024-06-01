@@ -42,7 +42,7 @@ abstract class Store {
   Future<void> deleteMediaMultiple(
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
-    required Future<bool> Function(String id) onRemovePin,
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   });
   Future<void> togglePin(
     CLMedia media, {
@@ -179,12 +179,22 @@ class DBManager extends Store {
     required Future<bool> Function(String id) onRemovePin,
   }) async {
     await db.writeTransaction((tx) async {
-      if (media.pin != null) {}
+      if (media.id == null) return;
+      if (media.pin != null) {
+        final res = await dbWriter.togglePin(
+          tx,
+          media,
+          onPin: (media, {required title, desc}) async {
+            throw Exception('Unexpected');
+          },
+          onRemovePin: onRemovePin,
+        );
+        if (!res) return;
+      }
       await dbWriter.deleteMedia(
         tx,
         media,
         onDeleteFile: onDeleteFile,
-        onRemovePin: onRemovePin,
       );
     });
   }
@@ -193,15 +203,21 @@ class DBManager extends Store {
   Future<void> deleteMediaMultiple(
     List<CLMedia> media, {
     required Future<void> Function(File file) onDeleteFile,
-    required Future<bool> Function(String id) onRemovePin,
+    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   }) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteMediaList(
+      final res = await dbWriter.unpinMediaMultiple(
         tx,
         media,
-        onDeleteFile: onDeleteFile,
-        onRemovePin: onRemovePin,
+        onRemovePinMultiple: onRemovePinMultiple,
       );
+      if (res) {
+        await dbWriter.deleteMediaList(
+          tx,
+          media,
+          onDeleteFile: onDeleteFile,
+        );
+      }
     });
   }
 

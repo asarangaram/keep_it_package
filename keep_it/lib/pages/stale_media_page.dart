@@ -81,7 +81,8 @@ class StaleMediaPage extends ConsumerWidget {
                       galleryMap: ref.watch(singleGroupItemProvider(media)),
                       emptyState: const Center(
                         child: CLText.large(
-                          'The medias pinned to show in gallery are shown here.',
+                          'The medias pinned to show '
+                          'in gallery are shown here.',
                         ),
                       ),
                       identifier: 'Pinned Media',
@@ -123,12 +124,12 @@ class StaleMediaPage extends ConsumerWidget {
                                 await dbManager.deleteMediaMultiple(
                                   items,
                                   onDeleteFile: (f) async => f.deleteIfExists(),
-                                  onRemovePin: (id) async {
+                                  onRemovePinMultiple: (ids) async {
                                     /// This should not happen as
                                     /// stale media can't be pinned
                                     final res =
                                         await AlbumManager(albumName: 'KeepIt')
-                                            .removeMedia(id);
+                                            .removeMultipleMedia(ids);
                                     if (!res) {
                                       await ref
                                           .read(
@@ -186,12 +187,12 @@ class StaleMediaPage extends ConsumerWidget {
                               await dbManager.deleteMediaMultiple(
                                 media,
                                 onDeleteFile: (f) async => f.deleteIfExists(),
-                                onRemovePin: (id) async {
+                                onRemovePinMultiple: (id) async {
                                   /// This should not happen as
                                   /// stale media can't be pinned
                                   final res =
                                       await AlbumManager(albumName: 'KeepIt')
-                                          .removeMedia(id);
+                                          .removeMultipleMedia(id);
                                   if (!res) {
                                     await ref
                                         .read(
