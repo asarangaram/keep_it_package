@@ -18,6 +18,7 @@ enum DBQueries {
   mediaByMD5,
   mediaPinned,
   mediaStaled,
+  mediaDeleted,
   mediaByIdList;
 
   DBQuery<dynamic> get sql => switch (this) {
@@ -40,7 +41,8 @@ enum DBQueries {
         collectionsExcludeEmpty => DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* FROM Collection '
                 'JOIN Item ON Collection.id = Item.collectionId '
-                "WHERE label NOT LIKE '***%'",
+                "WHERE label NOT LIKE '***%' AND "
+                'Item.isDeleted = 0',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
@@ -48,7 +50,8 @@ enum DBQueries {
             sql: 'SELECT Collection.* FROM Collection '
                 'LEFT JOIN Item ON Collection.id = Item.collectionId '
                 'WHERE Item.collectionId IS NULL AND '
-                "label NOT LIKE '***%'",
+                "label NOT LIKE '***%' AND "
+                'Item.isDeleted = 0',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
@@ -58,12 +61,13 @@ enum DBQueries {
             fromMap: CLMedia.fromMap,
           ),
         mediaAll => DBQuery<CLMedia>(
-            sql: 'SELECT * FROM Item',
+            sql: 'SELECT * FROM Item WHERE isHidden IS 0 AND isDeleted IS 0',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
         mediaByCollectionId => DBQuery<CLMedia>(
-            sql: 'SELECT * FROM Item WHERE collectionId = ?',
+            sql:
+                'SELECT * FROM Item WHERE collectionId = ? AND isHidden IS 0 AND isDeleted IS 0',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
@@ -73,12 +77,19 @@ enum DBQueries {
             fromMap: CLMedia.fromMap,
           ),
         mediaPinned => DBQuery<CLMedia>(
-            sql: "SELECT * FROM Item WHERE NULLIF(pin, 'null') IS NOT NULL",
+            sql:
+                "SELECT * FROM Item WHERE NULLIF(pin, 'null') IS NOT NULL AND isHidden IS 0 AND isDeleted IS 0",
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
         mediaStaled => DBQuery<CLMedia>(
-            sql: 'SELECT * FROM Item WHERE isHidden IS NOT 0',
+            sql:
+                'SELECT * FROM Item WHERE isHidden IS NOT 0 AND isDeleted IS 0',
+            triggerOnTables: const {'Item'},
+            fromMap: CLMedia.fromMap,
+          ),
+        mediaDeleted => DBQuery<CLMedia>(
+            sql: 'SELECT * FROM Item WHERE isDeleted IS NOT 0 ',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),
