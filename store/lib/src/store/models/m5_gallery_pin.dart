@@ -94,8 +94,8 @@ class AlbumManager {
     final auth = await checkRequest();
     if (!auth) return false;
     try {
-      await PhotoManager.editor.deleteWithIds(ids);
-      return true;
+      final res = await PhotoManager.editor.deleteWithIds(ids);
+      return res.isNotEmpty;
     } catch (e) {
       return false;
     }

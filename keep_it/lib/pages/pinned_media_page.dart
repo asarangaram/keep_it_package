@@ -54,7 +54,8 @@ class PinnedMediaPage extends ConsumerWidget {
                                         notificationMessageProvider.notifier,
                                       )
                                       .push(
-                                          "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                                        "Pin couldn't be removed.\nGive Permission to delete from Gallery",
+                                      );
                                 }
                                 return res;
                               },
@@ -83,9 +84,21 @@ class PinnedMediaPage extends ConsumerWidget {
                           onTap: () async {
                             await dbManager.unpinMediaMultiple(
                               media,
-                              onRemovePinMultiple:
-                                  AlbumManager(albumName: 'KeepIt')
-                                      .removeMultipleMedia,
+                              onRemovePinMultiple: (id) async {
+                                final res =
+                                    await AlbumManager(albumName: 'KeepIt')
+                                        .removeMultipleMedia(id);
+                                if (!res) {
+                                  await ref
+                                      .read(
+                                        notificationMessageProvider.notifier,
+                                      )
+                                      .push(
+                                        'Give Permission to remove from Gallery',
+                                      );
+                                }
+                                return res;
+                              },
                             );
                             return true;
                           },
