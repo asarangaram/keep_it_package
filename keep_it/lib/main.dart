@@ -21,6 +21,7 @@ import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/pinned_media_page.dart';
+import 'pages/stale_media_page.dart';
 import 'widgets/empty_state.dart';
 
 extension ExtDirectory on Directory {
@@ -143,10 +144,18 @@ class KeepItApp implements AppDescriptor {
                 .split(',')
                 .map(int.parse)
                 .toList();
+            final unhide = state.uri.queryParameters['unhide'] == 'true';
 
             return MoveMediaPage(
               idsToMove: idsToMove,
+              unhide: unhide,
             );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'stale_media',
+          builder: (context, GoRouterState state) {
+            return const StaleMediaPage();
           },
         ),
 

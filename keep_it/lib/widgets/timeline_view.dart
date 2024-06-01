@@ -83,8 +83,11 @@ class TimeLineView extends ConsumerWidget {
                         final res = await AlbumManager(albumName: 'KeepIt')
                             .removeMedia(id);
                         if (!res) {
-                          await ref.read(notificationMessageProvider.notifier).push(
-                              "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                          await ref
+                              .read(notificationMessageProvider.notifier)
+                              .push(
+                                "'Give Permission to remove from Gallery'",
+                              );
                         }
                         return res;
                       },

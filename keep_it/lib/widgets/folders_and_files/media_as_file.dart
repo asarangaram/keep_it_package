@@ -55,7 +55,7 @@ class MediaAsFile extends ConsumerWidget {
                             await ref
                                 .read(notificationMessageProvider.notifier)
                                 .push(
-                                  "Pin couldn't be removed.\nGive Permission to delete from Gallery",
+                                  "'Give Permission to remove from Gallery'",
                                 );
                           }
                           return res;

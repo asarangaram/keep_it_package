@@ -1,5 +1,6 @@
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/src/models/cl_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,20 +12,32 @@ class MoveMediaPage extends ConsumerWidget {
   const MoveMediaPage({
     required this.idsToMove,
     super.key,
+    this.unhide = false,
   });
 
   final List<int> idsToMove;
+  final bool unhide;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       child: GetMediaMultiple(
         idList: idsToMove,
         buildOnData: (media) {
-          final media2Move = media
-              .where(
-                (m) => idsToMove.contains(m.id),
-              )
-              .toList();
+          final List<CLMedia> media2Move;
+          if (unhide) {
+            media2Move = media
+                .where(
+                  (m) => idsToMove.contains(m.id),
+                )
+                .map((e) => e.copyWith(isHidden: false))
+                .toList();
+          } else {
+            media2Move = media
+                .where(
+                  (m) => idsToMove.contains(m.id),
+                )
+                .toList();
+          }
           return IncomingMediaHandler(
             incomingMedia: CLSharedMedia(entries: media2Move),
             onDiscard: ({required bool result}) {

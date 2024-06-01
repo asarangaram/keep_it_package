@@ -17,6 +17,7 @@ enum DBQueries {
   mediaByPath,
   mediaByMD5,
   mediaPinned,
+  mediaStaled,
   mediaByIdList;
 
   DBQuery<dynamic> get sql => switch (this) {
@@ -31,20 +32,23 @@ enum DBQueries {
             fromMap: Collection.fromMap,
           ),
         collectionsAll => DBQuery<Collection>(
-            sql: 'SELECT * FROM Collection',
+            sql: 'SELECT * FROM Collection '
+                "WHERE label NOT LIKE '***%'",
             triggerOnTables: const {'Collection'},
             fromMap: Collection.fromMap,
           ),
         collectionsExcludeEmpty => DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* FROM Collection '
-                'JOIN Item ON Collection.id = Item.collectionId;',
+                'JOIN Item ON Collection.id = Item.collectionId '
+                "WHERE label NOT LIKE '***%'",
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
         collectionsEmpty => DBQuery<Collection>(
             sql: 'SELECT Collection.* FROM Collection '
                 'LEFT JOIN Item ON Collection.id = Item.collectionId '
-                'WHERE Item.collectionId IS NULL;',
+                'WHERE Item.collectionId IS NULL AND '
+                "label NOT LIKE '***%'",
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
@@ -70,6 +74,11 @@ enum DBQueries {
           ),
         mediaPinned => DBQuery<CLMedia>(
             sql: "SELECT * FROM Item WHERE NULLIF(pin, 'null') IS NOT NULL",
+            triggerOnTables: const {'Item'},
+            fromMap: CLMedia.fromMap,
+          ),
+        mediaStaled => DBQuery<CLMedia>(
+            sql: 'SELECT * FROM Item WHERE isHidden IS NOT 0',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),

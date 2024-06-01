@@ -60,7 +60,7 @@ class SaveCollection extends SharedMediaWizard {
       unawaited(
         dbManager
             .upsertMediaMultiple(
-          media: media,
+          media: media?.map((e) => e.copyWith(isHidden: false)).toList(),
           collectionId: updatedCollection.id!,
           onPrepareMedia: (m, {required targetDir}) async {
             final updated =
