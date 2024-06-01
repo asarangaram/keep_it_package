@@ -78,6 +78,10 @@ class MediaFileHandler extends StatelessWidget {
                     collectionId: media.collectionId,
                     originalDate: media.originalDate,
                     createdDate: media.createdDate,
+                    isDeleted: media.isDeleted,
+                    isHidden: media.isHidden,
+                    pin: media.pin,
+                    updatedDate: media.updatedDate,
                   );
                 }
                 await dbManager.upsertMedia(
