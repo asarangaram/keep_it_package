@@ -44,7 +44,7 @@ class StaleMediaPage extends ConsumerWidget {
                             onTap: () async {
                               unawaited(
                                 context.push(
-                                  '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
+                                  '/itemview/${item.id}?parentIdentifier=$parentIdentifier',
                                 ),
                               );
                             },
