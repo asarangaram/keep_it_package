@@ -288,7 +288,8 @@ class _ItemViewState extends ConsumerState<ItemView> {
                                 await ref
                                     .read(notificationMessageProvider.notifier)
                                     .push(
-                                        "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                                      'Give Permission to remove from Gallery',
+                                    );
                               }
                               return res;
                             },
@@ -341,7 +342,8 @@ class _ItemViewState extends ConsumerState<ItemView> {
                         await AlbumManager(albumName: 'KeepIt').removeMedia(id);
                     if (!res) {
                       await ref.read(notificationMessageProvider.notifier).push(
-                          "Pin couldn't be removed.\nGive Permission to delete from Gallery");
+                            "'Give Permission to remove from Gallery'",
+                          );
                     }
                     return res;
                   },

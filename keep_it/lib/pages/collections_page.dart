@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
@@ -77,7 +78,9 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        unawaited(context.push('/stale_media'));
+                      },
                       child: const CLText.small('Show Now'),
                     ),
                   ],
