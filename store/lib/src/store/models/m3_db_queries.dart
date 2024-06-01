@@ -41,7 +41,8 @@ enum DBQueries {
         collectionsExcludeEmpty => DBQuery<Collection>(
             sql: 'SELECT DISTINCT Collection.* FROM Collection '
                 'JOIN Item ON Collection.id = Item.collectionId '
-                "WHERE label NOT LIKE '***%'",
+                "WHERE label NOT LIKE '***%' AND "
+                'Item.isDeleted = 0',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
@@ -49,7 +50,8 @@ enum DBQueries {
             sql: 'SELECT Collection.* FROM Collection '
                 'LEFT JOIN Item ON Collection.id = Item.collectionId '
                 'WHERE Item.collectionId IS NULL AND '
-                "label NOT LIKE '***%'",
+                "label NOT LIKE '***%' AND "
+                'Item.isDeleted = 0',
             triggerOnTables: const {'Collection', 'Item'},
             fromMap: Collection.fromMap,
           ),
