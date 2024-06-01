@@ -77,6 +77,7 @@ class PinnedMediaPage extends ConsumerWidget {
                     ),
                     identifier: 'Pinned Media',
                     columns: 2,
+                    onRefresh: () async => ref.invalidate(dbManagerProvider),
                     selectionActions: (context, items) {
                       return [
                         CLMenuItem(
