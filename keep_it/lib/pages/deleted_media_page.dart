@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -12,17 +10,17 @@ import 'package:store/store.dart';
 
 import '../providers/gallery_group_provider.dart';
 
-class StaleMediaPage extends ConsumerWidget {
-  const StaleMediaPage({super.key});
+class DeleteMediaPage extends ConsumerWidget {
+  const DeleteMediaPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const label = 'Unclassified Media';
-    const parentIdentifier = 'Unclassified Media';
+    const label = 'Deleted';
+    const parentIdentifier = 'Deleted Media';
     return FullscreenLayout(
       child: GetDBManager(
         builder: (dbManager) {
-          return GetStaleMedia(
+          return GetDeletedMedia(
             buildOnData: (media) {
               if (media.isEmpty) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -34,7 +32,7 @@ class StaleMediaPage extends ConsumerWidget {
                   Expanded(
                     child: CLSimpleGalleryView<CLMedia>(
                       key: const ValueKey(label),
-                      title: 'Unclassified  Media',
+                      title: 'Deleted Media',
                       itemBuilder:
                           (context, item, {required quickMenuScopeKey}) => Hero(
                         tag: '$parentIdentifier /item/${item.id}',
@@ -42,11 +40,11 @@ class StaleMediaPage extends ConsumerWidget {
                           padding: const EdgeInsets.all(4),
                           child: GestureDetector(
                             onTap: () async {
-                              unawaited(
+                              /* unawaited(
                                 context.push(
                                   '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
                                 ),
-                              );
+                              ); */
                             },
                             child: PreviewService(
                               media: item,
@@ -67,14 +65,28 @@ class StaleMediaPage extends ConsumerWidget {
                       selectionActions: (context, items) {
                         return [
                           CLMenuItem(
-                            title: 'Move',
+                            title: 'Restore',
                             icon: MdiIcons.imageMove,
                             onTap: () async {
-                              final result = await context.push<bool>(
-                                '/move?ids=${items.map((e) => e.id).join(',')}&unhide=true',
-                              );
-
-                              return result;
+                              for (final item in items) {
+                                if (item.id != null) {
+                                  await dbManager.upsertMedia(
+                                    collectionId: item.collectionId!,
+                                    media: item.copyWith(isDeleted: false),
+                                    onPrepareMedia: (
+                                      m, {
+                                      required targetDir,
+                                    }) async {
+                                      final updated = (await m.moveFile(
+                                        targetDir: targetDir,
+                                      ))
+                                          .getMetadata();
+                                      return updated;
+                                    },
+                                  );
+                                }
+                              }
+                              return true;
                             },
                           ),
                           CLMenuItem(
@@ -135,12 +147,26 @@ class StaleMediaPage extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () {
-                            context.push<bool>(
-                              '/move?ids=${media.map((e) => e.id).join(',')}&unhide=true',
-                            );
+                          onPressed: () async {
+                            for (final item in media) {
+                              if (item.id != null) {
+                                await dbManager.upsertMedia(
+                                  collectionId: item.collectionId!,
+                                  media: item.copyWith(isDeleted: false),
+                                  onPrepareMedia: (
+                                    m, {
+                                    required targetDir,
+                                  }) async {
+                                    final updated =
+                                        (await m.moveFile(targetDir: targetDir))
+                                            .getMetadata();
+                                    return updated;
+                                  },
+                                );
+                              }
+                            }
                           },
-                          label: const CLText.small('Keep All'),
+                          label: const CLText.small('Restore All'),
                           icon: Icon(MdiIcons.imageMove),
                         ),
                         ElevatedButton.icon(

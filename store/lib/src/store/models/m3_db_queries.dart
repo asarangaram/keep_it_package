@@ -18,6 +18,7 @@ enum DBQueries {
   mediaByMD5,
   mediaPinned,
   mediaStaled,
+  mediaDeleted,
   mediaByIdList;
 
   DBQuery<dynamic> get sql => switch (this) {
@@ -82,6 +83,11 @@ enum DBQueries {
         mediaStaled => DBQuery<CLMedia>(
             sql:
                 'SELECT * FROM Item WHERE isHidden IS NOT 0 AND isDeleted IS 0',
+            triggerOnTables: const {'Item'},
+            fromMap: CLMedia.fromMap,
+          ),
+        mediaDeleted => DBQuery<CLMedia>(
+            sql: 'SELECT * FROM Item WHERE isDeleted IS NOT 0 ',
             triggerOnTables: const {'Item'},
             fromMap: CLMedia.fromMap,
           ),

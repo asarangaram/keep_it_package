@@ -156,3 +156,32 @@ class GetStaleMedia extends ConsumerWidget {
     );
   }
 }
+
+class GetDeletedMedia extends ConsumerWidget {
+  const GetDeletedMedia({
+    required this.buildOnData,
+    super.key,
+  });
+  final Widget Function(List<CLMedia> items) buildOnData;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const qid = DBQueries.mediaDeleted;
+
+    return GetFromStore<CLMedia>(
+      query: qid.sql as DBQuery<CLMedia>,
+      builder: (media) {
+        media.sort((a, b) {
+          final aDate = a.originalDate ?? a.createdDate;
+          final bDate = b.originalDate ?? b.createdDate;
+
+          if (aDate != null && bDate != null) {
+            return bDate.compareTo(aDate);
+          }
+          return 0;
+        });
+        return buildOnData(media);
+      },
+    );
+  }
+}

@@ -17,10 +17,12 @@ import 'pages/camera_page.dart';
 import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
+import 'pages/deleted_media_page.dart';
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/pinned_media_page.dart';
+import 'pages/settings_main.dart';
 import 'pages/stale_media_page.dart';
 import 'widgets/empty_state.dart';
 
@@ -75,9 +77,7 @@ class KeepItApp implements AppDescriptor {
         ),
         CLShellRouteDescriptor(
           name: 'settings',
-          builder: (context, state) => const Center(
-            child: Text('Settings'),
-          ),
+          builder: (context, state) => const SettingsMainPage(),
           iconData: MdiIcons.cog,
           label: 'Settings',
         ),
@@ -156,6 +156,12 @@ class KeepItApp implements AppDescriptor {
           name: 'stale_media',
           builder: (context, GoRouterState state) {
             return const StaleMediaPage();
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'deleted_media',
+          builder: (context, GoRouterState state) {
+            return const DeleteMediaPage();
           },
         ),
 
