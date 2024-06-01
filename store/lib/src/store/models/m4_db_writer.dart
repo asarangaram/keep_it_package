@@ -158,7 +158,12 @@ class DBWriter {
       await onDeleteFile(File(media.path));
       await mediaTable.delete(tx, {'id': media.id.toString()});
     } else {
-      await upsertMedia(tx, media.copyWith(isDeleted: true));
+      await upsertMedia(
+        tx,
+        media.removePin().copyWith(
+              isDeleted: true,
+            ),
+      );
     }
   }
 
