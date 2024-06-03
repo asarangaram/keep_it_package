@@ -1,9 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-import 'camera_gesture.dart';
-import 'flash_control.dart';
-
 class CameraPreviewLayer extends StatefulWidget {
   const CameraPreviewLayer({
     required this.controller,
@@ -74,7 +71,8 @@ class _CameraPreviewLayerState extends State<CameraPreviewLayer> {
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    cameraController.setExposurePoint(offset);
-    cameraController.setFocusPoint(offset);
+    cameraController
+      ..setExposurePoint(offset)
+      ..setFocusPoint(offset);
   }
 }

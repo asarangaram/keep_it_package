@@ -12,6 +12,8 @@ dependencies:
   app_loader:
     path: ../app_loader
   camera: ^0.10.6
+  cl_camera:
+    path: ../cl_camera
   colan_services:
     path: ../colan_services
   colan_widgets:

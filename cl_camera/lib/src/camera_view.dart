@@ -14,9 +14,6 @@ import 'widgets/camera_mode.dart';
 
 import 'widgets/cl_circular_button.dart';
 
-import 'widgets/layer1_background.dart';
-import 'widgets/layer2_preview.dart';
-
 class CLCamera extends StatefulWidget {
   const CLCamera({
     required this.cameras,
@@ -472,23 +469,6 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
         ],
       ),
     );
-  }
-
-  /* Widget _wrapInRotatedBox({
-    required Widget child,
-    required DeviceOrientation oritentation,
-  }) {
-    return RotatedBox(
-      quarterTurns: _getQuarterTurns(oritentation),
-      child: child,
-    );
-  } */
-
-  bool _isLandscape(DeviceOrientation oritentation) {
-    return <DeviceOrientation>[
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ].contains(oritentation);
   }
 
   int _getQuarterTurns(DeviceOrientation oritentation) {
