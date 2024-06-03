@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'camera_gesture.dart';
 import 'flash_control.dart';
 
-class CameraPreviewLayer extends StatelessWidget {
+class CameraPreviewLayer extends StatefulWidget {
   const CameraPreviewLayer({
     required this.controller,
     required this.currentZoomLevel,
@@ -18,48 +18,63 @@ class CameraPreviewLayer extends StatelessWidget {
   final double aspectRatio;
 
   @override
+  State<CameraPreviewLayer> createState() => _CameraPreviewLayerState();
+}
+
+class _CameraPreviewLayerState extends State<CameraPreviewLayer> {
+  // Counting pointers (number of user fingers on screen)
+  int _pointers = 0;
+  final double _minAvailableZoom = 1;
+  final double _maxAvailableZoom = 1;
+  double _currentScale = 1;
+  double _baseScale = 1;
+  @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: aspectRatio,
-      child: Stack(
-        children: [
-          CameraPreview(
-            controller,
-            child: LayoutBuilder(
-              builder: (
-                BuildContext context,
-                BoxConstraints constraints,
-              ) {
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: (details) => onViewFinderTap(
-                    details,
-                    constraints,
-                  ),
-                );
-              },
-            ),
-          ),
-          CameraGesture(
-            currentZoomLevel: currentZoomLevel,
-            onChangeZoomLevel: onChangeZoomLevel,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, top: 8),
-            child: FlashControl(controller: controller),
-          ),
-        ],
+    return Listener(
+      onPointerDown: (_) => _pointers++,
+      onPointerUp: (_) => _pointers--,
+      child: CameraPreview(
+        widget.controller,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onScaleStart: _handleScaleStart,
+              onScaleUpdate: _handleScaleUpdate,
+              onTapDown: (TapDownDetails details) =>
+                  onViewFinderTap(details, constraints),
+            );
+          },
+        ),
       ),
     );
   }
 
+  void _handleScaleStart(ScaleStartDetails details) {
+    _baseScale = _currentScale;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (_pointers != 2) {
+      return;
+    }
+
+    _currentScale = (_baseScale * details.scale)
+        .clamp(_minAvailableZoom, _maxAvailableZoom);
+
+    await widget.controller.setZoomLevel(_currentScale);
+    widget.onChangeZoomLevel(_currentScale);
+  }
+
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
+    final cameraController = widget.controller;
+
     final offset = Offset(
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    controller
-      ..setExposurePoint(offset)
-      ..setFocusPoint(offset);
+    cameraController.setExposurePoint(offset);
+    cameraController.setFocusPoint(offset);
   }
 }

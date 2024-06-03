@@ -65,6 +65,12 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
   double _maxAvailableZoom = 1;
   double _currentZoomLevel = 1;
 
+  //double _currentScale = 1;
+  double _baseScale = 1;
+
+  // Counting pointers (number of user fingers on screen)
+  int _pointers = 0;
+
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
@@ -152,49 +158,89 @@ class CameraScreenState extends State<CLCamera> with WidgetsBindingObserver {
     quarterTurns = _getQuarterTurns(_getApplicableOrientation(controller!));
     return Stack(
       children: [
-        RotatedBox(
+        /*  RotatedBox(
           quarterTurns: quarterTurns,
           child: CameraBackgroundLayer(controller: controller!),
-        ),
-        SafeArea(
-          child: RotatedBox(
-            quarterTurns: quarterTurns,
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: CameraPreviewLayer(
-                controller: controller!,
-                currentZoomLevel: _currentZoomLevel,
-                onChangeZoomLevel: (scale) {
-                  if (scale < _minAvailableZoom) {
-                    scale = _minAvailableZoom;
-                  } else if (scale > _maxAvailableZoom) {
-                    scale = _maxAvailableZoom;
-                  }
-                  controller!.setZoomLevel(scale).then((value) {
-                    setState(() {
-                      _currentZoomLevel = scale;
-                    });
-                  });
-                },
-                aspectRatio:
-                    _isLandscape(_getApplicableOrientation(controller!))
-                        ? controller!.value.aspectRatio
-                        : 1 / controller!.value.aspectRatio,
-              ),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: IgnorePointer(
-            ignoring: false,
+        ), */
+        _cameraPreviewWidget(),
+        /* IgnorePointer(
+          ignoring: false,
+          child: Align(
+            alignment: Alignment.bottomCenter,
             child: LayoutBuilder(
               builder: buildBottomControl,
             ),
           ),
-        ),
+        ), */
       ],
     );
+  }
+
+  Widget _cameraPreviewWidget() {
+    final cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return const Center(
+        child: Text(
+          'Tap a camera',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      );
+    } else {
+      return Listener(
+        onPointerDown: (_) => _pointers++,
+        onPointerUp: (_) => _pointers--,
+        child: CameraPreview(
+          controller!,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onScaleStart: _handleScaleStart,
+                onScaleUpdate: _handleScaleUpdate,
+                onTapDown: (TapDownDetails details) =>
+                    onViewFinderTap(details, constraints),
+              );
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  void _handleScaleStart(ScaleStartDetails details) {
+    _baseScale = _currentZoomLevel;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (controller == null || _pointers != 2) {
+      return;
+    }
+    _currentZoomLevel = (_baseScale * details.scale)
+        .clamp(_minAvailableZoom, _maxAvailableZoom);
+
+    await controller!.setZoomLevel(_currentZoomLevel);
+  }
+
+  void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
+    if (controller == null) {
+      return;
+    }
+
+    final cameraController = controller!;
+
+    final offset = Offset(
+      details.localPosition.dx / constraints.maxWidth,
+      details.localPosition.dy / constraints.maxHeight,
+    );
+    cameraController
+      ..setExposurePoint(offset)
+      ..setFocusPoint(offset);
   }
 
   void startVideoRecording() {
