@@ -13,6 +13,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../cl_camera.dart';
 import 'widgets/camera_mode.dart';
+import 'widgets/camera_settings.dart';
 import 'widgets/cl_circular_button.dart';
 import 'widgets/flash_control.dart';
 
@@ -65,6 +66,8 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
 
+  CameraSettings? cameraSettings;
+
   @override
   void initState() {
     super.initState();
@@ -97,7 +100,12 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
       onNewCameraSelected(restore: true);
     }
   }
-  // #enddocregion AppLifecycle
+
+  void showSettings(CameraSettings value) {
+    setState(() {
+      cameraSettings = (cameraSettings == value) ? null : value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +134,10 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
                   children: [
                     FlashControl(
                       controller: controller!,
+                    ),
+                    CameraSettingsHandler(
+                      currentSelection: cameraSettings,
+                      onSelection: showSettings,
                     ),
                   ],
                 ),
