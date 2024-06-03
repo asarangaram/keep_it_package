@@ -152,10 +152,15 @@ class _CLCameraState extends State<CLCamera>
     {
       return Row(
         children: [
-          if (cameraSettings == CameraSettings.exposureMode)
-            Expanded(child: exposureModeSettings(cameraController))
-          else
-            Expanded(child: Text(cameraSettings.toString())),
+          Expanded(
+            child: switch (cameraSettings) {
+              CameraSettings.exposureMode =>
+                exposureModeSettings(cameraController),
+              null => Container(),
+              CameraSettings.cameraSelection => Text(cameraSettings.toString()),
+              CameraSettings.focusMode => focusModeSettings(cameraController),
+            },
+          ),
           IconButton(onPressed: closeSettings, icon: const Icon(Icons.close)),
         ],
       );
@@ -359,8 +364,8 @@ class _CLCameraState extends State<CLCamera>
   }
 
   void showInSnackBar(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    /* ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message))); */
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
@@ -627,7 +632,7 @@ class _CLCameraState extends State<CLCamera>
                   ? null
                   : () {
                       controller.setExposurePoint(null);
-                      showInSnackBar('Resetting exposure point');
+                      // showInSnackBar('Resetting exposure point');
                     },
               child: const Text('AUTO'),
             ),
@@ -686,6 +691,7 @@ class _CLCameraState extends State<CLCamera>
 
     try {
       await controller!.setExposureMode(mode);
+      // ignore: unused_catch_clause
     } on CameraException catch (e) {
       //_showCameraException(e);
       rethrow;
@@ -700,11 +706,78 @@ class _CLCameraState extends State<CLCamera>
     if (mounted) {
       setState(() {});
     }
-    print('currentExposureOffset $currentExposureOffset');
+
     try {
       await controller!.setExposureOffset(offset);
     } /* on CameraException  */ catch (e) {
       // TODO(anandas): : handler error
+      rethrow;
+    }
+  }
+
+  Widget focusModeSettings(CameraController? controller) {
+    final styleAuto = TextButton.styleFrom(
+      foregroundColor: controller?.value.focusMode == FocusMode.auto
+          ? Colors.orange
+          : Colors.blue,
+    );
+    final styleLocked = TextButton.styleFrom(
+      foregroundColor: controller?.value.focusMode == FocusMode.locked
+          ? Colors.orange
+          : Colors.blue,
+    );
+    return Column(
+      children: <Widget>[
+        const Center(
+          child: Text('Focus Mode'),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            TextButton(
+              style: styleAuto,
+              onPressed: controller != null
+                  ? () => onSetFocusModeButtonPressed(FocusMode.auto)
+                  : null,
+              onLongPress: () {
+                if (controller != null) {
+                  controller.setFocusPoint(null);
+                }
+                //showInSnackBar('Resetting focus point');
+              },
+              child: const Text('AUTO'),
+            ),
+            TextButton(
+              style: styleLocked,
+              onPressed: controller != null
+                  ? () => onSetFocusModeButtonPressed(FocusMode.locked)
+                  : null,
+              child: const Text('LOCKED'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void onSetFocusModeButtonPressed(FocusMode mode) {
+    setFocusMode(mode).then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+      //showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
+    });
+  }
+
+  Future<void> setFocusMode(FocusMode mode) async {
+    if (controller == null) {
+      return;
+    }
+
+    try {
+      await controller!.setFocusMode(mode);
+    } on CameraException catch (e) {
+      //_showCameraException(e);
       rethrow;
     }
   }
