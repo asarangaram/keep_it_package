@@ -44,7 +44,8 @@ class CLCamera extends StatefulWidget {
   }
 }
 
-class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
+class _CLCameraState extends State<CLCamera>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
   XFile? imageFile;
   XFile? videoFile;
@@ -53,7 +54,7 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
   bool enableAudio = true;
   double minAvailableExposureOffset = 0;
   double maxAvailableExposureOffset = 0;
-  final double currentExposureOffset = 0;
+  double currentExposureOffset = 0;
 
   double _minAvailableZoom = 1;
   double _maxAvailableZoom = 1;
@@ -67,44 +68,84 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
   int _pointers = 0;
 
   CameraSettings? cameraSettings;
+  late AnimationController cameraSettingsController;
+  late Animation<double> cameraSettingsAnimation;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     cameraMode = widget.cameraMode;
+    cameraSettingsController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    cameraSettingsAnimation = CurvedAnimation(
+      parent: cameraSettingsController,
+      curve: Curves.easeInCubic,
+    );
     onNewCameraSelected();
   }
 
   @override
   void dispose() {
     controller?.dispose();
+    controller = null;
     WidgetsBinding.instance.removeObserver(this);
-
+    cameraSettingsController.dispose();
     super.dispose();
   }
 
   // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final cameraController = controller;
-
-    // App state changed before we got the chance to initialize.
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
-
     if (state == AppLifecycleState.inactive) {
+      final cameraController = controller;
+      // App state changed before we got the chance to initialize.
+      if (cameraController == null || !cameraController.value.isInitialized) {
+        return;
+      }
+      controller = null;
       cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
       onNewCameraSelected(restore: true);
     }
   }
 
+  void animate(CameraSettings? value) {
+    if (value == null) {
+      cameraSettingsController.reverse();
+    } else {
+      cameraSettingsController.forward();
+    }
+  }
+
   void showSettings(CameraSettings value) {
-    setState(() {
-      cameraSettings = (cameraSettings == value) ? null : value;
-    });
+    cameraSettings = (cameraSettings == value) ? null : value;
+    animate(cameraSettings);
+    setState(() {});
+  }
+
+  Widget cameraSettingWidget(CameraController? cameraController) {
+    if (cameraController == null) {
+      return const SizedBox.shrink();
+    }
+    return SizeTransition(
+      sizeFactor: cameraSettingsAnimation,
+      child: ClipRect(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [Expanded(child: cameraSettingsMenu(cameraController))],
+        ),
+      ),
+    );
+  }
+
+  Widget cameraSettingsMenu(CameraController cameraController) {
+    if (cameraSettings == CameraSettings.exposureMode) {
+      return exposureModeSettings(cameraController);
+    }
+    return Text(cameraSettings.toString());
   }
 
   @override
@@ -144,6 +185,7 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
               ),
             ],
           ),
+          cameraSettingWidget(controller),
           Expanded(
             child: Align(
               alignment: Alignment.bottomCenter,
@@ -542,5 +584,114 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
         }
       },
     );
+  }
+
+  Widget exposureModeSettings(CameraController? controller) {
+    final styleAuto = TextButton.styleFrom(
+      foregroundColor: controller?.value.exposureMode == ExposureMode.auto
+          ? Colors.orange
+          : Colors.blue,
+    );
+    final styleLocked = TextButton.styleFrom(
+      foregroundColor: controller?.value.exposureMode == ExposureMode.locked
+          ? Colors.orange
+          : Colors.blue,
+    );
+    return Column(
+      children: <Widget>[
+        const Center(
+          child: Text('Exposure Mode'),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            TextButton(
+              style: styleAuto,
+              onPressed: () =>
+                  onSetExposureModeButtonPressed(ExposureMode.auto),
+              onLongPress: controller == null
+                  ? null
+                  : () {
+                      controller.setExposurePoint(null);
+                      showInSnackBar('Resetting exposure point');
+                    },
+              child: const Text('AUTO'),
+            ),
+            TextButton(
+              style: styleLocked,
+              onPressed: () =>
+                  onSetExposureModeButtonPressed(ExposureMode.locked),
+              child: const Text('LOCKED'),
+            ),
+            TextButton(
+              style: styleLocked,
+              onPressed: () {
+                setExposureOffset(0);
+              },
+              child: const Text('RESET OFFSET'),
+            ),
+          ],
+        ),
+        const Center(
+          child: Text('Exposure Offset'),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Text(minAvailableExposureOffset.toString()),
+            Slider(
+              value: currentExposureOffset,
+              min: minAvailableExposureOffset,
+              max: maxAvailableExposureOffset,
+              label: currentExposureOffset.toString(),
+              onChanged:
+                  minAvailableExposureOffset == maxAvailableExposureOffset
+                      ? null
+                      : setExposureOffset,
+            ),
+            Text(maxAvailableExposureOffset.toString()),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void onSetExposureModeButtonPressed(ExposureMode mode) {
+    setExposureMode(mode).then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+      //showInSnackBar('Exposure mode set to ${mode.toString().split('.').last}');
+    });
+  }
+
+  Future<void> setExposureMode(ExposureMode mode) async {
+    if (controller == null) {
+      return;
+    }
+
+    try {
+      await controller!.setExposureMode(mode);
+    } on CameraException catch (e) {
+      //_showCameraException(e);
+      rethrow;
+    }
+  }
+
+  Future<void> setExposureOffset(double offset) async {
+    if (controller == null) {
+      return;
+    }
+    currentExposureOffset = offset;
+    if (mounted) {
+      setState(() {});
+    }
+    print('currentExposureOffset $currentExposureOffset');
+    try {
+      await controller!.setExposureOffset(offset);
+    } /* on CameraException  */ catch (e) {
+      // TODO(anandas): : handler error
+      rethrow;
+    }
   }
 }
