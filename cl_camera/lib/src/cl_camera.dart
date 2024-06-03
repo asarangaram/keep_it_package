@@ -126,6 +126,13 @@ class _CLCameraState extends State<CLCamera>
     setState(() {});
   }
 
+  void closeSettings() {
+    if (cameraSettings == null) return;
+    cameraSettings = null;
+    animate(cameraSettings);
+    setState(() {});
+  }
+
   Widget cameraSettingWidget(CameraController? cameraController) {
     if (cameraController == null) {
       return const SizedBox.shrink();
@@ -142,10 +149,17 @@ class _CLCameraState extends State<CLCamera>
   }
 
   Widget cameraSettingsMenu(CameraController cameraController) {
-    if (cameraSettings == CameraSettings.exposureMode) {
-      return exposureModeSettings(cameraController);
+    {
+      return Row(
+        children: [
+          if (cameraSettings == CameraSettings.exposureMode)
+            Expanded(child: exposureModeSettings(cameraController))
+          else
+            Expanded(child: Text(cameraSettings.toString())),
+          IconButton(onPressed: closeSettings, icon: const Icon(Icons.close)),
+        ],
+      );
     }
-    return Text(cameraSettings.toString());
   }
 
   @override
