@@ -16,6 +16,7 @@ class CameraService extends ConsumerWidget {
   const CameraService({
     required this.collectionId,
     required this.builder,
+    this.onDone,
     super.key,
   });
   final int? collectionId;
@@ -25,6 +26,7 @@ class CameraService extends ConsumerWidget {
     required void Function(String, {required bool isVideo}) onCapture,
     required Widget previewWidget,
   }) builder;
+  final VoidCallback? onDone;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO(anandas): Read from Settings
@@ -86,16 +88,15 @@ class CameraService extends ConsumerWidget {
                   previewWidget: PreviewCapturedMedia(
                     sendMedia: (mediaList) async {
                       if (collection == null) {
-                        unawaited(
-                          onReceiveCapturedMedia(
-                            context,
-                            ref,
-                            entries: mediaList,
-                            collection: collection,
-                          ),
+                        await onReceiveCapturedMedia(
+                          context,
+                          ref,
+                          entries: mediaList,
+                          collection: collection,
                         );
                       }
                       ref.read(capturedMediaProvider.notifier).clear();
+                      onDone?.call();
                     },
                   ),
                 );
