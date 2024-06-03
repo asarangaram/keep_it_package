@@ -30,6 +30,11 @@ class CameraPage extends StatelessWidget {
           required Widget previewWidget,
         }) {
           return CLCamera(
+            onCancel: () {
+              if (context.canPop()) {
+                context.pop();
+              }
+            },
             cameras: [backCamera, frontCamera],
             cameraIcons: CameraIcons(
               imageCamera: MdiIcons.camera,
