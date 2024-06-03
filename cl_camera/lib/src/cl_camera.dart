@@ -23,6 +23,7 @@ class CLCamera extends StatefulWidget {
     required this.cameras,
     required this.previewWidget,
     required this.onCapture,
+    required this.cameraSelector,
     this.textStyle,
     this.cameraMode = CameraMode.photo,
     this.onError,
@@ -35,6 +36,7 @@ class CLCamera extends StatefulWidget {
 
   final void Function(String message, {required dynamic error})? onError;
   final Widget previewWidget;
+  final Widget cameraSelector;
   final void Function(String, {required bool isVideo}) onCapture;
   final VoidCallback? onCancel;
 
@@ -157,7 +159,7 @@ class _CLCameraState extends State<CLCamera>
               CameraSettings.exposureMode =>
                 exposureModeSettings(cameraController),
               null => Container(),
-              CameraSettings.cameraSelection => Text(cameraSettings.toString()),
+              CameraSettings.cameraSelection => widget.cameraSelector,
               CameraSettings.focusMode => focusModeSettings(cameraController),
             },
           ),

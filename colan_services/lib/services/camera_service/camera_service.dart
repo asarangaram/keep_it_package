@@ -24,6 +24,7 @@ class CameraService extends ConsumerWidget {
     required CameraDescription frontCamera,
     required void Function(String, {required bool isVideo}) onCapture,
     required Widget previewWidget,
+    required Widget cameraSelector,
   }) builder;
   final VoidCallback? onDone;
   @override
@@ -36,10 +37,15 @@ class CameraService extends ConsumerWidget {
           id: collectionId,
           buildOnData: (collection) {
             return GetCameras(
-              builder: ({required backCamera, required frontCamera}) {
+              builder: ({
+                required backCamera,
+                required frontCamera,
+                required Widget cameraSelector,
+              }) {
                 return builder(
                   backCamera: backCamera,
                   frontCamera: frontCamera,
+                  cameraSelector: cameraSelector,
                   onCapture: (path, {required isVideo}) async {
                     final md5String = await File(path).checksum;
                     CLMedia? media = CLMedia(

@@ -26,6 +26,7 @@ class CameraPage extends StatelessWidget {
           required CameraDescription frontCamera,
           required void Function(String, {required bool isVideo}) onCapture,
           required Widget previewWidget,
+          required Widget cameraSelector,
         }) {
           return CLCamera(
             onCancel: () {
@@ -40,6 +41,7 @@ class CameraPage extends StatelessWidget {
                 ?.copyWith(fontSize: CLScaleType.small.fontSize),
             onCapture: onCapture,
             previewWidget: previewWidget,
+            cameraSelector: cameraSelector,
           );
         },
       ),
