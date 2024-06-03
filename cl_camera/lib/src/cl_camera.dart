@@ -5,15 +5,18 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
-import 'package:cl_camera/cl_camera.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:video_player/video_player.dart';
+
+import '../cl_camera.dart';
+import 'widgets/camera_mode.dart';
+import 'widgets/cl_circular_button.dart';
 
 /// Camera example home widget.
-class CameraExampleHome extends StatefulWidget {
-  const CameraExampleHome({
+class CLCamera extends StatefulWidget {
+  const CLCamera({
     required this.cameras,
     required this.cameraIcons,
     required this.previewWidget,
@@ -32,17 +35,17 @@ class CameraExampleHome extends StatefulWidget {
   final void Function(String, {required bool isVideo}) onCapture;
 
   @override
-  State<CameraExampleHome> createState() {
-    return _CameraExampleHomeState();
+  State<CLCamera> createState() {
+    return _CLCameraState();
   }
 }
 
-class _CameraExampleHomeState extends State<CameraExampleHome>
+class _CLCameraState extends State<CLCamera>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
   XFile? imageFile;
   XFile? videoFile;
-  VideoPlayerController? videoController;
+
   VoidCallback? videoPlayerListener;
   bool enableAudio = true;
   double minAvailableExposureOffset = 0;
