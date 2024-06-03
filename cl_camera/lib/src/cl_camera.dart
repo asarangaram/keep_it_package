@@ -20,7 +20,6 @@ import 'widgets/flash_control.dart';
 class CLCamera extends StatefulWidget {
   const CLCamera({
     required this.cameras,
-    required this.cameraIcons,
     required this.previewWidget,
     required this.onCapture,
     this.textStyle,
@@ -32,7 +31,7 @@ class CLCamera extends StatefulWidget {
   final List<CameraDescription> cameras;
   final TextStyle? textStyle;
   final CameraMode cameraMode;
-  final CameraIcons cameraIcons;
+
   final void Function(String message, {required dynamic error})? onError;
   final Widget previewWidget;
   final void Function(String, {required bool isVideo}) onCapture;
@@ -128,7 +127,6 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
                     FlashControl(
                       controller: controller!,
                     ),
-                    
                   ],
                 ),
               ),
@@ -205,13 +203,10 @@ class _CLCameraState extends State<CLCamera> with WidgetsBindingObserver {
                                 controller!.value.isRecordingVideo,
                                 controller!.value.isRecordingPaused
                               )) {
-                                (false, _, _) => widget.cameraIcons.imageCamera,
-                                (true, false, _) =>
-                                  widget.cameraIcons.videoCamera,
-                                (true, true, false) =>
-                                  widget.cameraIcons.pauseRecording,
-                                (true, true, true) =>
-                                  widget.cameraIcons.resumeRecording
+                                (false, _, _) => MdiIcons.camera,
+                                (true, false, _) => MdiIcons.video,
+                                (true, true, false) => MdiIcons.pause,
+                                (true, true, true) => MdiIcons.circle
                               },
                               onPressed: switch ((
                                 cameraMode.isVideo,

@@ -36,12 +36,6 @@ class CameraPage extends StatelessWidget {
               }
             },
             cameras: [backCamera, frontCamera],
-            cameraIcons: CameraIcons(
-              imageCamera: MdiIcons.camera,
-              videoCamera: MdiIcons.video,
-              pauseRecording: MdiIcons.pause,
-              resumeRecording: MdiIcons.circle,
-            ),
             textStyle: Theme.of(context)
                 .textTheme
                 .bodyLarge
