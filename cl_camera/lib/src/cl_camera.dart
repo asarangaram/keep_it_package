@@ -5,10 +5,13 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
+import 'package:cl_camera/src/models/camera_config.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../cl_camera.dart';
@@ -23,7 +26,6 @@ class CLCamera extends StatefulWidget {
     required this.cameras,
     required this.previewWidget,
     required this.onCapture,
-    required this.cameraSelector,
     this.textStyle,
     this.cameraMode = CameraMode.photo,
     this.onError,
@@ -31,12 +33,14 @@ class CLCamera extends StatefulWidget {
     this.onCancel,
   });
   final List<CameraDescription> cameras;
+
+  //final List<CameraDescription> cameras;
   final TextStyle? textStyle;
   final CameraMode cameraMode;
 
   final void Function(String message, {required dynamic error})? onError;
   final Widget previewWidget;
-  final Widget cameraSelector;
+
   final void Function(String, {required bool isVideo}) onCapture;
   final VoidCallback? onCancel;
 
@@ -49,11 +53,7 @@ class CLCamera extends StatefulWidget {
 class _CLCameraState extends State<CLCamera>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
-  XFile? imageFile;
-  XFile? videoFile;
 
-  VoidCallback? videoPlayerListener;
-  bool enableAudio = true;
   double minAvailableExposureOffset = 0;
   double maxAvailableExposureOffset = 0;
   double currentExposureOffset = 0;
@@ -72,6 +72,8 @@ class _CLCameraState extends State<CLCamera>
   CameraSettings? cameraSettings;
   late AnimationController cameraSettingsController;
   late Animation<double> cameraSettingsAnimation;
+  late final CameraDescription defaultCamera;
+  CameraConfig config = const CameraConfig();
 
   @override
   void initState() {
@@ -86,7 +88,8 @@ class _CLCameraState extends State<CLCamera>
       parent: cameraSettingsController,
       curve: Curves.easeInCubic,
     );
-    onNewCameraSelected();
+
+    swapFrontBack();
   }
 
   @override
@@ -110,7 +113,7 @@ class _CLCameraState extends State<CLCamera>
       controller = null;
       cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      onNewCameraSelected(restore: true);
+      swapFrontBack(restore: true);
     }
   }
 
@@ -159,11 +162,11 @@ class _CLCameraState extends State<CLCamera>
               CameraSettings.exposureMode =>
                 exposureModeSettings(cameraController),
               null => Container(),
-              CameraSettings.cameraSelection => widget.cameraSelector,
+              CameraSettings.cameraSelection => cameraSelector(widget.cameras),
               CameraSettings.focusMode => focusModeSettings(cameraController),
             },
           ),
-          IconButton(onPressed: closeSettings, icon: const Icon(Icons.close)),
+          IconButton(onPressed: closeSettings, icon: const Icon(Icons.check)),
         ],
       );
     }
@@ -171,6 +174,7 @@ class _CLCameraState extends State<CLCamera>
 
   @override
   Widget build(BuildContext context) {
+    print('Cl Camera is build');
     if (controller == null || !controller!.value.isInitialized) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -263,7 +267,7 @@ class _CLCameraState extends State<CLCamera>
                                   )
                                 : CircularButton(
                                     quarterTurns: quarterTurns,
-                                    onPressed: onNewCameraSelected,
+                                    onPressed: swapFrontBack,
                                     icon: Icons.cameraswitch,
                                     foregroundColor: Colors.white,
                                     hasDecoration: false,
@@ -386,17 +390,29 @@ class _CLCameraState extends State<CLCamera>
       ..setFocusPoint(offset);
   }
 
-  Future<void> onNewCameraSelected({
+  CameraDescription get backCamera => widget.cameras
+      .where(
+        (e) => e.lensDirection == CameraLensDirection.back,
+      )
+      .toList()[config.defaultBackCameraIndex];
+  CameraDescription get frontCamera => widget.cameras
+      .where(
+        (e) => e.lensDirection == CameraLensDirection.front,
+      )
+      .toList()[config.defaultFrontCameraIndex];
+
+  Future<void> swapFrontBack({
     bool restore = false,
   }) async {
     if (restore) {
       currDescription =
-          controller?.description ?? currDescription ?? widget.cameras[0];
+          controller?.description ?? currDescription ?? backCamera;
     } else {
       if (currDescription == null) {
-        currDescription = widget.cameras[0];
+        currDescription = backCamera;
       } else {
-        currDescription = widget.cameras.next(currDescription!);
+        currDescription =
+            currDescription == backCamera ? frontCamera : backCamera;
       }
     }
 
@@ -459,14 +475,17 @@ class _CLCameraState extends State<CLCamera>
   Future<void> initializeCameraController(
     CameraDescription cameraDescription,
   ) async {
+    print('Initializing camera');
+    final prevCamera = controller;
     final cameraController = CameraController(
       cameraDescription,
-      kIsWeb ? ResolutionPreset.max : ResolutionPreset.medium,
-      enableAudio: enableAudio,
+      config.resolutionPreset,
+      enableAudio: config.enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     controller = cameraController;
+    await prevCamera?.dispose();
 
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
@@ -782,5 +801,199 @@ class _CLCameraState extends State<CLCamera>
       //_showCameraException(e);
       rethrow;
     }
+  }
+
+  Widget cameraSelector(List<CameraDescription> cameras) {
+    final backCameras = cameras
+        .where(
+          (e) => e.lensDirection == CameraLensDirection.back,
+        )
+        .toList();
+    final numberOfBackCameras = backCameras.length;
+    final numberOfFrontCameras = cameras
+        .where(
+          (e) => e.lensDirection == CameraLensDirection.front,
+        )
+        .length;
+
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'Back Camera:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              ToggleButtons(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                selectedBorderColor: Colors.green[700],
+                selectedColor: Colors.white,
+                fillColor: Colors.green[200],
+                color: Colors.green[400],
+                isSelected: widget.cameras
+                    .where(
+                      (e) => e.lensDirection == CameraLensDirection.back,
+                    )
+                    .indexed
+                    .map((e) {
+                  final (index, _) = e;
+                  return index == config.defaultBackCameraIndex;
+                }).toList(),
+                children: List<int>.generate(
+                  widget.cameras
+                      .where(
+                        (e) => e.lensDirection == CameraLensDirection.back,
+                      )
+                      .length,
+                  (i) => i,
+                )
+                    .map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          'Camera $e',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onPressed: (index) {
+                  if (index != config.defaultBackCameraIndex) {
+                    config = config.copyWith(defaultBackCameraIndex: index);
+                    initializeCameraController(backCamera);
+                  }
+                },
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                'Image Resolution:',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          FittedBox(
+            child: ToggleButtons(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              selectedBorderColor: Colors.green[700],
+              selectedColor: Colors.white,
+              fillColor: Colors.green[200],
+              color: Colors.green[400],
+              isSelected: ResolutionPreset.values.map((e) {
+                return e == config.resolutionPreset;
+              }).toList(),
+              children: ResolutionPreset.values
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      child: Text(
+                        e.name,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onPressed: (index) {
+                if (index !=
+                    ResolutionPreset.values.indexOf(config.resolutionPreset)) {
+                  config = config.copyWith(
+                    resolutionPreset: ResolutionPreset.values[index],
+                  );
+                  initializeCameraController(backCamera);
+                }
+              },
+            ),
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'Audio',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  config = config.copyWith(
+                    enableAudio: !config.enableAudio,
+                  );
+                  initializeCameraController(currDescription ?? backCamera);
+                },
+                icon: Icon(
+                  config.enableAudio
+                      ? MdiIcons.volumeHigh
+                      : MdiIcons.volumeMute,
+                ),
+              ),
+              if (!config.enableAudio) const Text('(Muted)'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class NumberDropdown extends StatefulWidget {
+  const NumberDropdown({required this.n, required this.label, super.key});
+  final int n;
+  final String label;
+
+  @override
+  NumberDropdownState createState() => NumberDropdownState();
+}
+
+class NumberDropdownState extends State<NumberDropdown> {
+  int selectedNumber = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final numberList = List<int>.generate(widget.n, (i) => i);
+
+    return DropdownMenu<int>(
+      initialSelection: selectedNumber,
+      label: Text(widget.label),
+      // hint: const Text('Select Camera'),
+      onSelected: (int? newValue) {
+        if (newValue != null) {
+          setState(() {
+            selectedNumber = newValue;
+          });
+        }
+      },
+      expandedInsets: EdgeInsets.zero,
+      dropdownMenuEntries: numberList.map<DropdownMenuEntry<int>>((int value) {
+        return DropdownMenuEntry<int>(
+          value: value,
+          label: value.toString(),
+        );
+      }).toList(),
+    );
   }
 }

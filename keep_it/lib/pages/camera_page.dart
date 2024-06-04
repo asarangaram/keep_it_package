@@ -22,26 +22,24 @@ class CameraPage extends StatelessWidget {
           }
         },
         builder: ({
-          required CameraDescription backCamera,
-          required CameraDescription frontCamera,
+          required List<CameraDescription> cameras,
           required void Function(String, {required bool isVideo}) onCapture,
           required Widget previewWidget,
-          required Widget cameraSelector,
         }) {
+          print('Builder invoked');
           return CLCamera(
             onCancel: () {
               if (context.canPop()) {
                 context.pop();
               }
             },
-            cameras: [backCamera, frontCamera],
+            cameras: cameras,
             textStyle: Theme.of(context)
                 .textTheme
                 .bodyLarge
                 ?.copyWith(fontSize: CLScaleType.small.fontSize),
             onCapture: onCapture,
             previewWidget: previewWidget,
-            cameraSelector: cameraSelector,
           );
         },
       ),
