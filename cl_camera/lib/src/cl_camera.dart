@@ -72,7 +72,7 @@ class _CLCameraState extends State<CLCamera>
   CameraSettings? cameraSettings;
   late AnimationController cameraSettingsController;
   late Animation<double> cameraSettingsAnimation;
-  late final CameraDescription defaultCamera;
+
   CameraConfig config = const CameraConfig();
 
   @override
@@ -155,20 +155,12 @@ class _CLCameraState extends State<CLCamera>
 
   Widget cameraSettingsMenu(CameraController cameraController) {
     {
-      return Row(
-        children: [
-          Expanded(
-            child: switch (cameraSettings) {
-              CameraSettings.exposureMode =>
-                exposureModeSettings(cameraController),
-              null => Container(),
-              CameraSettings.cameraSelection => cameraSelector(widget.cameras),
-              CameraSettings.focusMode => focusModeSettings(cameraController),
-            },
-          ),
-          IconButton(onPressed: closeSettings, icon: const Icon(Icons.check)),
-        ],
-      );
+      return switch (cameraSettings) {
+        CameraSettings.exposureMode => exposureModeSettings(cameraController),
+        null => Container(),
+        CameraSettings.cameraSelection => cameraSelector(widget.cameras),
+        CameraSettings.focusMode => focusModeSettings(cameraController),
+      };
     }
   }
 
@@ -211,10 +203,13 @@ class _CLCameraState extends State<CLCamera>
             ],
           ),
           cameraSettingWidget(controller),
-          Expanded(
+          Flexible(
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
+                padding: (cameraSettings == null)
+                    ? EdgeInsets.zero
+                    : const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.black,
                   border: Border.all(
@@ -232,90 +227,94 @@ class _CLCameraState extends State<CLCamera>
               ),
             ),
           ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return Column(
-                children: [
-                  SizedBox(
-                    width: constraints.maxWidth,
-                    height: kMinInteractiveDimension,
-                    child: MenuCameraMode(
-                      currMode: cameraMode,
-                      onUpdateMode: (mode) {
-                        setState(() {
-                          cameraMode = mode;
-                        });
-                      },
-                      textStyle: widget.textStyle,
-                    ),
-                  ),
-                  SizedBox(
-                    width: constraints.maxWidth,
-                    height: kMinInteractiveDimension * 2,
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 8, right: 8, bottom: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: _isRecordingInProgress
-                                ? CircularButton(
-                                    quarterTurns: quarterTurns,
-                                    icon: Icons.stop,
-                                    onPressed: stopVideoRecording,
-                                  )
-                                : CircularButton(
-                                    quarterTurns: quarterTurns,
-                                    onPressed: swapFrontBack,
-                                    icon: Icons.cameraswitch,
-                                    foregroundColor: Colors.white,
-                                    hasDecoration: false,
-                                  ),
-                          ),
-                          Expanded(
-                            child: CircularButton(
-                              quarterTurns: quarterTurns,
-                              size: 44,
-                              icon: switch ((
-                                cameraMode.isVideo,
-                                controller!.value.isRecordingVideo,
-                                controller!.value.isRecordingPaused
-                              )) {
-                                (false, _, _) => MdiIcons.camera,
-                                (true, false, _) => MdiIcons.video,
-                                (true, true, false) => MdiIcons.pause,
-                                (true, true, true) => MdiIcons.circle
-                              },
-                              onPressed: switch ((
-                                cameraMode.isVideo,
-                                controller!.value.isRecordingVideo,
-                                controller!.value.isRecordingPaused
-                              )) {
-                                (false, _, _) => takePicture,
-                                (true, false, _) => startVideoRecording,
-                                (true, true, false) => pauseVideoRecording,
-                                (true, true, true) => resumeVideoRecording
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: RotatedBox(
-                                quarterTurns: quarterTurns,
-                                child: widget.previewWidget,
-                              ),
-                            ),
-                          ),
-                        ],
+          if (cameraSettings == null)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
+                  children: [
+                    SizedBox(
+                      width: constraints.maxWidth,
+                      height: kMinInteractiveDimension,
+                      child: MenuCameraMode(
+                        currMode: cameraMode,
+                        onUpdateMode: (mode) {
+                          setState(() {
+                            cameraMode = mode;
+                          });
+                        },
+                        textStyle: widget.textStyle,
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
+                    SizedBox(
+                      width: constraints.maxWidth,
+                      height: kMinInteractiveDimension * 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 8,
+                          right: 8,
+                          bottom: 16,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: _isRecordingInProgress
+                                  ? CircularButton(
+                                      quarterTurns: quarterTurns,
+                                      icon: Icons.stop,
+                                      onPressed: stopVideoRecording,
+                                    )
+                                  : CircularButton(
+                                      quarterTurns: quarterTurns,
+                                      onPressed: swapFrontBack,
+                                      icon: Icons.cameraswitch,
+                                      foregroundColor: Colors.white,
+                                      hasDecoration: false,
+                                    ),
+                            ),
+                            Expanded(
+                              child: CircularButton(
+                                quarterTurns: quarterTurns,
+                                size: 44,
+                                icon: switch ((
+                                  cameraMode.isVideo,
+                                  controller!.value.isRecordingVideo,
+                                  controller!.value.isRecordingPaused
+                                )) {
+                                  (false, _, _) => MdiIcons.camera,
+                                  (true, false, _) => MdiIcons.video,
+                                  (true, true, false) => MdiIcons.pause,
+                                  (true, true, true) => MdiIcons.circle
+                                },
+                                onPressed: switch ((
+                                  cameraMode.isVideo,
+                                  controller!.value.isRecordingVideo,
+                                  controller!.value.isRecordingPaused
+                                )) {
+                                  (false, _, _) => takePicture,
+                                  (true, false, _) => startVideoRecording,
+                                  (true, true, false) => pauseVideoRecording,
+                                  (true, true, true) => resumeVideoRecording
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: RotatedBox(
+                                  quarterTurns: quarterTurns,
+                                  child: widget.previewWidget,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           const SizedBox(
             height: 16,
           ),
@@ -375,7 +374,7 @@ class _CLCameraState extends State<CLCamera>
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
-    if (controller == null) {
+    /* if (controller == null) {
       return;
     }
 
@@ -385,9 +384,13 @@ class _CLCameraState extends State<CLCamera>
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    cameraController
-      ..setExposurePoint(offset)
-      ..setFocusPoint(offset);
+    try {
+      cameraController
+        ..setExposurePoint(offset)
+        ..setFocusPoint(offset);
+    } catch (e) {
+      /** */
+    } */
   }
 
   CameraDescription get backCamera => widget.cameras
@@ -692,6 +695,10 @@ class _CLCameraState extends State<CLCamera>
             Text(maxAvailableExposureOffset.toString()),
           ],
         ),
+        const SizedBox(
+          height: 16,
+        ),
+        ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
       ],
     );
   }
@@ -777,6 +784,10 @@ class _CLCameraState extends State<CLCamera>
             ),
           ],
         ),
+        const SizedBox(
+          height: 16,
+        ),
+        ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
       ],
     );
   }
@@ -804,23 +815,71 @@ class _CLCameraState extends State<CLCamera>
   }
 
   Widget cameraSelector(List<CameraDescription> cameras) {
-    final backCameras = cameras
-        .where(
-          (e) => e.lensDirection == CameraLensDirection.back,
-        )
-        .toList();
-    final numberOfBackCameras = backCameras.length;
-    final numberOfFrontCameras = cameras
-        .where(
-          (e) => e.lensDirection == CameraLensDirection.front,
-        )
-        .length;
-
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'Front Camera:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              ToggleButtons(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                selectedBorderColor: Colors.green[700],
+                selectedColor: Colors.white,
+                fillColor: Colors.green[200],
+                color: Colors.green[400],
+                isSelected: widget.cameras
+                    .where(
+                      (e) => e.lensDirection == CameraLensDirection.front,
+                    )
+                    .indexed
+                    .map((e) {
+                  final (index, _) = e;
+                  return index == config.defaultFrontCameraIndex;
+                }).toList(),
+                children: List<int>.generate(
+                  widget.cameras
+                      .where(
+                        (e) => e.lensDirection == CameraLensDirection.front,
+                      )
+                      .length,
+                  (i) => i,
+                )
+                    .map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          'Camera $e',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onPressed: (index) {
+                  if (index != config.defaultFrontCameraIndex) {
+                    config = config.copyWith(defaultFrontCameraIndex: index);
+                  }
+                  initializeCameraController(frontCamera);
+                },
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 4,
+          ),
           Row(
             children: [
               Padding(
@@ -872,8 +931,8 @@ class _CLCameraState extends State<CLCamera>
                 onPressed: (index) {
                   if (index != config.defaultBackCameraIndex) {
                     config = config.copyWith(defaultBackCameraIndex: index);
-                    initializeCameraController(backCamera);
                   }
+                  initializeCameraController(backCamera);
                 },
               ),
             ],
@@ -926,6 +985,11 @@ class _CLCameraState extends State<CLCamera>
               },
             ),
           ),
+          if (controller?.value.previewSize != null)
+            Text(
+              'Current Resolution ${controller!.value.previewSize!.width} '
+              ' x ${controller!.value.previewSize!.height}',
+            ),
           Row(
             children: [
               Padding(
@@ -954,46 +1018,12 @@ class _CLCameraState extends State<CLCamera>
               if (!config.enableAudio) const Text('(Muted)'),
             ],
           ),
+          const SizedBox(
+            height: 16,
+          ),
+          ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
         ],
       ),
-    );
-  }
-}
-
-class NumberDropdown extends StatefulWidget {
-  const NumberDropdown({required this.n, required this.label, super.key});
-  final int n;
-  final String label;
-
-  @override
-  NumberDropdownState createState() => NumberDropdownState();
-}
-
-class NumberDropdownState extends State<NumberDropdown> {
-  int selectedNumber = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final numberList = List<int>.generate(widget.n, (i) => i);
-
-    return DropdownMenu<int>(
-      initialSelection: selectedNumber,
-      label: Text(widget.label),
-      // hint: const Text('Select Camera'),
-      onSelected: (int? newValue) {
-        if (newValue != null) {
-          setState(() {
-            selectedNumber = newValue;
-          });
-        }
-      },
-      expandedInsets: EdgeInsets.zero,
-      dropdownMenuEntries: numberList.map<DropdownMenuEntry<int>>((int value) {
-        return DropdownMenuEntry<int>(
-          value: value,
-          label: value.toString(),
-        );
-      }).toList(),
     );
   }
 }
