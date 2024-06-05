@@ -112,7 +112,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                 CLRefreshIndicator(
                   onRefresh: isSelectionMode ? null : widget.onRefresh,
                   key: ValueKey('${widget.identifier} Refresh'),
-                  child: CLSimpleGalleryView0(
+                  child: CLGalleryCore(
                     key: ValueKey(widget.galleryMap),
                     items: widget.galleryMap,
                     itemBuilder: (context, item) {

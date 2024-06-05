@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../../basics/cl_button.dart';
-import '../../basics/cl_refresh_indicator.dart';
 import '../../basics/cl_text.dart';
-import '../../extensions/ext_cl_menu_item.dart';
-import '../../models/cl_menu_item.dart';
-import '../../models/typedefs.dart';
-import '../appearance/keep_it_main_view.dart';
-import '../draggable/draggable_menu.dart';
-import '../draggable/menu.dart';
 import 'model/gallery_group.dart';
 import 'selection/selectable_item.dart';
 import 'selection/selectable_label.dart';
 import 'selection/selection_count.dart';
 import 'widgets/cl_grid.dart';
 
-class CLSimpleGalleryView0<T> extends StatefulWidget {
-  const CLSimpleGalleryView0({
+class CLGalleryCore<T> extends StatefulWidget {
+  const CLGalleryCore({
     required this.items,
     required this.itemBuilder,
     required this.columns,
@@ -35,11 +27,10 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
   final void Function(List<T> items)? onSelectionChanged;
 
   @override
-  State<CLSimpleGalleryView0<T>> createState() =>
-      _CLSimpleGalleryView0State<T>();
+  State<CLGalleryCore<T>> createState() => _CLGalleryCoreState<T>();
 }
 
-class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
+class _CLGalleryCoreState<T> extends State<CLGalleryCore<T>> {
   late List<GalleryGroupMutable<bool>> selectionMap;
 
   @override
@@ -159,17 +150,3 @@ class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
     );
   }
 }
-
-
-
-/**
- * 
- * selectionMap.filterItems(widget.galleryMap)
- */
-
-/**
- * 
- * selectAll(select: false);
-          isSelectionMode = false;
-          setState(() {});
- */
