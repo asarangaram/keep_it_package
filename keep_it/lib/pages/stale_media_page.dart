@@ -138,12 +138,12 @@ class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
                           await dbManager.deleteMediaMultiple(
                             selectedItems,
                             onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePinMultiple: (id) async {
+                            onRemovePinMultiple: (ids) async {
                               /// This should not happen as
                               /// stale media can't be pinned
                               final res =
                                   await AlbumManager(albumName: 'KeepIt')
-                                      .removeMultipleMedia(id);
+                                      .removeMultipleMedia(ids);
                               if (!res) {
                                 await ref
                                     .read(
@@ -160,7 +160,7 @@ class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
                         }
                         return;
                       },
-                      label: const CLText.small('Discard All'),
+                      label: const CLText.small('Discard Selected'),
                       icon: Icon(MdiIcons.delete),
                     ),
                   ],
