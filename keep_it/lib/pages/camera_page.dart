@@ -1,5 +1,9 @@
 import 'package:app_loader/app_loader.dart';
+import 'package:camera/camera.dart';
+import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
+
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,13 +16,31 @@ class CameraPage extends StatelessWidget {
       useSafeArea: false,
       child: CameraService(
         collectionId: collectionId,
-        onReceiveCapturedMedia: onReceiveCapturedMedia,
         onDone: () {
-          if (context.mounted) {
-            if (context.canPop()) {
-              context.pop();
-            }
+          if (context.canPop()) {
+            context.pop();
           }
+        },
+        builder: ({
+          required List<CameraDescription> cameras,
+          required void Function(String, {required bool isVideo}) onCapture,
+          required Widget previewWidget,
+        }) {
+          print('Builder invoked');
+          return CLCamera(
+            onCancel: () {
+              if (context.canPop()) {
+                context.pop();
+              }
+            },
+            cameras: cameras,
+            textStyle: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(fontSize: CLScaleType.small.fontSize),
+            onCapture: onCapture,
+            previewWidget: previewWidget,
+          );
         },
       ),
     );

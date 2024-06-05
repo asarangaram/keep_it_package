@@ -78,4 +78,5 @@ extension ExtCameraController on CameraController {
       onError?.call('Error occured while taking picture', error: e);
     }
   }
+  
 }
