@@ -6,12 +6,10 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:cl_camera/src/models/camera_config.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../cl_camera.dart';
@@ -166,7 +164,6 @@ class _CLCameraState extends State<CLCamera>
 
   @override
   Widget build(BuildContext context) {
-    print('Cl Camera is build');
     if (controller == null || !controller!.value.isInitialized) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -478,7 +475,6 @@ class _CLCameraState extends State<CLCamera>
   Future<void> initializeCameraController(
     CameraDescription cameraDescription,
   ) async {
-    print('Initializing camera');
     final prevCamera = controller;
     final cameraController = CameraController(
       cameraDescription,
@@ -708,7 +704,8 @@ class _CLCameraState extends State<CLCamera>
       if (mounted) {
         setState(() {});
       }
-      //showInSnackBar('Exposure mode set to ${mode.toString().split('.').last}');
+      // showInSnackBar(
+      // 'Exposure mode set to ${mode.toString().split('.').last}');
     });
   }
 
@@ -808,7 +805,7 @@ class _CLCameraState extends State<CLCamera>
 
     try {
       await controller!.setFocusMode(mode);
-    } on CameraException catch (e) {
+    } /* on CameraException  */ catch (e) {
       //_showCameraException(e);
       rethrow;
     }
