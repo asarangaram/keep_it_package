@@ -131,7 +131,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                         : null,
                   ),
                 ),
-                if (selectedItems.isNotEmpty)
+                if (isSelectionMode && selectedItems.isNotEmpty)
                   ActionsDraggableMenu<T>(
                     items: selectedItems,
                     tagPrefix: widget.identifier,
@@ -179,5 +179,67 @@ class ActionsDraggableMenu<T> extends StatelessWidget {
         ).insertOnDone(onDone),
       ),
     );
+  }
+}
+
+class CLSimpleItemsSelector<T> extends StatefulWidget {
+  const CLSimpleItemsSelector({
+    required this.title,
+    required this.identifier,
+    required this.galleryMap,
+    required this.emptyState,
+    required this.itemBuilder,
+    required this.columns,
+    required this.onSelectionChanged,
+    super.key,
+  });
+
+  final String title;
+  final List<GalleryGroup<T>> galleryMap;
+  final int columns;
+
+  final Widget emptyState;
+  final String identifier;
+
+  final ItemBuilder<T> itemBuilder;
+  final void Function(List<T>) onSelectionChanged;
+
+  @override
+  State<CLSimpleItemsSelector<T>> createState() =>
+      CLSimpleItemsSelectorState<T>();
+}
+
+class CLSimpleItemsSelectorState<T> extends State<CLSimpleItemsSelector<T>> {
+  final GlobalKey parentKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.galleryMap.isEmpty) {
+      return KeepItMainView(
+        key: ValueKey('Selector Empty ${widget.identifier}'),
+        title: widget.title,
+        pageBuilder: (context, quickMenuScopeKey) => widget.emptyState,
+      );
+    } else {
+      return KeepItMainView(
+        key: ValueKey('Selector ${widget.identifier}'),
+        title: widget.title,
+        pageBuilder: (context, quickMenuScopeKey) {
+          return CLGalleryCore1(
+            key: ValueKey(widget.galleryMap),
+            items: widget.galleryMap,
+            itemBuilder: (context, item) {
+              return widget.itemBuilder(
+                context,
+                item,
+                quickMenuScopeKey: quickMenuScopeKey,
+              );
+            },
+            columns: widget.columns,
+            onSelectionChanged: widget.onSelectionChanged,
+          );
+        },
+      );
+    }
   }
 }
