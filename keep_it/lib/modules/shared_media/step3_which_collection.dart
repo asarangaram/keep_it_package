@@ -19,6 +19,7 @@ class WhichCollection extends SharedMediaWizard {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (title != null) title!,
         if (incomingMedia.entries.length == 1)

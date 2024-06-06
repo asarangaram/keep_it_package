@@ -1,17 +1,23 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/shared_media_service/models/cl_shared_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keep_it/widgets/empty_state.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:store/store.dart';
 
+import '../modules/shared_media/step3_which_collection.dart';
+import '../modules/shared_media/step4_save_collection.dart';
 import '../providers/gallery_group_provider.dart';
+import '../widgets/editors/collection_editor_wizard/create_collection_wizard.dart';
 
 class StaleMediaPage extends ConsumerWidget {
   const StaleMediaPage({super.key});
@@ -71,7 +77,9 @@ class StaleMediaHandler extends ConsumerStatefulWidget {
 }
 
 class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
-  List<CLMedia> selectedItems = [];
+  CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
+  Collection? targetCollection;
+  bool keepSelected = false;
   @override
   Widget build(BuildContext context) {
     return GetDBManager(
@@ -98,12 +106,67 @@ class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
                 identifier: widget.parentIdentifier,
                 columns: 2,
                 onSelectionChanged: (List<CLMedia> items) {
-                  selectedItems = items;
+                  selectedMedia = selectedMedia.copyWith(entries: items);
                   setState(() {});
                 },
               ),
             ),
-            if (selectedItems.isNotEmpty)
+            if (keepSelected &&
+                selectedMedia.entries.isNotEmpty &&
+                selectedMedia.collection == null)
+              SizedBox(
+                height: kMinInteractiveDimension * 4,
+                child: CreateCollectionWizard(
+                  onDone: ({required collection}) {
+                    selectedMedia = selectedMedia.copyWith(
+                      collection: collection,
+                      entries: selectedMedia.entries
+                          .map((e) => e.copyWith(collectionId: collection.id))
+                          .toList(),
+                    );
+                    setState(() {});
+                  },
+                ),
+              )
+            else if (keepSelected && selectedMedia.entries.isNotEmpty)
+              StreamBuilder<Progress>(
+                stream: SaveCollection.acceptMedia(
+                  dbManager,
+                  collection: selectedMedia.collection!,
+                  media: List.from(selectedMedia.entries),
+                  onDone: () {
+                    selectedMedia = const CLSharedMedia(entries: []);
+                    keepSelected = false;
+                  },
+                ),
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<Progress> snapshot,
+                ) {
+                  final percentage = (snapshot.hasData
+                              ? min(1, snapshot.data!.fractCompleted)
+                              : 0.0)
+                          .toDouble() *
+                      100;
+                  return Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: LinearPercentIndicator(
+                      width: MediaQuery.of(context).size.width - 50,
+                      animation: true,
+                      lineHeight: 20,
+                      animationDuration: 2000,
+                      percent: percentage / 100,
+                      animateFromLastPercent: true,
+                      center: Text('$percentage'),
+                      isRTL: true,
+                      barRadius: const Radius.elliptical(5, 15),
+                      progressColor: Theme.of(context).colorScheme.primary,
+                      maskFilter: const MaskFilter.blur(BlurStyle.solid, 3),
+                    ),
+                  );
+                },
+              ),
+            if (keepSelected == false && selectedMedia.entries.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
@@ -111,9 +174,8 @@ class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        context.push<bool>(
-                          '/move?ids=${selectedItems.map((e) => e.id).join(',')}&unhide=true',
-                        );
+                        keepSelected = true;
+                        setState(() {});
                       },
                       label: const CLText.small('Keep Selected'),
                       icon: Icon(MdiIcons.imageMove),
@@ -126,7 +188,7 @@ class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
                                 return CLConfirmAction(
                                   title: 'Confirm delete',
                                   message: 'Are you sure you want to delete '
-                                      '${selectedItems.length} items?',
+                                      '${selectedMedia.entries.length} items?',
                                   child: null,
                                   onConfirm: ({required confirmed}) =>
                                       Navigator.of(context).pop(confirmed),
@@ -136,7 +198,7 @@ class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
                             false;
                         if (confirmed) {
                           await dbManager.deleteMediaMultiple(
-                            selectedItems,
+                            selectedMedia.entries,
                             onDeleteFile: (f) async => f.deleteIfExists(),
                             onRemovePinMultiple: (ids) async {
                               /// This should not happen as
