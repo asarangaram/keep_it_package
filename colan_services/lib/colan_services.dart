@@ -13,7 +13,7 @@ export 'services/shared_media_service/models/cl_shared_media.dart'
 export 'services/shared_media_service/process/cl_media_process.dart'
     show CLMediaProcess, ExtProcessCLMedia;
 export 'services/shared_media_service/process/file_picker.dart'
-    show onPickFiles, onReceiveCapturedMedia;
+    show onPickFiles;
 export 'services/shared_media_service/widgets/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
 export 'services/video_edit_service/video_trimmer.dart' show VideoEditServices;

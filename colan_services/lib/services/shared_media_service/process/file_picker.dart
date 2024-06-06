@@ -32,7 +32,7 @@ Future<bool> onPickFiles(
     // User canceled the picker
   }
 }
-
+/* 
 Future<bool> onReceiveCapturedMedia(
   BuildContext context,
   WidgetRef ref, {
@@ -46,3 +46,4 @@ Future<bool> onReceiveCapturedMedia(
   }
   return false;
 }
+ */
