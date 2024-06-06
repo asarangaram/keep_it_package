@@ -123,6 +123,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                       );
                     },
                     columns: widget.columns,
+                    keepSelected: false,
                     onSelectionChanged: isSelectionMode
                         ? (List<T> items) {
                             selectedItems = items;
@@ -191,6 +192,7 @@ class CLSimpleItemsSelector<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.columns,
     required this.onSelectionChanged,
+    required this.keepSelected,
     super.key,
   });
 
@@ -203,6 +205,7 @@ class CLSimpleItemsSelector<T> extends StatefulWidget {
 
   final ItemBuilder<T> itemBuilder;
   final void Function(List<T>) onSelectionChanged;
+  final bool keepSelected;
 
   @override
   State<CLSimpleItemsSelector<T>> createState() =>
@@ -237,6 +240,7 @@ class CLSimpleItemsSelectorState<T> extends State<CLSimpleItemsSelector<T>> {
             },
             columns: widget.columns,
             onSelectionChanged: widget.onSelectionChanged,
+            keepSelected: widget.keepSelected,
           );
         },
       );

@@ -1,9 +1,7 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/shared_media_service/models/cl_shared_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +12,6 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:store/store.dart';
 
-import '../modules/shared_media/step3_which_collection.dart';
 import '../modules/shared_media/step4_save_collection.dart';
 import '../providers/gallery_group_provider.dart';
 import '../widgets/editors/collection_editor_wizard/create_collection_wizard.dart';
@@ -45,7 +42,7 @@ class StaleMediaPage extends ConsumerWidget {
                 }
               }
             },
-            child: StaleMediaHandler(
+            child: SelectAndKeepMedia(
               label: label,
               parentIdentifier: parentIdentifier,
               galleryMap: galleryMap,
@@ -58,8 +55,8 @@ class StaleMediaPage extends ConsumerWidget {
   }
 }
 
-class StaleMediaHandler extends ConsumerStatefulWidget {
-  const StaleMediaHandler({
+class SelectAndKeepMedia extends ConsumerStatefulWidget {
+  const SelectAndKeepMedia({
     required this.label,
     required this.parentIdentifier,
     required this.galleryMap,
@@ -73,10 +70,10 @@ class StaleMediaHandler extends ConsumerStatefulWidget {
   final Widget emptyState;
 
   @override
-  ConsumerState<StaleMediaHandler> createState() => _StaleMediaHandlerState();
+  ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();
 }
 
-class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
+class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
   Collection? targetCollection;
   bool keepSelected = false;
@@ -109,6 +106,7 @@ class _StaleMediaHandlerState extends ConsumerState<StaleMediaHandler> {
                   selectedMedia = selectedMedia.copyWith(entries: items);
                   setState(() {});
                 },
+                keepSelected: keepSelected,
               ),
             ),
             if (keepSelected &&

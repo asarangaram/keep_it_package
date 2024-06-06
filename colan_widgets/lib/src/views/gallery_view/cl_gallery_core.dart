@@ -13,6 +13,7 @@ class CLGalleryCore<T> extends StatelessWidget {
     required this.itemBuilder,
     required this.columns,
     required this.onSelectionChanged,
+    required this.keepSelected,
     super.key,
   });
   final List<GalleryGroup<T>> items;
@@ -22,6 +23,7 @@ class CLGalleryCore<T> extends StatelessWidget {
   ) itemBuilder;
 
   final int columns;
+  final bool keepSelected;
 
   final void Function(List<T> items)? onSelectionChanged;
 
@@ -39,6 +41,7 @@ class CLGalleryCore<T> extends StatelessWidget {
       itemBuilder: itemBuilder,
       columns: columns,
       onSelectionChanged: onSelectionChanged!,
+      keepSelected: keepSelected,
     );
   }
 }
@@ -49,6 +52,7 @@ class CLGalleryCore1<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.columns,
     required this.onSelectionChanged,
+    required this.keepSelected,
     super.key,
   });
 
@@ -61,6 +65,7 @@ class CLGalleryCore1<T> extends StatefulWidget {
   final int columns;
 
   final void Function(List<T> items) onSelectionChanged;
+  final bool keepSelected;
 
   @override
   State<CLGalleryCore1<T>> createState() => _CLGalleryCoreState1<T>();
@@ -91,12 +96,14 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
   }
 
   void toggleSelection(int groupIndex, int itemIndex) {
+    if (widget.keepSelected) return;
     selectionMap[groupIndex].items[itemIndex] =
         !selectionMap[groupIndex].items[itemIndex];
     widget.onSelectionChanged.call(selectionMap.filterItems(widget.items));
   }
 
   void selectGroup(int groupIndex, {required bool select}) {
+    if (widget.keepSelected) return;
     final group = selectionMap[groupIndex];
 
     for (var i = 0; i < group.items.length; i++) {
@@ -106,6 +113,7 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
   }
 
   void selectAll({required bool select}) {
+    if (widget.keepSelected) return;
     for (var g = 0; g < selectionMap.length; g++) {
       final group = selectionMap[g];
 
@@ -144,12 +152,12 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
 
                   return SelectableItem(
                     isSelected: selectionMap[groupIndex].items[itemIndex],
-                    child: itemWidget,
                     onTap: () {
                       toggleSelection(groupIndex, itemIndex);
 
                       setState(() {});
                     },
+                    child: itemWidget,
                   );
                 },
                 header: gallery.label == null
