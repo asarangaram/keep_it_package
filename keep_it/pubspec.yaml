@@ -20,6 +20,7 @@ dependencies:
     path: ../colan_widgets  
   flutter:
     sdk: flutter
+  flutter_chat_ui: ^1.6.13
   flutter_riverpod: ^2.5.1
   form_factory:
     path: ../form_factory
