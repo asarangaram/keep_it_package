@@ -68,14 +68,14 @@ class ImageViewerBasic extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Theme.of(context)
                           .colorScheme
-                          .onBackground
+                          .surface
                           .withAlpha(192), // Color for the circular container
                     ),
                     child: CLIcon.veryLarge(
                       overlayIcon!,
                       color: Theme.of(context)
                           .colorScheme
-                          .background
+                          .surface
                           .withAlpha(192),
                     ),
                   ),

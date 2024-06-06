@@ -12,13 +12,13 @@ class PopFullScreen extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Theme.of(context).colorScheme.onBackground.withAlpha(
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(
               192,
             ), // Color for the circular container
       ),
       child: CLButtonIcon.small(
         Icons.close,
-        color: Theme.of(context).colorScheme.background.withAlpha(192),
+        color: Theme.of(context).colorScheme.surface.withAlpha(192),
         onTap: context.canPop()
             ? () {
                 if (context.canPop()) {

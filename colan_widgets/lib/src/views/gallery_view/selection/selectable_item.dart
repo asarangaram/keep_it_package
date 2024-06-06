@@ -62,7 +62,7 @@ class OverlayIcon extends StatelessWidget {
             shape: BoxShape.circle,
             color: Theme.of(
               context,
-            ).colorScheme.onBackground.withAlpha(
+            ).colorScheme.onSurface.withAlpha(
                   192,
                 ), // Color for the circular container
           ),
@@ -70,7 +70,7 @@ class OverlayIcon extends StatelessWidget {
             iconData,
             color: Theme.of(
               context,
-            ).colorScheme.background.withAlpha(192),
+            ).colorScheme.surface.withAlpha(192),
           ),
         ),
       ),

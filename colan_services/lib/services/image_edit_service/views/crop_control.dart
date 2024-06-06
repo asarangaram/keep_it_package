@@ -34,7 +34,7 @@ class CropperControls extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context)
             .colorScheme
-            .onBackground, // Color for the circular container
+            .onSurface, // Color for the circular container
       ),
       child: Row(
         children: [

@@ -60,13 +60,13 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
                     shape: BoxShape.circle,
                     color: Theme.of(context)
                         .colorScheme
-                        .onBackground
+                        .onSurface
                         .withAlpha(192), // Color for the circular container
                   ),
                   child: CLButtonIcon.small(
                     Icons.close,
                     color:
-                        Theme.of(context).colorScheme.background.withAlpha(192),
+                        Theme.of(context).colorScheme.onSurface.withAlpha(192),
                     onTap: () => onDiscard(result: false),
                   ),
                 ),

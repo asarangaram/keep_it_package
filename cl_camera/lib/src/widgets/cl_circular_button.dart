@@ -37,9 +37,9 @@ class CircularButton extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: isOpaque
                       ? backgroundColor ??
-                          Theme.of(context).colorScheme.background
+                          Theme.of(context).colorScheme.surface
                       : (backgroundColor ??
-                              Theme.of(context).colorScheme.background)
+                              Theme.of(context).colorScheme.surface)
                           .withAlpha(128),
                   boxShadow: hasShadow
                       ? [
@@ -63,8 +63,8 @@ class CircularButton extends StatelessWidget {
                     size: size,
                     color: foregroundColor ??
                         (hasDecoration
-                            ? Theme.of(context).colorScheme.onBackground
-                            : Theme.of(context).colorScheme.background),
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).colorScheme.surface),
                   ),
                 ),
         ),
