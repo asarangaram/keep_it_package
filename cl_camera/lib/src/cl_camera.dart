@@ -232,14 +232,24 @@ class _CLCameraState extends State<CLCamera>
                     SizedBox(
                       width: constraints.maxWidth,
                       height: kMinInteractiveDimension,
-                      child: MenuCameraMode(
-                        currMode: cameraMode,
-                        onUpdateMode: (mode) {
-                          setState(() {
-                            cameraMode = mode;
-                          });
-                        },
-                        textStyle: widget.textStyle,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: MenuCameraMode(
+                              currMode: cameraMode,
+                              onUpdateMode: (mode) {
+                                setState(() {
+                                  cameraMode = mode;
+                                });
+                              },
+                              textStyle: widget.textStyle,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: audioMute(),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(
@@ -1020,6 +1030,23 @@ class _CLCameraState extends State<CLCamera>
           ),
           ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
         ],
+      ),
+    );
+  }
+
+  Widget audioMute() {
+    return IconButton(
+      onPressed: _isRecordingInProgress
+          ? null
+          : () {
+              config = config.copyWith(
+                enableAudio: !config.enableAudio,
+              );
+              initializeCameraController(currDescription ?? backCamera);
+            },
+      icon: Icon(
+        config.enableAudio ? MdiIcons.volumeHigh : MdiIcons.volumeMute,
+        color: config.enableAudio ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }
