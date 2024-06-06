@@ -28,7 +28,6 @@ class ItemNotesPage extends ConsumerWidget {
           child: Column(
             children: [
               Expanded(
-                flex: 3,
                 child: MediaViewer(
                   media: media,
                   onLockPage: ({required lock}) {},
@@ -46,19 +45,7 @@ class ItemNotesPage extends ConsumerWidget {
               ),
               const Expanded(
                 flex: 5,
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 4,
-                      child: Center(
-                        child: Text('Chat here'),
-                      ),
-                    ),
-                    Expanded(
-                      child: NotesInput(),
-                    ),
-                  ],
-                ),
+                child: NotesInput(),
               ),
             ],
           ),

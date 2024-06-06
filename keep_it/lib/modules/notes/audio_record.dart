@@ -1,199 +1,270 @@
-import 'dart:async';
 import 'dart:io';
 
+import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_recorder2/flutter_audio_recorder2.dart';
+import 'package:form_factory/form_factory.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'chat_bubble.dart';
+import 'models/message.dart';
+import 'widgets/show_messages.dart';
 
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({super.key});
 
   @override
-  AudioRecorderState createState() => AudioRecorderState();
+  State<AudioRecorder> createState() => _AudioRecorderState();
 }
 
-class AudioRecorderState extends State<AudioRecorder> {
-  late FlutterAudioRecorder2? _recorder;
-  Recording? _current;
-  RecordingStatus _currentStatus = RecordingStatus.Unset;
-  final List<double> _waveData = [];
+class _AudioRecorderState extends State<AudioRecorder> {
+  late final RecorderController recorderController;
+  late final TextEditingController textEditingController;
+  late final FocusNode focusNode;
+
+  bool isRecording = false;
+  bool isRecordingCompleted = false;
+  List<CLMessage> messages = [];
+  CLAudioMessage? audioMessage;
 
   @override
   void initState() {
     super.initState();
-    _init();
+    _initialiseControllers();
+    textEditingController = TextEditingController();
+    focusNode = FocusNode();
   }
 
-  Future<void> _init() async {
-    try {
-      if (await FlutterAudioRecorder2.hasPermissions ?? false) {
-        var customPath = '/flutter_audio_recorder_';
-        Directory appDocDirectory;
+  Future<Directory> _getDir() async {
+    return getApplicationDocumentsDirectory();
+    /* path = '${appDirectory.path}/recording.m4a';
+    setState(() {}); */
+  }
 
-        appDocDirectory = await getApplicationDocumentsDirectory();
+  void _initialiseControllers() {
+    recorderController = RecorderController()
+      ..androidEncoder = AndroidEncoder.aac
+      ..androidOutputFormat = AndroidOutputFormat.mpeg4
+      ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
+      ..sampleRate = 44100;
+  }
 
-        customPath = appDocDirectory.path +
-            customPath +
-            DateTime.now().millisecondsSinceEpoch.toString();
-        _recorder =
-            FlutterAudioRecorder2(customPath, audioFormat: AudioFormat.WAV);
-        await _recorder!.initialized;
-        final current = await _recorder!.current();
-        setState(() {
-          _current = current;
-          _currentStatus = current!.status!;
-        });
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('You must accept permissions')),
-          );
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
+  @override
+  void dispose() {
+    recorderController.dispose();
+
+    textEditingController.dispose();
+    focusNode.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: SizedBox(
-            height: 128,
-            child: ClipRect(
-              child: CustomPaint(
-                painter: WaveformPainter(_waveData),
-                child: Container(
-                  decoration:
-                      BoxDecoration(color: Colors.red.shade100.withAlpha(100)),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return FutureBuilder(
+      future: _getDir(),
+      builder: (context, snapShot) {
+        if (snapShot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        final appDirectory = snapShot.data!;
+        return Column(
           children: [
-            ElevatedButton(
-              onPressed: () {
-                switch (_currentStatus) {
-                  case RecordingStatus.Initialized:
-                  case RecordingStatus.Stopped:
-                    _start();
-                  case RecordingStatus.Recording:
-                    _pause();
-                  case RecordingStatus.Paused:
-                    _resume();
-
-                  case RecordingStatus.Unset:
-                    break;
-                }
-              },
-              child: Text(
-                _currentStatus == RecordingStatus.Recording
-                    ? 'Pause'
-                    : _currentStatus == RecordingStatus.Paused
-                        ? 'Resume'
-                        : 'Record',
-              ),
+            Expanded(
+              child:
+                  ShowMessages(messages: messages, appDirectory: appDirectory),
             ),
-            const SizedBox(width: 20),
-            if (_currentStatus == RecordingStatus.Recording ||
-                _currentStatus == RecordingStatus.Paused)
-              ElevatedButton(
-                onPressed: _stop,
-                child: const Text('Stop'),
-              ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: hasAudioMessage
+                  ? Row(
+                      children: [
+                        WaveBubble(
+                          path: (audioMessage!).path,
+                          width: MediaQuery.of(context).size.width / 4,
+                          //width: MediaQuery.of(context).size.width / 2,
+                          appDirectory: appDirectory,
+                        ),
+                        IconButton(
+                          onPressed: _sendAudio,
+                          icon: const Icon(
+                            Icons.send,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        IconButton(
+                          onPressed: _deleteAudioMessage,
+                          icon: const Icon(Icons.delete),
+                          color: Colors.white,
+                          iconSize: 28,
+                        ),
+                      ],
+                    )
+                  : isRecording
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: LiveAudio(
+                                recorderController: recorderController,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () =>
+                                  _startOrStopRecording(appDirectory),
+                              icon: Icon(
+                                isRecording ? Icons.stop : Icons.mic,
+                              ),
+                              color: Colors.white,
+                              iconSize: 28,
+                            ),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: InputDecorator(
+                                  decoration: FormDesign.inputDecoration(
+                                    context,
+                                    label: 'Add Notes',
+                                    hintText: 'Add Notes',
+                                    actionBuilder: null,
+                                  ),
+                                  child: TextField(
+                                    enabled: true,
+                                    showCursor: true,
+                                    controller: textEditingController,
+                                    focusNode: focusNode,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                messages.add(
+                                  CLTextMessage(
+                                    dateTime: DateTime.now(),
+                                    text: textEditingController.text,
+                                  ),
+                                );
+                                textEditingController.clear();
+                                setState(() {});
+                              },
+                              icon: const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () =>
+                                  _startOrStopRecording(appDirectory),
+                              icon: Icon(
+                                isRecording ? Icons.stop : Icons.mic,
+                              ),
+                              color: Colors.white,
+                              iconSize: 28,
+                            ),
+                          ],
+                        ),
+            ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Future<void> _start() async {
-    try {
-      await _recorder!.start();
-      final recording = await _recorder!.current();
-      setState(() {
-        _current = recording;
-      });
-      const tick = Duration(milliseconds: 50);
-      Timer.periodic(tick, (Timer t) async {
-        if (_currentStatus == RecordingStatus.Stopped) {
-          t.cancel();
-        }
-        final current = await _recorder!.current();
-        setState(() {
-          _current = current;
-          _currentStatus = _current!.status!;
-          if (_current!.metering!.averagePower != null) {
-            _waveData.add(_current!.metering!.averagePower!);
-          }
-        });
-      });
-    } catch (e) {
-      print(e);
+  void _deleteAudioMessage() {
+    if (hasAudioMessage) {
+      File((audioMessage!).path).deleteSync();
+      audioMessage = null;
+      setState(() {});
     }
   }
 
-  Future<void> _pause() async {
-    await _recorder!.pause();
-    setState(() {
-      _currentStatus = RecordingStatus.Paused;
-    });
+  bool get hasAudioMessage => audioMessage != null;
+  bool get hasTextMessage => textEditingController.text.isNotEmpty;
+  bool get hasMessage => hasAudioMessage || hasTextMessage;
+
+  bool get canSendMessage => !isRecording && hasMessage;
+
+  void _sendAudio() {
+    if (hasAudioMessage) {
+      messages.add(audioMessage!);
+      audioMessage = null;
+      setState(() {});
+    }
   }
 
-  Future<void> _resume() async {
-    await _recorder!.resume();
-    setState(() {
-      _currentStatus = RecordingStatus.Recording;
-    });
-  }
+  Future<void> _startOrStopRecording(Directory appDirectory) async {
+    try {
+      if (isRecording) {
+        recorderController.reset();
 
-  Future<void> _stop() async {
-    final result = await _recorder!.stop();
-    setState(() {
-      _current = result;
-      _currentStatus = _current!.status!;
-    });
+        final path = await recorderController.stop(false);
+
+        if (path != null) {
+          isRecordingCompleted = true;
+          debugPrint(path);
+          debugPrint('Recorded file size: ${File(path).lengthSync()}');
+          //audioFiles.add(path);
+          audioMessage = CLAudioMessage(
+            dateTime: DateTime.now(),
+            path: path,
+          );
+          setState(() {});
+        }
+      } else {
+        final now = DateTime.now();
+        final formattedDate = DateFormat('yyyyMMdd_HHmmss_SSS').format(now);
+        final path = '${appDirectory.path}/audio_$formattedDate.aac';
+
+        await recorderController.record(path: path); // Path is optional
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      setState(() {
+        isRecording = !isRecording;
+      });
+    }
   }
 }
 
-class WaveformPainter extends CustomPainter {
-  WaveformPainter(this.waveData);
-  final List<double> waveData;
+class LiveAudio extends StatelessWidget {
+  const LiveAudio({
+    required this.recorderController,
+    super.key,
+  });
+
+  final RecorderController recorderController;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.blue
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    final path = Path();
-    final centerY = size.height / 2;
-    final scaleX = size.width / (waveData.length - 1);
-    final scaleY = size.height / 2;
-
-    for (var i = 0; i < waveData.length; i++) {
-      final x = i * scaleX;
-      final y = centerY + waveData[i] * scaleY;
-      if (i == 0) {
-        path.moveTo(x, y);
-      } else {
-        path.lineTo(x, y);
-      }
-    }
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  Widget build(BuildContext context) {
+    return AudioWaveforms(
+      enableGesture: true,
+      size: Size(
+        MediaQuery.of(context).size.width / 2,
+        50,
+      ),
+      recorderController: recorderController,
+      waveStyle: const WaveStyle(
+        waveColor: Colors.white,
+        extendWaveform: true,
+        showMiddleLine: false,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFF1E1B26),
+      ),
+      padding: const EdgeInsets.only(left: 18),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 15,
+      ),
+    );
   }
 }
