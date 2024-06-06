@@ -9,16 +9,20 @@ class ShowAsyncValue<T> extends ConsumerWidget {
   const ShowAsyncValue(
     this.asyncData, {
     required this.builder,
+    this.errorBuilder,
+    this.loadingBuilder,
     super.key,
   });
   final AsyncValue<T> asyncData;
   final Widget Function(T data) builder;
+  final Widget Function(Object object, StackTrace st)? errorBuilder;
+  final Widget Function()? loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return asyncData.when(
-      loading: CLLoadingView.new,
-      error: _ShowAsyncError.new,
+      loading: loadingBuilder != null ? loadingBuilder! : CLLoadingView.new,
+      error: errorBuilder != null ? errorBuilder! : _ShowAsyncError.new,
       data: (data) {
         try {
           return builder(data);

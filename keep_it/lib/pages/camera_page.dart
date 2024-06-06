@@ -26,7 +26,6 @@ class CameraPage extends StatelessWidget {
           required void Function(String, {required bool isVideo}) onCapture,
           required Widget previewWidget,
         }) {
-          print('Builder invoked');
           return CLCamera(
             onCancel: () {
               if (context.canPop()) {
@@ -41,6 +40,9 @@ class CameraPage extends StatelessWidget {
             onCapture: onCapture,
             previewWidget: previewWidget,
           );
+        },
+        onReceiveCapturedMedia: () async {
+          await context.push('/stale_media');
         },
       ),
     );

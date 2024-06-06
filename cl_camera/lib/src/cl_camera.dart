@@ -6,12 +6,10 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:cl_camera/src/models/camera_config.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../cl_camera.dart';
@@ -166,7 +164,6 @@ class _CLCameraState extends State<CLCamera>
 
   @override
   Widget build(BuildContext context) {
-    print('Cl Camera is build');
     if (controller == null || !controller!.value.isInitialized) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -235,14 +232,24 @@ class _CLCameraState extends State<CLCamera>
                     SizedBox(
                       width: constraints.maxWidth,
                       height: kMinInteractiveDimension,
-                      child: MenuCameraMode(
-                        currMode: cameraMode,
-                        onUpdateMode: (mode) {
-                          setState(() {
-                            cameraMode = mode;
-                          });
-                        },
-                        textStyle: widget.textStyle,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: MenuCameraMode(
+                              currMode: cameraMode,
+                              onUpdateMode: (mode) {
+                                setState(() {
+                                  cameraMode = mode;
+                                });
+                              },
+                              textStyle: widget.textStyle,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: audioMute(),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(
@@ -478,7 +485,6 @@ class _CLCameraState extends State<CLCamera>
   Future<void> initializeCameraController(
     CameraDescription cameraDescription,
   ) async {
-    print('Initializing camera');
     final prevCamera = controller;
     final cameraController = CameraController(
       cameraDescription,
@@ -708,7 +714,8 @@ class _CLCameraState extends State<CLCamera>
       if (mounted) {
         setState(() {});
       }
-      //showInSnackBar('Exposure mode set to ${mode.toString().split('.').last}');
+      // showInSnackBar(
+      // 'Exposure mode set to ${mode.toString().split('.').last}');
     });
   }
 
@@ -808,7 +815,7 @@ class _CLCameraState extends State<CLCamera>
 
     try {
       await controller!.setFocusMode(mode);
-    } on CameraException catch (e) {
+    } /* on CameraException  */ catch (e) {
       //_showCameraException(e);
       rethrow;
     }
@@ -1023,6 +1030,23 @@ class _CLCameraState extends State<CLCamera>
           ),
           ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
         ],
+      ),
+    );
+  }
+
+  Widget audioMute() {
+    return IconButton(
+      onPressed: _isRecordingInProgress
+          ? null
+          : () {
+              config = config.copyWith(
+                enableAudio: !config.enableAudio,
+              );
+              initializeCameraController(currDescription ?? backCamera);
+            },
+      icon: Icon(
+        config.enableAudio ? MdiIcons.volumeHigh : MdiIcons.volumeMute,
+        color: config.enableAudio ? null : Theme.of(context).colorScheme.error,
       ),
     );
   }

@@ -1,35 +1,25 @@
+import 'package:colan_widgets/src/extensions/ext_cl_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../basics/cl_button.dart';
 import '../../basics/cl_refresh_indicator.dart';
-import '../../basics/cl_text.dart';
-import '../../extensions/ext_cl_menu_item.dart';
 import '../../models/cl_menu_item.dart';
+import '../../models/typedefs.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
 import '../draggable/menu.dart';
 import '../draggable/menu_control.dart';
+import 'cl_gallery_core.dart';
 import 'model/gallery_group.dart';
-import 'selection/selectable_item.dart';
-import 'selection/selectable_label.dart';
-import 'selection/selection_count.dart';
-import 'widgets/cl_grid.dart';
 
-typedef QuickMenuScopeKey = GlobalKey<State<StatefulWidget>>;
-typedef ItemBuilder<T> = Widget Function(
-  BuildContext context,
-  T item, {
-  required QuickMenuScopeKey quickMenuScopeKey,
-});
-
-class CLSimpleGalleryView<T> extends StatelessWidget {
+class CLSimpleGalleryView<T> extends StatefulWidget {
   const CLSimpleGalleryView({
-    required this.galleryMap,
     required this.title,
-    required this.emptyState,
     required this.identifier,
+    required this.galleryMap,
+    required this.emptyState,
     required this.itemBuilder,
     required this.columns,
     this.onPickFiles,
@@ -54,24 +44,32 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
   final ItemBuilder<T> itemBuilder;
 
   @override
+  State<CLSimpleGalleryView<T>> createState() => _CLSimpleGalleryViewState<T>();
+}
+
+class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
+  final GlobalKey parentKey = GlobalKey();
+  bool isSelectionMode = false;
+  List<T> selectedItems = [];
+  @override
   Widget build(BuildContext context) {
-    if (galleryMap.isEmpty) {
+    if (widget.galleryMap.isEmpty) {
       return KeepItMainView(
-        key: ValueKey('KeepItMainView $identifier'),
-        title: title,
+        key: ValueKey('KeepItMainView ${widget.identifier}'),
+        title: widget.title,
         actionsBuilder: [
-          if (onCameraCapture != null)
+          if (widget.onCameraCapture != null)
             (context, quickMenuScopeKey) => CLButtonIcon.small(
                   MdiIcons.camera,
-                  onTap: onCameraCapture,
+                  onTap: widget.onCameraCapture,
                 ),
-          if (onPickFiles != null)
+          if (widget.onPickFiles != null)
             (context, quickMenuScopeKey) => CLButtonIcon.standard(
                   Icons.add,
-                  onTap: () => onPickFiles?.call(context),
+                  onTap: () => widget.onPickFiles?.call(context),
                 ),
         ],
-        pageBuilder: (context, quickMenuScopeKey) => emptyState,
+        pageBuilder: (context, quickMenuScopeKey) => widget.emptyState,
       );
     } else {
       return ProviderScope(
@@ -79,34 +77,122 @@ class CLSimpleGalleryView<T> extends StatelessWidget {
           menuControlNotifierProvider
               .overrideWith((ref) => MenuControlNotifier()),
         ],
-        child: CLSimpleGalleryView0(
-          key: ValueKey(galleryMap),
-          title: title,
-          onPickFiles: onPickFiles,
-          onCameraCapture: onCameraCapture,
-          galleryMap: galleryMap,
-          itemBuilder: itemBuilder,
-          columns: columns,
-          tagPrefix: identifier,
-          onRefresh: onRefresh,
-          selectionActions: selectionActions,
+        child: KeepItMainView(
+          title: widget.title,
+          actionsBuilder: [
+            if (widget.selectionActions != null)
+              (context, quickMenuScopeKey) => CLButtonText.small(
+                    isSelectionMode ? 'Done' : 'Select',
+                    onTap: () {
+                      setState(() {
+                        isSelectionMode = !isSelectionMode;
+                      });
+                    },
+                  ),
+            if (!isSelectionMode)
+              (context, quickMenuScopeKey) => Row(
+                    children: [
+                      if (widget.onPickFiles != null)
+                        CLButtonIcon.standard(
+                          Icons.add,
+                          onTap: () => widget.onPickFiles?.call(context),
+                        ),
+                      if (widget.onCameraCapture != null)
+                        CLButtonIcon.small(
+                          MdiIcons.camera,
+                          onTap: widget.onCameraCapture,
+                        ),
+                    ],
+                  ),
+          ],
+          pageBuilder: (context, quickMenuScopeKey) {
+            return Stack(
+              key: parentKey,
+              children: [
+                CLRefreshIndicator(
+                  onRefresh: isSelectionMode ? null : widget.onRefresh,
+                  key: ValueKey('${widget.identifier} Refresh'),
+                  child: CLGalleryCore(
+                    key: ValueKey(widget.galleryMap),
+                    items: widget.galleryMap,
+                    itemBuilder: (context, item) {
+                      return widget.itemBuilder(
+                        context,
+                        item,
+                        quickMenuScopeKey: quickMenuScopeKey,
+                      );
+                    },
+                    columns: widget.columns,
+                    keepSelected: false,
+                    onSelectionChanged: isSelectionMode
+                        ? (List<T> items) {
+                            selectedItems = items;
+                            setState(() {});
+                          }
+                        : null,
+                  ),
+                ),
+                if (isSelectionMode && selectedItems.isNotEmpty)
+                  ActionsDraggableMenu<T>(
+                    items: selectedItems,
+                    tagPrefix: widget.identifier,
+                    onDone: () {
+                      //isSelectionMode = false;
+                      //onDone();
+                      //setState(() {});
+                    },
+                    selectionActions: widget.selectionActions,
+                    parentKey: parentKey,
+                  ),
+              ],
+            );
+          },
         ),
       );
     }
   }
 }
 
-class CLSimpleGalleryView0<T> extends StatefulWidget {
-  const CLSimpleGalleryView0({
-    required this.galleryMap,
-    required this.title,
+class ActionsDraggableMenu<T> extends StatelessWidget {
+  const ActionsDraggableMenu({
     required this.tagPrefix,
+    required this.parentKey,
+    required this.selectionActions,
+    required this.items,
+    required this.onDone,
+    super.key,
+  });
+  final String tagPrefix;
+  final GlobalKey parentKey;
+  final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
+      selectionActions;
+  final VoidCallback onDone;
+  final List<T> items;
+  @override
+  Widget build(BuildContext context) {
+    return DraggableMenu(
+      key: ValueKey('$tagPrefix DraggableMenu'),
+      parentKey: parentKey,
+      child: Menu(
+        menuItems: selectionActions!(
+          context,
+          items,
+        ).insertOnDone(onDone),
+      ),
+    );
+  }
+}
+
+class CLSimpleItemsSelector<T> extends StatefulWidget {
+  const CLSimpleItemsSelector({
+    required this.title,
+    required this.identifier,
+    required this.galleryMap,
+    required this.emptyState,
     required this.itemBuilder,
     required this.columns,
-    required this.onPickFiles,
-    required this.onCameraCapture,
-    required this.onRefresh,
-    required this.selectionActions,
+    required this.onSelectionChanged,
+    required this.keepSelected,
     super.key,
   });
 
@@ -114,190 +200,50 @@ class CLSimpleGalleryView0<T> extends StatefulWidget {
   final List<GalleryGroup<T>> galleryMap;
   final int columns;
 
-  final String tagPrefix;
-  final void Function(BuildContext context)? onPickFiles;
-  final void Function()? onCameraCapture;
-
-  final Future<void> Function()? onRefresh;
+  final Widget emptyState;
+  final String identifier;
 
   final ItemBuilder<T> itemBuilder;
-  final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
-      selectionActions;
+  final void Function(List<T>) onSelectionChanged;
+  final bool keepSelected;
 
   @override
-  State<CLSimpleGalleryView0<T>> createState() =>
-      _CLSimpleGalleryView0State<T>();
+  State<CLSimpleItemsSelector<T>> createState() =>
+      CLSimpleItemsSelectorState<T>();
 }
 
-class _CLSimpleGalleryView0State<T> extends State<CLSimpleGalleryView0<T>> {
-  late List<GalleryGroupMutable<bool>> selectionMap;
+class CLSimpleItemsSelectorState<T> extends State<CLSimpleItemsSelector<T>> {
   final GlobalKey parentKey = GlobalKey();
-  bool isSelectionMode = false;
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    selectionMap = createBooleanList(widget.galleryMap);
-    super.didChangeDependencies();
-  }
-
-  List<GalleryGroupMutable<bool>> createBooleanList(
-    List<GalleryGroup<T>> originalList,
-  ) {
-    return originalList.map((galleryGroup) {
-      // Map the items list to a list of booleans (initialized to false)
-      final booleanItems = galleryGroup.items.map((item) => false).toList();
-      return GalleryGroupMutable<bool>(booleanItems, label: galleryGroup.label);
-    }).toList();
-  }
-
-  void toggleSelection(int groupIndex, int itemIndex) {
-    selectionMap[groupIndex].items[itemIndex] =
-        !selectionMap[groupIndex].items[itemIndex];
-  }
-
-  void selectGroup(int groupIndex, {required bool select}) {
-    final group = selectionMap[groupIndex];
-
-    for (var i = 0; i < group.items.length; i++) {
-      group.items[i] = select;
-    }
-  }
-
-  void selectAll({required bool select}) {
-    for (var g = 0; g < selectionMap.length; g++) {
-      final group = selectionMap[g];
-
-      for (var i = 0; i < group.items.length; i++) {
-        group.items[i] = select;
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final hasSelection = widget.selectionActions != null &&
-        isSelectionMode &&
-        selectionMap.trueCount > 0;
-    return KeepItMainView(
-      title: widget.title,
-      actionsBuilder: [
-        if (widget.selectionActions != null)
-          (context, quickMenuScopeKey) => CLButtonText.small(
-                isSelectionMode ? 'Done' : 'Select',
-                onTap: () {
-                  setState(() {
-                    isSelectionMode = !isSelectionMode;
-                  });
-                },
-              ),
-        if (!isSelectionMode && widget.onPickFiles != null)
-          (context, quickMenuScopeKey) => CLButtonIcon.standard(
-                Icons.add,
-                onTap: () => widget.onPickFiles?.call(context),
-              ),
-        if (!isSelectionMode && widget.onCameraCapture != null)
-          (context, quickMenuScopeKey) => CLButtonIcon.small(
-                MdiIcons.camera,
-                onTap: widget.onCameraCapture,
-              ),
-      ],
-      pageBuilder: (context, quickMenuScopeKey) => Stack(
-        key: parentKey,
-        children: [
-          Column(
-            children: [
-              Expanded(
-                child: CLRefreshIndicator(
-                  onRefresh: isSelectionMode ? null : widget.onRefresh,
-                  key: ValueKey('${widget.tagPrefix} Refresh'),
-                  child: ListView.builder(
-                    //key: ValueKey(widget.galleryMap),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: widget.galleryMap.length,
-                    itemBuilder: (BuildContext context, int groupIndex) {
-                      final gallery = widget.galleryMap[groupIndex];
-                      final labelWidget = gallery.label == null
-                          ? null
-                          : CLText.large(
-                              gallery.label!,
-                              textAlign: TextAlign.start,
-                            );
-                      return CLGrid<T>(
-                        itemCount: gallery.items.length,
-                        columns: widget.columns,
-                        itemBuilder: (context, itemIndex) {
-                          final itemWidget = widget.itemBuilder(
-                            context,
-                            gallery.items[itemIndex],
-                            quickMenuScopeKey: quickMenuScopeKey,
-                          );
-                          if (!isSelectionMode) {
-                            return itemWidget;
-                          }
-                          return SelectableItem(
-                            isSelected:
-                                selectionMap[groupIndex].items[itemIndex],
-                            child: itemWidget,
-                            onTap: () {
-                              toggleSelection(groupIndex, itemIndex);
-
-                              setState(() {});
-                            },
-                          );
-                        },
-                        header: gallery.label == null
-                            ? null
-                            : !isSelectionMode
-                                ? labelWidget
-                                : SelectableLabel(
-                                    selectionMap:
-                                        selectionMap[groupIndex].items,
-                                    child: labelWidget ?? Container(),
-                                    onSelect: ({required select}) {
-                                      selectGroup(
-                                        groupIndex,
-                                        select: select,
-                                      );
-                                      setState(() {});
-                                    },
-                                  ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              if (isSelectionMode)
-                SelectionCount(
-                  selectionMap,
-                  onSelectAll: ({required select}) {
-                    selectAll(select: select);
-                    setState(() {});
-                  },
-                ),
-            ],
-          ),
-          if (hasSelection)
-            DraggableMenu(
-              key: ValueKey('${widget.tagPrefix} DraggableMenu'),
-              parentKey: parentKey,
-              child: Menu(
-                menuItems: widget.selectionActions!(
-                  context,
-                  selectionMap.filterItems(widget.galleryMap),
-                )
-                    .insertOnDone(() {
-                  selectAll(select: false);
-                  isSelectionMode = false;
-                  setState(() {});
-                }),
-              ),
-            ),
-        ],
-      ),
-    );
+    if (widget.galleryMap.isEmpty) {
+      return KeepItMainView(
+        key: ValueKey('Selector Empty ${widget.identifier}'),
+        title: widget.title,
+        pageBuilder: (context, quickMenuScopeKey) => widget.emptyState,
+      );
+    } else {
+      return KeepItMainView(
+        key: ValueKey('Selector ${widget.identifier}'),
+        title: widget.title,
+        pageBuilder: (context, quickMenuScopeKey) {
+          return CLGalleryCore1(
+            key: ValueKey(widget.galleryMap),
+            items: widget.galleryMap,
+            itemBuilder: (context, item) {
+              return widget.itemBuilder(
+                context,
+                item,
+                quickMenuScopeKey: quickMenuScopeKey,
+              );
+            },
+            columns: widget.columns,
+            onSelectionChanged: widget.onSelectionChanged,
+            keepSelected: widget.keepSelected,
+          );
+        },
+      );
+    }
   }
 }
