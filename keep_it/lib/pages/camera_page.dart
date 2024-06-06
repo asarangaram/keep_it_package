@@ -41,6 +41,9 @@ class CameraPage extends StatelessWidget {
             previewWidget: previewWidget,
           );
         },
+        onReceiveCapturedMedia: () async {
+          await context.push('/stale_media');
+        },
       ),
     );
   }
