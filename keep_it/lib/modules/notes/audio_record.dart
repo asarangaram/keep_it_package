@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:intl/intl.dart';
