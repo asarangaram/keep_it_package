@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
+import '../modules/notes/input.dart';
 import '../widgets/media_view/media_viewer.dart';
 
 class ItemNotesPage extends ConsumerWidget {
@@ -45,8 +46,18 @@ class ItemNotesPage extends ConsumerWidget {
               ),
               const Expanded(
                 flex: 5,
-                child: Center(
-                  child: Text('Chat here'),
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Center(
+                        child: Text('Chat here'),
+                      ),
+                    ),
+                    Expanded(
+                      child: NotesInput(),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -20,7 +20,10 @@ dependencies:
     path: ../colan_widgets  
   flutter:
     sdk: flutter
-  flutter_chat_ui: ^1.6.13
+  
+  flutter_audio_recorder2: ^0.0.2
+  flutter_audio_waveforms: ^1.2.1+8
+  flutter_chat_types: ^3.6.2
   flutter_riverpod: ^2.5.1
   form_factory:
     path: ../form_factory
