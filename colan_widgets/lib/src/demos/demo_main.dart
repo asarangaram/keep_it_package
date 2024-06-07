@@ -69,7 +69,7 @@ class DemoMainState extends ConsumerState<DemoMain> {
                         (e) => ListTile(
                           shape: const ContinuousRectangleBorder(
                             side: BorderSide(),
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                           title: CLText.large(e),
                           onTap: () {

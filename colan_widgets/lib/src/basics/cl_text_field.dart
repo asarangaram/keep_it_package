@@ -132,7 +132,7 @@ class CLTextField extends StatelessWidget {
     double width = 1,
   }) =>
       OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(
           width: width,
         ),

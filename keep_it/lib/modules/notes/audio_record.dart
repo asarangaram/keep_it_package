@@ -257,7 +257,7 @@ class LiveAudio extends StatelessWidget {
         showMiddleLine: false,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         color: const Color(0xFF1E1B26),
       ),
       padding: const EdgeInsets.only(left: 18),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class CLConfirmAction extends StatelessWidget {
   const CLConfirmAction({
     required this.title,
@@ -31,18 +30,14 @@ class CLConfirmAction extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.black,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: Colors.white,
                           width: 2,
                         ),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          8,
-                        ),
+                        borderRadius: BorderRadius.circular(8),
                         child: child ?? const SizedBox.shrink(),
                       ),
                     ),

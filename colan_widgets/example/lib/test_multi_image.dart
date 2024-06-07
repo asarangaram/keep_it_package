@@ -190,12 +190,12 @@ class _StackBasedState extends State<StackBased>
             borderOnForeground: true,
             shape: RoundedRectangleBorder(
               side: const BorderSide(),
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Padding(
               padding: const EdgeInsets.all(2.0),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(8),
                 child: RawImage(image: e.value),
               ),
             ),

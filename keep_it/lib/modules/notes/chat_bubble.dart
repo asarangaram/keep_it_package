@@ -25,7 +25,7 @@ class ChatBubble extends StatelessWidget {
             child: Container(
               width: width != null ? width! - 40 : null,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
                 color: const Color(0xFF343145),
               ),
               padding: const EdgeInsets.only(
@@ -134,7 +134,7 @@ class _WaveBubbleState extends State<WaveBubble> {
               ),
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
                 color: const Color(0xFF343145),
               ),
               child: Row(

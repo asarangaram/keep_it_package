@@ -13,7 +13,7 @@ class SelectionCount extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
-        //borderRadius: BorderRadius.circular(15),
+        //borderRadius: BorderRadius.circular(16),
         /* border: Border.all(
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ), */

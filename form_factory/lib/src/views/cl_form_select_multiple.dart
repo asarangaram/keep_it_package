@@ -107,9 +107,8 @@ class CLFormSelectMultiple extends StatelessWidget {
                               onPressed: controller.openView,
                               shape: const ContinuousRectangleBorder(
                                 side: BorderSide(),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(16),
-                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16)),
                               ),
                             ),
                           );
