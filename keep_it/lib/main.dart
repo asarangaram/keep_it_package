@@ -19,6 +19,7 @@ import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/deleted_media_page.dart';
 import 'pages/item_notes_page.dart';
+import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/pinned_media_page.dart';
@@ -115,6 +116,20 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'item/:collectionId/:item_id',
+          builder: (context, GoRouterState state) {
+            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+              throw Exception('missing parentIdentifier');
+            }
+
+            return CollectionItemPage(
+              collectionId: int.parse(state.pathParameters['collectionId']!),
+              id: int.parse(state.pathParameters['item_id']!),
+              parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'item_note/:collectionId/:item_id',
           builder: (context, GoRouterState state) {
             if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
               throw Exception('missing parentIdentifier');
