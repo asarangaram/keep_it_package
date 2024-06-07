@@ -36,23 +36,11 @@ class CapturedMediaDecorator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 60,
       height: 60,
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(
-          10,
-        ),
-        border: Border.all(
-          color: Colors.white,
-          width: 2,
-        ),
-      ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          8,
-        ),
+        borderRadius: BorderRadius.circular(8),
         child: child,
       ),
     );
