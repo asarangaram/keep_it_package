@@ -34,6 +34,7 @@ class AppLoader extends ConsumerWidget {
               FocusScope.of(context).unfocus();
             }
           });
+         
           return AppView(appDescriptor: appDescriptor);
         },
         error: (err, _) {

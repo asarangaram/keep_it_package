@@ -16,7 +16,7 @@ class ImageViewerBasic extends StatelessWidget {
     this.isFullScreen = false,
     this.isPinned = false,
     this.isPinBroken = false,
- });
+  });
   final File file;
   final bool isFullScreen;
 
@@ -48,8 +48,8 @@ class ImageViewerBasic extends StatelessWidget {
                   child: Transform.rotate(
                     angle: math.pi / 4,
                     child: CLIcon.veryLarge(
-                      isPinBroken ? MdiIcons.pinOffOutline :MdiIcons.pin,
-                      color: isPinBroken? Colors.red: Colors.blue,
+                      isPinBroken ? MdiIcons.pinOffOutline : MdiIcons.pin,
+                      color: isPinBroken ? Colors.red : Colors.blue,
                     ),
                   ),
                 ),
@@ -68,15 +68,12 @@ class ImageViewerBasic extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Theme.of(context)
                           .colorScheme
-                          .onBackground
+                          .onSurface
                           .withAlpha(192), // Color for the circular container
                     ),
                     child: CLIcon.veryLarge(
                       overlayIcon!,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .background
-                          .withAlpha(192),
+                      color: CLTheme.of(context).colors.iconColorTransparent,
                     ),
                   ),
                 ),

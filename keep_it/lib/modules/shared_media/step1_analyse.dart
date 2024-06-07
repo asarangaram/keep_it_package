@@ -20,18 +20,22 @@ class AnalysePage extends SharedMediaWizard {
       builder: (appSettings) {
         return GetDBManager(
           builder: (dbManager) {
-            return SharedMediaWizard.buildWizard(
-              context, ref,
-              title: 'Analysing Shared Media',
-              message: 'Please wait while we analysing media files',
-              //option1: CLMenuItem(title: 'Yes', icon: Icons.abc),
-              //option2: CLMenuItem(title: 'No', icon: Icons.abc),
-              child: StreamProgressView(
-                stream: () => CLMediaProcess.analyseMedia(
-                  media: incomingMedia,
-                  findItemByMD5: dbManager.getMediaByMD5,
-                  onDone: onDone,
-                  appSettings: appSettings,
+            return Padding(
+              padding: const EdgeInsets.all(8),
+              child: SharedMediaWizard.buildWizard(
+                context, ref,
+                title: 'Analysing Shared Media',
+                message: 'Please wait while we analysing media files',
+                //option1: CLMenuItem(title: 'Yes', icon: Icons.abc),
+                //option2: CLMenuItem(title: 'No', icon: Icons.abc),
+                child: StreamProgressView(
+                  stream: () => CLMediaProcess.analyseMedia(
+                    media: incomingMedia,
+                    findItemByMD5: dbManager.getMediaByMD5,
+                    onDone: onDone,
+                    appSettings: appSettings,
+                  ),
+                  onCancel: onCancel,
                 ),
                 onCancel: onCancel,
               ),

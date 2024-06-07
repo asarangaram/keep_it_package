@@ -32,7 +32,7 @@ class EditorFinalizer extends StatelessWidget {
       child: child ??
           CLIcon.small(
             MdiIcons.check,
-            color: Theme.of(context).colorScheme.background,
+            color: CLTheme.of(context).colors.iconColor,
           ),
       onSelected: (EditorFinalActions value) async {
         switch (value) {

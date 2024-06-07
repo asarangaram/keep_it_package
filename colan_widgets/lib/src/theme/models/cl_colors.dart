@@ -8,16 +8,27 @@ class CLColors {
     required this.iconColorTransparent,
     required this.disabledIconColor,
     required this.disabledIconColorTransparent,
+    required this.iconBackground,
+    required this.iconBackgroundTransparent,
     required this.textColor,
     required this.gradientColors1,
+    required this.wizardButtonForegroundColor,
+    required this.wizardButtonBackgroundColor,
+    required this.editorBackgroundColor,
   });
   final Color borderColor0;
   final Color iconColor;
   final Color iconColorTransparent;
   final Color disabledIconColor;
   final Color disabledIconColorTransparent;
+  final Color iconBackgroundTransparent;
+  final Color iconBackground;
   final Color textColor;
   final List<Color> gradientColors1;
+
+  final Color wizardButtonForegroundColor;
+  final Color wizardButtonBackgroundColor;
+  final Color editorBackgroundColor;
 
   @override
   bool operator ==(covariant CLColors other) {
@@ -32,12 +43,20 @@ class CLColors {
 
 class DefaultCLColors extends CLColors {
   const DefaultCLColors({
-    super.borderColor0 = const Color.fromARGB(255, 47, 27, 198),
-    super.iconColor = const Color.fromARGB(255, 0, 0, 0),
-    super.iconColorTransparent = const Color.fromARGB(192, 0, 0, 0),
-    super.disabledIconColor = const Color.fromARGB(255, 70, 70, 70),
-    super.disabledIconColorTransparent = const Color.fromARGB(192, 70, 70, 70),
-    super.textColor = const Color.fromARGB(255, 0, 0, 0),
+    super.borderColor0 = const Color.fromARGB(0xFF, 47, 27, 198),
+    super.iconColor = const Color.fromARGB(0xFF, 0, 0, 0),
+    super.iconColorTransparent = const Color.fromARGB(192, 0xfe, 0xf7, 0xff),
+    super.disabledIconColor = const Color.fromARGB(0xFF, 192, 192, 192),
+    super.disabledIconColorTransparent =
+        const Color.fromARGB(192, 192, 192, 192),
+    super.iconBackground = const Color.fromARGB(0xFF, 70, 70, 70),
+    super.iconBackgroundTransparent =
+        const Color.fromARGB(192, 0x1d, 0x1b, 0x20),
+    super.wizardButtonBackgroundColor = const Color.fromARGB(0xFF, 0, 0, 0),
+    super.wizardButtonForegroundColor =
+        const Color.fromARGB(0xFF, 0xFF, 0xFF, 0xFF),
+    super.editorBackgroundColor = const Color.fromARGB(0xFF, 0, 0, 0),
+    super.textColor = const Color.fromARGB(0xFF, 0, 0, 0),
     super.gradientColors1 = const [
       Colors.red,
       Colors.orange,

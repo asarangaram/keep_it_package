@@ -91,6 +91,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                 return true;
               },
             ),
+            onCancel: widget.onCancel,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

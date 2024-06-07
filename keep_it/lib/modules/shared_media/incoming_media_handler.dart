@@ -51,27 +51,6 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
       widget0 = FullscreenLayout(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onBackground
-                        .withAlpha(192), // Color for the circular container
-                  ),
-                  child: CLButtonIcon.small(
-                    Icons.close,
-                    color:
-                        Theme.of(context).colorScheme.background.withAlpha(192),
-                    onTap: () => onDiscard(result: false),
-                  ),
-                ),
-              ),
-            ),
             Flexible(
               child: switch (candidates) {
                 null => AnalysePage(

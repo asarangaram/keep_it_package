@@ -20,28 +20,59 @@ abstract class SharedMediaWizard extends ConsumerWidget {
     required Widget child,
     required String message,
     required String title,
+    required void Function()? onCancel,
     CLMenuItem? option1,
     CLMenuItem? option2,
   }) {
-    /* decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: const BorderRadius.all(Radius.circular(16)),
-          ), 
+    /*  
           Do we need ClipRRect?? 
+          
           */
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(4),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: CLTheme.of(context).colors.wizardButtonBackgroundColor,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
-              child: CLText.large(title),
-            ),
-            Expanded(
               flex: 14,
-              child: child,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: CLText.large(title)),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: CLTheme.of(context)
+                                  .colors
+                                  .iconBackgroundTransparent,
+                            ),
+                            child: CLButtonIcon.small(
+                              Icons.close,
+                              color: CLTheme.of(context)
+                                  .colors
+                                  .iconColorTransparent,
+                              onTap: onCancel,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(child: child),
+                ],
+              ),
             ),
             Expanded(
               flex: 5,
@@ -51,14 +82,18 @@ abstract class SharedMediaWizard extends ConsumerWidget {
                     : CLButtonText.large(
                         option1.title,
                         onTap: option1.onTap,
-                        color: Theme.of(context).colorScheme.surface,
+                        color: CLTheme.of(context)
+                            .colors
+                            .wizardButtonForegroundColor,
                       ),
                 option2: option2 == null
                     ? null
                     : CLButtonText.large(
                         option2.title,
                         onTap: option2.onTap,
-                        color: Theme.of(context).colorScheme.surface,
+                        color: CLTheme.of(context)
+                            .colors
+                            .wizardButtonForegroundColor,
                       ),
                 content: Center(
                   child: Text(
@@ -111,15 +146,18 @@ class WizardDialog extends StatelessWidget {
                 Expanded(
                   child: (option2 == null)
                       ? Container()
-                      : DecoratedBox(
+                      : Container(
+                          margin: const EdgeInsets.only(right: 1),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            border: Border(
+                            color: CLTheme.of(context)
+                                .colors
+                                .wizardButtonBackgroundColor,
+                            border: const Border(
                               top: BorderSide(
-                                color: Theme.of(context).colorScheme.surface,
+                                color: Colors.transparent,
                               ),
                               right: BorderSide(
-                                color: Theme.of(context).colorScheme.surface,
+                                color: Colors.transparent,
                               ),
                             ),
                             borderRadius: const BorderRadius.only(
@@ -137,15 +175,18 @@ class WizardDialog extends StatelessWidget {
                 Expanded(
                   child: (option1 == null)
                       ? Container()
-                      : DecoratedBox(
+                      : Container(
+                          margin: const EdgeInsets.only(left: 1),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            border: Border(
+                            color: CLTheme.of(context)
+                                .colors
+                                .wizardButtonBackgroundColor,
+                            border: const Border(
                               top: BorderSide(
-                                color: Theme.of(context).colorScheme.surface,
+                                color: Colors.transparent,
                               ),
                               left: BorderSide(
-                                color: Theme.of(context).colorScheme.surface,
+                                color: Colors.transparent,
                               ),
                             ),
                             borderRadius: const BorderRadius.only(
@@ -154,7 +195,7 @@ class WizardDialog extends StatelessWidget {
                           ),
                           child: Center(
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 8),
+                              padding: const EdgeInsets.only(top: 8, left: 2),
                               child: option1,
                             ),
                           ),

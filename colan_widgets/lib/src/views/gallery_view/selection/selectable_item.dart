@@ -1,6 +1,6 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../../../basics/cl_icon.dart';
 
 class SelectableItem extends StatelessWidget {
   const SelectableItem({
@@ -62,15 +62,13 @@ class OverlayIcon extends StatelessWidget {
             shape: BoxShape.circle,
             color: Theme.of(
               context,
-            ).colorScheme.onBackground.withAlpha(
+            ).colorScheme.onSurface.withAlpha(
                   192,
                 ), // Color for the circular container
           ),
           child: CLIcon.veryLarge(
             iconData,
-            color: Theme.of(
-              context,
-            ).colorScheme.background.withAlpha(192),
+            color: CLTheme.of(context).colors.iconColorTransparent,
           ),
         ),
       ),

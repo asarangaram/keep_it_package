@@ -1,4 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart' as cl;
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:form_factory/src/views/cl_form_select_single.dart';
@@ -98,7 +99,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
               heightFactor: 1,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: CLTheme.of(context).colors.wizardButtonBackgroundColor,
                   border: Border.all(),
                   borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(16),

@@ -36,9 +36,8 @@ class MediaEditorPage extends StatelessWidget {
         switch (mediaType) {
           case CLMediaType.image:
             return FullscreenLayout(
-              useSafeArea: false,
               hasBackground: false,
-              backgroundColor: Theme.of(context).colorScheme.onSurface,
+              backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
               child: ImageEditService(
                 file: File(filePath),
                 onDone: () async {

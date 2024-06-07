@@ -67,7 +67,9 @@ class _DeviceInOrientation extends StatelessWidget {
       scaleY: isLandscape ? 1 : 16 / 9,
       child: CLIcon.verySmall(
         Icons.image,
-        color: isDisabled ? Theme.of(context).disabledColor : Colors.white,
+        color: isDisabled
+            ? CLTheme.of(context).colors.disabledIconColor
+            : CLTheme.of(context).colors.iconColor,
       ),
     );
   }

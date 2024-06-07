@@ -32,9 +32,9 @@ class CropperControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .onBackground, // Color for the circular container
+        color: CLTheme.of(context)
+            .colors
+            .wizardButtonForegroundColor, // Color for the circular container
       ),
       child: Row(
         children: [
@@ -51,7 +51,6 @@ class CropperControls extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: CLText.large(
                           'Crop',
-                          color: Colors.white,
                         ),
                       ),
                       Align(
@@ -91,14 +90,13 @@ class CropperControls extends StatelessWidget {
                             children: [
                               CLButtonText.standard(
                                 'Free form',
-                                color: aspectRatio == null
-                                    ? Colors.white
-                                    : Colors.grey,
-                                onTap: () {
-                                  onChangeAspectRatio(
-                                    null,
-                                  );
-                                },
+                                disabledColor: CLTheme.of(context)
+                                    .colors
+                                    .disabledIconColor,
+                                color: CLTheme.of(context).colors.iconColor,
+                                onTap: aspectRatio == null
+                                    ? null
+                                    : () => onChangeAspectRatio(null),
                               ),
                             ],
                           ),
@@ -114,16 +112,20 @@ class CropperControls extends StatelessWidget {
                               children: [
                                 CLButtonText.standard(
                                   ratio.title,
-                                  color: aspectRatio?.ratio == ratio.ratio
-                                      ? Colors.white
-                                      : Colors.grey,
-                                  onTap: () {
-                                    onChangeAspectRatio(
-                                      ratio.copyWith(
-                                        isLandscape: aspectRatio?.isLandscape,
-                                      ),
-                                    );
-                                  },
+                                  disabledColor: CLTheme.of(context)
+                                      .colors
+                                      .disabledIconColor,
+                                  color: CLTheme.of(context).colors.iconColor,
+                                  onTap: aspectRatio?.ratio == ratio.ratio
+                                      ? null
+                                      : () {
+                                          onChangeAspectRatio(
+                                            ratio.copyWith(
+                                              isLandscape:
+                                                  aspectRatio?.isLandscape,
+                                            ),
+                                          );
+                                        },
                                 ),
                               ],
                             ),
