@@ -11,6 +11,7 @@ environment:
 dependencies:
   app_loader:
     path: ../app_loader
+  audio_waveforms: ^1.0.5
   camera: ^0.10.6
   cl_camera:
     path: ../cl_camera
@@ -18,12 +19,18 @@ dependencies:
     path: ../colan_services
   colan_widgets:
     path: ../colan_widgets  
+  file_picker: ^8.0.3
   flutter:
     sdk: flutter
+  
+  flutter_audio_recorder2: ^0.0.2
+  flutter_audio_waveforms: ^1.2.1+8
+  flutter_chat_types: ^3.6.2
   flutter_riverpod: ^2.5.1
   form_factory:
     path: ../form_factory
   go_router: ^12.1.1
+  intl: ^0.18.1
   material_design_icons_flutter: ^7.0.7296
   path_provider: ^2.1.1
   percent_indicator: ^4.2.3
@@ -52,5 +59,10 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/logo.png
+    - assets/audios/audio1.mp3
+    - assets/audios/audio2.mp3
+    - assets/audios/audio3.mp3
+    - assets/audios/audio4.mp3
 
-    

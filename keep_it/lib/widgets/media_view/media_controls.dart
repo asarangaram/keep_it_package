@@ -45,6 +45,11 @@ class MediaControls extends ConsumerWidget {
                 padding: const EdgeInsets.only(left: 8, top: 8),
                 child: CircledIcon(
                   MdiIcons.notebook,
+                  onTap: () {
+                    context.push(
+                      '/item_note/${media.collectionId}/${media.id}?parentIdentifier=noteview${media.id ?? "no_id"}',
+                    );
+                  },
                 ),
               ),
             ),
