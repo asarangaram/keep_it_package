@@ -25,25 +25,28 @@ class AppLoader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appInitAsync = ref.watch(appInitProvider(appDescriptor));
-    return appInitAsync.when(
-      data: (success) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (FocusScope.of(context).hasFocus) {
-            FocusScope.of(context).unfocus();
-          }
-        });
-        return AppView(appDescriptor: appDescriptor);
-      },
-      error: (err, _) {
-        _infoLogger(err.toString());
-        return MaterialApp(
+    return CLTheme(
+      colors: const DefaultCLColors(),
+      child: appInitAsync.when(
+        data: (success) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (FocusScope.of(context).hasFocus) {
+              FocusScope.of(context).unfocus();
+            }
+          });
+          return AppView(appDescriptor: appDescriptor);
+        },
+        error: (err, _) {
+          _infoLogger(err.toString());
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: CLErrorView(errorMessage: err.toString()),
+          );
+        },
+        loading: () => const MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: CLErrorView(errorMessage: err.toString()),
-        );
-      },
-      loading: () => const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: CLLoadingView(),
+          home: CLLoadingView(),
+        ),
       ),
     );
   }
