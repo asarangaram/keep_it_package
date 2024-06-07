@@ -11,13 +11,13 @@ class SelectionCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        //borderRadius: BorderRadius.circular(16),
-        /* border: Border.all(
+      decoration: const BoxDecoration(
+          //color: Theme.of(context).colorScheme.primaryContainer,
+          //borderRadius: BorderRadius.circular(16),
+          /* border: Border.all(
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ), */
-        boxShadow: const [
+          /*  boxShadow: [
           BoxShadow(
             color: Color.fromARGB(
               128 + 64,
@@ -31,8 +31,8 @@ class SelectionCount extends StatelessWidget {
               5, // Move to bottom 10 Vertically
             ),
           ),
-        ],
-      ),
+        ], */
+          ),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Row(

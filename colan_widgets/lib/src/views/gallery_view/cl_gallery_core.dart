@@ -128,6 +128,13 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SelectionCount(
+          selectionMap,
+          onSelectAll: ({required select}) {
+            selectAll(select: select);
+            setState(() {});
+          },
+        ),
         Expanded(
           child: ListView.builder(
             //key: ValueKey(widget.galleryMap),
@@ -176,13 +183,6 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
               );
             },
           ),
-        ),
-        SelectionCount(
-          selectionMap,
-          onSelectAll: ({required select}) {
-            selectAll(select: select);
-            setState(() {});
-          },
         ),
       ],
     );

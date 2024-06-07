@@ -13,6 +13,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:store/store.dart';
 
 import '../modules/shared_media/step4_save_collection.dart';
+import '../modules/shared_media/wizard_page.dart';
 import '../providers/gallery_group_provider.dart';
 import '../widgets/editors/collection_editor_wizard/create_collection_wizard.dart';
 
@@ -28,7 +29,9 @@ class StaleMediaPage extends ConsumerWidget {
         buildOnData: (media) {
           if (media.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.pop();
+              if (context.canPop()) {
+                context.pop();
+              }
             });
           }
           final galleryMap = ref.watch(singleGroupItemProvider(media));
@@ -81,14 +84,127 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   Widget build(BuildContext context) {
     return GetDBManager(
       builder: (dbManager) {
+        if (!keepSelected) {
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: SharedMediaWizard.buildWizard(
+              context,
+              ref,
+              title: 'Unsaved',
+              message: selectedMedia.entries.isEmpty
+                  ? 'Select Media to proceed'
+                  : 'Do you want to keep the selected media or delete ?',
+              onCancel: () {
+                if (context.canPop()) {
+                  context.pop();
+                }
+              },
+              option1:
+                  (keepSelected == false && selectedMedia.entries.isNotEmpty)
+                      ? CLMenuItem(
+                          title: 'Keep',
+                          icon: Icons.save,
+                          onTap: () async {
+                            keepSelected = true;
+                            setState(() {});
+                            return true;
+                          },
+                        )
+                      : null,
+              option2: (keepSelected == false &&
+                      selectedMedia.entries.isNotEmpty)
+                  ? CLMenuItem(
+                      title: 'Delete',
+                      icon: Icons.delete,
+                      onTap: () async {
+                        final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CLConfirmAction(
+                                  title: 'Confirm delete',
+                                  message: 'Are you sure you want to delete '
+                                      '${selectedMedia.entries.length} items?',
+                                  child: null,
+                                  onConfirm: ({required confirmed}) =>
+                                      Navigator.of(context).pop(confirmed),
+                                );
+                              },
+                            ) ??
+                            false;
+                        if (confirmed) {
+                          await dbManager.deleteMediaMultiple(
+                            selectedMedia.entries,
+                            onDeleteFile: (f) async => f.deleteIfExists(),
+                            onRemovePinMultiple: (ids) async {
+                              /// This should not happen as
+                              /// stale media can't be pinned
+                              final res =
+                                  await AlbumManager(albumName: 'KeepIt')
+                                      .removeMultipleMedia(ids);
+                              if (!res) {
+                                await ref
+                                    .read(
+                                      notificationMessageProvider.notifier,
+                                    )
+                                    .push(
+                                      "'Give Permission to "
+                                      "remove from Gallery'",
+                                    );
+                              }
+                              return res;
+                            },
+                          );
+                        }
+                        return true;
+                      },
+                    )
+                  : null,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: DecoratedBox(
+                  decoration:
+                      const BoxDecoration(border: Border(bottom: BorderSide())),
+                  child: CLSimpleItemsSelector<CLMedia>(
+                    key: ValueKey(widget.label),
+                    galleryMap: widget.galleryMap,
+                    itemBuilder: (
+                      context,
+                      item,
+                    ) =>
+                        Hero(
+                      tag: '${widget.parentIdentifier} /item/${item.id}',
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: PreviewService(
+                          media: item,
+                          keepAspectRatio: false,
+                        ),
+                      ),
+                    ),
+                    emptyState: widget.emptyState,
+                    identifier: widget.parentIdentifier,
+                    columns: 2,
+                    onSelectionChanged: (List<CLMedia> items) {
+                      selectedMedia = selectedMedia.copyWith(entries: items);
+                      setState(() {});
+                    },
+                    keepSelected: keepSelected,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
         return Column(
           children: [
             Expanded(
               child: CLSimpleItemsSelector<CLMedia>(
                 key: ValueKey(widget.label),
-                title: 'Unsaved  Media',
                 galleryMap: widget.galleryMap,
-                itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+                itemBuilder: (
+                  context,
+                  item,
+                ) =>
                     Hero(
                   tag: '${widget.parentIdentifier} /item/${item.id}',
                   child: Padding(

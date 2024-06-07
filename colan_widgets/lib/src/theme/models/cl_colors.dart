@@ -45,13 +45,12 @@ class DefaultCLColors extends CLColors {
   const DefaultCLColors({
     super.borderColor0 = const Color.fromARGB(0xFF, 47, 27, 198),
     super.iconColor = const Color.fromARGB(0xFF, 0, 0, 0),
-    super.iconColorTransparent = const Color.fromARGB(192, 0xfe, 0xf7, 0xff),
+    super.iconColorTransparent = const Color.fromARGB(192, 0xFF, 0xFF, 0xFF),
     super.disabledIconColor = const Color.fromARGB(0xFF, 192, 192, 192),
     super.disabledIconColorTransparent =
         const Color.fromARGB(192, 192, 192, 192),
     super.iconBackground = const Color.fromARGB(0xFF, 70, 70, 70),
-    super.iconBackgroundTransparent =
-        const Color.fromARGB(192, 0x1d, 0x1b, 0x20),
+    super.iconBackgroundTransparent = const Color.fromARGB(192, 70, 70, 70),
     super.wizardButtonBackgroundColor = const Color.fromARGB(0xFF, 0, 0, 0),
     super.wizardButtonForegroundColor =
         const Color.fromARGB(0xFF, 0xFF, 0xFF, 0xFF),

@@ -162,7 +162,7 @@ class CircledIcon extends ConsumerWidget {
           shape: BoxShape.circle,
           color: CLTheme.of(context)
               .colors
-              .iconColorTransparent, // Color for the circular container
+              .iconBackgroundTransparent, // Color for the circular container
         ),
         child: Padding(
           padding: const EdgeInsets.all(4),
