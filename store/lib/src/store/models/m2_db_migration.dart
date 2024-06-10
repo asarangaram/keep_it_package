@@ -1,9 +1,9 @@
 import 'package:sqlite_async/sqlite_async.dart';
 
 final migrations = SqliteMigrations()
-  ..add(
-    SqliteMigration(1, (tx) async {
-      await tx.execute('''
+      ..add(
+        SqliteMigration(1, (tx) async {
+          await tx.execute('''
       CREATE TABLE IF NOT EXISTS Collection (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         description TEXT,
@@ -12,7 +12,7 @@ final migrations = SqliteMigrations()
         updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     ''');
-      await tx.execute('''
+          await tx.execute('''
       CREATE TRIGGER IF NOT EXISTS update_dates_on_collection
         AFTER UPDATE ON Collection
         BEGIN
@@ -21,7 +21,7 @@ final migrations = SqliteMigrations()
             WHERE id = NEW.id;
         END;
     ''');
-      await tx.execute('''
+          await tx.execute('''
       CREATE TABLE IF NOT EXISTS Item (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         path TEXT NOT NULL UNIQUE,
@@ -35,7 +35,7 @@ final migrations = SqliteMigrations()
         FOREIGN KEY (collectionId) REFERENCES Collection(id)
       )
     ''');
-      await tx.execute('''
+          await tx.execute('''
       CREATE TRIGGER IF NOT EXISTS update_dates_on_item
         AFTER UPDATE ON Item
         BEGIN
@@ -44,24 +44,59 @@ final migrations = SqliteMigrations()
             WHERE id = NEW.id;
         END;
     ''');
+        }),
+      )
+      ..add(
+        SqliteMigration(2, (tx) async {
+          await tx.execute(
+            'ALTER TABLE Item ADD COLUMN isDeleted INTEGER DEFAULT 0',
+          );
+          await tx.execute(
+            'ALTER TABLE Item ADD COLUMN isHidden INTEGER DEFAULT 0',
+          );
+          await tx.execute(
+            'ALTER TABLE Item ADD COLUMN isPinned INTEGER DEFAULT 0',
+          );
+          await tx.execute('UPDATE Item SET isDeleted = 0');
+          await tx.execute('UPDATE Item SET isHidden = 0');
+          await tx.execute('UPDATE Item SET isPinned = 0');
+        }),
+      )
+      ..add(
+        SqliteMigration(3, (tx) async {
+          await tx.execute('ALTER TABLE Item ADD COLUMN pin TEXT DEFAULT NULL');
+          await tx.execute('UPDATE Item SET pin = NULL');
+        }),
+      )
+    /* ..add(
+    SqliteMigration(4, (tx) async {
+      await tx.execute('''
+      CREATE TABLE IF NOT EXISTS Messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        message TEXT NOT NULL UNIQUE,
+        type TEXT NOT NULL,
+        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+      )
+      ''');
+      await tx.execute('''
+      CREATE TRIGGER IF NOT EXISTS update_dates_on_messages
+        AFTER UPDATE ON Messages
+        BEGIN
+            UPDATE Messages
+            SET updatedDate = CURRENT_TIMESTAMP
+            WHERE id = NEW.id;
+        END;
+      ''');
+      await tx.execute('''
+      CREATE TABLE IF NOT EXISTS ItemMessage (
+        messageId INTEGER,
+        itemId INTEGER,
+        PRIMARY KEY (messageId, itemId),
+        FOREIGN KEY (messageId) REFERENCES Messages(id) ON DELETE CASCADE,
+        FOREIGN KEY (itemId) REFERENCES Item(id) ON DELETE CASCADE
+      )
+    ''');
     }),
-  )
-  ..add(
-    SqliteMigration(2, (tx) async {
-      await tx
-          .execute('ALTER TABLE Item ADD COLUMN isDeleted INTEGER DEFAULT 0');
-      await tx
-          .execute('ALTER TABLE Item ADD COLUMN isHidden INTEGER DEFAULT 0');
-      await tx
-          .execute('ALTER TABLE Item ADD COLUMN isPinned INTEGER DEFAULT 0');
-      await tx.execute('UPDATE Item SET isDeleted = 0');
-      await tx.execute('UPDATE Item SET isHidden = 0');
-      await tx.execute('UPDATE Item SET isPinned = 0');
-    }),
-  )
-  ..add(
-    SqliteMigration(3, (tx) async {
-      await tx.execute('ALTER TABLE Item ADD COLUMN pin TEXT DEFAULT NULL');
-      await tx.execute('UPDATE Item SET pin = NULL');
-    }),
-  );
+  ) */
+    ;

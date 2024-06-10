@@ -1,31 +1,60 @@
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:intl/intl.dart';
+import 'package:keep_it/modules/notes/widgets/note_view.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'chat_bubble.dart';
-import 'models/message.dart';
-import 'widgets/show_messages.dart';
+import 'widgets/show_notes.dart';
 
-class AudioRecorder extends StatefulWidget {
-  const AudioRecorder({super.key});
+class NotesView extends StatefulWidget {
+  const NotesView({required this.media, super.key});
+  final CLMedia media;
 
   @override
-  State<AudioRecorder> createState() => _AudioRecorderState();
+  State<NotesView> createState() => _NotesViewState();
 }
 
-class _AudioRecorderState extends State<AudioRecorder> {
+class _NotesViewState extends State<NotesView> {
+  List<CLNote> messages = [];
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: ShowNotes(messages: messages),
+        ),
+        InputNewNote(
+          onNewNote: (CLNote note) async {
+            messages.add(note);
+            setState(() {});
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class InputNewNote extends StatefulWidget {
+  const InputNewNote({required this.onNewNote, super.key});
+  final Future<void> Function(CLNote note) onNewNote;
+
+  @override
+  State<InputNewNote> createState() => _InputNewNoteState();
+}
+
+class _InputNewNoteState extends State<InputNewNote> {
   late final RecorderController recorderController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
 
   bool isRecording = false;
   bool isRecordingCompleted = false;
-  List<CLMessage> messages = [];
-  CLAudioMessage? audioMessage;
+
+  CLAudioNote? audioMessage;
 
   @override
   void initState() {
@@ -36,7 +65,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   }
 
   Future<Directory> _getDir() async {
-    return getApplicationDocumentsDirectory();
+    return getApplicationCacheDirectory();
     /* path = '${appDirectory.path}/recording.m4a';
     setState(() {}); */
   }
@@ -71,20 +100,19 @@ class _AudioRecorderState extends State<AudioRecorder> {
         final appDirectory = snapShot.data!;
         return Column(
           children: [
-            Expanded(
-              child:
-                  ShowMessages(messages: messages, appDirectory: appDirectory),
-            ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: hasAudioMessage
                   ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        WaveBubble(
-                          path: (audioMessage!).path,
-                          width: MediaQuery.of(context).size.width / 4,
-                          //width: MediaQuery.of(context).size.width / 2,
-                          appDirectory: appDirectory,
+                        Expanded(
+                          child: AudioNoteView(
+                            audioMessage!,
+                            theme: const DefaultNotesInputTheme().copyWith(
+                              margin: const EdgeInsets.only(left: 8),
+                            ),
+                          ),
                         ),
                         IconButton(
                           onPressed: _sendAudio,
@@ -93,7 +121,6 @@ class _AudioRecorderState extends State<AudioRecorder> {
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 16),
                         IconButton(
                           onPressed: _deleteAudioMessage,
                           icon: const Icon(Icons.delete),
@@ -116,7 +143,8 @@ class _AudioRecorderState extends State<AudioRecorder> {
                               icon: Icon(
                                 isRecording ? Icons.stop : Icons.mic,
                               ),
-                              color: Colors.white,
+                              color: const DefaultNotesInputTheme()
+                                  .foregroundColor,
                               iconSize: 28,
                             ),
                           ],
@@ -144,11 +172,12 @@ class _AudioRecorderState extends State<AudioRecorder> {
                               ),
                             ),
                             IconButton(
-                              onPressed: () {
-                                messages.add(
-                                  CLTextMessage(
-                                    dateTime: DateTime.now(),
-                                    text: textEditingController.text,
+                              onPressed: () async {
+                                await widget.onNewNote(
+                                  CLTextNote(
+                                    createdDate: DateTime.now(),
+                                    note: textEditingController.text,
+                                    id: null,
                                   ),
                                 );
                                 textEditingController.clear();
@@ -191,9 +220,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   bool get canSendMessage => !isRecording && hasMessage;
 
-  void _sendAudio() {
+  Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      messages.add(audioMessage!);
+      await widget.onNewNote(audioMessage!);
       audioMessage = null;
       setState(() {});
     }
@@ -208,12 +237,13 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
         if (path != null) {
           isRecordingCompleted = true;
-          debugPrint(path);
+
           debugPrint('Recorded file size: ${File(path).lengthSync()}');
           //audioFiles.add(path);
-          audioMessage = CLAudioMessage(
-            dateTime: DateTime.now(),
+          audioMessage = CLAudioNote(
+            createdDate: DateTime.now(),
             path: path,
+            id: null,
           );
           setState(() {});
         }

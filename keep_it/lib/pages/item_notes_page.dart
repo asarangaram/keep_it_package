@@ -6,7 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:store/store.dart';
 
-import '../modules/notes/input.dart';
+import '../modules/notes/notes_view.dart';
+
 import '../widgets/media_view/media_viewer.dart';
 
 class ItemNotesPage extends ConsumerWidget {
@@ -39,6 +40,7 @@ class ItemNotesPage extends ConsumerWidget {
             child: Column(
               children: [
                 Expanded(
+                  flex: 2,
                   child: MediaViewer(
                     media: media,
                     onLockPage: ({required lock}) {},
@@ -54,9 +56,9 @@ class ItemNotesPage extends ConsumerWidget {
                     endIndent: 4,
                   ),
                 ),
-                const Expanded(
+                Expanded(
                   flex: 5,
-                  child: NotesInput(),
+                  child: NotesView(media: media),
                 ),
               ],
             ),

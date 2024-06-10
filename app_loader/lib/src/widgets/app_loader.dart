@@ -27,6 +27,7 @@ class AppLoader extends ConsumerWidget {
     final appInitAsync = ref.watch(appInitProvider(appDescriptor));
     return CLTheme(
       colors: const DefaultCLColors(),
+      noteTheme: DefaultNotesTheme(),
       child: appInitAsync.when(
         data: (success) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -34,7 +35,7 @@ class AppLoader extends ConsumerWidget {
               FocusScope.of(context).unfocus();
             }
           });
-         
+
           return AppView(appDescriptor: appDescriptor);
         },
         error: (err, _) {

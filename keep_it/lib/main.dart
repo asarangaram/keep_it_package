@@ -19,6 +19,7 @@ import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/deleted_media_page.dart';
 import 'pages/item_notes_page.dart';
+// ignore: unused_import
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/move_media_page.dart';
@@ -121,7 +122,7 @@ class KeepItApp implements AppDescriptor {
               throw Exception('missing parentIdentifier');
             }
 
-            return CollectionItemPage(
+            return ItemNotesPage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
               id: int.parse(state.pathParameters['item_id']!),
               parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
