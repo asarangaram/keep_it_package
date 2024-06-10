@@ -3,18 +3,19 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:exif/exif.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:image/image.dart' as img;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
+import 'package:store/store.dart';
 
 import '../models/cl_shared_media.dart';
 
 class CLMediaProcess {
   static Stream<Progress> analyseMedia({
+    required DBManager dbManager,
     required CLSharedMedia media,
     required Future<CLMedia?> Function(String md5) findItemByMD5,
     required AppSettings appSettings,
@@ -43,14 +44,34 @@ class CLMediaProcess {
           if (duplicate != null) {
             candidates.add(duplicate);
           } else {
-            candidates.add(
-              CLMedia(
-                path: item.path,
-                type: item.type,
-                collectionId: media.collection?.id,
-                md5String: md5String,
-              ),
+            const tempCollectionName = '*** Recently Imported';
+            final Collection tempCollection;
+            tempCollection =
+                await dbManager.getCollectionByLabel(tempCollectionName) ??
+                    await dbManager.upsertCollection(
+                      collection: const Collection(label: tempCollectionName),
+                    );
+            final newMedia = CLMedia(
+              path: item.path,
+              type: item.type,
+              collectionId: tempCollection.id,
+              md5String: md5String,
+              isHidden: true,
             );
+            final tempMedia = await dbManager.upsertMedia(
+              collectionId: tempCollection.id!,
+              media: newMedia.copyWith(isHidden: true),
+              onPrepareMedia: (m, {required targetDir}) async {
+                final updated =
+                    (await m.moveFile(targetDir: targetDir)).getMetadata();
+                return updated;
+              },
+            );
+            if (tempMedia != null) {
+              candidates.add(tempMedia);
+            } else {
+              /* Failed to add media, handle here */
+            }
           }
         } else {
           /* Missing file? ignoring */

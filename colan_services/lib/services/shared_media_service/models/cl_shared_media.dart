@@ -39,7 +39,9 @@ class CLSharedMedia {
   }
 
   CLSharedMedia? removeMismatch() {
-    final items = entries.where((e) => e.collectionId == collection?.id);
+    final items = entries.where(
+      (e) => e.collectionId == collection?.id || (e.isHidden ?? false),
+    );
     if (items.isEmpty) return null;
 
     return copyWith(entries: items.toList());

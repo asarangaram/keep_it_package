@@ -30,6 +30,7 @@ class AnalysePage extends SharedMediaWizard {
                 //option2: CLMenuItem(title: 'No', icon: Icons.abc),
                 child: StreamProgressView(
                   stream: () => CLMediaProcess.analyseMedia(
+                    dbManager: dbManager,
                     media: incomingMedia,
                     findItemByMD5: dbManager.getMediaByMD5,
                     onDone: onDone,
