@@ -31,3 +31,7 @@ class AppSettings {
   Directory get downloadDir =>
       Directory(join(directories.cacheDir.path, 'downloads'));
 }
+
+extension NotesOnAppSettings on AppSettings {
+  String get notesDir => '${directories.docDir.path}/keep_it/notes';
+}

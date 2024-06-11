@@ -66,6 +66,14 @@ abstract class Store {
     List<CLMedia> media, {
     required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   });
+  Future<CLNote> upsertNote(
+    CLNote note,
+    List<CLMedia> mediaList, {
+    required Future<CLNote> Function(
+      CLNote note, {
+      required String targetDir,
+    }) onSaveNote,
+  });
 }
 
 class DBManager extends Store {
@@ -272,6 +280,22 @@ class DBManager extends Store {
         media,
         onRemovePinMultiple: onRemovePinMultiple,
       );
+    });
+  }
+
+  @override
+  Future<CLNote> upsertNote(
+    CLNote note,
+    List<CLMedia> mediaList, {
+    required Future<CLNote> Function(
+      CLNote note, {
+      required String targetDir,
+    }) onSaveNote,
+  }) async {
+    final targetDir = dbWriter.appSettings.notesDir;
+    final updated = await onSaveNote(note, targetDir: targetDir);
+    return db.writeTransaction((tx) async {
+      return dbWriter.upsertNote(tx, updated, mediaList);
     });
   }
 }

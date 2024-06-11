@@ -48,7 +48,7 @@ class TextNoteView extends StatelessWidget {
       margin: theme.margin,
       padding: theme.padding,
       child: Text(
-        note.note,
+        note.path,
         style: theme.textStyle,
       ),
     );

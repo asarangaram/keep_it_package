@@ -27,7 +27,7 @@ class AppLoader extends ConsumerWidget {
     final appInitAsync = ref.watch(appInitProvider(appDescriptor));
     return CLTheme(
       colors: const DefaultCLColors(),
-      noteTheme: DefaultNotesTheme(),
+      noteTheme: const DefaultNotesTheme(),
       child: appInitAsync.when(
         data: (success) {
           WidgetsBinding.instance.addPostFrameCallback((_) {

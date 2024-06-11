@@ -74,6 +74,30 @@ class DBWriter {
       );
     },
   );
+  final DBExec<CLNote> notesTable = DBExec<CLNote>(
+    table: 'Notes',
+    toMap: (CLNote obj, {required appSettings, required validate}) {
+      final map = obj.toMap2(
+        validate: validate,
+        pathPrefix: appSettings.directories.docDir.path,
+      );
+      if (validate) {}
+      return map;
+    },
+    readBack: (tx, item, {required appSettings, required validate}) async {
+      final pathExpected = CLMedia.relativePath(
+        item.path,
+        pathPrefix: appSettings.directories.docDir.path,
+        validate: true,
+      );
+      return (DBQueries.noteByPath.sql as DBQuery<CLNote>)
+          .copyWith(parameters: [pathExpected]).read(
+        tx,
+        appSettings: appSettings,
+        validate: validate,
+      );
+    },
+  );
 
   final AppSettings appSettings;
 
@@ -248,6 +272,29 @@ class DBWriter {
       }
     }
     return res;
+  }
+
+  Future<CLNote> upsertNote(
+    SqliteWriteContext tx,
+    CLNote note,
+    List<CLMedia> mediaList,
+  ) async {
+    _infoLogger('upsertNote: $note');
+
+    final updated = await notesTable.upsert(
+      tx,
+      note,
+      appSettings: appSettings,
+      validate: true,
+    );
+    _infoLogger('upsertNote: Done :  $updated');
+    if (updated == null) {
+      exceptionLogger(
+        '$_filePrefix: DB Failure',
+        '$_filePrefix: Failed to write / retrive Note',
+      );
+    }
+    return updated!;
   }
 }
 

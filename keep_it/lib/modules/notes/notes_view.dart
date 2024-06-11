@@ -7,6 +7,7 @@ import 'package:form_factory/form_factory.dart';
 import 'package:intl/intl.dart';
 import 'package:keep_it/modules/notes/widgets/note_view.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:store/store.dart';
 
 import 'widgets/show_notes.dart';
 
@@ -22,18 +23,33 @@ class _NotesViewState extends State<NotesView> {
   List<CLNote> messages = [];
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ShowNotes(messages: messages),
-        ),
-        InputNewNote(
-          onNewNote: (CLNote note) async {
-            messages.add(note);
-            setState(() {});
+    return GetDBManager(
+      builder: (dbManager) {
+        return GetNotes(
+          buildOnData: (notes) {
+            return Column(
+              children: [
+                Expanded(
+                  child: ShowNotes(messages: notes),
+                ),
+                InputNewNote(
+                  onNewNote: (CLNote note) async {
+                    await dbManager.upsertNote(
+                      note,
+                      [widget.media],
+                      onSaveNote: (note1, {required targetDir}) async {
+                        return note1.moveFile(targetDir: targetDir);
+                      },
+                    );
+                    messages.add(note);
+                    setState(() {});
+                  },
+                ),
+              ],
+            );
           },
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -173,10 +189,19 @@ class _InputNewNoteState extends State<InputNewNote> {
                             ),
                             IconButton(
                               onPressed: () async {
+                                final now = DateTime.now();
+                                final formattedDate =
+                                    DateFormat('yyyyMMdd_HHmmss_SSS')
+                                        .format(now);
+                                final path =
+                                    '${appDirectory.path}/note_$formattedDate.txt';
+                                await File(path)
+                                    .writeAsString(textEditingController.text);
+                                // Write  to file.
                                 await widget.onNewNote(
                                   CLTextNote(
                                     createdDate: DateTime.now(),
-                                    note: textEditingController.text,
+                                    path: path,
                                     id: null,
                                   ),
                                 );
