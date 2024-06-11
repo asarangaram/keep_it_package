@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:store/store.dart';
 
 import 'widgets/show_notes.dart';
+import 'widgets/text_note.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({required this.media, super.key});
@@ -22,17 +23,22 @@ class NotesView extends StatefulWidget {
 class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
-    return GetDBManager(
-      builder: (dbManager) {
-        return GetNotesByMediaId(
-          mediaId: widget.media.id!,
-          buildOnData: (notes) {
-            return Column(
-              children: [
-                Expanded(
-                  child: ShowNotes(messages: notes),
-                ),
-                InputNewNote(
+    return GetAppSettings(
+      builder: (appSettings) {
+        return GetDBManager(
+          builder: (dbManager) {
+            return GetNotesByMediaId(
+              mediaId: widget.media.id!,
+              buildOnData: (notes) {
+                final textNote = notes.where(
+                  (e) {
+                    return e.type == CLNoteTypes.text;
+                  },
+                ).firstOrNull as CLTextNote?;
+
+                return TextNote(
+                  tempDir: appSettings.directories.cacheDir,
+                  note: textNote,
                   onNewNote: (CLNote note) async {
                     await dbManager.upsertNote(
                       note,
@@ -42,8 +48,8 @@ class _NotesViewState extends State<NotesView> {
                       },
                     );
                   },
-                ),
-              ],
+                );
+              },
             );
           },
         );

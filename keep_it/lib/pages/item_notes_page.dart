@@ -37,30 +37,29 @@ class ItemNotesPage extends ConsumerWidget {
                 }
               }
             },
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: MediaViewer(
-                    media: media,
-                    onLockPage: ({required lock}) {},
-                    autoStart: false,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: MediaViewer(
+                      media: media,
+                      onLockPage: ({required lock}) {},
+                      autoStart: false,
+                    ),
                   ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Divider(
-                    height: 2,
-                    thickness: 3,
-                    indent: 4,
-                    endIndent: 4,
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Divider(
+                      height: 2,
+                      thickness: 3,
+                      indent: 4,
+                      endIndent: 4,
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 5,
-                  child: NotesView(media: media),
-                ),
-              ],
+                  NotesView(media: media),
+                ],
+              ),
             ),
           ),
         );
