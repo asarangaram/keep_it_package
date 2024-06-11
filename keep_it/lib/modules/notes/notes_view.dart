@@ -20,7 +20,6 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  List<CLNote> messages = [];
   @override
   Widget build(BuildContext context) {
     return GetDBManager(
@@ -41,8 +40,6 @@ class _NotesViewState extends State<NotesView> {
                         return note1.moveFile(targetDir: targetDir);
                       },
                     );
-                    messages.add(note);
-                    setState(() {});
                   },
                 ),
               ],
@@ -189,24 +186,29 @@ class _InputNewNoteState extends State<InputNewNote> {
                             ),
                             IconButton(
                               onPressed: () async {
-                                final now = DateTime.now();
-                                final formattedDate =
-                                    DateFormat('yyyyMMdd_HHmmss_SSS')
-                                        .format(now);
-                                final path =
-                                    '${appDirectory.path}/note_$formattedDate.txt';
-                                await File(path)
-                                    .writeAsString(textEditingController.text);
-                                // Write  to file.
-                                await widget.onNewNote(
-                                  CLTextNote(
-                                    createdDate: DateTime.now(),
-                                    path: path,
-                                    id: null,
-                                  ),
-                                );
-                                textEditingController.clear();
-                                setState(() {});
+                                if (textEditingController.text
+                                    .trim()
+                                    .isNotEmpty) {
+                                  final now = DateTime.now();
+                                  final formattedDate =
+                                      DateFormat('yyyyMMdd_HHmmss_SSS')
+                                          .format(now);
+                                  final path =
+                                      '${appDirectory.path}/note_$formattedDate.txt';
+                                  await File(path).writeAsString(
+                                    textEditingController.text.trim(),
+                                  );
+                                  // Write  to file.
+                                  await widget.onNewNote(
+                                    CLTextNote(
+                                      createdDate: DateTime.now(),
+                                      path: path,
+                                      id: null,
+                                    ),
+                                  );
+                                  textEditingController.clear();
+                                  setState(() {});
+                                }
                               },
                               icon: const Icon(
                                 Icons.send,

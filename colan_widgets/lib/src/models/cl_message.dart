@@ -139,7 +139,7 @@ class CLNote {
     }
     final map = Map<String, dynamic>.from(map1)
       ..removeWhere((key, value) => value == 'null');
-
+    map['path'] = path;
     return CLNote.fromMap(map);
   }
 
@@ -187,6 +187,10 @@ class CLTextNote extends CLNote {
     super.updatedDate,
     super.type = CLNoteTypes.text,
   });
+
+  String get text {
+    return File(path).readAsStringSync();
+  }
 }
 
 @immutable
