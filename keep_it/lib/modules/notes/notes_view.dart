@@ -24,7 +24,8 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return GetDBManager(
       builder: (dbManager) {
-        return GetNotes(
+        return GetNotesByMediaId(
+          mediaId: widget.media.id!,
           buildOnData: (notes) {
             return Column(
               children: [

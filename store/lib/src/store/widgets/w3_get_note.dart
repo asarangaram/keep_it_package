@@ -31,18 +31,20 @@ class GetNote extends ConsumerWidget {
   }
 }
 
-class GetNotes extends ConsumerWidget {
-  const GetNotes({
+class GetNotesByMediaId extends ConsumerWidget {
+  const GetNotesByMediaId({
+    required this.mediaId,
     required this.buildOnData,
     super.key,
   });
+  final int mediaId;
   final Widget Function(List<CLNote> note) buildOnData;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetFromStore<CLNote>(
-      query:
-          (DBQueries.notesAll.sql.copyWith(parameters: [])) as DBQuery<CLNote>,
+      query: (DBQueries.notesByMediaId.sql.copyWith(parameters: [mediaId]))
+          as DBQuery<CLNote>,
       builder: buildOnData,
     );
   }

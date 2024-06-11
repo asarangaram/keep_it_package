@@ -98,6 +98,17 @@ class DBWriter {
       );
     },
   );
+  final DBExec<NotesOnMedia> notesOnMediaTable = DBExec<NotesOnMedia>(
+    table: 'ItemNote',
+    toMap: (NotesOnMedia obj, {required appSettings, required validate}) {
+      final map = obj.toMap();
+      if (validate) {}
+      return map;
+    },
+    readBack: (tx, item, {required appSettings, required validate}) async {
+      return item;
+    },
+  );
 
   final AppSettings appSettings;
 
@@ -293,6 +304,15 @@ class DBWriter {
         '$_filePrefix: DB Failure',
         '$_filePrefix: Failed to write / retrive Note',
       );
+    } else {
+      for (final media in mediaList) {
+        await notesOnMediaTable.upsert(
+          tx,
+          NotesOnMedia(noteId: updated.id!, itemId: media.id!),
+          appSettings: appSettings,
+          validate: false,
+        );
+      }
     }
     return updated!;
   }

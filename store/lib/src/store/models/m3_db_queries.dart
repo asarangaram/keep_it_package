@@ -111,7 +111,7 @@ enum DBQueries {
         mediaByNoteID => DBQuery<CLMedia>(
             sql:
                 'SELECT Item.* FROM Item JOIN ItemNote ON Item.id = ItemNote.itemId WHERE ItemNote.noteId = ?;',
-            triggerOnTables: const {'Item', 'Notes'},
+            triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
             fromMap: CLMedia.fromMap,
           ),
         notesAll => DBQuery<CLNote>(
@@ -132,7 +132,7 @@ enum DBQueries {
         notesByMediaId => DBQuery<CLNote>(
             sql:
                 'SELECT Notes.* FROM Notes JOIN ItemNote ON Notes.id = ItemNote.noteId WHERE ItemNote.itemId = ?;',
-            triggerOnTables: const {'Item', 'Notes'},
+            triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
             fromMap: CLNote.fromMap2,
           ),
       };
