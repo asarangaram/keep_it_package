@@ -9,7 +9,6 @@ import 'package:keep_it/modules/notes/widgets/note_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:store/store.dart';
 
-import 'widgets/show_notes.dart';
 import 'widgets/text_note.dart';
 
 class NotesView extends StatefulWidget {

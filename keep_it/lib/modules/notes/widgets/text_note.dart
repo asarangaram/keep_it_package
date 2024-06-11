@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 
 class TextNote extends StatefulWidget {
   const TextNote({
