@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../modules/notes/notes_view.dart';
+import '../../modules/notes/widgets/audio_notes.dart';
 
 class MediaViewer extends ConsumerWidget {
   const MediaViewer({
@@ -24,20 +26,32 @@ class MediaViewer extends ConsumerWidget {
     return Column(
       children: [
         Expanded(
-          child: switch (media.type) {
-            CLMediaType.image => ImageViewService(
-                file: File(media.path),
-                onLockPage: onLockPage,
-              ),
-            CLMediaType.video => VideoPlayerService.player(
-                media: media,
-                alternate: PreviewService(
-                  media: media,
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              switch (media.type) {
+                CLMediaType.image => ImageViewService(
+                    file: File(media.path),
+                    onLockPage: onLockPage,
+                  ),
+                CLMediaType.video => VideoPlayerService.player(
+                    media: media,
+                    alternate: PreviewService(
+                      media: media,
+                    ),
+                    autoStart: autoStart,
+                  ),
+                _ => throw UnimplementedError('Not yet implemented')
+              },
+              if (showControl.showNotes)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AudioNotes(
+                    media: media,
+                  ),
                 ),
-                autoStart: autoStart,
-              ),
-            _ => throw UnimplementedError('Not yet implemented')
-          },
+            ],
+          ),
         ),
         if (showControl.showNotes) ...[
           const Padding(
