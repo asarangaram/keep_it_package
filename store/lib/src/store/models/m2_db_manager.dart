@@ -298,6 +298,15 @@ class DBManager extends Store {
       return dbWriter.upsertNote(tx, updated, mediaList);
     });
   }
+
+  Future<void> deleteNote(
+    CLNote note, {
+    required Future<void> Function(File file) onDeleteFile,
+  }) async {
+    await db.writeTransaction((tx) async {
+      await dbWriter.deleteNote(tx, note, onDeleteFile: onDeleteFile);
+    });
+  }
 }
 
 extension ExtSqliteDatabase on SqliteDatabase {

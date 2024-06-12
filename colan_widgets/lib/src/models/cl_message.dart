@@ -135,10 +135,10 @@ class CLNote {
         : map1['path'] as String)
       ..replaceAll('//', '/');
     if (appSettings.shouldValidate && !File(path).existsSync()) {
-      exceptionLogger(
+      /* exceptionLogger(
         'File not found',
         'CL Note file path read from database is not found',
-      );
+      ); */
     }
     final map = Map<String, dynamic>.from(map1)
       ..removeWhere((key, value) => value == 'null');

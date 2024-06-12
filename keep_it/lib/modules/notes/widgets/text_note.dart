@@ -25,10 +25,7 @@ class TextNote extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CLButtonIcon.standard(
-          MdiIcons.chevronDown,
-          onTap: onClose,
-        ),
+        
         SizedBox(
           height: 200,
           child: Padding(

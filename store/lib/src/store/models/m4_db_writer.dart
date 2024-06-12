@@ -317,6 +317,15 @@ class DBWriter {
     }
     return updated!;
   }
+
+  Future<void> deleteNote(
+    SqliteWriteContext tx,
+    CLNote note, {
+    required Future<void> Function(File file) onDeleteFile,
+  }) async {
+    await onDeleteFile(File(note.path));
+    await notesTable.delete(tx, {'id': note.id.toString()});
+  }
 }
 
 const _filePrefix = 'DB Write: ';

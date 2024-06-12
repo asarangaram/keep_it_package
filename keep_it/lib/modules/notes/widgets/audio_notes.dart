@@ -10,15 +10,27 @@ import 'package:store/store.dart';
 import 'audio_chip.dart';
 
 class AudioNotes extends StatefulWidget {
-  const AudioNotes({required this.media, super.key});
+  const AudioNotes({
+    required this.media,
+    required this.audioNotes,
+    super.key,
+  });
   final CLMedia media;
+  final List<CLAudioNote> audioNotes;
 
   @override
   State<AudioNotes> createState() => _AudioNotesState();
 }
 
 class _AudioNotesState extends State<AudioNotes> {
-  bool editMode = false;
+  late bool editMode;
+
+  @override
+  void didChangeDependencies() {
+    editMode = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -27,54 +39,56 @@ class _AudioNotesState extends State<AudioNotes> {
         builder: (appSettings) {
           return GetDBManager(
             builder: (dbManager) {
-              return GetNotesByMediaId(
-                mediaId: widget.media.id!,
-                buildOnData: (notes) {
-                  final audioNotes = notes
-                      .where(
-                        (e) {
-                          return e.type == CLNoteTypes.audio;
-                        },
-                      )
-                      .map((e) => e as CLAudioNote)
-                      .toList();
-                  return AudioRecorder(
-                    tempDir: appSettings.directories.cacheDir,
-                    onNewNote: (CLNote note) async {
-                      await dbManager.upsertNote(
-                        note,
-                        [widget.media],
-                        onSaveNote: (note1, {required targetDir}) async {
-                          return note1.moveFile(targetDir: targetDir);
-                        },
-                      );
+              return AudioRecorder(
+                tempDir: appSettings.directories.cacheDir,
+                onNewNote: (CLNote note) async {
+                  await dbManager.upsertNote(
+                    note,
+                    [widget.media],
+                    onSaveNote: (note1, {required targetDir}) async {
+                      return note1.moveFile(targetDir: targetDir);
                     },
-                    editMode: editMode,
-                    onEditCancel: () {
-                      setState(() {
-                        editMode = false;
-                      });
-                    },
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: audioNotes
-                          .map(
-                            (audioNote) => AudioChip(
-                              audioNote,
-                              editMode: editMode,
-                              onEditMode: () {
-                                setState(() {
-                                  editMode = true;
-                                });
-                              },
-                              theme: CLTheme.of(context).noteTheme,
-                            ),
-                          )
-                          .toList(),
-                    ),
                   );
                 },
+                editMode: editMode && widget.audioNotes.isNotEmpty,
+                onEditCancel: () {
+                  setState(() {
+                    editMode = false;
+                  });
+                },
+                child: widget.audioNotes.isEmpty
+                    ? null
+                    : SingleChildScrollView(
+                        child: Wrap(
+                          runSpacing: 2,
+                          spacing: 2,
+                          children: widget.audioNotes
+                              .map(
+                                (audioNote) => AudioChip(
+                                  audioNote,
+                                  editMode:
+                                      editMode && widget.audioNotes.isNotEmpty,
+                                  onEditMode: () {
+                                    setState(() {
+                                      if (widget.audioNotes.isNotEmpty) {
+                                        editMode = true;
+                                      }
+                                    });
+                                  },
+                                  theme: CLTheme.of(context).noteTheme,
+                                  onDeleteNote: () async {
+                                    await dbManager.deleteNote(
+                                      audioNote,
+                                      onDeleteFile: (file) async {
+                                        await file.deleteIfExists();
+                                      },
+                                    );
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
               );
             },
           );
