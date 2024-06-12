@@ -97,6 +97,7 @@ class CLNote {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'createdDate': createdDate.toSQL(),
       'type': type.name,
       'path': path,
@@ -108,6 +109,7 @@ class CLNote {
     String? pathPrefix,
   }) {
     return <String, dynamic>{
+      'id': id,
       'createdDate': createdDate.toSQL(),
       'type': type.name,
       'path': CLMedia.relativePath(
@@ -133,10 +135,10 @@ class CLNote {
         : map1['path'] as String)
       ..replaceAll('//', '/');
     if (appSettings.shouldValidate && !File(path).existsSync()) {
-      exceptionLogger(
+      /* TODO: Remove exceptionLogger(
         'File not found',
         'CL Note file path read from database is not found',
-      );
+      ); */
     }
     final map = Map<String, dynamic>.from(map1)
       ..removeWhere((key, value) => value == 'null');
@@ -190,6 +192,9 @@ class CLTextNote extends CLNote {
   });
 
   String get text {
+    if (!File(path).existsSync()) {
+      return 'Content Missing. File is deleted';
+    }
     return File(path).readAsStringSync();
   }
 }

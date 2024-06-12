@@ -48,6 +48,7 @@ class _NotesViewState extends State<NotesView> {
                       },
                     );
                   },
+                  onClose: widget.onClose,
                 );
               },
             );

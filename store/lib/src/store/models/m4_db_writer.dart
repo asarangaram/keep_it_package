@@ -311,6 +311,7 @@ class DBWriter {
           NotesOnMedia(noteId: updated.id!, itemId: media.id!),
           appSettings: appSettings,
           validate: false,
+          ignore: true
         );
       }
     }

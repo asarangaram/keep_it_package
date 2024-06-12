@@ -63,11 +63,13 @@ class DBExec<T> {
     T obj, {
     required AppSettings appSettings,
     required bool validate,
+    bool ignore = false,
   }) async {
     final cmd = _sql(
       obj,
       appSettings: appSettings,
       validate: validate,
+      ignore: ignore,
     );
     _infoLogger('Exec:  $cmd');
     if (cmd.value.isNotEmpty) {
@@ -136,6 +138,7 @@ class DBExec<T> {
     T obj, {
     required AppSettings appSettings,
     required bool validate,
+    bool ignore = false,
   }) {
     final map = toMap(
       obj,
@@ -151,11 +154,13 @@ class DBExec<T> {
     final values = keys.map((e) => map[e].toString()).toList();
     final String sql;
     if (id != null) {
-      sql = 'UPDATE $table SET ${keys.map((e) => '$e =?').join(', ')} '
+      sql = 'UPDATE '
+          '$table SET ${keys.map((e) => '$e =?').join(', ')} '
           'WHERE id = ?';
       values.add(id);
     } else {
-      sql = 'INSERT INTO $table (${keys.join(', ')}) '
+      sql =
+          'INSERT ${ignore ? "OR IGNORE" : ""} INTO $table (${keys.join(', ')}) '
           'VALUES (${keys.map((e) => '?').join(', ')}) ';
     }
     return MapEntry(sql, values);
