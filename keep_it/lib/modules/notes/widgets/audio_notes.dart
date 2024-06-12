@@ -5,7 +5,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:keep_it/modules/notes/widgets/note_view.dart';
-import 'package:path/path.dart' as path;
 import 'package:store/store.dart';
 
 import 'audio_chip.dart';
@@ -22,69 +21,64 @@ class _AudioNotesState extends State<AudioNotes> {
   bool editMode = false;
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: (event) {
-        print('onPointerDown evebnt $event');
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: GetAppSettings(
-          builder: (appSettings) {
-            return GetDBManager(
-              builder: (dbManager) {
-                return GetNotesByMediaId(
-                  mediaId: widget.media.id!,
-                  buildOnData: (notes) {
-                    final audioNotes = notes
-                        .where(
-                          (e) {
-                            return e.type == CLNoteTypes.audio;
-                          },
-                        )
-                        .map((e) => e as CLAudioNote)
-                        .toList();
-                    return AudioRecorder(
-                      tempDir: appSettings.directories.cacheDir,
-                      onNewNote: (CLNote note) async {
-                        await dbManager.upsertNote(
-                          note,
-                          [widget.media],
-                          onSaveNote: (note1, {required targetDir}) async {
-                            return note1.moveFile(targetDir: targetDir);
-                          },
-                        );
-                      },
-                      editMode: editMode,
-                      onEditCancel: () {
-                        setState(() {
-                          editMode = false;
-                        });
-                      },
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
-                        children: audioNotes
-                            .map(
-                              (audioNote) => AudioChip(
-                                audioNote,
-                                editMode: editMode,
-                                onEditMode: () {
-                                  setState(() {
-                                    editMode = true;
-                                  });
-                                },
-                                theme: CLTheme.of(context).noteTheme,
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          },
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: GetAppSettings(
+        builder: (appSettings) {
+          return GetDBManager(
+            builder: (dbManager) {
+              return GetNotesByMediaId(
+                mediaId: widget.media.id!,
+                buildOnData: (notes) {
+                  final audioNotes = notes
+                      .where(
+                        (e) {
+                          return e.type == CLNoteTypes.audio;
+                        },
+                      )
+                      .map((e) => e as CLAudioNote)
+                      .toList();
+                  return AudioRecorder(
+                    tempDir: appSettings.directories.cacheDir,
+                    onNewNote: (CLNote note) async {
+                      await dbManager.upsertNote(
+                        note,
+                        [widget.media],
+                        onSaveNote: (note1, {required targetDir}) async {
+                          return note1.moveFile(targetDir: targetDir);
+                        },
+                      );
+                    },
+                    editMode: editMode,
+                    onEditCancel: () {
+                      setState(() {
+                        editMode = false;
+                      });
+                    },
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: audioNotes
+                          .map(
+                            (audioNote) => AudioChip(
+                              audioNote,
+                              editMode: editMode,
+                              onEditMode: () {
+                                setState(() {
+                                  editMode = true;
+                                });
+                              },
+                              theme: CLTheme.of(context).noteTheme,
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

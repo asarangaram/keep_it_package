@@ -96,15 +96,3 @@ class _AudioChipState extends State<AudioChip> {
     );
   }
 }
-/**
- * 
-Chip(
-        
-        label: AudioFileWaveforms(
-          size: const Size(80, 20),
-          playerController: controller,
-          playerWaveStyle: playerWaveStyle,
-          continuousWaveform: widget.theme.continuousWaveform,
-        ),
-      )
- */
