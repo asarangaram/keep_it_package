@@ -4,37 +4,51 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+enum ItemViewModes { fullView, menu, notes }
+
 @immutable
 class ShowWhat {
-  final bool bottomMenu;
-  final bool notes;
+  final ItemViewModes itemViewMode;
   const ShowWhat({
-    this.bottomMenu = false,
-    this.notes = false,
+    this.itemViewMode = ItemViewModes.fullView,
   });
 
   ShowWhat copyWith({
-    bool? bottomMenu,
-    bool? notes,
+    ItemViewModes? itemViewMode,
   }) {
     return ShowWhat(
-      bottomMenu: bottomMenu ?? this.bottomMenu,
-      notes: notes ?? this.notes,
+      itemViewMode: itemViewMode ?? this.itemViewMode,
     );
   }
 
   @override
-  String toString() => 'ShowWhat(bottomMenu: $bottomMenu, showNotes: $notes)';
+  String toString() => 'ShowWhat(itemViewMode: $itemViewMode)';
 
   @override
   bool operator ==(covariant ShowWhat other) {
     if (identical(this, other)) return true;
 
-    return other.bottomMenu == bottomMenu && other.notes == notes;
+    return other.itemViewMode == itemViewMode;
   }
 
   @override
-  int get hashCode => bottomMenu.hashCode ^ notes.hashCode;
+  int get hashCode => itemViewMode.hashCode;
+
+  bool get showMenu {
+    return itemViewMode == ItemViewModes.menu;
+  }
+
+  bool get showStatusBar {
+    return itemViewMode == ItemViewModes.menu;
+  }
+
+  bool get showBackground {
+    return itemViewMode != ItemViewModes.fullView;
+  }
+
+  bool get showNotes {
+    return itemViewMode == ItemViewModes.notes;
+  }
 }
 
 class ShowControlNotifier extends StateNotifier<ShowWhat> {
@@ -49,19 +63,26 @@ class ShowControlNotifier extends StateNotifier<ShowWhat> {
   }
 
   void hideControls() {
-    if (state.bottomMenu) {
-      state = state.copyWith(bottomMenu: false);
+    if (state.showMenu) {
+      state = state.copyWith(itemViewMode: ItemViewModes.fullView);
     }
   }
 
   void showControls() {
-    if (!state.bottomMenu) {
-      state = state.copyWith(bottomMenu: true);
+    if (!state.showMenu) {
+      state = state.copyWith(itemViewMode: ItemViewModes.menu);
     }
   }
 
   void toggleControls() {
-    state = state.copyWith(bottomMenu: !state.bottomMenu);
+    switch (state.itemViewMode) {
+      case ItemViewModes.fullView:
+        state = state.copyWith(itemViewMode: ItemViewModes.menu);
+      case ItemViewModes.menu:
+        state = state.copyWith(itemViewMode: ItemViewModes.fullView);
+      case ItemViewModes.notes:
+        break;
+    }
   }
 
   void briefHover({Duration? timeout}) {
@@ -77,6 +98,14 @@ class ShowControlNotifier extends StateNotifier<ShowWhat> {
         },
       );
     }
+  }
+
+  void showNotes() {
+    state = state.copyWith(itemViewMode: ItemViewModes.notes);
+  }
+
+  void hideNotes() {
+    state = state.copyWith(itemViewMode: ItemViewModes.fullView);
   }
 }
 

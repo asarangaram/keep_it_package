@@ -38,7 +38,7 @@ class CollectionItemPage extends ConsumerWidget {
               context.pop();
             }
           });
-          return const EmptyState(message: 'All items are Deleted');
+          return const EmptyState(message: 'No Media');
         }
         final initialMedia = items.where((e) => e.id == id).firstOrNull;
         final initialMediaIndex =
@@ -93,7 +93,7 @@ class MediaInPageViewState extends ConsumerState<MediaInPageView> {
       DeviceOrientation.landscapeRight,
     ]);
     final showControl = ref.watch(showControlsProvider);
-    if (!showControl) {
+    if (!showControl.showStatusBar) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     } else {
       SystemChrome.setEnabledSystemUIMode(
@@ -185,7 +185,7 @@ class MediaBackground extends ConsumerWidget {
     final showControl = ref.watch(showControlsProvider);
 
     return AnimatedOpacity(
-      opacity: showControl ? 0 : 1.0,
+      opacity: showControl.showBackground ? 0 : 1.0,
       duration: const Duration(milliseconds: 500),
       child: Container(
         decoration:

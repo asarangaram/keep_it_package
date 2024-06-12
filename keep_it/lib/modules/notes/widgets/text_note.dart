@@ -83,15 +83,20 @@ class _TextNoteState extends State<TextNote> {
                       .bodyLarge
                       ?.copyWith(fontSize: CLScaleType.standard.fontSize),
                   decoration: InputDecoration(
-                    suffixIcon: CLButtonIcon.large(
-                      Icons.check,
-                      onTap: () async {
-                        if (textEditingController.text.trim().isNotEmpty &&
-                            textEditingController.text != widget.note?.text) {}
-                        isEditing = false;
-                        setState(() {});
-                      },
-                    ),
+                    suffixIcon: isEditing
+                        ? CLButtonIcon.large(
+                            Icons.check,
+                            onTap: () async {
+                              if (textEditingController.text
+                                      .trim()
+                                      .isNotEmpty &&
+                                  textEditingController.text !=
+                                      widget.note?.text) {}
+                              isEditing = false;
+                              setState(() {});
+                            },
+                          )
+                        : null,
                   ),
                 ),
               ),

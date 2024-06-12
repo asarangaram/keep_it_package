@@ -3,8 +3,11 @@ import 'dart:io';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MediaViewer extends StatelessWidget {
+import '../../modules/notes/notes_view.dart';
+
+class MediaViewer extends ConsumerWidget {
   const MediaViewer({
     required this.media,
     required this.onLockPage,
@@ -16,20 +19,47 @@ class MediaViewer extends StatelessWidget {
   final bool autoStart;
 
   @override
-  Widget build(BuildContext context) {
-    return switch (media.type) {
-      CLMediaType.image => ImageViewService(
-          file: File(media.path),
-          onLockPage: onLockPage,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
+    return Column(
+      children: [
+        Expanded(
+          child: switch (media.type) {
+            CLMediaType.image => ImageViewService(
+                file: File(media.path),
+                onLockPage: onLockPage,
+              ),
+            CLMediaType.video => VideoPlayerService.player(
+                media: media,
+                alternate: PreviewService(
+                  media: media,
+                ),
+                autoStart: autoStart,
+              ),
+            _ => throw UnimplementedError('Not yet implemented')
+          },
         ),
-      CLMediaType.video => VideoPlayerService.player(
-          media: media,
-          alternate: PreviewService(
-            media: media,
+        if (showControl.showNotes) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Divider(
+              height: 2,
+              thickness: 3,
+              indent: 4,
+              endIndent: 4,
+            ),
           ),
-          autoStart: autoStart,
-        ),
-      _ => throw UnimplementedError('Not yet implemented')
-    };
+          SafeArea(
+            top: false,
+            child: NotesView(
+              media: media,
+              onClose: () {
+                ref.read(showControlsProvider.notifier).hideNotes();
+              },
+            ),
+          ),
+        ],
+      ],
+    );
   }
 }

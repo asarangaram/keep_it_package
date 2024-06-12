@@ -32,12 +32,13 @@ class MediaControls extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    if (!showControl) return const IgnorePointer();
+    if (!showControl.showMenu) return const IgnorePointer();
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
       child: Stack(
         children: [
+          //if (!showControl.showNotes)
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,
@@ -46,9 +47,10 @@ class MediaControls extends ConsumerWidget {
                 child: CircledIcon(
                   MdiIcons.notebook,
                   onTap: () {
-                    context.push(
+                    ref.read(showControlsProvider.notifier).showNotes();
+                    /* context.push(
                       '/item_note/${media.collectionId}/${media.id}?parentIdentifier=noteview${media.id ?? "no_id"}',
-                    );
+                    ); */
                   },
                 ),
               ),

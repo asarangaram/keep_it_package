@@ -12,8 +12,9 @@ import 'package:store/store.dart';
 import 'widgets/text_note.dart';
 
 class NotesView extends StatefulWidget {
-  const NotesView({required this.media, super.key});
+  const NotesView({required this.media, super.key, this.onClose});
   final CLMedia media;
+  final VoidCallback? onClose;
 
   @override
   State<NotesView> createState() => _NotesViewState();
