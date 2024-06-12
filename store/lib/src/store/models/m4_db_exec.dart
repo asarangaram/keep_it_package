@@ -159,8 +159,8 @@ class DBExec<T> {
           'WHERE id = ?';
       values.add(id);
     } else {
-      sql =
-          'INSERT ${ignore ? "OR IGNORE" : ""} INTO $table (${keys.join(', ')}) '
+      sql = 'INSERT ${ignore ? "OR IGNORE" : ""} '
+          'INTO $table (${keys.join(', ')}) '
           'VALUES (${keys.map((e) => '?').join(', ')}) ';
     }
     return MapEntry(sql, values);
