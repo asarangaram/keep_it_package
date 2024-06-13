@@ -1,113 +1,21 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:keep_it/modules/notes/widgets/note_view.dart';
-import 'package:store/store.dart';
-
-import 'audio_chip.dart';
-
-class AudioNotes extends StatefulWidget {
-  const AudioNotes({
-    required this.media,
-    required this.audioNotes,
-    super.key,
-  });
-  final CLMedia media;
-  final List<CLAudioNote> audioNotes;
-
-  @override
-  State<AudioNotes> createState() => _AudioNotesState();
-}
-
-class _AudioNotesState extends State<AudioNotes> {
-  late bool editMode;
-
-  @override
-  void didChangeDependencies() {
-    editMode = false;
-    super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: GetAppSettings(
-        builder: (appSettings) {
-          return GetDBManager(
-            builder: (dbManager) {
-              return AudioRecorder(
-                tempDir: appSettings.directories.cacheDir,
-                onNewNote: (CLNote note) async {
-                  await dbManager.upsertNote(
-                    note,
-                    [widget.media],
-                    onSaveNote: (note1, {required targetDir}) async {
-                      return note1.moveFile(targetDir: targetDir);
-                    },
-                  );
-                },
-                editMode: editMode && widget.audioNotes.isNotEmpty,
-                onEditCancel: () {
-                  setState(() {
-                    editMode = false;
-                  });
-                },
-                child: widget.audioNotes.isEmpty
-                    ? null
-                    : SingleChildScrollView(
-                        child: Wrap(
-                          runSpacing: 2,
-                          spacing: 2,
-                          children: widget.audioNotes
-                              .map(
-                                (audioNote) => AudioChip(
-                                  audioNote,
-                                  editMode:
-                                      editMode && widget.audioNotes.isNotEmpty,
-                                  onEditMode: () {
-                                    setState(() {
-                                      if (widget.audioNotes.isNotEmpty) {
-                                        editMode = true;
-                                      }
-                                    });
-                                  },
-                                  theme: CLTheme.of(context).noteTheme,
-                                  onDeleteNote: () async {
-                                    await dbManager.deleteNote(
-                                      audioNote,
-                                      onDeleteFile: (file) async {
-                                        await file.deleteIfExists();
-                                      },
-                                    );
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
 
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({
-    required this.onNewNote,
+    required this.onUpsertNote,
     required this.tempDir,
     this.child,
     super.key,
     this.editMode = false,
     this.onEditCancel,
   });
-  final Future<void> Function(CLNote note) onNewNote;
+  final Future<void> Function(CLNote note) onUpsertNote;
   final Directory tempDir;
   final Widget? child;
   final bool editMode;
@@ -234,7 +142,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await widget.onNewNote(audioMessage!);
+      await widget.onUpsertNote(audioMessage!);
       audioMessage = null;
       setState(() {});
     }
@@ -305,6 +213,82 @@ class LiveAudio extends StatelessWidget {
       padding: const EdgeInsets.only(left: 18),
       margin: const EdgeInsets.symmetric(
         horizontal: 15,
+      ),
+    );
+  }
+}
+
+class AudioNoteView extends StatefulWidget {
+  const AudioNoteView(this.note, {required this.theme, super.key});
+
+  final CLAudioNote note;
+  final NotesTheme theme;
+
+  @override
+  State<AudioNoteView> createState() => _AudioNoteViewState();
+}
+
+class _AudioNoteViewState extends State<AudioNoteView> {
+  late PlayerController controller;
+  late StreamSubscription<PlayerState> playerStateSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PlayerController();
+    _preparePlayer();
+    playerStateSubscription = controller.onPlayerStateChanged.listen((_) {
+      setState(() {});
+    });
+  }
+
+  Future<void> _preparePlayer() async =>
+      controller.preparePlayer(path: widget.note.path, noOfSamples: 200);
+
+  @override
+  void dispose() {
+    playerStateSubscription.cancel();
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final playerWaveStyle = widget.theme.playerWaveStyle;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(widget.theme.borderRadius),
+        border: Border.all(color: widget.theme.borderColor),
+        color: widget.theme.backgroundColor,
+      ),
+      margin: widget.theme.margin,
+      padding: widget.theme.padding,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          //if (!controller.playerState.isStopped)
+          IconButton(
+            onPressed: () async {
+              controller.playerState.isPlaying
+                  ? await controller.pausePlayer()
+                  : await controller.startPlayer(
+                      finishMode: FinishMode.pause,
+                    );
+            },
+            icon: Icon(
+              controller.playerState.isPlaying ? Icons.stop : Icons.play_arrow,
+              color: widget.theme.foregroundColor,
+            ),
+          ),
+          Expanded(
+            child: AudioFileWaveforms(
+              size: Size(MediaQuery.of(context).size.width * 3 / 4, 70),
+              playerController: controller,
+              playerWaveStyle: playerWaveStyle,
+              continuousWaveform: widget.theme.continuousWaveform,
+            ),
+          ),
+        ],
       ),
     );
   }
