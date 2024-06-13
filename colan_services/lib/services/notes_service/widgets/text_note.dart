@@ -30,6 +30,7 @@ class _TextNoteState extends State<TextNote> {
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
   late bool isEditing;
+  bool textModified = false;
 
   @override
   void initState() {
@@ -101,33 +102,44 @@ class _TextNoteState extends State<TextNote> {
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.only(top: 4, bottom: 4),
               ),
+              onChanged: (s) {
+                textModified = textEditingController.text.trim().isNotEmpty &&
+                    textEditingController.text.trim() != widget.note?.text;
+                setState(() {});
+              },
             ),
           ),
         ),
         if (isEditing)
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(left: 8),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                CLButtonIcon.large(
-                  MdiIcons.undoVariant,
-                  onTap: () {
-                    if (textModified) {
-                      if (widget.note != null) {
-                        textEditingController.text = widget.note!.text;
-                      } else {
-                        textEditingController.clear();
+                if (textModified) ...[
+                  CLButtonIcon.large(
+                    MdiIcons.undoVariant,
+                    onTap: () {
+                      if (textModified) {
+                        if (widget.note != null) {
+                          textEditingController.text = widget.note!.text;
+                        } else {
+                          textEditingController.clear();
+                        }
+                        textModified = false;
+                        setState(() {});
                       }
-                    }
-                  },
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                CLButtonIcon.large(
-                  Icons.save,
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                ],
+                CLButtonIcon.standard(
+                  textModified
+                      ? MdiIcons.contentSave
+                      : MdiIcons.pencilOffOutline,
                   onTap: onEditDone,
                 ),
               ],
@@ -136,10 +148,6 @@ class _TextNoteState extends State<TextNote> {
       ],
     );
   }
-
-  bool get textModified =>
-      textEditingController.text.trim().isNotEmpty &&
-      textEditingController.text != widget.note?.text;
 
   Future<void> onEditDone() async {
     if (textModified) {
