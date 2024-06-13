@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../models/sticky_notes.dart';
 import 'audio_notes.dart';
 import 'text_notes.dart';
 
@@ -66,29 +67,7 @@ class _NotesViewState extends State<NotesView> {
               ),
             ),
             SizedBox(
-              height: audioNotes.isEmpty
-                  ? kMinInteractiveDimension
-                  : kMinInteractiveDimension * 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: AudioNotes(
-                  tempDir: widget.appSettings.directories.cacheDir,
-                  media: widget.media,
-                  notes: audioNotes,
-                  onUpsertNote: onUpsertNote,
-                  onDeleteNote: onDeleteNote,
-                ),
-              ),
-            ),
-            const Divider(
-              height: 2,
-              thickness: 1,
-              indent: 4,
-              endIndent: 4,
-              color: Colors.red,
-            ),
-            SizedBox(
-              height: 200,
+              height: MediaQuery.of(context).size.height * 2 / 5,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: TextNotes(

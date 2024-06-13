@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../models/input_decoration.dart';
+import '../models/sticky_notes.dart';
 
 class TextNote extends StatefulWidget {
   const TextNote({
@@ -228,18 +229,17 @@ class ViewNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: InputDecorator(
-            decoration: NotesTextFieldDecoration.inputDecoration(
-              context,
-              hintText: 'Add Notes',
-              actionBuilder: null,
-              hasBorder: false,
-            ),
-            child: SizedBox(
-              height: double.infinity,
+    return StickyNote(
+      child: Row(
+        children: [
+          Expanded(
+            child: InputDecorator(
+              decoration: NotesTextFieldDecoration.inputDecoration(
+                context,
+                hintText: 'Add Notes',
+                actionBuilder: null,
+                hasBorder: false,
+              ),
               child: GestureDetector(
                 onTap: onTap,
                 child: SingleChildScrollView(
@@ -256,18 +256,18 @@ class ViewNotes extends StatelessWidget {
               ),
             ),
           ),
-        ),
-        if (controls != null)
-          SizedBox(
-            height: double.infinity,
-            width: kMinInteractiveDimension,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: controls!,
+          if (controls != null)
+            SizedBox(
+              height: double.infinity,
+              width: kMinInteractiveDimension,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: controls!,
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
