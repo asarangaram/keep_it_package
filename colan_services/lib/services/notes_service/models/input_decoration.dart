@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class NotesTextFieldDecoration {
   static InputDecoration inputDecoration(
     BuildContext context, {
-    required String label,
     required Widget Function(BuildContext context)? actionBuilder,
+    String? label,
     String? hintText,
+    bool hasBorder = true,
   }) =>
       InputDecoration(
         // isDense: true,
@@ -15,22 +16,28 @@ class NotesTextFieldDecoration {
             .textTheme
             .bodyLarge
             ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          gapPadding: 8,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          gapPadding: 8,
-        ),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.error,
-            width: 2,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          gapPadding: 8,
-        ),
+        enabledBorder: hasBorder
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                gapPadding: 8,
+              )
+            : null,
+        focusedBorder: hasBorder
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                gapPadding: 8,
+              )
+            : null,
+        errorBorder: hasBorder
+            ? OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.error,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                gapPadding: 8,
+              )
+            : null,
         hintText: hintText,
         suffixIcon: actionBuilder?.call(context),
       );

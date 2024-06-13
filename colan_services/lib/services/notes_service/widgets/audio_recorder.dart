@@ -101,8 +101,10 @@ class _AudioRecorderState extends State<AudioRecorder> {
                       recorderController: recorderController,
                     ),
                   )
+                else if (widget.child != null)
+                  Expanded(child: widget.child!)
                 else
-                  Expanded(child: widget.child ?? const Spacer()),
+                  const Spacer(),
                 if (widget.editMode)
                   IconButton(
                     onPressed: widget.onEditCancel,
@@ -113,13 +115,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
                     iconSize: 28,
                   )
                 else
-                  IconButton(
-                    onPressed: () => _startOrStopRecording(widget.tempDir),
-                    icon: Icon(
-                      isRecording ? Icons.stop : Icons.mic,
-                    ),
-                    color: Colors.white,
-                    iconSize: 28,
+                  CLButtonIcon.small(
+                    isRecording ? Icons.stop : Icons.mic,
+                    onTap: () => _startOrStopRecording(widget.tempDir),
                   ),
               ],
             ),
@@ -128,9 +126,10 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   void _deleteAudioMessage() {
     if (hasAudioMessage) {
-      File((audioMessage!).path).deleteSync();
+      final message2Delete = audioMessage;
       audioMessage = null;
       setState(() {});
+      File((message2Delete!).path).delete();
     }
   }
 

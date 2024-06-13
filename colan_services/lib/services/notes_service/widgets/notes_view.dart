@@ -6,6 +6,7 @@ import 'package:store/store.dart';
 
 import 'audio_notes.dart';
 import 'text_note.dart';
+import 'text_notes.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({
@@ -29,11 +30,14 @@ class NotesView extends StatefulWidget {
 class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
-    final textNote = widget.notes.where(
-      (e) {
-        return e.type == CLNoteTypes.text;
-      },
-    ).firstOrNull as CLTextNote?;
+    final textNotes = widget.notes
+        .where(
+          (e) {
+            return e.type == CLNoteTypes.text;
+          },
+        )
+        .map((e) => e as CLTextNote)
+        .toList();
     final audioNotes = widget.notes
         .where(
           (e) {
@@ -79,14 +83,15 @@ class _NotesViewState extends State<NotesView> {
               thickness: 1,
               indent: 4,
               endIndent: 4,
+              color: Colors.red,
             ),
             SizedBox(
               height: 200,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: TextNote(
+                padding: const EdgeInsets.all(8),
+                child: TextNotes(
                   tempDir: widget.appSettings.directories.cacheDir,
-                  note: textNote,
+                  notes: textNotes,
                   onUpsertNote: onUpsertNote,
                   onDeleteNote: onDeleteNote,
                 ),
