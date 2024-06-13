@@ -5,7 +5,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:store/store.dart';
 
 import 'audio_notes.dart';
-import 'text_note.dart';
 import 'text_notes.dart';
 
 class NotesView extends StatefulWidget {
@@ -70,12 +69,15 @@ class _NotesViewState extends State<NotesView> {
               height: audioNotes.isEmpty
                   ? kMinInteractiveDimension
                   : kMinInteractiveDimension * 2,
-              child: AudioNotes(
-                tempDir: widget.appSettings.directories.cacheDir,
-                media: widget.media,
-                notes: audioNotes,
-                onUpsertNote: onUpsertNote,
-                onDeleteNote: onDeleteNote,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: AudioNotes(
+                  tempDir: widget.appSettings.directories.cacheDir,
+                  media: widget.media,
+                  notes: audioNotes,
+                  onUpsertNote: onUpsertNote,
+                  onDeleteNote: onDeleteNote,
+                ),
               ),
             ),
             const Divider(

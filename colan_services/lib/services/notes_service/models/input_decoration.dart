@@ -21,13 +21,13 @@ class NotesTextFieldDecoration {
                 borderRadius: BorderRadius.circular(16),
                 gapPadding: 8,
               )
-            : null,
+            : InputBorder.none,
         focusedBorder: hasBorder
             ? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 gapPadding: 8,
               )
-            : null,
+            : InputBorder.none,
         errorBorder: hasBorder
             ? OutlineInputBorder(
                 borderSide: BorderSide(
@@ -37,7 +37,7 @@ class NotesTextFieldDecoration {
                 borderRadius: BorderRadius.circular(16),
                 gapPadding: 8,
               )
-            : null,
+            : InputBorder.none,
         hintText: hintText,
         suffixIcon: actionBuilder?.call(context),
       );
