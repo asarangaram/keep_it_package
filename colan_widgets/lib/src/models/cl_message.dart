@@ -6,7 +6,6 @@ import 'package:colan_widgets/src/extensions/ext_datetime.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
-import '../app_logger.dart';
 import 'cl_media.dart';
 import 'm1_app_settings.dart';
 
