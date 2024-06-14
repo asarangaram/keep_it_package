@@ -247,6 +247,26 @@ class DBWriter {
     }
   }
 
+  Future<bool> removePin(
+    SqliteWriteContext tx,
+    CLMedia media, {
+    required Future<bool> Function(String id) onRemovePin,
+  }) async {
+    if (media.id == null) return false;
+
+    if (media.pin == null || media.pin!.isEmpty) {
+      return false;
+    } else {
+      final id = media.pin!;
+      final res = await onRemovePin(id);
+      if (res) {
+        final pinnedMedia = media.removePin();
+        await upsertMedia(tx, pinnedMedia);
+      }
+      return res;
+    }
+  }
+
   Future<void> pinMediaMultiple(
     SqliteWriteContext tx,
     List<CLMedia> media, {

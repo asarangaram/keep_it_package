@@ -140,13 +140,15 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'move',
           builder: (context, GoRouterState state) {
+            final List<int> idsToMove;
             if (!state.uri.queryParameters.containsKey('ids')) {
-              throw Exception('Nothing to move');
+              idsToMove = <int>[];
+            } else {
+              idsToMove = state.uri.queryParameters['ids']!
+                  .split(',')
+                  .map(int.parse)
+                  .toList();
             }
-            final idsToMove = state.uri.queryParameters['ids']!
-                .split(',')
-                .map(int.parse)
-                .toList();
             final unhide = state.uri.queryParameters['unhide'] == 'true';
 
             return MoveMediaPage(

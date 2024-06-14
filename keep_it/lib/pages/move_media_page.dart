@@ -5,6 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keep_it/widgets/empty_state.dart';
 import 'package:store/store.dart';
 
 import '../modules/shared_media/incoming_media_handler.dart';
@@ -20,35 +21,71 @@ class MoveMediaPage extends ConsumerWidget {
   final bool unhide;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FullscreenLayout(
-      child: GetMediaMultiple(
-        idList: idsToMove,
-        buildOnData: (media) {
-          final List<CLMedia> media2Move;
-          if (unhide) {
-            media2Move = media
-                .where(
-                  (m) => idsToMove.contains(m.id),
-                )
-                .map((e) => e.copyWith(isHidden: false))
-                .toList();
-          } else {
-            media2Move = media
-                .where(
-                  (m) => idsToMove.contains(m.id),
-                )
-                .toList();
+    if (idsToMove.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await Future<void>.delayed(const Duration(seconds: 1));
+        if (context.mounted) {
+          if (context.canPop()) {
+            context.pop();
           }
-          return IncomingMediaHandler(
-            incomingMedia: CLSharedMedia(entries: media2Move),
-            onDiscard: ({required bool result}) {
+        }
+      });
+      return FullscreenLayout(
+        child: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity == null) return;
+            // pop on Swipe
+            if (details.primaryVelocity! > 0) {
               if (context.canPop()) {
-                context.pop(result);
+                context.pop();
               }
-            },
-            moving: true,
-          );
+            }
+          },
+          child: const EmptyState(
+              message: 'Nothing to Move. You may be redirected'),
+        ),
+      );
+    }
+    return FullscreenLayout(
+      child: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.primaryVelocity == null) return;
+          // pop on Swipe
+          if (details.primaryVelocity! > 0) {
+            if (context.canPop()) {
+              context.pop();
+            }
+          }
         },
+        child: GetMediaMultiple(
+          idList: idsToMove,
+          buildOnData: (media) {
+            final List<CLMedia> media2Move;
+            if (unhide) {
+              media2Move = media
+                  .where(
+                    (m) => idsToMove.contains(m.id),
+                  )
+                  .map((e) => e.copyWith(isHidden: false))
+                  .toList();
+            } else {
+              media2Move = media
+                  .where(
+                    (m) => idsToMove.contains(m.id),
+                  )
+                  .toList();
+            }
+            return IncomingMediaHandler(
+              incomingMedia: CLSharedMedia(entries: media2Move),
+              onDiscard: ({required bool result}) {
+                if (context.canPop()) {
+                  context.pop(result);
+                }
+              },
+              moving: true,
+            );
+          },
+        ),
       ),
     );
   }
