@@ -14,31 +14,24 @@ class SettingsMainPage extends StatelessWidget {
     return KeepItMainView(
       title: 'Settings',
       pageBuilder: (context, quickMenuScopeKey) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            GetDeletedMedia(
-              buildOnData: (media) {
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: CLButtonIconLabelled.large(
-                      MdiIcons.delete,
-                      'Deleted Items (${media.length})',
-                      onTap: media.isEmpty
-                          ? null
-                          : () async {
-                              unawaited(context.push('/deleted_media'));
-                            },
-                      color: Colors.blue,
-                      disabledColor: Theme.of(context).disabledColor,
+        return GetDeletedMedia(
+          buildOnData: (deletedMedia) {
+            return ListView(
+              children: [
+                if (deletedMedia.isNotEmpty)
+                  ListTile(
+                    leading: Icon(MdiIcons.delete),
+                    trailing: IconButton(
+                      icon: Icon(MdiIcons.arrowRight),
+                      onPressed: () async {
+                        unawaited(context.push('/deleted_media'));
+                      },
                     ),
+                    title: Text('Deleted Items (${deletedMedia.length})'),
                   ),
-                );
-              },
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
