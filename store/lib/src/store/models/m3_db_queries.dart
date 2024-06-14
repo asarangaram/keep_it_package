@@ -117,23 +117,23 @@ enum DBQueries {
         notesAll => DBQuery<CLNote>(
             sql: 'SELECT * FROM Notes',
             triggerOnTables: const {'Notes'},
-            fromMap: CLNote.fromMap2,
+            fromMap: CLNote.fromMapNullable,
           ),
         noteById => DBQuery<CLNote>(
             sql: 'SELECT * FROM Notes WHERE id = ?;',
             triggerOnTables: const {'Notes'},
-            fromMap: CLNote.fromMap2,
+            fromMap: CLNote.fromMapNullable,
           ),
         noteByPath => DBQuery<CLNote>(
             sql: 'SELECT * FROM Notes WHERE path = ?;',
             triggerOnTables: const {'Notes'},
-            fromMap: CLNote.fromMap2,
+            fromMap: CLNote.fromMapNullable,
           ),
         notesByMediaId => DBQuery<CLNote>(
             sql:
                 'SELECT Notes.* FROM Notes JOIN ItemNote ON Notes.id = ItemNote.noteId WHERE ItemNote.itemId = ?;',
             triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
-            fromMap: CLNote.fromMap2,
+            fromMap: CLNote.fromMapNullable,
           ),
       };
 }

@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 
 import 'cl_media.dart';
 import 'm1_app_settings.dart';
+import 'map_fixer.dart';
 
 enum CLNoteTypes { text, audio }
 
@@ -119,29 +120,32 @@ class CLNote {
     };
   }
 
-  factory CLNote.fromMap2(
+  static MapFixer incomingMapFixer(String basePath) => MapFixer(
+        pathType: PathType.absolute,
+        basePath: basePath,
+        mandatoryKeys: const ['type', 'path', 'md5String'],
+        pathKeys: const ['path'],
+        removeValues: const ['null'],
+      );
+
+  static CLNote? fromMapNullable(
     Map<String, dynamic> map1, {
     // ignore: avoid_unused_constructor_parameters
     required AppSettings appSettings,
   }) {
-    final pathPrefix = appSettings.directories.docDir.path;
-    if (CLNoteTypes.values.asNameMap()[map1['type'] as String] == null) {
-      throw Exception('Incorrect type');
+    final map = incomingMapFixer(appSettings.directories.docDir.path).fix(
+      map1,
+      /* onError: (errors) {
+        if (errors.isNotEmpty) {
+          logger.e(errors.join(','));
+          return false;
+        }
+        return true;
+      }, */
+    );
+    if (map.isEmpty) {
+      return null;
     }
-    // ignore: unnecessary_null_comparison
-    final path = ((pathPrefix != null)
-        ? '$pathPrefix/${map1['path']}'
-        : map1['path'] as String)
-      ..replaceAll('//', '/');
-    if (appSettings.shouldValidate && !File(path).existsSync()) {
-      /* exceptionLogger(
-        'File not found',
-        'CL Note file path read from database is not found',
-      ); */
-    }
-    final map = Map<String, dynamic>.from(map1)
-      ..removeWhere((key, value) => value == 'null');
-    map['path'] = path;
     return CLNote.fromMap(map);
   }
 
