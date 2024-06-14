@@ -37,12 +37,13 @@ class MoveMediaPage extends ConsumerWidget {
             // pop on Swipe
             if (details.primaryVelocity! > 0) {
               if (context.canPop()) {
-                context.pop();
+                context.pop(true);
               }
             }
           },
           child: const EmptyState(
-              message: 'Nothing to Move. You may be redirected'),
+            message: 'Nothing to Move. You may be redirected',
+          ),
         ),
       );
     }
@@ -53,7 +54,7 @@ class MoveMediaPage extends ConsumerWidget {
           // pop on Swipe
           if (details.primaryVelocity! > 0) {
             if (context.canPop()) {
-              context.pop();
+              context.pop(true);
             }
           }
         },
