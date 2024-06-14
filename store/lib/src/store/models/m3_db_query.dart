@@ -8,7 +8,7 @@ class DBQuery<T> {
   factory DBQuery({
     required String sql,
     required Set<String> triggerOnTables,
-    required T Function(
+    required T? Function(
       Map<String, dynamic> map, {
       required AppSettings appSettings,
     }) fromMap,
@@ -32,7 +32,7 @@ class DBQuery<T> {
   final String sql;
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
-  final T Function(
+  final T? Function(
     Map<String, dynamic> map, {
     required AppSettings appSettings,
   }) fromMap;
@@ -102,6 +102,8 @@ class DBQuery<T> {
     _infoLogger('cmd: $sql, $parameters');
     final objs = (await tx.getAll(sql, parameters ?? []))
         .map((m) => fromMap(m, appSettings: appSettings))
+        .where((e) => e != null)
+        .map((e) => e! as T)
         .toList();
     _infoLogger("read: ${objs.map((e) => e.toString()).join(', ')}");
     return objs;
