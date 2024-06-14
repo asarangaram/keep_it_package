@@ -31,7 +31,7 @@ export 'src/models/cl_media/extensions/io_ext_on_collection.dart';
 export 'src/models/cl_media/extensions/url_handler.dart';
 export 'src/models/cl_media_type.dart';
 export 'src/models/cl_menu_item.dart';
-export 'src/models/cl_message.dart';
+export 'src/models/cl_note.dart';
 export 'src/models/cl_scale_type.dart';
 export 'src/models/collection.dart';
 export 'src/models/m1_app_settings.dart';
