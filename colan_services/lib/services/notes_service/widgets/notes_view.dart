@@ -69,16 +69,16 @@ class _NotesViewState extends State<NotesView> {
               height: audioNotes.isEmpty
                   ? kMinInteractiveDimension
                   : kMinInteractiveDimension * 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: AudioNotes(
-                  tempDir: widget.appSettings.directories.cacheDir,
-                  media: widget.media,
-                  notes: audioNotes,
-                  onUpsertNote: onUpsertNote,
-                  onDeleteNote: onDeleteNote,
-                ),
+              child: AudioNotes(
+                tempDir: widget.appSettings.directories.cacheDir,
+                media: widget.media,
+                notes: audioNotes,
+                onUpsertNote: onUpsertNote,
+                onDeleteNote: onDeleteNote,
               ),
+            ),
+            const SizedBox(
+              height: 8,
             ),
             const Divider(
               height: 2,
