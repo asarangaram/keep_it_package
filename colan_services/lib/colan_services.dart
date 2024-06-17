@@ -17,6 +17,7 @@ export 'services/shared_media_service/process/file_picker.dart'
     show onPickFiles;
 export 'services/shared_media_service/widgets/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
+export 'services/storage_monitor_service/models/storage_statistics.dart';
 export 'services/video_edit_service/video_trimmer.dart' show VideoEditServices;
 //This must be removed!!
 export 'services/video_player_service/providers/show_controls.dart';
