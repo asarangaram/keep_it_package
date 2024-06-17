@@ -45,8 +45,11 @@ class DeleteMediaPage extends ConsumerWidget {
                       child: CLSimpleGalleryView<CLMedia>(
                         key: const ValueKey(label),
                         title: 'Deleted Media',
-                        itemBuilder: (context, item,
-                                {required quickMenuScopeKey}) =>
+                        itemBuilder: (
+                          context,
+                          item, {
+                          required quickMenuScopeKey,
+                        }) =>
                             Hero(
                           tag: '$parentIdentifier /item/${item.id}',
                           child: Padding(
@@ -131,8 +134,8 @@ class DeleteMediaPage extends ConsumerWidget {
                                       /// This should not happen as
                                       /// stale media can't be pinned
                                       final res = await AlbumManager(
-                                              albumName: 'KeepIt')
-                                          .removeMultipleMedia(ids);
+                                        albumName: 'KeepIt',
+                                      ).removeMultipleMedia(ids);
                                       if (!res) {
                                         await ref
                                             .read(
@@ -172,7 +175,8 @@ class DeleteMediaPage extends ConsumerWidget {
                                       required targetDir,
                                     }) async {
                                       final updated = (await m.moveFile(
-                                              targetDir: targetDir))
+                                        targetDir: targetDir,
+                                      ))
                                           .getMetadata();
                                       return updated;
                                     },
