@@ -32,7 +32,6 @@ class SettingsMainPage extends ConsumerWidget {
       pageBuilder: (context, quickMenuScopeKey) {
         return GetAppSettings(
           builder: (appSettings) {
-            print(appSettings.downloadDir);
             final dirInfoList = [
               DirInfo(
                 name: 'Document Directory',

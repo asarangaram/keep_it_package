@@ -21,13 +21,13 @@ class DeviceDirectories {
     Directory? container,
     Directory? docDir,
     Directory? cacheDir,
-    Directory? tmpDirectory,
+    Directory? systemTemp,
   }) {
     return DeviceDirectories(
       container: container ?? this.container,
       docDir: docDir ?? this.docDir,
       cacheDir: cacheDir ?? this.cacheDir,
-      systemTemp: tmpDirectory ?? this.systemTemp,
+      systemTemp: systemTemp ?? this.systemTemp,
     );
   }
 
