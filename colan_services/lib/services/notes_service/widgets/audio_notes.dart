@@ -59,7 +59,12 @@ class _AudioNotesState extends State<AudioNotes> {
                             }
                           });
                         },
-                        onDeleteNote: () => widget.onDeleteNote(note),
+                        onDeleteNote: () {
+                          if (widget.notes.length == 1) {
+                            editMode = false;
+                          }
+                          widget.onDeleteNote(note);
+                        },
                       ),
                     )
                     .toList(),
