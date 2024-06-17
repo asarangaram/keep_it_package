@@ -34,6 +34,7 @@ export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_note.dart';
 export 'src/models/cl_scale_type.dart';
 export 'src/models/collection.dart';
+export 'src/models/file_system/models/cl_directories.dart';
 export 'src/models/m1_app_settings.dart';
 export 'src/services/selection/cl_selection_wrapper.dart';
 export 'src/theme/models/cl_colors.dart';

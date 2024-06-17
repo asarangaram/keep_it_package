@@ -32,51 +32,6 @@ class SettingsMainPage extends ConsumerWidget {
       pageBuilder: (context, quickMenuScopeKey) {
         return GetAppSettings(
           builder: (appSettings) {
-            final dirInfoList = [
-              DirInfo(
-                name: 'Document Directory',
-                directory: appSettings.directories.docDir.path.replaceFirst(
-                  '${appSettings.directories.container.path}/',
-                  '',
-                ),
-                statsAsync: ref.watch(
-                  storageStatisticsProvider(appSettings.directories.docDir),
-                ),
-              ),
-              DirInfo(
-                name: 'Cache Directory',
-                directory: appSettings.directories.cacheDir.path.replaceFirst(
-                  '${appSettings.directories.container.path}/',
-                  '',
-                ),
-                statsAsync: ref.watch(
-                  storageStatisticsProvider(appSettings.directories.cacheDir),
-                ),
-              ),
-              DirInfo(
-                name: 'Download Directory',
-                directory: appSettings.downloadDir.path.replaceFirst(
-                  '${appSettings.directories.container.path}/',
-                  '',
-                ),
-                statsAsync: ref.watch(
-                  storageStatisticsProvider(appSettings.downloadDir),
-                ),
-              ),
-              DirInfo(
-                name: 'System Temp (For Developers)',
-                directory: appSettings.directories.systemTemp.path.replaceFirst(
-                  '${appSettings.directories.container.path}/',
-                  '',
-                ),
-                statsAsync: ref.watch(
-                  storageStatisticsProvider(
-                    appSettings.directories.systemTemp,
-                  ),
-                ),
-              ),
-            ];
-
             return GetDeletedMedia(
               buildOnData: (deletedMedia) {
                 return ListView(
@@ -92,19 +47,6 @@ class SettingsMainPage extends ConsumerWidget {
                         ),
                         title: Text('Deleted Items (${deletedMedia.length})'),
                       ),
-                    for (final dirInfo in dirInfoList)
-                      dirInfo.statsAsync.whenOrNull(
-                            data: (stat) {
-                              return ListTile(
-                                title: Text(
-                                  '${dirInfo.name} [${dirInfo.directory}]',
-                                ),
-                                subtitle: Text(stat.statistics),
-                                trailing: const Icon(Icons.archive),
-                              );
-                            },
-                          ) ??
-                          const SizedBox.shrink(),
                   ],
                 );
               },

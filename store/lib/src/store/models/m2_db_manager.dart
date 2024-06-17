@@ -289,7 +289,7 @@ class DBManager extends Store {
       required String targetDir,
     }) onSaveNote,
   }) async {
-    final targetDir = dbWriter.appSettings.notesDir;
+    final targetDir = dbWriter.appSettings.directories.notes.pathString;
     final updated = await onSaveNote(note, targetDir: targetDir);
     return db.writeTransaction((tx) async {
       return dbWriter.upsertNote(tx, updated, mediaList);

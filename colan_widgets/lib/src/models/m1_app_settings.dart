@@ -1,8 +1,7 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:colan_widgets/src/models/file_system/models/cl_directories.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart';
 
 @immutable
 class DeviceDirectories {
@@ -61,18 +60,13 @@ class AppSettings {
     this.directories, {
     this.shouldValidate = true,
   });
-  final DeviceDirectories directories;
+  final CLDirectories directories;
   final bool shouldValidate;
-  String validPrefix(int collectionID) =>
-      '${directories.docDir.path}/keep_it/cluster_$collectionID';
+
+  String validPrefix(int collectionID) => directories.media.pathString;
+
   String validRelativePrefix(int collectionID) =>
-      'keep_it/cluster_$collectionID';
+      '${directories.media.name}/cluster_$collectionID';
 
   String dbName = 'keepIt.db';
-  Directory get downloadDir =>
-      Directory(join(directories.cacheDir.path, 'downloads'));
-}
-
-extension NotesOnAppSettings on AppSettings {
-  String get notesDir => '${directories.docDir.path}/keep_it/notes';
 }

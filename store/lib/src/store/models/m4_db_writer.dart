@@ -36,7 +36,7 @@ class DBWriter {
     table: 'Item',
     toMap: (CLMedia obj, {required appSettings, required validate}) {
       final map = obj.toMap(
-        pathPrefix: appSettings.directories.docDir.path,
+        pathPrefix: appSettings.directories.media.pathString,
         validate: true,
       );
       if (validate) {
@@ -62,7 +62,7 @@ class DBWriter {
     readBack: (tx, item, {required appSettings, required validate}) {
       final pathExpected = CLMedia.relativePath(
         item.path,
-        pathPrefix: appSettings.directories.docDir.path,
+        pathPrefix: appSettings.directories.media.pathString,
         validate: true,
       );
 
@@ -79,7 +79,7 @@ class DBWriter {
     toMap: (CLNote obj, {required appSettings, required validate}) {
       final map = obj.toMap2(
         validate: validate,
-        pathPrefix: appSettings.directories.docDir.path,
+        pathPrefix: appSettings.directories.notes.pathString,
       );
       if (validate) {}
       return map;
@@ -87,7 +87,7 @@ class DBWriter {
     readBack: (tx, item, {required appSettings, required validate}) async {
       final pathExpected = CLMedia.relativePath(
         item.path,
-        pathPrefix: appSettings.directories.docDir.path,
+        pathPrefix: appSettings.directories.notes.pathString,
         validate: true,
       );
       return (DBQueries.noteByPath.sql as DBQuery<CLNote>)

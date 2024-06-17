@@ -70,7 +70,7 @@ class _NotesViewState extends State<NotesView> {
                   ? kMinInteractiveDimension
                   : kMinInteractiveDimension * 2,
               child: AudioNotes(
-                tempDir: widget.appSettings.directories.cacheDir,
+                tempDir: widget.appSettings.directories.tempNotes.path,
                 media: widget.media,
                 notes: audioNotes,
                 onUpsertNote: onUpsertNote,
@@ -92,7 +92,7 @@ class _NotesViewState extends State<NotesView> {
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: TextNotes(
-                  tempDir: widget.appSettings.directories.cacheDir,
+                  tempDir: widget.appSettings.directories.tempNotes.path,
                   notes: textNotes,
                   onUpsertNote: onUpsertNote,
                   onDeleteNote: onDeleteNote,

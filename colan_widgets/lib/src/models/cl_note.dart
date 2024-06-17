@@ -133,7 +133,7 @@ class CLNote {
     // ignore: avoid_unused_constructor_parameters
     required AppSettings appSettings,
   }) {
-    final map = incomingMapFixer(appSettings.directories.docDir.path).fix(
+    final map = incomingMapFixer(appSettings.directories.notes.pathString).fix(
       map1,
       /* onError: (errors) {
         if (errors.isNotEmpty) {
