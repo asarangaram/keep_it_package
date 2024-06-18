@@ -105,7 +105,7 @@ class CLDirectories {
         label: dir.label,
         name: dir.name,
         baseDir: dir.isPersistent ? persistent : temporary,
-      );
+      )..create();
 
   CLDirectory get media =>
       standardDirectory(CLStandardDirectories.mediaPersistent);

@@ -58,4 +58,10 @@ class CLDirectory {
         baseDir.hashCode ^
         description0.hashCode;
   }
+
+  void create() {
+    if (!path.existsSync()) {
+      path.createSync(recursive: true);
+    }
+  }
 }
