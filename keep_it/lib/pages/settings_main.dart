@@ -47,6 +47,7 @@ class SettingsMainPage extends ConsumerWidget {
                         ),
                         title: Text('Deleted Items (${deletedMedia.length})'),
                       ),
+                    const StorageInfo(),
                   ],
                 );
               },
@@ -54,6 +55,88 @@ class SettingsMainPage extends ConsumerWidget {
           },
         );
       },
+    );
+  }
+}
+
+class StorageInfo extends ConsumerWidget {
+  const StorageInfo({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetAppSettings(
+      builder: (appSettings) {
+        final persistentDirs = CLStandardDirectories.values
+            .where((stddir) => stddir.isPersistent)
+            .map(appSettings.directories.standardDirectory)
+            .toList();
+        final cacheDir = CLStandardDirectories.values
+            .where((stddir) => !stddir.isPersistent)
+            .map(appSettings.directories.standardDirectory)
+            .toList();
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StorageInfoEntry(
+              label: 'Storage Used',
+              dirs: persistentDirs,
+              actions: [
+                CLMenuItem(
+                  title: 'Archive',
+                  icon: Icons.archive,
+                  onTap: () async {
+                    return false;
+                  },
+                ),
+              ],
+            ),
+            StorageInfoEntry(
+              label: 'Cache',
+              dirs: cacheDir,
+              actions: const [CLMenuItem(title: 'Clear', icon: Icons.delete)],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class StorageInfoEntry extends ConsumerWidget {
+  const StorageInfoEntry({
+    required this.label,
+    required this.dirs,
+    super.key,
+    this.actions,
+  });
+  final String label;
+  final List<CLDirectory> dirs;
+  final List<CLMenuItem>? actions;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final infoListAsync = dirs
+        .map(
+          (dir) => ref.watch(dir.infoStream).whenOrNull(data: (data) => data),
+        )
+        .toList();
+    CLDirectoryInfo? info;
+    Widget? trailing;
+    final infoReady = infoListAsync.every((element) => element != null);
+    if (infoReady) {
+      info = infoListAsync.reduce((a, b) => a! + b!);
+      trailing = (actions?.isEmpty ?? true)
+          ? null
+          : ElevatedButton.icon(
+              onPressed: actions![0].onTap,
+              label: Text(actions![0].title),
+              icon: Icon(actions![0].icon),
+            );
+    }
+    return ListTile(
+      title: Text(label),
+      subtitle: Text(info?.statistics ?? ''),
+      trailing: trailing,
     );
   }
 }

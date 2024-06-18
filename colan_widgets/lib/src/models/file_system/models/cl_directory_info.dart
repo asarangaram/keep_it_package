@@ -57,6 +57,11 @@ class CLDirectoryInfo {
 
   String get statistics {
     //return '$size ($count files)';
+    if (count == 0) return 'Empty';
     return '${size.toHumanReadableFileSize()} [$size Bytes] ($count files)';
+  }
+
+  CLDirectoryInfo operator +(CLDirectoryInfo other) {
+    return CLDirectoryInfo(count: count + other.count, size: size + other.size);
   }
 }
