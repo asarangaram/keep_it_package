@@ -54,7 +54,7 @@ enum CLStandardDirectories {
       importedMediaPreserved => 'keep_it/temp/imported',
       downloadedMediaPreserved => 'keep_it/temp/downloaded',
       tempThumbnail => 'keep_it/temp/thumbnail',
-      tempTrimmer => 'keep_it/temp/trimmer',
+      tempTrimmer => 'Trimmer',
       tempNotes => 'keep_it/temp/notes',
     };
   }
