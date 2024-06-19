@@ -24,5 +24,12 @@
             "type": "dart",
             "flutterMode": "release"
         },
+        {
+            "name": "Backup Files",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceFolder}/colan_services/test/test_backup_files.dart",
+            "console": "terminal"
+        }
     ]
 }
