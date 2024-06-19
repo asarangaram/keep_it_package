@@ -37,6 +37,7 @@ dependencies:
   store:
     path: ../store
   stream_channel: ^2.1.2
+  tar: ^2.0.0
   uuid: ^4.4.0
   video_player: ^2.8.6
   video_thumbnail: ^0.5.3
