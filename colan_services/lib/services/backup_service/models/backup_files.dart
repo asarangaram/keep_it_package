@@ -2,6 +2,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:tar/tar.dart';
@@ -19,25 +21,53 @@ class BackupManager {
   File backupFile() {
     final now = DateTime.now();
     final name = DateFormat('yyyyMMdd_HHmmss_SSS').format(now);
-
     return File(p.join(backupFolder.path, 'keep_it_$name.tar.gz'));
   }
 
-  Future<String> backup({
-    required void Function(String fname) onProgress,
-  }) async {
+  Stream<Progress> backupStream({
+    required void Function(String backupFile) onDone,
+  }) async* {
+    final controller = StreamController<Progress>();
     final output = backupFile();
-    final streamOfFiles = tee<MapEntry<String, File>>(findFiles(), 2);
-    streamOfFiles[1].listen((entry) {
-      onProgress(entry.key);
-    });
+    unawaited(
+      backup(
+        output: output,
+        onData: controller.add,
+        onDone: () => onDone(output.path),
+      ).then(onDone),
+    );
+    yield* controller.stream;
+  }
 
-    final tarGzStream = streamTagEntries(streamOfFiles[0])
+  Future<String> backup({
+    required File output,
+    required void Function(Progress progress) onData,
+    VoidCallback? onDone,
+  }) async {
+    final totalFiles = directories.fold(
+      0,
+      (previousValue, element) => previousValue + (element.fileCount()),
+    );
+    var processedFiles = 0;
+
+    final streamOfFiles = tee<MapEntry<String, File>>(findFiles(), 2);
+    streamOfFiles[1].listen(
+      (entry) {
+        processedFiles++;
+        onData(
+          Progress(
+            fractCompleted: processedFiles / totalFiles,
+            currentItem: entry.key,
+          ),
+        );
+      },
+      onDone: onDone,
+    );
+
+    await streamTagEntries(streamOfFiles[0])
         .transform(tarWriter)
-        .transform(gzip.encoder);
-    final outputSink = output.openWrite();
-    final tarGzSubscription = tarGzStream.pipe(outputSink);
-    await tarGzSubscription;
+        .transform(gzip.encoder)
+        .pipe(output.openWrite());
     return output.path;
   }
 
@@ -47,6 +77,7 @@ class BackupManager {
         if (entry is! File) continue;
         final name = p.relative(entry.path, from: baseDir.path);
         if (name.startsWith('.')) continue;
+        await Future<void>.delayed(const Duration(seconds: 1));
         yield MapEntry(name, entry);
       }
     }
@@ -87,7 +118,6 @@ class BackupManager {
     filesStream.listen((entry) {
       final name = entry.key;
       final file = entry.value;
-
       final stat = file.statSync();
 
       controller.add(
@@ -105,5 +135,6 @@ class BackupManager {
         ),
       );
     });
+    yield* controller.stream;
   }
 }
