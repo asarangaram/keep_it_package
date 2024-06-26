@@ -1,3 +1,4 @@
+export 'services/backup_service/models/backup_files.dart';
 export 'services/camera_service/camera_service.dart' show CameraService;
 export 'services/image_edit_service/views/image_editor.dart'
     show ImageEditService;

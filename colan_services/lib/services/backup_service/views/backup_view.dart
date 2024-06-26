@@ -29,8 +29,9 @@ class _BackupViewState extends State<BackupView> {
           stream: () => BackupManager(
             directories: persistentDirs.map((e) => e.path).toList(),
             baseDir: appSettings.directories.persistent,
-            backupFolder: appSettings.directories.persistent,
           ).backupStream(
+            output:
+                BackupManager.backupFile(appSettings.directories.backup.path),
             onDone: (output) => setState(() {
               outFile = output;
             }),

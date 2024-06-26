@@ -4,37 +4,39 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:store/store.dart';
 import 'package:tar/tar.dart';
 
 class BackupManager {
   List<Directory> directories;
   Directory baseDir;
-  Directory backupFolder;
+
   BackupManager({
     required this.directories,
     required this.baseDir,
-    required this.backupFolder,
   });
 
-  File backupFile() {
+  static File backupFile(Directory directory) {
     final now = DateTime.now();
     final name = DateFormat('yyyyMMdd_HHmmss_SSS').format(now);
-    return File(p.join(backupFolder.path, 'keep_it_$name.tar.gz'));
+    return File(p.join(directory.path, 'keep_it_$name.tar.gz'));
   }
 
   Stream<Progress> backupStream({
+    required File output,
     required void Function(String backupFile) onDone,
   }) async* {
     final controller = StreamController<Progress>();
-    final output = backupFile();
+
     unawaited(
       backup(
         output: output,
         onData: controller.add,
         onDone: () => onDone(output.path),
-      ).then(onDone),
+      ),
     );
     yield* controller.stream;
   }
@@ -54,6 +56,7 @@ class BackupManager {
     streamOfFiles[1].listen(
       (entry) {
         processedFiles++;
+
         onData(
           Progress(
             fractCompleted: processedFiles / totalFiles,
@@ -138,3 +141,50 @@ class BackupManager {
     yield* controller.stream;
   }
 }
+
+final backupNowProvider = StreamProvider<Progress>((ref) async* {
+  final controller = StreamController<Progress>();
+  final appSettings = await ref.watch(appSettingsProvider.future);
+
+  ref.listen(refreshProvider, (prev, curr) async {
+    if (prev != curr && curr != 0) {
+      final directories = CLStandardDirectories.values
+          .where((stddir) => stddir.isStore)
+          .map(appSettings.directories.standardDirectory)
+          .toList();
+      final backupManager = BackupManager(
+        directories: directories.map((e) => e.path).toList(),
+        baseDir: appSettings.directories.persistent,
+      );
+      final file = BackupManager.backupFile(
+        appSettings.directories.backup.path,
+      );
+      appSettings.directories.backup.path.clear();
+
+      await backupManager.backup(
+        output: file,
+        onData: controller.add,
+        onDone: () {
+          controller.add(
+            const Progress(
+              fractCompleted: 1,
+              currentItem: 'Completed',
+              isDone: true,
+            ),
+          );
+        },
+      );
+    }
+  });
+  controller.add(
+    const Progress(
+      fractCompleted: 1,
+      currentItem: 'Completed',
+      isDone: true,
+    ),
+  );
+
+  yield* controller.stream;
+});
+
+final refreshProvider = StateProvider<int>((ref) => 0);

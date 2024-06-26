@@ -23,4 +23,6 @@ extension ExtDirectory on Directory {
     }
     return count;
   }
+
+  bool isEmpty() => listSync().isEmpty;
 }

@@ -9,6 +9,7 @@ enum CLStandardDirectories {
   mediaPersistent,
   notesPersistent,
   dbPersistent,
+  backupPersistent,
   capturedMediaPreserved,
   importedMediaPreserved,
   downloadedMediaPreserved,
@@ -17,11 +18,20 @@ enum CLStandardDirectories {
   tempTrimmer,
   tempNotes;
 
+  bool get isStore {
+    return switch (this) {
+      mediaPersistent => true,
+      notesPersistent => true,
+      _ => false,
+    };
+  }
+
   bool get isPersistent {
     return switch (this) {
       mediaPersistent => true,
       notesPersistent => true,
       dbPersistent => true,
+      backupPersistent => true,
       capturedMediaPreserved => true,
       importedMediaPreserved => true,
       downloadedMediaPreserved => true,
@@ -36,6 +46,7 @@ enum CLStandardDirectories {
       mediaPersistent => 'Media Directory',
       notesPersistent => 'Notes Directory',
       dbPersistent => 'DataBase',
+      backupPersistent => 'Backup Dir',
       capturedMediaPreserved => 'Captured Media Unclassified',
       importedMediaPreserved => 'Imported Media Unclassified',
       downloadedMediaPreserved => 'Downloaded Media Unclassified',
@@ -50,6 +61,7 @@ enum CLStandardDirectories {
       mediaPersistent => 'keep_it/store/media',
       notesPersistent => 'keep_it/store/notes',
       dbPersistent => 'keep_it/store/database',
+      backupPersistent => 'keep_it/backup',
       capturedMediaPreserved => 'keep_it/temp/captured',
       importedMediaPreserved => 'keep_it/temp/imported',
       downloadedMediaPreserved => 'keep_it/temp/downloaded',
@@ -125,4 +137,14 @@ class CLDirectories {
       standardDirectory(CLStandardDirectories.tempNotes);
   CLDirectory get database =>
       standardDirectory(CLStandardDirectories.dbPersistent);
+  CLDirectory get backup =>
+      standardDirectory(CLStandardDirectories.backupPersistent);
+
+  // Derived
+  List<Directory> get store => CLStandardDirectories.values
+      .where((e) => e.isStore)
+      .map(
+        (e) => standardDirectory(e).path,
+      )
+      .toList();
 }
