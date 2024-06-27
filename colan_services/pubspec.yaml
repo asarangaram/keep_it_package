@@ -11,7 +11,7 @@ environment:
 
 dependencies:
   audio_waveforms: ^1.0.5
-  camera: ^0.10.5+9
+  camera: ^0.11.0+1
   cl_camera:
     path: ../cl_camera
   colan_widgets:
@@ -19,7 +19,7 @@ dependencies:
   collection: ^1.18.0
   event_bus: ^2.0.0
   exif: ^3.3.0
-  extended_image: ^8.2.0
+  extended_image: ^8.2.1
   ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
@@ -27,13 +27,13 @@ dependencies:
   heif_converter: ^1.0.0
   image: ^4.1.7
   
-  image_picker: ^1.1.0
+  image_picker: ^1.1.2
   intl: ^0.18.1
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
   path: ^1.9.0
   percent_indicator: ^4.2.3
-  photo_manager: ^3.1.1
+  photo_manager: ^3.2.0
   share_handler: ^0.0.21
   share_plus: ^9.0.0
   store:
@@ -41,15 +41,15 @@ dependencies:
   stream_channel: ^2.1.2
   tar: ^2.0.0
   uuid: ^4.4.0
-  video_player: ^2.8.6
+  video_player: ^2.8.7
   video_thumbnail: ^0.5.3
   video_trimmer: ^3.0.1
   watcher: ^1.1.0
 
 dev_dependencies:
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^5.1.0
+  very_good_analysis: ^6.0.0
 
 flutter:

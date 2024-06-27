@@ -37,7 +37,7 @@ class BackupManager {
     if (dbArchive == null || dbArchive.isEmpty) return '';
 
     final indexData = json.encode(dbArchive);
-    print(indexData);
+    
 
     final mediaFiles = await gatherFiles(dbArchive);
     final totalFiles = mediaFiles.fold(

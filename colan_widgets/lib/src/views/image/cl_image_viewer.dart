@@ -19,7 +19,7 @@ class ImageViewer extends ConsumerWidget {
       data: (image) {
         return CLImageViewer(image: image);
       },
-      error: (_, __) => CLErrorView(errorMessage: _.toString()),
+      error: (e, st) => CLErrorView(errorMessage: e.toString()),
       loading: CLLoadingView.new,
     );
   }

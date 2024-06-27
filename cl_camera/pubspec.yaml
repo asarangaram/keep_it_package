@@ -10,17 +10,17 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  camera: ^0.10.5+9
+  camera: ^0.11.0+1
   flutter:
     sdk: flutter
   material_design_icons_flutter: ^7.0.7296
   
 
 dev_dependencies:
-  flutter_lints: ^3.0.2
+  flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^5.1.0
+  very_good_analysis: ^6.0.0
   
 
 # For information on the generic Dart part of this file, see the
