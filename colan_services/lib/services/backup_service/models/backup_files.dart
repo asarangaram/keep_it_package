@@ -80,7 +80,7 @@ class BackupManager {
         if (entry is! File) continue;
         final name = p.relative(entry.path, from: baseDir.path);
         if (name.startsWith('.')) continue;
-        await Future<void>.delayed(const Duration(seconds: 1));
+        // await Future<void>.delayed(const Duration(seconds: 1));
         yield MapEntry(name, entry);
       }
     }
@@ -145,9 +145,16 @@ class BackupManager {
 final backupNowProvider = StreamProvider<Progress>((ref) async* {
   final controller = StreamController<Progress>();
   final appSettings = await ref.watch(appSettingsProvider.future);
+  final dbManager = await ref.watch(dbManagerProvider.future);
 
   ref.listen(refreshProvider, (prev, curr) async {
     if (prev != curr && curr != 0) {
+      final dbArchive = await dbManager.rawQuery(backupQuery);
+
+      if (dbArchive != null) {
+        print(dbArchive);
+      }
+
       final directories = CLStandardDirectories.values
           .where((stddir) => stddir.isStore)
           .map(appSettings.directories.standardDirectory)
@@ -188,3 +195,73 @@ final backupNowProvider = StreamProvider<Progress>((ref) async* {
 });
 
 final refreshProvider = StateProvider<int>((ref) => 0);
+
+const backupQuery = '''
+SELECT 
+    json_object(
+        'itemId', Item.id,
+        'itemPath', Item.path,
+        'itemRef', Item.ref,
+        'collectionLabel', Collection.label,
+        'itemType', Item.type,
+        'itemMd5String', Item.md5String,
+        'itemOriginalDate', Item.originalDate,
+        'itemCreatedDate', Item.createdDate,
+        'itemUpdatedDate', Item.updatedDate,
+         'notes',
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM ItemNote 
+                WHERE ItemNote.itemId = Item.id
+            )
+            THEN  json_group_array(
+                    json_object(
+                        'notePath', Notes.path,
+                        'noteType', Notes.type
+                    ))
+                
+           
+        END 
+    ) 
+FROM 
+    Item
+LEFT JOIN 
+    Collection ON Item.collectionId = Collection.id
+LEFT JOIN 
+    ItemNote ON Item.id = ItemNote.itemId
+LEFT JOIN 
+    Notes ON ItemNote.noteId = Notes.id
+GROUP BY
+    Item.id;
+''';
+
+/*
+
+
+    json_object(
+        'itemId', Item.id,
+        'itemPath', Item.path,
+        'itemRef', Item.ref,
+        'collectionLabel', Collection.label,
+        'itemType', Item.type,
+        'itemMd5String', Item.md5String,
+        'itemOriginalDate', Item.originalDate,
+        'itemCreatedDate', Item.createdDate,
+        'itemUpdatedDate', Item.updatedDate,
+         'notes','[' || CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM ItemNote 
+                WHERE ItemNote.itemId = Item.id
+            )
+            THEN  group_concat(
+                    json_object(
+                        'notePath', Notes.path,
+                        'noteType', Notes.type
+                    )
+                ) 
+            
+        END || ']'
+    ) AS jsonData
+*/

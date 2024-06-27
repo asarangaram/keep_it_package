@@ -74,6 +74,9 @@ abstract class Store {
       required String targetDir,
     }) onSaveNote,
   });
+  Future<List<Object?>?> rawQuery(
+    String query,
+  );
 }
 
 class DBManager extends Store {
@@ -303,6 +306,15 @@ class DBManager extends Store {
     await db.writeTransaction((tx) async {
       await dbWriter.deleteNote(tx, note, onDeleteFile: onDeleteFile);
     });
+  }
+
+  @override
+  Future<List<Object?>?> rawQuery(
+    String query,
+  ) async {
+    final json = (await db.getAll(query, [])).rows;
+
+    return json;
   }
 }
 
