@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'cl_circular_button.dart';
 
