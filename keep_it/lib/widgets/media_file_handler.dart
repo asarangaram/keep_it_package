@@ -33,11 +33,14 @@ class MediaFileHandler extends StatelessWidget {
     if (mediaId == null) {
       return errorBuilder('No Media Provided');
     }
-    return GetMedia(
-      id: mediaId!,
-      buildOnData: (media) {
-        return GetDBManager(
-          builder: (dbManager) {
+    return GetDBManager(
+      builder: (dbManager) {
+        return GetMedia(
+          id: mediaId!,
+          buildOnData: (media) {
+            if (media == null) {
+              return errorBuilder('Media not found');
+            }
             return builder(
               media.path,
               mediaType: media.type,

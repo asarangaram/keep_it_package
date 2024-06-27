@@ -35,18 +35,19 @@ class _AudioNoteState extends State<AudioNote> {
     super.initState();
     controller = PlayerController();
     if (File(widget.note.path).existsSync()) {
-      _preparePlayer();
-      playerStateSubscription = controller.onPlayerStateChanged.listen((_) {
-        setState(() {});
-      });
       validAudio = true;
+      _preparePlayer();
     } else {
       validAudio = false;
     }
   }
 
-  Future<void> _preparePlayer() async =>
-      controller.preparePlayer(path: widget.note.path, noOfSamples: 200);
+  Future<void> _preparePlayer() async {
+    await controller.preparePlayer(path: widget.note.path, noOfSamples: 200);
+    playerStateSubscription = controller.onPlayerStateChanged.listen((_) {
+      setState(() {});
+    });
+  }
 
   @override
   void dispose() {
@@ -59,6 +60,9 @@ class _AudioNoteState extends State<AudioNote> {
   Widget build(BuildContext context) {
     final theme = CLTheme.of(context).noteTheme;
     final playerWaveStyle = theme.playerWaveStyle;
+
+    final label =
+        DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.note.createdDate);
     return CLCustomChip(
       avatar: validAudio
           ? CLIcon.tiny(
@@ -81,8 +85,7 @@ class _AudioNoteState extends State<AudioNote> {
               size: const Size(100, 20),
               child: FittedBox(
                 child: CLText.standard(
-                  DateFormat('yyyy-MM-dd HH:mm:ss')
-                      .format(widget.note.createdDate),
+                  label,
                   textAlign: TextAlign.start,
                   color: validAudio ? null : Colors.red,
                 ),
@@ -91,8 +94,8 @@ class _AudioNoteState extends State<AudioNote> {
       onTap: () async {
         if (widget.editMode) {
           widget.onDeleteNote();
-        } else {
-          controller.playerState.isPlaying && validAudio
+        } else if (validAudio) {
+          controller.playerState.isPlaying
               ? await controller.pausePlayer()
               : await controller.startPlayer(
                   finishMode: FinishMode.pause,

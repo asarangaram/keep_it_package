@@ -1,3 +1,5 @@
+export 'services/backup_service/models/backup_files.dart';
+export 'services/backup_service/views/backup_view.dart';
 export 'services/camera_service/camera_service.dart' show CameraService;
 export 'services/image_edit_service/views/image_editor.dart'
     show ImageEditService;
@@ -17,6 +19,8 @@ export 'services/shared_media_service/process/file_picker.dart'
     show onPickFiles;
 export 'services/shared_media_service/widgets/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
+export 'services/storage_monitor_service/models/storage_statistics.dart';
+export 'services/storage_monitor_service/views/storage_monitor.dart';
 export 'services/video_edit_service/video_trimmer.dart' show VideoEditServices;
 //This must be removed!!
 export 'services/video_player_service/providers/show_controls.dart';

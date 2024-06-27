@@ -12,7 +12,7 @@ class GetMedia extends ConsumerWidget {
     required this.id,
     super.key,
   });
-  final Widget Function(CLMedia media) buildOnData;
+  final Widget Function(CLMedia? media) buildOnData;
   final int id;
 
   @override
@@ -22,10 +22,8 @@ class GetMedia extends ConsumerWidget {
           as DBQuery<CLMedia>,
       builder: (data) {
         final media = data.where((e) => e.id == id).firstOrNull;
-        if (media != null) {
-          return buildOnData(media);
-        }
-        throw Exception('Media not found');
+
+        return buildOnData(media);
       },
     );
   }

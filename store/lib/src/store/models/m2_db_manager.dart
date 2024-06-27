@@ -189,12 +189,9 @@ class DBManager extends Store {
     await db.writeTransaction((tx) async {
       if (media.id == null) return;
       if (media.pin != null) {
-        final res = await dbWriter.togglePin(
+        final res = await dbWriter.removePin(
           tx,
           media,
-          onPin: (media, {required title, desc}) async {
-            throw Exception('Unexpected');
-          },
           onRemovePin: onRemovePin,
         );
         if (!res) return;
@@ -292,7 +289,7 @@ class DBManager extends Store {
       required String targetDir,
     }) onSaveNote,
   }) async {
-    final targetDir = dbWriter.appSettings.notesDir;
+    final targetDir = dbWriter.appSettings.directories.notes.pathString;
     final updated = await onSaveNote(note, targetDir: targetDir);
     return db.writeTransaction((tx) async {
       return dbWriter.upsertNote(tx, updated, mediaList);

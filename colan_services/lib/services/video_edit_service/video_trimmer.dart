@@ -48,16 +48,18 @@ class _VideoEditServicesState extends State<VideoEditServices> {
     await _trimmer.saveTrimmedVideo(
       startValue: _startValue,
       endValue: _endValue,
+      storageDir: StorageDir.temporaryDirectory,
       onSave: (outputPath) async {
         if (outputPath != null) {
           await widget.onSave(outputPath, overwrite: overwrite);
         } else {
           // Error Handle
         }
-
-        setState(() {
-          _progressVisibility = false;
-        });
+        if (mounted) {
+          setState(() {
+            _progressVisibility = false;
+          });
+        }
         debugPrint('OUTPUT PATH: $outputPath');
         await widget.onDone();
       },

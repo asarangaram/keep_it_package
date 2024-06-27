@@ -272,7 +272,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       percent: percentage / 100,
                       animateFromLastPercent: true,
                       center: Text('$percentage'),
-                      isRTL: true,
                       barRadius: const Radius.elliptical(5, 15),
                       progressColor: Theme.of(context).colorScheme.primary,
                       maskFilter: const MaskFilter.blur(BlurStyle.solid, 3),

@@ -49,11 +49,11 @@ class EmptyState extends StatelessWidget {
         ),
       );
     }
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: CLText.large(
-          'Empty',
+          message,
         ),
       ),
     );

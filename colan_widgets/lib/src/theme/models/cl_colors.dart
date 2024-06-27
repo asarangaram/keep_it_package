@@ -15,6 +15,8 @@ class CLColors {
     required this.wizardButtonForegroundColor,
     required this.wizardButtonBackgroundColor,
     required this.editorBackgroundColor,
+    required this.errorTextForeground,
+    required this.errorTextBackground,
   });
   final Color borderColor0;
   final Color iconColor;
@@ -29,6 +31,9 @@ class CLColors {
   final Color wizardButtonForegroundColor;
   final Color wizardButtonBackgroundColor;
   final Color editorBackgroundColor;
+
+  final Color errorTextForeground;
+  final Color errorTextBackground;
 
   @override
   bool operator ==(covariant CLColors other) {
@@ -65,5 +70,7 @@ class DefaultCLColors extends CLColors {
       Colors.indigo,
       Colors.purple,
     ],
+    super.errorTextForeground = Colors.red,
+    super.errorTextBackground = const Color.fromARGB(0xFF, 0xFF, 0xFF, 0xFF),
   });
 }

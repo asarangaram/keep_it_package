@@ -27,21 +27,6 @@ import 'pages/settings_main.dart';
 import 'pages/stale_media_page.dart';
 import 'widgets/empty_state.dart';
 
-extension ExtDirectory on Directory {
-  void clear() {
-    if (existsSync()) {
-      final contents = listSync();
-      for (final content in contents) {
-        if (content is File) {
-          content.deleteSync();
-        } else if (content is Directory) {
-          content.deleteSync(recursive: true);
-        }
-      }
-    }
-  }
-}
-
 class KeepItApp implements AppDescriptor {
   @override
   String get title => 'Keep It';
@@ -117,14 +102,17 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'item/:collectionId/:item_id',
           builder: (context, GoRouterState state) {
+            final String parentIdentifier;
             if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
-              throw Exception('missing parentIdentifier');
+              parentIdentifier = 'unknown';
+            } else {
+              parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
             }
 
             return CollectionItemPage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
               id: int.parse(state.pathParameters['item_id']!),
-              parentIdentifier: state.uri.queryParameters['parentIdentifier']!,
+              parentIdentifier: parentIdentifier,
             );
           },
         ),
@@ -140,13 +128,15 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'move',
           builder: (context, GoRouterState state) {
+            final List<int> idsToMove;
             if (!state.uri.queryParameters.containsKey('ids')) {
-              throw Exception('Nothing to move');
+              idsToMove = <int>[];
+            } else {
+              idsToMove = state.uri.queryParameters['ids']!
+                  .split(',')
+                  .map(int.parse)
+                  .toList();
             }
-            final idsToMove = state.uri.queryParameters['ids']!
-                .split(',')
-                .map(int.parse)
-                .toList();
             final unhide = state.uri.queryParameters['unhide'] == 'true';
 
             return MoveMediaPage(

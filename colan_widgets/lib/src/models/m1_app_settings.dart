@@ -1,37 +1,19 @@
-import 'dart:io';
-
+import 'package:colan_widgets/src/models/file_system/models/cl_directories.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart';
 
 @immutable
-class DeviceDirectories {
-  const DeviceDirectories({
-    required this.container,
-    required this.docDir,
-    required this.cacheDir,
-  });
-  final Directory container;
-  final Directory docDir;
-  final Directory cacheDir;
-}
-
 class AppSettings {
-  AppSettings(
+  const AppSettings(
     this.directories, {
     this.shouldValidate = true,
   });
-  final DeviceDirectories directories;
+  final CLDirectories directories;
   final bool shouldValidate;
+
   String validPrefix(int collectionID) =>
-      '${directories.docDir.path}/keep_it/cluster_$collectionID';
-  String validRelativePrefix(int collectionID) =>
-      'keep_it/cluster_$collectionID';
+      '${directories.media.pathString}/cluster_$collectionID';
 
-  String dbName = 'keepIt.db';
-  Directory get downloadDir =>
-      Directory(join(directories.cacheDir.path, 'downloads'));
-}
+  String validRelativePrefix(int collectionID) => 'cluster_$collectionID';
 
-extension NotesOnAppSettings on AppSettings {
-  String get notesDir => '${directories.docDir.path}/keep_it/notes';
+  String get dbName => 'keepIt.db';
 }

@@ -11,7 +11,7 @@ class DBExec<T> {
     required this.readBack,
   });
   final String table;
-  final Map<String, dynamic> Function(
+  final Map<String, dynamic>? Function(
     T obj, {
     required AppSettings appSettings,
     required bool validate,
@@ -71,6 +71,7 @@ class DBExec<T> {
       validate: validate,
       ignore: ignore,
     );
+    if (cmd == null) return null;
     _infoLogger('Exec:  $cmd');
     if (cmd.value.isNotEmpty) {
       await tx.execute(cmd.key, cmd.value);
@@ -134,7 +135,7 @@ class DBExec<T> {
     await tx.execute(sql, value);
   }
 
-  MapEntry<String, List<String>> _sql(
+  MapEntry<String, List<String>>? _sql(
     T obj, {
     required AppSettings appSettings,
     required bool validate,
@@ -145,6 +146,9 @@ class DBExec<T> {
       appSettings: appSettings,
       validate: validate,
     );
+    if (map == null) {
+      return null;
+    }
 
     String? id;
     if (map.containsKey('id') && map['id'] != null) {
@@ -175,10 +179,12 @@ class DBExec<T> {
 
     for (final obj in objList) {
       final entry = _sql(obj, appSettings: appSettings, validate: validate);
-      if (!execCmdList.containsKey(entry.key)) {
-        execCmdList[entry.key] = [];
+      if (entry != null) {
+        if (!execCmdList.containsKey(entry.key)) {
+          execCmdList[entry.key] = [];
+        }
+        execCmdList[entry.key]!.add(entry.value);
       }
-      execCmdList[entry.key]!.add(entry.value);
     }
     return execCmdList;
   }

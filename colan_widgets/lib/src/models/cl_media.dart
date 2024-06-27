@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:colan_widgets/src/models/map_fixer.dart';
 import 'package:flutter/material.dart';
 
 import '../extensions/ext_datetime.dart';
@@ -42,30 +43,38 @@ class CLMedia {
     }
   }
 
-  factory CLMedia.fromMap(
+  static MapFixer incomingMapFixer(String basePath) => MapFixer(
+        pathType: PathType.absolute,
+        basePath: basePath,
+        mandatoryKeys: const ['type', 'path', 'md5String'],
+        pathKeys: const ['path'],
+        removeValues: const ['null'],
+      );
+
+  static CLMedia? fromMapNullable(
     Map<String, dynamic> map1, {
     // ignore: avoid_unused_constructor_parameters
     required AppSettings appSettings,
   }) {
-    final pathPrefix = appSettings.directories.docDir.path;
-    if (CLMediaType.values.asNameMap()[map1['type'] as String] == null) {
-      throw Exception('Incorrect type');
+    final map = incomingMapFixer(appSettings.directories.media.pathString).fix(
+      map1,
+      /* onError: (errors) {
+        if (errors.isNotEmpty) {
+          logger.e(errors.join(','));
+          return false;
+        }
+        return true;
+      }, */
+    );
+    if (map.isEmpty) {
+      return null;
     }
-    // ignore: unnecessary_null_comparison
-    final path = ((pathPrefix != null)
-        ? '$pathPrefix/${map1['path']}'
-        : map1['path'] as String)
-      ..replaceAll('//', '/');
-    if (appSettings.shouldValidate && !File(path).existsSync()) {
-      exceptionLogger(
-        'File not found',
-        'CL Media file path read from database is not found',
-      );
-    }
-    final map = Map<String, dynamic>.from(map1)
-      ..removeWhere((key, value) => value == 'null');
+    return CLMedia.fromMap(map);
+  }
+
+  factory CLMedia.fromMap(Map<String, dynamic> map) {
     return CLMedia(
-      path: path,
+      path: map['path'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       ref: map['ref'] != null ? map['ref'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,

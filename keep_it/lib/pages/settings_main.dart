@@ -1,44 +1,45 @@
 import 'dart:async';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-class SettingsMainPage extends StatelessWidget {
+class SettingsMainPage extends ConsumerWidget {
   const SettingsMainPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
       title: 'Settings',
       pageBuilder: (context, quickMenuScopeKey) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            GetDeletedMedia(
-              buildOnData: (media) {
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: CLButtonIconLabelled.large(
-                      MdiIcons.delete,
-                      'Deleted Items (${media.length})',
-                      onTap: media.isEmpty
-                          ? null
-                          : () async {
-                              unawaited(context.push('/deleted_media'));
-                            },
-                      color: Colors.blue,
-                      disabledColor: Theme.of(context).disabledColor,
-                    ),
-                  ),
+        return GetAppSettings(
+          builder: (appSettings) {
+            return GetDeletedMedia(
+              buildOnData: (deletedMedia) {
+                return ListView(
+                  children: [
+                    if (deletedMedia.isNotEmpty)
+                      ListTile(
+                        leading: Icon(MdiIcons.delete),
+                        trailing: IconButton(
+                          icon: Icon(MdiIcons.arrowRight),
+                          onPressed: () async {
+                            unawaited(context.push('/deleted_media'));
+                          },
+                        ),
+                        title: Text('Deleted Items (${deletedMedia.length})'),
+                      ),
+                    StorageMonitor(appSettings: appSettings),
+                    BackupView(appSettings: appSettings),
+                  ],
                 );
               },
-            ),
-          ],
+            );
+          },
         );
       },
     );

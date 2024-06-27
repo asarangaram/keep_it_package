@@ -12,7 +12,7 @@ class GetNote extends ConsumerWidget {
     required this.id,
     super.key,
   });
-  final Widget Function(CLNote note) buildOnData;
+  final Widget Function(CLNote? note) buildOnData;
   final int id;
 
   @override
@@ -22,10 +22,7 @@ class GetNote extends ConsumerWidget {
           as DBQuery<CLNote>,
       builder: (data) {
         final note = data.where((e) => e.id == id).firstOrNull;
-        if (note != null) {
-          return buildOnData(note);
-        }
-        throw Exception('Media not found');
+        return buildOnData(note);
       },
     );
   }

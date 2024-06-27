@@ -111,7 +111,7 @@ class CLMediaProcess {
     }
     final downloadedFile = await URLHandler.download(
       item0.path,
-      appSettings.downloadDir,
+      appSettings.directories.downloadedMedia.path,
     );
     if (downloadedFile == null) {
       return item0;

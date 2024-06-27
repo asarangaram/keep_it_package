@@ -5,9 +5,9 @@ import '../providers/p1_app_settings.dart';
 
 final dbManagerProvider = FutureProvider<DBManager>((ref) async {
   final appSettings = await ref.watch(appSettingsProvider.future);
-  final appDir = appSettings.directories.docDir;
-  final fullPath = join(appDir.path, appSettings.dbName);
-  //await Future<void>.delayed(const Duration(seconds: 1));
+  final dbPath = appSettings.directories.database;
+  final fullPath = join(dbPath.pathString, appSettings.dbName);
+
   final dbManager = await DBManager.createInstances(
     dbpath: fullPath,
     appSettings: appSettings,
