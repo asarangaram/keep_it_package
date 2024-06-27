@@ -107,7 +107,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
                   widget.builder(context, const AsyncLoading()),
             );
           },
-          error: (_, __) => widget.builder(context, AsyncError(_, __)),
+          error: (e, st) => widget.builder(context, AsyncError(e, st)),
           loading: () => widget.builder(context, const AsyncLoading()),
         );
       },
