@@ -1,5 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 

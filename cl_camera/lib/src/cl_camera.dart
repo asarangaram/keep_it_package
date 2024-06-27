@@ -6,14 +6,12 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:cl_camera/src/models/camera_config.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../cl_camera.dart';
-import 'models/cl_camera_theme_data.dart';
 import 'state/camera_theme.dart';
 import 'widgets/camera_mode.dart';
 import 'widgets/camera_settings.dart';

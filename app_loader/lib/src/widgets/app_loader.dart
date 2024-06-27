@@ -28,7 +28,6 @@ class AppLoader extends ConsumerWidget {
     return CLTheme(
       colors: const DefaultCLColors(),
       noteTheme: const DefaultNotesTheme(),
-      icons: DefaultCLIcons(),
       child: appInitAsync.when(
         data: (success) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
