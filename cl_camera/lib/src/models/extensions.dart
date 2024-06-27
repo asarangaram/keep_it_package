@@ -1,9 +1,5 @@
 import 'package:camera/camera.dart';
 
-extension EXTNextOnList<T> on List<T> {
-  T next(T item) => this[(indexOf(item) + 1) % length];
-}
-
 extension ExtCameraController on CameraController {
   Future<void> onStartVideoRecording({
     required void Function() onSuccess,
@@ -78,5 +74,4 @@ extension ExtCameraController on CameraController {
       onError?.call('Error occured while taking picture', error: e);
     }
   }
-  
 }
