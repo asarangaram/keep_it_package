@@ -15,12 +15,12 @@ dependencies:
   flutter_riverpod: ^2.5.1
   http: ^1.2.0
   http_parser: ^4.0.2
-  intl: ^0.18.0
+  intl: ^0.18.1
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   path: ^1.8.3
   percent_indicator: ^4.2.3
-  photo_manager: ^3.1.1
+  photo_manager: ^3.2.0
   progress_indicators: ^1.0.0
   
   scroll_to_index: ^3.0.1
@@ -29,9 +29,9 @@ dependencies:
   
   
 dev_dependencies:
-  flutter_lints: ^3.0.2
+  flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^5.1.0
+  very_good_analysis: ^6.0.0
   
 flutter:
