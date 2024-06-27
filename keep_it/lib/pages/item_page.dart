@@ -12,6 +12,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:store/store.dart';
 
+import '../config/texts.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/media_view/media_controls.dart';
 import '../widgets/media_view/media_viewer.dart';
@@ -287,7 +288,8 @@ class _ItemViewState extends ConsumerState<ItemView> {
                                 await ref
                                     .read(notificationMessageProvider.notifier)
                                     .push(
-                                      'Give Permission to remove from Gallery',
+                                      CLTexts
+                                          .missingdDeletePermissionsForGallery,
                                     );
                               }
                               return res;
@@ -341,7 +343,7 @@ class _ItemViewState extends ConsumerState<ItemView> {
                         await AlbumManager(albumName: 'KeepIt').removeMedia(id);
                     if (!res) {
                       await ref.read(notificationMessageProvider.notifier).push(
-                            "'Give Permission to remove from Gallery'",
+                            CLTexts.missingdDeletePermissionsForGallery,
                           );
                     }
                     return res;

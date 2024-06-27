@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../config/texts.dart';
 import '../providers/gallery_group_provider.dart';
 
 class PinnedMediaPage extends ConsumerWidget {
@@ -54,8 +55,8 @@ class PinnedMediaPage extends ConsumerWidget {
                                         notificationMessageProvider.notifier,
                                       )
                                       .push(
-                                        'Give Permission to '
-                                        'remove from Gallery',
+                                        CLTexts
+                                            .missingdDeletePermissionsForGallery,
                                       );
                                 }
                                 return res;
@@ -96,8 +97,8 @@ class PinnedMediaPage extends ConsumerWidget {
                                         notificationMessageProvider.notifier,
                                       )
                                       .push(
-                                        'Give Permission to '
-                                        'remove from Gallery',
+                                        CLTexts
+                                            .missingdDeletePermissionsForGallery,
                                       );
                                 }
                                 return res;

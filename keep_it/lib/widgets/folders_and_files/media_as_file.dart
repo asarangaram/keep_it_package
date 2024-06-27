@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
+import '../../config/texts.dart';
 import '../wrap_standard_quick_menu.dart';
 
 class MediaAsFile extends ConsumerWidget {
@@ -55,7 +56,7 @@ class MediaAsFile extends ConsumerWidget {
                             await ref
                                 .read(notificationMessageProvider.notifier)
                                 .push(
-                                  "'Give Permission to remove from Gallery'",
+                                  CLTexts.missingdDeletePermissionsForGallery,
                                 );
                           }
                           return res;

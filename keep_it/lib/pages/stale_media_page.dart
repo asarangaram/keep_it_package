@@ -12,6 +12,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:store/store.dart';
 
+import '../config/texts.dart';
 import '../modules/shared_media/step4_save_collection.dart';
 import '../modules/shared_media/wizard_page.dart';
 import '../providers/gallery_group_provider.dart';
@@ -147,8 +148,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                       notificationMessageProvider.notifier,
                                     )
                                     .push(
-                                      "'Give Permission to "
-                                      "remove from Gallery'",
+                                      CLTexts
+                                          .missingdDeletePermissionsForGallery,
                                     );
                               }
                               return res;
@@ -325,8 +326,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                       notificationMessageProvider.notifier,
                                     )
                                     .push(
-                                      "'Give Permission to "
-                                      "remove from Gallery'",
+                                      CLTexts
+                                          .missingdDeletePermissionsForGallery,
                                     );
                               }
                               return res;

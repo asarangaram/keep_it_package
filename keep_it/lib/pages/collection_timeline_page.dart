@@ -38,20 +38,12 @@ class CollectionTimeLinePage extends ConsumerWidget {
               return true;
             },
             onPickFiles: (BuildContext c) async {
-              // await Permission.photos.request();
-              // await Permission.storage.request();
               if (c.mounted) {
-                //final photosStatus = await Permission.photos.status;
-                // final storageStatus = await Permission.storage.status;
-                //if (photosStatus.isGranted && storageStatus.isGranted) {
-                if (c.mounted) {
-                  await onPickFiles(
-                    c,
-                    ref,
-                    collection: collection,
-                  );
-                }
-                //}
+                await onPickFiles(
+                  c,
+                  ref,
+                  collection: collection,
+                );
               }
             },
             onCameraCapture: () {

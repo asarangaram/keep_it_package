@@ -7,6 +7,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
+import '../config/texts.dart';
 import '../providers/gallery_group_provider.dart';
 import 'empty_state.dart';
 import 'folders_and_files/media_as_file.dart';
@@ -86,7 +87,7 @@ class TimeLineView extends ConsumerWidget {
                           await ref
                               .read(notificationMessageProvider.notifier)
                               .push(
-                                "'Give Permission to remove from Gallery'",
+                                CLTexts.missingdDeletePermissionsForGallery,
                               );
                         }
                         return res;
