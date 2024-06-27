@@ -11,9 +11,12 @@ environment:
 
 dependencies:
   camera: ^0.11.0+1
+  # Ideally we only need theme
+  colan_widgets:
+    path: ../colan_widgets
   flutter:
     sdk: flutter
-  material_design_icons_flutter: ^7.0.7296
+  
   
 
 dev_dependencies:

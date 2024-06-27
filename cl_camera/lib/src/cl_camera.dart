@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:cl_camera/src/models/camera_config.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -164,6 +165,7 @@ class _CLCameraState extends State<CLCamera>
 
   @override
   Widget build(BuildContext context) {
+    final cameraIcons = CLTheme.of(context).icons.camera;
     if (controller == null || !controller!.value.isInitialized) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -180,7 +182,7 @@ class _CLCameraState extends State<CLCamera>
             children: [
               if (widget.onCancel != null)
                 IconButton(
-                  icon: Icon(MdiIcons.arrowLeft),
+                  icon: Icon(CLTheme.of(context).icons.pagePop),
                   onPressed: widget.onCancel,
                 ),
               Expanded(
@@ -268,13 +270,13 @@ class _CLCameraState extends State<CLCamera>
                               child: _isRecordingInProgress
                                   ? CircularButton(
                                       quarterTurns: quarterTurns,
-                                      icon: Icons.stop,
+                                      icon: cameraIcons.videoRecordingStop,
                                       onPressed: stopVideoRecording,
                                     )
                                   : CircularButton(
                                       quarterTurns: quarterTurns,
                                       onPressed: swapFrontBack,
-                                      icon: Icons.cameraswitch,
+                                      icon: cameraIcons.switchCamera,
                                       foregroundColor: Colors.white,
                                       hasDecoration: false,
                                     ),
@@ -288,10 +290,13 @@ class _CLCameraState extends State<CLCamera>
                                   controller!.value.isRecordingVideo,
                                   controller!.value.isRecordingPaused
                                 )) {
-                                  (false, _, _) => MdiIcons.camera,
-                                  (true, false, _) => MdiIcons.video,
-                                  (true, true, false) => MdiIcons.pause,
-                                  (true, true, true) => MdiIcons.circle
+                                  (false, _, _) => cameraIcons.imageCapture,
+                                  (true, false, _) =>
+                                    cameraIcons.videoRecordingStart,
+                                  (true, true, false) =>
+                                    cameraIcons.videoRecordingPause,
+                                  (true, true, true) =>
+                                    cameraIcons.videoRecordingResume
                                 },
                                 onPressed: switch ((
                                   cameraMode.isVideo,
@@ -822,6 +827,7 @@ class _CLCameraState extends State<CLCamera>
   }
 
   Widget cameraSelector(List<CameraDescription> cameras) {
+    final cameraIcons = CLTheme.of(context).icons.camera;
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Column(
@@ -1018,8 +1024,8 @@ class _CLCameraState extends State<CLCamera>
                 },
                 icon: Icon(
                   config.enableAudio
-                      ? MdiIcons.volumeHigh
-                      : MdiIcons.volumeMute,
+                      ? cameraIcons.recordingAudioOn
+                      : cameraIcons.recordingAudioOff,
                 ),
               ),
               if (!config.enableAudio) const Text('(Muted)'),
@@ -1035,6 +1041,7 @@ class _CLCameraState extends State<CLCamera>
   }
 
   Widget audioMute() {
+    final cameraIcons = CLTheme.of(context).icons.camera;
     return IconButton(
       onPressed: _isRecordingInProgress
           ? null
@@ -1045,7 +1052,9 @@ class _CLCameraState extends State<CLCamera>
               initializeCameraController(currDescription ?? backCamera);
             },
       icon: Icon(
-        config.enableAudio ? MdiIcons.volumeHigh : MdiIcons.volumeMute,
+        config.enableAudio
+            ? cameraIcons.recordingAudioOn
+            : cameraIcons.recordingAudioOff,
         color: config.enableAudio ? null : Theme.of(context).colorScheme.error,
       ),
     );

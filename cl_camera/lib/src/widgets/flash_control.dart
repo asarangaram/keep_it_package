@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 
@@ -10,12 +11,13 @@ class FlashControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cameraIcons = CLTheme.of(context).icons.camera;
     return CircularButton(
       icon: switch (controller.value.flashMode) {
-        FlashMode.off => Icons.flash_off,
-        FlashMode.auto => Icons.flash_auto,
-        FlashMode.always => Icons.flash_on,
-        FlashMode.torch => Icons.highlight,
+        FlashMode.off => cameraIcons.flashModeOff,
+        FlashMode.auto => cameraIcons.flashModeAuto,
+        FlashMode.always => cameraIcons.flashModeAlways,
+        FlashMode.torch => cameraIcons.flashModeTorch,
       },
       size: 32,
       hasDecoration: false,

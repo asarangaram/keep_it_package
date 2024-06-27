@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -29,7 +30,7 @@ class CameraSettingsHandler extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 4),
                       child: Icon(
-                        MdiIcons.checkCircle,
+                        CLTheme.of(context).icons.popMenuSelectedItem,
                         color: (e == currentSelection)
                             ? Colors.black
                             : Colors.transparent,
@@ -43,7 +44,7 @@ class CameraSettingsHandler extends StatelessWidget {
             .toList();
       },
       child: CircularButton(
-        icon: MdiIcons.dotsVertical,
+        icon: CLTheme.of(context).icons.popMenuAnchor,
         hasDecoration: false,
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),
