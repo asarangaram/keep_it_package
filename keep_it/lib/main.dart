@@ -53,7 +53,7 @@ class KeepItApp implements AppDescriptor {
           name: '',
           builder: (context, GoRouterState state) => const CollectionsPage(),
           iconData: MdiIcons.home,
-          label: 'Collections',
+          label: 'main',
         ),
         CLShellRouteDescriptor(
           name: 'Pinned',

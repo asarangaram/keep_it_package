@@ -51,7 +51,7 @@ class _RaLRouterState extends ConsumerState<AppView>
   Widget build(BuildContext context) {
     final app = widget.appDescriptor;
 
-    final routes = app.screenBuilders.map(
+    /* final routes = app.screenBuilders.map(
       (e) => GoRoute(
         path: '/${e.name}',
         name: e.name,
@@ -61,7 +61,7 @@ class _RaLRouterState extends ConsumerState<AppView>
           transitionsBuilder: app.transitionBuilder,
         ),
       ),
-    );
+    ); */
     final fullScreenRoutes = app.fullscreenBuilders.map(
       (e) => GoRoute(
         path: '/${e.name}',
@@ -93,6 +93,22 @@ class _RaLRouterState extends ConsumerState<AppView>
                 child: route.builder(context, state),
               );
             },
+            routes: (index != 0)
+                ? []
+                : app.screenBuilders.map(
+                    (e) {
+                      return GoRoute(
+                        path: e.name,
+                        name: '${route.name}/${e.name}',
+                        pageBuilder: (context, state) =>
+                            CustomTransitionPage<void>(
+                          key: state.pageKey,
+                          child: AppTheme(child: e.builder(context, state)),
+                          transitionsBuilder: app.transitionBuilder,
+                        ),
+                      );
+                    },
+                  ).toList(),
           ),
         ],
       );
@@ -119,7 +135,6 @@ class _RaLRouterState extends ConsumerState<AppView>
             );
           },
         ),
-        ...routes,
         ...fullScreenRoutes,
       ],
       redirect: (context, state) {
