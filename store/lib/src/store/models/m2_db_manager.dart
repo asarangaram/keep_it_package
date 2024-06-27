@@ -312,7 +312,7 @@ class DBManager extends Store {
   Future<List<Object?>?> rawQuery(
     String query,
   ) async {
-    final json = (await db.getAll(query, [])).rows;
+    final json = (await db.getAll(query, [])).rows.map((e) => e[0]).toList();
 
     return json;
   }

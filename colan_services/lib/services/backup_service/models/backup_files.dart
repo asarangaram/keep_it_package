@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -10,13 +11,15 @@ import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 import 'package:tar/tar.dart';
 
+import 'files.dart';
+
 class BackupManager {
-  List<Directory> directories;
-  Directory baseDir;
+  AppSettings appSettings;
+  DBManager dbManager;
 
   BackupManager({
-    required this.directories,
-    required this.baseDir,
+    required this.appSettings,
+    required this.dbManager,
   });
 
   static File backupFile(Directory directory) {
@@ -25,36 +28,28 @@ class BackupManager {
     return File(p.join(directory.path, 'keep_it_$name.tar.gz'));
   }
 
-  Stream<Progress> backupStream({
-    required File output,
-    required void Function(String backupFile) onDone,
-  }) async* {
-    final controller = StreamController<Progress>();
-
-    unawaited(
-      backup(
-        output: output,
-        onData: controller.add,
-        onDone: () => onDone(output.path),
-      ),
-    );
-    yield* controller.stream;
-  }
-
   Future<String> backup({
     required File output,
     required void Function(Progress progress) onData,
     VoidCallback? onDone,
   }) async {
-    final totalFiles = directories.fold(
+    final dbArchive = await dbManager.rawQuery(backupQuery);
+    if (dbArchive == null || dbArchive.isEmpty) return '';
+
+    final indexData = json.encode(dbArchive);
+    print(indexData);
+
+    final mediaFiles = await gatherFiles(dbArchive);
+    final totalFiles = mediaFiles.fold(
       0,
-      (previousValue, element) => previousValue + (element.fileCount()),
+      (previousValue, element) => previousValue + element.filesCount,
     );
     var processedFiles = 0;
 
-    final streamOfFiles = tee<MapEntry<String, File>>(findFiles(), 2);
-    streamOfFiles[1].listen(
-      (entry) {
+    await streamTagEntries(
+      indexData,
+      mediaFiles,
+      onData: (entry) {
         processedFiles++;
 
         onData(
@@ -65,80 +60,97 @@ class BackupManager {
         );
       },
       onDone: onDone,
-    );
+    ).transform(tarWriter).transform(gzip.encoder).pipe(output.openWrite());
 
-    await streamTagEntries(streamOfFiles[0])
-        .transform(tarWriter)
-        .transform(gzip.encoder)
-        .pipe(output.openWrite());
     return output.path;
   }
 
-  Stream<MapEntry<String, File>> findFiles() async* {
-    for (final directory in directories) {
-      await for (final entry in directory.list(recursive: true)) {
-        if (entry is! File) continue;
-        final name = p.relative(entry.path, from: baseDir.path);
-        if (name.startsWith('.')) continue;
-        // await Future<void>.delayed(const Duration(seconds: 1));
-        yield MapEntry(name, entry);
-      }
-    }
-  }
-
-  List<Stream<T>> tee<T>(Stream<T> inputStream, int count) {
-    final controllers = List<StreamController<T>>.generate(
-      count,
-      (_) => StreamController<T>.broadcast(),
+  TarEntry entry2tarEntry(MapEntry<String, File> entry) {
+    final name = entry.key;
+    final file = entry.value;
+    final stat = file.statSync();
+    final tarEntry = TarEntry(
+      TarHeader(
+        name: name,
+        typeFlag: TypeFlag.reg,
+        mode: stat.mode,
+        modified: stat.modified,
+        accessed: stat.accessed,
+        changed: stat.changed,
+        size: stat.size,
+      ),
+      file.openRead(),
     );
-
-    inputStream.listen(
-      (data) {
-        for (final controller in controllers) {
-          controller.add(data);
-        }
-      },
-      onError: (Object error) {
-        for (final controller in controllers) {
-          controller.addError(error);
-        }
-      },
-      onDone: () {
-        for (final controller in controllers) {
-          controller.close();
-        }
-      },
-    );
-
-    return controllers.map((controller) => controller.stream).toList();
+    return tarEntry;
   }
 
   Stream<TarEntry> streamTagEntries(
-    Stream<MapEntry<String, File>> filesStream,
-  ) async* {
-    final controller = StreamController<TarEntry>();
+    String indexData,
+    List<MediaFile> mediaFiles, {
+    required void Function(MapEntry<String, File> entry) onData,
+    VoidCallback? onDone,
+  }) async* {
+    yield TarEntry.data(
+      TarHeader(
+        name: 'index.json',
+        mode: int.parse('644', radix: 8),
+      ),
+      utf8.encode(indexData),
+    );
 
-    filesStream.listen((entry) {
-      final name = entry.key;
-      final file = entry.value;
-      final stat = file.statSync();
+    for (final mediaFile in mediaFiles) {
+      onData(mediaFile.mapEntry);
+      yield entry2tarEntry(mediaFile.mapEntry);
+      if ((mediaFile.noteFiles?.length ?? 0) > 0) {
+        for (final noteFile in mediaFile.noteFiles!) {
+          onData(mediaFile.mapEntry);
+          yield entry2tarEntry(noteFile.mapEntry);
+        }
+      }
+    }
+    onDone?.call();
+  }
 
-      controller.add(
-        TarEntry(
-          TarHeader(
-            name: name,
-            typeFlag: TypeFlag.reg,
-            mode: stat.mode,
-            modified: stat.modified,
-            accessed: stat.accessed,
-            changed: stat.changed,
-            size: stat.size,
-          ),
-          file.openRead(),
-        ),
-      );
-    });
-    yield* controller.stream;
+  Future<List<MediaFile>> gatherFiles(List<Object?> dbArchive) async {
+    final fileEntries = <MediaFile>[];
+    for (final media in dbArchive) {
+      if (media != null) {
+        final e = jsonDecode(media as String);
+        final mediaMap = Map<String, dynamic>.from(e as Map<dynamic, dynamic>);
+        final file = mediaMap['itemPath'] as String;
+        if (file.isNotEmpty) {
+          final absPath =
+              p.join(appSettings.directories.media.pathString, file);
+          if (File(absPath).existsSync()) {
+            var mediaFile = MediaFile(path: file, absPath: absPath);
+
+            if ((mediaMap['notes'] as dynamic).runtimeType == List) {
+              final noteFiles = <NotesFile>[];
+              // We have notes
+              for (final n in mediaMap['notes'] as List) {
+                final note =
+                    Map<String, dynamic>.from(n as Map<dynamic, dynamic>);
+
+                final notePath = note['notePath'] as String;
+                final noteAbsPath = p.join(
+                  appSettings.directories.notes.pathString,
+                  notePath,
+                );
+
+                if (File(noteAbsPath).existsSync()) {
+                  final noteFile =
+                      NotesFile(path: notePath, absPath: noteAbsPath);
+                  noteFiles.add(noteFile);
+                }
+              }
+              mediaFile = mediaFile.copyWith(noteFiles: noteFiles);
+            }
+            fileEntries.add(mediaFile);
+          }
+        }
+      }
+    }
+    return fileEntries;
   }
 }
 
@@ -149,19 +161,9 @@ final backupNowProvider = StreamProvider<Progress>((ref) async* {
 
   ref.listen(refreshProvider, (prev, curr) async {
     if (prev != curr && curr != 0) {
-      final dbArchive = await dbManager.rawQuery(backupQuery);
-
-      if (dbArchive != null) {
-        print(dbArchive);
-      }
-
-      final directories = CLStandardDirectories.values
-          .where((stddir) => stddir.isStore)
-          .map(appSettings.directories.standardDirectory)
-          .toList();
       final backupManager = BackupManager(
-        directories: directories.map((e) => e.path).toList(),
-        baseDir: appSettings.directories.persistent,
+        dbManager: dbManager,
+        appSettings: appSettings,
       );
       final file = BackupManager.backupFile(
         appSettings.directories.backup.path,
@@ -235,33 +237,3 @@ LEFT JOIN
 GROUP BY
     Item.id;
 ''';
-
-/*
-
-
-    json_object(
-        'itemId', Item.id,
-        'itemPath', Item.path,
-        'itemRef', Item.ref,
-        'collectionLabel', Collection.label,
-        'itemType', Item.type,
-        'itemMd5String', Item.md5String,
-        'itemOriginalDate', Item.originalDate,
-        'itemCreatedDate', Item.createdDate,
-        'itemUpdatedDate', Item.updatedDate,
-         'notes','[' || CASE 
-            WHEN EXISTS (
-                SELECT 1 
-                FROM ItemNote 
-                WHERE ItemNote.itemId = Item.id
-            )
-            THEN  group_concat(
-                    json_object(
-                        'notePath', Notes.path,
-                        'noteType', Notes.type
-                    )
-                ) 
-            
-        END || ']'
-    ) AS jsonData
-*/
