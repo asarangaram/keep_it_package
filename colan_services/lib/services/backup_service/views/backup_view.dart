@@ -86,43 +86,47 @@ class _AvailableBackupState extends State<AvailableBackup> {
       return const SizedBox.shrink();
     }
     final stats = backupFile.statSync();
-    final backupTime = DateFormat('MMM dd, yyyy HH:mm').format(stats.modified);
+    final backupTime =
+        DateFormat('MMM dd, yyyy HH:mm:ss').format(stats.modified);
     final fileSize = '(${stats.size.toHumanReadableFileSize()})';
 
     return ListTile(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text.rich(
-                TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: 'Last Backup:',
-                    ),
-                    WidgetSpan(
-                      alignment: PlaceholderAlignment.middle,
-                      child: TextButton(
-                        onPressed: () {
-                          backupFile.deleteSync();
-                          setState(() {});
-                        },
-                        child: CLText.small(
-                          'Remove',
-                          color: CLTheme.of(context).colors.errorTextForeground,
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'Last Backup:',
+                      ),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: TextButton(
+                          onPressed: () {
+                            backupFile.deleteSync();
+                            setState(() {});
+                          },
+                          child: CLText.small(
+                            'Remove',
+                            color:
+                                CLTheme.of(context).colors.errorTextForeground,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              CLText.small(
-                '$backupTime $fileSize',
-              ),
-            ],
+                CLText.small(
+                  '$backupTime $fileSize',
+                ),
+              ],
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
