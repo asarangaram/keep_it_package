@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
+import '../state/camera_theme.dart';
 import 'cl_circular_button.dart';
 
 enum CameraSettings { cameraSelection, exposureMode, focusMode }
@@ -16,6 +17,7 @@ class CameraSettingsHandler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cameraThemeData = CameraTheme.of(context).themeData;
     return PopupMenuButton<CameraSettings>(
       initialValue: currentSelection,
       onSelected: onSelection,
@@ -29,7 +31,7 @@ class CameraSettingsHandler extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 4),
                       child: Icon(
-                        CLTheme.of(context).icons.popMenuSelectedItem,
+                        cameraThemeData.popMenuSelectedItem,
                         color: (e == currentSelection)
                             ? Colors.black
                             : Colors.transparent,
@@ -43,7 +45,7 @@ class CameraSettingsHandler extends StatelessWidget {
             .toList();
       },
       child: CircularButton(
-        icon: CLTheme.of(context).icons.popMenuAnchor,
+        icon: cameraThemeData.popMenuAnchor,
         hasDecoration: false,
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),

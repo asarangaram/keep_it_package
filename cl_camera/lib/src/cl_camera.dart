@@ -224,7 +224,7 @@ class _CLCameraState extends State<_CLCamera>
             children: [
               if (widget.onCancel != null)
                 IconButton(
-                  icon: Icon(CLTheme.of(context).icons.pagePop),
+                  icon: Icon(cameraThemeData.pagePop),
                   onPressed: widget.onCancel,
                 ),
               Expanded(
