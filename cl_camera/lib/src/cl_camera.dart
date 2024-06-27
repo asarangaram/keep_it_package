@@ -13,22 +13,65 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../cl_camera.dart';
+import 'models/cl_camera_theme_data.dart';
+import 'state/camera_theme.dart';
 import 'widgets/camera_mode.dart';
 import 'widgets/camera_settings.dart';
 import 'widgets/cl_circular_button.dart';
 import 'widgets/flash_control.dart';
 
-/// Camera example home widget.
-class CLCamera extends StatefulWidget {
+class CLCamera extends StatelessWidget {
   const CLCamera({
     required this.cameras,
     required this.previewWidget,
     required this.onCapture,
+    required this.themeData,
     this.textStyle,
     this.cameraMode = CameraMode.photo,
     this.onError,
     super.key,
     this.onCancel,
+  });
+  final CLCameraThemeData themeData;
+  final List<CameraDescription> cameras;
+
+  //final List<CameraDescription> cameras;
+  final TextStyle? textStyle;
+  final CameraMode cameraMode;
+
+  final void Function(String message, {required dynamic error})? onError;
+  final Widget previewWidget;
+
+  final void Function(String, {required bool isVideo}) onCapture;
+  final VoidCallback? onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    return CameraTheme(
+      themeData: themeData,
+      child: _CLCamera(
+        cameras: cameras,
+        previewWidget: previewWidget,
+        onCapture: onCapture,
+        onCancel: onCancel,
+        onError: onError,
+        cameraMode: cameraMode,
+        textStyle: textStyle,
+      ),
+    );
+  }
+}
+
+/// Camera example home widget.
+class _CLCamera extends StatefulWidget {
+  const _CLCamera({
+    required this.cameras,
+    required this.previewWidget,
+    required this.onCapture,
+    required this.textStyle,
+    required this.cameraMode,
+    required this.onError,
+    required this.onCancel,
   });
   final List<CameraDescription> cameras;
 
@@ -43,12 +86,12 @@ class CLCamera extends StatefulWidget {
   final VoidCallback? onCancel;
 
   @override
-  State<CLCamera> createState() {
+  State<_CLCamera> createState() {
     return _CLCameraState();
   }
 }
 
-class _CLCameraState extends State<CLCamera>
+class _CLCameraState extends State<_CLCamera>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
 
@@ -164,7 +207,7 @@ class _CLCameraState extends State<CLCamera>
 
   @override
   Widget build(BuildContext context) {
-    final cameraIcons = CLTheme.of(context).icons.camera;
+    final cameraThemeData = CameraTheme.of(context).themeData;
     if (controller == null || !controller!.value.isInitialized) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -269,13 +312,13 @@ class _CLCameraState extends State<CLCamera>
                               child: _isRecordingInProgress
                                   ? CircularButton(
                                       quarterTurns: quarterTurns,
-                                      icon: cameraIcons.videoRecordingStop,
+                                      icon: cameraThemeData.videoRecordingStop,
                                       onPressed: stopVideoRecording,
                                     )
                                   : CircularButton(
                                       quarterTurns: quarterTurns,
                                       onPressed: swapFrontBack,
-                                      icon: cameraIcons.switchCamera,
+                                      icon: cameraThemeData.switchCamera,
                                       foregroundColor: Colors.white,
                                       hasDecoration: false,
                                     ),
@@ -289,13 +332,13 @@ class _CLCameraState extends State<CLCamera>
                                   controller!.value.isRecordingVideo,
                                   controller!.value.isRecordingPaused
                                 )) {
-                                  (false, _, _) => cameraIcons.imageCapture,
+                                  (false, _, _) => cameraThemeData.imageCapture,
                                   (true, false, _) =>
-                                    cameraIcons.videoRecordingStart,
+                                    cameraThemeData.videoRecordingStart,
                                   (true, true, false) =>
-                                    cameraIcons.videoRecordingPause,
+                                    cameraThemeData.videoRecordingPause,
                                   (true, true, true) =>
-                                    cameraIcons.videoRecordingResume
+                                    cameraThemeData.videoRecordingResume
                                 },
                                 onPressed: switch ((
                                   cameraMode.isVideo,
@@ -826,7 +869,7 @@ class _CLCameraState extends State<CLCamera>
   }
 
   Widget cameraSelector(List<CameraDescription> cameras) {
-    final cameraIcons = CLTheme.of(context).icons.camera;
+    final cameraThemeData = CameraTheme.of(context).themeData;
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Column(
@@ -1023,8 +1066,8 @@ class _CLCameraState extends State<CLCamera>
                 },
                 icon: Icon(
                   config.enableAudio
-                      ? cameraIcons.recordingAudioOn
-                      : cameraIcons.recordingAudioOff,
+                      ? cameraThemeData.recordingAudioOn
+                      : cameraThemeData.recordingAudioOff,
                 ),
               ),
               if (!config.enableAudio) const Text('(Muted)'),
@@ -1040,7 +1083,7 @@ class _CLCameraState extends State<CLCamera>
   }
 
   Widget audioMute() {
-    final cameraIcons = CLTheme.of(context).icons.camera;
+    final cameraThemeData = CameraTheme.of(context).themeData;
     return IconButton(
       onPressed: _isRecordingInProgress
           ? null
@@ -1052,8 +1095,8 @@ class _CLCameraState extends State<CLCamera>
             },
       icon: Icon(
         config.enableAudio
-            ? cameraIcons.recordingAudioOn
-            : cameraIcons.recordingAudioOff,
+            ? cameraThemeData.recordingAudioOn
+            : cameraThemeData.recordingAudioOff,
         color: config.enableAudio ? null : Theme.of(context).colorScheme.error,
       ),
     );
