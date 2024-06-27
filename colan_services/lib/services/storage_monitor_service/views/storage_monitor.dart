@@ -28,7 +28,19 @@ class StorageMonitor extends ConsumerWidget {
         StorageInfoEntry(
           label: 'Cache',
           dirs: cacheDir,
-          actions: const [CLMenuItem(title: 'Clear', icon: Icons.delete)],
+          actions: [
+            CLMenuItem(
+              title: 'Clear',
+              icon: Icons.delete,
+              onTap: () async {
+                for (final dir in cacheDir) {
+                  dir.path.clear();
+                }
+
+                return false;
+              },
+            ),
+          ],
         ),
       ],
     );
