@@ -1020,7 +1020,8 @@ class CLCameraCoreState extends State<CLCameraCore>
                   );
                   await config.saveConfig();
                   await initializeCameraController(
-                      currDescription ?? backCamera);
+                    currDescription ?? backCamera,
+                  );
                 },
                 icon: Icon(
                   config.enableAudio
