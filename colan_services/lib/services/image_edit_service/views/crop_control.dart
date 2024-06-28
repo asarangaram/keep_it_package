@@ -1,10 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/aspect_ratio.dart' as aratio;
+import '../models/aspect_ratio.dart';
 import 'crop_orientation_control.dart';
 
-class CropperControls extends StatelessWidget {
+class CropperControls extends ConsumerWidget {
   const CropperControls({
     required this.rotateAngle,
     required this.aspectRatio,
@@ -18,18 +20,13 @@ class CropperControls extends StatelessWidget {
   final void Function(aratio.AspectRatio? aspectRatio) onChangeAspectRatio;
   final Widget? saveWidget;
 
-  // TODO(anandas): Move to settings
-  static List<aratio.AspectRatio> get availableAspectRatio => const [
-        //  aratio.AspectRatio(title: 'Freeform'),
-        aratio.AspectRatio(title: '1:1', ratio: 1),
-        aratio.AspectRatio(title: '4:3', ratio: 4 / 3),
-        aratio.AspectRatio(title: '5:4', ratio: 5 / 4),
-        aratio.AspectRatio(title: '7:5', ratio: 7 / 5),
-        aratio.AspectRatio(title: '16:9', ratio: 16 / 9),
-      ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final availableAspectRatioAsync = ref.watch(supportedAspectRatiosProvider);
+    final availableAspectRatio = availableAspectRatioAsync
+            .whenOrNull(data: (value) => value)
+            ?.aspectRatios ??
+        [];
     return Container(
       decoration: BoxDecoration(
         color: CLTheme.of(context)
