@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../config/texts.dart';
+import '../models/album_manager_helper.dart';
 import '../providers/gallery_group_provider.dart';
 
 class PinnedMediaPage extends ConsumerWidget {
@@ -45,22 +45,8 @@ class PinnedMediaPage extends ConsumerWidget {
                             await dbManager.togglePin(
                               item,
                               onPin: AlbumManager(albumName: 'KeepIt').addMedia,
-                              onRemovePin: (id) async {
-                                final res =
-                                    await AlbumManager(albumName: 'KeepIt')
-                                        .removeMedia(id);
-                                if (!res) {
-                                  await ref
-                                      .read(
-                                        notificationMessageProvider.notifier,
-                                      )
-                                      .push(
-                                        CLTexts
-                                            .missingdDeletePermissionsForGallery,
-                                      );
-                                }
-                                return res;
-                              },
+                              onRemovePin: (id) async => AlbumManagerHelper()
+                                  .removeMedia(context, ref, id),
                             );
                           },
                           child: PreviewService(
@@ -87,22 +73,9 @@ class PinnedMediaPage extends ConsumerWidget {
                           onTap: () async {
                             await dbManager.unpinMediaMultiple(
                               media,
-                              onRemovePinMultiple: (id) async {
-                                final res =
-                                    await AlbumManager(albumName: 'KeepIt')
-                                        .removeMultipleMedia(id);
-                                if (!res) {
-                                  await ref
-                                      .read(
-                                        notificationMessageProvider.notifier,
-                                      )
-                                      .push(
-                                        CLTexts
-                                            .missingdDeletePermissionsForGallery,
-                                      );
-                                }
-                                return res;
-                              },
+                              onRemovePinMultiple: (id) async =>
+                                  AlbumManagerHelper()
+                                      .removeMultipleMedia(context, ref, id),
                             );
                             return true;
                           },

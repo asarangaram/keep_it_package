@@ -8,7 +8,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import 'package:store/store.dart';
 
-import '../config/texts.dart';
+import '../models/album_manager_helper.dart';
 import '../providers/gallery_group_provider.dart';
 
 class DeleteMediaPage extends ConsumerWidget {
@@ -131,25 +131,13 @@ class DeleteMediaPage extends ConsumerWidget {
                                     items,
                                     onDeleteFile: (f) async =>
                                         f.deleteIfExists(),
-                                    onRemovePinMultiple: (ids) async {
-                                      /// This should not happen as
-                                      /// stale media can't be pinned
-                                      final res = await AlbumManager(
-                                        albumName: 'KeepIt',
-                                      ).removeMultipleMedia(ids);
-                                      if (!res) {
-                                        await ref
-                                            .read(
-                                              notificationMessageProvider
-                                                  .notifier,
-                                            )
-                                            .push(
-                                              CLTexts
-                                                  .missingdDeletePermissionsForGallery,
-                                            );
-                                      }
-                                      return res;
-                                    },
+                                    onRemovePinMultiple: (id) async =>
+                                        AlbumManagerHelper()
+                                            .removeMultipleMedia(
+                                      context,
+                                      ref,
+                                      id,
+                                    ),
                                   );
                                 }
                                 return confirmed;
@@ -210,25 +198,12 @@ class DeleteMediaPage extends ConsumerWidget {
                                 await dbManager.deleteMediaMultiple(
                                   media,
                                   onDeleteFile: (f) async => f.deleteIfExists(),
-                                  onRemovePinMultiple: (id) async {
-                                    /// This should not happen as
-                                    /// stale media can't be pinned
-                                    final res =
-                                        await AlbumManager(albumName: 'KeepIt')
-                                            .removeMultipleMedia(id);
-                                    if (!res) {
-                                      await ref
-                                          .read(
-                                            notificationMessageProvider
-                                                .notifier,
-                                          )
-                                          .push(
-                                            CLTexts
-                                                .missingdDeletePermissionsForGallery,
-                                          );
-                                    }
-                                    return res;
-                                  },
+                                  onRemovePinMultiple: (id) async =>
+                                      AlbumManagerHelper().removeMultipleMedia(
+                                    context,
+                                    ref,
+                                    id,
+                                  ),
                                 );
                               }
                               return;

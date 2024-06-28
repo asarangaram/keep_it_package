@@ -12,7 +12,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:store/store.dart';
 
-import '../config/texts.dart';
+import '../models/album_manager_helper.dart';
 import '../modules/shared_media/step4_save_collection.dart';
 import '../modules/shared_media/wizard_page.dart';
 import '../providers/gallery_group_provider.dart';
@@ -136,24 +136,9 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           await dbManager.deleteMediaMultiple(
                             selectedMedia.entries,
                             onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePinMultiple: (ids) async {
-                              /// This should not happen as
-                              /// stale media can't be pinned
-                              final res =
-                                  await AlbumManager(albumName: 'KeepIt')
-                                      .removeMultipleMedia(ids);
-                              if (!res) {
-                                await ref
-                                    .read(
-                                      notificationMessageProvider.notifier,
-                                    )
-                                    .push(
-                                      CLTexts
-                                          .missingdDeletePermissionsForGallery,
-                                    );
-                              }
-                              return res;
-                            },
+                            onRemovePinMultiple: (id) async =>
+                                AlbumManagerHelper()
+                                    .removeMultipleMedia(context, ref, id),
                           );
                         }
                         return true;
@@ -314,24 +299,9 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           await dbManager.deleteMediaMultiple(
                             selectedMedia.entries,
                             onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePinMultiple: (ids) async {
-                              /// This should not happen as
-                              /// stale media can't be pinned
-                              final res =
-                                  await AlbumManager(albumName: 'KeepIt')
-                                      .removeMultipleMedia(ids);
-                              if (!res) {
-                                await ref
-                                    .read(
-                                      notificationMessageProvider.notifier,
-                                    )
-                                    .push(
-                                      CLTexts
-                                          .missingdDeletePermissionsForGallery,
-                                    );
-                              }
-                              return res;
-                            },
+                            onRemovePinMultiple: (id) async =>
+                                AlbumManagerHelper()
+                                    .removeMultipleMedia(context, ref, id),
                           );
                         }
                         return;
