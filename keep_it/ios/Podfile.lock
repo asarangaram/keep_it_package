@@ -64,6 +64,8 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
   - photo_manager (2.0.0):
     - Flutter
     - FlutterMacOS
@@ -115,6 +117,7 @@ DEPENDENCIES:
   - heif_converter (from `.symlinks/plugins/heif_converter/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - share_handler_ios (from `.symlinks/plugins/share_handler_ios/ios`)
   - share_handler_ios_models (from `.symlinks/plugins/share_handler_ios/ios/Models`)
@@ -150,6 +153,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   photo_manager:
     :path: ".symlinks/plugins/photo_manager/ios"
   share_handler_ios:
@@ -178,6 +183,7 @@ SPEC CHECKSUMS:
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   photo_manager: ff695c7a1dd5bc379974953a2b5c0a293f7c4c8a
   SDWebImage: dfe95b2466a9823cf9f0c6d01217c06550d7b29a
   share_handler_ios: 088138c17ce73333b4875a35860cd52604041521
@@ -189,6 +195,6 @@ SPEC CHECKSUMS:
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
 
-PODFILE CHECKSUM: c1e587fec67796a6d9abf5ac72586146c2c3c354
+PODFILE CHECKSUM: 466a47047b278c274a860a1a18118b3a0fc396e7
 
 COCOAPODS: 1.15.2

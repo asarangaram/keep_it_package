@@ -25,6 +25,8 @@ class CLCameraThemeData {
   final IconData popMenuSelectedItem;
   final IconData pagePop;
 
+  final TextStyle displayTextStyle;
+
   const CLCameraThemeData({
     required this.imageCapture,
     required this.videoRecordingStart,
@@ -43,6 +45,7 @@ class CLCameraThemeData {
     required this.popMenuAnchor,
     required this.popMenuSelectedItem,
     required this.pagePop,
+    required this.displayTextStyle,
   });
 
   CLCameraThemeData copyWith({
@@ -63,6 +66,7 @@ class CLCameraThemeData {
     IconData? popMenuAnchor,
     IconData? popMenuSelectedItem,
     IconData? pagePop,
+    TextStyle? displayTextStyle,
   }) {
     return CLCameraThemeData(
       imageCapture: imageCapture ?? this.imageCapture,
@@ -82,12 +86,13 @@ class CLCameraThemeData {
       popMenuAnchor: popMenuAnchor ?? this.popMenuAnchor,
       popMenuSelectedItem: popMenuSelectedItem ?? this.popMenuSelectedItem,
       pagePop: pagePop ?? this.pagePop,
+      displayTextStyle: displayTextStyle ?? this.displayTextStyle,
     );
   }
 
   @override
   String toString() {
-    return 'CLCameraThemeData(imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop)';
+    return 'CLCameraThemeData(imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, displayTextStyle: $displayTextStyle)';
   }
 
   @override
@@ -110,7 +115,8 @@ class CLCameraThemeData {
         other.invokeCamera == invokeCamera &&
         other.popMenuAnchor == popMenuAnchor &&
         other.popMenuSelectedItem == popMenuSelectedItem &&
-        other.pagePop == pagePop;
+        other.pagePop == pagePop &&
+        other.displayTextStyle == displayTextStyle;
   }
 
   @override
@@ -131,7 +137,7 @@ class CLCameraThemeData {
         invokeCamera.hashCode ^
         popMenuAnchor.hashCode ^
         popMenuSelectedItem.hashCode ^
-        pagePop.hashCode;
+        pagePop.hashCode ^
+        displayTextStyle.hashCode;
   }
 }
-

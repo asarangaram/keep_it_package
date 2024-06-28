@@ -1,7 +1,3 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 
 import 'package:camera/camera.dart';
@@ -10,6 +6,7 @@ import 'package:cl_camera/src/models/camera_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../cl_camera.dart';
 import 'state/camera_theme.dart';
@@ -17,8 +14,10 @@ import 'widgets/camera_mode.dart';
 import 'widgets/camera_settings.dart';
 import 'widgets/cl_circular_button.dart';
 import 'widgets/flash_control.dart';
+import 'widgets/permission_denied.dart';
+import 'widgets/permission_wait.dart';
 
-class CLCamera extends StatelessWidget {
+class CLCamera extends StatefulWidget {
   const CLCamera({
     required this.cameras,
     required this.previewWidget,
@@ -44,25 +43,75 @@ class CLCamera extends StatelessWidget {
   final VoidCallback? onCancel;
 
   @override
+  State<CLCamera> createState() => _CLCameraState();
+}
+
+class _CLCameraState extends State<CLCamera> {
+  bool? hasPermission;
+  @override
+  void initState() {
+    super.initState();
+
+    _requestCameraPermission();
+  }
+
+  Future<void> _requestCameraPermission() async {
+    final status = await Permission.camera.status;
+    print('status $status');
+    if (status.isGranted) {
+      setState(() {
+        hasPermission = true;
+      });
+    } else if (status.isDenied || status.isRestricted) {
+      if (await Permission.camera.request().isGranted) {
+        setState(() {
+          hasPermission = true;
+        });
+      } else {
+        setState(() {
+          hasPermission = false;
+        });
+      }
+    } else if (status.isPermanentlyDenied) {
+      // Open app settings
+      await openAppSettings();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CameraTheme(
-      themeData: themeData,
-      child: _CLCamera(
-        cameras: cameras,
-        previewWidget: previewWidget,
-        onCapture: onCapture,
-        onCancel: onCancel,
-        onError: onError,
-        cameraMode: cameraMode,
-        textStyle: textStyle,
-      ),
+      themeData: widget.themeData,
+      child: switch (hasPermission) {
+        null => CameraPermissionWait(
+            message: 'Waiting for Camera Permission',
+            onDone: widget.onCancel,
+          ),
+        false => CameraPermissionDenied(
+            message: 'Permission not granted to use Camera',
+            onDone: widget.onCancel,
+            onOpenSettings: openAppSettings,
+          ),
+        true => CameraTheme(
+            themeData: widget.themeData,
+            child: CLCamera0(
+              cameras: widget.cameras,
+              previewWidget: widget.previewWidget,
+              onCapture: widget.onCapture,
+              onCancel: widget.onCancel,
+              onError: widget.onError,
+              cameraMode: widget.cameraMode,
+              textStyle: widget.textStyle,
+            ),
+          )
+      },
     );
   }
 }
 
 /// Camera example home widget.
-class _CLCamera extends StatefulWidget {
-  const _CLCamera({
+class CLCamera0 extends StatefulWidget {
+  const CLCamera0({
     required this.cameras,
     required this.previewWidget,
     required this.onCapture,
@@ -70,6 +119,7 @@ class _CLCamera extends StatefulWidget {
     required this.cameraMode,
     required this.onError,
     required this.onCancel,
+    super.key,
   });
   final List<CameraDescription> cameras;
 
@@ -84,12 +134,12 @@ class _CLCamera extends StatefulWidget {
   final VoidCallback? onCancel;
 
   @override
-  State<_CLCamera> createState() {
-    return _CLCameraState();
+  State<CLCamera0> createState() {
+    return CLCamera0State();
   }
 }
 
-class _CLCameraState extends State<_CLCamera>
+class CLCamera0State extends State<CLCamera0>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
 

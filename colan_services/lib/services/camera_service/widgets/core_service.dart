@@ -62,5 +62,6 @@ class DefaultCLCameraIcons extends CLCameraThemeData {
           popMenuAnchor: MdiIcons.dotsVertical,
           popMenuSelectedItem: MdiIcons.checkCircle,
           pagePop: MdiIcons.arrowLeft,
+          displayTextStyle: const TextStyle(fontSize: 20),
         );
 }
