@@ -107,8 +107,9 @@ class CameraConfig {
     return CameraConfig.fromJson(prefJSON);
   }
 
+  // Never allow Audio to be muted when starting the camera
   Future<void> saveConfig() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('cameraConfig', toJson());
+    await prefs.setString('cameraConfig', copyWith(enableAudio: true).toJson());
   }
 }
