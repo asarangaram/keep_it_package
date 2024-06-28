@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 
@@ -46,8 +47,16 @@ class CollectionTimeLinePage extends ConsumerWidget {
                 );
               }
             },
-            onCameraCapture: () {
-              context.push('/camera?collectionId=$collectionId');
+            onCameraCapture: () async {
+              await CLCamera.invokeWithSufficientPermission(
+                context,
+                () async {
+                  if (context.mounted) {
+                    await context.push('/camera?collectionId=$collectionId');
+                  }
+                },
+                themeData: DefaultCLCameraIcons(),
+              );
             },
           ),
         ),

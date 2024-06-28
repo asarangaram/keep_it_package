@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -50,8 +51,16 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     c,
                     ref,
                   ),
-                  onCameraCapture: () {
-                    context.push('/camera');
+                  onCameraCapture: () async {
+                    await CLCamera.invokeWithSufficientPermission(
+                      context,
+                      () async {
+                        if (context.mounted) {
+                          await context.push('/camera');
+                        }
+                      },
+                      themeData: DefaultCLCameraIcons(),
+                    );
                   },
                   onRefresh: () async {
                     ref.invalidate(dbManagerProvider);

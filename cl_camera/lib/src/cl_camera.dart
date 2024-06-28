@@ -44,6 +44,68 @@ class CLCamera extends StatefulWidget {
 
   @override
   State<CLCamera> createState() => _CLCameraState();
+
+  static Future<Map<Permission, PermissionStatus>> checkPermission() async {
+    var statuses = <Permission, PermissionStatus>{};
+    statuses[Permission.camera] = await Permission.camera.status;
+    statuses[Permission.microphone] = await Permission.microphone.status;
+    statuses[Permission.location] = await Permission.location.status;
+    if (!statuses.values.every((e) => e.isGranted)) {
+      statuses = await [
+        Permission.camera,
+        Permission.microphone,
+        Permission.location,
+      ].request();
+    }
+    return statuses;
+  }
+
+  static Future<bool> get hasPermission async {
+    final statuses = await checkPermission();
+    return statuses.values.every((e) => e.isGranted);
+  }
+
+  static Future<bool> invokeWithSufficientPermission(
+    BuildContext context,
+    Future<void> Function() callback, {
+    required CLCameraThemeData themeData,
+  }) async {
+    final statuses = await checkPermission();
+    final hasPermission = statuses.values.every((e) => e.isGranted);
+    if (hasPermission) {
+      await callback();
+      return true;
+    }
+    if (context.mounted) {
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            alignment: Alignment.center,
+            insetPadding: const EdgeInsets.all(10),
+            content: CameraTheme(
+              themeData: themeData,
+              child: CameraPermissionDenied(
+                statuses: statuses,
+                onDone: () {
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
+                onOpenSettings: () async {
+                  await openAppSettings();
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      );
+    }
+    return false;
+  }
 }
 
 class _CLCameraState extends State<CLCamera> {
@@ -57,30 +119,14 @@ class _CLCameraState extends State<CLCamera> {
   }
 
   Future<void> _requestCameraPermission() async {
-    statuses[Permission.camera] = await Permission.camera.status;
-    statuses[Permission.microphone] = await Permission.microphone.status;
-    statuses[Permission.location] = await Permission.location.status;
-    if (statuses.values.every((e) => e.isGranted)) {
-      hasPermission = true;
-    } else {
-      statuses = await [
-        Permission.camera,
-        Permission.microphone,
-        Permission.location,
-      ].request();
-      if (statuses.values.every((e) => e.isGranted)) {
-        hasPermission = true;
-      } else {
-        hasPermission = false;
-      }
-    }
+    statuses = await CLCamera.checkPermission();
+    hasPermission = statuses.values.every((e) => e.isGranted);
 
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    print(statuses);
     return CameraTheme(
       themeData: widget.themeData,
       child: switch (hasPermission) {
