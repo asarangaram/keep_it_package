@@ -45,6 +45,9 @@ class CameraServiceCore extends StatelessWidget {
 class DefaultCLCameraIcons extends CLCameraThemeData {
   DefaultCLCameraIcons()
       : super(
+          iconCamera: MdiIcons.camera,
+          iconMicrophone: MdiIcons.microphone,
+          iconLocation: MdiIcons.mapMarker,
           imageCapture: MdiIcons.camera,
           videoRecordingStart: MdiIcons.video,
           videoRecordingPause: MdiIcons.pause,
@@ -63,5 +66,6 @@ class DefaultCLCameraIcons extends CLCameraThemeData {
           popMenuSelectedItem: MdiIcons.checkCircle,
           pagePop: MdiIcons.arrowLeft,
           displayTextStyle: const TextStyle(fontSize: 20),
+          displayIconSize: 35,
         );
 }

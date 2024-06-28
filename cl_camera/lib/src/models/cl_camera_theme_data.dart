@@ -1,8 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 @immutable
 class CLCameraThemeData {
+  final IconData iconCamera;
+  final IconData iconMicrophone;
+  final IconData iconLocation;
+
   final IconData imageCapture;
   final IconData videoRecordingStart;
   final IconData videoRecordingPause;
@@ -26,8 +31,12 @@ class CLCameraThemeData {
   final IconData pagePop;
 
   final TextStyle displayTextStyle;
+  final double displayIconSize;
 
   const CLCameraThemeData({
+    required this.iconCamera,
+    required this.iconMicrophone,
+    required this.iconLocation,
     required this.imageCapture,
     required this.videoRecordingStart,
     required this.videoRecordingPause,
@@ -46,9 +55,13 @@ class CLCameraThemeData {
     required this.popMenuSelectedItem,
     required this.pagePop,
     required this.displayTextStyle,
+    required this.displayIconSize,
   });
 
   CLCameraThemeData copyWith({
+    IconData? iconCamera,
+    IconData? iconMicrophone,
+    IconData? iconLocation,
     IconData? imageCapture,
     IconData? videoRecordingStart,
     IconData? videoRecordingPause,
@@ -67,8 +80,12 @@ class CLCameraThemeData {
     IconData? popMenuSelectedItem,
     IconData? pagePop,
     TextStyle? displayTextStyle,
+    double? displayIconSize,
   }) {
     return CLCameraThemeData(
+      iconCamera: iconCamera ?? this.iconCamera,
+      iconMicrophone: iconMicrophone ?? this.iconMicrophone,
+      iconLocation: iconLocation ?? this.iconLocation,
       imageCapture: imageCapture ?? this.imageCapture,
       videoRecordingStart: videoRecordingStart ?? this.videoRecordingStart,
       videoRecordingPause: videoRecordingPause ?? this.videoRecordingPause,
@@ -87,19 +104,23 @@ class CLCameraThemeData {
       popMenuSelectedItem: popMenuSelectedItem ?? this.popMenuSelectedItem,
       pagePop: pagePop ?? this.pagePop,
       displayTextStyle: displayTextStyle ?? this.displayTextStyle,
+      displayIconSize: displayIconSize ?? this.displayIconSize,
     );
   }
 
   @override
   String toString() {
-    return 'CLCameraThemeData(imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, displayTextStyle: $displayTextStyle)';
+    return 'CLCameraThemeData(iconCamera: $iconCamera, iconMicrophone: $iconMicrophone, iconLocation: $iconLocation, imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, displayTextStyle: $displayTextStyle, displayIconSize: $displayIconSize)';
   }
 
   @override
   bool operator ==(covariant CLCameraThemeData other) {
     if (identical(this, other)) return true;
 
-    return other.imageCapture == imageCapture &&
+    return other.iconCamera == iconCamera &&
+        other.iconMicrophone == iconMicrophone &&
+        other.iconLocation == iconLocation &&
+        other.imageCapture == imageCapture &&
         other.videoRecordingStart == videoRecordingStart &&
         other.videoRecordingPause == videoRecordingPause &&
         other.videoRecordingResume == videoRecordingResume &&
@@ -116,12 +137,16 @@ class CLCameraThemeData {
         other.popMenuAnchor == popMenuAnchor &&
         other.popMenuSelectedItem == popMenuSelectedItem &&
         other.pagePop == pagePop &&
-        other.displayTextStyle == displayTextStyle;
+        other.displayTextStyle == displayTextStyle &&
+        other.displayIconSize == displayIconSize;
   }
 
   @override
   int get hashCode {
-    return imageCapture.hashCode ^
+    return iconCamera.hashCode ^
+        iconMicrophone.hashCode ^
+        iconLocation.hashCode ^
+        imageCapture.hashCode ^
         videoRecordingStart.hashCode ^
         videoRecordingPause.hashCode ^
         videoRecordingResume.hashCode ^
@@ -138,6 +163,16 @@ class CLCameraThemeData {
         popMenuAnchor.hashCode ^
         popMenuSelectedItem.hashCode ^
         pagePop.hashCode ^
-        displayTextStyle.hashCode;
+        displayTextStyle.hashCode ^
+        displayIconSize.hashCode;
+  }
+
+  IconData iconPermission(Permission permission) {
+    return switch (permission) {
+      Permission.camera => iconCamera,
+      Permission.microphone => iconMicrophone,
+      Permission.location => iconLocation,
+      _ => Icons.device_unknown_outlined // Should not occur
+    };
   }
 }

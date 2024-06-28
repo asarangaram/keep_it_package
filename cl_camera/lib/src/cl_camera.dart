@@ -47,6 +47,7 @@ class CLCamera extends StatefulWidget {
 }
 
 class _CLCameraState extends State<CLCamera> {
+  Map<Permission, PermissionStatus> statuses = {};
   bool? hasPermission;
   @override
   void initState() {
@@ -56,30 +57,30 @@ class _CLCameraState extends State<CLCamera> {
   }
 
   Future<void> _requestCameraPermission() async {
-    final status = await Permission.camera.status;
-    print('status $status');
-    if (status.isGranted) {
-      setState(() {
+    statuses[Permission.camera] = await Permission.camera.status;
+    statuses[Permission.microphone] = await Permission.microphone.status;
+    statuses[Permission.location] = await Permission.location.status;
+    if (statuses.values.every((e) => e.isGranted)) {
+      hasPermission = true;
+    } else {
+      statuses = await [
+        Permission.camera,
+        Permission.microphone,
+        Permission.location,
+      ].request();
+      if (statuses.values.every((e) => e.isGranted)) {
         hasPermission = true;
-      });
-    } else if (status.isDenied || status.isRestricted) {
-      if (await Permission.camera.request().isGranted) {
-        setState(() {
-          hasPermission = true;
-        });
       } else {
-        setState(() {
-          hasPermission = false;
-        });
+        hasPermission = false;
       }
-    } else if (status.isPermanentlyDenied) {
-      // Open app settings
-      await openAppSettings();
     }
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    print(statuses);
     return CameraTheme(
       themeData: widget.themeData,
       child: switch (hasPermission) {
@@ -88,7 +89,7 @@ class _CLCameraState extends State<CLCamera> {
             onDone: widget.onCancel,
           ),
         false => CameraPermissionDenied(
-            message: 'Permission not granted to use Camera',
+            statuses: statuses,
             onDone: widget.onCancel,
             onOpenSettings: openAppSettings,
           ),
