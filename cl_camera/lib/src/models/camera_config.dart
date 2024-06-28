@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 extension ExtResolutionPreset on ResolutionPreset {
   String toMap() {
@@ -94,4 +95,20 @@ class CameraConfig {
 
   factory CameraConfig.fromJson(String source) =>
       CameraConfig.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  static Future<CameraConfig> loadConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final prefJSON = prefs.getString('cameraConfig');
+    if (prefJSON == null) {
+      const config = CameraConfig();
+      await prefs.setString('cameraConfig', config.toJson());
+      return config;
+    }
+    return CameraConfig.fromJson(prefJSON);
+  }
+
+  Future<void> saveConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('cameraConfig', toJson());
+  }
 }

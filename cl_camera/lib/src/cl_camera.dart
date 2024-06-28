@@ -4,8 +4,10 @@ import 'package:camera/camera.dart';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../cl_camera.dart';
+import 'models/camera_config.dart';
 import 'state/camera_theme.dart';
 import 'widgets/camera_core.dart';
 import 'widgets/permission_denied.dart';
@@ -112,7 +114,6 @@ class _CLCameraState extends State<CLCamera> {
   Future<void> _requestCameraPermission() async {
     statuses = await CLCamera.checkPermission();
     hasPermission = statuses.values.every((e) => e.isGranted);
-
     setState(() {});
   }
 
@@ -132,13 +133,26 @@ class _CLCameraState extends State<CLCamera> {
           ),
         true => CameraTheme(
             themeData: widget.themeData,
-            child: CLCameraCore(
-              cameras: widget.cameras,
-              previewWidget: widget.previewWidget,
-              onCapture: widget.onCapture,
-              onCancel: widget.onCancel,
-              onError: widget.onError,
-              cameraMode: widget.cameraMode,
+            child: FutureBuilder(
+              future: CameraConfig.loadConfig(),
+              builder: (context, snapShot) {
+                if (snapShot.connectionState == ConnectionState.waiting ||
+                    (!snapShot.hasData)) {
+                  return CameraPermissionWait(
+                    message: 'Loading Config',
+                    onDone: widget.onCancel,
+                  );
+                }
+                return CLCameraCore(
+                  config: snapShot.data!,
+                  cameras: widget.cameras,
+                  previewWidget: widget.previewWidget,
+                  onCapture: widget.onCapture,
+                  onCancel: widget.onCancel,
+                  onError: widget.onError,
+                  cameraMode: widget.cameraMode,
+                );
+              },
             ),
           )
       },

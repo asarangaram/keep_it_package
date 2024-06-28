@@ -22,9 +22,11 @@ class CLCameraCore extends StatefulWidget {
     required this.cameraMode,
     required this.onError,
     required this.onCancel,
+    required this.config,
     super.key,
   });
   final List<CameraDescription> cameras;
+  final CameraConfig config;
 
   //final List<CameraDescription> cameras;
 
@@ -65,11 +67,12 @@ class CLCameraCoreState extends State<CLCameraCore>
   late AnimationController cameraSettingsController;
   late Animation<double> cameraSettingsAnimation;
 
-  CameraConfig config = const CameraConfig();
+  late CameraConfig config;
 
   @override
   void initState() {
     super.initState();
+    config = widget.config;
     WidgetsBinding.instance.addObserver(this);
     cameraMode = widget.cameraMode;
     cameraSettingsController = AnimationController(
@@ -873,11 +876,12 @@ class CLCameraCoreState extends State<CLCameraCore>
                       ),
                     )
                     .toList(),
-                onPressed: (index) {
+                onPressed: (index) async {
                   if (index != config.defaultFrontCameraIndex) {
                     config = config.copyWith(defaultFrontCameraIndex: index);
+                    await config.saveConfig();
                   }
-                  initializeCameraController(frontCamera);
+                  await initializeCameraController(frontCamera);
                 },
               ),
             ],
@@ -933,11 +937,12 @@ class CLCameraCoreState extends State<CLCameraCore>
                       ),
                     )
                     .toList(),
-                onPressed: (index) {
+                onPressed: (index) async {
                   if (index != config.defaultBackCameraIndex) {
                     config = config.copyWith(defaultBackCameraIndex: index);
+                    await config.saveConfig();
                   }
-                  initializeCameraController(backCamera);
+                  await initializeCameraController(backCamera);
                 },
               ),
             ],
@@ -979,13 +984,14 @@ class CLCameraCoreState extends State<CLCameraCore>
                     ),
                   )
                   .toList(),
-              onPressed: (index) {
+              onPressed: (index) async {
                 if (index !=
                     ResolutionPreset.values.indexOf(config.resolutionPreset)) {
                   config = config.copyWith(
                     resolutionPreset: ResolutionPreset.values[index],
                   );
-                  initializeCameraController(backCamera);
+                  await config.saveConfig();
+                  await initializeCameraController(backCamera);
                 }
               },
             ),
@@ -1008,11 +1014,13 @@ class CLCameraCoreState extends State<CLCameraCore>
                 ),
               ),
               IconButton(
-                onPressed: () {
+                onPressed: () async {
                   config = config.copyWith(
                     enableAudio: !config.enableAudio,
                   );
-                  initializeCameraController(currDescription ?? backCamera);
+                  await config.saveConfig();
+                  await initializeCameraController(
+                      currDescription ?? backCamera);
                 },
                 icon: Icon(
                   config.enableAudio
@@ -1037,11 +1045,12 @@ class CLCameraCoreState extends State<CLCameraCore>
     return IconButton(
       onPressed: _isRecordingInProgress
           ? null
-          : () {
+          : () async {
               config = config.copyWith(
                 enableAudio: !config.enableAudio,
               );
-              initializeCameraController(currDescription ?? backCamera);
+              await config.saveConfig();
+              await initializeCameraController(currDescription ?? backCamera);
             },
       icon: Icon(
         config.enableAudio
