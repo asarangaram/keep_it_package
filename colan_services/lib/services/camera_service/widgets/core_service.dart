@@ -11,6 +11,7 @@ class CameraServiceCore extends StatelessWidget {
     required this.previewWidget,
     super.key,
     this.onDone,
+    this.onError,
   });
   final VoidCallback? onDone;
   final Future<void> Function() onReceiveCapturedMedia;
@@ -19,6 +20,7 @@ class CameraServiceCore extends StatelessWidget {
     required bool isVideo,
   }) onCapture;
   final Widget previewWidget;
+  final void Function(String, {required dynamic error})? onError;
   @override
   Widget build(BuildContext context) {
     return GetCameras(
@@ -31,6 +33,7 @@ class CameraServiceCore extends StatelessWidget {
           onCapture: onCapture,
           previewWidget: previewWidget,
           themeData: DefaultCLCameraIcons(),
+          onError: onError,
         );
       },
     );

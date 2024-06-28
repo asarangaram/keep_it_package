@@ -17,7 +17,7 @@ class PreviewService extends StatelessWidget {
   });
   final CLMedia media;
   final bool keepAspectRatio;
-  // TODO(anandas): :  Make this reactive??
+  // TODO(anandas): :  How to make this reactive??
   Future<bool> isPinBroken() async {
     if (media.pin != null) {
       final asset = await AssetEntity.fromId(media.pin!);

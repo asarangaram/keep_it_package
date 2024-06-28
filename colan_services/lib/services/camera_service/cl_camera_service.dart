@@ -16,12 +16,14 @@ class CLCameraService extends ConsumerWidget {
     required this.onReceiveCapturedMedia,
     this.onDone,
     super.key,
+    this.onError,
   });
   final int? collectionId;
 
   final VoidCallback? onDone;
   final Future<void> Function() onReceiveCapturedMedia;
   static const tempCollectionName = '*** Recently Captured';
+  final void Function(String message, {required dynamic error})? onError;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDBManager(
@@ -31,6 +33,7 @@ class CLCameraService extends ConsumerWidget {
           buildOnData: (collection) {
             return CameraServiceCore(
               onDone: onDone,
+              onError: onError,
               onCapture: (path, {required isVideo}) => onCapture(
                 ref,
                 path,

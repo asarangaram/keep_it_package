@@ -728,8 +728,7 @@ class CLCameraCoreState extends State<CLCameraCore>
       await controller!.setExposureMode(mode);
       // ignore: unused_catch_clause
     } on CameraException catch (e) {
-      //_showCameraException(e);
-      rethrow;
+      widget.onError?.call('setExposureMode failed.', error: e);
     }
   }
 
@@ -745,8 +744,7 @@ class CLCameraCoreState extends State<CLCameraCore>
     try {
       await controller!.setExposureOffset(offset);
     } /* on CameraException  */ catch (e) {
-      // TODO(anandas): : handler error
-      rethrow;
+      widget.onError?.call('setExposureOffset failed.', error: e);
     }
   }
 
@@ -816,8 +814,7 @@ class CLCameraCoreState extends State<CLCameraCore>
     try {
       await controller!.setFocusMode(mode);
     } /* on CameraException  */ catch (e) {
-      //_showCameraException(e);
-      rethrow;
+      widget.onError?.call('setFocusMode failed.', error: e);
     }
   }
 
