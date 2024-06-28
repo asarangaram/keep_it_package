@@ -44,7 +44,7 @@ class PinnedMediaPage extends ConsumerWidget {
                           onLongPress: () async {
                             await dbManager.togglePin(
                               item,
-                              onPin: AlbumManager(albumName: 'KeepIt').addMedia,
+                              onPin: AlbumManagerHelper().albumManager.addMedia,
                               onRemovePin: (id) async => AlbumManagerHelper()
                                   .removeMedia(context, ref, id),
                             );

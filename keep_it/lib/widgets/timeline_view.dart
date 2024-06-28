@@ -123,8 +123,9 @@ class TimeLineView extends ConsumerWidget {
                 onTap: () async {
                   await dbManager.pinMediaMultiple(
                     items,
-                    onPin: AlbumManager(albumName: 'KeepIt').addMedia,
-                    onRemovePin: AlbumManager(albumName: 'KeepIt').removeMedia,
+                    onPin: AlbumManagerHelper().albumManager.addMedia,
+                    onRemovePin: (id) async =>
+                        AlbumManagerHelper().removeMedia(context, ref, id),
                   );
                   return true;
                 },

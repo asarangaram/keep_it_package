@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
-import '../../config/texts.dart';
+import '../../models/album_manager_helper.dart';
 import '../wrap_standard_quick_menu.dart';
 
 class MediaAsFile extends ConsumerWidget {
@@ -49,18 +49,8 @@ class MediaAsFile extends ConsumerWidget {
                       await dbManager.deleteMedia(
                         media,
                         onDeleteFile: (f) async => f.deleteIfExists(),
-                        onRemovePin: (id) async {
-                          final res = await AlbumManager(albumName: 'KeepIt')
-                              .removeMedia(id);
-                          if (!res) {
-                            await ref
-                                .read(notificationMessageProvider.notifier)
-                                .push(
-                                  CLTexts.missingdDeletePermissionsForGallery,
-                                );
-                          }
-                          return res;
-                        },
+                        onRemovePin: (id) async =>
+                            AlbumManagerHelper().removeMedia(context, ref, id),
                       );
                       if (context.mounted) {
                         Navigator.of(context).pop(confirmed);

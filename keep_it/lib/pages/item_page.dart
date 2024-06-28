@@ -8,11 +8,11 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keep_it/models/album_manager_helper.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:store/store.dart';
 
-import '../config/texts.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/media_view/media_controls.dart';
 import '../widgets/media_view/media_viewer.dart';
@@ -280,20 +280,8 @@ class _ItemViewState extends ConsumerState<ItemView> {
                           await dbManager.deleteMedia(
                             media,
                             onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePin: (id) async {
-                              final res =
-                                  await AlbumManager(albumName: 'KeepIt')
-                                      .removeMedia(id);
-                              if (!res) {
-                                await ref
-                                    .read(notificationMessageProvider.notifier)
-                                    .push(
-                                      CLTexts
-                                          .missingdDeletePermissionsForGallery,
-                                    );
-                              }
-                              return res;
-                            },
+                            onRemovePin: (id) async => AlbumManagerHelper()
+                                .removeMedia(context, ref, id),
                           );
                           if (context.mounted) {
                             Navigator.of(context).pop(confirmed);
@@ -337,17 +325,9 @@ class _ItemViewState extends ConsumerState<ItemView> {
               onPin: () async {
                 await dbManager.togglePin(
                   media,
-                  onPin: AlbumManager(albumName: 'KeepIt').addMedia,
-                  onRemovePin: (id) async {
-                    final res =
-                        await AlbumManager(albumName: 'KeepIt').removeMedia(id);
-                    if (!res) {
-                      await ref.read(notificationMessageProvider.notifier).push(
-                            CLTexts.missingdDeletePermissionsForGallery,
-                          );
-                    }
-                    return res;
-                  },
+                  onPin: AlbumManagerHelper().albumManager.addMedia,
+                  onRemovePin: (id) async =>
+                      AlbumManagerHelper().removeMedia(context, ref, id),
                 );
                 return true;
               },
