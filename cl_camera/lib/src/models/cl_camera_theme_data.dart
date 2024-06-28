@@ -114,6 +114,7 @@ class CLCameraThemeData {
 
   @override
   String toString() {
+    // ignore: lines_longer_than_80_chars
     return 'CLCameraThemeData(iconCamera: $iconCamera, iconMicrophone: $iconMicrophone, iconLocation: $iconLocation, imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, displayTextStyle: $displayTextStyle, displayIconSize: $displayIconSize, textStyle: $textStyle)';
   }
 
