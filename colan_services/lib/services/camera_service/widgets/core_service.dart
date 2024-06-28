@@ -1,5 +1,4 @@
 import 'package:cl_camera/cl_camera.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/default_theme.dart';

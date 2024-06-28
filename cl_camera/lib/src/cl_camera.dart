@@ -4,7 +4,6 @@ import 'package:camera/camera.dart';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../cl_camera.dart';
 import 'models/camera_config.dart';
