@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:window_size/window_size.dart';
 
 import 'modules/shared_media/incoming_media_handler.dart';
@@ -33,17 +32,6 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLAppInitializer get appInitializer => (ref) async {
-        // TODO(anandas): Delete only if saved preference is set to reset.
-        // ignore: dead_code, literal_only_boolean_expressions
-        if (false) {
-          for (final dir in [
-            await getApplicationDocumentsDirectory(),
-            await getApplicationCacheDirectory(),
-          ]) {
-            dir.clear();
-          }
-          //await FilePicker.platform.clearTemporaryFiles();
-        }
         return true;
       };
 
