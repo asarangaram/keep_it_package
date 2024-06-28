@@ -44,7 +44,7 @@ class AlbumManager {
 
     /// Unfortunately, it is not possible to keep inside a FOLDER OR ALBUM
     /// with this approach. Lets investigate later
-    // TODO(anandas): : Investigate album in Android
+    // TODO(anandas): : How to create album in Android
     final AssetEntity? assetEntity;
     if (media.type == CLMediaType.image) {
       assetEntity = await PhotoManager.editor.saveImageWithPath(
