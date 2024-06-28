@@ -27,5 +27,6 @@ class DefaultCLCameraIcons extends CLCameraThemeData {
           pagePop: MdiIcons.arrowLeft,
           displayTextStyle: const TextStyle(fontSize: 20),
           displayIconSize: 35,
+          textStyle: const TextStyle(fontSize: 16),
         );
 }

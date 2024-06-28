@@ -32,6 +32,7 @@ class CLCameraThemeData {
 
   final TextStyle displayTextStyle;
   final double displayIconSize;
+  final TextStyle textStyle;
 
   const CLCameraThemeData({
     required this.iconCamera,
@@ -56,6 +57,7 @@ class CLCameraThemeData {
     required this.pagePop,
     required this.displayTextStyle,
     required this.displayIconSize,
+    required this.textStyle,
   });
 
   CLCameraThemeData copyWith({
@@ -81,6 +83,7 @@ class CLCameraThemeData {
     IconData? pagePop,
     TextStyle? displayTextStyle,
     double? displayIconSize,
+    TextStyle? textStyle,
   }) {
     return CLCameraThemeData(
       iconCamera: iconCamera ?? this.iconCamera,
@@ -105,12 +108,13 @@ class CLCameraThemeData {
       pagePop: pagePop ?? this.pagePop,
       displayTextStyle: displayTextStyle ?? this.displayTextStyle,
       displayIconSize: displayIconSize ?? this.displayIconSize,
+      textStyle: textStyle ?? this.textStyle,
     );
   }
 
   @override
   String toString() {
-    return 'CLCameraThemeData(iconCamera: $iconCamera, iconMicrophone: $iconMicrophone, iconLocation: $iconLocation, imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, displayTextStyle: $displayTextStyle, displayIconSize: $displayIconSize)';
+    return 'CLCameraThemeData(iconCamera: $iconCamera, iconMicrophone: $iconMicrophone, iconLocation: $iconLocation, imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, displayTextStyle: $displayTextStyle, displayIconSize: $displayIconSize, textStyle: $textStyle)';
   }
 
   @override
@@ -138,7 +142,8 @@ class CLCameraThemeData {
         other.popMenuSelectedItem == popMenuSelectedItem &&
         other.pagePop == pagePop &&
         other.displayTextStyle == displayTextStyle &&
-        other.displayIconSize == displayIconSize;
+        other.displayIconSize == displayIconSize &&
+        other.textStyle == textStyle;
   }
 
   @override
@@ -164,7 +169,8 @@ class CLCameraThemeData {
         popMenuSelectedItem.hashCode ^
         pagePop.hashCode ^
         displayTextStyle.hashCode ^
-        displayIconSize.hashCode;
+        displayIconSize.hashCode ^
+        textStyle.hashCode;
   }
 
   IconData iconPermission(Permission permission) {

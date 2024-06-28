@@ -1,3 +1,4 @@
+import 'package:cl_camera/src/state/camera_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../models/camera_mode.dart';
@@ -6,13 +7,11 @@ class MenuCameraMode extends StatelessWidget {
   const MenuCameraMode({
     required this.onUpdateMode,
     required this.currMode,
-    required this.textStyle,
     super.key,
   });
 
   final CameraMode currMode;
   final void Function(CameraMode type) onUpdateMode;
-  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +27,11 @@ class MenuCameraMode extends StatelessWidget {
               TextButton(
                 child: Text(
                   type.capitalizedName,
-                  style: (textStyle ?? const TextStyle()).copyWith(
-                    color: type == currMode
-                        ? Colors.yellow.shade300
-                        : Colors.yellow.shade100,
-                  ),
+                  style: CameraTheme.of(context).themeData.textStyle.copyWith(
+                        color: type == currMode
+                            ? Colors.yellow.shade300
+                            : Colors.yellow.shade100,
+                      ),
                 ),
                 onPressed: () => onUpdateMode(type),
               ),

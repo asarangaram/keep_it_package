@@ -29,10 +29,6 @@ class CameraServiceCore extends StatelessWidget {
         return CLCamera(
           onCancel: onDone,
           cameras: cameras,
-          textStyle: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(fontSize: CLScaleType.small.fontSize),
           onCapture: onCapture,
           previewWidget: previewWidget,
           themeData: DefaultCLCameraIcons(),

@@ -1,6 +1,18 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
+
+extension ExtResolutionPreset on ResolutionPreset {
+  String toMap() {
+    return name;
+  }
+
+  static ResolutionPreset fromString(String value) {
+    return ResolutionPreset.values.asNameMap()[value]!;
+  }
+}
 
 @immutable
 class CameraConfig {
@@ -57,35 +69,29 @@ class CameraConfig {
         defaultFrontCameraIndex.hashCode ^
         defaultBackCameraIndex.hashCode;
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'resolutionPreset': resolutionPreset.toMap(),
+      'enableAudio': enableAudio,
+      'defaultFrontCameraIndex': defaultFrontCameraIndex,
+      'defaultBackCameraIndex': defaultBackCameraIndex,
+    };
+  }
+
+  factory CameraConfig.fromMap(Map<String, dynamic> map) {
+    return CameraConfig(
+      resolutionPreset: ExtResolutionPreset.fromString(
+        map['resolutionPreset'] as String,
+      ),
+      enableAudio: map['enableAudio'] as bool,
+      defaultFrontCameraIndex: map['defaultFrontCameraIndex'] as int,
+      defaultBackCameraIndex: map['defaultBackCameraIndex'] as int,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory CameraConfig.fromJson(String source) =>
+      CameraConfig.fromMap(json.decode(source) as Map<String, dynamic>);
 }
-/* 
-class CameraConfigNotifier extends StateNotifier<CameraConfig> {
-  CameraConfigNotifier() : super(const CameraConfig());
-
-  ResolutionPreset get resolutionPreset => state.resolutionPreset;
-  bool get enableAudio => state.enableAudio;
-  int get defaultFrontCameraIndex => state.defaultBackCameraIndex;
-  int get defaultBackCameraIndex => state.defaultBackCameraIndex;
-
-  set resolutionPreset(ResolutionPreset val) {
-    state = state.copyWith(resolutionPreset: val);
-  }
-
-  set enableAudio(bool val) {
-    state = state.copyWith(enableAudio: val);
-  }
-
-  set defaultFrontCameraIndex(int val) {
-    state = state.copyWith(defaultBackCameraIndex: val);
-  }
-
-  set defaultBackCameraIndex(int val) {
-    state = state.copyWith(defaultBackCameraIndex: val);
-  }
-}
-
-final cameraConfigProvider =
-    StateNotifierProvider<CameraConfigNotifier, CameraConfig>((ref) {
-  return CameraConfigNotifier();
-});
- */
