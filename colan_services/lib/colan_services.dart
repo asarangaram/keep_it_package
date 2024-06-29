@@ -6,6 +6,8 @@ export 'services/image_edit_service/views/image_editor.dart'
     show ImageEditService;
 export 'services/image_view_service/image_view_service.dart'
     show ImageViewService;
+export 'services/media_view_service/media_view_service.dart';
+export 'services/media_view_service/media_viewer.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;
 export 'services/notification_services/notification_service.dart'
     show NotificationService;

@@ -15,7 +15,6 @@ import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
 import '../widgets/media_view/media_controls.dart';
-import '../widgets/media_view/media_viewer.dart';
 
 class CollectionItemPage extends ConsumerWidget {
   const CollectionItemPage({

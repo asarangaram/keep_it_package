@@ -24,7 +24,7 @@ class WhichCollection extends SharedMediaWizard {
         if (title != null) title!,
         if (incomingMedia.entries.length == 1)
           Flexible(
-            child: PreviewService(
+            child: MediaServices.basicView(
               media: incomingMedia.entries[0],
             ),
           )
