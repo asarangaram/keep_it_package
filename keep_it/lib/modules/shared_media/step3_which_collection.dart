@@ -18,42 +18,64 @@ class WhichCollection extends SharedMediaWizard {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
-        if (title != null) title!,
-        if (incomingMedia.entries.length == 1)
-          Flexible(
-            child: MediaServices.basicView(
-              media: incomingMedia.entries[0],
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (title != null) title!,
+            if (incomingMedia.entries.length == 1)
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: MediaServices.basicView(
+                    media: incomingMedia.entries[0],
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: CLMediaCollage.byMatrixSize(
+                  incomingMedia.entries,
+                  hCount: switch (incomingMedia.entries.length) { _ => 2 },
+                  itemBuilder: (context, index) => MediaServices.preview(
+                    media: incomingMedia.entries[index],
+                  ),
+                ),
+              ),
+            const Divider(
+              thickness: 4,
             ),
-          )
-        else
-          Flexible(
-            child: CLMediaCollage.byMatrixSize(
-              incomingMedia.entries,
-              hCount: switch (incomingMedia.entries.length) { _ => 2 },
-              itemBuilder: (context, index) => PreviewService(
-                media: incomingMedia.entries[index],
+            SizedBox(
+              height: kMinInteractiveDimension * 4,
+              child: CreateCollectionWizard(
+                onDone: ({required collection}) {
+                  onDone(
+                    mg: incomingMedia.copyWith(
+                      collection: collection,
+                      entries: incomingMedia.entries
+                          .map((e) => e.copyWith(collectionId: collection.id))
+                          .toList(),
+                    ),
+                  );
+                },
               ),
             ),
-          ),
-        const Divider(
-          thickness: 4,
+          ],
         ),
-        SizedBox(
-          height: kMinInteractiveDimension * 4,
-          child: CreateCollectionWizard(
-            onDone: ({required collection}) {
-              onDone(
-                mg: incomingMedia.copyWith(
-                  collection: collection,
-                  entries: incomingMedia.entries
-                      .map((e) => e.copyWith(collectionId: collection.id))
-                      .toList(),
-                ),
-              );
-            },
+        Positioned(
+          top: 8,
+          right: 8,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: CLTheme.of(context).colors.iconBackgroundTransparent,
+            ),
+            child: CLButtonIcon.small(
+              Icons.close,
+              color: CLTheme.of(context).colors.iconColorTransparent,
+              onTap: onCancel,
+            ),
           ),
         ),
       ],

@@ -50,15 +50,14 @@ class VideoPlayerService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     switch (playerService) {
       case PlayerServices.player:
-        if (autoStart) {
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (context.mounted) {
-              await ref
-                  .read(videoPlayerStateProvider.notifier)
-                  .playVideo(media.path);
-            }
-          });
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (context.mounted) {
+            await ref
+                .read(videoPlayerStateProvider.notifier)
+                .setVideo(media.path, autoPlay: autoStart);
+          }
+        });
+
         return GetVideoController(
           builder: (
             VideoPlayerState state,
@@ -121,9 +120,12 @@ class VideoPlayerService extends ConsumerWidget {
         VideoPlayerController controller,
       ) {
         if (state.path == media.path) {
-          return PlayerStateMonitor(
-            controller: controller,
-            builder: builder!,
+          return SizedBox(
+            width: 200,
+            child: PlayerStateMonitor(
+              controller: controller,
+              builder: builder!,
+            ),
           );
         } else {
           return builder!(isPlaying: false);
