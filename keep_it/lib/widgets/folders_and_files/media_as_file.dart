@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
 import '../../models/album_manager_helper.dart';
+import '../../models/media_handler.dart';
 import '../wrap_standard_quick_menu.dart';
 
 class MediaAsFile extends ConsumerWidget {
@@ -26,71 +27,14 @@ class MediaAsFile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDBManager(
       builder: (dbManager) {
+        final mediaHandler = MediaHandler(media: media, dbManager: dbManager);
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () async {
-            unawaited(
-              context.push(
-                '/move?ids=${media.id}',
-              ),
-            );
-            return true;
-          },
-          onDelete: () async =>
-              await showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return CLConfirmAction(
-                    title: 'Confirm delete',
-                    message: 'Are you sure you want to delete '
-                        'this ${media.type.name}?',
-                    child: PreviewService(media: media),
-                    onConfirm: ({required confirmed}) async {
-                      await dbManager.deleteMedia(
-                        media,
-                        onDeleteFile: (f) async => f.deleteIfExists(),
-                        onRemovePin: (id) async =>
-                            AlbumManagerHelper().removeMedia(context, ref, id),
-                      );
-                      if (context.mounted) {
-                        Navigator.of(context).pop(confirmed);
-                      }
-                    },
-                  );
-                },
-              ) ??
-              false,
+          onMove: () => mediaHandler.onMove(context, ref),
+          onDelete: () => mediaHandler.onDelete(context, ref),
+          onShare: () => mediaHandler.onShare(context, ref),
+          onEdit: () => mediaHandler.onEdit(context, ref),
           onTap: onTap,
-          onShare: () async {
-            final box = context.findRenderObject() as RenderBox?;
-            final files = [XFile(media.path)];
-            final shareResult = await Share.shareXFiles(
-              files,
-              // text: 'Share from KeepIT',
-              subject: 'Find the media from KeepIt',
-              sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-            );
-            return switch (shareResult.status) {
-              ShareResultStatus.dismissed => false,
-              ShareResultStatus.unavailable => false,
-              ShareResultStatus.success => true,
-            };
-          },
-          onEdit: (media.pin != null)
-              ? () async {
-                  await ref.read(notificationMessageProvider.notifier).push(
-                        "Unpin to edit.\n Pinned items can't be edited",
-                      );
-                  return true;
-                }
-              : () async {
-                  unawaited(
-                    context.push(
-                      '/mediaEditor?id=${media.id}',
-                    ),
-                  );
-                  return true;
-                },
           child: PreviewService(
             media: media,
             keepAspectRatio: false,
