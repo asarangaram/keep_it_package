@@ -2,11 +2,9 @@ import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../image_view_service/image_view_service.dart';
 import '../preview_service/view/preview.dart';
-import '../video_player_service/providers/show_controls.dart';
 import '../video_player_service/video_player.dart';
 
 class MediaServices extends StatefulWidget {
