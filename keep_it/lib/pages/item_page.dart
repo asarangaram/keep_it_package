@@ -258,11 +258,11 @@ class _ItemViewState extends ConsumerState<ItemView> {
             final mediaHandler =
                 MediaHandler(media: media, dbManager: dbManager);
             return MediaControls(
-              onMove: () => mediaHandler.onMove(context, ref),
-              onDelete: () => mediaHandler.onDelete(context, ref),
-              onShare: () => mediaHandler.onShare(context, ref),
-              onEdit: () => mediaHandler.onEdit(context, ref),
-              onPin: () => mediaHandler.onPin(context, ref),
+              onMove: () => mediaHandler.move(context, ref),
+              onDelete: () => mediaHandler.delete(context, ref),
+              onShare: () => mediaHandler.share(context, ref),
+              onEdit: () => mediaHandler.edit(context, ref),
+              onPin: () => mediaHandler.togglePin(context, ref),
               media: widget.items[currIndex],
             );
           },

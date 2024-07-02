@@ -27,10 +27,10 @@ class MediaAsFile extends ConsumerWidget {
         final mediaHandler = MediaHandler(media: media, dbManager: dbManager);
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () => mediaHandler.onMove(context, ref),
-          onDelete: () => mediaHandler.onDelete(context, ref),
-          onShare: () => mediaHandler.onShare(context, ref),
-          onEdit: () => mediaHandler.onEdit(context, ref),
+          onMove: () => mediaHandler.move(context, ref),
+          onDelete: () => mediaHandler.delete(context, ref),
+          onShare: () => mediaHandler.share(context, ref),
+          onEdit: () => mediaHandler.edit(context, ref),
           onTap: onTap,
           child: PreviewService(
             media: media,

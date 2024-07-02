@@ -44,7 +44,8 @@ class PinnedMediaPage extends ConsumerWidget {
                                 ),
                               );
                             },
-                            onLongPress: () => mediaHandler.onPin(context, ref),
+                            onLongPress: () =>
+                                mediaHandler.togglePin(context, ref),
                             child: PreviewService(
                               media: item,
                               keepAspectRatio: false,

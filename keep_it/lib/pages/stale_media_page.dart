@@ -121,7 +121,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       ? CLMenuItem(
                           title: 'Delete',
                           icon: Icons.delete,
-                          onTap: () => mediaHandler.onDelete(context, ref),
+                          onTap: () => mediaHandler.delete(context, ref),
                         )
                       : null,
               child: Padding(
@@ -259,7 +259,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       icon: Icon(MdiIcons.imageMove),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => mediaHandler.onDelete(context, ref),
+                      onPressed: () => mediaHandler.delete(context, ref),
                       label: const CLText.small('Discard Selected'),
                       icon: Icon(MdiIcons.delete),
                     ),

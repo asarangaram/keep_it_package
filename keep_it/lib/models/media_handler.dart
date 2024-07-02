@@ -23,7 +23,7 @@ class MediaHandler {
   final List<CLMedia> media;
   final DBManager dbManager;
 
-  Future<bool> onMove(
+  Future<bool> move(
     BuildContext context,
     WidgetRef ref,
   ) async {
@@ -37,12 +37,16 @@ class MediaHandler {
         ),
       );
       return true;
-    }
+    } else {
+      final result = await context.push<bool>(
+        '/move?ids=${media.map((e) => e.id).join(',')}',
+      );
 
-    return false;
+      return result ?? false;
+    }
   }
 
-  Future<bool> onDelete(
+  Future<bool> delete(
     BuildContext context,
     WidgetRef ref,
   ) async {
@@ -100,32 +104,30 @@ class MediaHandler {
     }
   }
 
-  Future<bool> onShare(
+  Future<bool> share(
     BuildContext context,
     WidgetRef ref,
   ) async {
     if (media.isEmpty) {
       return true;
     }
-    if (media.length == 1) {
-      final box = context.findRenderObject() as RenderBox?;
-      final files = [XFile(media[0].path)];
-      final shareResult = await Share.shareXFiles(
-        files,
-        // text: 'Share from KeepIT',
-        subject: 'Exporting media from KeepIt',
-        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-      );
-      return switch (shareResult.status) {
-        ShareResultStatus.dismissed => false,
-        ShareResultStatus.unavailable => false,
-        ShareResultStatus.success => true,
-      };
-    }
-    return false;
+
+    final box = context.findRenderObject() as RenderBox?;
+    final files = media.map((e) => XFile(e.path)).toList();
+    final shareResult = await Share.shareXFiles(
+      files,
+      // text: 'Share from KeepIT',
+      subject: 'Exporting media from KeepIt',
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
+    return switch (shareResult.status) {
+      ShareResultStatus.dismissed => false,
+      ShareResultStatus.unavailable => false,
+      ShareResultStatus.success => true,
+    };
   }
 
-  Future<bool> onEdit(
+  Future<bool> edit(
     BuildContext context,
     WidgetRef ref,
   ) async {
@@ -150,7 +152,7 @@ class MediaHandler {
     return false;
   }
 
-  Future<bool> onPin(
+  Future<bool> togglePin(
     BuildContext context,
     WidgetRef ref,
   ) async {
@@ -165,7 +167,14 @@ class MediaHandler {
             AlbumManagerHelper().removeMedia(context, ref, id),
       );
       return true;
+    } else {
+      await dbManager.pinMediaMultiple(
+        media,
+        onPin: AlbumManagerHelper().albumManager.addMedia,
+        onRemovePin: (id) async =>
+            AlbumManagerHelper().removeMedia(context, ref, id),
+      );
+      return true;
     }
-    return false;
   }
 }
