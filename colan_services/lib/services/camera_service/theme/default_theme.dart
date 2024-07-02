@@ -2,8 +2,8 @@ import 'package:cl_camera/cl_camera.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class DefaultCLCameraIcons extends CLCameraThemeData {
-  DefaultCLCameraIcons()
+class DefaultCLCameraThemeData extends CLCameraThemeData {
+  DefaultCLCameraThemeData()
       : super(
           iconCamera: MdiIcons.camera,
           iconMicrophone: MdiIcons.microphone,
