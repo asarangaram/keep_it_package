@@ -12,7 +12,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:store/store.dart';
 
-import '../models/album_manager_helper.dart';
+import '../models/media_handler.dart';
 import '../modules/shared_media/step4_save_collection.dart';
 import '../modules/shared_media/wizard_page.dart';
 import '../providers/gallery_group_provider.dart';
@@ -85,6 +85,10 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   Widget build(BuildContext context) {
     return GetDBManager(
       builder: (dbManager) {
+        final mediaHandler = MediaHandler.multiple(
+          media: selectedMedia.entries,
+          dbManager: dbManager,
+        );
         if (!keepSelected) {
           return Padding(
             padding: const EdgeInsets.all(8),
@@ -112,39 +116,14 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           },
                         )
                       : null,
-              option2: (keepSelected == false &&
-                      selectedMedia.entries.isNotEmpty)
-                  ? CLMenuItem(
-                      title: 'Delete',
-                      icon: Icons.delete,
-                      onTap: () async {
-                        final confirmed = await showDialog<bool>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return CLConfirmAction(
-                                  title: 'Confirm delete',
-                                  message: 'Are you sure you want to delete '
-                                      '${selectedMedia.entries.length} items?',
-                                  child: null,
-                                  onConfirm: ({required confirmed}) =>
-                                      Navigator.of(context).pop(confirmed),
-                                );
-                              },
-                            ) ??
-                            false;
-                        if (confirmed) {
-                          await dbManager.deleteMediaMultiple(
-                            selectedMedia.entries,
-                            onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePinMultiple: (id) async =>
-                                AlbumManagerHelper()
-                                    .removeMultipleMedia(context, ref, id),
-                          );
-                        }
-                        return true;
-                      },
-                    )
-                  : null,
+              option2:
+                  (keepSelected == false && selectedMedia.entries.isNotEmpty)
+                      ? CLMenuItem(
+                          title: 'Delete',
+                          icon: Icons.delete,
+                          onTap: () => mediaHandler.onDelete(context, ref),
+                        )
+                      : null,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: DecoratedBox(
@@ -280,32 +259,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       icon: Icon(MdiIcons.imageMove),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () async {
-                        final confirmed = await showDialog<bool>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return CLConfirmAction(
-                                  title: 'Confirm delete',
-                                  message: 'Are you sure you want to delete '
-                                      '${selectedMedia.entries.length} items?',
-                                  child: null,
-                                  onConfirm: ({required confirmed}) =>
-                                      Navigator.of(context).pop(confirmed),
-                                );
-                              },
-                            ) ??
-                            false;
-                        if (confirmed) {
-                          await dbManager.deleteMediaMultiple(
-                            selectedMedia.entries,
-                            onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePinMultiple: (id) async =>
-                                AlbumManagerHelper()
-                                    .removeMultipleMedia(context, ref, id),
-                          );
-                        }
-                        return;
-                      },
+                      onPressed: () => mediaHandler.onDelete(context, ref),
                       label: const CLText.small('Discard Selected'),
                       icon: Icon(MdiIcons.delete),
                     ),

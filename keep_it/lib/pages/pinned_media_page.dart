@@ -9,6 +9,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:store/store.dart';
 
 import '../models/album_manager_helper.dart';
+import '../models/media_handler.dart';
 import '../providers/gallery_group_provider.dart';
 
 class PinnedMediaPage extends ConsumerWidget {
@@ -28,34 +29,30 @@ class PinnedMediaPage extends ConsumerWidget {
                   child: CLSimpleGalleryView<CLMedia>(
                     key: const ValueKey(label),
                     title: 'Pinned Media',
-                    itemBuilder:
-                        (context, item, {required quickMenuScopeKey}) => Hero(
-                      tag: '$parentIdentifier /item/${item.id}',
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: GestureDetector(
-                          onTap: () async {
-                            unawaited(
-                              context.push(
-                                '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
-                              ),
-                            );
-                          },
-                          onLongPress: () async {
-                            await dbManager.togglePin(
-                              item,
-                              onPin: AlbumManagerHelper().albumManager.addMedia,
-                              onRemovePin: (id) async => AlbumManagerHelper()
-                                  .removeMedia(context, ref, id),
-                            );
-                          },
-                          child: PreviewService(
-                            media: item,
-                            keepAspectRatio: false,
+                    itemBuilder: (context, item, {required quickMenuScopeKey}) {
+                      final mediaHandler =
+                          MediaHandler(media: item, dbManager: dbManager);
+                      return Hero(
+                        tag: '$parentIdentifier /item/${item.id}',
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: GestureDetector(
+                            onTap: () async {
+                              unawaited(
+                                context.push(
+                                  '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
+                                ),
+                              );
+                            },
+                            onLongPress: () => mediaHandler.onPin(context, ref),
+                            child: PreviewService(
+                              media: item,
+                              keepAspectRatio: false,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                     galleryMap: ref.watch(singleGroupItemProvider(media)),
                     emptyState: const Center(
                       child: CLText.large(
