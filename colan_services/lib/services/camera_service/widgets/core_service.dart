@@ -32,7 +32,7 @@ class CameraServiceCore extends StatelessWidget {
           cameras: cameras,
           onCapture: onCapture,
           previewWidget: previewWidget,
-          themeData: DefaultCLCameraIcons(),
+          themeData: DefaultCLCameraThemeData(),
           onError: onError,
         );
       },
