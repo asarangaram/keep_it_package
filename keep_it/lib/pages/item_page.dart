@@ -13,6 +13,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:store/store.dart';
 
+import '../models/media_handler.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/media_view/media_controls.dart';
 
@@ -228,6 +229,7 @@ class _ItemViewState extends ConsumerState<ItemView> {
   @override
   Widget build(BuildContext context) {
     final media = widget.items[currIndex];
+
     return Stack(
       children: [
         Positioned.fill(
@@ -257,79 +259,14 @@ class _ItemViewState extends ConsumerState<ItemView> {
         ),
         GetDBManager(
           builder: (dbManager) {
+            final mediaHandler =
+                MediaHandler(media: media, dbManager: dbManager);
             return MediaControls(
-              onMove: () async {
-                unawaited(
-                  context.push(
-                    '/move?ids=${media.id}',
-                  ),
-                );
-                return true;
-              },
-              onDelete: () async =>
-                  await showDialog<bool>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return CLConfirmAction(
-                        title: 'Confirm delete',
-                        message: 'Are you sure you want to delete '
-                            'this ${media.type.name}?',
-                        child: PreviewService(media: media),
-                        onConfirm: ({required confirmed}) async {
-                          await dbManager.deleteMedia(
-                            media,
-                            onDeleteFile: (f) async => f.deleteIfExists(),
-                            onRemovePin: (id) async => AlbumManagerHelper()
-                                .removeMedia(context, ref, id),
-                          );
-                          if (context.mounted) {
-                            Navigator.of(context).pop(confirmed);
-                          }
-                        },
-                      );
-                    },
-                  ) ??
-                  false,
-              onShare: () async {
-                final box = context.findRenderObject() as RenderBox?;
-                final files = [XFile(media.path)];
-                final shareResult = await Share.shareXFiles(
-                  files,
-                  // text: 'Share from KeepIT',
-                  subject: 'Exporting media from KeepIt',
-                  sharePositionOrigin:
-                      box!.localToGlobal(Offset.zero) & box.size,
-                );
-                return switch (shareResult.status) {
-                  ShareResultStatus.dismissed => false,
-                  ShareResultStatus.unavailable => false,
-                  ShareResultStatus.success => true,
-                };
-              },
-              onEdit: (media.pin != null)
-                  ? () async {
-                      await ref.read(notificationMessageProvider.notifier).push(
-                            "Unpin to edit.\n Pinned items can't be edited",
-                          );
-                      return true;
-                    }
-                  : () async {
-                      unawaited(
-                        context.push(
-                          '/mediaEditor?id=${media.id}',
-                        ),
-                      );
-                      return true;
-                    },
-              onPin: () async {
-                await dbManager.togglePin(
-                  media,
-                  onPin: AlbumManagerHelper().albumManager.addMedia,
-                  onRemovePin: (id) async =>
-                      AlbumManagerHelper().removeMedia(context, ref, id),
-                );
-                return true;
-              },
+              onMove: () => mediaHandler.onMove(context, ref),
+              onDelete: () => mediaHandler.onDelete(context, ref),
+              onShare: () => mediaHandler.onShare(context, ref),
+              onEdit: () => mediaHandler.onEdit(context, ref),
+              onPin: () => mediaHandler.onPin(context, ref),
               media: widget.items[currIndex],
             );
           },
