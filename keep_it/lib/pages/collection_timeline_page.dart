@@ -55,7 +55,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
                     await context.push('/camera?collectionId=$collectionId');
                   }
                 },
-                themeData: DefaultCLCameraIcons(),
+                themeData: DefaultCLCameraThemeData(),
               );
             },
           ),

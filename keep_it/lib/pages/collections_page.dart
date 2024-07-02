@@ -59,7 +59,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                           await context.push('/camera');
                         }
                       },
-                      themeData: DefaultCLCameraIcons(),
+                      themeData: DefaultCLCameraThemeData(),
                     );
                   },
                   onRefresh: () async {
