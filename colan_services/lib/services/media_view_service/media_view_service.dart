@@ -46,48 +46,15 @@ class _MediaServicesState extends State<MediaServices> {
           file: File(widget.media.path),
           onLockPage: widget.onLockView,
         ),
-      (false, CLMediaType.video) => VideoService(
+      (false, CLMediaType.video) => VideoPlayerService.player(
           media: widget.media,
+          alternate: PreviewService(
+            media: widget.media,
+          ),
           autoStart: widget.autoStart,
+          inplaceControl: true,
         ),
       (false, _) => throw UnimplementedError('Not yet implemented')
     };
-  }
-}
-
-class VideoService extends ConsumerWidget {
-  const VideoService({
-    required this.media,
-    this.autoStart = false,
-    super.key,
-  });
-  final CLMedia media;
-  final bool autoStart;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
-
-    return Stack(
-      children: [
-        Container(
-          color: Colors.blue,
-          child: VideoPlayerService.player(
-            media: media,
-            alternate: PreviewService(
-              media: media,
-            ),
-            autoStart: autoStart,
-          ),
-        ),
-        if (showControl.showMenu)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: VideoPlayerService.controlMenu(media: media),
-          ),
-      ],
-    );
   }
 }

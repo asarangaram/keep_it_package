@@ -18,6 +18,7 @@ class VideoPlayerService extends ConsumerWidget {
     super.key,
     this.onSelect,
     this.autoStart = false,
+    this.inplaceControl = false,
   })  : builder = null,
         playerService = PlayerServices.player;
   const VideoPlayerService.controlMenu({
@@ -27,7 +28,8 @@ class VideoPlayerService extends ConsumerWidget {
         onSelect = null,
         autoStart = false,
         builder = null,
-        playerService = PlayerServices.controlMenu;
+        playerService = PlayerServices.controlMenu,
+        inplaceControl = false;
   const VideoPlayerService.playStateBuilder({
     required this.media,
     required Widget Function({required bool isPlaying}) builder,
@@ -37,7 +39,8 @@ class VideoPlayerService extends ConsumerWidget {
         autoStart = false,
         // ignore: prefer_initializing_formals
         builder = builder,
-        playerService = PlayerServices.playStateBuilder;
+        playerService = PlayerServices.playStateBuilder,
+        inplaceControl = false;
 
   final CLMedia media;
   final void Function()? onSelect;
@@ -45,6 +48,7 @@ class VideoPlayerService extends ConsumerWidget {
   final Widget? alternate;
   final PlayerServices playerService;
   final Widget Function({required bool isPlaying})? builder;
+  final bool inplaceControl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,6 +70,7 @@ class VideoPlayerService extends ConsumerWidget {
             if (state.path == media.path) {
               return VideoLayer(
                 controller: controller,
+                inplaceControl: inplaceControl,
               );
             } else {
               return GestureDetector(
@@ -120,12 +125,9 @@ class VideoPlayerService extends ConsumerWidget {
         VideoPlayerController controller,
       ) {
         if (state.path == media.path) {
-          return SizedBox(
-            width: 200,
-            child: PlayerStateMonitor(
-              controller: controller,
-              builder: builder!,
-            ),
+          return PlayerStateMonitor(
+            controller: controller,
+            builder: builder!,
           );
         } else {
           return builder!(isPlaying: false);

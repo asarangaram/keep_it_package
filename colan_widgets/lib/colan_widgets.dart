@@ -20,6 +20,7 @@ export 'src/extensions/ext_cl_rect.dart';
 export 'src/extensions/ext_color.dart';
 export 'src/extensions/ext_directory.dart';
 export 'src/extensions/ext_double.dart';
+export 'src/extensions/ext_duration.dart';
 export 'src/extensions/ext_file.dart';
 //export 'src/extensions/ext_io_file.dart';
 export 'src/extensions/ext_list.dart';
