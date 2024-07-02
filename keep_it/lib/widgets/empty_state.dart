@@ -31,10 +31,12 @@ class EmptyState extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      if (context.canPop())
-                        CLButtonIcon.large(
-                          MdiIcons.arrowLeft,
-                          color: Theme.of(context).colorScheme.primary,
+                      if (CLPopScreen.canPop(context))
+                        CLPopScreen.onTap(
+                          child: CLIcon.large(
+                            MdiIcons.arrowLeft,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
                       CLButtonIcon.large(
                         MdiIcons.home,

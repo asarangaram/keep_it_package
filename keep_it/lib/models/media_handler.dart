@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -176,5 +177,72 @@ class MediaHandler {
       );
       return true;
     }
+  }
+
+  Future<bool> save(
+    BuildContext context,
+    WidgetRef ref,
+    String outFile, {
+    required bool overwrite,
+  }) async {
+    if (media.isEmpty) {
+      return true;
+    }
+    if (media.length == 1) {
+      if (overwrite) {
+        final confirmed = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return CLConfirmAction(
+                  title: 'Confirm '
+                      '${overwrite ? "Replace" : "Save New"} ',
+                  message: '',
+                  child: PreviewService(
+                    media: CLMedia(
+                      path: outFile,
+                      type: media[0].type,
+                    ),
+                    keepAspectRatio: false,
+                  ),
+                  onConfirm: ({required confirmed}) =>
+                      Navigator.of(context).pop(confirmed),
+                );
+              },
+            ) ??
+            false;
+        if (!confirmed) return false;
+      }
+      final md5String = await File(outFile).checksum;
+      final CLMedia updatedMedia;
+      if (overwrite) {
+        updatedMedia =
+            media[0].copyWith(path: outFile, md5String: md5String).removePin();
+      } else {
+        updatedMedia = CLMedia(
+          path: outFile,
+          md5String: md5String,
+          type: media[0].type,
+          collectionId: media[0].collectionId,
+          originalDate: media[0].originalDate,
+          createdDate: media[0].createdDate,
+          isDeleted: media[0].isDeleted,
+          isHidden: media[0].isHidden,
+          updatedDate: media[0].updatedDate,
+        );
+      }
+      await dbManager.upsertMedia(
+        collectionId: media[0].collectionId!,
+        media: updatedMedia,
+        onPrepareMedia: (m, {required targetDir}) async {
+          final updated = await m.moveFile(targetDir: targetDir);
+
+          return updated;
+        },
+      );
+      if (overwrite) {
+        await File(media[0].path).deleteIfExists();
+      }
+    }
+    return false;
   }
 }

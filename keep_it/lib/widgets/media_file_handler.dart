@@ -1,8 +1,7 @@
-import 'dart:io';
-
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/models/media_handler.dart';
 import 'package:store/store.dart';
 
 /// For the given media ID, this widget, calls the builder with the media file
@@ -10,7 +9,7 @@ import 'package:store/store.dart';
 /// if overwrite is enabled, the original media is updated with updated file
 /// or stored as another media, with same property as original
 
-class MediaFileHandler extends StatelessWidget {
+class MediaFileHandler extends ConsumerWidget {
   const MediaFileHandler({
     required this.builder,
     required this.errorBuilder,
@@ -29,7 +28,7 @@ class MediaFileHandler extends StatelessWidget {
   final Widget Function(String errorMessage) errorBuilder;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (mediaId == null) {
       return errorBuilder('No Media Provided');
     }
@@ -41,62 +40,13 @@ class MediaFileHandler extends StatelessWidget {
             if (media == null) {
               return errorBuilder('Media not found');
             }
+            final mediaHandler =
+                MediaHandler(media: media, dbManager: dbManager);
             return builder(
               media.path,
               mediaType: media.type,
-              onSave: (outFile, {required overwrite}) async {
-                if (overwrite) {
-                  final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CLConfirmAction(
-                            title: 'Confirm '
-                                '${overwrite ? "Replace" : "Save New"} ',
-                            message: '',
-                            child: PreviewService(
-                              media: CLMedia(
-                                path: outFile,
-                                type: media.type,
-                              ),
-                              keepAspectRatio: false,
-                            ),
-                            onConfirm: ({required confirmed}) =>
-                                Navigator.of(context).pop(confirmed),
-                          );
-                        },
-                      ) ??
-                      false;
-                  if (!confirmed) return;
-                }
-                final md5String = await File(outFile).checksum;
-                final CLMedia updatedMedia;
-                if (overwrite) {
-                  updatedMedia =
-                      media.copyWith(path: outFile, md5String: md5String);
-                } else {
-                  updatedMedia = CLMedia(
-                    path: outFile,
-                    md5String: md5String,
-                    type: media.type,
-                    collectionId: media.collectionId,
-                    originalDate: media.originalDate,
-                    createdDate: media.createdDate,
-                    isDeleted: media.isDeleted,
-                    isHidden: media.isHidden,
-                    pin: media.pin,
-                    updatedDate: media.updatedDate,
-                  );
-                }
-                await dbManager.upsertMedia(
-                  collectionId: media.collectionId!,
-                  media: updatedMedia,
-                  onPrepareMedia: (m, {required targetDir}) async {
-                    final updated = await m.moveFile(targetDir: targetDir);
-
-                    return updated;
-                  },
-                );
-              },
+              onSave: (outFile, {required overwrite}) => mediaHandler
+                  .save(context, ref, outFile, overwrite: overwrite),
             );
           },
         );

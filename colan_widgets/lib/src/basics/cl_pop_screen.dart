@@ -57,4 +57,6 @@ class CLPopScreen extends StatelessWidget {
       context.pop();
     }
   }
+
+  static bool canPop(BuildContext context) => context.canPop();
 }
