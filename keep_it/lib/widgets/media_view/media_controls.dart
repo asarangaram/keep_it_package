@@ -4,7 +4,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../pages/item_page.dart';
@@ -63,11 +62,7 @@ class MediaControls extends ConsumerWidget {
                 padding: const EdgeInsets.only(right: 8, top: 8),
                 child: CircledIcon(
                   MdiIcons.close,
-                  onTap: () {
-                    if (context.mounted && context.canPop()) {
-                      context.pop();
-                    }
-                  },
+                  onTap: () => CLPopScreen.onPop(context),
                 ),
               ),
             ),

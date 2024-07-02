@@ -1,5 +1,6 @@
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,11 +15,7 @@ class CameraPage extends ConsumerWidget {
       useSafeArea: false,
       child: CLCameraService(
         collectionId: collectionId,
-        onDone: () {
-          if (context.canPop()) {
-            context.pop();
-          }
-        },
+        onDone: () => CLPopScreen.onPop(context),
         onError: (String message, {required dynamic error}) async {
           await ref
               .read(

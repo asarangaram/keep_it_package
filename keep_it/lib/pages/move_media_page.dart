@@ -25,22 +25,11 @@ class MoveMediaPage extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await Future<void>.delayed(const Duration(seconds: 1));
         if (context.mounted) {
-          if (context.canPop()) {
-            context.pop();
-          }
+          await CLPopScreen.onPop(context);
         }
       });
       return FullscreenLayout(
-        child: GestureDetector(
-          onHorizontalDragEnd: (details) {
-            if (details.primaryVelocity == null) return;
-            // pop on Swipe
-            if (details.primaryVelocity! > 0) {
-              if (context.canPop()) {
-                context.pop(true);
-              }
-            }
-          },
+        child: CLPopScreen.onSwipe(
           child: const EmptyState(
             message: 'Nothing to Move. You may be redirected',
           ),
@@ -48,16 +37,7 @@ class MoveMediaPage extends ConsumerWidget {
       );
     }
     return FullscreenLayout(
-      child: GestureDetector(
-        onHorizontalDragEnd: (details) {
-          if (details.primaryVelocity == null) return;
-          // pop on Swipe
-          if (details.primaryVelocity! > 0) {
-            if (context.canPop()) {
-              context.pop(true);
-            }
-          }
-        },
+      child: CLPopScreen.onSwipe(
         child: GetMediaMultiple(
           idList: idsToMove,
           buildOnData: (media) {

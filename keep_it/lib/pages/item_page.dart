@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:store/store.dart';
 
@@ -31,9 +30,7 @@ class CollectionItemPage extends ConsumerWidget {
       buildOnData: (items) {
         if (items.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (context.canPop()) {
-              context.pop();
-            }
+            CLPopScreen.onPop(context);
           });
           return const EmptyState(message: 'No Media');
         }

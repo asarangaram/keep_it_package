@@ -3,7 +3,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'package:store/store.dart';
@@ -25,21 +24,10 @@ class DeleteMediaPage extends ConsumerWidget {
             buildOnData: (media) {
               if (media.isEmpty) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
+                  CLPopScreen.onPop(context);
                 });
               }
-              return GestureDetector(
-                onHorizontalDragEnd: (details) {
-                  if (details.primaryVelocity == null) return;
-                  // pop on Swipe
-                  if (details.primaryVelocity! > 0) {
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  }
-                },
+              return CLPopScreen.onSwipe(
                 child: Column(
                   children: [
                     Expanded(

@@ -5,7 +5,6 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../widgets/media_file_handler.dart';
@@ -41,11 +40,7 @@ class MediaEditorPage extends StatelessWidget {
               child: ImageEditService(
                 file: File(filePath),
                 onDone: () async {
-                  if (context.mounted) {
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  }
+                  await CLPopScreen.onPop(context);
                 },
                 onEditAndSave: (
                   Uint8List imageBytes, {
@@ -73,11 +68,7 @@ class MediaEditorPage extends StatelessWidget {
                 File(filePath),
                 onSave: onSave,
                 onDone: () async {
-                  if (context.mounted) {
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  }
+                  await CLPopScreen.onPop(context);
                 },
               ),
             );
