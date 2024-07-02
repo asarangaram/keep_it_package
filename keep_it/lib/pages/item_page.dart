@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -8,8 +6,6 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:keep_it/models/album_manager_helper.dart';
-import 'package:share_plus/share_plus.dart';
 
 import 'package:store/store.dart';
 
