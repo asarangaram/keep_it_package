@@ -2,7 +2,6 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class EmptyState extends StatelessWidget {
