@@ -57,3 +57,5 @@ export 'src/views/gallery_view/model/gallery_group.dart';
 export 'src/views/image/cl_image_viewer.dart';
 export 'src/views/quick_menu/cl_quickmenu.dart';
 export 'src/views/stream_progress_view.dart';
+export 'src/views/wizards/wizard_dialog.dart';
+export 'src/views/wizards/wizard_layout.dart';
