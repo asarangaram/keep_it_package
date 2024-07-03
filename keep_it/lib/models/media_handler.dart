@@ -32,10 +32,8 @@ class MediaHandler {
       return true;
     }
     if (media.length == 1) {
-      unawaited(
-        context.push(
-          '/move?ids=${media[0].id}',
-        ),
+      await context.push(
+        '/move?ids=${media[0].id}',
       );
       return true;
     } else {
@@ -146,11 +144,7 @@ class MediaHandler {
             );
         return true;
       } else {
-        unawaited(
-          context.push(
-            '/mediaEditor?id=${media[0].id}',
-          ),
-        );
+        await context.push('/mediaEditor?id=${media[0].id}');
         return true;
       }
     }

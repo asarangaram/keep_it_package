@@ -31,10 +31,8 @@ class CollectionTimeLinePage extends ConsumerWidget {
               int mediaId, {
               required String parentIdentifier,
             }) async {
-              unawaited(
-                context.push(
-                  '/item/$collectionId/$mediaId?parentIdentifier=$parentIdentifier',
-                ),
+              await context.push(
+                '/item/$collectionId/$mediaId?parentIdentifier=$parentIdentifier',
               );
               return true;
             },

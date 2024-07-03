@@ -28,7 +28,7 @@ class SettingsMainPage extends ConsumerWidget {
                         trailing: IconButton(
                           icon: Icon(MdiIcons.arrowRight),
                           onPressed: () async {
-                            unawaited(context.push('/deleted_media'));
+                            await context.push('/deleted_media');
                           },
                         ),
                         title: Text('Deleted Items (${deletedMedia.length})'),

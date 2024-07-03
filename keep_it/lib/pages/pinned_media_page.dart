@@ -35,10 +35,8 @@ class PinnedMediaPage extends ConsumerWidget {
                         padding: const EdgeInsets.all(4),
                         child: GestureDetector(
                           onTap: () async {
-                            unawaited(
-                              context.push(
-                                '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
-                              ),
+                            await context.push(
+                              '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
                             );
                           },
                           onLongPress: () async {

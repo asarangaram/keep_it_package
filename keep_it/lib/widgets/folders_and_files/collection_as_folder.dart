@@ -68,10 +68,8 @@ class CollectionAsFolder extends ConsumerWidget {
             return confirmed;
           },
           onTap: () async {
-            unawaited(
-              context.push(
-                '/items_by_collection/${collection.id}',
-              ),
+            await context.push(
+              '/items_by_collection/${collection.id}',
             );
             return true;
           },

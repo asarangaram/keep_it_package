@@ -88,7 +88,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        unawaited(context.push('/stale_media'));
+                        await context.push('/stale_media');
                       },
                       child: const CLText.small('Show Now'),
                     ),

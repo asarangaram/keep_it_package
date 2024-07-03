@@ -48,9 +48,6 @@ class MediaControls extends ConsumerWidget {
                   MdiIcons.notebook,
                   onTap: () {
                     ref.read(showControlsProvider.notifier).showNotes();
-                    /* context.push(
-                      '/item_note/${media.collectionId}/${media.id}?parentIdentifier=noteview${media.id ?? "no_id"}',
-                    ); */
                   },
                 ),
               ),
