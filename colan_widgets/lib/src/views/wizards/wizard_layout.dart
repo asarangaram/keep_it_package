@@ -1,0 +1,85 @@
+import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/material.dart';
+
+class WizardLayout extends StatelessWidget {
+  const WizardLayout({
+    required this.child,
+    required this.wizard,
+    required this.title,
+    required this.onCancel,
+    super.key,
+  });
+  final Widget child;
+  final Widget wizard;
+  final String title;
+  final void Function()? onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    /*  
+          Do we need ClipRRect?? 
+          
+          */
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: CLTheme.of(context).colors.wizardButtonBackgroundColor,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: CLText.large(title)),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: CLTheme.of(context)
+                                  .colors
+                                  .iconBackgroundTransparent,
+                            ),
+                            child: CLButtonIcon.small(
+                              Icons.close,
+                              color: CLTheme.of(context)
+                                  .colors
+                                  .iconColorTransparent,
+                              onTap: onCancel,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(child: child),
+                ],
+              ),
+            ),
+            const Divider(
+              height: 16,
+              thickness: 1,
+              indent: 8,
+              endIndent: 8,
+              color: Colors.black,
+            ),
+            SizedBox(
+              height: kMinInteractiveDimension * 4,
+              child: wizard,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
