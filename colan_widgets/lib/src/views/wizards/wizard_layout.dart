@@ -7,11 +7,14 @@ class WizardLayout extends StatelessWidget {
     required this.wizard,
     required this.title,
     required this.onCancel,
+    required this.actions,
     super.key,
   });
   final Widget child;
   final Widget wizard;
   final String title;
+  final List<Widget> actions;
+
   final void Function()? onCancel;
 
   @override
@@ -30,54 +33,49 @@ class WizardLayout extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(16)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Stack(
-                      children: [
-                        Positioned.fill(child: CLText.large(title)),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: CLTheme.of(context)
-                                  .colors
-                                  .iconBackgroundTransparent,
-                            ),
-                            child: CLButtonIcon.small(
-                              Icons.close,
-                              color: CLTheme.of(context)
-                                  .colors
-                                  .iconColorTransparent,
-                              onTap: onCancel,
-                            ),
-                          ),
-                        ),
-                      ],
+        child: KeepItMainView(
+          title: title,
+          actionsBuilder: [
+            ...actions.map((e) => (context, quickMenuScopeKey) => e),
+            (context, quickMenuScopeKey) => Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: CLTheme.of(context)
+                            .colors
+                            .iconBackgroundTransparent,
+                      ),
+                      child: CLButtonIcon.small(
+                        Icons.close,
+                        color: CLTheme.of(context).colors.iconColorTransparent,
+                        onTap: onCancel,
+                      ),
                     ),
                   ),
-                  Flexible(child: child),
-                ],
-              ),
-            ),
-            const Divider(
-              height: 16,
-              thickness: 1,
-              indent: 8,
-              endIndent: 8,
-              color: Colors.black,
-            ),
-            SizedBox(
-              height: kMinInteractiveDimension * 4,
-              child: wizard,
-            ),
+                ),
           ],
+          pageBuilder: (context, quickMenuScopeKey) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(child: child),
+                const Divider(
+                  height: 16,
+                  thickness: 1,
+                  indent: 8,
+                  endIndent: 8,
+                  color: Colors.black,
+                ),
+                SizedBox(
+                  height: kMinInteractiveDimension * 4,
+                  child: wizard,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

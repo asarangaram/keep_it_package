@@ -13,7 +13,7 @@ import 'package:store/store.dart';
 
 import '../models/media_handler.dart';
 import '../modules/shared_media/step4_save_collection.dart';
-import '../modules/shared_media/wizard_page.dart';
+
 import '../providers/gallery_group_provider.dart';
 import '../widgets/editors/collection_editor_wizard/create_collection_wizard.dart';
 
@@ -69,6 +69,10 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
   Collection? targetCollection;
   bool keepSelected = false;
+  bool isSelectionMode = false;
+
+  bool get hasSelection =>
+      keepSelected == false && selectedMedia.entries.isNotEmpty;
   @override
   Widget build(BuildContext context) {
     return GetDBManager(
@@ -78,16 +82,20 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
           dbManager: dbManager,
         );
         if (!keepSelected) {
-          return Padding(
-            padding: const EdgeInsets.all(8),
-            child: SharedMediaWizard.buildWizard(
-              context,
-              ref,
-              title: 'Unsaved',
-              message: selectedMedia.entries.isEmpty
-                  ? 'Select Media to proceed'
-                  : 'Do you want to keep the selected media or delete ?',
-              onCancel: () => CLPopScreen.onPop(context),
+          return WizardLayout(
+            title: 'Unsaved',
+            onCancel: () => CLPopScreen.onPop(context),
+            actions: [
+              CLButtonText.small(
+                isSelectionMode ? 'Done' : 'Select',
+                onTap: () {
+                  setState(() {
+                    isSelectionMode = !isSelectionMode;
+                  });
+                },
+              ),
+            ],
+            wizard: WizardDialog(
               option1:
                   (keepSelected == false && selectedMedia.entries.isNotEmpty)
                       ? CLMenuItem(
@@ -108,38 +116,44 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       onTap: () => selectedMediaHandler.delete(context, ref),
                     )
                   : null,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: DecoratedBox(
-                  decoration:
-                      const BoxDecoration(border: Border(bottom: BorderSide())),
-                  child: CLSimpleItemsSelector<CLMedia>(
-                    key: ValueKey(widget.label),
-                    galleryMap: widget.galleryMap,
-                    itemBuilder: (
-                      context,
-                      item,
-                    ) =>
-                        Hero(
-                      tag: '${widget.parentIdentifier} /item/${item.id}',
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: PreviewService(
-                          media: item,
-                          keepAspectRatio: false,
-                        ),
+              content: Center(
+                child: Text(
+                  selectedMedia.entries.isEmpty
+                      ? 'Select Media to proceed'
+                      : 'Do you want to keep the selected media or delete ?',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: CLScaleType.standard.fontSize,
                       ),
+                ),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: CLGalleryCore<CLMedia>(
+                key: ValueKey(widget.label),
+                items: widget.galleryMap,
+                itemBuilder: (
+                  context,
+                  item,
+                ) =>
+                    Hero(
+                  tag: '${widget.parentIdentifier} /item/${item.id}',
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: PreviewService(
+                      media: item,
+                      keepAspectRatio: false,
                     ),
-                    emptyState: widget.emptyState,
-                    identifier: widget.parentIdentifier,
-                    columns: 2,
-                    onSelectionChanged: (List<CLMedia> items) {
-                      selectedMedia = selectedMedia.copyWith(entries: items);
-                      setState(() {});
-                    },
-                    keepSelected: keepSelected,
                   ),
                 ),
+                columns: 4,
+                onSelectionChanged: isSelectionMode
+                    ? (List<CLMedia> items) {
+                        selectedMedia = selectedMedia.copyWith(entries: items);
+                        setState(() {});
+                      }
+                    : null,
+                keepSelected: keepSelected,
               ),
             ),
           );
@@ -184,7 +198,9 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                     selectedMedia = selectedMedia.copyWith(
                       collection: collection,
                       entries: selectedMedia.entries
-                          .map((e) => e.copyWith(collectionId: collection.id))
+                          .map(
+                            (e) => e.copyWith(collectionId: collection.id),
+                          )
                           .toList(),
                     );
                     setState(() {});
