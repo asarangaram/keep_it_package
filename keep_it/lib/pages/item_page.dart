@@ -32,9 +32,7 @@ class CollectionItemPage extends ConsumerWidget {
       buildOnData: (items) {
         if (items.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (context.canPop()) {
-              context.pop();
-            }
+            CLPopScreen.onPop(context);
           });
           return const EmptyState(message: 'No Media');
         }

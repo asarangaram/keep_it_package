@@ -29,21 +29,10 @@ class DeleteMediaPage extends ConsumerWidget {
               );
               if (media.isEmpty) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
+                  CLPopScreen.onPop(context);
                 });
               }
-              return GestureDetector(
-                onHorizontalDragEnd: (details) {
-                  if (details.primaryVelocity == null) return;
-                  // pop on Swipe
-                  if (details.primaryVelocity! > 0) {
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  }
-                },
+              return CLPopScreen.onSwipe(
                 child: Column(
                   children: [
                     Expanded(

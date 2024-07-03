@@ -23,24 +23,15 @@ class MoveMediaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (idsToMove.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
+        // intentional delay!
         await Future<void>.delayed(const Duration(seconds: 1));
         if (context.mounted) {
-          if (context.canPop()) {
-            context.pop();
-          }
+          await CLPopScreen.onPop(context, result: false);
         }
       });
       return FullscreenLayout(
-        child: GestureDetector(
-          onHorizontalDragEnd: (details) {
-            if (details.primaryVelocity == null) return;
-            // pop on Swipe
-            if (details.primaryVelocity! > 0) {
-              if (context.canPop()) {
-                context.pop(true);
-              }
-            }
-          },
+        child: CLPopScreen.onSwipe(
+          result: true,
           child: const EmptyState(
             message: 'Nothing to Move. You may be redirected',
           ),
@@ -48,16 +39,8 @@ class MoveMediaPage extends ConsumerWidget {
       );
     }
     return FullscreenLayout(
-      child: GestureDetector(
-        onHorizontalDragEnd: (details) {
-          if (details.primaryVelocity == null) return;
-          // pop on Swipe
-          if (details.primaryVelocity! > 0) {
-            if (context.canPop()) {
-              context.pop(true);
-            }
-          }
-        },
+      child: CLPopScreen.onSwipe(
+        result: true,
         child: GetMediaMultiple(
           idList: idsToMove,
           buildOnData: (media) {
@@ -79,9 +62,7 @@ class MoveMediaPage extends ConsumerWidget {
             return IncomingMediaHandler(
               incomingMedia: CLSharedMedia(entries: media2Move),
               onDiscard: ({required bool result}) {
-                if (context.canPop()) {
-                  context.pop(result);
-                }
+                CLPopScreen.onPop(context, result: result);
               },
               moving: true,
             );

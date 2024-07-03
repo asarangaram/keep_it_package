@@ -58,13 +58,10 @@ class MediaControls extends ConsumerWidget {
               alignment: Alignment.topRight,
               child: Padding(
                 padding: const EdgeInsets.only(right: 8, top: 8),
-                child: CircledIcon(
-                  MdiIcons.close,
-                  onTap: () {
-                    if (context.mounted && context.canPop()) {
-                      context.pop();
-                    }
-                  },
+                child: CLPopScreen.onTap(
+                  child: CircledIcon(
+                    MdiIcons.close,
+                  ),
                 ),
               ),
             ),

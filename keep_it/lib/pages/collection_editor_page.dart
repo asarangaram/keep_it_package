@@ -11,19 +11,5 @@ class CollectionEditorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     throw UnimplementedError('This page needs proper implementation');
-    /* 
-    FullscreenLayout
-    return SizedBox(
-      width: min(MediaQuery.of(context).size.width, 450),
-      child: CollectionEditor(
-        collectionId: collectionId,
-        onSubmit: (collection) {},
-        onCancel: () {
-          if (context.canPop()) {
-            context.pop();
-          }
-        },
-      ),
-    ); */
   }
 }

@@ -40,13 +40,7 @@ class MediaEditorPage extends StatelessWidget {
               backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
               child: ImageEditService(
                 file: File(filePath),
-                onDone: () async {
-                  if (context.mounted) {
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  }
-                },
+                onDone: () => CLPopScreen.onPop(context),
                 onEditAndSave: (
                   Uint8List imageBytes, {
                   required bool overwrite,
@@ -72,13 +66,7 @@ class MediaEditorPage extends StatelessWidget {
               child: VideoEditServices(
                 File(filePath),
                 onSave: onSave,
-                onDone: () async {
-                  if (context.mounted) {
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                  }
-                },
+                onDone: () => CLPopScreen.onPop(context),
               ),
             );
           case CLMediaType.text:

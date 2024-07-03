@@ -7,32 +7,38 @@ class CLPopScreen extends StatelessWidget {
   const CLPopScreen._({
     required this.child,
     required this.popGesture,
+    required this.result,
     super.key,
   });
 
   factory CLPopScreen.onSwipe({
     required Widget child,
     Key? key,
+    bool? result,
   }) {
     return CLPopScreen._(
       popGesture: CLScreenPopGesture.swipeLeft,
       key: key,
+      result: result,
       child: child,
     );
   }
   factory CLPopScreen.onTap({
     required Widget child,
     Key? key,
+    bool? result,
   }) {
     return CLPopScreen._(
       popGesture: CLScreenPopGesture.onTap,
       key: key,
+      result: result,
       child: child,
     );
   }
 
   final Widget? child;
   final CLScreenPopGesture popGesture;
+  final bool? result;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +50,7 @@ class CLPopScreen extends StatelessWidget {
               if (details.primaryVelocity == null) return;
               // pop on Swipe
               if (details.primaryVelocity! > 0) {
-                onPop(context);
+                onPop(context, result: result);
               }
             }
           : null,
@@ -52,9 +58,13 @@ class CLPopScreen extends StatelessWidget {
     );
   }
 
-  static Future<void> onPop(BuildContext context) async {
+  static Future<void> onPop(BuildContext context, {bool? result}) async {
     if (context.mounted && context.canPop()) {
-      context.pop();
+      if (result != null) {
+        context.pop(result);
+      } else {
+        context.pop();
+      }
     }
   }
 

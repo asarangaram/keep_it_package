@@ -30,22 +30,11 @@ class StaleMediaPage extends ConsumerWidget {
         buildOnData: (media) {
           if (media.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.canPop()) {
-                context.pop();
-              }
+              CLPopScreen.onPop(context);
             });
           }
           final galleryMap = ref.watch(singleGroupItemProvider(media));
-          return GestureDetector(
-            onHorizontalDragEnd: (details) {
-              if (details.primaryVelocity == null) return;
-              // pop on Swipe
-              if (details.primaryVelocity! > 0) {
-                if (context.canPop()) {
-                  context.pop();
-                }
-              }
-            },
+          return CLPopScreen.onSwipe(
             child: SelectAndKeepMedia(
               label: label,
               parentIdentifier: parentIdentifier,
@@ -99,11 +88,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               message: selectedMedia.entries.isEmpty
                   ? 'Select Media to proceed'
                   : 'Do you want to keep the selected media or delete ?',
-              onCancel: () {
-                if (context.canPop()) {
-                  context.pop();
-                }
-              },
+              onCancel: () => CLPopScreen.onPop(context),
               option1:
                   (keepSelected == false && selectedMedia.entries.isNotEmpty)
                       ? CLMenuItem(
