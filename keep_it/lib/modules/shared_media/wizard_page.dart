@@ -23,6 +23,7 @@ abstract class SharedMediaWizard extends ConsumerWidget {
     required void Function()? onCancel,
     CLMenuItem? option1,
     CLMenuItem? option2,
+    CLMenuItem? option3,
   }) {
     /*  
           Do we need ClipRRect?? 
@@ -74,6 +75,13 @@ abstract class SharedMediaWizard extends ConsumerWidget {
                 ],
               ),
             ),
+            const Divider(
+              height: 16,
+              thickness: 1,
+              indent: 8,
+              endIndent: 8,
+              color: Colors.black,
+            ),
             Expanded(
               flex: 5,
               child: WizardDialog(
@@ -94,6 +102,46 @@ abstract class SharedMediaWizard extends ConsumerWidget {
                         color: CLTheme.of(context)
                             .colors
                             .wizardButtonForegroundColor,
+                      ),
+                option3: (option3 == null)
+                    ? null
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 16, top: 8),
+                        child: Row(
+                          children: [
+                            const Spacer(),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: CLTheme.of(context)
+                                      .colors
+                                      .wizardButtonBackgroundColor,
+                                  border: Border.all(
+                                    color: CLTheme.of(context)
+                                        .colors
+                                        .wizardButtonBackgroundColor,
+                                  ),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(16)),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  child: CLButtonText.large(
+                                    option3.title,
+                                    onTap: option3.onTap,
+                                    color: CLTheme.of(context)
+                                        .colors
+                                        .wizardButtonForegroundColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                 content: Center(
                   child: Text(
@@ -117,16 +165,19 @@ class WizardDialog extends StatelessWidget {
     required this.content,
     this.option1,
     this.option2,
+    this.option3,
     super.key,
   });
   final Widget content;
   final Widget? option1;
   final Widget? option2;
+  final Widget? option3;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if (option3 != null) option3!,
         Expanded(
           flex: 3,
           child: SizedBox(

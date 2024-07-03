@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -8,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import '../modules/universal_media_handler/models/types.dart';
+import '../modules/universal_media_handler/providers/media_provider.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/collection_as_folder.dart';
 
@@ -88,7 +88,14 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        unawaited(context.push('/stale_media'));
+                        ref
+                            .read(
+                              universalMediaProvider(
+                                UniversalMediaTypes.staleMedia,
+                              ).notifier,
+                            )
+                            .mediaGroup = CLSharedMedia(entries: media);
+                        await context.push('/stale_media');
                       },
                       child: const CLText.small('Show Now'),
                     ),
