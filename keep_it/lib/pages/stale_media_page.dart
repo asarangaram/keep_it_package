@@ -12,6 +12,8 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:store/store.dart';
 
 import '../models/media_handler.dart';
+import '../modules/media_wizard/models/types.dart';
+import '../modules/media_wizard/providers/media_provider.dart';
 import '../modules/shared_media/step4_save_collection.dart';
 
 import '../providers/gallery_group_provider.dart';
@@ -24,24 +26,22 @@ class StaleMediaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const label = 'Unclassified Media';
     const parentIdentifier = 'Unclassified Media';
+    final media =
+        ref.watch(universalMediaProvider(UniversalMediaTypes.staleMedia));
+    if (media.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        CLPopScreen.onPop(context);
+      });
+    }
+    final galleryMap = ref.watch(singleGroupItemProvider(media.entries));
     return FullscreenLayout(
-      child: GetStaleMedia(
-        buildOnData: (media) {
-          if (media.isEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              CLPopScreen.onPop(context);
-            });
-          }
-          final galleryMap = ref.watch(singleGroupItemProvider(media));
-          return CLPopScreen.onSwipe(
-            child: SelectAndKeepMedia(
-              label: label,
-              parentIdentifier: parentIdentifier,
-              galleryMap: galleryMap,
-              emptyState: const EmptyState(),
-            ),
-          );
-        },
+      child: CLPopScreen.onSwipe(
+        child: SelectAndKeepMedia(
+          label: label,
+          parentIdentifier: parentIdentifier,
+          galleryMap: galleryMap,
+          emptyState: const EmptyState(),
+        ),
       ),
     );
   }
