@@ -1,12 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
-import '../models/album_manager_helper.dart';
 import '../models/media_handler.dart';
 import '../providers/gallery_group_provider.dart';
 import 'empty_state.dart';

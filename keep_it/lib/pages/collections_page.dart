@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
