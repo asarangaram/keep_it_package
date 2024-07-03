@@ -93,6 +93,7 @@ abstract class SharedMediaWizard extends ConsumerWidget {
                         color: CLTheme.of(context)
                             .colors
                             .wizardButtonForegroundColor,
+                        disabledColor: Colors.grey,
                       ),
                 option2: option2 == null
                     ? null
@@ -102,6 +103,7 @@ abstract class SharedMediaWizard extends ConsumerWidget {
                         color: CLTheme.of(context)
                             .colors
                             .wizardButtonForegroundColor,
+                        disabledColor: Colors.grey,
                       ),
                 option3: (option3 == null)
                     ? null
@@ -123,7 +125,8 @@ abstract class SharedMediaWizard extends ConsumerWidget {
                                         .wizardButtonBackgroundColor,
                                   ),
                                   borderRadius: const BorderRadius.all(
-                                      Radius.circular(16)),
+                                    Radius.circular(16),
+                                  ),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -136,6 +139,7 @@ abstract class SharedMediaWizard extends ConsumerWidget {
                                     color: CLTheme.of(context)
                                         .colors
                                         .wizardButtonForegroundColor,
+                                    disabledColor: Colors.grey,
                                   ),
                                 ),
                               ),

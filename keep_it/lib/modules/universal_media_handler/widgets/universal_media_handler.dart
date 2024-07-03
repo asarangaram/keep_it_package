@@ -1,23 +1,24 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/modules/universal_media_handler/widgets/select_view.dart';
 
-import '../../shared_media/wizard_page.dart';
+import 'normal_view.dart';
 
-enum HandlerStates { normal, select, selected, processing }
+enum HandlerState { normal, select, selected, processing }
 
 class UniversalMediaHandler extends ConsumerStatefulWidget {
   const UniversalMediaHandler({
-    required this.galleryMap,
+    required this.media,
     required this.identifier,
     required this.onDelete,
     super.key,
   });
   final String identifier;
 
-  final List<GalleryGroup<CLMedia>> galleryMap;
+  final CLSharedMedia media;
 
   final Future<bool> Function(List<CLMedia> media) onDelete;
 
@@ -27,94 +28,56 @@ class UniversalMediaHandler extends ConsumerStatefulWidget {
 }
 
 class UniversalMediaHandlerState extends ConsumerState<UniversalMediaHandler> {
-  bool keep = false;
-  Future<bool> onKeep() async {
-    keep = true;
-    setState(() {});
-    return true;
-  }
+  bool isSelectionMode = false;
+  bool keepSelected = false;
+  CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
 
-  Future<bool> onDelete() async {
-    return true;
+  Future<bool> onSwitchMode() async {
+    setState(() {
+      isSelectionMode = !isSelectionMode;
+    });
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return MediaViewNormal(
-      onKeepAll: () async {
-        return false;
-      },
-      onDeleteAll: () async {
-        return false;
-      },
-      onSelectMode: () async {
-        return false;
-      },
-      option3: const CLMenuItem(icon: Icons.abc, title: 'Select'),
-      child: CLGalleryCore0<CLMedia>(
-        key: ValueKey(widget.identifier),
-        items: widget.galleryMap,
-        itemBuilder: (
-          context,
-          item,
-        ) =>
-            Hero(
-          tag: '${widget.identifier} /item/${item.id}',
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: PreviewService(
-              media: item,
-              keepAspectRatio: false,
-            ),
-          ),
+    return switch (isSelectionMode) {
+      false => MediaViewNormal(
+          identifier: widget.identifier,
+          media: widget.media,
+          onKeepAll: widget.media.isEmpty
+              ? null
+              : () async {
+                  return false;
+                },
+          onDeleteAll: widget.media.isEmpty
+              ? null
+              : () async {
+                  return false;
+                },
+          onSwitchMode: onSwitchMode,
         ),
-        columns: 3,
-      ),
-    );
-  }
-}
-
-class MediaViewNormal extends ConsumerWidget {
-  const MediaViewNormal({
-    required this.onKeepAll,
-    required this.onDeleteAll,
-    required this.onSelectMode,
-    required this.child,
-    this.option3,
-    super.key,
-  });
-  final Future<bool?> Function()? onKeepAll;
-  final Future<bool?> Function()? onDeleteAll;
-  final Future<bool?> Function()? onSelectMode;
-  final Widget child;
-  final CLMenuItem? option3;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: SharedMediaWizard.buildWizard(
-        context,
-        ref,
-        title: 'Unsaved',
-        message: 'You may keep or delete all the media or enter select Mode',
-        onCancel: () => CLPopScreen.onPop(context),
-        option1: CLMenuItem(
-          title: 'Keep All',
-          icon: Icons.save,
-          onTap: onKeepAll,
+      true => MediaViewSelect(
+          identifier: widget.identifier,
+          media: widget.media,
+          onKeepSelected: selectedMedia.isEmpty
+              ? null
+              : () async {
+                  return false;
+                },
+          onDeleteSelected: selectedMedia.isEmpty
+              ? null
+              : () async {
+                  return false;
+                },
+          onSwitchMode: onSwitchMode,
+          hasSelection: selectedMedia.entries.isNotEmpty,
+          onSelectionChanged: (items) {
+            selectedMedia = selectedMedia.copyWith(entries: items);
+            setState(() {});
+          },
+          keepSelected: keepSelected,
         ),
-        option2: CLMenuItem(
-          title: 'Delete All',
-          icon: Icons.delete,
-          onTap: onDeleteAll,
-        ),
-        option3: option3,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: child,
-        ),
-      ),
-    );
+    };
   }
 }

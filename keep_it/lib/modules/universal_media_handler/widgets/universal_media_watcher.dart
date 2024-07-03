@@ -24,14 +24,13 @@ class UniversalMediaWatcher extends ConsumerWidget {
       });
       return const EmptyState();
     }
-    final galleryMap = ref.watch(singleGroupItemProvider(media.entries));
 
     return FullscreenLayout(
       child: GetDBManager(
         builder: (dbManager) {
           return CLPopScreen.onSwipe(
             child: UniversalMediaHandler(
-              galleryMap: galleryMap,
+              media: media,
               identifier: type.identifier,
               onDelete: (mediaList) async {
                 final mediaHandler = MediaHandler.multiple(
