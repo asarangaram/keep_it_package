@@ -24,6 +24,9 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
+  form_factory:
+    path: ../form_factory
+  go_router: ^14.2.0
   heif_converter: ^1.0.0
   image: ^4.1.7
   

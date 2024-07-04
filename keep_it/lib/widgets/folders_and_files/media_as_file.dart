@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../models/media_handler.dart';
 import '../wrap_standard_quick_menu.dart';
 
 class MediaAsFile extends ConsumerWidget {

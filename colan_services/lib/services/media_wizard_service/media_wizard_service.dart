@@ -1,27 +1,36 @@
-import 'dart:async';
 import 'dart:math';
 
-import 'package:app_loader/app_loader.dart';
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:store/store.dart';
 
-import '../../../models/media_handler.dart';
-import '../../../providers/gallery_group_provider.dart';
-import '../../../widgets/editors/collection_editor_wizard/create_collection_wizard.dart';
-import '../../../widgets/empty_state.dart';
-import '../../shared_media/step4_save_collection.dart';
-import '../models/types.dart';
-import '../providers/media_provider.dart';
+import '../preview_service/view/preview.dart';
+import '../shared_media_service/models/cl_shared_media.dart';
+import '../shared_media_service/models/media_handler.dart';
+import 'models/types.dart';
+import 'providers/gallery_group_provider.dart';
+import 'providers/media_provider.dart';
+import 'views/create_collection_wizard.dart';
 
-class UniversalMediaWizard extends ConsumerWidget {
-  const UniversalMediaWizard({required this.type, super.key});
+class MediaWizardService extends ConsumerWidget {
+  const MediaWizardService({required this.type, super.key});
   final UniversalMediaTypes type;
+  static Future<void> addMedia(
+    BuildContext context,
+    WidgetRef ref, {
+    required UniversalMediaTypes type,
+    required CLSharedMedia media,
+  }) async {
+    ref
+        .read(
+          universalMediaProvider(
+            UniversalMediaTypes.staleMedia,
+          ).notifier,
+        )
+        .mediaGroup = media;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,16 +39,14 @@ class UniversalMediaWizard extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         CLPopScreen.onPop(context);
       });
-      return const EmptyState();
+      return const SizedBox.expand();
     }
     final galleryMap = ref.watch(singleGroupItemProvider(media.entries));
-    return FullscreenLayout(
-      child: CLPopScreen.onSwipe(
-        child: SelectAndKeepMedia(
-          media: media,
-          type: type,
-          galleryMap: galleryMap,
-        ),
+    return CLPopScreen.onSwipe(
+      child: SelectAndKeepMedia(
+        media: media,
+        type: type,
+        galleryMap: galleryMap,
       ),
     );
   }
@@ -107,7 +114,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                   : SizedBox(
                       height: kMinInteractiveDimension * 2,
                       child: StreamBuilder<Progress>(
-                        stream: SaveCollection.acceptMedia(
+                        stream: MediaHandler.acceptMedia(
                           dbManager,
                           collection: targetCollection!,
                           media: List.from(candidate.entries),

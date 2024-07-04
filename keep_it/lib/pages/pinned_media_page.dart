@@ -6,9 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../models/album_manager_helper.dart';
-import '../providers/gallery_group_provider.dart';
-
 class PinnedMediaPage extends ConsumerWidget {
   const PinnedMediaPage({super.key});
 
@@ -38,12 +35,10 @@ class PinnedMediaPage extends ConsumerWidget {
                             );
                           },
                           onLongPress: () async {
-                            await dbManager.togglePin(
-                              item,
-                              onPin: AlbumManagerHelper().albumManager.addMedia,
-                              onRemovePin: (id) async => AlbumManagerHelper()
-                                  .removeMedia(context, ref, id),
-                            );
+                            await MediaHandler(
+                              dbManager: dbManager,
+                              media: item,
+                            ).togglePin(context, ref);
                           },
                           child: PreviewService(
                             media: item,
@@ -67,12 +62,11 @@ class PinnedMediaPage extends ConsumerWidget {
                           title: 'Remove Selected Pins',
                           icon: MdiIcons.pinOffOutline,
                           onTap: () async {
-                            await dbManager.unpinMediaMultiple(
-                              media,
-                              onRemovePinMultiple: (id) async =>
-                                  AlbumManagerHelper()
-                                      .removeMultipleMedia(context, ref, id),
-                            );
+                            await MediaHandler.multiple(
+                              dbManager: dbManager,
+                              media: media,
+                            ).togglePin(context, ref);
+
                             return true;
                           },
                         ),

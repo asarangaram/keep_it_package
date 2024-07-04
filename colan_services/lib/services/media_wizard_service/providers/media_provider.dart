@@ -3,8 +3,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/types.dart';
-
 class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
   UniversalMediaNotifier(this.mediaTypes)
       : super(const CLSharedMedia(entries: []));

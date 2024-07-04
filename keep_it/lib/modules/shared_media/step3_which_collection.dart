@@ -3,7 +3,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../widgets/editors/collection_editor_wizard/create_collection_wizard.dart';
 import 'wizard_page.dart';
 
 class WhichCollection extends SharedMediaWizard {

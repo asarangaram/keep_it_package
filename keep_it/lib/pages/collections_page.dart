@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../modules/media_wizard/models/types.dart';
-import '../modules/media_wizard/providers/media_provider.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/collection_as_folder.dart';
 
@@ -88,14 +86,15 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        ref
-                            .read(
-                              universalMediaProvider(
-                                UniversalMediaTypes.staleMedia,
-                              ).notifier,
-                            )
-                            .mediaGroup = CLSharedMedia(entries: media);
-                        await context.push('/stale_media');
+                        await MediaWizardService.addMedia(
+                          context,
+                          ref,
+                          type: UniversalMediaTypes.staleMedia,
+                          media: CLSharedMedia(entries: media),
+                        );
+                        if (context.mounted) {
+                          await context.push('/stale_media');
+                        }
                       },
                       child: const CLText.small('Show Now'),
                     ),

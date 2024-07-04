@@ -7,9 +7,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import 'package:store/store.dart';
 
-import '../models/media_handler.dart';
-import '../providers/gallery_group_provider.dart';
-
 class DeleteMediaPage extends ConsumerWidget {
   const DeleteMediaPage({super.key});
 
