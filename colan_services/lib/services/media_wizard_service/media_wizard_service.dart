@@ -88,10 +88,10 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
         );
 
         return WizardLayout(
-          title: 'Unsaved',
+          title: widget.type.label,
           onCancel: () => CLPopScreen.onPop(context),
           actions: [
-            if (!keepSelected)
+            if (!keepSelected && widget.media.entries.length > 1)
               CLButtonText.small(
                 isSelectionMode ? 'Done' : 'Select',
                 onTap: () {
@@ -138,7 +138,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                   height: kMinInteractiveDimension * 2,
                   child: WizardDialog(
                     option1: CLMenuItem(
-                      title: isSelectionMode ? 'Keep Selected' : 'Keep All',
+                      title: '${widget.type.actionLabel}'
+                          '${isSelectionMode ? 'Selected' : 'All'}',
                       icon: Icons.save,
                       onTap: hasCandidate
                           ? () async {
@@ -149,32 +150,38 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                             }
                           : null,
                     ),
-                    option2: CLMenuItem(
-                      title: isSelectionMode ? 'Delete Selected' : 'Delete All',
-                      icon: Icons.delete,
-                      onTap: hasCandidate
-                          ? () async {
-                              final res = await selectedMediaHandler.delete(
-                                context,
-                                ref,
-                              );
+                    option2: (widget.type.canDelete)
+                        ? CLMenuItem(
+                            title: isSelectionMode
+                                ? 'Delete Selected'
+                                : 'Delete All',
+                            icon: Icons.delete,
+                            onTap: hasCandidate
+                                ? () async {
+                                    final res =
+                                        await selectedMediaHandler.delete(
+                                      context,
+                                      ref,
+                                    );
 
-                              await ref
-                                  .read(
-                                    universalMediaProvider(widget.type)
-                                        .notifier,
-                                  )
-                                  .remove(candidate.entries);
-                              selectedMedia = const CLSharedMedia(entries: []);
-                              keepSelected = false;
-                              targetCollection = null;
-                              isSelectionMode = false;
-                              setState(() {});
+                                    await ref
+                                        .read(
+                                          universalMediaProvider(widget.type)
+                                              .notifier,
+                                        )
+                                        .remove(candidate.entries);
+                                    selectedMedia =
+                                        const CLSharedMedia(entries: []);
+                                    keepSelected = false;
+                                    targetCollection = null;
+                                    isSelectionMode = false;
+                                    setState(() {});
 
-                              return res;
-                            }
-                          : null,
-                    ),
+                                    return res;
+                                  }
+                                : null,
+                          )
+                        : null,
                   ),
                 ),
           child: Padding(
