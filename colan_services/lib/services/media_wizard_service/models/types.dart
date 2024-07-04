@@ -14,10 +14,10 @@ enum UniversalMediaTypes {
 
   String get actionLabel => switch (this) {
         captured => 'Save',
-        move => 'Save',
+        move => 'Move',
         imported => 'Import',
         staleMedia => 'Keep'
       };
 
-  bool get canDelete => switch (this) { _ => true };
+  bool get canDelete => switch (this) { move => false, _ => true };
 }
