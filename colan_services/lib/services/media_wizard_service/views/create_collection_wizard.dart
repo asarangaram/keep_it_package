@@ -9,9 +9,10 @@ import 'pick_collection.dart';
 class CreateCollectionWizard extends StatefulWidget {
   const CreateCollectionWizard({
     required this.onDone,
+    this.fixedHeight = true,
     super.key,
   });
-
+  final bool fixedHeight;
   final void Function({
     required Collection collection,
   }) onDone;
@@ -41,8 +42,9 @@ class PickCollectionState extends State<CreateCollectionWizard> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget child;
     if (collection == null || onEditLabel) {
-      return PickCollection(
+      child = PickCollection(
         collection: collection,
         onDone: (collection) {
           if (collection.id != null) {
@@ -56,7 +58,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
         },
       );
     } else if (!hasDescription) {
-      return Column(
+      child = Column(
         children: [
           LabelViewer(
             label: 'Collection: ${collection!.label}',
@@ -82,7 +84,14 @@ class PickCollectionState extends State<CreateCollectionWizard> {
         ],
       );
     } else {
-      return const Center(child: CLLoadingView(message: 'Saving...'));
+      child = const Center(child: CLLoadingView(message: 'Saving...'));
     }
+    if (widget.fixedHeight) {
+      return SizedBox(
+        height: kMinInteractiveDimension * 4,
+        child: child,
+      );
+    }
+    return child;
   }
 }

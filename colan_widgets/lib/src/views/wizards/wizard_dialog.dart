@@ -8,15 +8,17 @@ class WizardDialog extends StatelessWidget {
     this.option2,
     this.option3,
     super.key,
+    this.fixedHeight = true,
   });
   final Widget? content;
   final CLMenuItem? option1;
   final CLMenuItem? option2;
   final CLMenuItem? option3;
+  final bool fixedHeight;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final child = Column(
       children: [
         if (option3 != null)
           Padding(
@@ -153,5 +155,12 @@ class WizardDialog extends StatelessWidget {
           ),
       ],
     );
+    if (fixedHeight) {
+      return SizedBox(
+        height: kMinInteractiveDimension * 2,
+        child: child,
+      );
+    }
+    return child;
   }
 }
