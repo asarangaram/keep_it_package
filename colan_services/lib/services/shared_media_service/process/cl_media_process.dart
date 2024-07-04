@@ -24,7 +24,7 @@ class CLMediaProcess {
     }) onDone,
   }) async* {
     final candidates = <CLMedia>[];
-    await Future<void>.delayed(const Duration(seconds: 3));
+    //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
       currentItem: path.basename(media.entries[0].path),
       fractCompleted: 0,

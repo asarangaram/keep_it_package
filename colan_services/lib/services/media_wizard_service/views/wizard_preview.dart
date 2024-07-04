@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../image_view_service/image_view_service.dart';
 import '../../preview_service/view/preview.dart';
@@ -10,7 +11,7 @@ import '../models/types.dart';
 import '../providers/gallery_group_provider.dart';
 import '../providers/media_provider.dart';
 
-class WizardPreview extends ConsumerWidget {
+class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
     required this.type,
     required this.onSelectionChanged,
@@ -22,7 +23,19 @@ class WizardPreview extends ConsumerWidget {
   final bool freezeView;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
+}
+
+class _WizardPreviewState extends ConsumerState<WizardPreview> {
+  CLMedia? previewItem;
+
+  MediaSourceType get type => widget.type;
+  bool get freezeView => widget.freezeView;
+  void Function(List<CLMedia>)? get onSelectionChanged =>
+      widget.onSelectionChanged;
+
+  @override
+  Widget build(BuildContext context) {
     final media = ref.watch(universalMediaProvider(type));
     if (media.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,11 +56,32 @@ class WizardPreview extends ConsumerWidget {
       ) =>
           Hero(
         tag: '${type.identifier} /item/${item.id}',
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: PreviewService(
-            media: item,
-            keepAspectRatio: false,
+        child: GestureDetector(
+          onTap: () {
+            showDialog<void>(
+              context: context,
+              builder: (context) {
+                return Dialog.fullscreen(
+                  backgroundColor: Colors.transparent,
+                  child: WizardLayout(
+                    actions: [
+                      CLIcon.standard(MdiIcons.pencil),
+                    ],
+                    onCancel: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: ImageViewService(file: File(item.path)),
+                  ),
+                );
+              },
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: PreviewService(
+              media: item,
+              keepAspectRatio: false,
+            ),
           ),
         ),
       ),

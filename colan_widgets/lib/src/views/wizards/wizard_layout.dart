@@ -30,55 +30,59 @@ class WizardLayout extends StatelessWidget {
           color: CLTheme.of(context).colors.wizardButtonBackgroundColor,
         ),
         borderRadius: const BorderRadius.all(Radius.circular(16)),
+        // color: Colors.blue,
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(16)),
-        child: KeepItMainView(
-          title: title ?? '',
-          actionsBuilder: [
-            if (actions != null)
-              ...actions!.map((e) => (context, quickMenuScopeKey) => e),
-            (context, quickMenuScopeKey) => Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: CLTheme.of(context)
-                            .colors
-                            .iconBackgroundTransparent,
-                      ),
-                      child: CLButtonIcon.small(
-                        Icons.close,
-                        color: CLTheme.of(context).colors.iconColorTransparent,
-                        onTap: onCancel,
+        child: CLBackground(
+          child: KeepItMainView(
+            title: title ?? '',
+            actionsBuilder: [
+              if (actions != null)
+                ...actions!.map((e) => (context, quickMenuScopeKey) => e),
+              (context, quickMenuScopeKey) => Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: CLTheme.of(context)
+                              .colors
+                              .iconBackgroundTransparent,
+                        ),
+                        child: CLButtonIcon.small(
+                          Icons.close,
+                          color:
+                              CLTheme.of(context).colors.iconColorTransparent,
+                          onTap: onCancel,
+                        ),
                       ),
                     ),
                   ),
-                ),
-          ],
-          pageBuilder: (context, quickMenuScopeKey) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(child: child),
-                /* const Divider(
-                  height: 16,
-                  thickness: 1,
-                  indent: 8,
-                  endIndent: 8,
-                  color: Colors.black,
-                ), */
-                if (wizard != null) ...[
-                  const SizedBox(
+            ],
+            pageBuilder: (context, quickMenuScopeKey) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(child: child),
+                  /* const Divider(
                     height: 16,
-                  ),
-                  wizard!,
+                    thickness: 1,
+                    indent: 8,
+                    endIndent: 8,
+                    color: Colors.black,
+                  ), */
+                  if (wizard != null) ...[
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    wizard!,
+                  ],
                 ],
-              ],
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

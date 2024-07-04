@@ -40,7 +40,7 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
       },
       child: Scaffold(
         backgroundColor: widget.backgroundColor,
-        body: _CLBackground(
+        body: CLBackground(
           hasBackground: widget.hasBackground,
           backgroundBrightness: widget.backgroundBrightness,
           child: SafeArea(
@@ -166,9 +166,10 @@ class _ScaffoldBorder extends StatelessWidget {
   }
 }
 
-class _CLBackground extends StatelessWidget {
-  const _CLBackground({
+class CLBackground extends StatelessWidget {
+  const CLBackground({
     required this.child,
+    super.key,
     this.backgroundBrightness = 0.25,
     this.hasBackground = true,
   });
