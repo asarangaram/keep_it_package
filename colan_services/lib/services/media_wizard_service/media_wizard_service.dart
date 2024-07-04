@@ -1,18 +1,16 @@
-import 'dart:math';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:store/store.dart';
 
-import '../preview_service/view/preview.dart';
 import '../shared_media_service/models/cl_shared_media.dart';
 import '../shared_media_service/models/media_handler.dart';
 import 'models/types.dart';
 import 'providers/gallery_group_provider.dart';
 import 'providers/media_provider.dart';
 import 'views/create_collection_wizard.dart';
+import 'views/progress_bar.dart';
+import 'views/wizard_preview.dart';
 
 class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({required this.type, super.key});
@@ -138,7 +136,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           setState(() {});
                         },
                       ),
-                      builder: progressBarBuilder,
+                      builder: (context, snapShot) => ProgressBar(
+                        progress: snapShot.hasData
+                            ? snapShot.data?.fractCompleted
+                            : null,
+                      ),
                     )
               : WizardDialog(
                   option1: CLMenuItem(
@@ -195,83 +197,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
           ),
         );
       },
-    );
-  }
-
-  Widget progressBarBuilder(
-    BuildContext context,
-    AsyncSnapshot<Progress> snapshot,
-  ) {
-    final percentage =
-        (snapshot.hasData ? min(1, snapshot.data!.fractCompleted) : 0.0)
-                .toDouble() *
-            100;
-    return SizedBox(
-      height: kMinInteractiveDimension * 2,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Padding(
-            padding: const EdgeInsets.all(15),
-            child: LinearPercentIndicator(
-              width: constraints.maxWidth - 40,
-              animation: true,
-              lineHeight: 20,
-              animationDuration: 2000,
-              percent: percentage / 100,
-              animateFromLastPercent: true,
-              center: Text('$percentage'),
-              barRadius: const Radius.elliptical(5, 15),
-              progressColor: Theme.of(context).colorScheme.primary,
-              maskFilter: const MaskFilter.blur(BlurStyle.solid, 3),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class WizardPreview extends ConsumerWidget {
-  const WizardPreview({
-    required this.type,
-    required this.onSelectionChanged,
-    required this.freezeView,
-    super.key,
-  });
-  final UniversalMediaTypes type;
-  final void Function(List<CLMedia>)? onSelectionChanged;
-  final bool freezeView;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final media = ref.watch(universalMediaProvider(type));
-    if (media.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        CLPopScreen.onPop(context);
-      });
-      return const SizedBox.expand();
-    }
-    final galleryMap = ref.watch(singleGroupItemProvider(media.entries));
-    return CLGalleryCore<CLMedia>(
-      key: ValueKey(type.identifier),
-      items: galleryMap,
-      itemBuilder: (
-        context,
-        item,
-      ) =>
-          Hero(
-        tag: '${type.identifier} /item/${item.id}',
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: PreviewService(
-            media: item,
-            keepAspectRatio: false,
-          ),
-        ),
-      ),
-      columns: 4,
-      onSelectionChanged: onSelectionChanged,
-      keepSelected: freezeView,
     );
   }
 }
