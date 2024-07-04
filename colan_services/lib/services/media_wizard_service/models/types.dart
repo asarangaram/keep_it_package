@@ -1,12 +1,12 @@
 enum UniversalMediaTypes {
   captured,
-  shared,
+  move,
   imported,
   staleMedia;
 
   String get identifier => switch (this) {
         captured => 'Captured',
-        shared => 'Shared',
+        move => 'Shared',
         imported => 'Imported',
         staleMedia => 'Unclassified'
       };
@@ -14,7 +14,7 @@ enum UniversalMediaTypes {
 
   String get actionLabel => switch (this) {
         captured => 'Save',
-        shared => 'Save',
+        move => 'Save',
         imported => 'Import',
         staleMedia => 'Keep'
       };

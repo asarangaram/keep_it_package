@@ -32,18 +32,20 @@ class MediaHandler {
     if (media.isEmpty) {
       return true;
     }
-    if (media.length == 1) {
-      await context.push(
-        '/move?ids=${media[0].id}',
-      );
-      return true;
-    } else {
-      final result = await context.push<bool>(
-        '/move?ids=${media.map((e) => e.id).join(',')}',
-      );
 
-      return result ?? false;
+    await MediaWizardService.addMedia(
+      context,
+      ref,
+      type: UniversalMediaTypes.move,
+      media: CLSharedMedia(entries: media),
+    );
+    if (context.mounted) {
+      await context.push(
+        '/media_wizard?type='
+        '${UniversalMediaTypes.move.name}',
+      );
     }
+    return true;
   }
 
   Future<bool> delete(
