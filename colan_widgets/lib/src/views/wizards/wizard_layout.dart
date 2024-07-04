@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 class WizardLayout extends StatelessWidget {
   const WizardLayout({
     required this.child,
-    required this.wizard,
     required this.title,
     required this.onCancel,
-    required this.actions,
+    this.wizard,
+    this.actions,
     super.key,
   });
   final Widget child;
-  final Widget wizard;
+  final Widget? wizard;
   final String title;
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
   final void Function()? onCancel;
 
@@ -36,7 +36,8 @@ class WizardLayout extends StatelessWidget {
         child: KeepItMainView(
           title: title,
           actionsBuilder: [
-            ...actions.map((e) => (context, quickMenuScopeKey) => e),
+            if (actions != null)
+              ...actions!.map((e) => (context, quickMenuScopeKey) => e),
             (context, quickMenuScopeKey) => Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Align(
@@ -69,10 +70,12 @@ class WizardLayout extends StatelessWidget {
                   endIndent: 8,
                   color: Colors.black,
                 ), */
-                const SizedBox(
-                  height: 16,
-                ),
-                wizard,
+                if (wizard != null) ...[
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  wizard!,
+                ],
               ],
             );
           },

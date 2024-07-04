@@ -7,8 +7,6 @@ import 'package:go_router/go_router.dart';
 
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';
-import 'step3_which_collection.dart';
-import 'step4_save_collection.dart';
 
 class IncomingMediaHandler extends ConsumerStatefulWidget {
   const IncomingMediaHandler({
@@ -50,45 +48,17 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     }
     try {
       widget0 = FullscreenLayout(
-        child: Column(
-          children: [
-            Flexible(
-              child: switch (candidates) {
-                null => AnalysePage(
-                    incomingMedia: widget.incomingMedia,
-                    onDone: ({required CLSharedMedia? mg}) {
-                      if (mg == null ||
-                          (!widget.moving && mg.hasTargetMismatchedItems)) {
-                        onDone(mg: mg);
-                      } else {
-                        onSave(mg: mg);
-                      }
-                    },
-                    onCancel: () => onDiscard(result: false),
-                  ),
-                (final candiates)
-                    when candidates!.hasTargetMismatchedItems &&
-                        !widget.moving =>
-                  DuplicatePage(
-                    incomingMedia: candiates,
-                    onDone: onSave,
-                    onCancel: () => onDiscard(result: false),
-                  ),
-                (final candiates) when candidates!.collection == null =>
-                  WhichCollection(
-                    incomingMedia: candiates,
-                    onDone: onDone,
-                    onCancel: () => onDiscard(result: false),
-                  ),
-                _ => SaveCollection(
-                    incomingMedia: candidates!,
-                    onDone: onSave,
-                    onCancel: () => onDiscard(result: false),
-                  )
-              },
-            ),
-          ],
-        ),
+        child: (candidates == null)
+            ? AnalysePage(
+                incomingMedia: widget.incomingMedia,
+                onDone: onSave,
+                onCancel: () => onDiscard(result: false),
+              )
+            : DuplicatePage(
+                incomingMedia: candidates!,
+                onDone: onSave,
+                onCancel: () => onDiscard(result: false),
+              ),
       );
     } catch (e) {
       return FullscreenLayout(
@@ -106,6 +76,12 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
       setState(() {});
       ref.read(notificationMessageProvider.notifier).push('Nothing to do.');
       onDiscard(result: false);
+      return;
+    }
+    if (!widget.moving && mg.hasTargetMismatchedItems) {
+      setState(() {
+        candidates = mg;
+      });
       return;
     }
     MediaWizardService.addMedia(

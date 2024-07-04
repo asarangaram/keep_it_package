@@ -5,22 +5,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/empty_state.dart';
 import 'package:store/store.dart';
 
-import 'wizard_page.dart';
-
-class DuplicatePage extends SharedMediaWizard {
+class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
-    required super.incomingMedia,
-    required super.onDone,
-    required super.onCancel,
+    required this.incomingMedia,
+    required this.onDone,
+    required this.onCancel,
     super.key,
   });
+  final CLSharedMedia incomingMedia;
+  final void Function({required CLSharedMedia? mg}) onDone;
+  final void Function() onCancel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return DuplicatePageStateful(
-      incomingMedia: super.incomingMedia,
-      onDone: super.onDone,
-      onCancel: super.onCancel,
+      incomingMedia: incomingMedia,
+      onDone: onDone,
+      onCancel: onCancel,
     );
   }
 }
@@ -65,33 +66,36 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
             : 'a new collection';
         return Padding(
           padding: const EdgeInsets.all(8),
-          child: SharedMediaWizard.buildWizard(
-            context,
-            ref,
+          child: WizardLayout(
             title: 'Already Imported',
-            message: 'Do you want all the above media to be moved '
-                'to $collectionLablel or skipped?',
-            option1: CLMenuItem(
-              icon: Icons.abc,
-              title: 'Move',
-              onTap: () async {
-                widget.onDone(
-                  mg: currentMedia.mergeMismatch(),
-                );
-                return true;
-              },
-            ),
-            option2: CLMenuItem(
-              icon: Icons.abc,
-              title: 'Skip',
-              onTap: () async {
-                widget.onDone(
-                  mg: currentMedia.removeMismatch(),
-                );
-                return true;
-              },
-            ),
             onCancel: widget.onCancel,
+            wizard: SizedBox(
+              height: kMinInteractiveDimension * 3,
+              child: WizardDialog(
+                content: Text('Do you want all the above media to be moved '
+                    'to $collectionLablel or skipped?'),
+                option1: CLMenuItem(
+                  icon: Icons.abc,
+                  title: 'Move',
+                  onTap: () async {
+                    widget.onDone(
+                      mg: currentMedia.mergeMismatch(),
+                    );
+                    return true;
+                  },
+                ),
+                option2: CLMenuItem(
+                  icon: Icons.abc,
+                  title: 'Skip',
+                  onTap: () async {
+                    widget.onDone(
+                      mg: currentMedia.removeMismatch(),
+                    );
+                    return true;
+                  },
+                ),
+              ),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
