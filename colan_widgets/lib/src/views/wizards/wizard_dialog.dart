@@ -9,7 +9,7 @@ class WizardDialog extends StatelessWidget {
     this.option3,
     super.key,
   });
-  final Widget content;
+  final Widget? content;
   final CLMenuItem? option1;
   final CLMenuItem? option2;
   final CLMenuItem? option3;
@@ -59,16 +59,17 @@ class WizardDialog extends StatelessWidget {
               ],
             ),
           ),
-        Expanded(
-          flex: 3,
-          child: SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: content,
+        if (content != null)
+          Expanded(
+            flex: 3,
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: content,
+              ),
             ),
           ),
-        ),
         if (option1 != null || option2 != null)
           Expanded(
             flex: 2,
