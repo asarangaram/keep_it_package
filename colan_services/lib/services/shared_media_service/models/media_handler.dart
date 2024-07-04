@@ -32,8 +32,7 @@ class MediaHandler {
     if (media.isEmpty) {
       return true;
     }
-    // TODO(anandas): move using Wizard Service
-    /* if (media.length == 1) {
+    if (media.length == 1) {
       await context.push(
         '/move?ids=${media[0].id}',
       );
@@ -44,8 +43,7 @@ class MediaHandler {
       );
 
       return result ?? false;
-    } */
-    return false;
+    }
   }
 
   Future<bool> delete(
