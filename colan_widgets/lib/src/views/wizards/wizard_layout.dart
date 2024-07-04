@@ -62,7 +62,7 @@ class WizardLayout extends StatelessWidget {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(child: child),
+                Expanded(child: child),
                 /* const Divider(
                   height: 16,
                   thickness: 1,

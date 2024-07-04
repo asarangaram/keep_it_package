@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class MediaWizardPage extends StatelessWidget {
   const MediaWizardPage({required this.type, super.key});
-  final UniversalMediaTypes type;
+  final MediaSourceType type;
 
   @override
   Widget build(BuildContext context) {

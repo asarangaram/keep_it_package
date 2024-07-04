@@ -89,13 +89,15 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                         await MediaWizardService.addMedia(
                           context,
                           ref,
-                          type: UniversalMediaTypes.staleMedia,
-                          media: CLSharedMedia(entries: media),
+                          media: CLSharedMedia(
+                            entries: media,
+                            type: MediaSourceType.unclassified,
+                          ),
                         );
                         if (context.mounted) {
                           await context.push(
                             '/media_wizard?type='
-                            '${UniversalMediaTypes.staleMedia.name}',
+                            '${MediaSourceType.unclassified.name}',
                           );
                         }
                       },

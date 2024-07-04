@@ -28,7 +28,7 @@ class CameraPage extends ConsumerWidget {
         onReceiveCapturedMedia: () async {
           await context.push(
             '/media_wizard?type='
-            '${UniversalMediaTypes.captured.name}',
+            '${MediaSourceType.captured.name}',
           );
         },
       ),

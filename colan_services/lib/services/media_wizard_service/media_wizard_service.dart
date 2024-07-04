@@ -14,14 +14,18 @@ import 'views/wizard_preview.dart';
 
 class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({required this.type, super.key});
-  final UniversalMediaTypes type;
+  final MediaSourceType type;
   static Future<void> addMedia(
     BuildContext context,
     WidgetRef ref, {
-    required UniversalMediaTypes type,
     required CLSharedMedia media,
   }) async {
-    ref.read(universalMediaProvider(type).notifier).mediaGroup = media;
+    ref
+        .read(
+          universalMediaProvider(media.type ?? MediaSourceType.unclassified)
+              .notifier,
+        )
+        .mediaGroup = media;
   }
 
   @override
@@ -52,7 +56,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     super.key,
   });
   final CLSharedMedia media;
-  final UniversalMediaTypes type;
+  final MediaSourceType type;
 
   final List<GalleryGroup<CLMedia>> galleryMap;
 

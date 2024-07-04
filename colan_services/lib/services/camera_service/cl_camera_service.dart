@@ -53,8 +53,10 @@ class CLCameraService extends ConsumerWidget {
                     await MediaWizardService.addMedia(
                       context,
                       ref,
-                      type: UniversalMediaTypes.captured,
-                      media: CLSharedMedia(entries: capturedMedia),
+                      media: CLSharedMedia(
+                        entries: capturedMedia,
+                        type: MediaSourceType.captured,
+                      ),
                     );
                     await onReceiveCapturedMedia();
                   }

@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
   UniversalMediaNotifier(this.mediaTypes)
       : super(const CLSharedMedia(entries: []));
-  UniversalMediaTypes mediaTypes;
+  MediaSourceType mediaTypes;
 
   set mediaGroup(CLSharedMedia sharedMedia) {
     state = state.copyWith(
@@ -27,8 +27,6 @@ class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
 }
 
 final universalMediaProvider = StateNotifierProvider.family<
-    UniversalMediaNotifier,
-    CLSharedMedia,
-    UniversalMediaTypes>((ref, mediaTypes) {
+    UniversalMediaNotifier, CLSharedMedia, MediaSourceType>((ref, mediaTypes) {
   return UniversalMediaNotifier(mediaTypes);
 });

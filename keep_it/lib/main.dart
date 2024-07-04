@@ -116,12 +116,12 @@ class KeepItApp implements AppDescriptor {
           name: 'media_wizard',
           builder: (context, GoRouterState state) {
             final typeString = state.uri.queryParameters['type'];
-            final UniversalMediaTypes type;
+            final MediaSourceType type;
             if (typeString != null) {
-              type = UniversalMediaTypes.values.asNameMap()[typeString] ??
-                  UniversalMediaTypes.staleMedia;
+              type = MediaSourceType.values.asNameMap()[typeString] ??
+                  MediaSourceType.unclassified;
             } else {
-              type = UniversalMediaTypes.staleMedia;
+              type = MediaSourceType.unclassified;
             }
             return MediaWizardPage(type: type);
           },

@@ -17,7 +17,7 @@ class WizardPreview extends ConsumerWidget {
     required this.freezeView,
     super.key,
   });
-  final UniversalMediaTypes type;
+  final MediaSourceType type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
 

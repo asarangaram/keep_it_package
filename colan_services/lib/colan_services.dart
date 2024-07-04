@@ -8,8 +8,7 @@ export 'services/image_view_service/image_view_service.dart'
     show ImageViewService;
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
-export 'services/media_wizard_service/models/types.dart'
-    show UniversalMediaTypes;
+export 'services/media_wizard_service/models/types.dart' show MediaSourceType;
 export 'services/media_wizard_service/providers/gallery_group_provider.dart';
 export 'services/media_wizard_service/views/create_collection_wizard.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;

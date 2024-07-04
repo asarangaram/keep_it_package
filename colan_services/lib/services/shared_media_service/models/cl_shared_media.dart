@@ -1,26 +1,36 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:colan_services/services/media_wizard_service/models/types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
 class CLSharedMedia {
-  const CLSharedMedia({required this.entries, this.collection});
+  const CLSharedMedia({
+    required this.entries,
+    this.collection,
+    this.type,
+  });
   final List<CLMedia> entries;
   final Collection? collection;
+  final MediaSourceType? type;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
 
   @override
-  String toString() => 'CLMediaList(entries: $entries, '
-      'collection: $collection)';
+  String toString() =>
+      'CLSharedMedia(entries: $entries, collection: $collection, type: $type)';
 
   CLSharedMedia copyWith({
     List<CLMedia>? entries,
     Collection? collection,
+    MediaSourceType? type,
   }) {
     return CLSharedMedia(
       entries: entries ?? this.entries,
       collection: collection ?? this.collection,
+      type: type ?? this.type,
     );
   }
 
@@ -62,4 +72,17 @@ class CLSharedMedia {
 
   List<CLMediaType> get contentTypes =>
       Set<CLMediaType>.from(entries.map((e) => e.type)).toList();
+
+  @override
+  bool operator ==(covariant CLSharedMedia other) {
+    if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
+
+    return listEquals(other.entries, entries) &&
+        other.collection == collection &&
+        other.type == type;
+  }
+
+  @override
+  int get hashCode => entries.hashCode ^ collection.hashCode ^ type.hashCode;
 }

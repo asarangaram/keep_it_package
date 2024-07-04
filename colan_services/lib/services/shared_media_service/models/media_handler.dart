@@ -36,13 +36,12 @@ class MediaHandler {
     await MediaWizardService.addMedia(
       context,
       ref,
-      type: UniversalMediaTypes.move,
-      media: CLSharedMedia(entries: media),
+      media: CLSharedMedia(entries: media, type: MediaSourceType.move),
     );
     if (context.mounted) {
       await context.push(
         '/media_wizard?type='
-        '${UniversalMediaTypes.move.name}',
+        '${MediaSourceType.move.name}',
       );
     }
     return true;

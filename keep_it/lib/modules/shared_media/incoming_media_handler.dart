@@ -13,11 +13,9 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
     required this.incomingMedia,
     required this.onDiscard,
     super.key,
-    this.moving = false,
   });
   final CLSharedMedia incomingMedia;
   final void Function({required bool result}) onDiscard;
-  final bool moving;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -25,21 +23,17 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
 }
 
 class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
-  CLSharedMedia? candidates;
+  CLSharedMedia? candidate;
   bool isSaving = false;
   @override
   void didChangeDependencies() {
-    candidates = null;
-    if (widget.moving) {
-      // No need to analyze
-      candidates = widget.incomingMedia;
-    }
+    candidate = null;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    _infoLogger('build IncomingMediaHandler $candidates');
+    _infoLogger('build IncomingMediaHandler $candidate');
     final Widget widget0;
     if (isSaving) {
       return const Center(
@@ -48,14 +42,14 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     }
     try {
       widget0 = FullscreenLayout(
-        child: (candidates == null)
+        child: (candidate == null)
             ? AnalysePage(
                 incomingMedia: widget.incomingMedia,
                 onDone: onSave,
                 onCancel: () => onDiscard(result: false),
               )
             : DuplicatePage(
-                incomingMedia: candidates!,
+                incomingMedia: candidate!,
                 onDone: onSave,
                 onCancel: () => onDiscard(result: false),
               ),
@@ -71,53 +65,40 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
 
   void onSave({required CLSharedMedia? mg}) {
     if (mg == null || mg.isEmpty) {
-      candidates = null;
+      candidate = null;
       isSaving = true;
       setState(() {});
       ref.read(notificationMessageProvider.notifier).push('Nothing to do.');
       onDiscard(result: false);
       return;
     }
-    if (!widget.moving && mg.hasTargetMismatchedItems) {
+    if (mg.hasTargetMismatchedItems) {
       setState(() {
-        candidates = mg;
+        candidate = mg;
       });
       return;
     }
-    MediaWizardService.addMedia(
-      context,
-      ref,
-      type: UniversalMediaTypes.imported,
-      media: mg,
-    );
-    onDiscard(result: true);
-    context.push(
-      '/media_wizard?type='
-      '${UniversalMediaTypes.imported.name}',
-    );
-    candidates = null;
+    if (widget.incomingMedia.type != null) {
+      MediaWizardService.addMedia(
+        context,
+        ref,
+        media: mg.copyWith(type: widget.incomingMedia.type),
+      );
+      onDiscard(result: true);
+      context.push(
+        '/media_wizard?type='
+        '${widget.incomingMedia.type!.name}',
+      );
+    }
+    candidate = null;
     isSaving = true;
     if (mounted) {
       setState(() {});
     }
   }
 
-  void onDone({CLSharedMedia? mg}) {
-    if (mg == null || mg.isEmpty) {
-      candidates = null;
-      isSaving = true;
-      setState(() {});
-      ref.read(notificationMessageProvider.notifier).push('Nothing to do.');
-      onDiscard(result: false);
-      return;
-    }
-    setState(() {
-      candidates = mg;
-    });
-  }
-
   void onDiscard({required bool result}) {
-    candidates = null;
+    candidate = null;
 
     widget.onDiscard(result: result);
     isSaving = false;
