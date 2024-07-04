@@ -23,13 +23,7 @@ class MediaWizardService extends ConsumerWidget {
     required UniversalMediaTypes type,
     required CLSharedMedia media,
   }) async {
-    ref
-        .read(
-          universalMediaProvider(
-            UniversalMediaTypes.staleMedia,
-          ).notifier,
-        )
-        .mediaGroup = media;
+    ref.read(universalMediaProvider(type).notifier).mediaGroup = media;
   }
 
   @override

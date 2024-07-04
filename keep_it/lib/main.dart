@@ -18,7 +18,7 @@ import 'pages/collections_page.dart';
 import 'pages/deleted_media_page.dart';
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
-import 'pages/media_wizard.dart';
+import 'pages/media_wizard_page.dart';
 import 'pages/move_media_page.dart';
 import 'pages/pinned_media_page.dart';
 import 'pages/settings_main.dart';
