@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,13 +16,12 @@ import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/deleted_media_page.dart';
-
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
+import 'pages/media_wizard.dart';
 import 'pages/move_media_page.dart';
 import 'pages/pinned_media_page.dart';
 import 'pages/settings_main.dart';
-import 'pages/stale_media_page.dart';
 import 'widgets/empty_state.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -134,11 +132,20 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'stale_media',
+          name: 'media_wizard',
           builder: (context, GoRouterState state) {
-            return const StaleMediaPage();
+            final typeString = state.uri.queryParameters['type'];
+            final UniversalMediaTypes type;
+            if (typeString != null) {
+              type = UniversalMediaTypes.values.asNameMap()[typeString] ??
+                  UniversalMediaTypes.staleMedia;
+            } else {
+              type = UniversalMediaTypes.staleMedia;
+            }
+            return MediaWizardPage(type: type);
           },
         ),
+
         CLRouteDescriptor(
           name: 'deleted_media',
           builder: (context, GoRouterState state) {

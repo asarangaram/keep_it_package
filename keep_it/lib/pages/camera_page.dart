@@ -26,7 +26,10 @@ class CameraPage extends ConsumerWidget {
               );
         },
         onReceiveCapturedMedia: () async {
-          await context.push('/stale_media');
+          await context.push(
+            '/media_wizard?type='
+            '${UniversalMediaTypes.captured.name}',
+          );
         },
       ),
     );

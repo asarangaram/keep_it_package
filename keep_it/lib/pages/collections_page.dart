@@ -93,7 +93,10 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                           media: CLSharedMedia(entries: media),
                         );
                         if (context.mounted) {
-                          await context.push('/stale_media');
+                          await context.push(
+                            '/media_wizard?type='
+                            '${UniversalMediaTypes.staleMedia.name}',
+                          );
                         }
                       },
                       child: const CLText.small('Show Now'),

@@ -49,6 +49,13 @@ class CLCameraService extends ConsumerWidget {
               previewWidget: PreviewCapturedMedia(
                 sendMedia: (mediaList) async {
                   if (collection == null) {
+                    final capturedMedia = ref.read(capturedMediaProvider);
+                    await MediaWizardService.addMedia(
+                      context,
+                      ref,
+                      type: UniversalMediaTypes.captured,
+                      media: CLSharedMedia(entries: capturedMedia),
+                    );
                     await onReceiveCapturedMedia();
                   }
                   ref.read(capturedMediaProvider.notifier).clear();
