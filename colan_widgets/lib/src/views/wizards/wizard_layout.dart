@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 class WizardLayout extends StatelessWidget {
   const WizardLayout({
     required this.child,
-    required this.title,
     required this.onCancel,
+    this.title,
     this.wizard,
     this.actions,
     super.key,
   });
   final Widget child;
   final Widget? wizard;
-  final String title;
+  final String? title;
   final List<Widget>? actions;
 
   final void Function()? onCancel;
@@ -34,7 +34,7 @@ class WizardLayout extends StatelessWidget {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(16)),
         child: KeepItMainView(
-          title: title,
+          title: title ?? '',
           actionsBuilder: [
             if (actions != null)
               ...actions!.map((e) => (context, quickMenuScopeKey) => e),
