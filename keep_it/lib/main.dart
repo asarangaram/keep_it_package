@@ -19,7 +19,7 @@ import 'pages/deleted_media_page.dart';
 import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/media_wizard_page.dart';
-import 'pages/move_media_page.dart';
+
 import 'pages/pinned_media_page.dart';
 import 'pages/settings_main.dart';
 import 'widgets/empty_state.dart';
@@ -111,26 +111,7 @@ class KeepItApp implements AppDescriptor {
             );
           },
         ),
-        CLRouteDescriptor(
-          name: 'move',
-          builder: (context, GoRouterState state) {
-            final List<int> idsToMove;
-            if (!state.uri.queryParameters.containsKey('ids')) {
-              idsToMove = <int>[];
-            } else {
-              idsToMove = state.uri.queryParameters['ids']!
-                  .split(',')
-                  .map(int.parse)
-                  .toList();
-            }
-            final unhide = state.uri.queryParameters['unhide'] == 'true';
 
-            return MoveMediaPage(
-              idsToMove: idsToMove,
-              unhide: unhide,
-            );
-          },
-        ),
         CLRouteDescriptor(
           name: 'media_wizard',
           builder: (context, GoRouterState state) {
