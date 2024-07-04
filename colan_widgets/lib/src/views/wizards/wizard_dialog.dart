@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class WizardDialog extends StatelessWidget {
   const WizardDialog({
-    required this.content,
+    this.content,
     this.option1,
     this.option2,
     this.option3,

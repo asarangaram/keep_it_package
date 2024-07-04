@@ -32,7 +32,11 @@ class CLCameraService extends ConsumerWidget {
           id: collectionId,
           buildOnData: (collection) {
             return CameraServiceCore(
-              onDone: onDone,
+              onDone: () {
+                // Confirm ?
+                ref.read(capturedMediaProvider.notifier).clear();
+                onDone?.call();
+              },
               onError: onError,
               onCapture: (path, {required isVideo}) => onCapture(
                 ref,

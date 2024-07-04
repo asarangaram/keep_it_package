@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -61,12 +63,13 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
 
 class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
-
+  Collection? targetCollection;
   bool keepSelected = false;
   bool isSelectionMode = false;
 
   CLSharedMedia get candidate => isSelectionMode ? selectedMedia : widget.media;
   bool get hasCandidate => candidate.isNotEmpty;
+  bool get hasCollection => targetCollection != null;
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +79,12 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
           media: isSelectionMode ? selectedMedia.entries : widget.media.entries,
           dbManager: dbManager,
         );
-        if (!keepSelected) {
-          return WizardLayout(
-            title: 'Unsaved',
-            onCancel: () => CLPopScreen.onPop(context),
-            actions: [
+
+        return WizardLayout(
+          title: 'Unsaved',
+          onCancel: () => CLPopScreen.onPop(context),
+          actions: [
+            if (!keepSelected)
               CLButtonText.small(
                 isSelectionMode ? 'Done' : 'Select',
                 onTap: () {
@@ -89,16 +93,50 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                   });
                 },
               ),
-            ],
-            wizard: keepSelected
-                ? Container()
-                : WizardDialog(
+          ],
+          wizard: keepSelected
+              ? !hasCollection
+                  ? SizedBox(
+                      height: kMinInteractiveDimension * 4,
+                      child: CreateCollectionWizard(
+                        onDone: ({required collection}) => setState(() {
+                          targetCollection = collection;
+                        }),
+                      ),
+                    )
+                  : SizedBox(
+                      height: kMinInteractiveDimension * 2,
+                      child: StreamBuilder<Progress>(
+                        stream: SaveCollection.acceptMedia(
+                          dbManager,
+                          collection: targetCollection!,
+                          media: List.from(candidate.entries),
+                          onDone: () {
+                            ref
+                                .read(
+                                  universalMediaProvider(widget.type).notifier,
+                                )
+                                .remove(candidate.entries);
+                            selectedMedia = const CLSharedMedia(entries: []);
+                            keepSelected = false;
+                            targetCollection = null;
+                            isSelectionMode = false;
+                            setState(() {});
+                          },
+                        ),
+                        builder: progressBarBuilder,
+                      ),
+                    )
+              : SizedBox(
+                  height: kMinInteractiveDimension * 2,
+                  child: WizardDialog(
                     option1: CLMenuItem(
                       title: isSelectionMode ? 'Keep Selected' : 'Keep All',
                       icon: Icons.save,
                       onTap: hasCandidate
                           ? () async {
                               keepSelected = true;
+                              targetCollection = widget.media.collection;
                               setState(() {});
                               return true;
                             }
@@ -108,167 +146,88 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       title: isSelectionMode ? 'Delete Selected' : 'Delete All',
                       icon: Icons.delete,
                       onTap: hasCandidate
-                          ? () => selectedMediaHandler.delete(context, ref)
+                          ? () async {
+                              final res = await selectedMediaHandler.delete(
+                                context,
+                                ref,
+                              );
+
+                              await ref
+                                  .read(
+                                    universalMediaProvider(widget.type)
+                                        .notifier,
+                                  )
+                                  .remove(candidate.entries);
+                              selectedMedia = const CLSharedMedia(entries: []);
+                              keepSelected = false;
+                              targetCollection = null;
+                              isSelectionMode = false;
+                              setState(() {});
+
+                              return res;
+                            }
                           : null,
                     ),
-                    content: /* isSelectionMode
-                        ? Center(
-                            child: Text(
-                              hasCandidate
-                                  ? 'Select Media to proceed'
-                                  : 'Do you want to keep the selected media or delete ?',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    fontSize: CLScaleType.standard.fontSize,
-                                  ),
-                            ),
-                          )
-                        :  */
-                        null,
-                  ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: CLGalleryCore<CLMedia>(
-                key: ValueKey(widget.type.identifier),
-                items: widget.galleryMap,
-                itemBuilder: (
-                  context,
-                  item,
-                ) =>
-                    Hero(
-                  tag: '${widget.type.identifier} /item/${item.id}',
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: PreviewService(
-                      media: item,
-                      keepAspectRatio: false,
-                    ),
                   ),
                 ),
-                columns: 4,
-                onSelectionChanged: isSelectionMode
-                    ? (List<CLMedia> items) {
-                        selectedMedia = selectedMedia.copyWith(entries: items);
-                        setState(() {});
-                      }
-                    : null,
-                keepSelected: keepSelected,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: CLGalleryCore<CLMedia>(
+              key: ValueKey(widget.type.identifier),
+              items: widget.galleryMap,
+              itemBuilder: (
+                context,
+                item,
+              ) =>
+                  Hero(
+                tag: '${widget.type.identifier} /item/${item.id}',
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: PreviewService(
+                    media: item,
+                    keepAspectRatio: false,
+                  ),
+                ),
               ),
+              columns: 4,
+              onSelectionChanged: isSelectionMode
+                  ? (List<CLMedia> items) {
+                      selectedMedia = selectedMedia.copyWith(entries: items);
+                      setState(() {});
+                    }
+                  : null,
+              keepSelected: keepSelected,
             ),
-          );
-        }
-        return Column(
-          children: [
-            Expanded(
-              child: CLSimpleItemsSelector<CLMedia>(
-                key: ValueKey(widget.type.identifier),
-                galleryMap: widget.galleryMap,
-                itemBuilder: (
-                  context,
-                  item,
-                ) =>
-                    Hero(
-                  tag: '${widget.type.identifier} /item/${item.id}',
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: PreviewService(
-                      media: item,
-                      keepAspectRatio: false,
-                    ),
-                  ),
-                ),
-                emptyState: const SizedBox.shrink(),
-                identifier: widget.type.identifier,
-                columns: 2,
-                onSelectionChanged: (List<CLMedia> items) {
-                  selectedMedia = selectedMedia.copyWith(entries: items);
-                  setState(() {});
-                },
-                keepSelected: keepSelected,
-              ),
-            ),
-            if (keepSelected &&
-                selectedMedia.entries.isNotEmpty &&
-                selectedMedia.collection == null)
-              SizedBox(
-                height: kMinInteractiveDimension * 4,
-                child: CreateCollectionWizard(
-                  onDone: ({required collection}) {
-                    selectedMedia = selectedMedia.copyWith(
-                      collection: collection,
-                      entries: selectedMedia.entries
-                          .map(
-                            (e) => e.copyWith(collectionId: collection.id),
-                          )
-                          .toList(),
-                    );
-                    setState(() {});
-                  },
-                ),
-              )
-            else if (keepSelected && selectedMedia.entries.isNotEmpty)
-              StreamBuilder<Progress>(
-                stream: SaveCollection.acceptMedia(
-                  dbManager,
-                  collection: selectedMedia.collection!,
-                  media: List.from(selectedMedia.entries),
-                  onDone: () {
-                    selectedMedia = const CLSharedMedia(entries: []);
-                    keepSelected = false;
-                  },
-                ),
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<Progress> snapshot,
-                ) {
-                  final percentage = (snapshot.hasData
-                              ? min(1, snapshot.data!.fractCompleted)
-                              : 0.0)
-                          .toDouble() *
-                      100;
-                  return Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: LinearPercentIndicator(
-                      width: MediaQuery.of(context).size.width - 50,
-                      animation: true,
-                      lineHeight: 20,
-                      animationDuration: 2000,
-                      percent: percentage / 100,
-                      animateFromLastPercent: true,
-                      center: Text('$percentage'),
-                      barRadius: const Radius.elliptical(5, 15),
-                      progressColor: Theme.of(context).colorScheme.primary,
-                      maskFilter: const MaskFilter.blur(BlurStyle.solid, 3),
-                    ),
-                  );
-                },
-              ),
-            if (keepSelected == false && selectedMedia.entries.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        keepSelected = true;
-                        setState(() {});
-                      },
-                      label: const CLText.small('Keep Selected'),
-                      icon: Icon(MdiIcons.imageMove),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () =>
-                          selectedMediaHandler.delete(context, ref),
-                      label: const CLText.small('Discard Selected'),
-                      icon: Icon(MdiIcons.delete),
-                    ),
-                  ],
-                ),
-              ),
-          ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget progressBarBuilder(
+    BuildContext context,
+    AsyncSnapshot<Progress> snapshot,
+  ) {
+    final percentage =
+        (snapshot.hasData ? min(1, snapshot.data!.fractCompleted) : 0.0)
+                .toDouble() *
+            100;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Padding(
+          padding: const EdgeInsets.all(15),
+          child: LinearPercentIndicator(
+            width: constraints.maxWidth - 40,
+            animation: true,
+            lineHeight: 20,
+            animationDuration: 2000,
+            percent: percentage / 100,
+            animateFromLastPercent: true,
+            center: Text('$percentage'),
+            barRadius: const Radius.elliptical(5, 15),
+            progressColor: Theme.of(context).colorScheme.primary,
+            maskFilter: const MaskFilter.blur(BlurStyle.solid, 3),
+          ),
         );
       },
     );

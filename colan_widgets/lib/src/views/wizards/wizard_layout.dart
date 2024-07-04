@@ -72,10 +72,7 @@ class WizardLayout extends StatelessWidget {
                 const SizedBox(
                   height: 16,
                 ),
-                SizedBox(
-                  height: kMinInteractiveDimension * 2,
-                  child: wizard,
-                ),
+                wizard,
               ],
             );
           },
