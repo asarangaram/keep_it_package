@@ -3,6 +3,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';
@@ -55,7 +56,14 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
               child: switch (candidates) {
                 null => AnalysePage(
                     incomingMedia: widget.incomingMedia,
-                    onDone: onDone,
+                    onDone: ({required CLSharedMedia? mg}) {
+                      if (mg == null ||
+                          (!widget.moving && mg.hasTargetMismatchedItems)) {
+                        onDone(mg: mg);
+                      } else {
+                        onSave(mg: mg);
+                      }
+                    },
                     onCancel: () => onDiscard(result: false),
                   ),
                 (final candiates)
@@ -63,7 +71,7 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
                         !widget.moving =>
                   DuplicatePage(
                     incomingMedia: candiates,
-                    onDone: onDone,
+                    onDone: onSave,
                     onCancel: () => onDiscard(result: false),
                   ),
                 (final candiates) when candidates!.collection == null =>
@@ -92,15 +100,30 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
   }
 
   void onSave({required CLSharedMedia? mg}) {
+    if (mg == null || mg.isEmpty) {
+      candidates = null;
+      isSaving = true;
+      setState(() {});
+      ref.read(notificationMessageProvider.notifier).push('Nothing to do.');
+      onDiscard(result: false);
+      return;
+    }
+    MediaWizardService.addMedia(
+      context,
+      ref,
+      type: UniversalMediaTypes.imported,
+      media: mg,
+    );
+    onDiscard(result: true);
+    context.push(
+      '/media_wizard?type='
+      '${UniversalMediaTypes.imported.name}',
+    );
     candidates = null;
     isSaving = true;
     if (mounted) {
       setState(() {});
     }
-    if (mounted) {
-      ref.read(notificationMessageProvider.notifier).push('Done.');
-    }
-    onDiscard(result: true);
   }
 
   void onDone({CLSharedMedia? mg}) {
