@@ -32,18 +32,3 @@ Future<bool> onPickFiles(
     // User canceled the picker
   }
 }
-/* 
-Future<bool> onReceiveCapturedMedia(
-  BuildContext context,
-  WidgetRef ref, {
-  required List<CLMedia> entries,
-  Collection? collection,
-}) async {
-  if (entries.isNotEmpty) {
-    final sharedMedia = CLSharedMedia(entries: entries, collection: collection);
-    ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);
-    return true;
-  }
-  return false;
-}
- */
