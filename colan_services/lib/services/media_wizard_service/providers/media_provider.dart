@@ -20,8 +20,9 @@ class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
   void clear() => state = const CLSharedMedia(entries: []);
 
   Future<void> remove(List<CLMedia> mediaList) async {
+    final ids = mediaList.map((e) => e.id);
     state = state.copyWith(
-      entries: state.entries.where((e) => !mediaList.contains(e)).toList(),
+      entries: state.entries.where((e) => !ids.contains(e.id)).toList(),
     );
   }
 }
