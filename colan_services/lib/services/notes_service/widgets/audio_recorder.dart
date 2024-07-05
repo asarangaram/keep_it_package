@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'audio/decorations.dart';
-import 'audio/recorded_audio_view.dart';
 import 'audio/live_audio_view.dart';
+import 'audio/recorded_audio_view.dart';
 
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({
