@@ -127,29 +127,39 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                         targetCollection = collection;
                       }),
                     )
-                  : StreamBuilder<Progress>(
-                      stream: MediaHandler.acceptMedia(
-                        dbManager,
-                        collection: targetCollection!,
-                        media: List.from(candidate.entries),
-                        onDone: () {
-                          ref
-                              .read(
-                                universalMediaProvider(widget.type).notifier,
-                              )
-                              .remove(candidate.entries);
-                          selectedMedia = const CLSharedMedia(entries: []);
-                          keepSelected = false;
-                          targetCollection = null;
-                          isSelectionMode = false;
-                          setState(() {});
-                        },
-                      ),
-                      builder: (context, snapShot) => ProgressBar(
-                        progress: snapShot.hasData
-                            ? snapShot.data?.fractCompleted
-                            : null,
-                      ),
+
+                  /// Needed reload as impact of edit is not reflecting in
+                  /// the universalMediaProvider
+                  /// We only need to update the collectionId
+                  : GetMediaMultiple(
+                      idList: candidate.entries.map((e) => e.id!).toList(),
+                      buildOnData: (mediaLive) {
+                        return StreamBuilder<Progress>(
+                          stream: MediaHandler.acceptMedia(
+                            dbManager,
+                            collection: targetCollection!,
+                            media: List.from(mediaLive),
+                            onDone: () {
+                              ref
+                                  .read(
+                                    universalMediaProvider(widget.type)
+                                        .notifier,
+                                  )
+                                  .remove(candidate.entries);
+                              selectedMedia = const CLSharedMedia(entries: []);
+                              keepSelected = false;
+                              targetCollection = null;
+                              isSelectionMode = false;
+                              setState(() {});
+                            },
+                          ),
+                          builder: (context, snapShot) => ProgressBar(
+                            progress: snapShot.hasData
+                                ? snapShot.data?.fractCompleted
+                                : null,
+                          ),
+                        );
+                      },
                     )
               : WizardDialog(
                   option1: CLMenuItem(
