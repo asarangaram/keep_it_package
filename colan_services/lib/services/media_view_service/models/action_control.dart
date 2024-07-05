@@ -76,4 +76,15 @@ class ActionControl {
         allowShare.hashCode ^
         allowPin.hashCode;
   }
+
+  Future<bool?> Function()? onEdit(Future<bool?> Function() cb) =>
+      allowEdit ? cb : null;
+  Future<bool?> Function()? onDelete(Future<bool?> Function() cb) =>
+      allowDelete ? cb : null;
+  Future<bool?> Function()? onMove(Future<bool?> Function() cb) =>
+      allowMove ? cb : null;
+  Future<bool?> Function()? onShare(Future<bool?> Function() cb) =>
+      allowShare ? cb : null;
+  Future<bool?> Function()? onPin(Future<bool?> Function() cb) =>
+      allowPin ? cb : null;
 }

@@ -124,6 +124,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                             }
                           });
                         },
+                        actionControl: widget.actionControl,
                       )
                     : MediaPageView(
                         items: widget.media,

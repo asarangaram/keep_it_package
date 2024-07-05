@@ -11,11 +11,13 @@ class MediaViewerRaw extends ConsumerWidget {
     required this.media,
     required this.onLockPage,
     required this.autoStart,
+    required this.isLocked,
     super.key,
   });
   final CLMedia media;
   final void Function({required bool lock})? onLockPage;
   final bool autoStart;
+  final bool isLocked;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +46,7 @@ class MediaViewerRaw extends ConsumerWidget {
               _ => throw UnimplementedError('Not yet implemented')
             },
           ),
-          if (showControl.showNotes) NotesService(media: media),
+          if (showControl.showNotes && !isLocked) NotesService(media: media),
         ],
       ),
     );

@@ -9,7 +9,6 @@ import 'models/types.dart';
 import 'providers/gallery_group_provider.dart';
 import 'providers/media_provider.dart';
 import 'views/create_collection_wizard.dart';
-import 'views/media_edit_button.dart';
 import 'views/progress_bar.dart';
 import 'views/wizard_preview.dart';
 
@@ -114,10 +113,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               CLButtonText.small(
                 toggleSelectModeActionLabel,
                 onTap: onToggleSelectMode,
-              ),
-            if (widget.media.entries.length == 1)
-              WizardMediaControl(
-                media: widget.media.entries[0],
               ),
           ],
           wizard: keepSelected

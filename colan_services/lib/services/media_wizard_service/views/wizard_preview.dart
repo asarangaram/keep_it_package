@@ -1,19 +1,14 @@
-import 'dart:io';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../image_view_service/image_view_service.dart';
-import '../../notes_service/notes_service.dart';
+import '../../media_view_service/media_view_service.dart';
+import '../../media_view_service/models/action_control.dart';
 import '../../preview_service/view/preview.dart';
-import '../../video_player_service/providers/show_controls.dart';
-import '../../video_player_service/video_player.dart';
 import '../models/types.dart';
 import '../providers/gallery_group_provider.dart';
 import '../providers/media_provider.dart';
-import 'media_edit_button.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
@@ -52,7 +47,10 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       idList: media0.entries.map((e) => e.id!).toList(),
       buildOnData: (media) {
         if (media.length == 1) {
-          return ImageViewService(file: File(media[0].path));
+          return MediaViewService(
+            media: media[0],
+            parentIdentifier: type.identifier,
+          );
         }
         final galleryMap = ref.watch(singleGroupItemProvider(media));
         return CLGalleryCore<CLMedia>(
@@ -71,18 +69,11 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                   builder: (context) {
                     return Dialog.fullscreen(
                       backgroundColor: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: WizardLayout(
-                          actions: [
-                            WizardMediaControl(media: item),
-                          ],
-                          child: GetMedia(
-                            id: item.id!,
-                            buildOnData: (mediaLive) => ShowMedia(
-                              media: mediaLive!,
-                            ),
-                          ),
+                      child: GetMedia(
+                        id: item.id!,
+                        buildOnData: (mediaLive) => ShowMedia(
+                          media: mediaLive!,
+                          type: widget.type,
                         ),
                       ),
                     );
@@ -108,43 +99,32 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
 }
 
 class ShowMedia extends ConsumerWidget {
-  const ShowMedia({required this.media, super.key});
+  const ShowMedia({required this.media, required this.type, super.key});
   final CLMedia media;
+  final MediaSourceType type;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          child: Center(
-            child: media.type == CLMediaType.image
-                ? ImageViewService(
-                    file: File(media.path),
-                  )
-                : VideoPlayerService.player(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(16)),
+              child: CLBackground(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: MediaViewService(
                     media: media,
-                    alternate: PreviewService(media: media),
-                    autoStart: true,
-                    inplaceControl: true,
+                    parentIdentifier: type.identifier,
+                    actionControl: ActionControl.editOnly(),
                   ),
+                ),
+              ),
+            ),
           ),
-        ),
-        if (showControl.showNotes)
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: NotesService(media: media),
-          ),
-        SizedBox(
-          height: kMinInteractiveDimension,
-          child: CLButtonText.standard(
-            'Done',
-            onTap: Navigator.of(context).pop,
-          ),
-        ),
-        const SizedBox(
-          height: 16,
         ),
       ],
     );
