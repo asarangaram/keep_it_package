@@ -5,35 +5,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-class WizardMediaControl extends ConsumerWidget {
-  const WizardMediaControl({required this.media, super.key});
+class WizardMediaMenu extends ConsumerWidget {
+  const WizardMediaMenu({required this.media, super.key});
   final CLMedia media;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showNotes = ref.watch(showControlsProvider).showNotes;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        MediaEditButton(
-          media: media,
-        ),
-        if (!showNotes)
-          CLButtonIcon.small(
-            MdiIcons.note,
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GetDBManager(
+            builder: (dbManager) {
+              return CLButtonText.small(
+                'Edit Media',
+                onTap: () async {
+                  await MediaHandler(dbManager: dbManager, media: media)
+                      .edit(context, ref);
+                },
+              );
+            },
+          ),
+          CLButtonText.small(
+            showNotes ? 'Hide Notes' : 'Show Notes',
             onTap: () {
               ref.read(showControlsProvider.notifier).showNotes();
             },
           ),
-      ]
-          .map(
-            (e) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: e,
-            ),
-          )
-          .toList(),
+        ],
+      ),
     );
   }
 }
