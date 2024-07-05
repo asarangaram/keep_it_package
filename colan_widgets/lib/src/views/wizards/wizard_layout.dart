@@ -1,10 +1,14 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+
+import '../../basics/cl_circled_icon.dart';
+import '../../theme/state/cl_theme.dart';
+import '../appearance/cl_fullscreen_box.dart';
+import '../appearance/keep_it_main_view.dart';
 
 class WizardLayout extends StatelessWidget {
   const WizardLayout({
     required this.child,
-    required this.onCancel,
+    this.onCancel,
     this.title,
     this.wizard,
     this.actions,
@@ -40,26 +44,11 @@ class WizardLayout extends StatelessWidget {
             actionsBuilder: [
               if (actions != null)
                 ...actions!.map((e) => (context, quickMenuScopeKey) => e),
-              (context, quickMenuScopeKey) => Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: CLTheme.of(context)
-                              .colors
-                              .iconBackgroundTransparent,
-                        ),
-                        child: CLButtonIcon.small(
-                          Icons.close,
-                          color:
-                              CLTheme.of(context).colors.iconColorTransparent,
-                          onTap: onCancel,
-                        ),
-                      ),
+              if (onCancel != null)
+                (context, quickMenuScopeKey) => CircledIcon(
+                      Icons.close,
+                      onTap: onCancel,
                     ),
-                  ),
             ],
             pageBuilder: (context, quickMenuScopeKey) {
               return Column(

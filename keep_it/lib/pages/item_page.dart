@@ -143,34 +143,6 @@ class MediaInPageViewState extends ConsumerState<MediaInPageView> {
   }
 }
 
-class CircledIcon extends ConsumerWidget {
-  const CircledIcon(this.iconData, {super.key, this.onTap});
-  final IconData iconData;
-  final VoidCallback? onTap;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: CLTheme.of(context)
-              .colors
-              .iconBackgroundTransparent, // Color for the circular container
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: CLButtonIcon.verySmall(
-            iconData,
-            color: CLTheme.of(context).colors.iconColorTransparent,
-            onTap: onTap,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class MediaBackground extends ConsumerWidget {
   const MediaBackground({super.key});
 

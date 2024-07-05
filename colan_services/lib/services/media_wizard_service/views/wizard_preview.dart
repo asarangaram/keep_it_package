@@ -68,22 +68,35 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                   builder: (context) {
                     return Dialog.fullscreen(
                       backgroundColor: Colors.transparent,
-                      child: WizardLayout(
-                        actions: [
-                          MediaEditButton(
-                            media: item,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: WizardLayout(
+                          actions: [
+                            MediaEditButton(
+                              media: item,
+                            ),
+                          ],
+                          child: GetMedia(
+                            id: item.id!,
+                            buildOnData: (mediaLive) {
+                              return Column(
+                                children: [
+                                  Expanded(
+                                    child: ImageViewService(
+                                      file: File(mediaLive!.path),
+                                    ),
+                                  ),
+                                  CLButtonText.standard(
+                                    'Done',
+                                    onTap: Navigator.of(context).pop,
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                ],
+                              );
+                            },
                           ),
-                        ],
-                        onCancel: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: GetMedia(
-                          id: item.id!,
-                          buildOnData: (mediaLive) {
-                            return ImageViewService(
-                              file: File(mediaLive!.path),
-                            );
-                          },
                         ),
                       ),
                     );
