@@ -82,7 +82,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
           widget.media.entries.length > 1 ? 'All' : '',
       ].join(' ');
   String get deleteActionLabel => [
-        'Delete',
+        'Discard',
         if (isSelectionMode)
           'Selected'
         else
