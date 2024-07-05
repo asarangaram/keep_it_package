@@ -6,6 +6,8 @@ import 'package:store/store.dart';
 
 import '../shared_media_service/models/media_handler.dart';
 import '../video_player_service/providers/show_controls.dart';
+import 'models/action_control.dart';
+import 'widgets/media_background.dart';
 import 'widgets/media_controls.dart';
 import 'widgets/media_viewer.dart';
 
@@ -13,12 +15,29 @@ class MediaViewService extends ConsumerStatefulWidget {
   factory MediaViewService({
     required CLMedia media,
     required String parentIdentifier,
+    ActionControl? actionControl,
     Key? key,
   }) {
     return MediaViewService._(
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
+      actionControl: actionControl ?? ActionControl.full(),
+      key: key,
+    );
+  }
+  factory MediaViewService.pageView({
+    required int initialMediaIndex,
+    required List<CLMedia> media,
+    required String parentIdentifier,
+    ActionControl? actionControl,
+    Key? key,
+  }) {
+    return MediaViewService._(
+      initialMediaIndex: initialMediaIndex,
+      media: media,
+      parentIdentifier: parentIdentifier,
+      actionControl: actionControl ?? ActionControl.full(),
       key: key,
     );
   }
@@ -26,25 +45,14 @@ class MediaViewService extends ConsumerStatefulWidget {
     required this.initialMediaIndex,
     required this.media,
     required this.parentIdentifier,
+    required this.actionControl,
     super.key,
   });
 
-  factory MediaViewService.pageView({
-    required int initialMediaIndex,
-    required List<CLMedia> media,
-    required String parentIdentifier,
-    Key? key,
-  }) {
-    return MediaViewService._(
-      initialMediaIndex: initialMediaIndex,
-      media: media,
-      parentIdentifier: parentIdentifier,
-      key: key,
-    );
-  }
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
+  final ActionControl actionControl;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => MediaInPageViewState();
@@ -98,7 +106,7 @@ class MediaInPageViewState extends ConsumerState<MediaViewService> {
               return SizedBox(
                 width: boxConstraints.maxWidth,
                 height: boxConstraints.maxHeight,
-                child: ItemView(
+                child: MediaPageView(
                   items: widget.media,
                   startIndex: widget.initialMediaIndex,
                   parentIdentifier: widget.parentIdentifier,
@@ -123,26 +131,8 @@ class MediaInPageViewState extends ConsumerState<MediaViewService> {
   }
 }
 
-class MediaBackground extends ConsumerWidget {
-  const MediaBackground({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
-
-    return AnimatedOpacity(
-      opacity: showControl.showBackground ? 0 : 1.0,
-      duration: const Duration(milliseconds: 500),
-      child: Container(
-        decoration:
-            BoxDecoration(color: Theme.of(context).colorScheme.inverseSurface),
-      ),
-    );
-  }
-}
-
-class ItemView extends ConsumerStatefulWidget {
-  const ItemView({
+class MediaPageView extends ConsumerStatefulWidget {
+  const MediaPageView({
     required this.items,
     required this.startIndex,
     required this.parentIdentifier,
@@ -157,10 +147,10 @@ class ItemView extends ConsumerStatefulWidget {
   final void Function({required bool lock})? onLockPage;
 
   @override
-  ConsumerState<ItemView> createState() => _ItemViewState();
+  ConsumerState<MediaPageView> createState() => _ItemViewState();
 }
 
-class _ItemViewState extends ConsumerState<ItemView> {
+class _ItemViewState extends ConsumerState<MediaPageView> {
   late final PageController _pageController;
   late int currIndex;
 
