@@ -102,6 +102,22 @@ class KeepItApp implements AppDescriptor {
             );
           },
         ),
+        CLRouteDescriptor(
+          name: 'item_view/:item_id',
+          builder: (context, GoRouterState state) {
+            final String parentIdentifier;
+            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+              parentIdentifier = 'unknown';
+            } else {
+              parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
+            }
+
+            return ItemViewPage(
+              id: int.parse(state.pathParameters['item_id']!),
+              parentIdentifier: parentIdentifier,
+            );
+          },
+        ),
 
         CLRouteDescriptor(
           name: 'edit/:collectionId',

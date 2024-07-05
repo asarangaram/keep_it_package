@@ -96,9 +96,7 @@ class MediaControls extends ConsumerWidget {
                                       MainAxisAlignment.spaceEvenly,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    if (onEdit == null)
-                                      Container()
-                                    else
+                                    if (onEdit != null)
                                       CLButtonIcon.small(
                                         MdiIcons.pencil,
                                         color: Theme.of(context)
@@ -109,9 +107,7 @@ class MediaControls extends ConsumerWidget {
                                             : null,
                                         onTap: isPlaying ? null : onEdit,
                                       ),
-                                    if (onDelete == null)
-                                      Container()
-                                    else
+                                    if (onDelete != null)
                                       CLButtonIcon.small(
                                         Icons.delete_rounded,
                                         color: Theme.of(context)
@@ -122,9 +118,7 @@ class MediaControls extends ConsumerWidget {
                                             : null,
                                         onTap: isPlaying ? null : onDelete,
                                       ),
-                                    if (onMove == null)
-                                      Container()
-                                    else
+                                    if (onMove != null)
                                       CLButtonIcon.small(
                                         MdiIcons.imageMove,
                                         color: Theme.of(context)
@@ -135,9 +129,7 @@ class MediaControls extends ConsumerWidget {
                                             : null,
                                         onTap: isPlaying ? null : onMove,
                                       ),
-                                    if (onShare == null)
-                                      Container()
-                                    else
+                                    if (onShare != null)
                                       CLButtonIcon.small(
                                         MdiIcons.share,
                                         color: Theme.of(context)
@@ -148,9 +140,7 @@ class MediaControls extends ConsumerWidget {
                                             : null,
                                         onTap: isPlaying ? null : onShare,
                                       ),
-                                    if (onPin == null)
-                                      Container()
-                                    else
+                                    if (onPin != null)
                                       Transform.rotate(
                                         angle: math.pi / 4,
                                         child: CLButtonIcon.small(

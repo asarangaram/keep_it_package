@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../../media_view_service/media_view_service.dart';
@@ -46,12 +47,13 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     return GetMediaMultiple(
       idList: media0.entries.map((e) => e.id!).toList(),
       buildOnData: (media) {
-        if (media.length == 1) {
+        /* if (media.length == 1) {
           return MediaViewService(
             media: media[0],
             parentIdentifier: type.identifier,
+            actionControl: ActionControl.editOnly(),
           );
-        }
+        } */
         final galleryMap = ref.watch(singleGroupItemProvider(media));
         return CLGalleryCore<CLMedia>(
           key: ValueKey(type.identifier),
@@ -64,21 +66,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             tag: '${type.identifier} /item/${item.id}',
             child: GestureDetector(
               onTap: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (context) {
-                    return Dialog.fullscreen(
-                      backgroundColor: Colors.transparent,
-                      child: GetMedia(
-                        id: item.id!,
-                        buildOnData: (mediaLive) => ShowMedia(
-                          media: mediaLive!,
-                          type: widget.type,
-                        ),
-                      ),
-                    );
-                  },
-                );
+                context.push('/item_view/${item.id}');
               },
               child: Padding(
                 padding: const EdgeInsets.all(4),
@@ -105,28 +93,15 @@ class ShowMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-              child: CLBackground(
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: MediaViewService(
-                    media: media,
-                    parentIdentifier: type.identifier,
-                    actionControl: ActionControl.editOnly(),
-                  ),
-                ),
-              ),
-            ),
-          ),
+    return ClipRRect(
+      borderRadius: const BorderRadius.all(Radius.circular(16)),
+      child: CLBackground(
+        child: MediaViewService(
+          media: media,
+          parentIdentifier: type.identifier,
+          actionControl: ActionControl.editOnly(),
         ),
-      ],
+      ),
     );
   }
 }

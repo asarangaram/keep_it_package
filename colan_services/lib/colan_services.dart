@@ -8,6 +8,7 @@ export 'services/image_view_service/image_view_service.dart'
     show ImageViewService;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
+export 'services/media_view_service/models/action_control.dart';
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
 export 'services/media_wizard_service/models/types.dart' show MediaSourceType;

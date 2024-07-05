@@ -30,7 +30,7 @@ class ActionControl {
       allowEdit: true,
       allowDelete: true,
       allowMove: false,
-      allowShare: false,
+      allowShare: true,
       allowPin: false,
     );
   }
