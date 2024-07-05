@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'audio/audio_note_view.dart';
+import 'audio/live_audio_view.dart';
 
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({
@@ -192,43 +193,5 @@ class _AudioRecorderState extends State<AudioRecorder> {
         isRecording = !isRecording;
       });
     }
-  }
-}
-
-class LiveAudio extends StatelessWidget {
-  const LiveAudio({
-    required this.recorderController,
-    super.key,
-  });
-
-  final RecorderController recorderController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Center(
-            child: AudioWaveforms(
-              enableGesture: true,
-              size: Size(constraints.maxWidth, constraints.maxHeight - 16),
-              recorderController: recorderController,
-              waveStyle: const WaveStyle(
-                waveColor: Colors.white,
-                extendWaveform: true,
-                showMiddleLine: false,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: const Color(0xFF1E1B26),
-              ),
-              padding: EdgeInsets.zero,
-              margin: EdgeInsets.zero,
-            ),
-          );
-        },
-      ),
-    );
   }
 }
