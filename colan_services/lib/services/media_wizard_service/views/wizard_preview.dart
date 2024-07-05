@@ -6,7 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../image_view_service/image_view_service.dart';
+import '../../notes_service/notes_service.dart';
 import '../../preview_service/view/preview.dart';
+import '../../video_player_service/providers/show_controls.dart';
+import '../../video_player_service/video_player.dart';
 import '../models/types.dart';
 import '../providers/gallery_group_provider.dart';
 import '../providers/media_provider.dart';
@@ -72,30 +75,13 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                         padding: const EdgeInsets.all(8),
                         child: WizardLayout(
                           actions: [
-                            MediaEditButton(
-                              media: item,
-                            ),
+                            WizardMediaControl(media: item),
                           ],
                           child: GetMedia(
                             id: item.id!,
-                            buildOnData: (mediaLive) {
-                              return Column(
-                                children: [
-                                  Expanded(
-                                    child: ImageViewService(
-                                      file: File(mediaLive!.path),
-                                    ),
-                                  ),
-                                  CLButtonText.standard(
-                                    'Done',
-                                    onTap: Navigator.of(context).pop,
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                ],
-                              );
-                            },
+                            buildOnData: (mediaLive) => ShowMedia(
+                              media: mediaLive!,
+                            ),
                           ),
                         ),
                       ),
@@ -117,6 +103,50 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           keepSelected: freezeView,
         );
       },
+    );
+  }
+}
+
+class ShowMedia extends ConsumerWidget {
+  const ShowMedia({required this.media, super.key});
+  final CLMedia media;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Center(
+            child: media.type == CLMediaType.image
+                ? ImageViewService(
+                    file: File(media.path),
+                  )
+                : VideoPlayerService.player(
+                    media: media,
+                    alternate: PreviewService(media: media),
+                    autoStart: true,
+                    inplaceControl: true,
+                  ),
+          ),
+        ),
+        if (showControl.showNotes)
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: NotesService(media: media),
+          ),
+        SizedBox(
+          height: kMinInteractiveDimension,
+          child: CLButtonText.standard(
+            'Done',
+            onTap: Navigator.of(context).pop,
+          ),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+      ],
     );
   }
 }

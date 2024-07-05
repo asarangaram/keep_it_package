@@ -5,6 +5,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+class WizardMediaControl extends ConsumerWidget {
+  const WizardMediaControl({required this.media, super.key});
+  final CLMedia media;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showNotes = ref.watch(showControlsProvider).showNotes;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        MediaEditButton(
+          media: media,
+        ),
+        if (!showNotes)
+          CLButtonIcon.small(
+            MdiIcons.note,
+            onTap: () {
+              ref.read(showControlsProvider.notifier).showNotes();
+            },
+          ),
+      ]
+          .map(
+            (e) => Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: e,
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
 class MediaEditButton extends ConsumerWidget {
   const MediaEditButton({
     required this.media,
@@ -16,7 +49,7 @@ class MediaEditButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDBManager(
       builder: (dbManager) {
-        return CLButtonIcon.standard(
+        return CLButtonIcon.small(
           MdiIcons.pencil,
           onTap: () async {
             await MediaHandler(dbManager: dbManager, media: media)

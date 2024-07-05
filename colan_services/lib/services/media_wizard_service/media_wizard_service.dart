@@ -116,7 +116,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                 onTap: onToggleSelectMode,
               ),
             if (widget.media.entries.length == 1)
-              MediaEditButton(
+              WizardMediaControl(
                 media: widget.media.entries[0],
               ),
           ],
