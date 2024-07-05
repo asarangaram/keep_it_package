@@ -4,51 +4,56 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum ItemViewModes { fullView, menu, notes }
+enum ItemViewModes { fullView, menu }
 
 @immutable
 class ShowWhat {
   final ItemViewModes itemViewMode;
+  final bool showNotes;
   const ShowWhat({
     this.itemViewMode = ItemViewModes.fullView,
+    this.showNotes = false,
   });
 
   ShowWhat copyWith({
     ItemViewModes? itemViewMode,
+    bool? showNotes,
   }) {
     return ShowWhat(
       itemViewMode: itemViewMode ?? this.itemViewMode,
+      showNotes: showNotes ?? this.showNotes,
     );
   }
 
   @override
-  String toString() => 'ShowWhat(itemViewMode: $itemViewMode)';
+  String toString() =>
+      'ShowWhat(itemViewMode: $itemViewMode, showNotes: $showNotes)';
 
   @override
   bool operator ==(covariant ShowWhat other) {
     if (identical(this, other)) return true;
 
-    return other.itemViewMode == itemViewMode;
+    return other.itemViewMode == itemViewMode && other.showNotes == showNotes;
   }
 
   @override
-  int get hashCode => itemViewMode.hashCode;
+  int get hashCode => itemViewMode.hashCode ^ showNotes.hashCode;
 
   bool get showMenu {
-    return itemViewMode == ItemViewModes.menu;
+    return itemViewMode == ItemViewModes.menu && !showNotes;
   }
 
   bool get showStatusBar {
-    return itemViewMode == ItemViewModes.menu;
+    return itemViewMode == ItemViewModes.menu || showNotes;
   }
 
   bool get showBackground {
-    return itemViewMode != ItemViewModes.fullView;
+    return itemViewMode != ItemViewModes.fullView || showNotes;
   }
 
-  bool get showNotes {
+  /* bool get showNotes {
     return itemViewMode == ItemViewModes.notes;
-  }
+  } */
 }
 
 class ShowControlNotifier extends StateNotifier<ShowWhat> {
@@ -80,8 +85,6 @@ class ShowControlNotifier extends StateNotifier<ShowWhat> {
         state = state.copyWith(itemViewMode: ItemViewModes.menu);
       case ItemViewModes.menu:
         state = state.copyWith(itemViewMode: ItemViewModes.fullView);
-      case ItemViewModes.notes:
-        break;
     }
   }
 
@@ -101,11 +104,11 @@ class ShowControlNotifier extends StateNotifier<ShowWhat> {
   }
 
   void showNotes() {
-    state = state.copyWith(itemViewMode: ItemViewModes.notes);
+    state = state.copyWith(showNotes: true);
   }
 
   void hideNotes() {
-    state = state.copyWith(itemViewMode: ItemViewModes.fullView);
+    state = state.copyWith(showNotes: false);
   }
 }
 

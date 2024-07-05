@@ -52,18 +52,32 @@ class _NotesViewState extends State<NotesView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Divider(
-              height: 2,
-              thickness: 3,
-              indent: 4,
-              endIndent: 4,
-            ),
-            SizedBox(
-              height: kMinInteractiveDimension,
-              child: CLButtonIcon.standard(
-                MdiIcons.chevronDown,
-                onTap: widget.onClose,
-              ),
+            Row(
+              children: [
+                Container(
+                  width: 16,
+                  height: 2,
+                  color: Colors.grey,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: CLText.large('Notes'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: CLButtonText.small(
+                    'Hide',
+                    color: Colors.blue,
+                    onTap: widget.onClose,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
             SizedBox(
               height: kMinInteractiveDimension * 2,

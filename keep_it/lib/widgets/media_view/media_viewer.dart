@@ -39,6 +39,7 @@ class MediaViewer extends ConsumerWidget {
                     media: media,
                   ),
                   autoStart: autoStart,
+                  inplaceControl: showControl.showNotes,
                 ),
               _ => throw UnimplementedError('Not yet implemented')
             },
