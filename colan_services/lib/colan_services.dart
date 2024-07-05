@@ -1,11 +1,15 @@
 export 'services/backup_service/models/backup_files.dart';
 export 'services/backup_service/views/backup_view.dart';
+export 'services/basic_page_service/basic_page_service.dart'
+    show BasicPageService;
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart';
 export 'services/image_edit_service/views/image_editor.dart'
     show ImageEditService;
 export 'services/image_view_service/image_view_service.dart'
     show ImageViewService;
+export 'services/media_edit_service/media_edit_service.dart'
+    show MediaEditService;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_view_service/models/action_control.dart';
