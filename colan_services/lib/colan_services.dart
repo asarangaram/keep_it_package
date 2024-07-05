@@ -6,7 +6,8 @@ export 'services/image_edit_service/views/image_editor.dart'
     show ImageEditService;
 export 'services/image_view_service/image_view_service.dart'
     show ImageViewService;
-export 'services/media_service/media_view_service.dart' show MediaViewService;
+export 'services/media_view_service/media_view_service.dart'
+    show MediaViewService;
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
 export 'services/media_wizard_service/models/types.dart' show MediaSourceType;

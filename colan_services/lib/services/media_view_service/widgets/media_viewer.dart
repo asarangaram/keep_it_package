@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MediaViewer extends ConsumerWidget {
-  const MediaViewer({
+class MediaViewerRaw extends ConsumerWidget {
+  const MediaViewerRaw({
     required this.media,
     required this.onLockPage,
     required this.autoStart,
