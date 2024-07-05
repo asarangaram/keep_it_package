@@ -6,7 +6,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'audio/audio_note_view.dart';
+import 'audio/decorations.dart';
+import 'audio/recorded_audio_view.dart';
 import 'audio/live_audio_view.dart';
 
 class AudioRecorder extends StatefulWidget {
@@ -63,77 +64,67 @@ class _AudioRecorderState extends State<AudioRecorder> {
     super.dispose();
   }
 
+  Widget control() {
+    if (hasAudioMessage) {
+      return SizedBox(
+        width: kMinInteractiveDimension,
+        child: CLButtonIcon.small(
+          Icons.save,
+          onTap: _sendAudio,
+        ),
+      );
+    }
+
+    if (widget.editMode) {
+      return IconButton(
+        onPressed: widget.onEditCancel,
+        icon: const Icon(
+          Icons.check,
+        ),
+        color: Colors.white,
+        iconSize: 28,
+      );
+    }
+    return SizedBox(
+      width: kMinInteractiveDimension,
+      child: CLButtonIcon.small(
+        isRecording ? Icons.stop : Icons.mic,
+        onTap: () => _startOrStopRecording(widget.tempDir),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
-      child: hasAudioMessage
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      AudioNoteView(
-                        audioMessage!,
-                        theme: const DefaultNotesInputTheme().copyWith(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 4 + 8,
-                        right: 4,
-                        child: CLButtonIcon.small(
-                          Icons.delete,
-                          onTap: _deleteAudioMessage,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (hasAudioMessage)
+            Expanded(
+              child: RecordedAudioDecoration(
+                child: RecordedAudioView(
+                  audioMessage!,
+                  onDeleteAudio: _deleteAudioMessage,
                 ),
-                SizedBox(
-                  width: kMinInteractiveDimension,
-                  child: CLButtonIcon.small(
-                    Icons.save,
-                    onTap: _sendAudio,
-                  ),
-                ),
-              ],
+              ),
             )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isRecording)
-                  Expanded(
-                    child: LiveAudio(
-                      recorderController: recorderController,
-                    ),
-                  )
-                else if (widget.child != null)
-                  Expanded(child: widget.child!)
-                else
-                  const Spacer(),
-                if (widget.editMode)
-                  IconButton(
-                    onPressed: widget.onEditCancel,
-                    icon: const Icon(
-                      Icons.check,
-                    ),
-                    color: Colors.white,
-                    iconSize: 28,
-                  )
-                else
-                  SizedBox(
-                    width: kMinInteractiveDimension,
-                    child: CLButtonIcon.small(
-                      isRecording ? Icons.stop : Icons.mic,
-                      onTap: () => _startOrStopRecording(widget.tempDir),
-                    ),
-                  ),
-              ],
-            ),
+          else if (isRecording)
+            Expanded(
+              child: RecordedAudioDecoration(
+                child: LiveAudio(
+                  recorderController: recorderController,
+                ),
+              ),
+            )
+          else if (widget.child != null)
+            Expanded(child: widget.child!)
+          else
+            const Spacer(),
+          control(),
+        ],
+      ),
     );
   }
 
