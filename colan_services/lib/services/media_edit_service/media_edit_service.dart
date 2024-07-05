@@ -40,8 +40,7 @@ class MediaEditService extends StatelessWidget {
                   }) async {
                     await editAndSave(
                       imageBytes,
-                      cacheDir: appSettings.directories.downloadedMedia
-                          .path, // TODO: Move to edittedMedia
+                      cacheDir: appSettings.directories.downloadedMedia.path,
                       onSave: onSave,
                       overwrite: overwrite,
                       cropRect: cropRect,

@@ -27,7 +27,7 @@ class MediaViewPage extends ConsumerWidget {
         id: id,
         buildOnData: (media) {
           if (media == null) {
-            return const EmptyState(); // TODO
+            return const EmptyState();
           }
 
           return CLPopScreen.onSwipe(

@@ -35,7 +35,7 @@ class MediaFileHandler extends ConsumerWidget {
           id: mediaId,
           buildOnData: (media) {
             if (media == null) {
-              return const BasicPageService.message(message: 'Media not found');
+              return BasicPageService.message(message: 'Media not found');
             }
             return builder(
               media.path,
