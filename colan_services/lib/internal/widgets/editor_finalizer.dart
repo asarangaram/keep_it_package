@@ -21,11 +21,13 @@ class EditorFinalizer extends StatelessWidget {
     required this.onSave,
     required this.onDiscard,
     this.child,
+    this.allowCopy = true,
     super.key,
   });
   final Future<void> Function({required bool overwrite}) onSave;
   final Future<void> Function({required bool done}) onDiscard;
   final Widget? child;
+  final bool allowCopy;
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<EditorFinalActions>(
@@ -48,6 +50,7 @@ class EditorFinalizer extends StatelessWidget {
       },
       itemBuilder: (BuildContext context) {
         return EditorFinalActions.values
+            .where((e) => allowCopy || e != EditorFinalActions.saveAsNew)
             .map(
               (e) => PopupMenuItem<EditorFinalActions>(
                 value: e,

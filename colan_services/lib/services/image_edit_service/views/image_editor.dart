@@ -126,6 +126,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
               });
             },
             saveWidget: EditorFinalizer(
+              allowCopy: false,
               onSave: ({required overwrite}) async {
                 if (controller.currentState == null) {
                   return;
