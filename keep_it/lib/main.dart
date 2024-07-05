@@ -10,19 +10,19 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:window_size/window_size.dart';
 
-import 'widgets/shared_media/incoming_media_handler.dart';
 import 'pages/camera_page.dart';
-import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/deleted_media_page.dart';
-import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
-import 'pages/media_wizard_page.dart';
+import 'pages/media_pageview_page.dart';
+import 'pages/media_view_page.dart';
 
+import 'pages/media_wizard_page.dart';
 import 'pages/pinned_media_page.dart';
-import 'pages/settings_main.dart';
+import 'pages/settings_main_page.dart';
 import 'widgets/empty_state.dart';
+import 'widgets/shared_media/incoming_media_handler.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -95,7 +95,7 @@ class KeepItApp implements AppDescriptor {
               parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
             }
 
-            return CollectionItemPage(
+            return MediaPageViewPage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
               id: int.parse(state.pathParameters['item_id']!),
               parentIdentifier: parentIdentifier,
@@ -112,7 +112,7 @@ class KeepItApp implements AppDescriptor {
               parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
             }
 
-            return ItemViewPage(
+            return MediaViewPage(
               id: int.parse(state.pathParameters['item_id']!),
               parentIdentifier: parentIdentifier,
             );
