@@ -66,31 +66,22 @@ class _NotesViewState extends State<NotesView> {
               ),
             ),
             SizedBox(
-              height: audioNotes.isEmpty
-                  ? kMinInteractiveDimension
-                  : kMinInteractiveDimension * 2,
-              child: AudioNotes(
-                tempDir: widget.appSettings.directories.tempNotes.path,
-                media: widget.media,
-                notes: audioNotes,
-                onUpsertNote: onUpsertNote,
-                onDeleteNote: onDeleteNote,
+              height: kMinInteractiveDimension * 2,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: AudioNotes(
+                  tempDir: widget.appSettings.directories.tempNotes.path,
+                  media: widget.media,
+                  notes: audioNotes,
+                  onUpsertNote: onUpsertNote,
+                  onDeleteNote: onDeleteNote,
+                ),
               ),
             ),
-            const SizedBox(
-              height: 8,
-            ),
-            const Divider(
-              height: 2,
-              thickness: 1,
-              indent: 4,
-              endIndent: 4,
-              color: Colors.red,
-            ),
             SizedBox(
-              height: 200,
+              height: kMinInteractiveDimension * 3,
               child: Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.only(left: 8),
                 child: TextNotes(
                   tempDir: widget.appSettings.directories.tempNotes.path,
                   notes: textNotes,
