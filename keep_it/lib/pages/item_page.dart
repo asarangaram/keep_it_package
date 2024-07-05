@@ -61,24 +61,23 @@ class ItemViewPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetMedia(
-      id: id,
-      buildOnData: (media) {
-        if (media == null) {
-          return const EmptyState();
-        }
+    return FullscreenLayout(
+      child: GetMedia(
+        id: id,
+        buildOnData: (media) {
+          if (media == null) {
+            return const EmptyState();
+          }
 
-        return FullscreenLayout(
-          useSafeArea: false,
-          child: CLPopScreen.onSwipe(
+          return CLPopScreen.onSwipe(
             child: MediaViewService(
               media: media,
               parentIdentifier: parentIdentifier,
               actionControl: ActionControl.editOnly(),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
