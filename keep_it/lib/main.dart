@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:window_size/window_size.dart';
 
-import 'modules/shared_media/incoming_media_handler.dart';
+import 'widgets/shared_media/incoming_media_handler.dart';
 import 'pages/camera_page.dart';
 import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
@@ -115,15 +115,6 @@ class KeepItApp implements AppDescriptor {
             return ItemViewPage(
               id: int.parse(state.pathParameters['item_id']!),
               parentIdentifier: parentIdentifier,
-            );
-          },
-        ),
-
-        CLRouteDescriptor(
-          name: 'edit/:collectionId',
-          builder: (context, GoRouterState state) {
-            return CollectionEditorPage(
-              collectionId: int.parse(state.pathParameters['collectionId']!),
             );
           },
         ),

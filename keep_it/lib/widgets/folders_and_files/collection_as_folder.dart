@@ -5,7 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:keep_it/widgets/editors/collection_editor.dart';
+import 'package:keep_it/widgets/collection_editor.dart';
 import 'package:store/store.dart';
 
 import '../wrap_standard_quick_menu.dart';
@@ -76,7 +76,7 @@ class CollectionAsFolder extends ConsumerWidget {
           child: Column(
             children: [
               Flexible(
-                child: PreviewGenerator(
+                child: CollectionPreviewGenerator(
                   collection: collection,
                 ),
               ),
@@ -102,8 +102,8 @@ class CollectionAsFolder extends ConsumerWidget {
   ) async {}
 }
 
-class PreviewGenerator extends StatelessWidget {
-  const PreviewGenerator({
+class CollectionPreviewGenerator extends StatelessWidget {
+  const CollectionPreviewGenerator({
     required this.collection,
     super.key,
   });
