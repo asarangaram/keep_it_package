@@ -9,7 +9,7 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
   VideoPlayerStateNotifier() : super(const VideoPlayerState());
   VideoPlayerController? controller;
 
-  Future<void> playVideo(String path) async {
+  Future<void> setVideo(String path, {bool autoPlay = true}) async {
     if (state.path == path) return;
     state = VideoPlayerState(path: path);
     try {
@@ -30,7 +30,9 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
         throw Exception('Failed to load Video');
       }
       await newController.seekTo(Duration.zero);
-      await newController.play();
+      if (autoPlay) {
+        await newController.play();
+      }
       state = state.copyWith(controllerAsync: AsyncValue.data(newController));
     } catch (error, stackTrace) {
       state = state.copyWith(controllerAsync: AsyncError(error, stackTrace));
