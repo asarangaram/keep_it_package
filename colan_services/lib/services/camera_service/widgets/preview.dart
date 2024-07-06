@@ -12,17 +12,17 @@ class PreviewCapturedMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final capturedMedia = ref.watch(capturedMediaProvider);
-    return InkWell(
-      onTap: () => sendMedia(capturedMedia),
-      child: capturedMedia.isEmpty
-          ? Container()
-          : CapturedMediaDecorator(
+    return capturedMedia.isEmpty
+        ? const SizedBox.shrink()
+        : InkWell(
+            onTap: () => sendMedia(capturedMedia),
+            child: CapturedMediaDecorator(
               child: PreviewService(
                 media: capturedMedia.last,
                 keepAspectRatio: false,
               ),
             ),
-    );
+          );
   }
 }
 
