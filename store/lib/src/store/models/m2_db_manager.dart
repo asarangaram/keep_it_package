@@ -32,7 +32,7 @@ abstract class Store {
 
   Future<void> deleteCollection(
     Collection collection, {
-    required Future<void> Function(Directory dir) onDeleteDir,
+    required Future<void> Function(File file) onDeleteFile,
   });
   Future<void> deleteMedia(
     CLMedia media, {
@@ -172,13 +172,13 @@ class DBManager extends Store {
   @override
   Future<void> deleteCollection(
     Collection collection, {
-    required Future<void> Function(Directory dir) onDeleteDir,
+    required Future<void> Function(File file) onDeleteFile,
   }) async {
     await db.writeTransaction((tx) async {
       await dbWriter.deleteCollection(
         tx,
         collection,
-        onDeleteDir: onDeleteDir,
+        onDeleteFile: onDeleteFile,
       );
     });
   }

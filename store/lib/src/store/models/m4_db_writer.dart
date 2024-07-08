@@ -176,13 +176,20 @@ class DBWriter {
   Future<void> deleteCollection(
     SqliteWriteContext tx,
     Collection collection, {
-    required Future<void> Function(Directory dir) onDeleteDir,
+    required Future<void> Function(File file) onDeleteFile,
   }) async {
     if (collection.id == null) return;
-    await onDeleteDir(Directory(appSettings.validPrefix(collection.id!)));
 
-    await mediaTable.delete(tx, {'collectionId': collection.id.toString()});
-    await collectionTable.delete(tx, {'id': collection.id.toString()});
+    final items = await DBReader(appSettings: appSettings)
+        .getMediaByCollectionId(tx, collection.id!);
+
+    /// Delete all media ignoring those already in Recycle
+    /// Don't delete CollectionDir / Collection from Media, required for restore
+    await deleteMediaList(
+      tx,
+      items.where((e) => !(e.isDeleted ?? false)).toList(),
+      onDeleteFile: onDeleteFile,
+    );
   }
 
   Future<void> deleteOrphanNotes(

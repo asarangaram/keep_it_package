@@ -62,9 +62,9 @@ class CollectionAsFolder extends ConsumerWidget {
             if (confirmed) {
               await dbManager.deleteCollection(
                 collection,
-                onDeleteDir: (dir) async {
-                  if (dir.existsSync()) {
-                    dir.deleteSync(recursive: true);
+                onDeleteFile: (file) async {
+                  if (file.existsSync()) {
+                    file.deleteSync();
                   }
                 },
               );
