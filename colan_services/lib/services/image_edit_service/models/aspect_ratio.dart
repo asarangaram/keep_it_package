@@ -114,7 +114,7 @@ class SupportedAspectRatio {
   factory SupportedAspectRatio.fromMap(Map<String, dynamic> map) {
     return SupportedAspectRatio(
       aspectRatios: List<AspectRatio>.from(
-        (map['aspectRatios'] as List<int>).map<AspectRatio>(
+        (map['aspectRatios'] as List<dynamic>).map<AspectRatio>(
           (x) => AspectRatio.fromMap(x as Map<String, dynamic>),
         ),
       ),
