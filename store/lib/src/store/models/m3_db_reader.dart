@@ -44,4 +44,35 @@ class DBReader {
       validate: true,
     );
   }
+
+  Future<List<CLNote>?> getNotesByMediaID(
+    SqliteWriteContext tx,
+    int noteId,
+  ) {
+    return (DBQueries.notesByMediaId.sql as DBQuery<CLNote>)
+        .copyWith(parameters: [noteId]).readMultiple(
+      tx,
+      appSettings: appSettings,
+      validate: true,
+    );
+  }
+
+  Future<List<CLMedia>?> getMediaByNoteID(
+    SqliteWriteContext tx,
+    int noteId,
+  ) async {
+    return (DBQueries.mediaByNoteID.sql as DBQuery<CLMedia>)
+        .copyWith(parameters: [noteId]).readMultiple(
+      tx,
+      appSettings: appSettings,
+      validate: true,
+    );
+  }
+
+  Future<List<CLNote>?> getOrphanNotes(
+    SqliteWriteContext tx,
+  ) {
+    return (DBQueries.notesOrphan.sql as DBQuery<CLNote>)
+        .readMultiple(tx, appSettings: appSettings, validate: true);
+  }
 }

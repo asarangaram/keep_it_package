@@ -24,7 +24,8 @@ enum DBQueries {
   notesAll,
   noteById,
   noteByPath,
-  notesByMediaId;
+  notesByMediaId,
+  notesOrphan;
 
   DBQuery<dynamic> get sql => switch (this) {
         collectionById => DBQuery<Collection>(
@@ -133,6 +134,12 @@ enum DBQueries {
             sql:
                 'SELECT Notes.* FROM Notes JOIN ItemNote ON Notes.id = ItemNote.noteId WHERE ItemNote.itemId = ?;',
             triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
+            fromMap: CLNote.fromMapNullable,
+          ),
+        notesOrphan => DBQuery<CLNote>(
+            sql:
+                'SELECT n.* FROM Notes n LEFT JOIN ItemNote inote ON n.id = inote.noteId WHERE inote.noteId IS NULL',
+            triggerOnTables: const {'Notes', 'ItemNote'},
             fromMap: CLNote.fromMapNullable,
           ),
       };
