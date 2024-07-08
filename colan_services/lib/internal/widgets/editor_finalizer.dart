@@ -32,7 +32,6 @@ class EditorFinalizer extends StatelessWidget {
   final bool allowCopy;
   @override
   Widget build(BuildContext context) {
-    print('refresh EditorFinalizer $hasEditAction');
     if (!hasEditAction) {
       return CLButtonIcon.small(
         MdiIcons.check,
