@@ -72,9 +72,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
                         hasEditAction = true;
                       });
 
-                      print(
-                        'edit action: ${actions.hasEditAction}',
-                      ); /* 
+                      /* 
                       if (actions.hasEditAction) {
                         if (actions.hasRotateAngle) {
                           setState(() {

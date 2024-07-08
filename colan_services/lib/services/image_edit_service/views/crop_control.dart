@@ -27,11 +27,7 @@ class CropperControls extends ConsumerWidget {
             .whenOrNull(data: (value) => value)
             ?.aspectRatios ??
         [];
-    availableAspectRatioAsync.when(
-      data: print,
-      error: (e, _) => print('Error $e'),
-      loading: () => print('loading'),
-    );
+
     return Container(
       decoration: BoxDecoration(
         color: CLTheme.of(context)
