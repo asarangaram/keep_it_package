@@ -3,6 +3,7 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/file_system/models/cl_directories.dart';
 import 'storage_info_entry.dart';
 
 class StorageMonitor extends ConsumerWidget {
