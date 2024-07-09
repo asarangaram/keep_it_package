@@ -2,6 +2,7 @@
 library colon_widgets;
 
 export 'src/app_logger.dart';
+export 'src/basics/async_widgets.dart';
 export 'src/basics/cl_button.dart';
 export 'src/basics/cl_buttons_grid.dart';
 export 'src/basics/cl_circled_icon.dart';
