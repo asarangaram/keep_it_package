@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -37,7 +38,6 @@ class BackupManager {
     if (dbArchive == null || dbArchive.isEmpty) return '';
 
     final indexData = json.encode(dbArchive);
-    
 
     final mediaFiles = await gatherFiles(dbArchive);
     final totalFiles = mediaFiles.fold(

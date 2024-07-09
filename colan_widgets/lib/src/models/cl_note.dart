@@ -7,8 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 import 'cl_media.dart';
-import 'm1_app_settings.dart';
-import 'map_fixer.dart';
 
 enum CLNoteTypes { text, audio }
 
@@ -118,35 +116,6 @@ class CLNote {
         validate: validate,
       ),
     };
-  }
-
-  static MapFixer incomingMapFixer(String basePath) => MapFixer(
-        pathType: PathType.absolute,
-        basePath: basePath,
-        mandatoryKeys: const ['type', 'path', 'md5String'],
-        pathKeys: const ['path'],
-        removeValues: const ['null'],
-      );
-
-  static CLNote? fromMapNullable(
-    Map<String, dynamic> map1, {
-    // ignore: avoid_unused_constructor_parameters
-    required AppSettings appSettings,
-  }) {
-    final map = incomingMapFixer(appSettings.directories.notes.pathString).fix(
-      map1,
-      /* onError: (errors) {
-        if (errors.isNotEmpty) {
-          logger.e(errors.join(','));
-          return false;
-        }
-        return true;
-      }, */
-    );
-    if (map.isEmpty) {
-      return null;
-    }
-    return CLNote.fromMap(map);
   }
 
   /* String toJson() => json.encode(toMap());

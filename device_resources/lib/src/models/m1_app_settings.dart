@@ -1,5 +1,6 @@
-import 'package:colan_widgets/src/models/file_system/models/cl_directories.dart';
 import 'package:flutter/foundation.dart';
+
+import 'file_system/models/cl_directories.dart';
 
 @immutable
 class AppSettings {

@@ -1,6 +1,11 @@
 import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../models/file_system/models/cl_directory.dart';
+import '../models/file_system/models/cl_directory_info.dart';
+import '../models/file_system/providers/cl_directory_info.dart';
 
 class StorageInfoEntry extends ConsumerWidget {
   const StorageInfoEntry({

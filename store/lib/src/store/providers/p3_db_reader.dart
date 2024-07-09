@@ -1,9 +1,9 @@
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/m2_db_manager.dart';
 import '../models/m3_db_query.dart';
 
-import 'p1_app_settings.dart';
 import 'p2_db_manager.dart';
 
 final dbReaderProvider = StreamProvider.family<List<dynamic>, DBQuery<dynamic>>(

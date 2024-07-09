@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:exif/exif.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:image/image.dart' as img;
