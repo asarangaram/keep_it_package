@@ -1,7 +1,5 @@
 // ignore_for_file: unused_element
 
-import 'dart:async';
-
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
@@ -31,10 +29,8 @@ class CollectionTimeLinePage extends ConsumerWidget {
               int mediaId, {
               required String parentIdentifier,
             }) async {
-              unawaited(
-                context.push(
-                  '/item/$collectionId/$mediaId?parentIdentifier=$parentIdentifier',
-                ),
+              await context.push(
+                '/item/$collectionId/$mediaId?parentIdentifier=$parentIdentifier',
               );
               return true;
             },

@@ -1,7 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import 'audio_notes.dart';
@@ -52,45 +51,50 @@ class _NotesViewState extends State<NotesView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Divider(
-              height: 2,
-              thickness: 3,
-              indent: 4,
-              endIndent: 4,
+            Row(
+              children: [
+                Container(
+                  width: 16,
+                  height: 2,
+                  color: Colors.grey,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: CLText.large('Notes'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: CLButtonText.small(
+                    'Hide',
+                    color: Colors.blue,
+                    onTap: widget.onClose,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
             SizedBox(
-              height: kMinInteractiveDimension,
-              child: CLButtonIcon.standard(
-                MdiIcons.chevronDown,
-                onTap: widget.onClose,
-              ),
-            ),
-            SizedBox(
-              height: audioNotes.isEmpty
-                  ? kMinInteractiveDimension
-                  : kMinInteractiveDimension * 2,
-              child: AudioNotes(
-                tempDir: widget.appSettings.directories.tempNotes.path,
-                media: widget.media,
-                notes: audioNotes,
-                onUpsertNote: onUpsertNote,
-                onDeleteNote: onDeleteNote,
-              ),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            const Divider(
-              height: 2,
-              thickness: 1,
-              indent: 4,
-              endIndent: 4,
-              color: Colors.red,
-            ),
-            SizedBox(
-              height: 200,
+              height: kMinInteractiveDimension * 2,
               child: Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.only(left: 8),
+                child: AudioNotes(
+                  tempDir: widget.appSettings.directories.tempNotes.path,
+                  media: widget.media,
+                  notes: audioNotes,
+                  onUpsertNote: onUpsertNote,
+                  onDeleteNote: onDeleteNote,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: kMinInteractiveDimension * 3,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
                 child: TextNotes(
                   tempDir: widget.appSettings.directories.tempNotes.path,
                   notes: textNotes,

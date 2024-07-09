@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/src/store/models/m3_db_query.dart';
+import 'package:store/src/store/models/m3_db_reader.dart';
 
 import 'm3_db_queries.dart';
 import 'm4_db_exec.dart';
@@ -175,13 +176,32 @@ class DBWriter {
   Future<void> deleteCollection(
     SqliteWriteContext tx,
     Collection collection, {
-    required Future<void> Function(Directory dir) onDeleteDir,
+    required Future<void> Function(File file) onDeleteFile,
   }) async {
     if (collection.id == null) return;
-    await onDeleteDir(Directory(appSettings.validPrefix(collection.id!)));
 
-    await mediaTable.delete(tx, {'collectionId': collection.id.toString()});
-    await collectionTable.delete(tx, {'id': collection.id.toString()});
+    final items = await DBReader(appSettings: appSettings)
+        .getMediaByCollectionId(tx, collection.id!);
+
+    /// Delete all media ignoring those already in Recycle
+    /// Don't delete CollectionDir / Collection from Media, required for restore
+    await deleteMediaList(
+      tx,
+      items.where((e) => !(e.isDeleted ?? false)).toList(),
+      onDeleteFile: onDeleteFile,
+    );
+  }
+
+  Future<void> deleteOrphanNotes(
+    SqliteWriteContext tx, {
+    required Future<void> Function(File file) onDeleteFile,
+  }) async {
+    final notes = await DBReader(appSettings: appSettings).getOrphanNotes(tx);
+    if (notes != null && notes.isNotEmpty) {
+      for (final note in notes) {
+        await deleteNote(tx, note, onDeleteFile: onDeleteFile);
+      }
+    }
   }
 
   Future<void> deleteMedia(
@@ -190,9 +210,28 @@ class DBWriter {
     required Future<void> Function(File file) onDeleteFile,
   }) async {
     if (media.isDeleted ?? false) {
+      /// Hard delete
+      /// 1. Find all notes and remove associations.
+      /// 2. Delete Media files
+      /// 3. Delete Media from DB
+      /// 4. Clear up if any note is orphan
+      final notes = await DBReader(appSettings: appSettings)
+          .getNotesByMediaID(tx, media.id!);
+
+      if (notes != null && notes.isNotEmpty) {
+        for (final m in notes) {
+          await notesOnMediaTable.delete(
+            tx,
+            {'noteId': m.id!.toString(), 'itemId': media.id!.toString()},
+          );
+        }
+      }
+
       await onDeleteFile(File(media.path));
+      await deleteOrphanNotes(tx, onDeleteFile: onDeleteFile);
       await mediaTable.delete(tx, {'id': media.id.toString()});
     } else {
+      // Soft Delete
       await upsertMedia(
         tx,
         media.removePin().copyWith(
@@ -343,6 +382,18 @@ class DBWriter {
     CLNote note, {
     required Future<void> Function(File file) onDeleteFile,
   }) async {
+    if (note.id == null) return;
+
+    final media =
+        await DBReader(appSettings: appSettings).getMediaByNoteID(tx, note.id!);
+    if (media != null && media.isNotEmpty) {
+      for (final m in media) {
+        await notesOnMediaTable.delete(
+          tx,
+          {'noteId': note.id!.toString(), 'itemId': m.id!.toString()},
+        );
+      }
+    }
     await onDeleteFile(File(note.path));
     await notesTable.delete(tx, {'id': note.id.toString()});
   }

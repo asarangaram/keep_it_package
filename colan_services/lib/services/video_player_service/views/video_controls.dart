@@ -2,20 +2,13 @@
 ///
 library;
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
+import '../builders/audio_control_builder.dart';
 import '../providers/show_controls.dart';
-
-extension on Duration {
-  String get timestamp {
-    final hh = inHours > 0 ? "${inHours.toString().padLeft(2, '0')}:" : '';
-    return '$hh'
-        "${inMinutes.toString().padLeft(2, '0')}:"
-        "${(inSeconds % 60).toString().padLeft(2, '0')}";
-  }
-}
 
 class VideoControls extends ConsumerStatefulWidget {
   const VideoControls({
@@ -32,12 +25,9 @@ class VideoControls extends ConsumerStatefulWidget {
 class VideoControlsState extends ConsumerState<VideoControls> {
   VideoPlayerValue get video => widget.controller.value;
   double? seekValue;
-  double volume = 1;
 
   Duration get bufferedPosition =>
       video.buffered.isEmpty ? Duration.zero : video.buffered.last.end;
-
-  bool get isMuted => video.volume == 0;
 
   String get timestamp {
     final currentPosition =
@@ -128,9 +118,10 @@ class VideoControlsState extends ConsumerState<VideoControls> {
                     ),
                     onPressed: onPlayPause,
                   ),
-                  IconButton(
-                    icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
-                    onPressed: onMuteToggle,
+                  AudioControlBuilder(
+                    controller: widget.controller,
+                    builder: (volume) =>
+                        Icon(volume == 0 ? Icons.volume_off : Icons.volume_up),
                   ),
                   const Spacer(),
                   Flexible(
@@ -152,16 +143,6 @@ class VideoControlsState extends ConsumerState<VideoControls> {
       ),
     );
   }
-
-  void onAdjustVolume(
-    double value,
-  ) {
-    widget.controller.setVolume(value);
-    volume = value;
-    setState(() {});
-  }
-
-  void onMuteToggle() => widget.controller.setVolume(isMuted ? volume : 0);
 
   void onPlayPause() {
     // If the video is playing, pause it.

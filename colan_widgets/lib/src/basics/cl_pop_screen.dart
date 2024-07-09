@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+enum CLScreenPopGesture { swipeLeft, onTap }
+
+class CLPopScreen extends StatelessWidget {
+  const CLPopScreen._({
+    required this.child,
+    required this.popGesture,
+    required this.result,
+    super.key,
+  });
+
+  factory CLPopScreen.onSwipe({
+    required Widget child,
+    Key? key,
+    bool? result,
+  }) {
+    return CLPopScreen._(
+      popGesture: CLScreenPopGesture.swipeLeft,
+      key: key,
+      result: result,
+      child: child,
+    );
+  }
+  factory CLPopScreen.onTap({
+    required Widget child,
+    Key? key,
+    bool? result,
+  }) {
+    return CLPopScreen._(
+      popGesture: CLScreenPopGesture.onTap,
+      key: key,
+      result: result,
+      child: child,
+    );
+  }
+
+  final Widget? child;
+  final CLScreenPopGesture popGesture;
+  final bool? result;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap:
+          popGesture == CLScreenPopGesture.onTap ? () => onPop(context) : null,
+      onHorizontalDragEnd: popGesture == CLScreenPopGesture.swipeLeft
+          ? (DragEndDetails details) {
+              if (details.primaryVelocity == null) return;
+              // pop on Swipe
+              if (details.primaryVelocity! > 0) {
+                onPop(context, result: result);
+              }
+            }
+          : null,
+      child: child,
+    );
+  }
+
+  static Future<void> onPop(BuildContext context, {bool? result}) async {
+    if (context.mounted && context.canPop()) {
+      if (result != null) {
+        context.pop(result);
+      } else {
+        context.pop();
+      }
+    }
+  }
+
+  static bool canPop(BuildContext context) => context.canPop();
+}

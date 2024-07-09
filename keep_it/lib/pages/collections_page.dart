@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -88,7 +86,20 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        unawaited(context.push('/stale_media'));
+                        await MediaWizardService.addMedia(
+                          context,
+                          ref,
+                          media: CLSharedMedia(
+                            entries: media,
+                            type: MediaSourceType.unclassified,
+                          ),
+                        );
+                        if (context.mounted) {
+                          await context.push(
+                            '/media_wizard?type='
+                            '${MediaSourceType.unclassified.name}',
+                          );
+                        }
                       },
                       child: const CLText.small('Show Now'),
                     ),

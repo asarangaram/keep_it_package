@@ -21,18 +21,31 @@ class EditorFinalizer extends StatelessWidget {
     required this.onSave,
     required this.onDiscard,
     this.child,
+    this.allowCopy = true,
+    this.hasEditAction = true,
     super.key,
   });
   final Future<void> Function({required bool overwrite}) onSave;
   final Future<void> Function({required bool done}) onDiscard;
   final Widget? child;
+  final bool hasEditAction;
+  final bool allowCopy;
   @override
   Widget build(BuildContext context) {
+    if (!hasEditAction) {
+      return CLButtonIcon.small(
+        MdiIcons.check,
+        color: CLTheme.of(context).colors.iconColor,
+        onTap: () {
+          onDiscard(done: true);
+        },
+      );
+    }
     return PopupMenuButton<EditorFinalActions>(
       child: child ??
           CLIcon.small(
             MdiIcons.check,
-            color: CLTheme.of(context).colors.iconColor,
+            color: Colors.red, //CLTheme.of(context).colors.iconColor,
           ),
       onSelected: (EditorFinalActions value) async {
         switch (value) {
@@ -47,7 +60,14 @@ class EditorFinalizer extends StatelessWidget {
         }
       },
       itemBuilder: (BuildContext context) {
-        return EditorFinalActions.values
+        final values = <EditorFinalActions>[
+          EditorFinalActions.save,
+          if (allowCopy) EditorFinalActions.saveAsNew,
+          EditorFinalActions.revertToOriginal,
+          EditorFinalActions.discard,
+        ];
+
+        return values
             .map(
               (e) => PopupMenuItem<EditorFinalActions>(
                 value: e,

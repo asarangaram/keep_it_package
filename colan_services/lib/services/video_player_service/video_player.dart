@@ -18,6 +18,8 @@ class VideoPlayerService extends ConsumerWidget {
     super.key,
     this.onSelect,
     this.autoStart = false,
+    this.autoPlay = false,
+    this.inplaceControl = false,
   })  : builder = null,
         playerService = PlayerServices.player;
   const VideoPlayerService.controlMenu({
@@ -26,8 +28,10 @@ class VideoPlayerService extends ConsumerWidget {
   })  : alternate = null,
         onSelect = null,
         autoStart = false,
+        autoPlay = false,
         builder = null,
-        playerService = PlayerServices.controlMenu;
+        playerService = PlayerServices.controlMenu,
+        inplaceControl = false;
   const VideoPlayerService.playStateBuilder({
     required this.media,
     required Widget Function({required bool isPlaying}) builder,
@@ -35,30 +39,33 @@ class VideoPlayerService extends ConsumerWidget {
   })  : alternate = null,
         onSelect = null,
         autoStart = false,
+        autoPlay = false,
         // ignore: prefer_initializing_formals
         builder = builder,
-        playerService = PlayerServices.playStateBuilder;
+        playerService = PlayerServices.playStateBuilder,
+        inplaceControl = false;
 
   final CLMedia media;
   final void Function()? onSelect;
   final bool autoStart;
+  final bool autoPlay;
   final Widget? alternate;
   final PlayerServices playerService;
   final Widget Function({required bool isPlaying})? builder;
+  final bool inplaceControl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     switch (playerService) {
       case PlayerServices.player:
-        if (autoStart) {
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (context.mounted) {
-              await ref
-                  .read(videoPlayerStateProvider.notifier)
-                  .playVideo(media.path);
-            }
-          });
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (context.mounted && autoStart) {
+            await ref
+                .read(videoPlayerStateProvider.notifier)
+                .setVideo(media.path, autoPlay: autoPlay);
+          }
+        });
+
         return GetVideoController(
           builder: (
             VideoPlayerState state,
@@ -67,6 +74,7 @@ class VideoPlayerService extends ConsumerWidget {
             if (state.path == media.path) {
               return VideoLayer(
                 controller: controller,
+                inplaceControl: inplaceControl,
               );
             } else {
               return GestureDetector(

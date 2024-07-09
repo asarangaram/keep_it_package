@@ -6,6 +6,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'audio/decorations.dart';
+import 'audio/live_audio_view.dart';
+import 'audio/recorded_audio_view.dart';
+
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({
     required this.onUpsertNote,
@@ -60,67 +64,67 @@ class _AudioRecorderState extends State<AudioRecorder> {
     super.dispose();
   }
 
+  Widget control() {
+    if (hasAudioMessage) {
+      return SizedBox(
+        width: kMinInteractiveDimension,
+        child: CLButtonIcon.small(
+          Icons.save,
+          onTap: _sendAudio,
+        ),
+      );
+    }
+
+    if (widget.editMode) {
+      return IconButton(
+        onPressed: widget.onEditCancel,
+        icon: const Icon(
+          Icons.check,
+        ),
+        color: Colors.white,
+        iconSize: 28,
+      );
+    }
+    return SizedBox(
+      width: kMinInteractiveDimension,
+      child: CLButtonIcon.small(
+        isRecording ? Icons.stop : Icons.mic,
+        onTap: () => _startOrStopRecording(widget.tempDir),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
-      child: hasAudioMessage
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: AudioNoteView(
-                    audioMessage!,
-                    theme: const DefaultNotesInputTheme().copyWith(
-                      margin: const EdgeInsets.only(left: 8),
-                    ),
-                  ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (hasAudioMessage)
+            Expanded(
+              child: RecordedAudioDecoration(
+                child: RecordedAudioView(
+                  audioMessage!,
+                  onDeleteAudio: _deleteAudioMessage,
                 ),
-                IconButton(
-                  onPressed: _sendAudio,
-                  icon: const Icon(
-                    Icons.save,
-                    color: Colors.white,
-                  ),
-                ),
-                IconButton(
-                  onPressed: _deleteAudioMessage,
-                  icon: const Icon(Icons.delete),
-                  color: Colors.white,
-                  iconSize: 28,
-                ),
-              ],
+              ),
             )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isRecording)
-                  Expanded(
-                    child: LiveAudio(
-                      recorderController: recorderController,
-                    ),
-                  )
-                else if (widget.child != null)
-                  Expanded(child: widget.child!)
-                else
-                  const Spacer(),
-                if (widget.editMode)
-                  IconButton(
-                    onPressed: widget.onEditCancel,
-                    icon: const Icon(
-                      Icons.check,
-                    ),
-                    color: Colors.white,
-                    iconSize: 28,
-                  )
-                else
-                  CLButtonIcon.small(
-                    isRecording ? Icons.stop : Icons.mic,
-                    onTap: () => _startOrStopRecording(widget.tempDir),
-                  ),
-              ],
-            ),
+          else if (isRecording)
+            Expanded(
+              child: RecordedAudioDecoration(
+                child: LiveAudio(
+                  recorderController: recorderController,
+                ),
+              ),
+            )
+          else if (widget.child != null)
+            Expanded(child: widget.child!)
+          else
+            const Spacer(),
+          control(),
+        ],
+      ),
     );
   }
 
@@ -180,115 +184,5 @@ class _AudioRecorderState extends State<AudioRecorder> {
         isRecording = !isRecording;
       });
     }
-  }
-}
-
-class LiveAudio extends StatelessWidget {
-  const LiveAudio({
-    required this.recorderController,
-    super.key,
-  });
-
-  final RecorderController recorderController;
-
-  @override
-  Widget build(BuildContext context) {
-    return AudioWaveforms(
-      enableGesture: true,
-      size: Size(
-        MediaQuery.of(context).size.width / 2,
-        50,
-      ),
-      recorderController: recorderController,
-      waveStyle: const WaveStyle(
-        waveColor: Colors.white,
-        extendWaveform: true,
-        showMiddleLine: false,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: const Color(0xFF1E1B26),
-      ),
-      padding: const EdgeInsets.only(left: 18),
-      margin: const EdgeInsets.symmetric(
-        horizontal: 15,
-      ),
-    );
-  }
-}
-
-class AudioNoteView extends StatefulWidget {
-  const AudioNoteView(this.note, {required this.theme, super.key});
-
-  final CLAudioNote note;
-  final NotesTheme theme;
-
-  @override
-  State<AudioNoteView> createState() => _AudioNoteViewState();
-}
-
-class _AudioNoteViewState extends State<AudioNoteView> {
-  late PlayerController controller;
-  late StreamSubscription<PlayerState> playerStateSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = PlayerController();
-    _preparePlayer();
-    playerStateSubscription = controller.onPlayerStateChanged.listen((_) {
-      setState(() {});
-    });
-  }
-
-  Future<void> _preparePlayer() async =>
-      controller.preparePlayer(path: widget.note.path, noOfSamples: 200);
-
-  @override
-  void dispose() {
-    playerStateSubscription.cancel();
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final playerWaveStyle = widget.theme.playerWaveStyle;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(widget.theme.borderRadius),
-        border: Border.all(color: widget.theme.borderColor),
-        color: widget.theme.backgroundColor,
-      ),
-      margin: widget.theme.margin,
-      padding: widget.theme.padding,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          //if (!controller.playerState.isStopped)
-          IconButton(
-            onPressed: () async {
-              controller.playerState.isPlaying
-                  ? await controller.pausePlayer()
-                  : await controller.startPlayer(
-                      finishMode: FinishMode.pause,
-                    );
-            },
-            icon: Icon(
-              controller.playerState.isPlaying ? Icons.stop : Icons.play_arrow,
-              color: widget.theme.foregroundColor,
-            ),
-          ),
-          Expanded(
-            child: AudioFileWaveforms(
-              size: Size(MediaQuery.of(context).size.width * 3 / 4, 70),
-              playerController: controller,
-              playerWaveStyle: playerWaveStyle,
-              continuousWaveform: widget.theme.continuousWaveform,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

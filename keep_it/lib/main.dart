@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,20 +10,19 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:window_size/window_size.dart';
 
-import 'modules/shared_media/incoming_media_handler.dart';
 import 'pages/camera_page.dart';
-import 'pages/collection_editor_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/deleted_media_page.dart';
-
-import 'pages/item_page.dart';
 import 'pages/media_editor_page.dart';
-import 'pages/move_media_page.dart';
+import 'pages/media_pageview_page.dart';
+import 'pages/media_view_page.dart';
+
+import 'pages/media_wizard_page.dart';
 import 'pages/pinned_media_page.dart';
-import 'pages/settings_main.dart';
-import 'pages/stale_media_page.dart';
+import 'pages/settings_main_page.dart';
 import 'widgets/empty_state.dart';
+import 'widgets/shared_media/incoming_media_handler.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -97,8 +95,24 @@ class KeepItApp implements AppDescriptor {
               parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
             }
 
-            return CollectionItemPage(
+            return MediaPageViewPage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
+              id: int.parse(state.pathParameters['item_id']!),
+              parentIdentifier: parentIdentifier,
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'item_view/:item_id',
+          builder: (context, GoRouterState state) {
+            final String parentIdentifier;
+            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+              parentIdentifier = 'unknown';
+            } else {
+              parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
+            }
+
+            return MediaViewPage(
               id: int.parse(state.pathParameters['item_id']!),
               parentIdentifier: parentIdentifier,
             );
@@ -106,39 +120,20 @@ class KeepItApp implements AppDescriptor {
         ),
 
         CLRouteDescriptor(
-          name: 'edit/:collectionId',
+          name: 'media_wizard',
           builder: (context, GoRouterState state) {
-            return CollectionEditorPage(
-              collectionId: int.parse(state.pathParameters['collectionId']!),
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'move',
-          builder: (context, GoRouterState state) {
-            final List<int> idsToMove;
-            if (!state.uri.queryParameters.containsKey('ids')) {
-              idsToMove = <int>[];
+            final typeString = state.uri.queryParameters['type'];
+            final MediaSourceType type;
+            if (typeString != null) {
+              type = MediaSourceType.values.asNameMap()[typeString] ??
+                  MediaSourceType.unclassified;
             } else {
-              idsToMove = state.uri.queryParameters['ids']!
-                  .split(',')
-                  .map(int.parse)
-                  .toList();
+              type = MediaSourceType.unclassified;
             }
-            final unhide = state.uri.queryParameters['unhide'] == 'true';
+            return MediaWizardPage(type: type);
+          },
+        ),
 
-            return MoveMediaPage(
-              idsToMove: idsToMove,
-              unhide: unhide,
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'stale_media',
-          builder: (context, GoRouterState state) {
-            return const StaleMediaPage();
-          },
-        ),
         CLRouteDescriptor(
           name: 'deleted_media',
           builder: (context, GoRouterState state) {

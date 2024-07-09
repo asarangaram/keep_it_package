@@ -39,12 +39,14 @@ class _ImageEditServiceState extends State<ImageEditService> {
 
   double rotateAngle = 0;
   aratio.AspectRatio? aspectRatio;
+  bool hasEditAction = false;
 
   void reset() {
     setState(() {
       aspectRatio = null;
       rotateAngle = 0.0;
       controller.currentState?.reset();
+      hasEditAction = false;
     });
   }
 
@@ -67,9 +69,10 @@ class _ImageEditServiceState extends State<ImageEditService> {
                     editActionDetailsIsChanged: (actions) {
                       setState(() {
                         rotateAngle = actions.rotateAngle;
+                        hasEditAction = true;
                       });
 
-                      /* print('edit action: ${actions.hasEditAction}');
+                      /* 
                       if (actions.hasEditAction) {
                         if (actions.hasRotateAngle) {
                           setState(() {
@@ -126,6 +129,8 @@ class _ImageEditServiceState extends State<ImageEditService> {
               });
             },
             saveWidget: EditorFinalizer(
+              allowCopy: false,
+              hasEditAction: hasEditAction,
               onSave: ({required overwrite}) async {
                 if (controller.currentState == null) {
                   return;

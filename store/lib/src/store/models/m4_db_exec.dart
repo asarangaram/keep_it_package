@@ -130,8 +130,8 @@ class DBExec<T> {
     final value = keys.map((e) => identifierMap[e]).toList();
 
     final sql =
-        'DELETE FROM $table WHERE ${keys.map((e) => '$e = ?').join(', ')}';
-    _infoLogger('Readback:  $sql, $value');
+        'DELETE FROM $table WHERE ${keys.map((e) => '$e = ?').join(' AND ')}';
+    _infoLogger('delete:  $sql, $value');
     await tx.execute(sql, value);
   }
 

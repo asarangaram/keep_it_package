@@ -27,6 +27,7 @@ class CropperControls extends ConsumerWidget {
             .whenOrNull(data: (value) => value)
             ?.aspectRatios ??
         [];
+
     return Container(
       decoration: BoxDecoration(
         color: CLTheme.of(context)

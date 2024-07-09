@@ -1,13 +1,10 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
-import '../models/album_manager_helper.dart';
-import '../providers/gallery_group_provider.dart';
 import 'empty_state.dart';
 import 'folders_and_files/media_as_file.dart';
 
@@ -56,79 +53,30 @@ class TimeLineView extends ConsumerWidget {
           onCameraCapture: onCameraCapture,
           onRefresh: () async => ref.invalidate(dbManagerProvider),
           selectionActions: (context, items) {
+            final mediaHandler = MediaHandler.multiple(
+              media: items,
+              dbManager: dbManager,
+            );
             return [
               CLMenuItem(
                 title: 'Delete',
                 icon: Icons.delete,
-                onTap: () async {
-                  final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CLConfirmAction(
-                            title: 'Confirm delete',
-                            message: 'Are you sure you want to delete '
-                                '${items.length} items?',
-                            child: null,
-                            onConfirm: ({required confirmed}) =>
-                                Navigator.of(context).pop(confirmed),
-                          );
-                        },
-                      ) ??
-                      false;
-                  if (confirmed) {
-                    await dbManager.deleteMediaMultiple(
-                      items,
-                      onDeleteFile: (f) async => f.deleteIfExists(),
-                      onRemovePinMultiple: (id) async => AlbumManagerHelper()
-                          .removeMultipleMedia(context, ref, id),
-                    );
-                  }
-                  return confirmed;
-                },
+                onTap: () => mediaHandler.delete(context, ref),
               ),
               CLMenuItem(
                 title: 'Move',
                 icon: MdiIcons.imageMove,
-                onTap: () async {
-                  final result = await context.push<bool>(
-                    '/move?ids=${items.map((e) => e.id).join(',')}',
-                  );
-
-                  return result;
-                },
+                onTap: () => mediaHandler.move(context, ref),
               ),
               CLMenuItem(
                 title: 'Share',
                 icon: MdiIcons.shareAll,
-                onTap: () async {
-                  final box = context.findRenderObject() as RenderBox?;
-                  final files = items.map((e) => XFile(e.path)).toList();
-                  final shareResult = await Share.shareXFiles(
-                    files,
-                    // text: 'Share from KeepIT',
-                    subject: 'Media from KeepIt',
-                    sharePositionOrigin:
-                        box!.localToGlobal(Offset.zero) & box.size,
-                  );
-                  return switch (shareResult.status) {
-                    ShareResultStatus.dismissed => false,
-                    ShareResultStatus.unavailable => false,
-                    ShareResultStatus.success => true,
-                  };
-                },
+                onTap: () => mediaHandler.share(context, ref),
               ),
               CLMenuItem(
                 title: 'Pin',
                 icon: MdiIcons.pin,
-                onTap: () async {
-                  await dbManager.pinMediaMultiple(
-                    items,
-                    onPin: AlbumManagerHelper().albumManager.addMedia,
-                    onRemovePin: (id) async =>
-                        AlbumManagerHelper().removeMedia(context, ref, id),
-                  );
-                  return true;
-                },
+                onTap: () => mediaHandler.togglePin(context, ref),
               ),
             ];
           },

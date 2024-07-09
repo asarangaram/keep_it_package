@@ -32,7 +32,11 @@ class CLCameraService extends ConsumerWidget {
           id: collectionId,
           buildOnData: (collection) {
             return CameraServiceCore(
-              onDone: onDone,
+              onDone: () {
+                // Confirm ?
+                ref.read(capturedMediaProvider.notifier).clear();
+                onDone?.call();
+              },
               onError: onError,
               onCapture: (path, {required isVideo}) => onCapture(
                 ref,
@@ -45,6 +49,15 @@ class CLCameraService extends ConsumerWidget {
               previewWidget: PreviewCapturedMedia(
                 sendMedia: (mediaList) async {
                   if (collection == null) {
+                    final capturedMedia = ref.read(capturedMediaProvider);
+                    await MediaWizardService.addMedia(
+                      context,
+                      ref,
+                      media: CLSharedMedia(
+                        entries: capturedMedia,
+                        type: MediaSourceType.captured,
+                      ),
+                    );
                     await onReceiveCapturedMedia();
                   }
                   ref.read(capturedMediaProvider.notifier).clear();

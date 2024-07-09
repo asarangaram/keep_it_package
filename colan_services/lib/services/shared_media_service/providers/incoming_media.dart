@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:colan_services/services/media_wizard_service/models/types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,6 +69,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
       push(
         CLSharedMedia(
           entries: attachements,
+          type: MediaSourceType.incoming,
         ),
       );
     }
