@@ -17,8 +17,14 @@ class NotesService extends ConsumerWidget {
   final CLMedia media;
   final List<CLNote> notes;
   final Future<String> Function({required String ext}) onCreateNewFile;
-  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
-  final Future<void> Function(CLNote note) onDeleteNote;
+  final Future<void> Function(
+    CLMedia media,
+    CLNote note,
+  ) onUpsertNote;
+  final Future<void> Function(
+    CLNote note, {
+    required bool? confirmed,
+  }) onDeleteNote;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return NotesView(

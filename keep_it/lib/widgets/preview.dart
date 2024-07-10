@@ -9,11 +9,11 @@ class Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaHandlerWidget(
-      builder: ({required action}) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return PreviewService(
           media: media,
-          getPreviewPath: action.getPreviewPath,
+          getPreviewPath: storeAction.getPreviewPath,
         );
       },
     );

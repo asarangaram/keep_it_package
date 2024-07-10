@@ -15,7 +15,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required String parentIdentifier,
     required Widget Function(CLMedia media) buildNotes,
     required Widget Function(CLMedia media) getPreview,
-    required StoreActions action,
+    required StoreActions storeAction,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -23,7 +23,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
-      action: action,
+      storeAction: storeAction,
       actionControl: actionControl ?? ActionControl.full(),
       buildNotes: buildNotes,
       key: key,
@@ -36,7 +36,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required String parentIdentifier,
     required Widget Function(CLMedia media) buildNotes,
     required Widget Function(CLMedia media) getPreview,
-    required StoreActions action,
+    required StoreActions storeAction,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -44,7 +44,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       initialMediaIndex: initialMediaIndex,
       media: media,
       parentIdentifier: parentIdentifier,
-      action: action,
+      storeAction: storeAction,
       actionControl: actionControl ?? ActionControl.full(),
       buildNotes: buildNotes,
       key: key,
@@ -58,14 +58,14 @@ class MediaViewService extends ConsumerStatefulWidget {
     required this.actionControl,
     required this.buildNotes,
     required this.getPreview,
-    required this.action,
+    required this.storeAction,
     super.key,
   });
 
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
-  final StoreActions action;
+  final StoreActions storeAction;
   final ActionControl actionControl;
   final Widget Function(CLMedia media) buildNotes;
   final Widget Function(CLMedia media) getPreview;
@@ -143,7 +143,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                             }
                           });
                         },
-                        action: widget.action,
+                        storeAction: widget.storeAction,
                         actionControl: widget.actionControl,
                         buildNotes: widget.buildNotes,
                       )
@@ -151,7 +151,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                         items: widget.media,
                         getPreview: widget.getPreview,
                         startIndex: widget.initialMediaIndex,
-                        action: widget.action,
+                        storeAction: widget.storeAction,
                         actionControl: ActionControl.full(),
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,

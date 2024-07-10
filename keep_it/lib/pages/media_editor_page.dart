@@ -24,8 +24,8 @@ class MediaEditorPage extends StatelessWidget {
     return FullscreenLayout(
       hasBackground: false,
       backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-      child: MediaHandlerWidget(
-        builder: ({required action}) {
+      child: StoreManager(
+        builder: ({required storeAction}) {
           return GetMedia(
             id: mediaId!,
             buildOnData: (media) {
@@ -38,13 +38,15 @@ class MediaEditorPage extends StatelessWidget {
               return InvokeEditor(
                 media: media,
                 onCreateNewFile: () async {
-                  return action.createTempFile(ext: 'jpg');
+                  return storeAction.createTempFile(ext: 'jpg');
                 },
                 onSave: (file, {required overwrite}) async {
                   if (overwrite) {
-                    await action.replaceMedia([media], file);
+                    await storeAction
+                        .replaceMedia([media], file, confirmed: null);
                   } else {
-                    await action.cloneAndReplaceMedia([media], file);
+                    await storeAction
+                        .cloneAndReplaceMedia([media], file, confirmed: null);
                   }
                 },
               );

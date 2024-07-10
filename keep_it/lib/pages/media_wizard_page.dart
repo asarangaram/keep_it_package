@@ -15,11 +15,11 @@ class MediaWizardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FullscreenLayout(
       child: CLPopScreen.onSwipe(
-        child: MediaHandlerWidget(
-          builder: ({required action}) {
+        child: StoreManager(
+          builder: ({required storeAction}) {
             return MediaWizardService(
               type: type,
-              action: action,
+              storeAction: storeAction,
               getPreview: (media) => Preview(media: media),
             );
           },

@@ -16,8 +16,8 @@ class CameraPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       useSafeArea: false,
-      child: MediaHandlerWidget(
-        builder: ({required action}) {
+      child: StoreManager(
+        builder: ({required storeAction}) {
           return GetCollection(
             id: collectionId,
             buildOnData: (collection) {
@@ -33,7 +33,7 @@ class CameraPage extends ConsumerWidget {
                       );
                 },
                 onNewMedia: (path, {required isVideo}) {
-                  return action.newMedia(
+                  return storeAction.newMedia(
                     path,
                     isVideo: isVideo,
                     collection: collection,

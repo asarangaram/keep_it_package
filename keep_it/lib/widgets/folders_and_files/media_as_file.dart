@@ -22,14 +22,14 @@ class MediaAsFile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MediaHandlerWidget(
-      builder: ({required action}) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () => action.move([media]),
-          onDelete: () => action.delete([media]),
-          onShare: () => action.share([media]),
-          onEdit: () => action.edit([media]),
+          onMove: () => storeAction.move([media]),
+          onDelete: () => storeAction.delete([media], confirmed: null),
+          onShare: () => storeAction.share([media]),
+          onEdit: () => storeAction.edit([media]),
           onTap: onTap,
           child: getPreview(media),
         );

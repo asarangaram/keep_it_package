@@ -15,7 +15,10 @@ class AudioNotes extends StatefulWidget {
   final CLMedia media;
   final List<CLAudioNote> notes;
   final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
-  final Future<void> Function(CLNote note) onDeleteNote;
+  final Future<void> Function(
+    CLNote note, {
+    required bool? confirmed,
+  }) onDeleteNote;
   final Future<String> Function() onCreateNewAudioFile;
   @override
   State<AudioNotes> createState() => _AudioNotesState();
@@ -61,7 +64,7 @@ class _AudioNotesState extends State<AudioNotes> {
                           if (widget.notes.length == 1) {
                             editMode = false;
                           }
-                          widget.onDeleteNote(note);
+                          widget.onDeleteNote(note, confirmed: null);
                         },
                       ),
                     )

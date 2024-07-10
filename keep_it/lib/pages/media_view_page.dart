@@ -22,8 +22,8 @@ class MediaViewPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
-      child: MediaHandlerWidget(
-        builder: ({required action}) {
+      child: StoreManager(
+        builder: ({required storeAction}) {
           return GetMedia(
             id: id,
             buildOnData: (media) {
@@ -34,7 +34,7 @@ class MediaViewPage extends ConsumerWidget {
               return CLPopScreen.onSwipe(
                 child: MediaViewService(
                   media: media,
-                  action: action,
+                  storeAction: storeAction,
                   getPreview: (media) => Preview(media: media),
                   parentIdentifier: parentIdentifier,
                   actionControl: ActionControl.editOnly(),
@@ -45,9 +45,9 @@ class MediaViewPage extends ConsumerWidget {
                         return NotesService(
                           media: media,
                           notes: notes,
-                          onUpsertNote: action.onUpsertNote,
-                          onDeleteNote: action.onDeleteNote,
-                          onCreateNewFile: action.createTempFile,
+                          onUpsertNote: storeAction.onUpsertNote,
+                          onDeleteNote: storeAction.onDeleteNote,
+                          onCreateNewFile: storeAction.createTempFile,
                         );
                       },
                     );

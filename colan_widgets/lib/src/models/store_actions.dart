@@ -19,20 +19,34 @@ class StoreActions {
     required this.onUpsertNote,
     required this.onDeleteNote,
     required this.getPreviewPath,
+    required this.upsertCollection,
+    required this.deleteCollection,
   });
   final Future<bool> Function(List<CLMedia> selectedMedia) move;
-  final Future<bool> Function(List<CLMedia> selectedMedia) delete;
+  final Future<bool> Function(
+    List<CLMedia> selectedMedia, {
+    required bool? confirmed,
+  }) delete;
   final Future<bool> Function(List<CLMedia> selectedMedia) share;
   final Future<bool> Function(List<CLMedia> selectedMedia) togglePin;
   final Future<bool> Function(List<CLMedia> selectedMedia) edit;
 
-  final Future<bool> Function(List<CLMedia> selectedMedia) restoreDeleted;
+  final Future<bool> Function(
+    List<CLMedia> selectedMedia, {
+    required bool? confirmed,
+  }) restoreDeleted;
 
-  final Future<bool> Function(List<CLMedia> selectedMedia, String outFile)
-      replaceMedia;
+  final Future<bool> Function(
+    List<CLMedia> selectedMedia,
+    String outFile, {
+    required bool? confirmed,
+  }) replaceMedia;
 
-  final Future<bool> Function(List<CLMedia> selectedMedia, String outFile)
-      cloneAndReplaceMedia;
+  final Future<bool> Function(
+    List<CLMedia> selectedMedia,
+    String outFile, {
+    required bool? confirmed,
+  }) cloneAndReplaceMedia;
 
   final Future<CLMedia?> Function(
     String path, {
@@ -56,6 +70,15 @@ class StoreActions {
   final Future<String> Function({required String ext}) createTempFile;
 
   final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
-  final Future<void> Function(CLNote note) onDeleteNote;
+  final Future<void> Function(
+    CLNote note, {
+    required bool? confirmed,
+  }) onDeleteNote;
   final String Function(CLMedia media) getPreviewPath;
+
+  final Future<Collection> Function(Collection collection) upsertCollection;
+  final Future<bool> Function(
+    Collection collection, {
+    required bool? confirmed,
+  }) deleteCollection;
 }

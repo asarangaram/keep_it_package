@@ -15,8 +15,8 @@ class PinnedMediaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const label = 'pinnedMedia';
     const parentIdentifier = 'PinnedMedia';
-    return MediaHandlerWidget(
-      builder: ({required action}) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return GetPinnedMedia(
           buildOnData: (media) {
             return Column(
@@ -30,15 +30,15 @@ class PinnedMediaPage extends ConsumerWidget {
                       tag: '$parentIdentifier /item/${item.id}',
                       child: Padding(
                         padding: const EdgeInsets.all(4),
-                        child: MediaHandlerWidget(
-                          builder: ({required action}) {
+                        child: StoreManager(
+                          builder: ({required storeAction}) {
                             return GestureDetector(
                               onTap: () async {
                                 await context.push(
                                   '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
                                 );
                               },
-                              onLongPress: () => action.togglePin([item]),
+                              onLongPress: () => storeAction.togglePin([item]),
                               child: Preview(media: item),
                             );
                           },
@@ -60,7 +60,7 @@ class PinnedMediaPage extends ConsumerWidget {
                           title: 'Remove Selected Pins',
                           icon: MdiIcons.pinOffOutline,
                           onTap: () async {
-                            await action.togglePin(media);
+                            await storeAction.togglePin(media);
 
                             return true;
                           },

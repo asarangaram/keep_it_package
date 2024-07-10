@@ -21,8 +21,8 @@ class MediaPageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaHandlerWidget(
-      builder: ({required action}) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return GetMediaByCollectionId(
           collectionId: collectionId,
           buildOnData: (items) {
@@ -40,7 +40,7 @@ class MediaPageViewPage extends StatelessWidget {
               useSafeArea: false,
               child: MediaViewService.pageView(
                 media: items,
-                action: action,
+                storeAction: storeAction,
                 getPreview: (media) => Preview(media: media),
                 parentIdentifier: parentIdentifier,
                 initialMediaIndex: initialMediaIndex,
@@ -51,9 +51,9 @@ class MediaPageViewPage extends StatelessWidget {
                       return NotesService(
                         media: media,
                         notes: notes,
-                        onUpsertNote: action.onUpsertNote,
-                        onDeleteNote: action.onDeleteNote,
-                        onCreateNewFile: action.createTempFile,
+                        onUpsertNote: storeAction.onUpsertNote,
+                        onDeleteNote: storeAction.onDeleteNote,
+                        onCreateNewFile: storeAction.createTempFile,
                       );
                     },
                   );

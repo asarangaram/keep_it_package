@@ -14,7 +14,10 @@ class TextNotes extends StatelessWidget {
   final List<CLTextNote> notes;
   final Future<String> Function() onCreateNewTextFile;
   final Future<void> Function(CLNote note) onUpsertNote;
-  final Future<void> Function(CLNote note) onDeleteNote;
+  final Future<void> Function(
+    CLNote note, {
+    required bool? confirmed,
+  }) onDeleteNote;
 
   @override
   Widget build(BuildContext context) {

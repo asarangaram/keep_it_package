@@ -15,8 +15,8 @@ class DeleteMediaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const label = 'Deleted';
     const parentIdentifier = 'Deleted Media';
-    return MediaHandlerWidget(
-      builder: ({required action}) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return GetDeletedMedia(
           buildOnData: (media) {
             if (media.isEmpty) {
@@ -58,12 +58,16 @@ class DeleteMediaPage extends ConsumerWidget {
                             CLMenuItem(
                               title: 'Restore',
                               icon: MdiIcons.imageMove,
-                              onTap: () => action.restoreDeleted(items),
+                              onTap: () => storeAction.restoreDeleted(
+                                items,
+                                confirmed: null,
+                              ),
                             ),
                             CLMenuItem(
                               title: 'Delete',
                               icon: Icons.delete,
-                              onTap: () => action.delete(items),
+                              onTap: () =>
+                                  storeAction.delete(items, confirmed: null),
                             ),
                           ];
                         },
@@ -75,12 +79,16 @@ class DeleteMediaPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () => action.restoreDeleted(media),
+                            onPressed: () => storeAction.restoreDeleted(
+                              media,
+                              confirmed: null,
+                            ),
                             label: const CLText.small('Restore All'),
                             icon: Icon(MdiIcons.imageMove),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () => action.delete(media),
+                            onPressed: () =>
+                                storeAction.delete(media, confirmed: null),
                             label: const CLText.small('Discard All'),
                             icon: Icon(MdiIcons.delete),
                           ),

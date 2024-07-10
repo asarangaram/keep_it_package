@@ -15,13 +15,13 @@ import 'package:uuid/uuid.dart';
 
 import '../models/album_manager_helper.dart';
 
-class MediaHandlerWidget extends StatelessWidget {
-  const MediaHandlerWidget({
+class StoreManager extends StatelessWidget {
+  const StoreManager({
     required this.builder,
     super.key,
   });
 
-  final Widget Function({required StoreActions action})? builder;
+  final Widget Function({required StoreActions storeAction})? builder;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
 
   final DBManager dbManager;
   final AppSettings appSettings;
-  final Widget Function({required StoreActions action})? builder;
+  final Widget Function({required StoreActions storeAction})? builder;
 
   @override
   ConsumerState<MediaHandlerWidget0> createState() =>
@@ -62,7 +62,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   @override
   Widget build(BuildContext context) {
     return widget.builder!(
-      action: StoreActions(
+      storeAction: StoreActions(
         move: move,
         delete: delete,
         share: share,
@@ -78,6 +78,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         onUpsertNote: onUpsertNote,
         onDeleteNote: onDeleteNote,
         getPreviewPath: getPreviewPath,
+        upsertCollection: upsertCollection,
+        deleteCollection: deleteCollection,
       ),
     );
   }
@@ -105,7 +107,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> delete(List<CLMedia> selectedMedia, {bool? confirmed}) async {
+  Future<bool> delete(
+    List<CLMedia> selectedMedia, {
+    required bool? confirmed,
+  }) async {
     if (confirmed == null || !confirmed) {
       return false;
     }
@@ -192,22 +197,27 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
   }
 
-  Future<bool> replaceMedia(List<CLMedia> selectedMedia, String outFile) {
-    return save(selectedMedia, outFile, duplicate: false);
+  Future<bool> replaceMedia(
+    List<CLMedia> selectedMedia,
+    String outFile, {
+    required bool? confirmed,
+  }) {
+    return save(selectedMedia, outFile, duplicate: false, confirmed: confirmed);
   }
 
   Future<bool> cloneAndReplaceMedia(
     List<CLMedia> selectedMedia,
-    String outFile,
-  ) {
-    return save(selectedMedia, outFile, duplicate: true);
+    String outFile, {
+    required bool? confirmed,
+  }) {
+    return save(selectedMedia, outFile, duplicate: true, confirmed: confirmed);
   }
 
   Future<bool> save(
     List<CLMedia> selectedMedia,
     String outFile, {
     required bool duplicate,
-    bool? confirmed,
+    required bool? confirmed,
   }) async {
     if (confirmed == null || !confirmed) return false;
 
@@ -309,7 +319,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
   }
 
-  Future<bool> restoreDeleted(List<CLMedia> selectedMedia) async {
+  Future<bool> restoreDeleted(
+    List<CLMedia> selectedMedia, {
+    required bool? confirmed,
+  }) async {
     for (final item in selectedMedia) {
       if (item.id != null) {
         await widget.dbManager.upsertMedia(
@@ -465,7 +478,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
   }
 
-  Future<void> onDeleteNote(CLNote note) async {
+  Future<void> onDeleteNote(
+    CLNote note, {
+    required bool? confirmed,
+  }) async {
     if (note.id == null) return;
     await widget.dbManager.deleteNote(
       note,
@@ -496,6 +512,27 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       '$uuid.tn.jpeg',
     );
     return previewFileName;
+  }
+
+  Future<Collection> upsertCollection(Collection collection) async {
+    return widget.dbManager.upsertCollection(
+      collection: collection,
+    );
+  }
+
+  Future<bool> deleteCollection(
+    Collection collection, {
+    required bool? confirmed,
+  }) async {
+    await widget.dbManager.deleteCollection(
+      collection,
+      onDeleteFile: (file) async {
+        if (file.existsSync()) {
+          file.deleteSync();
+        }
+      },
+    );
+    return true;
   }
 
   final uuidGenerator = const Uuid();

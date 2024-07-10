@@ -5,6 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keep_it/widgets/store_manager.dart';
 
 import 'package:store/store.dart';
 
@@ -22,8 +23,8 @@ class CollectionAsFolder extends ConsumerWidget {
   final Widget Function(CLMedia media) getPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetDBManager(
-      builder: (dbManager) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
           onEdit: () async {
@@ -33,9 +34,7 @@ class CollectionAsFolder extends ConsumerWidget {
             );
             if (res != null) {
               final (collection) = res;
-              await dbManager.upsertCollection(
-                collection: collection,
-              );
+              await storeAction.upsertCollection(collection);
 
               await ref
                   .read(notificationMessageProvider.notifier)
@@ -44,34 +43,8 @@ class CollectionAsFolder extends ConsumerWidget {
 
             return true;
           },
-          onDelete: () async {
-            final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return CLConfirmAction(
-                      title: 'Confirm Delete',
-                      message: 'Are you sure you want to delete '
-                          '"${collection.label}" and its content?',
-                      child: null,
-                      onConfirm: ({required confirmed}) =>
-                          Navigator.of(context).pop(confirmed),
-                    );
-                  },
-                ) ??
-                false;
-
-            if (confirmed) {
-              await dbManager.deleteCollection(
-                collection,
-                onDeleteFile: (file) async {
-                  if (file.existsSync()) {
-                    file.deleteSync();
-                  }
-                },
-              );
-            }
-            return confirmed;
-          },
+          onDelete: () =>
+              storeAction.deleteCollection(collection, confirmed: null),
           onTap: () async {
             await context.push(
               '/items_by_collection/${collection.id}',

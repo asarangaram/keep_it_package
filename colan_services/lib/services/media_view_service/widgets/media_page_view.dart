@@ -10,7 +10,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   const MediaPageView({
     required this.items,
     required this.startIndex,
-    required this.action,
+    required this.storeAction,
     required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
@@ -21,7 +21,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   });
   final List<CLMedia> items;
   final String parentIdentifier;
-  final StoreActions action;
+  final StoreActions storeAction;
   final ActionControl actionControl;
   final int startIndex;
   final bool isLocked;
@@ -78,11 +78,13 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
           ),
         ),
         MediaControls(
-          onMove: ac.onMove(() => widget.action.move([media])),
-          onDelete: ac.onDelete(() => widget.action.delete([media])),
-          onShare: ac.onShare(() => widget.action.share([media])),
-          onEdit: ac.onEdit(() => widget.action.edit([media])),
-          onPin: ac.onPin(() => widget.action.togglePin([media])),
+          onMove: ac.onMove(() => widget.storeAction.move([media])),
+          onDelete: ac.onDelete(
+            () => widget.storeAction.delete([media], confirmed: null),
+          ),
+          onShare: ac.onShare(() => widget.storeAction.share([media])),
+          onEdit: ac.onEdit(() => widget.storeAction.edit([media])),
+          onPin: ac.onPin(() => widget.storeAction.togglePin([media])),
           media: media,
         ),
       ],

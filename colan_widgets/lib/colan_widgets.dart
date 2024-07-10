@@ -6,7 +6,7 @@ export 'src/basics/async_widgets.dart';
 export 'src/basics/cl_button.dart';
 export 'src/basics/cl_buttons_grid.dart';
 export 'src/basics/cl_circled_icon.dart';
-export 'src/basics/cl_confirm_action.dart';
+
 export 'src/basics/cl_custom_chip.dart';
 export 'src/basics/cl_custom_grid.dart';
 export 'src/basics/cl_decorate_square.dart';

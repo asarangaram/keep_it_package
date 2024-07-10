@@ -14,12 +14,12 @@ class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({
     required this.type,
     required this.getPreview,
-    required this.action,
+    required this.storeAction,
     super.key,
   });
   final UniversalMediaSource type;
   final Widget Function(CLMedia media) getPreview;
-  final StoreActions action;
+  final StoreActions storeAction;
   static Future<void> addMedia(
     BuildContext context,
     WidgetRef ref, {
@@ -47,7 +47,7 @@ class MediaWizardService extends ConsumerWidget {
     return CLPopScreen.onSwipe(
       child: SelectAndKeepMedia(
         media: media,
-        action: action,
+        storeAction: storeAction,
         type: type,
         galleryMap: galleryMap,
         getPreview: getPreview,
@@ -62,13 +62,13 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     required this.type,
     required this.galleryMap,
     required this.getPreview,
-    required this.action,
+    required this.storeAction,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
   final Widget Function(CLMedia media) getPreview;
-  final StoreActions action;
+  final StoreActions storeAction;
   final List<GalleryGroup<CLMedia>> galleryMap;
 
   @override
@@ -133,7 +133,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               /// the universalMediaProvider
               /// We only need to update the collectionId
               : StreamBuilder<Progress>(
-                  stream: widget.action.moveToCollectionStream(
+                  stream: widget.storeAction.moveToCollectionStream(
                     currMedia,
                     collection: targetCollection!,
                     onDone: () {
@@ -173,7 +173,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       icon: Icons.delete,
                       onTap: hasCandidate
                           ? () async {
-                              final res = await widget.action.delete(currMedia);
+                              final res = await widget.storeAction
+                                  .delete(currMedia, confirmed: null);
 
                               await ref
                                   .read(

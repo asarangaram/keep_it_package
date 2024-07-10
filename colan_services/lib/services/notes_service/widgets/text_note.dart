@@ -19,9 +19,14 @@ class TextNote extends StatefulWidget {
   });
   final CLTextNote? note;
   final Future<String> Function() onCreateNewTextFile;
-  final Future<void> Function(CLNote note) onUpsertNote;
+  final Future<void> Function(
+    CLNote note,
+  ) onUpsertNote;
 
-  final Future<void> Function(CLNote note) onDeleteNote;
+  final Future<void> Function(
+    CLNote note, {
+    required bool? confirmed,
+  }) onDeleteNote;
 
   @override
   State<TextNote> createState() => _TextNoteState();
@@ -85,7 +90,7 @@ class _TextNoteState extends State<TextNote> {
               CLButtonIcon.small(
                 MdiIcons.delete,
                 onTap: () {
-                  widget.onDeleteNote(widget.note!);
+                  widget.onDeleteNote(widget.note!, confirmed: null);
                   textEditingController.clear();
                 },
               ),

@@ -17,7 +17,10 @@ class NotesView extends StatefulWidget {
   final CLMedia media;
   final List<CLNote> notes;
   final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
-  final Future<void> Function(CLNote note) onDeleteNote;
+  final Future<void> Function(
+    CLNote note, {
+    required bool? confirmed,
+  }) onDeleteNote;
   final Future<String> Function({required String ext}) onCreateNewFile;
   final VoidCallback onClose;
 

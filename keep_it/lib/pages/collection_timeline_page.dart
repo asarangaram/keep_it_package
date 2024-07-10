@@ -86,8 +86,8 @@ class TimeLineView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
 
-    return MediaHandlerWidget(
-      builder: ({required action}) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return CLSimpleGalleryView(
           key: ValueKey(label),
           title: label,
@@ -113,22 +113,22 @@ class TimeLineView extends ConsumerWidget {
               CLMenuItem(
                 title: 'Delete',
                 icon: Icons.delete,
-                onTap: () => action.delete(items),
+                onTap: () => storeAction.delete(items, confirmed: null),
               ),
               CLMenuItem(
                 title: 'Move',
                 icon: MdiIcons.imageMove,
-                onTap: () => action.move(items),
+                onTap: () => storeAction.move(items),
               ),
               CLMenuItem(
                 title: 'Share',
                 icon: MdiIcons.shareAll,
-                onTap: () => action.share(items),
+                onTap: () => storeAction.share(items),
               ),
               CLMenuItem(
                 title: 'Pin',
                 icon: MdiIcons.pin,
-                onTap: () => action.togglePin(items),
+                onTap: () => storeAction.togglePin(items),
               ),
             ];
           },
