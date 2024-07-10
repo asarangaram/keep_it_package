@@ -42,8 +42,7 @@ dependencies:
   share_handler: ^0.0.21
   share_plus: ^9.0.0
   shared_preferences: ^2.2.3
-  store:
-    path: ../store
+  
   stream_channel: ^2.1.2
   tar: ^2.0.0
   uuid: ^4.4.0

@@ -1,9 +1,9 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
-import '../../models/store_manager.dart';
+import '../store_manager.dart';
 
 class AnalysePage extends StatelessWidget {
   const AnalysePage({
@@ -27,8 +27,10 @@ class AnalysePage extends StatelessWidget {
             onCancel: onCancel,
             child: StreamProgressView(
               stream: () => action.analyseMediaStream(
-                media: incomingMedia,
-                onDone: onDone,
+                media: incomingMedia.entries,
+                onDone: ({required List<CLMedia> mg}) {
+                  onDone(mg: incomingMedia.copyWith(entries: mg));
+                },
               ),
               onCancel: onCancel,
             ),

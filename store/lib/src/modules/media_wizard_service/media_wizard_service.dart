@@ -2,9 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/cl_shared_media.dart';
-import '../../models/store_actions.dart';
-import '../../models/universal_media_source.dart';
+import 'models/cl_shared_media.dart';
+import 'models/universal_media_source.dart';
 import 'providers/gallery_group_provider.dart';
 import 'providers/universal_media.dart';
 import 'views/create_collection_wizard.dart';

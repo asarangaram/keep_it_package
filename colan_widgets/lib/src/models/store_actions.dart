@@ -1,8 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 
-import 'cl_shared_media.dart';
-
 @immutable
 class StoreActions {
   const StoreActions({
@@ -48,9 +46,9 @@ class StoreActions {
   }) moveToCollectionStream;
 
   final Stream<Progress> Function({
-    required CLSharedMedia media,
+    required List<CLMedia> media,
     required void Function({
-      required CLSharedMedia mg,
+      required List<CLMedia> mg,
     }) onDone,
   }) analyseMediaStream;
 

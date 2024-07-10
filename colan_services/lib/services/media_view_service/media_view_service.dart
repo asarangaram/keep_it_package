@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/store_actions.dart';
 import '../video_player_service/providers/show_controls.dart';
 import 'models/action_control.dart';
 import 'widgets/media_background.dart';

@@ -2,13 +2,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:colan_services/models/universal_media_source.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
 import '../models/cl_shared_media.dart';
+import '../models/universal_media_source.dart';
 
 class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
   IncomingMediaNotifier()

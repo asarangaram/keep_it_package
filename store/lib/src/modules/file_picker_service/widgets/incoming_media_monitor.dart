@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../models/cl_shared_media.dart';
-import '../../../providers/incoming_media.dart';
+import '../../media_wizard_service/models/cl_shared_media.dart';
+import '../../media_wizard_service/providers/incoming_media.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
   const IncomingMediaMonitor({

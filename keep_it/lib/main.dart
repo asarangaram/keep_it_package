@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:app_loader/app_loader.dart';
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:store/store.dart';
 import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';

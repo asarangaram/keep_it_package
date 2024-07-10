@@ -12,7 +12,7 @@ import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
-import 'album_manager_helper.dart';
+import '../models/album_manager_helper.dart';
 
 class MediaHandlerWidget extends StatelessWidget {
   const MediaHandlerWidget({
@@ -375,18 +375,18 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   static const tempCollectionName = '*** Recently Captured';
 
   Stream<Progress> analyseMediaStream({
-    required CLSharedMedia media,
+    required List<CLMedia> media,
     required void Function({
-      required CLSharedMedia mg,
+      required List<CLMedia> mg,
     }) onDone,
   }) async* {
     final candidates = <CLMedia>[];
     //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
-      currentItem: path.basename(media.entries[0].path),
+      currentItem: path.basename(media[0].path),
       fractCompleted: 0,
     );
-    for (final (i, item0) in media.entries.indexed) {
+    for (final (i, item0) in media.indexed) {
       final item1 = await ExtDeviceProcessMedia.tryDownloadMedia(
         item0,
         appSettings: widget.appSettings,
@@ -442,15 +442,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await Future<void>.delayed(const Duration(milliseconds: 10));
 
       yield Progress(
-        currentItem: (i + 1 == media.entries.length)
-            ? ''
-            : path.basename(media.entries[i + 1].path),
-        fractCompleted: (i + 1) / media.entries.length,
+        currentItem:
+            (i + 1 == media.length) ? '' : path.basename(media[i + 1].path),
+        fractCompleted: (i + 1) / media.length,
       );
     }
     await Future<void>.delayed(const Duration(milliseconds: 10));
     onDone(
-      mg: CLSharedMedia(entries: candidates, collection: media.collection),
+      mg: candidates,
     );
   }
 

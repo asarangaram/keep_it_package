@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
-import '../models/store_manager.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/store_manager.dart';
 
 class MediaPageViewPage extends StatelessWidget {
   const MediaPageViewPage({

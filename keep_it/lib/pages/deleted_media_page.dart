@@ -1,12 +1,11 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../models/store_manager.dart';
 import '../widgets/preview.dart';
+import '../widgets/store_manager.dart';
 
 class DeleteMediaPage extends ConsumerWidget {
   const DeleteMediaPage({super.key});
