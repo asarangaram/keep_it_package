@@ -43,11 +43,17 @@ class MediaPageViewPage extends StatelessWidget {
                 parentIdentifier: parentIdentifier,
                 initialMediaIndex: initialMediaIndex,
                 buildNotes: (media) {
-                  return NotesService(
-                    media: media,
-                    onUpsertNote: action.onUpsertNote,
-                    onDeleteNote: action.onDeleteNote,
-                    onCreateNewFile: action.createTempFile,
+                  return GetNotesByMediaId(
+                    mediaId: media.id!,
+                    buildOnData: (notes) {
+                      return NotesService(
+                        media: media,
+                        notes: notes,
+                        onUpsertNote: action.onUpsertNote,
+                        onDeleteNote: action.onDeleteNote,
+                        onCreateNewFile: action.createTempFile,
+                      );
+                    },
                   );
                 },
               ),
