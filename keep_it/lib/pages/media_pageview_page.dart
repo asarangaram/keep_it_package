@@ -2,6 +2,7 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
@@ -38,6 +39,7 @@ class MediaPageViewPage extends StatelessWidget {
               useSafeArea: false,
               child: MediaViewService.pageView(
                 media: items,
+                getPreview: (media) => Preview(media: media),
                 parentIdentifier: parentIdentifier,
                 initialMediaIndex: initialMediaIndex,
                 buildNotes: (media) {

@@ -14,6 +14,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required CLMedia media,
     required String parentIdentifier,
     required Widget Function(CLMedia media) buildNotes,
+    required Widget Function(CLMedia media) getPreview,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -24,6 +25,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       actionControl: actionControl ?? ActionControl.full(),
       buildNotes: buildNotes,
       key: key,
+      getPreview: getPreview,
     );
   }
   factory MediaViewService.pageView({
@@ -31,6 +33,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required List<CLMedia> media,
     required String parentIdentifier,
     required Widget Function(CLMedia media) buildNotes,
+    required Widget Function(CLMedia media) getPreview,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -41,6 +44,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       actionControl: actionControl ?? ActionControl.full(),
       buildNotes: buildNotes,
       key: key,
+      getPreview: getPreview,
     );
   }
   const MediaViewService._({
@@ -49,6 +53,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required this.parentIdentifier,
     required this.actionControl,
     required this.buildNotes,
+    required this.getPreview,
     super.key,
   });
 
@@ -57,6 +62,7 @@ class MediaViewService extends ConsumerStatefulWidget {
   final String parentIdentifier;
   final ActionControl actionControl;
   final Widget Function(CLMedia media) buildNotes;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -114,6 +120,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                 child: widget.media.length == 1
                     ? MediaView(
                         item: widget.media[0],
+                        getPreview: widget.getPreview,
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,
                         onLockPage: ({required bool lock}) {
@@ -135,6 +142,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                       )
                     : MediaPageView(
                         items: widget.media,
+                        getPreview: widget.getPreview,
                         startIndex: widget.initialMediaIndex,
                         actionControl: ActionControl.full(),
                         parentIdentifier: widget.parentIdentifier,

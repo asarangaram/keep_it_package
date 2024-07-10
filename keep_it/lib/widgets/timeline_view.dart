@@ -7,6 +7,7 @@ import 'package:store/store.dart';
 
 import 'empty_state.dart';
 import 'folders_and_files/media_as_file.dart';
+import 'preview.dart';
 
 class TimeLineView extends ConsumerWidget {
   const TimeLineView({
@@ -44,6 +45,7 @@ class TimeLineView extends ConsumerWidget {
             tag: '$parentIdentifier /item/${item.id}',
             child: MediaAsFile(
               media: item,
+              getPreview: (media) => Preview(media: media),
               onTap: () =>
                   onTapMedia(item.id!, parentIdentifier: parentIdentifier),
               quickMenuScopeKey: quickMenuScopeKey,

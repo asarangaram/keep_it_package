@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/empty_state.dart';
 import 'package:store/store.dart';
 
+import '../preview.dart';
+
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
     required this.incomingMedia,
@@ -22,6 +24,7 @@ class DuplicatePage extends StatelessWidget {
       incomingMedia: incomingMedia,
       onDone: onDone,
       onCancel: onCancel,
+      getPreview: (media) => Preview(media: media),
     );
   }
 }
@@ -31,11 +34,13 @@ class DuplicatePageStateful extends ConsumerStatefulWidget {
     required this.incomingMedia,
     required this.onDone,
     required this.onCancel,
+    required this.getPreview,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -114,6 +119,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                   child: ExistInDifferentCollection(
                     collections: collections,
                     media: currentMedia,
+                    getPreview: widget.getPreview,
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
                       if (updated?.targetMismatch.isEmpty ?? true) {
@@ -140,12 +146,14 @@ class ExistInDifferentCollection extends StatelessWidget {
     required this.media,
     required this.collections,
     required this.onRemove,
+    required this.getPreview,
     super.key,
   });
 
   final CLSharedMedia media;
   final List<Collection> collections;
   final void Function(CLMedia media) onRemove;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -200,10 +208,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                           aspectRatio: 1,
                           child: Padding(
                             padding: const EdgeInsets.all(2),
-                            child: PreviewService(
-                              media: m,
-                              keepAspectRatio: false,
-                            ),
+                            child: getPreview(m),
                           ),
                         ),
                         Expanded(

@@ -8,6 +8,7 @@ import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/collection_as_folder.dart';
+import '../widgets/preview.dart';
 
 class CollectionsPage extends ConsumerStatefulWidget {
   const CollectionsPage({super.key});
@@ -43,6 +44,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                       CollectionAsFolder(
                     collection: item,
                     quickMenuScopeKey: quickMenuScopeKey,
+                    getPreview: (media) => Preview(media: media),
                   ),
                   identifier: identifier,
                   onPickFiles: (BuildContext c) async => onPickFiles(

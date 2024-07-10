@@ -14,11 +14,12 @@ class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({
     required this.collection,
     required this.quickMenuScopeKey,
+    required this.getPreview,
     super.key,
   });
   final Collection collection;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-
+  final Widget Function(CLMedia media) getPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDBManager(
@@ -82,6 +83,7 @@ class CollectionAsFolder extends ConsumerWidget {
               Flexible(
                 child: CollectionPreviewGenerator(
                   collection: collection,
+                  getPreview: getPreview,
                 ),
               ),
               Padding(
@@ -109,9 +111,11 @@ class CollectionAsFolder extends ConsumerWidget {
 class CollectionPreviewGenerator extends StatelessWidget {
   const CollectionPreviewGenerator({
     required this.collection,
+    required this.getPreview,
     super.key,
   });
   final Collection collection;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -124,9 +128,8 @@ class CollectionPreviewGenerator extends StatelessWidget {
             items,
             hCount: 2,
             vCount: 2,
-            itemBuilder: (context, index) => PreviewService(
-              media: items[index],
-              keepAspectRatio: false,
+            itemBuilder: (context, index) => getPreview(
+              items[index],
             ),
             whenNopreview: Center(
               child: CLText.veryLarge(

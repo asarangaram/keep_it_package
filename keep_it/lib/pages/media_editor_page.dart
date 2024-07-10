@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
@@ -23,32 +22,28 @@ class MediaEditorPage extends StatelessWidget {
     return FullscreenLayout(
       hasBackground: false,
       backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-      child: GetAppSettings(
-        builder: (appSettings) {
-          return MediaHandlerWidget(
-            builder: ({required action}) {
-              return GetMedia(
-                id: mediaId!,
-                buildOnData: (media) {
-                  if (media == null || !File(media.path).existsSync()) {
-                    return BasicPageService.message(
-                      message: ' Media not found',
-                    );
-                  }
+      child: MediaHandlerWidget(
+        builder: ({required action}) {
+          return GetMedia(
+            id: mediaId!,
+            buildOnData: (media) {
+              if (media == null || !File(media.path).existsSync()) {
+                return BasicPageService.message(
+                  message: ' Media not found',
+                );
+              }
 
-                  return InvokeEditor(
-                    media: media,
-                    onCreateNewFile: () async {
-                      return action.createTempFile(ext: 'jpg');
-                    },
-                    onSave: (file, {required overwrite}) async {
-                      if (overwrite) {
-                        await action.replaceMedia([media], file);
-                      } else {
-                        await action.cloneAndReplaceMedia([media], file);
-                      }
-                    },
-                  );
+              return InvokeEditor(
+                media: media,
+                onCreateNewFile: () async {
+                  return action.createTempFile(ext: 'jpg');
+                },
+                onSave: (file, {required overwrite}) async {
+                  if (overwrite) {
+                    await action.replaceMedia([media], file);
+                  } else {
+                    await action.cloneAndReplaceMedia([media], file);
+                  }
                 },
               );
             },

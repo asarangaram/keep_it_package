@@ -12,8 +12,13 @@ import 'views/progress_bar.dart';
 import 'views/wizard_preview.dart';
 
 class MediaWizardService extends ConsumerWidget {
-  const MediaWizardService({required this.type, super.key});
+  const MediaWizardService({
+    required this.type,
+    required this.getPreview,
+    super.key,
+  });
   final MediaSourceType type;
+  final Widget Function(CLMedia media) getPreview;
   static Future<void> addMedia(
     BuildContext context,
     WidgetRef ref, {
@@ -42,6 +47,7 @@ class MediaWizardService extends ConsumerWidget {
         media: media,
         type: type,
         galleryMap: galleryMap,
+        getPreview: getPreview,
       ),
     );
   }
@@ -52,10 +58,12 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     required this.media,
     required this.type,
     required this.galleryMap,
+    required this.getPreview,
     super.key,
   });
   final CLSharedMedia media;
   final MediaSourceType type;
+  final Widget Function(CLMedia media) getPreview;
 
   final List<GalleryGroup<CLMedia>> galleryMap;
 
@@ -186,6 +194,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       : null,
                 ),
           child: WizardPreview(
+            getPreview: widget.getPreview,
             type: widget.type,
             onSelectionChanged: isSelectionMode
                 ? (List<CLMedia> items) {

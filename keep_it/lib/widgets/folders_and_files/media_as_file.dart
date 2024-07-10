@@ -12,11 +12,13 @@ class MediaAsFile extends ConsumerWidget {
     required this.media,
     required this.quickMenuScopeKey,
     required this.onTap,
+    required this.getPreview,
     super.key,
   });
   final CLMedia media;
   final Future<bool?> Function()? onTap;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,10 +31,7 @@ class MediaAsFile extends ConsumerWidget {
           onShare: () => action.share([media]),
           onEdit: () => action.edit([media]),
           onTap: onTap,
-          child: PreviewService(
-            media: media,
-            keepAspectRatio: false,
-          ),
+          child: getPreview(media),
         );
       },
     );

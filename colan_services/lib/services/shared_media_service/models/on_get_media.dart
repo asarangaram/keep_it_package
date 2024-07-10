@@ -14,7 +14,6 @@ import 'package:store/store.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 import '../../media_wizard_service/models/types.dart';
 import '../../notification_services/provider/notify.dart';
-import '../../preview_service/view/preview.dart';
 import 'album_manager_helper.dart';
 import 'cl_shared_media.dart';
 
@@ -162,63 +161,29 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> delete(List<CLMedia> selectedMedia) async {
+  Future<bool> delete(List<CLMedia> selectedMedia, {bool? confirmed}) async {
+    if (confirmed == null || !confirmed) {
+      return false;
+    }
     if (selectedMedia.isEmpty) {
       return true;
     }
     if (selectedMedia.length == 1) {
-      final confirmed = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return CLConfirmAction(
-                title: 'Confirm delete',
-                message: 'Are you sure you want to delete '
-                    'this ${selectedMedia[0].type.name}?',
-                child: PreviewService(media: selectedMedia[0]),
-                onConfirm: ({required confirmed}) async {
-                  if (context.mounted) {
-                    Navigator.of(context).pop(confirmed);
-                  }
-                },
-              );
-            },
-          ) ??
-          false;
-      if (confirmed) {
-        await widget.dbManager.deleteMedia(
-          selectedMedia[0],
-          onDeleteFile: (f) async => f.deleteIfExists(),
-          onRemovePin: (id) async =>
-              AlbumManagerHelper().removeMedia(context, ref, id),
-        );
-        return true;
-      }
-      return false;
+      await widget.dbManager.deleteMedia(
+        selectedMedia[0],
+        onDeleteFile: (f) async => f.deleteIfExists(),
+        onRemovePin: (id) async =>
+            AlbumManagerHelper().removeMedia(context, ref, id),
+      );
     } else {
-      final confirmed = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return CLConfirmAction(
-                title: 'Confirm delete',
-                message: 'Are you sure you want to delete '
-                    '${selectedMedia.length} items?',
-                child: null,
-                onConfirm: ({required confirmed}) =>
-                    Navigator.of(context).pop(confirmed),
-              );
-            },
-          ) ??
-          false;
-      if (confirmed) {
-        await widget.dbManager.deleteMediaMultiple(
-          selectedMedia,
-          onDeleteFile: (f) async => f.deleteIfExists(),
-          onRemovePinMultiple: (id) async =>
-              AlbumManagerHelper().removeMultipleMedia(context, ref, id),
-        );
-      }
-      return confirmed;
+      await widget.dbManager.deleteMediaMultiple(
+        selectedMedia,
+        onDeleteFile: (f) async => f.deleteIfExists(),
+        onRemovePinMultiple: (id) async =>
+            AlbumManagerHelper().removeMultipleMedia(context, ref, id),
+      );
     }
+    return true;
   }
 
   Future<bool> share(List<CLMedia> selectedMedia) async {
@@ -298,35 +263,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     List<CLMedia> selectedMedia,
     String outFile, {
     required bool duplicate,
+    bool? confirmed,
   }) async {
-    final overwrite = !duplicate;
+    if (confirmed == null || !confirmed) return false;
+
     if (selectedMedia.isEmpty) {
       return true;
     }
+    final overwrite = !duplicate;
     if (selectedMedia.length == 1) {
-      if (overwrite) {
-        final confirmed = await showDialog<bool>(
-              context: context,
-              builder: (BuildContext context) {
-                return CLConfirmAction(
-                  title: 'Confirm '
-                      '${overwrite ? "Replace" : "Save New"} ',
-                  message: '',
-                  child: PreviewService(
-                    media: CLMedia(
-                      path: outFile,
-                      type: selectedMedia[0].type,
-                    ),
-                    keepAspectRatio: false,
-                  ),
-                  onConfirm: ({required confirmed}) =>
-                      Navigator.of(context).pop(confirmed),
-                );
-              },
-            ) ??
-            false;
-        if (!confirmed) return false;
-      }
       final md5String = await File(outFile).checksum;
       final CLMedia updatedMedia;
       if (overwrite) {
@@ -359,7 +304,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         await File(selectedMedia[0].path).deleteIfExists();
       }
     }
-    return false;
+    return true;
   }
 
   //Can be converted to non static

@@ -14,6 +14,7 @@ class MediaView extends ConsumerWidget {
     required this.isLocked,
     required this.actionControl,
     required this.buildNotes,
+    required this.getPreview,
     this.onLockPage,
     super.key,
   });
@@ -23,7 +24,7 @@ class MediaView extends ConsumerWidget {
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
   final Widget Function(CLMedia media) buildNotes;
-
+  final Widget Function(CLMedia media) getPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ac = actionControl;
@@ -39,6 +40,7 @@ class MediaView extends ConsumerWidget {
               onLockPage: onLockPage,
               isLocked: isLocked,
               buildNotes: buildNotes,
+              getPreview: getPreview,
             ),
           ),
         ),

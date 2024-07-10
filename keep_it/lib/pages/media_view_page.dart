@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
+import '../widgets/preview.dart';
 
 class MediaViewPage extends ConsumerWidget {
   const MediaViewPage({
@@ -35,6 +36,7 @@ class MediaViewPage extends ConsumerWidget {
               return CLPopScreen.onSwipe(
                 child: MediaViewService(
                   media: media,
+                  getPreview: (media) => Preview(media: media),
                   parentIdentifier: parentIdentifier,
                   actionControl: ActionControl.editOnly(),
                   buildNotes: (media) {

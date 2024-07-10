@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../widgets/preview.dart';
+
 class DeleteMediaPage extends ConsumerWidget {
   const DeleteMediaPage({super.key});
 
@@ -37,10 +39,7 @@ class DeleteMediaPage extends ConsumerWidget {
                         tag: '$parentIdentifier /item/${item.id}',
                         child: Padding(
                           padding: const EdgeInsets.all(4),
-                          child: PreviewService(
-                            media: item,
-                            keepAspectRatio: false,
-                          ),
+                          child: Preview(media: item),
                         ),
                       ),
                       galleryMap: ref.watch(singleGroupItemProvider(media)),

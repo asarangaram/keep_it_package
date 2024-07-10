@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../widgets/preview.dart';
+
 class PinnedMediaPage extends ConsumerWidget {
   const PinnedMediaPage({super.key});
 
@@ -37,10 +39,7 @@ class PinnedMediaPage extends ConsumerWidget {
                                 );
                               },
                               onLongPress: () => action.togglePin([item]),
-                              child: PreviewService(
-                                media: item,
-                                keepAspectRatio: false,
-                              ),
+                              child: Preview(media: item),
                             );
                           },
                         ),

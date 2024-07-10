@@ -15,6 +15,7 @@ class MediaPageView extends ConsumerStatefulWidget {
     required this.parentIdentifier,
     required this.isLocked,
     required this.buildNotes,
+    required this.getPreview,
     this.onLockPage,
     super.key,
   });
@@ -25,7 +26,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
   final Widget Function(CLMedia media) buildNotes;
-
+  final Widget Function(CLMedia media) getPreview;
   @override
   ConsumerState<MediaPageView> createState() => _ItemViewState();
 }
@@ -69,6 +70,7 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                   onLockPage: widget.onLockPage,
                   isLocked: widget.isLocked,
                   buildNotes: widget.buildNotes,
+                  getPreview: widget.getPreview,
                 ),
               );
             },

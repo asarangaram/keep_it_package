@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../../preview_service/view/preview.dart';
 import '../models/types.dart';
 import '../providers/gallery_group_provider.dart';
 import '../providers/media_provider.dart';
@@ -14,11 +13,13 @@ class WizardPreview extends ConsumerStatefulWidget {
     required this.type,
     required this.onSelectionChanged,
     required this.freezeView,
+    required this.getPreview,
     super.key,
   });
   final MediaSourceType type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -68,10 +69,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               },
               child: Padding(
                 padding: const EdgeInsets.all(4),
-                child: PreviewService(
-                  media: item,
-                  keepAspectRatio: false,
-                ),
+                child: widget.getPreview(item),
               ),
             ),
           ),
