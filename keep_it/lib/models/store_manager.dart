@@ -8,7 +8,6 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
@@ -481,34 +480,5 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final absolutePath = '${dir.path}/$fileBasename.$ext';
 
     return absolutePath;
-  }
-
-  Future<bool> filesPicker({
-    Collection? collection,
-  }) async {
-    final picker = ImagePicker();
-    final pickedFileList = await picker.pickMultipleMedia();
-
-    if (pickedFileList.isNotEmpty) {
-      final items = pickedFileList
-          .map(
-            (xfile) => CLMedia(path: xfile.path, type: CLMediaType.file),
-          )
-          .toList();
-      final sharedMedia = CLSharedMedia(
-        entries: items,
-        collection: collection,
-        type: UniversalMediaSource.filePick,
-      );
-
-      if (items.isNotEmpty) {
-        IncomingMediaMonitor.pushMedia(ref, sharedMedia);
-      }
-
-      return items.isNotEmpty;
-    } else {
-      return false;
-      // User canceled the picker
-    }
   }
 }
