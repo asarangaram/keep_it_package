@@ -8,6 +8,7 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
@@ -41,6 +42,13 @@ class MediaActions {
     required void Function() onDone,
   }) moveToCollectionStream;
 
+  final Stream<Progress> Function({
+    required CLSharedMedia media,
+    required void Function({
+      required CLSharedMedia mg,
+    }) onDone,
+  }) analyseMediaStream;
+
   const MediaActions({
     required this.move,
     required this.delete,
@@ -52,6 +60,7 @@ class MediaActions {
     required this.cloneAndReplaceMedia,
     required this.moveToCollectionStream,
     required this.newMedia,
+    required this.analyseMediaStream,
   });
 }
 
@@ -65,11 +74,16 @@ class MediaHandlerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetDBManager(
-      builder: (dbManager) {
-        return MediaHandlerWidget0(
-          dbManager: dbManager,
-          builder: builder,
+    return GetAppSettings(
+      builder: (appSettings) {
+        return GetDBManager(
+          builder: (dbManager) {
+            return MediaHandlerWidget0(
+              dbManager: dbManager,
+              appSettings: appSettings,
+              builder: builder,
+            );
+          },
         );
       },
     );
@@ -80,10 +94,12 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
   const MediaHandlerWidget0({
     required this.builder,
     required this.dbManager,
+    required this.appSettings,
     super.key,
   });
 
   final DBManager dbManager;
+  final AppSettings appSettings;
   final Widget Function({required MediaActions action})? builder;
 
   @override
@@ -106,6 +122,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         cloneAndReplaceMedia: cloneAndReplaceMedia,
         moveToCollectionStream: moveToCollectionStream,
         newMedia: newMedia,
+        analyseMediaStream: analyseMediaStream,
       ),
     );
   }
@@ -454,4 +471,84 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   static const tempCollectionName = '*** Recently Captured';
+
+  Stream<Progress> analyseMediaStream({
+    required CLSharedMedia media,
+    required void Function({
+      required CLSharedMedia mg,
+    }) onDone,
+  }) async* {
+    final candidates = <CLMedia>[];
+    //await Future<void>.delayed(const Duration(seconds: 3));
+    yield Progress(
+      currentItem: path.basename(media.entries[0].path),
+      fractCompleted: 0,
+    );
+    for (final (i, item0) in media.entries.indexed) {
+      final item1 = await ExtDeviceProcessMedia.tryDownloadMedia(
+        item0,
+        appSettings: widget.appSettings,
+      );
+      final item = await ExtDeviceProcessMedia.identifyMediaType(
+        item1,
+        appSettings: widget.appSettings,
+      );
+      if (!item.type.isFile) {
+        // Skip for now
+      }
+      if (item.type.isFile) {
+        final file = File(item.path);
+        if (file.existsSync()) {
+          final md5String = await file.checksum;
+          final duplicate = await widget.dbManager.getMediaByMD5(md5String);
+          if (duplicate != null) {
+            candidates.add(duplicate);
+          } else {
+            final Collection tempCollection;
+            tempCollection = await widget.dbManager
+                    .getCollectionByLabel(tempCollectionName) ??
+                await widget.dbManager.upsertCollection(
+                  collection: const Collection(label: tempCollectionName),
+                );
+            final newMedia = CLMedia(
+              path: item.path,
+              type: item.type,
+              collectionId: tempCollection.id,
+              md5String: md5String,
+              isHidden: true,
+            );
+            final tempMedia = await widget.dbManager.upsertMedia(
+              collectionId: tempCollection.id!,
+              media: newMedia.copyWith(isHidden: true),
+              onPrepareMedia: (m, {required targetDir}) async {
+                final updated =
+                    (await m.moveFile(targetDir: targetDir)).getMetadata();
+                return updated;
+              },
+            );
+            if (tempMedia != null) {
+              candidates.add(tempMedia);
+            } else {
+              /* Failed to add media, handle here */
+            }
+          }
+        } else {
+          /* Missing file? ignoring */
+        }
+      }
+
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      yield Progress(
+        currentItem: (i + 1 == media.entries.length)
+            ? ''
+            : path.basename(media.entries[i + 1].path),
+        fractCompleted: (i + 1) / media.entries.length,
+      );
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    onDone(
+      mg: CLSharedMedia(entries: candidates, collection: media.collection),
+    );
+  }
 }
