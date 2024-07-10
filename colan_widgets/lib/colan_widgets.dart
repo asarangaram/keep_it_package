@@ -6,7 +6,6 @@ export 'src/basics/async_widgets.dart';
 export 'src/basics/cl_button.dart';
 export 'src/basics/cl_buttons_grid.dart';
 export 'src/basics/cl_circled_icon.dart';
-
 export 'src/basics/cl_custom_chip.dart';
 export 'src/basics/cl_custom_grid.dart';
 export 'src/basics/cl_decorate_square.dart';
@@ -16,6 +15,7 @@ export 'src/basics/cl_list_tile.dart';
 export 'src/basics/cl_pop_screen.dart';
 export 'src/basics/cl_text.dart';
 export 'src/basics/cl_text_field.dart';
+export 'src/basics/dialogs.dart';
 export 'src/demos/demo_main.dart' show DemoMain;
 export 'src/extensions/ext_cl_media.dart';
 export 'src/extensions/ext_cl_menu_item.dart';

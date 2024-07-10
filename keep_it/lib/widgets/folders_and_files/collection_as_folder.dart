@@ -43,8 +43,14 @@ class CollectionAsFolder extends ConsumerWidget {
 
             return true;
           },
-          onDelete: () =>
-              storeAction.deleteCollection(collection, confirmed: null),
+          onDelete: () async {
+            return ConfirmDelete.collection(
+              context,
+              collection: collection,
+              onConfirm: () =>
+                  storeAction.deleteCollection(collection, confirmed: true),
+            );
+          },
           onTap: () async {
             await context.push(
               '/items_by_collection/${collection.id}',
