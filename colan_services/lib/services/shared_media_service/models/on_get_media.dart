@@ -21,6 +21,8 @@ class MediaActions {
   final Future<bool> Function(List<CLMedia> selectedMedia) togglePin;
   final Future<bool> Function(List<CLMedia> selectedMedia) edit;
 
+  final Future<bool> Function(List<CLMedia> selectedMedia) restoreDeleted;
+
   final Future<bool> Function(List<CLMedia> selectedMedia, String outFile)
       replaceMedia;
 
@@ -39,6 +41,7 @@ class MediaActions {
     required this.share,
     required this.togglePin,
     required this.edit,
+    required this.restoreDeleted,
     required this.replaceMedia,
     required this.cloneAndReplaceMedia,
     required this.moveToCollection,
@@ -111,6 +114,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         share: share,
         togglePin: togglePin,
         edit: edit,
+        restoreDeleted: restoreDeleted,
         replaceMedia: replaceMedia,
         cloneAndReplaceMedia: cloneAndReplaceMedia,
         moveToCollection: moveToCollection,
@@ -396,7 +400,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
   }
 
-  Future<bool> onRestore(List<CLMedia> selectedMedia) async {
+  Future<bool> restoreDeleted(List<CLMedia> selectedMedia) async {
     for (final item in selectedMedia) {
       if (item.id != null) {
         await widget.dbManager.upsertMedia(

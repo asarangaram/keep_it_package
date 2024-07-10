@@ -27,7 +27,7 @@ export 'services/preview_service/view/preview.dart' show PreviewService;
 export 'services/shared_media_service/models/cl_shared_media.dart'
     show CLSharedMedia;
 export 'services/shared_media_service/models/media_handler.dart';
-export 'services/shared_media_service/models/on_get_deleted_media.dart';
+
 export 'services/shared_media_service/models/on_get_media.dart';
 export 'services/shared_media_service/process/cl_media_process.dart'
     show CLMediaProcess;
