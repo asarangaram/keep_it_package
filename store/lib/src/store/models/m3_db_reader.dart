@@ -22,6 +22,19 @@ class DBReader {
     );
   }
 
+  Future<CLMedia?> getMediaById(
+    SqliteWriteContext tx,
+    int id,
+  ) async {
+    return (await (DBQueries.mediaById.sql as DBQuery<CLMedia>)
+            .copyWith(parameters: [id]).readMultiple(
+      tx,
+      appSettings: appSettings,
+      validate: true,
+    ))
+        .firstOrNull;
+  }
+
   Future<List<CLMedia>> getMediaByCollectionId(
     SqliteWriteContext tx,
     int collectionId,
