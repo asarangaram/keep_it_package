@@ -49,27 +49,7 @@ class MediaActions {
 }
 
 class MediaHandlerWidget extends StatelessWidget {
-  factory MediaHandlerWidget({
-    required Widget Function({required MediaActions action})? builder,
-    Key? key,
-  }) {
-    return MediaHandlerWidget._(
-      builder: builder,
-      key: key,
-    );
-  }
-  factory MediaHandlerWidget.multiple({
-    required Widget Function({
-      required MediaActions action,
-    })? builder,
-    Key? key,
-  }) {
-    return MediaHandlerWidget._(
-      builder: builder,
-      key: key,
-    );
-  }
-  const MediaHandlerWidget._({
+  const MediaHandlerWidget({
     required this.builder,
     super.key,
   });
