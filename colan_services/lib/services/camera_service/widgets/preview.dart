@@ -15,7 +15,11 @@ class PreviewCapturedMedia extends ConsumerWidget {
     return capturedMedia.isEmpty
         ? const SizedBox.shrink()
         : InkWell(
-            onTap: () => sendMedia(capturedMedia),
+            onTap: () {
+              final capturedMediaCopy = [...capturedMedia];
+              ref.read(capturedMediaProvider.notifier).clear();
+              sendMedia(capturedMediaCopy);
+            },
             child: CapturedMediaDecorator(
               child: PreviewService(
                 media: capturedMedia.last,

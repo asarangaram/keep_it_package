@@ -5,6 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:store/store.dart';
 
 class CameraPage extends ConsumerWidget {
   const CameraPage({super.key, this.collectionId});
@@ -13,22 +14,51 @@ class CameraPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       useSafeArea: false,
-      child: CLCameraService(
-        collectionId: collectionId,
-        onDone: () => CLPopScreen.onPop(context),
-        onError: (String message, {required dynamic error}) async {
-          await ref
-              .read(
-                notificationMessageProvider.notifier,
-              )
-              .push(
-                '$message [$error]',
+      child: MediaHandlerWidget(
+        builder: ({required action}) {
+          return GetCollection(
+            id: collectionId,
+            buildOnData: (collection) {
+              return CLCameraService(
+                onCancel: () => CLPopScreen.onPop(context),
+                onError: (String message, {required dynamic error}) async {
+                  await ref
+                      .read(
+                        notificationMessageProvider.notifier,
+                      )
+                      .push(
+                        '$message [$error]',
+                      );
+                },
+                onNewMedia: (path, {required isVideo}) {
+                  return action.newMedia(
+                    path,
+                    isVideo: isVideo,
+                    collection: collection,
+                  );
+                },
+                onDone: (mediaList) async {
+                  await MediaWizardService.addMedia(
+                    context,
+                    ref,
+                    media: CLSharedMedia(
+                      entries: mediaList,
+                      type: MediaSourceType.captured,
+                    ),
+                  );
+
+                  if (context.mounted) {
+                    await context.push(
+                      '/media_wizard?type='
+                      '${MediaSourceType.captured.name}',
+                    );
+                  }
+                  if (context.mounted) {
+                    await CLPopScreen.onPop(context);
+                  }
+                },
               );
-        },
-        onReceiveCapturedMedia: () async {
-          await context.push(
-            '/media_wizard?type='
-            '${MediaSourceType.captured.name}',
+            },
           );
         },
       ),

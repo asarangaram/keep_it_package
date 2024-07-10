@@ -29,11 +29,17 @@ class MediaActions {
   final Future<bool> Function(List<CLMedia> selectedMedia, String outFile)
       cloneAndReplaceMedia;
 
+  final Future<CLMedia?> Function(
+    String path, {
+    required bool isVideo,
+    Collection? collection,
+  }) newMedia;
+
   final Stream<Progress> Function(
     List<CLMedia> selectedMedia, {
     required Collection collection,
     required void Function() onDone,
-  }) moveToCollection;
+  }) moveToCollectionStream;
 
   const MediaActions({
     required this.move,
@@ -44,7 +50,8 @@ class MediaActions {
     required this.restoreDeleted,
     required this.replaceMedia,
     required this.cloneAndReplaceMedia,
-    required this.moveToCollection,
+    required this.moveToCollectionStream,
+    required this.newMedia,
   });
 }
 
@@ -97,7 +104,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         restoreDeleted: restoreDeleted,
         replaceMedia: replaceMedia,
         cloneAndReplaceMedia: cloneAndReplaceMedia,
-        moveToCollection: moveToCollection,
+        moveToCollectionStream: moveToCollectionStream,
+        newMedia: newMedia,
       ),
     );
   }
@@ -323,7 +331,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   //Can be converted to non static
-  Stream<Progress> moveToCollection(
+  Stream<Progress> moveToCollectionStream(
     List<CLMedia> selectedMedia, {
     required Collection collection,
     required void Function() onDone,
@@ -401,4 +409,49 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     return true;
   }
+
+  Future<CLMedia?> newMedia(
+    String path, {
+    required bool isVideo,
+    Collection? collection,
+  }) async {
+    final md5String = await File(path).checksum;
+    CLMedia? media = CLMedia(
+      path: path,
+      type: isVideo ? CLMediaType.video : CLMediaType.image,
+      collectionId: collection?.id,
+      md5String: md5String,
+    );
+
+    if (collection == null) {
+      final Collection tempCollection;
+      tempCollection =
+          await widget.dbManager.getCollectionByLabel(tempCollectionName) ??
+              await widget.dbManager.upsertCollection(
+                collection: const Collection(label: tempCollectionName),
+              );
+      media = await widget.dbManager.upsertMedia(
+        collectionId: tempCollection.id!,
+        media: media.copyWith(isHidden: true),
+        onPrepareMedia: (m, {required targetDir}) async {
+          final updated =
+              (await m.moveFile(targetDir: targetDir)).getMetadata();
+          return updated;
+        },
+      );
+    } else {
+      media = await widget.dbManager.upsertMedia(
+        collectionId: collection.id!,
+        media: media,
+        onPrepareMedia: (m, {required targetDir}) async {
+          final updated =
+              (await m.moveFile(targetDir: targetDir)).getMetadata();
+          return updated;
+        },
+      );
+    }
+    return media;
+  }
+
+  static const tempCollectionName = '*** Recently Captured';
 }

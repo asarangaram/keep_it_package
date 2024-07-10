@@ -126,7 +126,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       /// the universalMediaProvider
                       /// We only need to update the collectionId
                       : StreamBuilder<Progress>(
-                          stream: action.moveToCollection(
+                          stream: action.moveToCollectionStream(
                             currMedia,
                             collection: targetCollection!,
                             onDone: () {
