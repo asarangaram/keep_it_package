@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,20 +16,16 @@ class ImageEditService extends StatefulWidget {
   const ImageEditService({
     required this.file,
     required this.onDone,
-    required this.onEditAndSave,
+    required this.onCreateNewFile,
+    required this.onSave,
     super.key,
   });
   final File file;
 
   final Future<void> Function() onDone;
-  final Future<void> Function(
-    Uint8List imageBytes, {
-    required bool overwrite,
-    bool? needFlip,
-    Rect? cropRect,
-    double? rotateAngle,
-  }) onEditAndSave;
 
+  final Future<String> Function() onCreateNewFile;
+  final Future<void> Function(String, {required bool overwrite}) onSave;
   @override
   State<ImageEditService> createState() => _ImageEditServiceState();
 }
@@ -142,7 +139,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
                   return;
                 }
 
-                await widget.onEditAndSave(
+                await editAndSave(
                   state.rawImageData,
                   cropRect:
                       editActionDetails.needCrop ? state.getCropRect() : null,
@@ -151,6 +148,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
                       ? editActionDetails.rotateAngle
                       : null,
                   overwrite: overwrite,
+                  onSave: widget.onSave,
                 );
                 await widget.onDone();
               },
@@ -165,6 +163,27 @@ class _ImageEditServiceState extends State<ImageEditService> {
         ],
       ),
     );
+  }
+
+  Future<void> editAndSave(
+    Uint8List imageBytes, {
+    required bool overwrite,
+    required Rect? cropRect,
+    required bool? needFlip,
+    required double? rotateAngle,
+    required Future<void> Function(String, {required bool overwrite}) onSave,
+  }) async {
+    final fileName = await widget.onCreateNewFile();
+
+    await ExtDeviceProcessMedia.imageCropper(
+      imageBytes,
+      cropRect: cropRect,
+      needFlip: needFlip ?? false,
+      rotateAngle: rotateAngle,
+      outFile: fileName,
+    );
+
+    await onSave(fileName, overwrite: overwrite);
   }
 }
 
