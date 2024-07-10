@@ -1,9 +1,8 @@
+import 'package:colan_services/services/shared_media_service/models/on_get_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import '../../shared_media_service/models/media_handler.dart';
 import '../models/action_control.dart';
 import 'media_controls.dart';
 import 'media_viewer.dart';
@@ -40,16 +39,15 @@ class MediaView extends ConsumerWidget {
             ),
           ),
         ),
-        GetDBManager(
-          builder: (dbManager) {
-            final mediaHandler =
-                MediaHandler(media: media, dbManager: dbManager);
+        OnGetMedia(
+          id: media.id!,
+          builder: (media, {required action}) {
             return MediaControls(
-              onMove: ac.onMove(() => mediaHandler.move(context, ref)),
-              onDelete: ac.onDelete(() => mediaHandler.delete(context, ref)),
-              onShare: ac.onShare(() => mediaHandler.share(context, ref)),
-              onEdit: ac.onEdit(() => mediaHandler.edit(context, ref)),
-              onPin: ac.onPin(() => mediaHandler.togglePin(context, ref)),
+              onMove: ac.onMove(action.move),
+              onDelete: ac.onDelete(action.delete),
+              onShare: ac.onShare(action.share),
+              onEdit: ac.onEdit(action.edit),
+              onPin: ac.onPin(action.togglePin),
               media: item,
             );
           },

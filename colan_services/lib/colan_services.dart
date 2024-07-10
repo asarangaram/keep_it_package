@@ -27,13 +27,13 @@ export 'services/preview_service/view/preview.dart' show PreviewService;
 export 'services/shared_media_service/models/cl_shared_media.dart'
     show CLSharedMedia;
 export 'services/shared_media_service/models/media_handler.dart';
+export 'services/shared_media_service/models/on_get_deleted_media.dart';
 export 'services/shared_media_service/process/cl_media_process.dart'
-    show CLMediaProcess, ExtProcessCLMedia;
+    show CLMediaProcess;
 export 'services/shared_media_service/process/file_picker.dart'
     show onPickFiles;
 export 'services/shared_media_service/widgets/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
-
 export 'services/video_edit_service/video_trimmer.dart' show VideoEditServices;
 //This must be removed!!
 export 'services/video_player_service/providers/show_controls.dart';

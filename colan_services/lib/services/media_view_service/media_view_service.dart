@@ -129,6 +129,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                     : MediaPageView(
                         items: widget.media,
                         startIndex: widget.initialMediaIndex,
+                        actionControl: ActionControl.full(),
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,
                         onLockPage: ({required bool lock}) {

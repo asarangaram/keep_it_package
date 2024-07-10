@@ -81,7 +81,7 @@ class MediaEditService extends StatelessWidget {
 
     File(imageFile).createSync(recursive: true);
 
-    await ExtProcessCLMedia.imageCropper(
+    await ExtDeviceProcessMedia.imageCropper(
       imageBytes,
       cropRect: cropRect,
       needFlip: needFlip ?? false,

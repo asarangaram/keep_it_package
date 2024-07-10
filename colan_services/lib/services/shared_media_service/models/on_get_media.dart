@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,11 @@ class MediaActions {
 
   final Future<bool> Function(String outFile) cloneAndReplaceMedia;
 
+  final Stream<Progress> Function({
+    required Collection collection,
+    required void Function() onDone,
+  }) moveToCollection;
+
   const MediaActions({
     required this.move,
     required this.delete,
@@ -32,28 +38,76 @@ class MediaActions {
     required this.edit,
     required this.replaceMedia,
     required this.cloneAndReplaceMedia,
+    required this.moveToCollection,
   });
 }
 
 class OnGetMedia extends StatelessWidget {
-  const OnGetMedia({required this.id, required this.builder, super.key});
-  final int id;
-  final Widget Function(CLMedia media, {required MediaActions action}) builder;
+  factory OnGetMedia({
+    required int id,
+    required Widget Function(CLMedia media, {required MediaActions action})?
+        builder,
+    Key? key,
+  }) {
+    return OnGetMedia._(
+      idList: [id],
+      builder: builder,
+      builderList: null,
+      key: key,
+    );
+  }
+  factory OnGetMedia.multiple({
+    required List<int> idList,
+    required Widget Function(
+      List<CLMedia> media, {
+      required MediaActions action,
+    })? builder,
+    Key? key,
+  }) {
+    return OnGetMedia._(
+      idList: idList,
+      builder: null,
+      builderList: builder,
+      key: key,
+    );
+  }
+  const OnGetMedia._({
+    required this.idList,
+    required this.builder,
+    required this.builderList,
+    super.key,
+  });
 
+  final List<int> idList;
+  final Widget Function(CLMedia media, {required MediaActions action})? builder;
+  final Widget Function(List<CLMedia> media, {required MediaActions action})?
+      builderList;
   @override
   Widget build(BuildContext context) {
     return GetDBManager(
       builder: (dbManager) {
-        return GetMedia(
-          id: id,
+        if (builder != null) {
+          return GetMedia(
+            id: idList[0],
+            buildOnData: (media) {
+              if (media == null) {
+                return BasicPageService.message(message: 'Media not found');
+              }
+              return MediaHandlerWidget(
+                media: media,
+                dbManager: dbManager,
+                builder: builder,
+              );
+            },
+          );
+        }
+        return GetMediaMultiple(
+          idList: idList,
           buildOnData: (media) {
-            if (media == null) {
-              return BasicPageService.message(message: 'Media not found');
-            }
-            return MediaHandlerWidget(
+            return MediaHandlerWidget.multiple(
               media: media,
               dbManager: dbManager,
-              builder: builder,
+              builderList: builderList,
             );
           },
         );
@@ -103,6 +157,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget> {
           edit: edit,
           replaceMedia: replaceMedia,
           cloneAndReplaceMedia: cloneAndReplaceMedia,
+          moveToCollection: moveToCollection,
         ),
       );
     } else {
@@ -116,6 +171,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget> {
           edit: edit,
           replaceMedia: replaceMedia,
           cloneAndReplaceMedia: cloneAndReplaceMedia,
+          moveToCollection: moveToCollection,
         ),
       );
     }
@@ -338,9 +394,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget> {
   }
 
   //Can be converted to non static
-  Stream<Progress> acceptMedia({
+  Stream<Progress> moveToCollection({
     required Collection collection,
-    required List<CLMedia>? media,
     required void Function() onDone,
   }) async* {
     final Collection updatedCollection;
@@ -356,13 +411,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget> {
       updatedCollection = collection;
     }
 
-    if (media?.isNotEmpty ?? false) {
+    if (widget.media.isNotEmpty) {
       final streamController = StreamController<Progress>();
       var completedMedia = 0;
       unawaited(
         widget.dbManager
             .upsertMediaMultiple(
-          media: media?.map((e) => e.copyWith(isHidden: false)).toList(),
+          media: widget.media.map((e) => e.copyWith(isHidden: false)).toList(),
           collectionId: updatedCollection.id!,
           onPrepareMedia: (m, {required targetDir}) async {
             final updated =
@@ -371,7 +426,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget> {
 
             streamController.add(
               Progress(
-                fractCompleted: completedMedia / media!.length,
+                fractCompleted: completedMedia / widget.media.length,
                 currentItem: m.basename,
               ),
             );

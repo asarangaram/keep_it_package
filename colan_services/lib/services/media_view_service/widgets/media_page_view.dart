@@ -1,9 +1,9 @@
+import 'package:colan_services/services/shared_media_service/models/on_get_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import '../../shared_media_service/models/media_handler.dart';
+import '../models/action_control.dart';
 import 'media_controls.dart';
 import 'media_viewer.dart';
 
@@ -11,6 +11,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   const MediaPageView({
     required this.items,
     required this.startIndex,
+    required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
     this.onLockPage,
@@ -18,6 +19,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   });
   final List<CLMedia> items;
   final String parentIdentifier;
+  final ActionControl actionControl;
   final int startIndex;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
@@ -40,6 +42,7 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
   @override
   Widget build(BuildContext context) {
     final media = widget.items[currIndex];
+    final ac = widget.actionControl;
     return Stack(
       children: [
         Positioned.fill(
@@ -68,17 +71,16 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
             },
           ),
         ),
-        GetDBManager(
-          builder: (dbManager) {
-            final mediaHandler =
-                MediaHandler(media: media, dbManager: dbManager);
+        OnGetMedia(
+          id: media.id!,
+          builder: (media, {required action}) {
             return MediaControls(
-              onMove: () => mediaHandler.move(context, ref),
-              onDelete: () => mediaHandler.delete(context, ref),
-              onShare: () => mediaHandler.share(context, ref),
-              onEdit: () => mediaHandler.edit(context, ref),
-              onPin: () => mediaHandler.togglePin(context, ref),
-              media: widget.items[currIndex],
+              onMove: ac.onMove(action.move),
+              onDelete: ac.onDelete(action.delete),
+              onShare: ac.onShare(action.share),
+              onEdit: ac.onEdit(action.edit),
+              onPin: ac.onPin(action.togglePin),
+              media: media,
             );
           },
         ),
