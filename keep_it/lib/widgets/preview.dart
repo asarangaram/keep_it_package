@@ -1,5 +1,7 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it/widgets/store_manager.dart';
 
 class Preview extends StatelessWidget {
   const Preview({required this.media, super.key});
@@ -7,6 +9,13 @@ class Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return MediaHandlerWidget(
+      builder: ({required action}) {
+        return PreviewService(
+          media: media,
+          getPreviewPath: action.getPreviewPath,
+        );
+      },
+    );
   }
 }

@@ -28,6 +28,7 @@ dependencies:
   share_plus: ^9.0.0
   store: 
     path: ../store 
+  uuid: ^4.4.0
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding

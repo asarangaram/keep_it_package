@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/album_manager_helper.dart';
 
@@ -76,6 +77,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         createTempFile: createTempFile,
         onUpsertNote: onUpsertNote,
         onDeleteNote: onDeleteNote,
+        getPreviewPath: getPreviewPath,
       ),
     );
   }
@@ -480,4 +482,21 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
     return absolutePath;
   }
+
+  String getPreviewPath(CLMedia media) {
+    final relativePath = CLMedia.relativePath(
+      media.path,
+      pathPrefix: widget.appSettings.directories.media.pathString,
+      validate: false,
+    );
+
+    final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, relativePath);
+    final previewFileName = path.join(
+      widget.appSettings.directories.thumbnail.pathString,
+      '$uuid.tn.jpeg',
+    );
+    return previewFileName;
+  }
+
+  final uuidGenerator = const Uuid();
 }

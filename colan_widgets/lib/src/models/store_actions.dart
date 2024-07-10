@@ -18,6 +18,7 @@ class StoreActions {
     required this.createTempFile,
     required this.onUpsertNote,
     required this.onDeleteNote,
+    required this.getPreviewPath,
   });
   final Future<bool> Function(List<CLMedia> selectedMedia) move;
   final Future<bool> Function(List<CLMedia> selectedMedia) delete;
@@ -56,4 +57,5 @@ class StoreActions {
 
   final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
   final Future<void> Function(CLNote note) onDeleteNote;
+  final String Function(CLMedia media) getPreviewPath;
 }
