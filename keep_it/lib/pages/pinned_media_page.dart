@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/shared_media_service/models/on_get_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,8 +14,8 @@ class PinnedMediaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const label = 'pinnedMedia';
     const parentIdentifier = 'PinnedMedia';
-    return GetDBManager(
-      builder: (dbManager) {
+    return MediaHandlerWidget(
+      builder: ({required action}) {
         return GetPinnedMedia(
           buildOnData: (media) {
             return Column(
@@ -28,22 +29,21 @@ class PinnedMediaPage extends ConsumerWidget {
                       tag: '$parentIdentifier /item/${item.id}',
                       child: Padding(
                         padding: const EdgeInsets.all(4),
-                        child: GestureDetector(
-                          onTap: () async {
-                            await context.push(
-                              '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
+                        child: MediaHandlerWidget(
+                          builder: ({required action}) {
+                            return GestureDetector(
+                              onTap: () async {
+                                await context.push(
+                                  '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
+                                );
+                              },
+                              onLongPress: () => action.togglePin([item]),
+                              child: PreviewService(
+                                media: item,
+                                keepAspectRatio: false,
+                              ),
                             );
                           },
-                          onLongPress: () async {
-                            await MediaHandler(
-                              dbManager: dbManager,
-                              media: item,
-                            ).togglePin(context, ref);
-                          },
-                          child: PreviewService(
-                            media: item,
-                            keepAspectRatio: false,
-                          ),
                         ),
                       ),
                     ),
@@ -62,10 +62,7 @@ class PinnedMediaPage extends ConsumerWidget {
                           title: 'Remove Selected Pins',
                           icon: MdiIcons.pinOffOutline,
                           onTap: () async {
-                            await MediaHandler.multiple(
-                              dbManager: dbManager,
-                              media: media,
-                            ).togglePin(context, ref);
+                            await action.togglePin(media);
 
                             return true;
                           },

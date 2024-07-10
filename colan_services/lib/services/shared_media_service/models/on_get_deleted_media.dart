@@ -35,7 +35,7 @@ class OnGetDeletedMedia extends ConsumerWidget {
             });
             return DeletedMediaHandler(
               dbManager: dbManager,
-              media: media,
+              media0: media,
               buildOnData: buildOnData,
             );
           },
@@ -48,12 +48,12 @@ class OnGetDeletedMedia extends ConsumerWidget {
 class DeletedMediaHandler extends ConsumerStatefulWidget {
   const DeletedMediaHandler({
     required this.dbManager,
-    required this.media,
+    required this.media0,
     required this.buildOnData,
     super.key,
   });
   final DBManager dbManager;
-  final List<CLMedia> media;
+  final List<CLMedia> media0;
   final Widget Function(
     List<CLMedia> items, {
     required Future<bool> Function(List<CLMedia> selectedMedia) onRestore,
@@ -69,7 +69,7 @@ class _DeletedMediaHandlerState extends ConsumerState<DeletedMediaHandler> {
   @override
   Widget build(BuildContext context) {
     return widget.buildOnData(
-      widget.media,
+      widget.media0,
       onRestore: onRestore,
       onDelete: onDelete,
     );
@@ -79,15 +79,15 @@ class _DeletedMediaHandlerState extends ConsumerState<DeletedMediaHandler> {
     if (selectedMedia.isEmpty) {
       return true;
     }
-    if (widget.media.length == 1) {
+    if (selectedMedia.length == 1) {
       final confirmed = await showDialog<bool>(
             context: context,
             builder: (BuildContext context) {
               return CLConfirmAction(
                 title: 'Confirm delete',
                 message: 'Are you sure you want to delete '
-                    'this ${widget.media[0].type.name}?',
-                child: PreviewService(media: widget.media[0]),
+                    'this ${selectedMedia[0].type.name}?',
+                child: PreviewService(media: selectedMedia[0]),
                 onConfirm: ({required confirmed}) async {
                   if (context.mounted) {
                     Navigator.of(context).pop(confirmed);
@@ -99,7 +99,7 @@ class _DeletedMediaHandlerState extends ConsumerState<DeletedMediaHandler> {
           false;
       if (confirmed) {
         await widget.dbManager.deleteMedia(
-          widget.media[0],
+          selectedMedia[0],
           onDeleteFile: (f) async => f.deleteIfExists(),
           onRemovePin: (id) async =>
               AlbumManagerHelper().removeMedia(context, ref, id),
@@ -114,7 +114,7 @@ class _DeletedMediaHandlerState extends ConsumerState<DeletedMediaHandler> {
               return CLConfirmAction(
                 title: 'Confirm delete',
                 message: 'Are you sure you want to delete '
-                    '${widget.media.length} items?',
+                    '${selectedMedia.length} items?',
                 child: null,
                 onConfirm: ({required confirmed}) =>
                     Navigator.of(context).pop(confirmed),
@@ -124,7 +124,7 @@ class _DeletedMediaHandlerState extends ConsumerState<DeletedMediaHandler> {
           false;
       if (confirmed) {
         await widget.dbManager.deleteMediaMultiple(
-          widget.media,
+          selectedMedia,
           onDeleteFile: (f) async => f.deleteIfExists(),
           onRemovePinMultiple: (id) async =>
               AlbumManagerHelper().removeMultipleMedia(context, ref, id),

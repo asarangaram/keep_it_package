@@ -71,15 +71,14 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
             },
           ),
         ),
-        OnGetMedia(
-          id: media.id!,
-          builder: (media, {required action}) {
+        MediaHandlerWidget(
+          builder: ({required action}) {
             return MediaControls(
-              onMove: ac.onMove(action.move),
-              onDelete: ac.onDelete(action.delete),
-              onShare: ac.onShare(action.share),
-              onEdit: ac.onEdit(action.edit),
-              onPin: ac.onPin(action.togglePin),
+              onMove: ac.onMove(() => action.move([media])),
+              onDelete: ac.onDelete(() => action.delete([media])),
+              onShare: ac.onShare(() => action.share([media])),
+              onEdit: ac.onEdit(() => action.edit([media])),
+              onPin: ac.onPin(() => action.togglePin([media])),
               media: media,
             );
           },

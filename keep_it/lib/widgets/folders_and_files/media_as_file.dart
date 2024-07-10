@@ -4,7 +4,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 import '../wrap_standard_quick_menu.dart';
 
@@ -21,15 +20,14 @@ class MediaAsFile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetDBManager(
-      builder: (dbManager) {
-        final mediaHandler = MediaHandler(media: media, dbManager: dbManager);
+    return MediaHandlerWidget(
+      builder: ({required action}) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () => mediaHandler.move(context, ref),
-          onDelete: () => mediaHandler.delete(context, ref),
-          onShare: () => mediaHandler.share(context, ref),
-          onEdit: () => mediaHandler.edit(context, ref),
+          onMove: () => action.move([media]),
+          onDelete: () => action.delete([media]),
+          onShare: () => action.share([media]),
+          onEdit: () => action.edit([media]),
           onTap: onTap,
           child: PreviewService(
             media: media,

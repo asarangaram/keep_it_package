@@ -98,14 +98,12 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   @override
   Widget build(BuildContext context) {
+    final currMedia =
+        (isSelectionMode ? selectedMedia.entries : widget.media.entries);
     return GetDBManager(
       builder: (dbManager) {
-        return OnGetMedia.multiple(
-          idList:
-              (isSelectionMode ? selectedMedia.entries : widget.media.entries)
-                  .map((e) => e.id!)
-                  .toList(),
-          builder: (_, {required action}) {
+        return MediaHandlerWidget(
+          builder: ({required action}) {
             return WizardLayout(
               title: widget.type.label,
               onCancel: () => CLPopScreen.onPop(context),
@@ -129,6 +127,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       /// We only need to update the collectionId
                       : StreamBuilder<Progress>(
                           stream: action.moveToCollection(
+                            currMedia,
                             collection: targetCollection!,
                             onDone: () {
                               ref
@@ -169,7 +168,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                               icon: Icons.delete,
                               onTap: hasCandidate
                                   ? () async {
-                                      final res = await action.delete();
+                                      final res =
+                                          await action.delete(currMedia);
 
                                       await ref
                                           .read(
