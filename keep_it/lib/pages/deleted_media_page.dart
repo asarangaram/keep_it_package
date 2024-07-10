@@ -1,3 +1,4 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,69 +24,71 @@ class DeleteMediaPage extends ConsumerWidget {
                 CLPopScreen.onPop(context);
               });
             }
-            return CLPopScreen.onSwipe(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: CLSimpleGalleryView<CLMedia>(
-                      key: const ValueKey(label),
-                      title: 'Deleted Media',
-                      itemBuilder: (
-                        context,
-                        item, {
-                        required quickMenuScopeKey,
-                      }) =>
-                          Hero(
-                        tag: '$parentIdentifier /item/${item.id}',
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Preview(media: item),
-                        ),
-                      ),
-                      galleryMap: ref.watch(singleGroupItemProvider(media)),
-                      emptyState: const Center(
-                        child: CLText.large(
-                          'The medias pinned to show '
-                          'in gallery are shown here.',
-                        ),
-                      ),
-                      identifier: 'Pinned Media',
-                      columns: 2,
-                      selectionActions: (context, items) {
-                        return [
-                          CLMenuItem(
-                            title: 'Restore',
-                            icon: MdiIcons.imageMove,
-                            onTap: () => action.restoreDeleted(items),
+            return FullscreenLayout(
+              child: CLPopScreen.onSwipe(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: CLSimpleGalleryView<CLMedia>(
+                        key: const ValueKey(label),
+                        title: 'Deleted Media',
+                        itemBuilder: (
+                          context,
+                          item, {
+                          required quickMenuScopeKey,
+                        }) =>
+                            Hero(
+                          tag: '$parentIdentifier /item/${item.id}',
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Preview(media: item),
                           ),
-                          CLMenuItem(
-                            title: 'Delete',
-                            icon: Icons.delete,
-                            onTap: () => action.delete(items),
+                        ),
+                        galleryMap: ref.watch(singleGroupItemProvider(media)),
+                        emptyState: const Center(
+                          child: CLText.large(
+                            'The medias pinned to show '
+                            'in gallery are shown here.',
                           ),
-                        ];
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () => action.restoreDeleted(media),
-                          label: const CLText.small('Restore All'),
-                          icon: Icon(MdiIcons.imageMove),
                         ),
-                        ElevatedButton.icon(
-                          onPressed: () => action.delete(media),
-                          label: const CLText.small('Discard All'),
-                          icon: Icon(MdiIcons.delete),
-                        ),
-                      ],
+                        identifier: 'Pinned Media',
+                        columns: 2,
+                        selectionActions: (context, items) {
+                          return [
+                            CLMenuItem(
+                              title: 'Restore',
+                              icon: MdiIcons.imageMove,
+                              onTap: () => action.restoreDeleted(items),
+                            ),
+                            CLMenuItem(
+                              title: 'Delete',
+                              icon: Icons.delete,
+                              onTap: () => action.delete(items),
+                            ),
+                          ];
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () => action.restoreDeleted(media),
+                            label: const CLText.small('Restore All'),
+                            icon: Icon(MdiIcons.imageMove),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () => action.delete(media),
+                            label: const CLText.small('Discard All'),
+                            icon: Icon(MdiIcons.delete),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
