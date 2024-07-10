@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'text/edit_notes.dart';
@@ -14,13 +13,14 @@ class TextNote extends StatefulWidget {
   const TextNote({
     required this.onUpsertNote,
     required this.onDeleteNote,
-    required this.tempDir,
+    required this.onCreateNewTextFile,
     super.key,
     this.note,
   });
   final CLTextNote? note;
+  final Future<String> Function() onCreateNewTextFile;
   final Future<void> Function(CLNote note) onUpsertNote;
-  final Directory tempDir;
+
   final Future<void> Function(CLNote note) onDeleteNote;
 
   @override
@@ -144,9 +144,7 @@ class _TextNoteState extends State<TextNote> {
 
   Future<void> onEditDone() async {
     if (textModified) {
-      final now = DateTime.now();
-      final formattedDate = DateFormat('yyyyMMdd_HHmmss_SSS').format(now);
-      final path = '${widget.tempDir.path}/note_$formattedDate.txt';
+      final path = await widget.onCreateNewTextFile();
       await File(path).writeAsString(
         textEditingController.text.trim(),
       );

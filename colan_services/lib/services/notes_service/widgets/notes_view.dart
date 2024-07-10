@@ -1,8 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
-
-import 'package:store/store.dart';
 
 import 'audio_notes.dart';
 import 'text_notes.dart';
@@ -11,15 +8,17 @@ class NotesView extends StatefulWidget {
   const NotesView({
     required this.media,
     required this.notes,
-    required this.appSettings,
-    required this.dbManager,
     required this.onClose,
+    required this.onUpsertNote,
+    required this.onDeleteNote,
+    required this.onCreateNewFile,
     super.key,
   });
   final CLMedia media;
   final List<CLNote> notes;
-  final AppSettings appSettings;
-  final DBManager dbManager;
+  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
+  final Future<void> Function(CLNote note) onDeleteNote;
+  final Future<String> Function({required String ext}) onCreateNewFile;
   final VoidCallback onClose;
 
   @override
@@ -84,11 +83,12 @@ class _NotesViewState extends State<NotesView> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: AudioNotes(
-                  tempDir: widget.appSettings.directories.tempNotes.path,
+                  onCreateNewAudioFile: () =>
+                      widget.onCreateNewFile(ext: 'aac'),
                   media: widget.media,
                   notes: audioNotes,
-                  onUpsertNote: onUpsertNote,
-                  onDeleteNote: onDeleteNote,
+                  onUpsertNote: widget.onUpsertNote,
+                  onDeleteNote: widget.onDeleteNote,
                 ),
               ),
             ),
@@ -97,36 +97,17 @@ class _NotesViewState extends State<NotesView> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: TextNotes(
-                  tempDir: widget.appSettings.directories.tempNotes.path,
+                  onCreateNewTextFile: () => widget.onCreateNewFile(ext: 'txt'),
                   notes: textNotes,
-                  onUpsertNote: onUpsertNote,
-                  onDeleteNote: onDeleteNote,
+                  onUpsertNote: (note) =>
+                      widget.onUpsertNote(widget.media, note),
+                  onDeleteNote: widget.onDeleteNote,
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> onUpsertNote(CLNote note) async {
-    await widget.dbManager.upsertNote(
-      note,
-      [widget.media],
-      onSaveNote: (note1, {required targetDir}) async {
-        return note1.moveFile(targetDir: targetDir);
-      },
-    );
-  }
-
-  Future<void> onDeleteNote(CLNote note) async {
-    if (note.id == null) return;
-    await widget.dbManager.deleteNote(
-      note,
-      onDeleteFile: (file) async {
-        await file.deleteIfExists();
-      },
     );
   }
 }

@@ -39,13 +39,7 @@ class MediaEditorPage extends StatelessWidget {
                   return InvokeEditor(
                     media: media,
                     onCreateNewFile: () async {
-                      final fileName =
-                          'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
-                      final imageFile =
-                          '${appSettings.directories.downloadedMedia.path.path}/$fileName';
-
-                      File(imageFile).createSync(recursive: true);
-                      return imageFile;
+                      return action.createTempFile(ext: 'jpg');
                     },
                     onSave: (file, {required overwrite}) async {
                       if (overwrite) {

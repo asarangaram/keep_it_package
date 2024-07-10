@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,12 @@ import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
+import '../../media_wizard_service/media_wizard_service.dart';
+import '../../media_wizard_service/models/types.dart';
+import '../../notification_services/provider/notify.dart';
+import '../../preview_service/view/preview.dart';
 import 'album_manager_helper.dart';
+import 'cl_shared_media.dart';
 
 @immutable
 class MediaActions {
@@ -49,6 +53,11 @@ class MediaActions {
     }) onDone,
   }) analyseMediaStream;
 
+  final Future<String> Function({required String ext}) createTempFile;
+
+  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
+  final Future<void> Function(CLNote note) onDeleteNote;
+
   const MediaActions({
     required this.move,
     required this.delete,
@@ -61,6 +70,9 @@ class MediaActions {
     required this.moveToCollectionStream,
     required this.newMedia,
     required this.analyseMediaStream,
+    required this.createTempFile,
+    required this.onUpsertNote,
+    required this.onDeleteNote,
   });
 }
 
@@ -123,6 +135,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         moveToCollectionStream: moveToCollectionStream,
         newMedia: newMedia,
         analyseMediaStream: analyseMediaStream,
+        createTempFile: createTempFile,
+        onUpsertNote: onUpsertNote,
+        onDeleteNote: onDeleteNote,
       ),
     );
   }
@@ -550,5 +565,33 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     onDone(
       mg: CLSharedMedia(entries: candidates, collection: media.collection),
     );
+  }
+
+  Future<void> onUpsertNote(CLMedia media, CLNote note) async {
+    await widget.dbManager.upsertNote(
+      note,
+      [media],
+      onSaveNote: (note1, {required targetDir}) async {
+        return note1.moveFile(targetDir: targetDir);
+      },
+    );
+  }
+
+  Future<void> onDeleteNote(CLNote note) async {
+    if (note.id == null) return;
+    await widget.dbManager.deleteNote(
+      note,
+      onDeleteFile: (file) async {
+        await file.deleteIfExists();
+      },
+    );
+  }
+
+  Future<String> createTempFile({required String ext}) async {
+    final dir = widget.appSettings.directories.downloadedMedia.path;
+    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
+    final absolutePath = '${dir.path}/$fileBasename.$ext';
+
+    return absolutePath;
   }
 }

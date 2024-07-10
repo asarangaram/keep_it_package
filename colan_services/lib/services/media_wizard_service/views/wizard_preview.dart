@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../../media_view_service/media_view_service.dart';
-import '../../media_view_service/models/action_control.dart';
 import '../../preview_service/view/preview.dart';
 import '../models/types.dart';
 import '../providers/gallery_group_provider.dart';
@@ -82,26 +80,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           keepSelected: freezeView,
         );
       },
-    );
-  }
-}
-
-class ShowMedia extends ConsumerWidget {
-  const ShowMedia({required this.media, required this.type, super.key});
-  final CLMedia media;
-  final MediaSourceType type;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: CLBackground(
-        child: MediaViewService(
-          media: media,
-          parentIdentifier: type.identifier,
-          actionControl: ActionControl.editOnly(),
-        ),
-      ),
     );
   }
 }

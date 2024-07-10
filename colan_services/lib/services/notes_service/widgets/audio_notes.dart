@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'audio_note.dart';
@@ -11,14 +9,14 @@ class AudioNotes extends StatefulWidget {
     required this.notes,
     required this.onUpsertNote,
     required this.onDeleteNote,
-    required this.tempDir,
+    required this.onCreateNewAudioFile,
     super.key,
   });
   final CLMedia media;
   final List<CLAudioNote> notes;
-  final Future<void> Function(CLNote note) onUpsertNote;
+  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
   final Future<void> Function(CLNote note) onDeleteNote;
-  final Directory tempDir;
+  final Future<String> Function() onCreateNewAudioFile;
   @override
   State<AudioNotes> createState() => _AudioNotesState();
 }
@@ -35,8 +33,8 @@ class _AudioNotesState extends State<AudioNotes> {
   @override
   Widget build(BuildContext context) {
     return AudioRecorder(
-      tempDir: widget.tempDir,
-      onUpsertNote: widget.onUpsertNote,
+      onCreateNewAudioFile: widget.onCreateNewAudioFile,
+      onUpsertNote: (note) => widget.onUpsertNote(widget.media, note),
       editMode: editMode && widget.notes.isNotEmpty,
       onEditCancel: () => setState(() {
         editMode = false;

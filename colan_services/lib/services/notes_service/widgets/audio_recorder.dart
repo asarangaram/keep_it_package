@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'audio/decorations.dart';
 import 'audio/live_audio_view.dart';
@@ -13,14 +12,14 @@ import 'audio/recorded_audio_view.dart';
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({
     required this.onUpsertNote,
-    required this.tempDir,
+    required this.onCreateNewAudioFile,
     this.child,
     super.key,
     this.editMode = false,
     this.onEditCancel,
   });
   final Future<void> Function(CLNote note) onUpsertNote;
-  final Directory tempDir;
+  final Future<String> Function() onCreateNewAudioFile;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
@@ -89,7 +88,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
       width: kMinInteractiveDimension,
       child: CLButtonIcon.small(
         isRecording ? Icons.stop : Icons.mic,
-        onTap: () => _startOrStopRecording(widget.tempDir),
+        onTap: _startOrStopRecording,
       ),
     );
   }
@@ -151,7 +150,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
     }
   }
 
-  Future<void> _startOrStopRecording(Directory appDirectory) async {
+  Future<void> _startOrStopRecording() async {
     try {
       if (isRecording) {
         recorderController.reset();
@@ -161,7 +160,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
         if (path != null) {
           isRecordingCompleted = true;
 
-          debugPrint('Recorded file size: ${File(path).lengthSync()}');
+          //debugPrint('Recorded file size: ${File(path).lengthSync()}');
           //audioFiles.add(path);
           audioMessage = CLAudioNote(
             createdDate: DateTime.now(),
@@ -171,10 +170,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
           setState(() {});
         }
       } else {
-        final now = DateTime.now();
-        final formattedDate = DateFormat('yyyyMMdd_HHmmss_SSS').format(now);
-        final path = '${appDirectory.path}/audio_$formattedDate.aac';
-
+        final path = await widget.onCreateNewAudioFile();
         await recorderController.record(path: path); // Path is optional
       }
     } catch (e) {

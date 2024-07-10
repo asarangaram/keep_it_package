@@ -14,6 +14,7 @@ class MediaPageView extends ConsumerStatefulWidget {
     required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
+    required this.buildNotes,
     this.onLockPage,
     super.key,
   });
@@ -23,6 +24,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   final int startIndex;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
+  final Widget Function(CLMedia media) buildNotes;
 
   @override
   ConsumerState<MediaPageView> createState() => _ItemViewState();
@@ -66,6 +68,7 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                   autoStart: currIndex == index,
                   onLockPage: widget.onLockPage,
                   isLocked: widget.isLocked,
+                  buildNotes: widget.buildNotes,
                 ),
               );
             },

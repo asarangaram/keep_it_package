@@ -12,12 +12,14 @@ class MediaViewerRaw extends ConsumerWidget {
     required this.onLockPage,
     required this.autoStart,
     required this.isLocked,
+    required this.buildNotes,
     super.key,
   });
   final CLMedia media;
   final void Function({required bool lock})? onLockPage;
   final bool autoStart;
   final bool isLocked;
+  final Widget Function(CLMedia media) buildNotes;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,7 +57,7 @@ class MediaViewerRaw extends ConsumerWidget {
                   ref.read(showControlsProvider.notifier).hideNotes();
                 }
               },
-              child: NotesService(media: media),
+              child: buildNotes(media),
             ),
         ],
       ),

@@ -13,6 +13,7 @@ class MediaViewService extends ConsumerStatefulWidget {
   factory MediaViewService({
     required CLMedia media,
     required String parentIdentifier,
+    required Widget Function(CLMedia media) buildNotes,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -21,6 +22,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       media: [media],
       parentIdentifier: parentIdentifier,
       actionControl: actionControl ?? ActionControl.full(),
+      buildNotes: buildNotes,
       key: key,
     );
   }
@@ -28,6 +30,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required int initialMediaIndex,
     required List<CLMedia> media,
     required String parentIdentifier,
+    required Widget Function(CLMedia media) buildNotes,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -36,6 +39,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       media: media,
       parentIdentifier: parentIdentifier,
       actionControl: actionControl ?? ActionControl.full(),
+      buildNotes: buildNotes,
       key: key,
     );
   }
@@ -44,6 +48,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required this.media,
     required this.parentIdentifier,
     required this.actionControl,
+    required this.buildNotes,
     super.key,
   });
 
@@ -51,6 +56,7 @@ class MediaViewService extends ConsumerStatefulWidget {
   final int initialMediaIndex;
   final String parentIdentifier;
   final ActionControl actionControl;
+  final Widget Function(CLMedia media) buildNotes;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -125,6 +131,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                           });
                         },
                         actionControl: widget.actionControl,
+                        buildNotes: widget.buildNotes,
                       )
                     : MediaPageView(
                         items: widget.media,
@@ -132,6 +139,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                         actionControl: ActionControl.full(),
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,
+                        buildNotes: widget.buildNotes,
                         onLockPage: ({required bool lock}) {
                           setState(() {
                             lockPage = lock;
