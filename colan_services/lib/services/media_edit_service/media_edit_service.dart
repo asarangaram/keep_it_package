@@ -1,35 +1,40 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 
-import 'widgets/media_file_handler.dart';
+import '../image_edit_service/views/image_editor.dart';
+import '../shared_media_service/models/on_get_media.dart';
+import '../video_edit_service/video_trimmer.dart';
 
 class MediaEditService extends StatelessWidget {
-  const MediaEditService({required this.mediaId, super.key});
-  final int mediaId;
+  const MediaEditService({
+    required this.media,
+    required this.onCreateNewFile,
+    required this.onSave,
+    super.key,
+  });
+  final CLMedia media;
+  final Future<String> Function() onCreateNewFile;
+  final Future<void> Function(String, {required bool overwrite}) onSave;
 
   @override
   Widget build(BuildContext context) {
     return GetAppSettings(
       builder: (appSettings) {
-        return MediaFileHandler(
-          mediaId: mediaId,
-          builder: (
-            filePath, {
-            required mediaType,
-            required onSave,
+        return MediaHandlerWidget(
+          builder: ({
+            required action,
           }) {
-            if (!File(filePath).existsSync()) {
+            if (!File(media.path).existsSync()) {
               return const CLErrorView(errorMessage: 'Invalid Media');
             }
-            switch (mediaType) {
+            switch (media.type) {
               case CLMediaType.image:
                 return ImageEditService(
-                  file: File(filePath),
+                  file: File(media.path),
                   onDone: () => CLPopScreen.onPop(context),
                   onEditAndSave: (
                     Uint8List imageBytes, {
@@ -51,7 +56,7 @@ class MediaEditService extends StatelessWidget {
                 );
               case CLMediaType.video:
                 return VideoEditServices(
-                  File(filePath),
+                  File(media.path),
                   onSave: onSave,
                   onDone: () => CLPopScreen.onPop(context),
                 );
@@ -76,19 +81,16 @@ class MediaEditService extends StatelessWidget {
     required double? rotateAngle,
     required Future<void> Function(String, {required bool overwrite}) onSave,
   }) async {
-    final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final imageFile = '${cacheDir.path}/$fileName';
-
-    File(imageFile).createSync(recursive: true);
+    final fileName = await onCreateNewFile();
 
     await ExtDeviceProcessMedia.imageCropper(
       imageBytes,
       cropRect: cropRect,
       needFlip: needFlip ?? false,
       rotateAngle: rotateAngle,
-      outFile: imageFile,
+      outFile: fileName,
     );
 
-    await onSave(imageFile, overwrite: overwrite);
+    await onSave(fileName, overwrite: overwrite);
   }
 }
