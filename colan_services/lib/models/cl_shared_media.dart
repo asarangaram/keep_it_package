@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:colan_services/services/media_wizard_service/models/types.dart';
+import 'package:colan_services/models/universal_media_source.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -13,7 +13,7 @@ class CLSharedMedia {
   });
   final List<CLMedia> entries;
   final Collection? collection;
-  final MediaSourceType? type;
+  final UniversalMediaSource? type;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
@@ -25,7 +25,7 @@ class CLSharedMedia {
   CLSharedMedia copyWith({
     List<CLMedia>? entries,
     Collection? collection,
-    MediaSourceType? type,
+    UniversalMediaSource? type,
   }) {
     return CLSharedMedia(
       entries: entries ?? this.entries,

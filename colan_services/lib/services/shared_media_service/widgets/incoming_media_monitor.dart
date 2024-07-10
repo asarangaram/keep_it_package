@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/cl_shared_media.dart';
-import '../providers/incoming_media.dart';
+import '../../../models/cl_shared_media.dart';
+import '../../../providers/incoming_media.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
   const IncomingMediaMonitor({
@@ -16,6 +16,10 @@ class IncomingMediaMonitor extends ConsumerWidget {
     required CLSharedMedia incomingMedia,
     required void Function({required bool result}) onDiscard,
   }) onMedia;
+
+  static void pushMedia(WidgetRef ref, CLSharedMedia sharedMedia) {
+    ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

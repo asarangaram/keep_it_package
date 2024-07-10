@@ -6,6 +6,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
+import '../models/store_manager.dart';
+
 class MediaEditorPage extends StatelessWidget {
   const MediaEditorPage({
     required this.mediaId,

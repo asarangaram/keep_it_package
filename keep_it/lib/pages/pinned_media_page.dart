@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../models/store_manager.dart';
 import '../widgets/preview.dart';
 
 class PinnedMediaPage extends ConsumerWidget {

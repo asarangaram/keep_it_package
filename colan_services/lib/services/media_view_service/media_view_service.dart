@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/store_actions.dart';
 import '../video_player_service/providers/show_controls.dart';
 import 'models/action_control.dart';
 import 'widgets/media_background.dart';
@@ -15,6 +16,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required String parentIdentifier,
     required Widget Function(CLMedia media) buildNotes,
     required Widget Function(CLMedia media) getPreview,
+    required StoreActions action,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -22,6 +24,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
+      action: action,
       actionControl: actionControl ?? ActionControl.full(),
       buildNotes: buildNotes,
       key: key,
@@ -34,6 +37,7 @@ class MediaViewService extends ConsumerStatefulWidget {
     required String parentIdentifier,
     required Widget Function(CLMedia media) buildNotes,
     required Widget Function(CLMedia media) getPreview,
+    required StoreActions action,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -41,6 +45,7 @@ class MediaViewService extends ConsumerStatefulWidget {
       initialMediaIndex: initialMediaIndex,
       media: media,
       parentIdentifier: parentIdentifier,
+      action: action,
       actionControl: actionControl ?? ActionControl.full(),
       buildNotes: buildNotes,
       key: key,
@@ -54,12 +59,14 @@ class MediaViewService extends ConsumerStatefulWidget {
     required this.actionControl,
     required this.buildNotes,
     required this.getPreview,
+    required this.action,
     super.key,
   });
 
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
+  final StoreActions action;
   final ActionControl actionControl;
   final Widget Function(CLMedia media) buildNotes;
   final Widget Function(CLMedia media) getPreview;
@@ -137,6 +144,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                             }
                           });
                         },
+                        action: widget.action,
                         actionControl: widget.actionControl,
                         buildNotes: widget.buildNotes,
                       )
@@ -144,6 +152,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                         items: widget.media,
                         getPreview: widget.getPreview,
                         startIndex: widget.initialMediaIndex,
+                        action: widget.action,
                         actionControl: ActionControl.full(),
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,

@@ -3,6 +3,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 
+import '../../models/store_manager.dart';
+
 class AnalysePage extends StatelessWidget {
   const AnalysePage({
     required this.incomingMedia,

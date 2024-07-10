@@ -2,78 +2,18 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 
-import '../../media_wizard_service/media_wizard_service.dart';
-import '../../media_wizard_service/models/types.dart';
-import '../../notification_services/provider/notify.dart';
 import 'album_manager_helper.dart';
-import 'cl_shared_media.dart';
-
-@immutable
-class MediaActions {
-  final Future<bool> Function(List<CLMedia> selectedMedia) move;
-  final Future<bool> Function(List<CLMedia> selectedMedia) delete;
-  final Future<bool> Function(List<CLMedia> selectedMedia) share;
-  final Future<bool> Function(List<CLMedia> selectedMedia) togglePin;
-  final Future<bool> Function(List<CLMedia> selectedMedia) edit;
-
-  final Future<bool> Function(List<CLMedia> selectedMedia) restoreDeleted;
-
-  final Future<bool> Function(List<CLMedia> selectedMedia, String outFile)
-      replaceMedia;
-
-  final Future<bool> Function(List<CLMedia> selectedMedia, String outFile)
-      cloneAndReplaceMedia;
-
-  final Future<CLMedia?> Function(
-    String path, {
-    required bool isVideo,
-    Collection? collection,
-  }) newMedia;
-
-  final Stream<Progress> Function(
-    List<CLMedia> selectedMedia, {
-    required Collection collection,
-    required void Function() onDone,
-  }) moveToCollectionStream;
-
-  final Stream<Progress> Function({
-    required CLSharedMedia media,
-    required void Function({
-      required CLSharedMedia mg,
-    }) onDone,
-  }) analyseMediaStream;
-
-  final Future<String> Function({required String ext}) createTempFile;
-
-  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
-  final Future<void> Function(CLNote note) onDeleteNote;
-
-  const MediaActions({
-    required this.move,
-    required this.delete,
-    required this.share,
-    required this.togglePin,
-    required this.edit,
-    required this.restoreDeleted,
-    required this.replaceMedia,
-    required this.cloneAndReplaceMedia,
-    required this.moveToCollectionStream,
-    required this.newMedia,
-    required this.analyseMediaStream,
-    required this.createTempFile,
-    required this.onUpsertNote,
-    required this.onDeleteNote,
-  });
-}
 
 class MediaHandlerWidget extends StatelessWidget {
   const MediaHandlerWidget({
@@ -81,7 +21,7 @@ class MediaHandlerWidget extends StatelessWidget {
     super.key,
   });
 
-  final Widget Function({required MediaActions action})? builder;
+  final Widget Function({required StoreActions action})? builder;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +51,7 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
 
   final DBManager dbManager;
   final AppSettings appSettings;
-  final Widget Function({required MediaActions action})? builder;
+  final Widget Function({required StoreActions action})? builder;
 
   @override
   ConsumerState<MediaHandlerWidget0> createState() =>
@@ -122,7 +62,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   @override
   Widget build(BuildContext context) {
     return widget.builder!(
-      action: MediaActions(
+      action: StoreActions(
         move: move,
         delete: delete,
         share: share,
@@ -149,12 +89,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await MediaWizardService.addMedia(
       context,
       ref,
-      media: CLSharedMedia(entries: selectedMedia, type: MediaSourceType.move),
+      media: CLSharedMedia(
+        entries: selectedMedia,
+        type: UniversalMediaSource.move,
+      ),
     );
     if (mounted) {
       await context.push(
         '/media_wizard?type='
-        '${MediaSourceType.move.name}',
+        '${UniversalMediaSource.move.name}',
       );
     }
 
@@ -538,5 +481,34 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final absolutePath = '${dir.path}/$fileBasename.$ext';
 
     return absolutePath;
+  }
+
+  Future<bool> filesPicker({
+    Collection? collection,
+  }) async {
+    final picker = ImagePicker();
+    final pickedFileList = await picker.pickMultipleMedia();
+
+    if (pickedFileList.isNotEmpty) {
+      final items = pickedFileList
+          .map(
+            (xfile) => CLMedia(path: xfile.path, type: CLMediaType.file),
+          )
+          .toList();
+      final sharedMedia = CLSharedMedia(
+        entries: items,
+        collection: collection,
+        type: UniversalMediaSource.filePick,
+      );
+
+      if (items.isNotEmpty) {
+        IncomingMediaMonitor.pushMedia(ref, sharedMedia);
+      }
+
+      return items.isNotEmpty;
+    } else {
+      return false;
+      // User canceled the picker
+    }
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
+import '../models/store_manager.dart';
 import '../widgets/preview.dart';
 
 class CameraPage extends ConsumerWidget {
@@ -45,14 +46,14 @@ class CameraPage extends ConsumerWidget {
                     ref,
                     media: CLSharedMedia(
                       entries: mediaList,
-                      type: MediaSourceType.captured,
+                      type: UniversalMediaSource.captured,
                     ),
                   );
 
                   if (context.mounted) {
                     await context.push(
                       '/media_wizard?type='
-                      '${MediaSourceType.captured.name}',
+                      '${UniversalMediaSource.captured.name}',
                     );
                   }
                   if (context.mounted) {

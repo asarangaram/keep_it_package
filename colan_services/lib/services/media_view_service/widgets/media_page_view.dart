@@ -1,8 +1,8 @@
-import 'package:colan_services/services/shared_media_service/models/on_get_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../models/store_actions.dart';
 import '../models/action_control.dart';
 import 'media_controls.dart';
 import 'media_viewer.dart';
@@ -11,6 +11,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   const MediaPageView({
     required this.items,
     required this.startIndex,
+    required this.action,
     required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
@@ -21,6 +22,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   });
   final List<CLMedia> items;
   final String parentIdentifier;
+  final StoreActions action;
   final ActionControl actionControl;
   final int startIndex;
   final bool isLocked;
@@ -76,17 +78,13 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
             },
           ),
         ),
-        MediaHandlerWidget(
-          builder: ({required action}) {
-            return MediaControls(
-              onMove: ac.onMove(() => action.move([media])),
-              onDelete: ac.onDelete(() => action.delete([media])),
-              onShare: ac.onShare(() => action.share([media])),
-              onEdit: ac.onEdit(() => action.edit([media])),
-              onPin: ac.onPin(() => action.togglePin([media])),
-              media: media,
-            );
-          },
+        MediaControls(
+          onMove: ac.onMove(() => widget.action.move([media])),
+          onDelete: ac.onDelete(() => widget.action.delete([media])),
+          onShare: ac.onShare(() => widget.action.share([media])),
+          onEdit: ac.onEdit(() => widget.action.edit([media])),
+          onPin: ac.onPin(() => widget.action.togglePin([media])),
+          media: media,
         ),
       ],
     );

@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../providers/incoming_media.dart';
-
 Future<bool> onPickFiles(
   BuildContext context,
   WidgetRef ref, {
@@ -23,11 +21,11 @@ Future<bool> onPickFiles(
     final sharedMedia = CLSharedMedia(
       entries: items,
       collection: collection,
-      type: MediaSourceType.filePick,
+      type: UniversalMediaSource.filePick,
     );
 
     if (items.isNotEmpty) {
-      ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);
+      IncomingMediaMonitor.pushMedia(ref, sharedMedia);
     }
 
     return items.isNotEmpty;

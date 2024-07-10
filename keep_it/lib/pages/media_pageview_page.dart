@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
+import '../models/store_manager.dart';
 import '../widgets/empty_state.dart';
 
 class MediaPageViewPage extends StatelessWidget {
@@ -39,6 +40,7 @@ class MediaPageViewPage extends StatelessWidget {
               useSafeArea: false,
               child: MediaViewService.pageView(
                 media: items,
+                action: action,
                 getPreview: (media) => Preview(media: media),
                 parentIdentifier: parentIdentifier,
                 initialMediaIndex: initialMediaIndex,

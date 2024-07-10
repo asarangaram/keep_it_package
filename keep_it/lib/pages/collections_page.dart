@@ -93,13 +93,13 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                           ref,
                           media: CLSharedMedia(
                             entries: media,
-                            type: MediaSourceType.unclassified,
+                            type: UniversalMediaSource.unclassified,
                           ),
                         );
                         if (context.mounted) {
                           await context.push(
                             '/media_wizard?type='
-                            '${MediaSourceType.unclassified.name}',
+                            '${UniversalMediaSource.unclassified.name}',
                           );
                         }
                       },

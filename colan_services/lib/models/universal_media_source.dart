@@ -1,4 +1,4 @@
-enum MediaSourceType {
+enum UniversalMediaSource {
   captured,
   move,
   filePick,

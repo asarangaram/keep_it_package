@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-import '../models/types.dart';
+import '../../../models/universal_media_source.dart';
 import '../providers/gallery_group_provider.dart';
-import '../providers/media_provider.dart';
+import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
@@ -16,7 +16,7 @@ class WizardPreview extends ConsumerStatefulWidget {
     required this.getPreview,
     super.key,
   });
-  final MediaSourceType type;
+  final UniversalMediaSource type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
   final Widget Function(CLMedia media) getPreview;
@@ -28,7 +28,7 @@ class WizardPreview extends ConsumerStatefulWidget {
 class _WizardPreviewState extends ConsumerState<WizardPreview> {
   CLMedia? previewItem;
 
-  MediaSourceType get type => widget.type;
+  UniversalMediaSource get type => widget.type;
   bool get freezeView => widget.freezeView;
   void Function(List<CLMedia>)? get onSelectionChanged =>
       widget.onSelectionChanged;
