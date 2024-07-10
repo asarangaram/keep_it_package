@@ -1,6 +1,5 @@
 // ignore_for_file: unused_element
 
-import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +43,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
               }
             },
             onCameraCapture: () async {
-              await CLCamera.invokeWithSufficientPermission(
+              await CLCameraService.invokeWithSufficientPermission(
                 context,
                 () async {
                   if (context.mounted) {

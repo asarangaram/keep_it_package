@@ -23,6 +23,17 @@ class CLCameraService extends ConsumerWidget {
   final Future<CLMedia?> Function(String, {required bool isVideo}) onNewMedia;
   final Widget Function(CLMedia media) getPreview;
   final void Function(String message, {required dynamic error})? onError;
+  static Future<bool> invokeWithSufficientPermission(
+    BuildContext context,
+    Future<void> Function() callback, {
+    required CLCameraThemeData themeData,
+  }) async =>
+      CLCamera.invokeWithSufficientPermission(
+        context,
+        callback,
+        themeData: themeData,
+      );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetCameras(
