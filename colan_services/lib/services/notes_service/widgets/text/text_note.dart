@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'text/edit_notes.dart';
-import 'text/text_controls.dart';
-import 'text/view_notes.dart';
+import 'edit_notes.dart';
+import 'text_controls.dart';
+import 'view_notes.dart';
 
 class TextNote extends StatefulWidget {
   const TextNote({

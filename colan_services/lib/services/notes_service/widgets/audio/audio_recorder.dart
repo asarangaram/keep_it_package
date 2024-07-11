@@ -5,9 +5,9 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'audio/decorations.dart';
-import 'audio/live_audio_view.dart';
-import 'audio/recorded_audio_view.dart';
+import 'decorations.dart';
+import 'live_audio_view.dart';
+import 'recorded_audio_view.dart';
 
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({

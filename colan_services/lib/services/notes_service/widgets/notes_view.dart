@@ -1,8 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'audio_notes.dart';
-import 'text_notes.dart';
+import 'audio/audio_notes.dart';
+import 'text/text_notes.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({
