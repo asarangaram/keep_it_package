@@ -78,7 +78,10 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
           ),
         ),
         MediaControls(
-          onMove: ac.onMove(() => widget.storeAction.openMoveWizard([media])),
+          onMove: ac.onMove(
+            () => widget.storeAction
+                .openWizard([media], UniversalMediaSource.move),
+          ),
           onDelete: ac.onDelete(() async {
             return ConfirmAction.deleteMedia(
               context,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'models/cl_shared_media.dart';
-import 'models/universal_media_source.dart';
+
 import 'providers/gallery_group_provider.dart';
 import 'providers/universal_media.dart';
 import 'views/create_collection_wizard.dart';
@@ -203,6 +203,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       child: WizardPreview(
         getPreview: widget.getPreview,
         type: widget.type,
+        storeAction: widget.storeAction,
         onSelectionChanged: isSelectionMode
             ? (List<CLMedia> items) {
                 selectedMedia = selectedMedia.copyWith(entries: items);

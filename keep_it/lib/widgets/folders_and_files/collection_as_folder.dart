@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:keep_it/widgets/store_manager.dart';
 
 import 'package:store/store.dart';
@@ -28,17 +26,12 @@ class CollectionAsFolder extends ConsumerWidget {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
           onEdit: () async {
-            final res = await CollectionEditor.popupDialog(
+            final updated = await CollectionEditor.popupDialog(
               context,
               collection: collection,
             );
-            if (res != null) {
-              final (collection) = res;
-              await storeAction.upsertCollection(collection);
-
-              await ref
-                  .read(notificationMessageProvider.notifier)
-                  .push('Updated');
+            if (updated != null) {
+              await storeAction.upsertCollection(updated);
             }
 
             return true;
@@ -52,9 +45,7 @@ class CollectionAsFolder extends ConsumerWidget {
             );
           },
           onTap: () async {
-            await context.push(
-              '/items_by_collection/${collection.id}',
-            );
+            await storeAction.openCollection(collectionId: collection.id);
             return true;
           },
           child: Column(

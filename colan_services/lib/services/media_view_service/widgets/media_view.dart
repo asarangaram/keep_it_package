@@ -46,7 +46,9 @@ class MediaView extends ConsumerWidget {
           ),
         ),
         MediaControls(
-          onMove: ac.onMove(() => storeAction.openMoveWizard([media])),
+          onMove: ac.onMove(
+            () => storeAction.openWizard([media], UniversalMediaSource.move),
+          ),
           onDelete: ac.onDelete(() async {
             return ConfirmAction.deleteMedia(
               context,

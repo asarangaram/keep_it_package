@@ -1,7 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
@@ -34,8 +33,10 @@ class PinnedMediaPage extends ConsumerWidget {
                           builder: ({required storeAction}) {
                             return GestureDetector(
                               onTap: () async {
-                                await context.push(
-                                  '/item/${item.collectionId}/${item.id}?parentIdentifier=$parentIdentifier',
+                                await storeAction.openMedia(
+                                  item.id!,
+                                  collectionId: item.collectionId,
+                                  parentIdentifier: parentIdentifier,
                                 );
                               },
                               onLongPress: () => storeAction.togglePin([item]),

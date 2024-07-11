@@ -26,7 +26,8 @@ class MediaAsFile extends ConsumerWidget {
       builder: ({required storeAction}) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () => storeAction.openMoveWizard([media]),
+          onMove: () =>
+              storeAction.openWizard([media], UniversalMediaSource.move),
           onDelete: () async {
             return ConfirmAction.deleteMedia(
               context,

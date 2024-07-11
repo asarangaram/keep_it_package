@@ -3,7 +3,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../widgets/preview.dart';
@@ -40,21 +39,11 @@ class CameraPage extends ConsumerWidget {
                   );
                 },
                 onDone: (mediaList) async {
-                  await MediaWizardService.addMedia(
-                    context,
-                    ref,
-                    media: CLSharedMedia(
-                      entries: mediaList,
-                      type: UniversalMediaSource.captured,
-                    ),
+                  await storeAction.openWizard(
+                    mediaList,
+                    UniversalMediaSource.captured,
                   );
 
-                  if (context.mounted) {
-                    await context.push(
-                      '/media_wizard?type='
-                      '${UniversalMediaSource.captured.name}',
-                    );
-                  }
                   if (context.mounted) {
                     await CLPopScreen.onPop(context);
                   }

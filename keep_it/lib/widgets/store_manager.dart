@@ -85,7 +85,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   Widget build(BuildContext context) {
     return widget.builder!(
       storeAction: StoreActions(
-        openMoveWizard: openMoveWizard,
+        openWizard: openWizard,
         delete: delete,
         share: share,
         togglePin: togglePin,
@@ -102,8 +102,41 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         getPreviewPath: getPreviewPath,
         upsertCollection: upsertCollection,
         deleteCollection: deleteCollection,
+        openCamera: openCamera,
+        openMedia: openMedia,
+        openCollection: openCollection,
+        openDeletedMedia: openDeletedMedia,
       ),
     );
+  }
+
+  Future<bool> openWizard(
+    List<CLMedia> media,
+    UniversalMediaSource wizardType,
+  ) async {
+    if (media.isEmpty) {
+      await ref
+          .read(notificationMessageProvider.notifier)
+          .push('Nothing to do.');
+      return true;
+    }
+
+    await MediaWizardService.addMedia(
+      context,
+      ref,
+      media: CLSharedMedia(
+        entries: media,
+        type: wizardType,
+      ),
+    );
+    if (mounted) {
+      await context.push(
+        '/media_wizard?type='
+        '${wizardType.name}',
+      );
+    }
+
+    return true;
   }
 
   Future<bool> openMoveWizard(List<CLMedia> selectedMedia) async {
@@ -186,7 +219,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             );
         return false;
       } else {
-        // TODO(anandas):  Try moving this to app
         await context.push('/mediaEditor?id=${selectedMedia[0].id}');
         return true;
       }
@@ -549,9 +581,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
-    return widget.dbManager.upsertCollection(
+    final updated = await widget.dbManager.upsertCollection(
       collection: collection,
     );
+    await ref.read(notificationMessageProvider.notifier).push('Updated');
+    return updated;
   }
 
   Future<bool> deleteCollection(
@@ -649,5 +683,50 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       }
     }
     return res;
+  }
+
+  Future<void> openCamera({int? collectionId}) async {
+    await CLCameraService.invokeWithSufficientPermission(
+      context,
+      () async {
+        if (context.mounted) {
+          await context.push(
+            '/camera'
+            '${collectionId == null ? '' : '?collectionId=$collectionId'}',
+          );
+        }
+      },
+      themeData: DefaultCLCameraIcons(),
+    );
+  }
+
+  Future<void> openMedia(
+    int mediaId, {
+    int? collectionId,
+    String? parentIdentifier,
+  }) async {
+    final query =
+        parentIdentifier == null ? '' : '?parentIdentifier=$parentIdentifier';
+    if (collectionId == null) {
+      await context.push('/item_view/$mediaId$query');
+    } else {
+      await context.push(
+        '/item/$collectionId/$mediaId$query',
+      );
+    }
+  }
+
+  Future<void> openCollection({
+    int? collectionId,
+  }) async {
+    await context.push(
+      '/items_by_collection/$collectionId',
+    );
+  }
+
+  Future<void> openDeletedMedia({
+    int? collectionId,
+  }) async {
+    await context.push('/deleted_media');
   }
 }

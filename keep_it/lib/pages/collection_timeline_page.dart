@@ -1,11 +1,9 @@
 // ignore_for_file: unused_element
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
@@ -20,46 +18,45 @@ class CollectionTimeLinePage extends ConsumerWidget {
   final int collectionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => GetCollection(
-        id: collectionId,
-        buildOnData: (collection) => GetMediaByCollectionId(
-          collectionId: collectionId,
-          buildOnData: (items) => TimeLineView(
-            label: collection?.label ?? 'All Media',
-            items: items,
-            parentIdentifier:
-                'Gallery View Media CollectionId: ${collection?.id}',
-            onTapMedia: (
-              int mediaId, {
-              required String parentIdentifier,
-            }) async {
-              await context.push(
-                '/item/$collectionId/$mediaId?parentIdentifier=$parentIdentifier',
-              );
-              return true;
-            },
-            onPickFiles: (BuildContext c) async {
-              if (c.mounted) {
-                await onPickFiles(
-                  c,
-                  ref,
-                  collection: collection,
-                );
-              }
-            },
-            onCameraCapture: () async {
-              await CLCameraService.invokeWithSufficientPermission(
-                context,
-                () async {
-                  if (context.mounted) {
-                    await context.push('/camera?collectionId=$collectionId');
+  Widget build(BuildContext context, WidgetRef ref) => StoreManager(
+        builder: ({required storeAction}) {
+          return GetCollection(
+            id: collectionId,
+            buildOnData: (collection) => GetMediaByCollectionId(
+              collectionId: collectionId,
+              buildOnData: (items) => TimeLineView(
+                label: collection?.label ?? 'All Media',
+                items: items,
+                parentIdentifier:
+                    'Gallery View Media CollectionId: ${collection?.id}',
+                onTapMedia: (
+                  CLMedia media, {
+                  required String parentIdentifier,
+                }) async {
+                  await storeAction.openMedia(
+                    media.id!,
+                    collectionId: collectionId,
+                    parentIdentifier: parentIdentifier,
+                  );
+
+                  return true;
+                },
+                onPickFiles: (BuildContext c) async {
+                  if (c.mounted) {
+                    await onPickFiles(
+                      c,
+                      ref,
+                      collection: collection,
+                    );
                   }
                 },
-                themeData: DefaultCLCameraIcons(),
-              );
-            },
-          ),
-        ),
+                onCameraCapture: () async {
+                  await storeAction.openCamera(collectionId: collection?.id);
+                },
+              ),
+            ),
+          );
+        },
       );
 }
 
@@ -77,8 +74,10 @@ class TimeLineView extends ConsumerWidget {
   final String label;
   final String parentIdentifier;
   final List<CLMedia> items;
-  final Future<bool?> Function(int id, {required String parentIdentifier})
-      onTapMedia;
+  final Future<bool?> Function(
+    CLMedia media, {
+    required String parentIdentifier,
+  }) onTapMedia;
   final void Function(BuildContext context)? onPickFiles;
   final void Function()? onCameraCapture;
 
@@ -100,8 +99,7 @@ class TimeLineView extends ConsumerWidget {
             child: MediaAsFile(
               media: item,
               getPreview: (media) => Preview(media: media),
-              onTap: () =>
-                  onTapMedia(item.id!, parentIdentifier: parentIdentifier),
+              onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
               quickMenuScopeKey: quickMenuScopeKey,
             ),
           ),
@@ -127,7 +125,8 @@ class TimeLineView extends ConsumerWidget {
               CLMenuItem(
                 title: 'Move',
                 icon: MdiIcons.imageMove,
-                onTap: () => storeAction.openMoveWizard(items),
+                onTap: () =>
+                    storeAction.openWizard(items, UniversalMediaSource.move),
               ),
               CLMenuItem(
                 title: 'Share',

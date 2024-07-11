@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../media_wizard_service/models/cl_shared_media.dart';
-import '../../media_wizard_service/models/universal_media_source.dart';
 import '../widgets/incoming_media_monitor.dart';
 
 Future<bool> onPickFiles(

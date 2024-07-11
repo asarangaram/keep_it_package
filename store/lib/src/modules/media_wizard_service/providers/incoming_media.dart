@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
 import '../models/cl_shared_media.dart';
-import '../models/universal_media_source.dart';
 
 class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
   IncomingMediaNotifier()

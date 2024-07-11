@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../store/widgets/w3_get_media.dart';
-import '../models/universal_media_source.dart';
+
 import '../providers/gallery_group_provider.dart';
 import '../providers/universal_media.dart';
 
@@ -14,12 +14,14 @@ class WizardPreview extends ConsumerStatefulWidget {
     required this.onSelectionChanged,
     required this.freezeView,
     required this.getPreview,
+    required this.storeAction,
     super.key,
   });
   final UniversalMediaSource type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
   final Widget Function(CLMedia media) getPreview;
+  final StoreActions storeAction;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -64,9 +66,8 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               Hero(
             tag: '${type.identifier} /item/${item.id}',
             child: GestureDetector(
-              onTap: () {
-                context.push('/item_view/${item.id}');
-              },
+              onTap: () => widget.storeAction
+                  .openMedia(item.id!, parentIdentifier: type.identifier),
               child: Padding(
                 padding: const EdgeInsets.all(4),
                 child: widget.getPreview(item),

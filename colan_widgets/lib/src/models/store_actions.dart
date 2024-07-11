@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class StoreActions {
   const StoreActions({
-    required this.openMoveWizard,
+    required this.openWizard,
     required this.delete,
     required this.share,
     required this.togglePin,
@@ -21,8 +21,16 @@ class StoreActions {
     required this.getPreviewPath,
     required this.upsertCollection,
     required this.deleteCollection,
+    required this.openCamera,
+    required this.openMedia,
+    required this.openCollection,
+    required this.openDeletedMedia,
   });
-  final Future<bool> Function(List<CLMedia> selectedMedia) openMoveWizard;
+  final Future<bool> Function(
+    List<CLMedia> media,
+    UniversalMediaSource wizardType,
+  ) openWizard;
+
   final Future<bool> Function(
     List<CLMedia> selectedMedia, {
     required bool? confirmed,
@@ -81,4 +89,19 @@ class StoreActions {
     Collection collection, {
     required bool? confirmed,
   }) deleteCollection;
+
+  final Future<void> Function({int? collectionId}) openCamera;
+
+  final Future<void> Function(
+    int mediaId, {
+    int? collectionId,
+    String? parentIdentifier,
+  }) openMedia;
+  final Future<void> Function({
+    int? collectionId,
+  }) openCollection;
+
+  final Future<void> Function({
+    int? collectionId,
+  }) openDeletedMedia;
 }

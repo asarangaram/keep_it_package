@@ -1,15 +1,15 @@
 import 'package:app_loader/app_loader.dart';
-import 'package:colan_services/colan_services.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:keep_it/widgets/store_manager.dart';
 import 'package:store/store.dart';
 
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';
 
-class IncomingMediaHandler extends ConsumerStatefulWidget {
+class IncomingMediaHandler extends StatelessWidget {
   const IncomingMediaHandler({
     required this.incomingMedia,
     required this.onDiscard,
@@ -19,11 +19,35 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
   final void Function({required bool result}) onDiscard;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _IncomingMediaHandlerState();
+  Widget build(BuildContext context) {
+    return StoreManager(
+      builder: ({required storeAction}) => IncomingMediaHandler0(
+        incomingMedia: incomingMedia,
+        onDiscard: onDiscard,
+        onSave: storeAction.openWizard,
+      ),
+    );
+  }
 }
 
-class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
+class IncomingMediaHandler0 extends ConsumerStatefulWidget {
+  const IncomingMediaHandler0({
+    required this.incomingMedia,
+    required this.onDiscard,
+    required this.onSave,
+    super.key,
+  });
+  final CLSharedMedia incomingMedia;
+  final void Function({required bool result}) onDiscard;
+  final Future<void> Function(List<CLMedia> media, UniversalMediaSource type)
+      onSave;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _IncomingMediaHandler0State();
+}
+
+class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   CLSharedMedia? candidate;
   bool isSaving = false;
   @override
@@ -64,33 +88,18 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
     return widget0;
   }
 
-  void onSave({required CLSharedMedia? mg}) {
-    if (mg == null || mg.isEmpty) {
-      candidate = null;
-      isSaving = true;
-      setState(() {});
-      ref.read(notificationMessageProvider.notifier).push('Nothing to do.');
-      onDiscard(result: false);
-      return;
-    }
-    if (mg.hasTargetMismatchedItems) {
+  Future<void> onSave({required CLSharedMedia? mg}) async {
+    if (mg?.hasTargetMismatchedItems ?? false) {
       setState(() {
         candidate = mg;
       });
       return;
     }
     if (widget.incomingMedia.type != null) {
-      MediaWizardService.addMedia(
-        context,
-        ref,
-        media: mg.copyWith(type: widget.incomingMedia.type),
-      );
-      onDiscard(result: true);
-      context.push(
-        '/media_wizard?type='
-        '${widget.incomingMedia.type!.name}',
-      );
+      await widget.onSave(mg?.entries ?? [], widget.incomingMedia.type!);
     }
+
+    onDiscard(result: !(mg == null || mg.isEmpty));
     candidate = null;
     isSaving = true;
     if (mounted) {

@@ -2,8 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-import 'universal_media_source.dart';
-
 @immutable
 class CLSharedMedia {
   const CLSharedMedia({
