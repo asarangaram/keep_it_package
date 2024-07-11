@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 import '../../../internal/widgets/broken_image.dart';
 import '../../image_view_service/image_view.dart';
@@ -19,14 +19,6 @@ class PreviewService extends StatelessWidget {
   final CLMedia media;
   final bool keepAspectRatio;
   final String Function(CLMedia media) getPreviewPath;
-  // TODO(anandas): :  How to make this reactive??
-  Future<bool> isPinBroken() async {
-    if (media.pin != null) {
-      final asset = await AssetEntity.fromId(media.pin!);
-      return asset == null;
-    }
-    return false;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +37,7 @@ class PreviewService extends StatelessWidget {
             builder: (context, thumbnailFile) {
               return thumbnailFile.when(
                 data: (file) => FutureBuilder(
-                  future: isPinBroken(),
+                  future: AlbumManager.isPinBroken(media.pin),
                   builder: (context, snapshot) {
                     return ImageViewerBasic(
                       file: file,

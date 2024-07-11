@@ -9,6 +9,15 @@ class AlbumManager {
     required this.albumName,
   });
 
+  // TODO(anandas): :  How to make this reactive??
+  static Future<bool> isPinBroken(String? pin) async {
+    if (pin != null) {
+      final asset = await AssetEntity.fromId(pin);
+      return asset == null;
+    }
+    return false;
+  }
+
   static Future<bool> checkRequest() async {
     final state = await PhotoManager.requestPermissionExtend(
       requestOption: const PermissionRequestOption(
