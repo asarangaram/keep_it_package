@@ -37,6 +37,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
                     media.id!,
                     collectionId: collectionId,
                     parentIdentifier: parentIdentifier,
+                    actionControl: ActionControl.full(),
                   );
 
                   return true;

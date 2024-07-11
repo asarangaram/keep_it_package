@@ -35,8 +35,8 @@ class PinnedMediaPage extends ConsumerWidget {
                               onTap: () async {
                                 await storeAction.openMedia(
                                   item.id!,
-                                  collectionId: item.collectionId,
                                   parentIdentifier: parentIdentifier,
+                                  actionControl: ActionControl.full(),
                                 );
                               },
                               onLongPress: () => storeAction.togglePin([item]),

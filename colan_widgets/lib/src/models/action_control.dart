@@ -1,3 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 @immutable
@@ -86,4 +89,29 @@ class ActionControl {
       allowShare ? cb : null;
   Future<bool?> Function()? onPin(Future<bool?> Function() cb) =>
       allowPin ? cb : null;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'allowEdit': allowEdit,
+      'allowDelete': allowDelete,
+      'allowMove': allowMove,
+      'allowShare': allowShare,
+      'allowPin': allowPin,
+    };
+  }
+
+  factory ActionControl.fromMap(Map<String, dynamic> map) {
+    return ActionControl(
+      allowEdit: map['allowEdit'] as bool,
+      allowDelete: map['allowDelete'] as bool,
+      allowMove: map['allowMove'] as bool,
+      allowShare: map['allowShare'] as bool,
+      allowPin: map['allowPin'] as bool,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory ActionControl.fromJson(String source) =>
+      ActionControl.fromMap(json.decode(source) as Map<String, dynamic>);
 }

@@ -65,8 +65,11 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               Hero(
             tag: '${type.identifier} /item/${item.id}',
             child: GestureDetector(
-              onTap: () => widget.storeAction
-                  .openMedia(item.id!, parentIdentifier: type.identifier),
+              onTap: () => widget.storeAction.openMedia(
+                item.id!,
+                parentIdentifier: type.identifier,
+                actionControl: ActionControl.editOnly(),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(4),
                 child: widget.getPreview(item),

@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/action_control.dart';
 import 'media_controls.dart';
 import 'media_viewer.dart';
 

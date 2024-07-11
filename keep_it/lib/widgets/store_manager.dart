@@ -702,18 +702,19 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
   Future<void> openMedia(
     int mediaId, {
+    required ActionControl actionControl,
     int? collectionId,
     String? parentIdentifier,
   }) async {
-    final query =
-        parentIdentifier == null ? '' : '?parentIdentifier=$parentIdentifier';
-    if (collectionId == null) {
-      await context.push('/item_view/$mediaId$query');
-    } else {
-      await context.push(
-        '/item/$collectionId/$mediaId$query',
-      );
-    }
+    final queryMap = [
+      if (parentIdentifier != null) 'parentIdentifier="$parentIdentifier"',
+      if (collectionId != null) 'collectionId=$collectionId',
+      // ignore: unnecessary_null_comparison
+      if (actionControl != null) 'actionControl=${actionControl.toJson()}',
+    ];
+    final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
+
+    await context.push('/media/$mediaId$query');
   }
 
   Future<void> openCollection({

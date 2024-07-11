@@ -1,5 +1,11 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
+
+import 'action_control.dart';
+import 'cl_media.dart';
+import 'cl_note.dart';
+import 'collection.dart';
+import 'progress.dart';
+import 'universal_media_source.dart';
 
 @immutable
 class StoreActions {
@@ -94,6 +100,7 @@ class StoreActions {
 
   final Future<void> Function(
     int mediaId, {
+    required ActionControl actionControl,
     int? collectionId,
     String? parentIdentifier,
   }) openMedia;

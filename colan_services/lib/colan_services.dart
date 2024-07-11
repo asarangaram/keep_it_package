@@ -9,7 +9,7 @@ export 'services/image_view_service/image_view_service.dart'
     show ImageViewService;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
-export 'services/media_view_service/models/action_control.dart';
+
 export 'services/notes_service/notes_service.dart' show NotesService;
 export 'services/notification_services/notification_service.dart'
     show NotificationService;
