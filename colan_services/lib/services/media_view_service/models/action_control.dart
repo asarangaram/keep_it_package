@@ -1,13 +1,7 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 @immutable
 class ActionControl {
-  final bool allowEdit;
-  final bool allowDelete;
-  final bool allowMove;
-  final bool allowShare;
-  final bool allowPin;
   const ActionControl({
     required this.allowEdit,
     required this.allowDelete,
@@ -34,6 +28,11 @@ class ActionControl {
       allowPin: false,
     );
   }
+  final bool allowEdit;
+  final bool allowDelete;
+  final bool allowMove;
+  final bool allowShare;
+  final bool allowPin;
 
   ActionControl copyWith({
     bool? allowEdit,
