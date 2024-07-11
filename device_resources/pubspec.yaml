@@ -10,15 +10,12 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  colan_widgets:
-    path: ../colan_widgets
+  
   exif: ^3.3.0
   ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
-  image: ^4.2.0
-  mime: ^1.0.5
   path: ^1.9.0
   path_provider: ^2.1.3
   photo_manager: ^3.2.0

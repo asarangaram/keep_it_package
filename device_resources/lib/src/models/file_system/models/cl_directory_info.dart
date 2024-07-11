@@ -1,8 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
+
+import '../../../extensions/human_readable.dart';
 
 @immutable
 class CLDirectoryInfo {

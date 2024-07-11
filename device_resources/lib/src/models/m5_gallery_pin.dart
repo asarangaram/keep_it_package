@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class AlbumManager {
@@ -34,11 +33,11 @@ class AlbumManager {
     return targetAlbum;
   }
 
-  Future<String?> addMedia(
-    CLMedia media, {
-    required String title,
-    String? desc,
-  }) async {
+  Future<String?> addMedia(String filePath,
+      {required String title,
+      String? desc,
+      required bool isImage,
+      required bool isVideo}) async {
     final auth = await checkRequest();
     if (!auth) return null;
 
@@ -46,15 +45,15 @@ class AlbumManager {
     /// with this approach. Lets investigate later
     // TODO(anandas): : How to create album in Android
     final AssetEntity? assetEntity;
-    if (media.type == CLMediaType.image) {
+    if (isImage) {
       assetEntity = await PhotoManager.editor.saveImageWithPath(
-        media.path,
+        filePath,
         title: title,
         desc: desc,
       );
-    } else if (media.type == CLMediaType.video) {
+    } else if (isVideo) {
       assetEntity =
-          await PhotoManager.editor.saveVideo(File(media.path), title: title);
+          await PhotoManager.editor.saveVideo(File(filePath), title: title);
     } else {
       assetEntity = null;
     }

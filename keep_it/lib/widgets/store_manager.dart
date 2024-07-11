@@ -8,12 +8,33 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/album_manager_helper.dart';
+
+extension ExtMetaData on CLMedia {
+  Future<CLMedia> getMetadata({bool? regenerate}) async {
+    if (type == CLMediaType.image) {
+      return copyWith(
+        originalDate:
+            (await File(this.path).getImageMetaData(regenerate: regenerate))
+                ?.originalDate,
+      );
+    } else if (type == CLMediaType.video) {
+      return copyWith(
+        originalDate:
+            (await File(this.path).getVideoMetaData(regenerate: regenerate))
+                ?.originalDate,
+      );
+    } else {
+      return this;
+    }
+  }
+}
 
 class StoreManager extends StatelessWidget {
   const StoreManager({
@@ -26,6 +47,8 @@ class StoreManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetAppSettings(
+      errorBuilder: (object, st) => const SizedBox.shrink(),
+      loadingBuilder: () => const SizedBox.shrink(),
       builder: (appSettings) {
         return GetDBManager(
           builder: (dbManager) {
@@ -181,7 +204,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (selectedMedia.length == 1) {
       await widget.dbManager.togglePin(
         selectedMedia[0],
-        onPin: AlbumManagerHelper().albumManager.addMedia,
+        onPin: (media, {required title, desc}) {
+          return AlbumManagerHelper().albumManager.addMedia(
+                media.path,
+                title: title,
+                isImage: media.type == CLMediaType.image,
+                isVideo: media.type == CLMediaType.video,
+                desc: desc,
+              );
+        },
         onRemovePin: (id) async =>
             AlbumManagerHelper().removeMedia(context, ref, id),
       );
@@ -189,7 +220,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     } else {
       await widget.dbManager.pinMediaMultiple(
         selectedMedia,
-        onPin: AlbumManagerHelper().albumManager.addMedia,
+        onPin: (media, {required title, desc}) {
+          return AlbumManagerHelper().albumManager.addMedia(
+                media.path,
+                title: title,
+                isImage: media.type == CLMediaType.image,
+                isVideo: media.type == CLMediaType.video,
+                desc: desc,
+              );
+        },
         onRemovePin: (id) async =>
             AlbumManagerHelper().removeMedia(context, ref, id),
       );
@@ -402,11 +441,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       fractCompleted: 0,
     );
     for (final (i, item0) in media.indexed) {
-      final item1 = await ExtDeviceProcessMedia.tryDownloadMedia(
+      final item1 = await tryDownloadMedia(
         item0,
         appSettings: widget.appSettings,
       );
-      final item = await ExtDeviceProcessMedia.identifyMediaType(
+      final item = await identifyMediaType(
         item1,
         appSettings: widget.appSettings,
       );
@@ -536,4 +575,48 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   final uuidGenerator = const Uuid();
+
+  static Future<CLMedia> tryDownloadMedia(
+    CLMedia item0, {
+    required AppSettings appSettings,
+  }) async {
+    if (item0.type != CLMediaType.url) {
+      return item0;
+    }
+    final mimeType = await URLHandler.getMimeType(item0.path);
+    if (![
+      CLMediaType.image,
+      CLMediaType.video,
+      CLMediaType.audio,
+      CLMediaType.file,
+    ].contains(mimeType)) {
+      return item0;
+    }
+    final downloadedFile = await URLHandler.download(
+      item0.path,
+      appSettings.directories.downloadedMedia.path,
+    );
+    if (downloadedFile == null) {
+      return item0;
+    }
+    return item0.copyWith(path: downloadedFile, type: mimeType);
+  }
+
+  static Future<CLMedia> identifyMediaType(
+    CLMedia item0, {
+    required AppSettings appSettings,
+  }) async {
+    if (item0.type != CLMediaType.file) {
+      return item0;
+    }
+    final mimeType = switch (lookupMimeType(item0.path)) {
+      (final String mime) when mime.startsWith('image') => CLMediaType.image,
+      (final String mime) when mime.startsWith('video') => CLMediaType.video,
+      _ => CLMediaType.file
+    };
+    if (mimeType == CLMediaType.file) {
+      return item0;
+    }
+    return item0.copyWith(type: mimeType);
+  }
 }

@@ -2,11 +2,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:watcher/watcher.dart';
+
+import '../extensions/human_readable.dart';
 
 @immutable
 class StorageStatistics {

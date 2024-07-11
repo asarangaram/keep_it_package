@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +9,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../../../internal/widgets/editor_finalizer.dart';
 import '../models/aspect_ratio.dart' as aratio;
+import '../models/image_processing.dart';
 import 'crop_control.dart';
 
 class ImageEditService extends StatefulWidget {
@@ -175,7 +175,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
   }) async {
     final fileName = await widget.onCreateNewFile();
 
-    await ExtDeviceProcessMedia.imageCropper(
+    await ImageProcessing.imageCropper(
       imageBytes,
       cropRect: cropRect,
       needFlip: needFlip ?? false,

@@ -1,5 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,11 +10,11 @@ class StorageInfoEntry extends ConsumerWidget {
     required this.label,
     required this.dirs,
     super.key,
-    this.actions,
+    this.action,
   });
   final String label;
   final List<CLDirectory> dirs;
-  final List<CLMenuItem>? actions;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,13 +28,7 @@ class StorageInfoEntry extends ConsumerWidget {
     final infoReady = infoListAsync.every((element) => element != null);
     if (infoReady) {
       info = infoListAsync.reduce((a, b) => a! + b!);
-      trailing = (actions?.isEmpty ?? true)
-          ? null
-          : ElevatedButton.icon(
-              onPressed: actions![0].onTap,
-              label: Text(actions![0].title),
-              icon: Icon(actions![0].icon),
-            );
+      trailing = action;
     }
     return ListTile(
       title: Text(label),

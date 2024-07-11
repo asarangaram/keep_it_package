@@ -1,10 +1,10 @@
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/file_system/models/cl_directories.dart';
 import 'storage_info_entry.dart';
+import 'w1_get_app_settings.dart';
+import '../extensions/ext_directory.dart';
 
 class StorageMonitor extends ConsumerWidget {
   const StorageMonitor({super.key});
@@ -12,6 +12,10 @@ class StorageMonitor extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetAppSettings(
+      loadingBuilder: () => const SizedBox.shrink(),
+      errorBuilder: (object, st) {
+        return const SizedBox.shrink();
+      },
       builder: (appSettings) {
         final persistentDirs = CLStandardDirectories.values
             .where((stddir) => stddir.isStore)
@@ -31,19 +35,15 @@ class StorageMonitor extends ConsumerWidget {
             StorageInfoEntry(
               label: 'Cache',
               dirs: cacheDir,
-              actions: [
-                CLMenuItem(
-                  title: 'Clear',
-                  icon: Icons.delete,
-                  onTap: () async {
-                    for (final dir in cacheDir) {
-                      dir.path.clear();
-                    }
-
-                    return false;
-                  },
-                ),
-              ],
+              action: ElevatedButton.icon(
+                onPressed: () async {
+                  for (final dir in cacheDir) {
+                    dir.path.clear();
+                  }
+                },
+                label: const Text('Clear'),
+                icon: const Icon(Icons.delete),
+              ),
             ),
           ],
         );
