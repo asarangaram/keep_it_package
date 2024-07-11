@@ -14,7 +14,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
-import '../models/album_manager_helper.dart';
+import '../config/texts.dart';
 
 extension ExtMetaData on CLMedia {
   Future<CLMedia> getMetadata({bool? regenerate}) async {
@@ -82,6 +82,7 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
 }
 
 class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
+  final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
   @override
   Widget build(BuildContext context) {
     return widget.builder!(
@@ -144,15 +145,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await widget.dbManager.deleteMedia(
         selectedMedia[0],
         onDeleteFile: (f) async => f.deleteIfExists(),
-        onRemovePin: (id) async =>
-            AlbumManagerHelper().removeMedia(context, ref, id),
+        onRemovePin: (id) async => removeMediaFromGallery(id),
       );
     } else {
       await widget.dbManager.deleteMediaMultiple(
         selectedMedia,
         onDeleteFile: (f) async => f.deleteIfExists(),
-        onRemovePinMultiple: (id) async =>
-            AlbumManagerHelper().removeMultipleMedia(context, ref, id),
+        onRemovePinMultiple: (id) async => removeMultipleMediaFromGallery(id),
       );
     }
     return true;
@@ -205,32 +204,30 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await widget.dbManager.togglePin(
         selectedMedia[0],
         onPin: (media, {required title, desc}) {
-          return AlbumManagerHelper().albumManager.addMedia(
-                media.path,
-                title: title,
-                isImage: media.type == CLMediaType.image,
-                isVideo: media.type == CLMediaType.video,
-                desc: desc,
-              );
+          return albumManager.addMedia(
+            media.path,
+            title: title,
+            isImage: media.type == CLMediaType.image,
+            isVideo: media.type == CLMediaType.video,
+            desc: desc,
+          );
         },
-        onRemovePin: (id) async =>
-            AlbumManagerHelper().removeMedia(context, ref, id),
+        onRemovePin: (id) async => removeMediaFromGallery(id),
       );
       return true;
     } else {
       await widget.dbManager.pinMediaMultiple(
         selectedMedia,
         onPin: (media, {required title, desc}) {
-          return AlbumManagerHelper().albumManager.addMedia(
-                media.path,
-                title: title,
-                isImage: media.type == CLMediaType.image,
-                isVideo: media.type == CLMediaType.video,
-                desc: desc,
-              );
+          return albumManager.addMedia(
+            media.path,
+            title: title,
+            isImage: media.type == CLMediaType.image,
+            isVideo: media.type == CLMediaType.video,
+            desc: desc,
+          );
         },
-        onRemovePin: (id) async =>
-            AlbumManagerHelper().removeMedia(context, ref, id),
+        onRemovePin: (id) async => removeMediaFromGallery(id),
       );
       return true;
     }
@@ -618,5 +615,41 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return item0;
     }
     return item0.copyWith(type: mimeType);
+  }
+
+  Future<bool> removeMediaFromGallery(
+    String ids,
+  ) async {
+    final res = await albumManager.removeMedia(ids);
+    if (!res) {
+      if (context.mounted) {
+        await ref
+            .read(
+              notificationMessageProvider.notifier,
+            )
+            .push(
+              CLTexts.missingdDeletePermissionsForGallery,
+            );
+      }
+    }
+    return res;
+  }
+
+  Future<bool> removeMultipleMediaFromGallery(
+    List<String> ids,
+  ) async {
+    final res = await albumManager.removeMultipleMedia(ids);
+    if (!res) {
+      if (context.mounted) {
+        await ref
+            .read(
+              notificationMessageProvider.notifier,
+            )
+            .push(
+              CLTexts.missingdDeletePermissionsForGallery,
+            );
+      }
+    }
+    return res;
   }
 }
