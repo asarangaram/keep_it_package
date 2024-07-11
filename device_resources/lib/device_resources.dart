@@ -7,3 +7,4 @@ export 'src/models/m1_app_settings.dart' show AppSettings;
 export 'src/widgets/storage_monitor.dart' show StorageMonitor;
 export 'src/extensions/cl_media_device_processing.dart'
     show ExtDeviceProcessMedia;
+export 'src/models/backup_file.dart' show backupFileProvider;

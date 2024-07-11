@@ -9,8 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../models/backup_files.dart';
 
 class BackupView extends ConsumerWidget {
-  const BackupView({required this.appSettings, super.key});
-  final AppSettings appSettings;
+  const BackupView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,9 +37,7 @@ class BackupView extends ConsumerWidget {
                   'and create a new backup.',
                 ),
               ),
-              AvailableBackup(
-                appSettings: appSettings,
-              ),
+              const AvailableBackup(),
             ],
           );
         }
@@ -70,19 +67,15 @@ class BackupView extends ConsumerWidget {
   }
 }
 
-class AvailableBackup extends StatefulWidget {
-  const AvailableBackup({required this.appSettings, super.key});
-  final AppSettings appSettings;
+class AvailableBackup extends ConsumerWidget {
+  const AvailableBackup({super.key});
 
   @override
-  State<AvailableBackup> createState() => _AvailableBackupState();
-}
-
-class _AvailableBackupState extends State<AvailableBackup> {
-  @override
-  Widget build(BuildContext context) {
-    final backupFile =
-        widget.appSettings.directories.backup.path.listSync().firstOrNull;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final backupFileAsync = ref.watch(backupFileProvider);
+    final backupFile = backupFileAsync.whenOrNull(
+      data: (data) => data,
+    );
     if (backupFile == null) {
       return const SizedBox.shrink();
     }
@@ -109,10 +102,7 @@ class _AvailableBackupState extends State<AvailableBackup> {
                       WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
                         child: TextButton(
-                          onPressed: () {
-                            backupFile.deleteSync();
-                            setState(() {});
-                          },
+                          onPressed: backupFile.delete,
                           child: CLText.small(
                             'Remove',
                             color:
@@ -144,25 +134,5 @@ class _AvailableBackupState extends State<AvailableBackup> {
         ],
       ),
     );
-    /* if(stats)
-    return switch (infoListAsync?.count) {
-      null => const SizedBox.shrink(),
-      0 => const SizedBox.shrink(),
-      1 => ListTile(
-          title: Text('Last Backup on }'),
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              CLButtonIcon.standard(
-                MdiIcons.delete,
-                color: CLTheme.of(context).colors.errorTextForeground,
-              ),
-              ElevatedButton(onPressed: () {}, child: const Text('Delete')),
-              ElevatedButton(onPressed: () {}, child: const Text('download')),
-            ],
-          ),
-        ),
-      _ => const ListTile(title: Text('Too many Backup Found. Unexpected')),
-    }; */
   }
 }

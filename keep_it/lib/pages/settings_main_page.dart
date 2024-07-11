@@ -14,28 +14,24 @@ class SettingsMainPage extends ConsumerWidget {
     return KeepItMainView(
       title: 'Settings',
       pageBuilder: (context, quickMenuScopeKey) {
-        return GetAppSettings(
-          builder: (appSettings) {
-            return GetDeletedMedia(
-              buildOnData: (deletedMedia) {
-                return ListView(
-                  children: [
-                    if (deletedMedia.isNotEmpty)
-                      ListTile(
-                        leading: Icon(MdiIcons.delete),
-                        trailing: IconButton(
-                          icon: Icon(MdiIcons.arrowRight),
-                          onPressed: () async {
-                            await context.push('/deleted_media');
-                          },
-                        ),
-                        title: Text('Deleted Items (${deletedMedia.length})'),
-                      ),
-                    const StorageMonitor(),
-                    BackupView(appSettings: appSettings),
-                  ],
-                );
-              },
+        return GetDeletedMedia(
+          buildOnData: (deletedMedia) {
+            return ListView(
+              children: [
+                if (deletedMedia.isNotEmpty)
+                  ListTile(
+                    leading: Icon(MdiIcons.delete),
+                    trailing: IconButton(
+                      icon: Icon(MdiIcons.arrowRight),
+                      onPressed: () async {
+                        await context.push('/deleted_media');
+                      },
+                    ),
+                    title: Text('Deleted Items (${deletedMedia.length})'),
+                  ),
+                const StorageMonitor(),
+                const BackupView(),
+              ],
             );
           },
         );
