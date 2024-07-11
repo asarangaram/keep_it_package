@@ -14,8 +14,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
-import '../config/texts.dart';
-
 extension ExtMetaData on CLMedia {
   Future<CLMedia> getMetadata({bool? regenerate}) async {
     if (type == CLMediaType.image) {
@@ -628,7 +626,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
               notificationMessageProvider.notifier,
             )
             .push(
-              CLTexts.missingdDeletePermissionsForGallery,
+              'Failed: Did you give permission to remove from Gallery?',
             );
       }
     }
@@ -646,7 +644,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
               notificationMessageProvider.notifier,
             )
             .push(
-              CLTexts.missingdDeletePermissionsForGallery,
+              'Failed: Did you give permission to remove from Gallery?',
             );
       }
     }
