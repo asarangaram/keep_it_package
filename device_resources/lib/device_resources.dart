@@ -5,7 +5,6 @@ export 'src/providers/p1_app_settings.dart' show appSettingsProvider;
 export 'src/widgets/w1_get_app_settings.dart' show GetAppSettings;
 export 'src/models/m1_app_settings.dart' show AppSettings;
 export 'src/widgets/storage_monitor.dart' show StorageMonitor;
-export 'src/models/backup_file.dart' show backupFileProvider;
 
 export 'src/extensions/ext_file.dart';
 export 'src/extensions/ext_directory.dart';
