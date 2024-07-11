@@ -45,7 +45,12 @@ class CLCameraService extends ConsumerWidget {
             onCancel?.call();
           },
           cameras: cameras,
-          onCapture: onNewMedia,
+          onCapture: (file, {required isVideo}) async {
+            final media = await onNewMedia(file, isVideo: isVideo);
+            if (media != null) {
+              ref.read(capturedMediaProvider.notifier).add(media);
+            }
+          },
           previewWidget: PreviewCapturedMedia(
             sendMedia: onDone,
             getPreview: getPreview,
