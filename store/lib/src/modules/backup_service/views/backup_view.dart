@@ -67,72 +67,83 @@ class BackupView extends ConsumerWidget {
   }
 }
 
-class AvailableBackup extends ConsumerWidget {
+class AvailableBackup extends StatefulWidget {
   const AvailableBackup({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final backupFileAsync = ref.watch(backupFileProvider);
-    final backupFile = backupFileAsync.whenOrNull(
-      data: (data) => data,
-    );
-    if (backupFile == null) {
-      return const SizedBox.shrink();
-    }
-    final stats = backupFile.statSync();
-    final backupTime =
-        DateFormat('MMM dd, yyyy HH:mm:ss').format(stats.modified);
-    final fileSize = '(${stats.size.toHumanReadableFileSize()})';
+  State<AvailableBackup> createState() => _AvailableBackupState();
+}
 
-    return ListTile(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      const TextSpan(
-                        text: 'Last Backup:',
-                      ),
-                      WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: TextButton(
-                          onPressed: backupFile.delete,
-                          child: CLText.small(
-                            'Remove',
-                            color:
-                                CLTheme.of(context).colors.errorTextForeground,
+class _AvailableBackupState extends State<AvailableBackup> {
+  @override
+  Widget build(BuildContext context) {
+    return GetAppSettings(
+      errorBuilder: (object, st) => const SizedBox.shrink(),
+      loadingBuilder: SizedBox.shrink,
+      builder: (appSettings) {
+        final backupFile =
+            appSettings.directories.backup.path.listSync().firstOrNull;
+        if (backupFile == null) return const SizedBox.shrink();
+        final stats = backupFile.statSync();
+        final backupTime =
+            DateFormat('MMM dd, yyyy HH:mm:ss').format(stats.modified);
+        final fileSize = '(${stats.size.toHumanReadableFileSize()})';
+        return ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: 'Last Backup:',
                           ),
-                        ),
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: TextButton(
+                              onPressed: () async {
+                                await backupFile.delete();
+                                setState(() {});
+                              },
+                              child: CLText.small(
+                                'Remove',
+                                color: CLTheme.of(context)
+                                    .colors
+                                    .errorTextForeground,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    CLText.small(
+                      '$backupTime $fileSize',
+                    ),
+                  ],
                 ),
-                CLText.small(
-                  '$backupTime $fileSize',
-                ),
-              ],
-            ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final box = context.findRenderObject() as RenderBox?;
+                  final files = [XFile(backupFile.path)];
+                  await Share.shareXFiles(
+                    files,
+                    subject: 'Backup from KeepIt',
+                    sharePositionOrigin:
+                        box!.localToGlobal(Offset.zero) & box.size,
+                  );
+                },
+                child: const Text('download'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final box = context.findRenderObject() as RenderBox?;
-              final files = [XFile(backupFile.path)];
-              await Share.shareXFiles(
-                files,
-                subject: 'Backup from KeepIt',
-                sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-              );
-            },
-            child: const Text('download'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
