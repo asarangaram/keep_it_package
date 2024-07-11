@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 
 import 'action_control.dart';
@@ -31,6 +33,7 @@ class StoreActions {
     required this.openMedia,
     required this.openCollection,
     required this.openDeletedMedia,
+    required this.onShareFiles,
   });
   final Future<bool> Function(
     List<CLMedia> media,
@@ -111,4 +114,8 @@ class StoreActions {
   final Future<void> Function({
     int? collectionId,
   }) openDeletedMedia;
+  final Future<void> Function(
+    List<String> files, {
+    Rect? sharePositionOrigin,
+  }) onShareFiles;
 }

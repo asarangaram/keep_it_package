@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
-import 'package:share_plus/share_plus.dart';
+
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
@@ -106,6 +106,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         openMedia: openMedia,
         openCollection: openCollection,
         openDeletedMedia: openDeletedMedia,
+        onShareFiles: ShareManager.onShareFiles,
       ),
     );
   }
@@ -192,20 +193,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (selectedMedia.isEmpty) {
       return true;
     }
-
     final box = context.findRenderObject() as RenderBox?;
-    final files = selectedMedia.map((e) => XFile(e.path)).toList();
-    final shareResult = await Share.shareXFiles(
-      files,
-      // text: 'Share from KeepIT',
-      subject: 'Exporting media from KeepIt',
+    return ShareManager.onShareFiles(
+      selectedMedia.map((e) => e.path).toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
-    return switch (shareResult.status) {
-      ShareResultStatus.dismissed => false,
-      ShareResultStatus.unavailable => false,
-      ShareResultStatus.success => true,
-    };
   }
 
   Future<bool> openEditor(List<CLMedia> selectedMedia) async {

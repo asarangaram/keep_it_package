@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../models/backup_files.dart';
 
 class BackupView extends ConsumerWidget {
-  const BackupView({super.key});
+  const BackupView({required this.onShareFiles, super.key});
+  final Future<void> Function(
+    List<String> files, {
+    Rect? sharePositionOrigin,
+  }) onShareFiles;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +40,9 @@ class BackupView extends ConsumerWidget {
                   'and create a new backup.',
                 ),
               ),
-              const AvailableBackup(),
+              AvailableBackup(
+                onShareFiles: onShareFiles,
+              ),
             ],
           );
         }
@@ -68,7 +73,11 @@ class BackupView extends ConsumerWidget {
 }
 
 class AvailableBackup extends StatefulWidget {
-  const AvailableBackup({super.key});
+  const AvailableBackup({required this.onShareFiles, super.key});
+  final Future<void> Function(
+    List<String> files, {
+    Rect? sharePositionOrigin,
+  }) onShareFiles;
 
   @override
   State<AvailableBackup> createState() => _AvailableBackupState();
@@ -130,10 +139,8 @@ class _AvailableBackupState extends State<AvailableBackup> {
               ElevatedButton(
                 onPressed: () async {
                   final box = context.findRenderObject() as RenderBox?;
-                  final files = [XFile(backupFile.path)];
-                  await Share.shareXFiles(
-                    files,
-                    subject: 'Backup from KeepIt',
+                  await widget.onShareFiles(
+                    [backupFile.path],
                     sharePositionOrigin:
                         box!.localToGlobal(Offset.zero) & box.size,
                   );

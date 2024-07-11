@@ -28,7 +28,6 @@ dependencies:
   percent_indicator: ^4.2.3
   
   share_handler: ^0.0.21
-  share_plus: ^9.0.0
   sqlite3_flutter_libs: ^0.5.20
   sqlite_async: ^0.7.0
   tar: ^2.0.0

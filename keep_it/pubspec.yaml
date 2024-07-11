@@ -26,7 +26,6 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   mime: ^1.0.5
   path: ^1.9.0
-  share_plus: ^9.0.0
   store: 
     path: ../store 
   uuid: ^4.4.0

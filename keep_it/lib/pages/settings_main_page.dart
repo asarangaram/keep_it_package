@@ -30,7 +30,9 @@ class SettingsMainPage extends ConsumerWidget {
                         title: Text('Deleted Items (${deletedMedia.length})'),
                       ),
                     const StorageMonitor(),
-                    const BackupView(),
+                    BackupView(
+                      onShareFiles: storeAction.onShareFiles,
+                    ),
                   ],
                 );
               },
