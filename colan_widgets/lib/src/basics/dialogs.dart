@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-class ConfirmDelete {
+class ConfirmAction {
   static Future<bool?> template(
     BuildContext context, {
     required String title,
@@ -63,7 +63,7 @@ class ConfirmDelete {
         ),
       );
 
-  static Future<bool?> collection(
+  static Future<bool?> deleteCollection(
     BuildContext context, {
     required Collection collection,
     Future<bool?> Function()? onConfirm,
@@ -76,7 +76,7 @@ class ConfirmDelete {
         onConfirm: onConfirm,
       );
 
-  static Future<bool?> media(
+  static Future<bool?> deleteMedia(
     BuildContext context, {
     required CLMedia media,
     required Widget Function(CLMedia media) getPreview,
@@ -91,7 +91,7 @@ class ConfirmDelete {
         child: getPreview(media),
       );
 
-  static Future<bool?> mediaMultiple(
+  static Future<bool?> deleteMediaMultiple(
     BuildContext context, {
     required List<CLMedia> media,
     required Widget Function(CLMedia media) getPreview,
@@ -102,10 +102,14 @@ class ConfirmDelete {
     }
     final String msg;
     if (media.length == 1) {
-      msg = 'Are you sure you want to delete '
-          'this ${media[0].type.name}?';
+      return ConfirmAction.deleteMedia(
+        context,
+        media: media[0],
+        getPreview: getPreview,
+        onConfirm: onConfirm,
+      );
     } else {
-      msg = 'Are you sure you want to delete the following media + '
+      msg = 'Are you sure you want to delete the above media + '
           '${media.length - 1} items?';
     }
 
@@ -117,4 +121,86 @@ class ConfirmDelete {
       child: getPreview(media[0]),
     );
   }
+
+  static Future<bool?> restoreMedia(
+    BuildContext context, {
+    required CLMedia media,
+    required Widget Function(CLMedia media) getPreview,
+    Future<bool?> Function()? onConfirm,
+  }) async =>
+      template(
+        context,
+        title: 'Confirm Restore',
+        message: 'Are you sure you want to restore '
+            'this ${media.type.name}?',
+        onConfirm: onConfirm,
+        child: getPreview(media),
+      );
+
+  static Future<bool?> restoreMediaMultiple(
+    BuildContext context, {
+    required List<CLMedia> media,
+    required Widget Function(CLMedia media) getPreview,
+    Future<bool?> Function()? onConfirm,
+  }) async {
+    if (media.isEmpty) {
+      return false;
+    }
+    if (media.length == 1) {
+      return ConfirmAction.restoreMedia(
+        context,
+        media: media[0],
+        getPreview: getPreview,
+        onConfirm: onConfirm,
+      );
+    }
+    return template(
+      context,
+      title: 'Confirm Restore',
+      message: 'Are you sure you want to restore the above media + '
+          '${media.length - 1} items?',
+      child: getPreview(media[0]),
+      onConfirm: onConfirm,
+    );
+  }
+
+  static Future<bool?> replaceMedia(
+    BuildContext context, {
+    required CLMedia media,
+    required Widget Function(CLMedia media) getPreview,
+    Future<bool?> Function()? onConfirm,
+  }) async =>
+      template(
+        context,
+        title: 'Confirm Replace',
+        message: 'This will replace the original file with the above media',
+        onConfirm: onConfirm,
+        child: getPreview(media),
+      );
+  static Future<bool?> cloneAndReplaceMedia(
+    BuildContext context, {
+    required CLMedia media,
+    required Widget Function(CLMedia media) getPreview,
+    Future<bool?> Function()? onConfirm,
+  }) async =>
+      template(
+        context,
+        title: 'Save',
+        message: 'This will save the above media as a separate copy, '
+            'other propertes will be copied from original media',
+        onConfirm: onConfirm,
+        child: getPreview(media),
+      );
+  static Future<bool?> deleteNote(
+    BuildContext context, {
+    required CLNote note,
+    Future<bool?> Function()? onConfirm,
+  }) async =>
+      template(
+        context,
+        title: 'Confirm Delete',
+        message: 'Are you sure you want to delete '
+            "this note? You can't recover it",
+        onConfirm: onConfirm,
+      );
 }

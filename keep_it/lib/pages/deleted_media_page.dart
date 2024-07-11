@@ -53,21 +53,37 @@ class DeleteMediaPage extends ConsumerWidget {
                         ),
                         identifier: 'Pinned Media',
                         columns: 2,
-                        selectionActions: (context, items) {
+                        selectionActions: (context, selectedMedia) {
                           return [
                             CLMenuItem(
                               title: 'Restore',
                               icon: MdiIcons.imageMove,
-                              onTap: () => storeAction.restoreDeleted(
-                                items,
-                                confirmed: null,
+                              onTap: () async =>
+                                  ConfirmAction.restoreMediaMultiple(
+                                context,
+                                media: selectedMedia,
+                                getPreview: (media) => Preview(
+                                  media: media,
+                                ),
+                                onConfirm: () => storeAction.restoreDeleted(
+                                  selectedMedia,
+                                  confirmed: true,
+                                ),
                               ),
                             ),
                             CLMenuItem(
                               title: 'Delete',
                               icon: Icons.delete,
-                              onTap: () =>
-                                  storeAction.delete(items, confirmed: null),
+                              onTap: () async =>
+                                  ConfirmAction.deleteMediaMultiple(
+                                context,
+                                media: selectedMedia,
+                                getPreview: (media) => Preview(
+                                  media: media,
+                                ),
+                                onConfirm: () => storeAction
+                                    .delete(selectedMedia, confirmed: true),
+                              ),
                             ),
                           ];
                         },
@@ -79,16 +95,32 @@ class DeleteMediaPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () => storeAction.restoreDeleted(
-                              media,
-                              confirmed: null,
+                            onPressed: () async =>
+                                ConfirmAction.restoreMediaMultiple(
+                              context,
+                              media: media,
+                              getPreview: (media) => Preview(
+                                media: media,
+                              ),
+                              onConfirm: () => storeAction.restoreDeleted(
+                                media,
+                                confirmed: true,
+                              ),
                             ),
                             label: const CLText.small('Restore All'),
                             icon: Icon(MdiIcons.imageMove),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () =>
-                                storeAction.delete(media, confirmed: null),
+                            onPressed: () async =>
+                                ConfirmAction.deleteMediaMultiple(
+                              context,
+                              media: media,
+                              getPreview: (media) => Preview(
+                                media: media,
+                              ),
+                              onConfirm: () =>
+                                  storeAction.delete(media, confirmed: true),
+                            ),
                             label: const CLText.small('Discard All'),
                             icon: Icon(MdiIcons.delete),
                           ),

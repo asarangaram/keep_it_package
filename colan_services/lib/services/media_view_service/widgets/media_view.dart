@@ -48,7 +48,7 @@ class MediaView extends ConsumerWidget {
         MediaControls(
           onMove: ac.onMove(() => storeAction.move([media])),
           onDelete: ac.onDelete(() async {
-            return ConfirmDelete.media(
+            return ConfirmAction.deleteMedia(
               context,
               media: media,
               getPreview: getPreview,

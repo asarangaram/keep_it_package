@@ -4,6 +4,7 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
 import '../widgets/store_manager.dart';
@@ -42,11 +43,21 @@ class MediaEditorPage extends StatelessWidget {
                 },
                 onSave: (file, {required overwrite}) async {
                   if (overwrite) {
-                    await storeAction
-                        .replaceMedia([media], file, confirmed: null);
+                    await ConfirmAction.replaceMedia(
+                      context,
+                      media: CLMedia(path: file, type: media.type),
+                      getPreview: (CLMedia media) => Preview(media: media),
+                      onConfirm: () async => storeAction
+                          .replaceMedia([media], file, confirmed: true),
+                    );
                   } else {
-                    await storeAction
-                        .cloneAndReplaceMedia([media], file, confirmed: null);
+                    await ConfirmAction.cloneAndReplaceMedia(
+                      context,
+                      media: CLMedia(path: file, type: media.type),
+                      getPreview: (CLMedia media) => Preview(media: media),
+                      onConfirm: () async => storeAction
+                          .cloneAndReplaceMedia([media], file, confirmed: true),
+                    );
                   }
                 },
               );

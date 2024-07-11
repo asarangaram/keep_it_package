@@ -44,7 +44,7 @@ class CollectionAsFolder extends ConsumerWidget {
             return true;
           },
           onDelete: () async {
-            return ConfirmDelete.collection(
+            return ConfirmAction.deleteCollection(
               context,
               collection: collection,
               onConfirm: () =>

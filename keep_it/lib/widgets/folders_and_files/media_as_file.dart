@@ -28,7 +28,7 @@ class MediaAsFile extends ConsumerWidget {
           quickMenuScopeKey: quickMenuScopeKey,
           onMove: () => storeAction.move([media]),
           onDelete: () async {
-            return ConfirmDelete.media(
+            return ConfirmAction.deleteMedia(
               context,
               media: media,
               getPreview: getPreview,

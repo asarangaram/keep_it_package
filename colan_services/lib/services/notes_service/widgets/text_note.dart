@@ -89,9 +89,16 @@ class _TextNoteState extends State<TextNote> {
               Container(),
               CLButtonIcon.small(
                 MdiIcons.delete,
-                onTap: () {
-                  widget.onDeleteNote(widget.note!, confirmed: null);
-                  textEditingController.clear();
+                onTap: () async {
+                  await ConfirmAction.deleteNote(
+                    context,
+                    note: widget.note!,
+                    onConfirm: () async {
+                      await widget.onDeleteNote(widget.note!, confirmed: true);
+                      textEditingController.clear();
+                      return true;
+                    },
+                  );
                 },
               ),
             ],
