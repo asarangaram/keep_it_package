@@ -86,11 +86,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   Widget build(BuildContext context) {
     return widget.builder!(
       storeAction: StoreActions(
-        move: move,
+        openMoveWizard: openMoveWizard,
         delete: delete,
         share: share,
         togglePin: togglePin,
-        edit: edit,
+        openEditor: openEditor,
         restoreDeleted: restoreDeleted,
         replaceMedia: replaceMedia,
         cloneAndReplaceMedia: cloneAndReplaceMedia,
@@ -107,7 +107,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
   }
 
-  Future<bool> move(List<CLMedia> selectedMedia) async {
+  Future<bool> openMoveWizard(List<CLMedia> selectedMedia) async {
     if (selectedMedia.isEmpty) {
       return true;
     }
@@ -178,7 +178,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     };
   }
 
-  Future<bool> edit(List<CLMedia> selectedMedia) async {
+  Future<bool> openEditor(List<CLMedia> selectedMedia) async {
     if (selectedMedia.isEmpty) {
       return true;
     }

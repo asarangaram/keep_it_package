@@ -78,7 +78,7 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
           ),
         ),
         MediaControls(
-          onMove: ac.onMove(() => widget.storeAction.move([media])),
+          onMove: ac.onMove(() => widget.storeAction.openMoveWizard([media])),
           onDelete: ac.onDelete(() async {
             return ConfirmAction.deleteMedia(
               context,
@@ -89,7 +89,7 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
             );
           }),
           onShare: ac.onShare(() => widget.storeAction.share([media])),
-          onEdit: ac.onEdit(() => widget.storeAction.edit([media])),
+          onEdit: ac.onEdit(() => widget.storeAction.openEditor([media])),
           onPin: ac.onPin(() => widget.storeAction.togglePin([media])),
           media: media,
         ),

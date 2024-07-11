@@ -26,7 +26,7 @@ class MediaAsFile extends ConsumerWidget {
       builder: ({required storeAction}) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () => storeAction.move([media]),
+          onMove: () => storeAction.openMoveWizard([media]),
           onDelete: () async {
             return ConfirmAction.deleteMedia(
               context,
@@ -36,7 +36,7 @@ class MediaAsFile extends ConsumerWidget {
             );
           },
           onShare: () => storeAction.share([media]),
-          onEdit: () => storeAction.edit([media]),
+          onEdit: () => storeAction.openEditor([media]),
           onTap: onTap,
           child: getPreview(media),
         );

@@ -127,7 +127,7 @@ class TimeLineView extends ConsumerWidget {
               CLMenuItem(
                 title: 'Move',
                 icon: MdiIcons.imageMove,
-                onTap: () => storeAction.move(items),
+                onTap: () => storeAction.openMoveWizard(items),
               ),
               CLMenuItem(
                 title: 'Share',

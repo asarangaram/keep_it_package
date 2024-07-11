@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 @immutable
 class StoreActions {
   const StoreActions({
-    required this.move,
+    required this.openMoveWizard,
     required this.delete,
     required this.share,
     required this.togglePin,
-    required this.edit,
+    required this.openEditor,
     required this.restoreDeleted,
     required this.replaceMedia,
     required this.cloneAndReplaceMedia,
@@ -22,14 +22,14 @@ class StoreActions {
     required this.upsertCollection,
     required this.deleteCollection,
   });
-  final Future<bool> Function(List<CLMedia> selectedMedia) move;
+  final Future<bool> Function(List<CLMedia> selectedMedia) openMoveWizard;
   final Future<bool> Function(
     List<CLMedia> selectedMedia, {
     required bool? confirmed,
   }) delete;
   final Future<bool> Function(List<CLMedia> selectedMedia) share;
   final Future<bool> Function(List<CLMedia> selectedMedia) togglePin;
-  final Future<bool> Function(List<CLMedia> selectedMedia) edit;
+  final Future<bool> Function(List<CLMedia> selectedMedia) openEditor;
 
   final Future<bool> Function(
     List<CLMedia> selectedMedia, {

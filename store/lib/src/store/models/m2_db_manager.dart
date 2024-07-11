@@ -299,6 +299,8 @@ class DBManager extends Store {
     required Future<void> Function(File file) onDeleteFile,
     required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   }) async {
+    if (media.isEmpty) return;
+
     await db.writeTransaction((tx) async {
       final res = await dbWriter.unpinMediaMultiple(
         tx,
