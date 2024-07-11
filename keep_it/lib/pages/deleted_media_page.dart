@@ -1,11 +1,12 @@
 import 'package:app_loader/app_loader.dart';
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
 import 'package:store/store.dart';
+
+import '../widgets/preview.dart';
+import '../widgets/store_manager.dart';
 
 class DeleteMediaPage extends ConsumerWidget {
   const DeleteMediaPage({super.key});
@@ -14,21 +15,17 @@ class DeleteMediaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const label = 'Deleted';
     const parentIdentifier = 'Deleted Media';
-    return FullscreenLayout(
-      child: GetDBManager(
-        builder: (dbManager) {
-          return GetDeletedMedia(
-            buildOnData: (media) {
-              final mediaHandler = MediaHandler.multiple(
-                media: media,
-                dbManager: dbManager,
-              );
-              if (media.isEmpty) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  CLPopScreen.onPop(context);
-                });
-              }
-              return CLPopScreen.onSwipe(
+    return StoreManager(
+      builder: ({required storeAction}) {
+        return GetDeletedMedia(
+          buildOnData: (media) {
+            if (media.isEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                CLPopScreen.onPop(context);
+              });
+            }
+            return FullscreenLayout(
+              child: CLPopScreen.onSwipe(
                 child: Column(
                   children: [
                     Expanded(
@@ -44,10 +41,7 @@ class DeleteMediaPage extends ConsumerWidget {
                           tag: '$parentIdentifier /item/${item.id}',
                           child: Padding(
                             padding: const EdgeInsets.all(4),
-                            child: PreviewService(
-                              media: item,
-                              keepAspectRatio: false,
-                            ),
+                            child: Preview(media: item),
                           ),
                         ),
                         galleryMap: ref.watch(singleGroupItemProvider(media)),
@@ -59,42 +53,37 @@ class DeleteMediaPage extends ConsumerWidget {
                         ),
                         identifier: 'Pinned Media',
                         columns: 2,
-                        selectionActions: (context, items) {
-                          final selectedMediaHandler = MediaHandler.multiple(
-                            media: items,
-                            dbManager: dbManager,
-                          );
+                        selectionActions: (context, selectedMedia) {
                           return [
                             CLMenuItem(
                               title: 'Restore',
                               icon: MdiIcons.imageMove,
-                              onTap: () async {
-                                for (final item in items) {
-                                  if (item.id != null) {
-                                    await dbManager.upsertMedia(
-                                      collectionId: item.collectionId!,
-                                      media: item.copyWith(isDeleted: false),
-                                      onPrepareMedia: (
-                                        m, {
-                                        required targetDir,
-                                      }) async {
-                                        final updated = (await m.moveFile(
-                                          targetDir: targetDir,
-                                        ))
-                                            .getMetadata();
-                                        return updated;
-                                      },
-                                    );
-                                  }
-                                }
-                                return true;
-                              },
+                              onTap: () async =>
+                                  ConfirmAction.restoreMediaMultiple(
+                                context,
+                                media: selectedMedia,
+                                getPreview: (media) => Preview(
+                                  media: media,
+                                ),
+                                onConfirm: () => storeAction.restoreDeleted(
+                                  selectedMedia,
+                                  confirmed: true,
+                                ),
+                              ),
                             ),
                             CLMenuItem(
                               title: 'Delete',
                               icon: Icons.delete,
-                              onTap: () =>
-                                  selectedMediaHandler.delete(context, ref),
+                              onTap: () async =>
+                                  ConfirmAction.deleteMediaMultiple(
+                                context,
+                                media: selectedMedia,
+                                getPreview: (media) => Preview(
+                                  media: media,
+                                ),
+                                onConfirm: () => storeAction
+                                    .delete(selectedMedia, confirmed: true),
+                              ),
                             ),
                           ];
                         },
@@ -106,31 +95,32 @@ class DeleteMediaPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () async {
-                              for (final item in media) {
-                                if (item.id != null) {
-                                  await dbManager.upsertMedia(
-                                    collectionId: item.collectionId!,
-                                    media: item.copyWith(isDeleted: false),
-                                    onPrepareMedia: (
-                                      m, {
-                                      required targetDir,
-                                    }) async {
-                                      final updated = (await m.moveFile(
-                                        targetDir: targetDir,
-                                      ))
-                                          .getMetadata();
-                                      return updated;
-                                    },
-                                  );
-                                }
-                              }
-                            },
+                            onPressed: () async =>
+                                ConfirmAction.restoreMediaMultiple(
+                              context,
+                              media: media,
+                              getPreview: (media) => Preview(
+                                media: media,
+                              ),
+                              onConfirm: () => storeAction.restoreDeleted(
+                                media,
+                                confirmed: true,
+                              ),
+                            ),
                             label: const CLText.small('Restore All'),
                             icon: Icon(MdiIcons.imageMove),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () => mediaHandler.delete(context, ref),
+                            onPressed: () async =>
+                                ConfirmAction.deleteMediaMultiple(
+                              context,
+                              media: media,
+                              getPreview: (media) => Preview(
+                                media: media,
+                              ),
+                              onConfirm: () =>
+                                  storeAction.delete(media, confirmed: true),
+                            ),
                             label: const CLText.small('Discard All'),
                             icon: Icon(MdiIcons.delete),
                           ),
@@ -139,11 +129,11 @@ class DeleteMediaPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-              );
-            },
-          );
-        },
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

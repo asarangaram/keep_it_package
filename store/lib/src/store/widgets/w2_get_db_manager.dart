@@ -1,9 +1,8 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/m2_db_manager.dart';
 import '../providers/p2_db_manager.dart';
-
-import 'async_widgets.dart';
 
 class GetDBManager extends ConsumerWidget {
   const GetDBManager({required this.builder, super.key});

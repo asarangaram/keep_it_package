@@ -1,9 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import '../../shared_media_service/models/media_handler.dart';
 import 'media_controls.dart';
 import 'media_viewer.dart';
 
@@ -11,17 +9,24 @@ class MediaPageView extends ConsumerStatefulWidget {
   const MediaPageView({
     required this.items,
     required this.startIndex,
+    required this.storeAction,
+    required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
+    required this.buildNotes,
+    required this.getPreview,
     this.onLockPage,
     super.key,
   });
   final List<CLMedia> items;
   final String parentIdentifier;
+  final StoreActions storeAction;
+  final ActionControl actionControl;
   final int startIndex;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
-
+  final Widget Function(CLMedia media) buildNotes;
+  final Widget Function(CLMedia media) getPreview;
   @override
   ConsumerState<MediaPageView> createState() => _ItemViewState();
 }
@@ -40,6 +45,7 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
   @override
   Widget build(BuildContext context) {
     final media = widget.items[currIndex];
+    final ac = widget.actionControl;
     return Stack(
       children: [
         Positioned.fill(
@@ -63,24 +69,31 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                   autoStart: currIndex == index,
                   onLockPage: widget.onLockPage,
                   isLocked: widget.isLocked,
+                  buildNotes: widget.buildNotes,
+                  getPreview: widget.getPreview,
                 ),
               );
             },
           ),
         ),
-        GetDBManager(
-          builder: (dbManager) {
-            final mediaHandler =
-                MediaHandler(media: media, dbManager: dbManager);
-            return MediaControls(
-              onMove: () => mediaHandler.move(context, ref),
-              onDelete: () => mediaHandler.delete(context, ref),
-              onShare: () => mediaHandler.share(context, ref),
-              onEdit: () => mediaHandler.edit(context, ref),
-              onPin: () => mediaHandler.togglePin(context, ref),
-              media: widget.items[currIndex],
+        MediaControls(
+          onMove: ac.onMove(
+            () => widget.storeAction
+                .openWizard([media], UniversalMediaSource.move),
+          ),
+          onDelete: ac.onDelete(() async {
+            return ConfirmAction.deleteMedia(
+              context,
+              media: media,
+              getPreview: widget.getPreview,
+              onConfirm: () =>
+                  widget.storeAction.delete([media], confirmed: true),
             );
-          },
+          }),
+          onShare: ac.onShare(() => widget.storeAction.share([media])),
+          onEdit: ac.onEdit(() => widget.storeAction.openEditor([media])),
+          onPin: ac.onPin(() => widget.storeAction.togglePin([media])),
+          media: media,
         ),
       ],
     );

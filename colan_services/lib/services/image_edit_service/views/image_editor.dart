@@ -9,26 +9,23 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../../../internal/widgets/editor_finalizer.dart';
 import '../models/aspect_ratio.dart' as aratio;
+import '../models/image_processing.dart';
 import 'crop_control.dart';
 
 class ImageEditService extends StatefulWidget {
   const ImageEditService({
     required this.file,
     required this.onDone,
-    required this.onEditAndSave,
+    required this.onCreateNewFile,
+    required this.onSave,
     super.key,
   });
   final File file;
 
   final Future<void> Function() onDone;
-  final Future<void> Function(
-    Uint8List imageBytes, {
-    required bool overwrite,
-    bool? needFlip,
-    Rect? cropRect,
-    double? rotateAngle,
-  }) onEditAndSave;
 
+  final Future<String> Function() onCreateNewFile;
+  final Future<void> Function(String, {required bool overwrite}) onSave;
   @override
   State<ImageEditService> createState() => _ImageEditServiceState();
 }
@@ -142,7 +139,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
                   return;
                 }
 
-                await widget.onEditAndSave(
+                await editAndSave(
                   state.rawImageData,
                   cropRect:
                       editActionDetails.needCrop ? state.getCropRect() : null,
@@ -151,6 +148,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
                       ? editActionDetails.rotateAngle
                       : null,
                   overwrite: overwrite,
+                  onSave: widget.onSave,
                 );
                 await widget.onDone();
               },
@@ -165,6 +163,27 @@ class _ImageEditServiceState extends State<ImageEditService> {
         ],
       ),
     );
+  }
+
+  Future<void> editAndSave(
+    Uint8List imageBytes, {
+    required bool overwrite,
+    required Rect? cropRect,
+    required bool? needFlip,
+    required double? rotateAngle,
+    required Future<void> Function(String, {required bool overwrite}) onSave,
+  }) async {
+    final fileName = await widget.onCreateNewFile();
+
+    await ImageProcessing.imageCropper(
+      imageBytes,
+      cropRect: cropRect,
+      needFlip: needFlip ?? false,
+      rotateAngle: rotateAngle,
+      outFile: fileName,
+    );
+
+    await onSave(fileName, overwrite: overwrite);
   }
 }
 

@@ -2,12 +2,16 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../preview_service/view/preview.dart';
 import '../providers/captured_media.dart';
 
 class PreviewCapturedMedia extends ConsumerWidget {
-  const PreviewCapturedMedia({required this.sendMedia, super.key});
+  const PreviewCapturedMedia({
+    required this.sendMedia,
+    required this.getPreview,
+    super.key,
+  });
   final Future<void> Function(List<CLMedia>) sendMedia;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,12 +19,13 @@ class PreviewCapturedMedia extends ConsumerWidget {
     return capturedMedia.isEmpty
         ? const SizedBox.shrink()
         : InkWell(
-            onTap: () => sendMedia(capturedMedia),
+            onTap: () {
+              final capturedMediaCopy = [...capturedMedia];
+              ref.read(capturedMediaProvider.notifier).clear();
+              sendMedia(capturedMediaCopy);
+            },
             child: CapturedMediaDecorator(
-              child: PreviewService(
-                media: capturedMedia.last,
-                keepAspectRatio: false,
-              ),
+              child: getPreview(capturedMedia.last),
             ),
           );
   }

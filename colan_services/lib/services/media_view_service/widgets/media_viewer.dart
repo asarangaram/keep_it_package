@@ -12,12 +12,16 @@ class MediaViewerRaw extends ConsumerWidget {
     required this.onLockPage,
     required this.autoStart,
     required this.isLocked,
+    required this.buildNotes,
+    required this.getPreview,
     super.key,
   });
   final CLMedia media;
   final void Function({required bool lock})? onLockPage;
   final bool autoStart;
   final bool isLocked;
+  final Widget Function(CLMedia media) buildNotes;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,9 +41,7 @@ class MediaViewerRaw extends ConsumerWidget {
                 ),
               CLMediaType.video => VideoPlayerService.player(
                   media: media,
-                  alternate: PreviewService(
-                    media: media,
-                  ),
+                  alternate: getPreview(media),
                   autoStart: autoStart,
                   inplaceControl: showControl.showNotes,
                 ),
@@ -55,7 +57,7 @@ class MediaViewerRaw extends ConsumerWidget {
                   ref.read(showControlsProvider.notifier).hideNotes();
                 }
               },
-              child: NotesService(media: media),
+              child: buildNotes(media),
             ),
         ],
       ),

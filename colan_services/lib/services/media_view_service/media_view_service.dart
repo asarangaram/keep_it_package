@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../video_player_service/providers/show_controls.dart';
-import 'models/action_control.dart';
+
 import 'widgets/media_background.dart';
 import 'widgets/media_page_view.dart';
 import 'widgets/media_view.dart';
@@ -13,6 +13,9 @@ class MediaViewService extends ConsumerStatefulWidget {
   factory MediaViewService({
     required CLMedia media,
     required String parentIdentifier,
+    required Widget Function(CLMedia media) buildNotes,
+    required Widget Function(CLMedia media) getPreview,
+    required StoreActions storeAction,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -20,14 +23,20 @@ class MediaViewService extends ConsumerStatefulWidget {
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
+      storeAction: storeAction,
       actionControl: actionControl ?? ActionControl.full(),
+      buildNotes: buildNotes,
       key: key,
+      getPreview: getPreview,
     );
   }
   factory MediaViewService.pageView({
     required int initialMediaIndex,
     required List<CLMedia> media,
     required String parentIdentifier,
+    required Widget Function(CLMedia media) buildNotes,
+    required Widget Function(CLMedia media) getPreview,
+    required StoreActions storeAction,
     ActionControl? actionControl,
     Key? key,
   }) {
@@ -35,8 +44,11 @@ class MediaViewService extends ConsumerStatefulWidget {
       initialMediaIndex: initialMediaIndex,
       media: media,
       parentIdentifier: parentIdentifier,
+      storeAction: storeAction,
       actionControl: actionControl ?? ActionControl.full(),
+      buildNotes: buildNotes,
       key: key,
+      getPreview: getPreview,
     );
   }
   const MediaViewService._({
@@ -44,13 +56,19 @@ class MediaViewService extends ConsumerStatefulWidget {
     required this.media,
     required this.parentIdentifier,
     required this.actionControl,
+    required this.buildNotes,
+    required this.getPreview,
+    required this.storeAction,
     super.key,
   });
 
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
+  final StoreActions storeAction;
   final ActionControl actionControl;
+  final Widget Function(CLMedia media) buildNotes;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -108,6 +126,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                 child: widget.media.length == 1
                     ? MediaView(
                         item: widget.media[0],
+                        getPreview: widget.getPreview,
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,
                         onLockPage: ({required bool lock}) {
@@ -124,13 +143,19 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                             }
                           });
                         },
+                        storeAction: widget.storeAction,
                         actionControl: widget.actionControl,
+                        buildNotes: widget.buildNotes,
                       )
                     : MediaPageView(
                         items: widget.media,
+                        getPreview: widget.getPreview,
                         startIndex: widget.initialMediaIndex,
+                        storeAction: widget.storeAction,
+                        actionControl: ActionControl.full(),
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,
+                        buildNotes: widget.buildNotes,
                         onLockPage: ({required bool lock}) {
                           setState(() {
                             lockPage = lock;

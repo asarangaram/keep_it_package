@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 
 import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -22,6 +23,22 @@ abstract class Store {
     }) onPrepareMedia,
   });
   Future<void> upsertMediaMultiple({
+    required int collectionId,
+    required List<CLMedia>? media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onPrepareMedia,
+  });
+  Future<CLMedia?> setCollection4Media({
+    required int collectionId,
+    required CLMedia media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onPrepareMedia,
+  });
+  Future<void> setCollection4MultipleMedia({
     required int collectionId,
     required List<CLMedia>? media,
     required Future<CLMedia> Function(
@@ -170,6 +187,75 @@ class DBManager extends Store {
   }
 
   @override
+  Future<void> setCollection4MultipleMedia({
+    required int collectionId,
+    required List<CLMedia>? media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onPrepareMedia,
+  }) async {
+    await db.writeTransaction((tx) async {
+      if (media?.isEmpty ?? true) return;
+      final updatedMedia = <CLMedia>[];
+      for (final item in media!) {
+        try {
+          final CLMedia item0;
+          if (item.id != null) {
+            /// We must reload it as the media might have updated in DB
+
+            item0 = (await DBReader(appSettings: dbWriter.appSettings)
+                        .getMediaById(tx, item.id!))
+                    ?.copyWith(collectionId: collectionId) ??
+                item;
+          } else {
+            item0 = item;
+          }
+          final updated = await onPrepareMedia(
+            item0.copyWith(collectionId: collectionId),
+            targetDir: dbWriter.appSettings.validPrefix(collectionId),
+          );
+          updatedMedia.add(updated);
+        } catch (e) {/* */}
+      }
+      await dbWriter.upsertMediaMultiple(tx, updatedMedia);
+    });
+  }
+
+  @override
+  Future<CLMedia?> setCollection4Media({
+    required int collectionId,
+    required CLMedia media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onPrepareMedia,
+  }) async {
+    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
+      try {
+        final CLMedia media0;
+        if (media.id != null) {
+          media0 = (await DBReader(appSettings: dbWriter.appSettings)
+                      .getMediaById(tx, media.id!))
+                  ?.copyWith(collectionId: collectionId) ??
+              media;
+        } else {
+          media0 = media;
+        }
+
+        final updated = await onPrepareMedia(
+          media0,
+          targetDir: dbWriter.appSettings.validPrefix(collectionId),
+        );
+        return await dbWriter.upsertMedia(tx, updated);
+      } catch (e) {
+        return null;
+      }
+    });
+    return dbMedia;
+  }
+
+  @override
   Future<void> deleteCollection(
     Collection collection, {
     required Future<void> Function(File file) onDeleteFile,
@@ -213,6 +299,8 @@ class DBManager extends Store {
     required Future<void> Function(File file) onDeleteFile,
     required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   }) async {
+    if (media.isEmpty) return;
+
     await db.writeTransaction((tx) async {
       final res = await dbWriter.unpinMediaMultiple(
         tx,

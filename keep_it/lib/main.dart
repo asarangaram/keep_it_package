@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:app_loader/app_loader.dart';
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:store/store.dart';
 import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';
@@ -16,7 +16,6 @@ import 'pages/collections_page.dart';
 import 'pages/deleted_media_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
-import 'pages/media_view_page.dart';
 
 import 'pages/media_wizard_page.dart';
 import 'pages/pinned_media_page.dart';
@@ -86,35 +85,37 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'item/:collectionId/:item_id',
+          name: 'media/:item_id',
           builder: (context, GoRouterState state) {
             final String parentIdentifier;
+            final int? collectionId;
+            final String? actionControlJson;
             if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
               parentIdentifier = 'unknown';
             } else {
               parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
             }
+            if (!state.uri.queryParameters.containsKey('collectionId')) {
+              collectionId = null;
+            } else {
+              collectionId =
+                  int.parse(state.uri.queryParameters['collectionId']!);
+            }
+            if (!state.uri.queryParameters.containsKey('actionControl')) {
+              actionControlJson = null;
+            } else {
+              actionControlJson = state.uri.queryParameters['actionControl'];
+            }
+
+            final actionControl = actionControlJson != null
+                ? ActionControl.fromJson(actionControlJson)
+                : ActionControl.none();
 
             return MediaPageViewPage(
-              collectionId: int.parse(state.pathParameters['collectionId']!),
+              collectionId: collectionId,
               id: int.parse(state.pathParameters['item_id']!),
               parentIdentifier: parentIdentifier,
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'item_view/:item_id',
-          builder: (context, GoRouterState state) {
-            final String parentIdentifier;
-            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
-              parentIdentifier = 'unknown';
-            } else {
-              parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
-            }
-
-            return MediaViewPage(
-              id: int.parse(state.pathParameters['item_id']!),
-              parentIdentifier: parentIdentifier,
+              actionControl: actionControl,
             );
           },
         ),
@@ -123,12 +124,12 @@ class KeepItApp implements AppDescriptor {
           name: 'media_wizard',
           builder: (context, GoRouterState state) {
             final typeString = state.uri.queryParameters['type'];
-            final MediaSourceType type;
+            final UniversalMediaSource type;
             if (typeString != null) {
-              type = MediaSourceType.values.asNameMap()[typeString] ??
-                  MediaSourceType.unclassified;
+              type = UniversalMediaSource.values.asNameMap()[typeString] ??
+                  UniversalMediaSource.unclassified;
             } else {
-              type = MediaSourceType.unclassified;
+              type = UniversalMediaSource.unclassified;
             }
             return MediaWizardPage(type: type);
           },

@@ -1,4 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
@@ -19,6 +20,19 @@ class DBReader {
       appSettings: appSettings,
       validate: true,
     );
+  }
+
+  Future<CLMedia?> getMediaById(
+    SqliteWriteContext tx,
+    int id,
+  ) async {
+    return (await (DBQueries.mediaById.sql as DBQuery<CLMedia>)
+            .copyWith(parameters: [id]).readMultiple(
+      tx,
+      appSettings: appSettings,
+      validate: true,
+    ))
+        .firstOrNull;
   }
 
   Future<List<CLMedia>> getMediaByCollectionId(

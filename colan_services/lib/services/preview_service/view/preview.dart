@@ -12,11 +12,13 @@ import 'image_thumbnail.dart';
 class PreviewService extends StatelessWidget {
   const PreviewService({
     required this.media,
+    required this.getPreviewPath,
     this.keepAspectRatio = true,
     super.key,
   });
   final CLMedia media;
   final bool keepAspectRatio;
+  final String Function(CLMedia media) getPreviewPath;
   // TODO(anandas): :  How to make this reactive??
   Future<bool> isPinBroken() async {
     if (media.pin != null) {
@@ -39,6 +41,7 @@ class PreviewService extends StatelessWidget {
       child: switch (media.type) {
         CLMediaType.image || CLMediaType.video => ImageThumbnail(
             media: media,
+            getPreviewPath: getPreviewPath,
             builder: (context, thumbnailFile) {
               return thumbnailFile.when(
                 data: (file) => FutureBuilder(

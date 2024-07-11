@@ -1,1 +1,3 @@
 .DS_Store
+device_resources/.flutter-plugins
+device_resources/.flutter-plugins-dependencies

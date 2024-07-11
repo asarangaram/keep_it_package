@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:keep_it/widgets/collection_editor.dart';
+import 'package:keep_it/widgets/store_manager.dart';
+
 import 'package:store/store.dart';
 
 import '../wrap_standard_quick_menu.dart';
@@ -14,67 +13,39 @@ class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({
     required this.collection,
     required this.quickMenuScopeKey,
+    required this.getPreview,
     super.key,
   });
   final Collection collection;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-
+  final Widget Function(CLMedia media) getPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetDBManager(
-      builder: (dbManager) {
+    return StoreManager(
+      builder: ({required storeAction}) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,
           onEdit: () async {
-            final res = await CollectionEditor.popupDialog(
+            final updated = await CollectionEditor.popupDialog(
               context,
               collection: collection,
             );
-            if (res != null) {
-              final (collection) = res;
-              await dbManager.upsertCollection(
-                collection: collection,
-              );
-
-              await ref
-                  .read(notificationMessageProvider.notifier)
-                  .push('Updated');
+            if (updated != null) {
+              await storeAction.upsertCollection(updated);
             }
 
             return true;
           },
           onDelete: () async {
-            final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return CLConfirmAction(
-                      title: 'Confirm Delete',
-                      message: 'Are you sure you want to delete '
-                          '"${collection.label}" and its content?',
-                      child: null,
-                      onConfirm: ({required confirmed}) =>
-                          Navigator.of(context).pop(confirmed),
-                    );
-                  },
-                ) ??
-                false;
-
-            if (confirmed) {
-              await dbManager.deleteCollection(
-                collection,
-                onDeleteFile: (file) async {
-                  if (file.existsSync()) {
-                    file.deleteSync();
-                  }
-                },
-              );
-            }
-            return confirmed;
+            return ConfirmAction.deleteCollection(
+              context,
+              collection: collection,
+              onConfirm: () =>
+                  storeAction.deleteCollection(collection, confirmed: true),
+            );
           },
           onTap: () async {
-            await context.push(
-              '/items_by_collection/${collection.id}',
-            );
+            await storeAction.openCollection(collectionId: collection.id);
             return true;
           },
           child: Column(
@@ -82,6 +53,7 @@ class CollectionAsFolder extends ConsumerWidget {
               Flexible(
                 child: CollectionPreviewGenerator(
                   collection: collection,
+                  getPreview: getPreview,
                 ),
               ),
               Padding(
@@ -109,9 +81,11 @@ class CollectionAsFolder extends ConsumerWidget {
 class CollectionPreviewGenerator extends StatelessWidget {
   const CollectionPreviewGenerator({
     required this.collection,
+    required this.getPreview,
     super.key,
   });
   final Collection collection;
+  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -124,9 +98,8 @@ class CollectionPreviewGenerator extends StatelessWidget {
             items,
             hCount: 2,
             vCount: 2,
-            itemBuilder: (context, index) => PreviewService(
-              media: items[index],
-              keepAspectRatio: false,
+            itemBuilder: (context, index) => getPreview(
+              items[index],
             ),
             whenNopreview: Center(
               child: CLText.veryLarge(

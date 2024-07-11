@@ -1,8 +1,9 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import 'package:store/store.dart';
+
+import '../store_manager.dart';
 
 class AnalysePage extends StatelessWidget {
   const AnalysePage({
@@ -17,28 +18,23 @@ class AnalysePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetAppSettings(
-      builder: (appSettings) {
-        return GetDBManager(
-          builder: (dbManager) {
-            return Padding(
-              padding: const EdgeInsets.all(8),
-              child: WizardLayout(
-                title: 'Analysing Shared Media',
-                onCancel: onCancel,
-                child: StreamProgressView(
-                  stream: () => CLMediaProcess.analyseMedia(
-                    dbManager: dbManager,
-                    media: incomingMedia,
-                    findItemByMD5: dbManager.getMediaByMD5,
-                    onDone: onDone,
-                    appSettings: appSettings,
-                  ),
-                  onCancel: onCancel,
-                ),
+    return StoreManager(
+      builder: ({required storeAction}) {
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: WizardLayout(
+            title: 'Analysing Shared Media',
+            onCancel: onCancel,
+            child: StreamProgressView(
+              stream: () => storeAction.analyseMediaStream(
+                media: incomingMedia.entries,
+                onDone: ({required List<CLMedia> mg}) {
+                  onDone(mg: incomingMedia.copyWith(entries: mg));
+                },
               ),
-            );
-          },
+              onCancel: onCancel,
+            ),
+          ),
         );
       },
     );

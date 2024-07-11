@@ -11,39 +11,30 @@ environment:
 dependencies:
   app_loader:
     path: ../app_loader
- 
-  camera: ^0.11.0+1
-  cl_camera:
-    path: ../cl_camera
   colan_services:
     path: ../colan_services
   colan_widgets:
-    path: ../colan_widgets  
-  file_picker: ^8.0.5
+    path: ../colan_widgets 
+  device_resources:
+    path: ../device_resources
   flutter:
     sdk: flutter
-  
-  
-  flutter_audio_waveforms: ^1.2.1+8
-  flutter_chat_types: ^3.6.2
   flutter_riverpod: ^2.5.1
   form_factory:
     path: ../form_factory
   go_router: ^14.2.0
-  intl: ^0.18.1
   material_design_icons_flutter: ^7.0.7296
+  mime: ^1.0.5
   path: ^1.9.0
-  path_provider: ^2.1.1
-  percent_indicator: ^4.2.3
   share_plus: ^9.0.0
   store: 
     path: ../store 
-  video_player: ^2.8.7
+  uuid: ^4.4.0
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding
       path: plugins/window_size
-  
+
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^4.0.0

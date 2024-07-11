@@ -4,8 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import 'm1_app_settings.dart';
-
 @immutable
 class Collection {
   const Collection({
@@ -17,10 +15,8 @@ class Collection {
   });
 
   factory Collection.fromMap(
-    Map<String, dynamic> map, {
-    // ignore: avoid_unused_constructor_parameters
-    required AppSettings appSettings,
-  }) {
+    Map<String, dynamic> map,
+  ) {
     return Collection(
       id: map['id'] != null ? map['id'] as int : null,
       label: map['label'] as String,

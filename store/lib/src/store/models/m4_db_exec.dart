@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 

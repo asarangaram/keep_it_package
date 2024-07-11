@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:colan_widgets/src/models/map_fixer.dart';
+
 import 'package:flutter/material.dart';
 
 import '../extensions/ext_datetime.dart';
@@ -41,35 +41,6 @@ class CLMedia {
           throw Exception('Invalid path');
         }
     }
-  }
-
-  static MapFixer incomingMapFixer(String basePath) => MapFixer(
-        pathType: PathType.absolute,
-        basePath: basePath,
-        mandatoryKeys: const ['type', 'path', 'md5String'],
-        pathKeys: const ['path'],
-        removeValues: const ['null'],
-      );
-
-  static CLMedia? fromMapNullable(
-    Map<String, dynamic> map1, {
-    // ignore: avoid_unused_constructor_parameters
-    required AppSettings appSettings,
-  }) {
-    final map = incomingMapFixer(appSettings.directories.media.pathString).fix(
-      map1,
-      /* onError: (errors) {
-        if (errors.isNotEmpty) {
-          logger.e(errors.join(','));
-          return false;
-        }
-        return true;
-      }, */
-    );
-    if (map.isEmpty) {
-      return null;
-    }
-    return CLMedia.fromMap(map);
   }
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {

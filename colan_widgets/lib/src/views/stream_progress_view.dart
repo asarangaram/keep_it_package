@@ -1,30 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-@immutable
-class Progress {
-  const Progress({
-    required double fractCompleted,
-    required this.currentItem,
-    this.isDone = false,
-  }) : fractCompleted = fractCompleted > 1.0 ? 1.0 : fractCompleted;
-  final double fractCompleted;
-  final String currentItem;
-  final bool isDone;
-
-  @override
-  String toString() =>
-      // ignore: lines_longer_than_80_chars
-      'Progress(fractCompleted: ${fractCompleted.toStringAsFixed(2)}, currentItem: $currentItem, isDone: $isDone)';
-
-  double get percentage => fractCompleted * 100;
-
-  String get percentageAsText => percentage.toStringAsFixed(1);
-}
+import '../basics/cl_text.dart';
+import '../models/progress.dart';
 
 class StreamProgressView extends StatelessWidget {
   const StreamProgressView({
