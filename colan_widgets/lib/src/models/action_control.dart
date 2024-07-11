@@ -22,6 +22,16 @@ class ActionControl {
       allowPin: true,
     );
   }
+  factory ActionControl.none() {
+    return const ActionControl(
+      allowEdit: false,
+      allowDelete: false,
+      allowMove: false,
+      allowShare: false,
+      allowPin: false,
+    );
+  }
+
   factory ActionControl.editOnly() {
     return const ActionControl(
       allowEdit: true,

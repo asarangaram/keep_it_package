@@ -109,7 +109,7 @@ class KeepItApp implements AppDescriptor {
 
             final actionControl = actionControlJson != null
                 ? ActionControl.fromJson(actionControlJson)
-                : ActionControl.full();
+                : ActionControl.none();
 
             return MediaPageViewPage(
               collectionId: collectionId,
