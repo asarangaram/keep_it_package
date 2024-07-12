@@ -42,11 +42,13 @@ class AlbumManager {
     return targetAlbum;
   }
 
-  Future<String?> addMedia(String filePath,
-      {required String title,
-      String? desc,
-      required bool isImage,
-      required bool isVideo}) async {
+  Future<String?> addMedia(
+    String filePath, {
+    required String title,
+    required bool isImage,
+    required bool isVideo,
+    String? desc,
+  }) async {
     final auth = await checkRequest();
     if (!auth) return null;
 

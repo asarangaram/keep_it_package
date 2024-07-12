@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -55,14 +54,17 @@ class _NotificationServiceState extends ConsumerState<NotificationService> {
           child: SafeArea(
             child: Container(
               margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: CLTheme.of(context).colors.wizardButtonBackgroundColor,
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(0xFF, 0, 0, 0),
               ),
               child: Align(
                 alignment: Alignment.bottomCenter,
-                child: CLText.large(
+                child: Text(
                   notification.message,
-                  color: CLTheme.of(context).colors.wizardButtonForegroundColor,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(color: const Color.fromARGB(0xFF, 0, 0, 0)),
                 ),
               ),
             ),

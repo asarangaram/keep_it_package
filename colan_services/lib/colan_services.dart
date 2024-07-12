@@ -11,10 +11,7 @@ export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 
 export 'services/notes_service/notes_service.dart' show NotesService;
-export 'services/notification_services/notification_service.dart'
-    show NotificationService;
-export 'services/notification_services/provider/notify.dart'
-    show notificationMessageProvider;
+
 export 'services/preview_service/view/preview.dart' show PreviewService;
 export 'services/video_edit_service/video_trimmer.dart' show VideoEditServices;
 //This must be removed!!

@@ -6,9 +6,9 @@ import '../providers/p1_app_settings.dart';
 class GetAppSettings extends ConsumerWidget {
   const GetAppSettings({
     required this.builder,
-    super.key,
     required this.errorBuilder,
     required this.loadingBuilder,
+    super.key,
   });
   final Widget Function(AppSettings settings) builder;
   final Widget Function(Object object, StackTrace st) errorBuilder;

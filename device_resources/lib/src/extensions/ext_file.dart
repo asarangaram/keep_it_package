@@ -8,7 +8,7 @@ import 'media_metadata.dart';
 extension ExtFileAnalysis on File {
   Future<MediaMetaData?> getImageMetaData({bool? regenerate}) async {
     try {
-      if ((regenerate != null && regenerate == true)) {
+      if (regenerate != null && regenerate == true) {
         final fileBytes = readAsBytesSync();
         final data = await readExifFromBytes(fileBytes);
 

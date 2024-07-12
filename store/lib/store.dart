@@ -2,7 +2,7 @@
 library store;
 
 export 'src/modules/backup_service/views/backup_view.dart';
-export 'src/modules/collection_editor/collection_editor.dart';
+
 export 'src/modules/media_wizard_service/media_wizard_service.dart';
 
 export 'src/modules/media_wizard_service/providers/gallery_group_provider.dart';
