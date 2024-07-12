@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/empty_state.dart';
 import 'package:store/store.dart';
 
-import '../preview.dart';
+import '../../widgets/preview.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({

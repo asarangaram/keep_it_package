@@ -14,7 +14,7 @@ import 'package:path/path.dart' as path;
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
-import '../media_wizard_service/media_wizard_service.dart';
+import '../services/media_wizard_service/media_wizard_service.dart';
 
 extension ExtMetaData on CLMedia {
   Future<CLMedia> getMetadata({bool? regenerate}) async {

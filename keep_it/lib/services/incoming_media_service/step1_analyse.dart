@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 
-import '../store_manager.dart';
+import '../../widgets/store_manager.dart';
 
 class AnalysePage extends StatelessWidget {
   const AnalysePage({

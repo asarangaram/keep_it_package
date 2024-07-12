@@ -12,15 +12,13 @@ import 'package:window_size/window_size.dart';
 import 'pages/camera_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
-
 import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
-
 import 'pages/media_wizard_page.dart';
 import 'pages/pinned_media_page.dart';
 import 'pages/settings_main_page.dart';
+import 'services/incoming_media_service/incoming_media_handler.dart';
 import 'widgets/empty_state.dart';
-import 'widgets/shared_media/incoming_media_handler.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
