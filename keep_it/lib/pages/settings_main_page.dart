@@ -6,6 +6,8 @@ import 'package:keep_it/widgets/store_manager.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../backup_service/views/backup_view.dart';
+
 class SettingsMainPage extends ConsumerWidget {
   const SettingsMainPage({super.key});
 
@@ -38,6 +40,7 @@ class SettingsMainPage extends ConsumerWidget {
                     const StorageMonitor(),
                     BackupView(
                       onShareFiles: storeAction.onShareFiles,
+                      onCreateBackupFile: storeAction.createBackupFile,
                     ),
                   ],
                 );

@@ -3,8 +3,8 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it/widgets/preview.dart';
-import 'package:store/store.dart';
 
+import '../media_wizard_service/media_wizard_service.dart';
 import '../widgets/store_manager.dart';
 
 class MediaWizardPage extends StatelessWidget {

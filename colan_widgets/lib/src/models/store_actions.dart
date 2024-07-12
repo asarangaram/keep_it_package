@@ -33,6 +33,7 @@ class StoreActions {
     required this.openMedia,
     required this.openCollection,
     required this.onShareFiles,
+    required this.createBackupFile,
   });
   final Future<bool> Function(
     List<CLMedia> media,
@@ -117,4 +118,6 @@ class StoreActions {
     List<String> files, {
     Rect? sharePositionOrigin,
   }) onShareFiles;
+
+  final Future<String> Function() createBackupFile;
 }

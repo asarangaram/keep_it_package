@@ -15,6 +15,7 @@ export 'src/basics/cl_pop_screen.dart';
 export 'src/basics/cl_text.dart';
 export 'src/basics/cl_text_field.dart';
 export 'src/basics/dialogs.dart';
+export 'src/basics/progress_bar.dart';
 export 'src/demos/demo_main.dart' show DemoMain;
 export 'src/extensions/ext_cl_media.dart';
 export 'src/extensions/ext_cl_menu_item.dart';
@@ -41,7 +42,6 @@ export 'src/models/collection.dart';
 export 'src/models/progress.dart';
 export 'src/models/store_actions.dart';
 export 'src/models/universal_media_source.dart';
-
 export 'src/theme/models/cl_colors.dart';
 export 'src/theme/models/note_theme.dart';
 export 'src/theme/state/cl_theme.dart';

@@ -6,8 +6,6 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 import 'package:tar/tar.dart';
@@ -23,18 +21,12 @@ class BackupManager {
     required this.dbManager,
   });
 
-  static File backupFile(Directory directory) {
-    final now = DateTime.now();
-    final name = DateFormat('yyyyMMdd_HHmmss_SSS').format(now);
-    return File(p.join(directory.path, 'keep_it_$name.tar.gz'));
-  }
-
   Future<String> backup({
     required File output,
     required void Function(Progress progress) onData,
     VoidCallback? onDone,
   }) async {
-    final dbArchive = await dbManager.rawQuery(backupQuery);
+    final dbArchive = await dbManager.getDBRecords();
     if (dbArchive == null || dbArchive.isEmpty) return '';
 
     final indexData = json.encode(dbArchive);
@@ -153,87 +145,3 @@ class BackupManager {
     return fileEntries;
   }
 }
-
-final backupNowProvider = StreamProvider<Progress>((ref) async* {
-  final controller = StreamController<Progress>();
-  final appSettings = await ref.watch(appSettingsProvider.future);
-  final dbManager = await ref.watch(dbManagerProvider.future);
-
-  ref.listen(refreshProvider, (prev, curr) async {
-    if (prev != curr && curr != 0) {
-      final backupManager = BackupManager(
-        dbManager: dbManager,
-        appSettings: appSettings,
-      );
-      final file = BackupManager.backupFile(
-        appSettings.directories.backup.path,
-      );
-      appSettings.directories.backup.path.clear();
-
-      await backupManager.backup(
-        output: file,
-        onData: controller.add,
-        onDone: () {
-          controller.add(
-            const Progress(
-              fractCompleted: 1,
-              currentItem: 'Completed',
-              isDone: true,
-            ),
-          );
-        },
-      );
-    }
-  });
-  controller.add(
-    const Progress(
-      fractCompleted: 1,
-      currentItem: 'Completed',
-      isDone: true,
-    ),
-  );
-
-  yield* controller.stream;
-});
-
-final refreshProvider = StateProvider<int>((ref) => 0);
-
-const backupQuery = '''
-SELECT 
-    json_object(
-        'itemId', Item.id,
-        'itemPath', Item.path,
-        'itemRef', Item.ref,
-        'collectionLabel', Collection.label,
-        'itemType', Item.type,
-        'itemMd5String', Item.md5String,
-        'itemOriginalDate', Item.originalDate,
-        'itemCreatedDate', Item.createdDate,
-        'itemUpdatedDate', Item.updatedDate,
-         'notes',
-        CASE 
-            WHEN EXISTS (
-                SELECT 1 
-                FROM ItemNote 
-                WHERE ItemNote.itemId = Item.id
-            )
-            THEN  json_group_array(
-                    json_object(
-                        'notePath', Notes.path,
-                        'noteType', Notes.type
-                    ))
-                
-           
-        END 
-    ) 
-FROM 
-    Item
-LEFT JOIN 
-    Collection ON Item.collectionId = Collection.id
-LEFT JOIN 
-    ItemNote ON Item.id = ItemNote.itemId
-LEFT JOIN 
-    Notes ON ItemNote.noteId = Notes.id
-GROUP BY
-    Item.id;
-''';

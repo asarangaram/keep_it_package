@@ -3,16 +3,20 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
-import '../models/backup_files.dart';
+import '../providers/backup_stream.dart';
 
 class BackupView extends ConsumerWidget {
-  const BackupView({required this.onShareFiles, super.key});
+  const BackupView({
+    required this.onShareFiles,
+    required this.onCreateBackupFile,
+    super.key,
+  });
   final Future<void> Function(
     List<String> files, {
     Rect? sharePositionOrigin,
   }) onShareFiles;
+  final Future<String> Function() onCreateBackupFile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +35,8 @@ class BackupView extends ConsumerWidget {
                 title: const Text('Backup'),
                 trailing: ElevatedButton(
                   onPressed: () async {
-                    ref.read(refreshProvider.notifier).state++;
+                    ref.read(backupFileProvider.notifier).state =
+                        await onCreateBackupFile();
                   },
                   child: const Text('Backup Now'),
                 ),
@@ -50,20 +55,8 @@ class BackupView extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('Backing up ... '),
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: LinearPercentIndicator(
-                width: MediaQuery.of(context).size.width - 50,
-                animation: true,
-                lineHeight: 20,
-                animationDuration: 2000,
-                percent: progress.fractCompleted,
-                animateFromLastPercent: true,
-                center: Text(progress.percentageAsText),
-                barRadius: const Radius.elliptical(5, 15),
-                progressColor: Theme.of(context).colorScheme.primary,
-                maskFilter: const MaskFilter.blur(BlurStyle.solid, 3),
-              ),
+            ProgressBar(
+              progress: progress.fractCompleted,
             ),
           ],
         );

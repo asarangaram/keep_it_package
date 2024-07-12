@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 
-import 'package:sqlite_async/sqlite3.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
 import 'm2_db_migration.dart';
+import 'm3_db_queries.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_writer.dart';
 
@@ -94,6 +94,8 @@ abstract class Store {
   Future<List<Object?>?> rawQuery(
     String query,
   );
+
+  Future<List<Object?>?> getDBRecords();
 }
 
 class DBManager extends Store {
@@ -404,31 +406,10 @@ class DBManager extends Store {
 
     return json;
   }
-}
 
-extension ExtSqliteDatabase on SqliteDatabase {
-  Stream<List<Row>> watchRows(
-    String sql, {
-    Set<String> triggerOnTables = const {},
-    List<Object?> parameters = const [],
-  }) async* {
-    yield await getAll(sql, parameters);
-    if (triggerOnTables.isNotEmpty) {}
-    {
-      final stream = watch(
-        sql,
-        parameters: parameters,
-        triggerOnTables: triggerOnTables.toList(),
-      );
-      await for (final event in stream) {
-        final rows = <Row>[];
-        final iterator = event.iterator;
-        while (iterator.moveNext()) {
-          final row = iterator.current;
-          rows.add(row);
-        }
-        yield rows;
-      }
-    }
+  @override
+  Future<List<Object?>?> getDBRecords() async {
+    final dbArchive = await rawQuery(backupQuery);
+    return dbArchive;
   }
 }

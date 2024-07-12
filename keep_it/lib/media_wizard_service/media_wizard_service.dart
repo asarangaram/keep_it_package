@@ -2,11 +2,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'providers/gallery_group_provider.dart';
+import '../providers/gallery_group_provider.dart';
 import 'providers/universal_media.dart';
 import 'recycle_bin_service.dart';
 import 'views/create_collection_wizard.dart';
-import 'views/progress_bar.dart';
+
 import 'views/wizard_preview.dart';
 
 class MediaWizardService extends ConsumerWidget {

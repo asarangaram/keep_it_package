@@ -1,7 +1,7 @@
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/src/store/extensions/ext_sqlite_database.dart';
 
-import '../models/m2_db_manager.dart';
 import '../models/m3_db_query.dart';
 
 import 'p2_db_manager.dart';

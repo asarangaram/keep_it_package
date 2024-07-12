@@ -14,6 +14,8 @@ import 'package:path/path.dart' as path;
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
+import '../media_wizard_service/media_wizard_service.dart';
+
 extension ExtMetaData on CLMedia {
   Future<CLMedia> getMetadata({bool? regenerate}) async {
     if (type == CLMediaType.image) {
@@ -106,6 +108,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         openMedia: openMedia,
         openCollection: openCollection,
         onShareFiles: ShareManager.onShareFiles,
+        createBackupFile: createBackupFile,
       ),
     );
   }
@@ -557,6 +560,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final dir = widget.appSettings.directories.downloadedMedia.path;
     final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
     final absolutePath = '${dir.path}/$fileBasename.$ext';
+
+    return absolutePath;
+  }
+
+  Future<String> createBackupFile() async {
+    final dir = widget.appSettings.directories.backup.path;
+    final fileBasename =
+        'keep_it_backup_${DateTime.now().millisecondsSinceEpoch}';
+    final absolutePath = '${dir.path}/$fileBasename.tar.gz';
 
     return absolutePath;
   }
