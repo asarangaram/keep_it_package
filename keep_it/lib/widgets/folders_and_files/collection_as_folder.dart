@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,11 +70,6 @@ class CollectionAsFolder extends ConsumerWidget {
       },
     );
   }
-
-  Future<void> deleteCollection(
-    DBManager dbManager,
-    Collection collection,
-  ) async {}
 }
 
 class CollectionPreviewGenerator extends StatelessWidget {

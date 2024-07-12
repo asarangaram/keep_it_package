@@ -50,7 +50,7 @@ class StoreManager extends StatelessWidget {
       errorBuilder: (object, st) => const SizedBox.shrink(),
       loadingBuilder: () => const SizedBox.shrink(),
       builder: (appSettings) {
-        return GetDBManager(
+        return GetStore(
           builder: (dbManager) {
             return MediaHandlerWidget0(
               dbManager: dbManager,
@@ -72,7 +72,7 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final DBManager dbManager;
+  final Store dbManager;
   final AppSettings appSettings;
   final Widget Function({required StoreActions storeAction})? builder;
 
@@ -109,6 +109,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         openCollection: openCollection,
         onShareFiles: ShareManager.onShareFiles,
         createBackupFile: createBackupFile,
+        reloadStore: reloadStore,
       ),
     );
   }
@@ -731,5 +732,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await context.push(
       '/items_by_collection/$collectionId',
     );
+  }
+
+  Future<void> reloadStore() async {
+    await widget.dbManager.reloadStore(ref);
   }
 }

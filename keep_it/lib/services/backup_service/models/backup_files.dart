@@ -14,7 +14,7 @@ import 'files.dart';
 
 class BackupManager {
   AppSettings appSettings;
-  DBManager dbManager;
+  Store dbManager;
 
   BackupManager({
     required this.appSettings,

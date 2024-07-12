@@ -34,6 +34,7 @@ class StoreActions {
     required this.openCollection,
     required this.onShareFiles,
     required this.createBackupFile,
+    required this.reloadStore,
   });
   final Future<bool> Function(
     List<CLMedia> media,
@@ -120,4 +121,6 @@ class StoreActions {
   }) onShareFiles;
 
   final Future<String> Function() createBackupFile;
+
+  final Future<void> Function() reloadStore;
 }

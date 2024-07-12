@@ -61,7 +61,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                       onCameraCapture: ColanPlatformSupport.cameraUnsupported
                           ? null
                           : () => storeAction.openCamera(),
-                      onRefresh: () async => ref.invalidate(dbManagerProvider),
+                      onRefresh: () async => storeAction.reloadStore(),
                     );
                   },
                 ),
