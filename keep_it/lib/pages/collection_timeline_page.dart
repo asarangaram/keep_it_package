@@ -135,11 +135,12 @@ class TimeLineView extends ConsumerWidget {
                 icon: MdiIcons.shareAll,
                 onTap: () => storeAction.share(items),
               ),
-              CLMenuItem(
-                title: 'Pin',
-                icon: MdiIcons.pin,
-                onTap: () => storeAction.togglePin(items),
-              ),
+              if (ColanPlatformSupport.isMobilePlatform)
+                CLMenuItem(
+                  title: 'Pin',
+                  icon: MdiIcons.pin,
+                  onTap: () => storeAction.togglePin(items),
+                ),
             ];
           },
         );
