@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:path/path.dart' as path_handler;
 
 import '../../../app_logger.dart';
@@ -57,7 +58,9 @@ extension IOExtOnCLMedia on CLMedia {
           if (path != targetFile) {
             File(targetFile).createSync(recursive: true);
             File(path).copySync(targetFile);
-            deleteFile();
+            if (ColanPlatformSupport.isMobilePlatform) {
+              deleteFile();
+            }
             _infoLogger(
               'file ${path_handler.basename(path)} moved to $targetDir',
             );

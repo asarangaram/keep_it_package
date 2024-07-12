@@ -14,6 +14,7 @@ class Preview extends StatelessWidget {
         return PreviewService(
           media: media,
           getPreviewPath: storeAction.getPreviewPath,
+          keepAspectRatio: false,
         );
       },
     );
