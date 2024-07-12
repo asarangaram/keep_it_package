@@ -1,7 +1,10 @@
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'cl_media.dart';
+import 'cl_note.dart';
+import 'collection.dart';
 
 abstract class Store {
   Future<Collection> upsertCollection({

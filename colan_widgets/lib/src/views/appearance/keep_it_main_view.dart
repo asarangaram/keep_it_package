@@ -1,8 +1,8 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../extensions/ext_string.dart';
+import '../quick_menu/cl_quickmenu.dart';
 import 'main_header.dart';
 
 class KeepItMainView extends ConsumerStatefulWidget {

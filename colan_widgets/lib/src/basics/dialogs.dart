@@ -1,5 +1,8 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+
+import '../models/cl_media.dart';
+import '../models/cl_note.dart';
+import '../models/collection.dart';
 
 class ConfirmAction {
   static Future<bool?> template(

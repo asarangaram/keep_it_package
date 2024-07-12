@@ -1,6 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
+import '../../../basics/cl_icon.dart';
+import '../../../theme/state/cl_theme.dart';
 
 class SelectableItem extends StatelessWidget {
   const SelectableItem({

@@ -1,5 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+
+import '../../basics/cl_icon.dart';
+import '../../basics/cl_text.dart';
 
 class CLErrorView extends StatelessWidget {
   const CLErrorView({
@@ -13,7 +15,6 @@ class CLErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return Padding(
       padding: const EdgeInsets.all(8),
       child: FittedBox(

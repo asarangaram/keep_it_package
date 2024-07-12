@@ -1,6 +1,13 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../basics/cl_buttons_grid.dart';
+import '../../basics/cl_icon.dart';
+import '../../basics/cl_text.dart';
+import '../../extensions/ext_cl_menu_item.dart';
+import '../../models/cl_menu_item.dart';
+import '../../models/cl_scale_type.dart';
+import '../quick_menu/cl_quickmenu.dart';
 
 class MainHeader extends ConsumerWidget {
   const MainHeader({

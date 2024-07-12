@@ -1,9 +1,10 @@
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../views/appearance/cl_error_view.dart';
+import '../views/appearance/cl_loading_view.dart';
 
 class ShowAsyncValue<T> extends ConsumerWidget {
   const ShowAsyncValue(
