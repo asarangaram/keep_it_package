@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../extensions/ext_datetime.dart';
-import '../extensions/ext_string.dart';
 import 'cl_media_type.dart';
 
 @immutable
@@ -24,7 +23,7 @@ class CLMedia {
     this.isHidden,
     this.pin,
   }) {
-    switch (type) {
+    /* switch (type) {
       case CLMediaType.text:
         if (!path.startsWith('text:')) {
           throw Exception('text should be prefixed with text:');
@@ -40,7 +39,7 @@ class CLMedia {
         if (!path.startsWith('/')) {
           throw Exception('Invalid path');
         }
-    }
+    } */
   }
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
