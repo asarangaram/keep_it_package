@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/store_manager.dart';
-import 'package:store/store.dart';
 
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';

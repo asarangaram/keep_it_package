@@ -1,5 +1,6 @@
 // ignore_for_file: unused_element
 
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +51,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
                 },
                 onPickFiles: (BuildContext c) async {
                   if (c.mounted) {
-                    await onPickFiles(
+                    await IncomingMediaMonitor.onPickFiles(
                       c,
                       ref,
                       collection: collection,

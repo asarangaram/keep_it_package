@@ -1,3 +1,4 @@
+import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,7 +53,8 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                         getPreview: (media) => Preview(media: media),
                       ),
                       identifier: identifier,
-                      onPickFiles: (BuildContext c) async => onPickFiles(
+                      onPickFiles: (BuildContext c) async =>
+                          IncomingMediaMonitor.onPickFiles(
                         c,
                         ref,
                       ),

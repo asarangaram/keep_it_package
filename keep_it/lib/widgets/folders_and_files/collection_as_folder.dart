@@ -7,6 +7,7 @@ import 'package:keep_it/widgets/store_manager.dart';
 
 import 'package:store/store.dart';
 
+import '../collection_editor.dart';
 import '../wrap_standard_quick_menu.dart';
 
 class CollectionAsFolder extends ConsumerWidget {

@@ -36,11 +36,12 @@ export 'src/models/cl_media_type.dart';
 export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_note.dart';
 export 'src/models/cl_scale_type.dart';
+export 'src/models/cl_shared_media.dart';
 export 'src/models/collection.dart';
 export 'src/models/progress.dart';
 export 'src/models/store_actions.dart';
 export 'src/models/universal_media_source.dart';
-export 'src/services/selection/cl_selection_wrapper.dart';
+
 export 'src/theme/models/cl_colors.dart';
 export 'src/theme/models/note_theme.dart';
 export 'src/theme/state/cl_theme.dart';
