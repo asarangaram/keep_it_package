@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../basics/cl_button.dart';
-import '../basics/cl_text.dart';
-
-import '../views/appearance/cl_fullscreen_box.dart';
+import '../../basics/cl_button.dart';
+import '../../basics/cl_text.dart';
+import '../../views/appearance/cl_fullscreen_box.dart';
 import 'cl_buttons_grid_demo.dart';
 import 'cl_fullscreen_box_enhanced.dart';
 

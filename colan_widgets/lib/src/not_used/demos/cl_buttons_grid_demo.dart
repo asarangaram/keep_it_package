@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../basics/cl_buttons_grid.dart';
-import '../models/cl_menu_item.dart';
+import '../../basics/cl_buttons_grid.dart';
+import '../../models/cl_menu_item.dart';
 
 class CLButtonsGridDemo extends StatelessWidget {
   const CLButtonsGridDemo({

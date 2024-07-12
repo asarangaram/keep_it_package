@@ -4,9 +4,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../basics/cl_scrollable.dart';
-import '../../views/appearance/cl_error_view.dart';
-import '../../views/appearance/cl_loading_view.dart';
+import '../basics/cl_scrollable.dart';
+import '../views/appearance/cl_error_view.dart';
+import '../views/appearance/cl_loading_view.dart';
 
 class ImageViewer extends ConsumerWidget {
   const ImageViewer({required this.path, super.key});
