@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/store.dart';
 import '../providers/p2_db_manager.dart';
 
 class GetStore extends ConsumerWidget {

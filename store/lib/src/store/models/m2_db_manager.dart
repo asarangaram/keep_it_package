@@ -11,7 +11,6 @@ import 'm2_db_migration.dart';
 import 'm3_db_queries.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_writer.dart';
-import 'store.dart';
 
 class DBManager extends Store {
   DBManager({required this.db, required AppSettings appSettings})

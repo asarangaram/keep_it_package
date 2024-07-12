@@ -1,6 +1,14 @@
 /// Colan Widgets
 library colon_widgets;
 
+/// APIs
+///
+///
+export 'src/models/store.dart';
+
+// Widgets
+
+// ignore: directives_ordering
 export 'src/app_logger.dart';
 export 'src/basics/async_widgets.dart';
 export 'src/basics/cl_button.dart';
@@ -40,6 +48,7 @@ export 'src/models/cl_scale_type.dart';
 export 'src/models/cl_shared_media.dart';
 export 'src/models/collection.dart';
 export 'src/models/progress.dart';
+
 export 'src/models/store_actions.dart';
 export 'src/models/universal_media_source.dart';
 export 'src/theme/models/cl_colors.dart';
