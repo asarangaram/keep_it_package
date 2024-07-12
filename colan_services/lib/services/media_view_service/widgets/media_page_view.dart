@@ -1,4 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -90,7 +91,15 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                   widget.storeAction.delete([media], confirmed: true),
             );
           }),
-          onShare: ac.onShare(() => widget.storeAction.share([media])),
+          onShare: ({required sharePositionOrigin}) async {
+            final function = ac.onShare(
+              () => ShareManager.onShareFiles(
+                [media.path],
+                sharePositionOrigin: sharePositionOrigin,
+              ),
+            );
+            return function?.call();
+          },
           onEdit: ac.onEdit(() => widget.storeAction.openEditor([media])),
           onPin: ac.onPin(() => widget.storeAction.togglePin([media])),
           media: media,

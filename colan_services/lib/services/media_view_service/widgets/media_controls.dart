@@ -22,7 +22,7 @@ class MediaControls extends ConsumerWidget {
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;
   final Future<bool?> Function()? onMove;
-  final Future<bool?> Function()? onShare;
+  final Future<bool?> Function({required Rect? sharePositionOrigin})? onShare;
   final Future<bool?> Function()? onTap;
   final Future<bool?> Function()? onPin;
 
@@ -143,7 +143,20 @@ class MediaControls extends ConsumerWidget {
                                           disabledColor: isPlaying
                                               ? Theme.of(context).disabledColor
                                               : null,
-                                          onTap: isPlaying ? null : onShare,
+                                          onTap: isPlaying
+                                              ? null
+                                              : () async {
+                                                  final box =
+                                                      context.findRenderObject()
+                                                          as RenderBox?;
+                                                  await onShare?.call(
+                                                    sharePositionOrigin:
+                                                        box!.localToGlobal(
+                                                              Offset.zero,
+                                                            ) &
+                                                            box.size,
+                                                  );
+                                                },
                                         ),
                                       if (onPin != null)
                                         Transform.rotate(

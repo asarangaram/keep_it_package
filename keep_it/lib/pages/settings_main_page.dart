@@ -31,7 +31,12 @@ class SettingsMainPage extends ConsumerWidget {
                       ),
                     const StorageMonitor(),
                     BackupView(
-                      onShareFiles: storeAction.onShareFiles,
+                      onShareFiles: (files, {sharePositionOrigin}) {
+                        return ShareManager.onShareFiles(
+                          files,
+                          sharePositionOrigin: sharePositionOrigin,
+                        );
+                      },
                     ),
                   ],
                 );

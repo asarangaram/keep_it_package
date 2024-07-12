@@ -87,7 +87,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       storeAction: StoreActions(
         openWizard: openWizard,
         delete: delete,
-        share: share,
         togglePin: togglePin,
         openEditor: openEditor,
         restoreDeleted: restoreDeleted,
@@ -106,7 +105,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         openMedia: openMedia,
         openCollection: openCollection,
         openDeletedMedia: openDeletedMedia,
-        onShareFiles: ShareManager.onShareFiles,
       ),
     );
   }
@@ -187,17 +185,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       );
     }
     return true;
-  }
-
-  Future<bool> share(List<CLMedia> selectedMedia) async {
-    if (selectedMedia.isEmpty) {
-      return true;
-    }
-    final box = context.findRenderObject() as RenderBox?;
-    return ShareManager.onShareFiles(
-      selectedMedia.map((e) => e.path).toList(),
-      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    );
   }
 
   Future<bool> openEditor(List<CLMedia> selectedMedia) async {

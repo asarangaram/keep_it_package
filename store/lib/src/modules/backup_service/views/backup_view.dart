@@ -11,7 +11,7 @@ class BackupView extends ConsumerWidget {
   const BackupView({required this.onShareFiles, super.key});
   final Future<void> Function(
     List<String> files, {
-    Rect? sharePositionOrigin,
+    required Rect? sharePositionOrigin,
   }) onShareFiles;
 
   @override
@@ -76,7 +76,7 @@ class AvailableBackup extends StatefulWidget {
   const AvailableBackup({required this.onShareFiles, super.key});
   final Future<void> Function(
     List<String> files, {
-    Rect? sharePositionOrigin,
+    required Rect? sharePositionOrigin,
   }) onShareFiles;
 
   @override

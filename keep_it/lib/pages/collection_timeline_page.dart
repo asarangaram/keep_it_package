@@ -1,6 +1,7 @@
 // ignore_for_file: unused_element
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,7 +134,14 @@ class TimeLineView extends ConsumerWidget {
               CLMenuItem(
                 title: 'Share',
                 icon: MdiIcons.shareAll,
-                onTap: () => storeAction.share(items),
+                onTap: () {
+                  final box = context.findRenderObject() as RenderBox?;
+                  return ShareManager.onShareFiles(
+                    items.map((e) => e.path).toList(),
+                    sharePositionOrigin:
+                        box!.localToGlobal(Offset.zero) & box.size,
+                  );
+                },
               ),
               if (ColanPlatformSupport.isMobilePlatform)
                 CLMenuItem(

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
 
 import 'action_control.dart';
@@ -14,7 +12,6 @@ class StoreActions {
   const StoreActions({
     required this.openWizard,
     required this.delete,
-    required this.share,
     required this.togglePin,
     required this.openEditor,
     required this.restoreDeleted,
@@ -33,7 +30,6 @@ class StoreActions {
     required this.openMedia,
     required this.openCollection,
     required this.openDeletedMedia,
-    required this.onShareFiles,
   });
   final Future<bool> Function(
     List<CLMedia> media,
@@ -44,7 +40,7 @@ class StoreActions {
     List<CLMedia> selectedMedia, {
     required bool? confirmed,
   }) delete;
-  final Future<bool> Function(List<CLMedia> selectedMedia) share;
+
   final Future<bool> Function(List<CLMedia> selectedMedia) togglePin;
   final Future<bool> Function(List<CLMedia> selectedMedia) openEditor;
 
@@ -114,8 +110,4 @@ class StoreActions {
   final Future<void> Function({
     int? collectionId,
   }) openDeletedMedia;
-  final Future<void> Function(
-    List<String> files, {
-    Rect? sharePositionOrigin,
-  }) onShareFiles;
 }

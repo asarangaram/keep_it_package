@@ -5,8 +5,9 @@ import 'package:share_plus/share_plus.dart';
 class ShareManager {
   static Future<bool> onShareFiles(
     List<String> files, {
-    Rect? sharePositionOrigin,
+    required Rect? sharePositionOrigin,
   }) async {
+    if (files.isEmpty) return false;
     final xFiles = files.map(XFile.new).toList();
 
     final shareResult = await Share.shareXFiles(
