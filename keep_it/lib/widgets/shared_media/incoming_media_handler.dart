@@ -88,20 +88,21 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
     return widget0;
   }
 
-  Future<void> onSave({required CLSharedMedia? mg}) async {
+  void onSave({required CLSharedMedia? mg}) {
     if (mg?.hasTargetMismatchedItems ?? false) {
       setState(() {
         candidate = mg;
       });
       return;
     }
-    if (widget.incomingMedia.type != null) {
-      await widget.onSave(mg?.entries ?? [], widget.incomingMedia.type!);
-    }
-
-    onDiscard(result: !(mg == null || mg.isEmpty));
     candidate = null;
     isSaving = true;
+    if (widget.incomingMedia.type != null) {
+      widget.onSave(mg?.entries ?? [], widget.incomingMedia.type!);
+    }
+
+    widget.onDiscard(result: !(mg == null || mg.isEmpty));
+
     if (mounted) {
       setState(() {});
     }
@@ -118,7 +119,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 }
 
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);

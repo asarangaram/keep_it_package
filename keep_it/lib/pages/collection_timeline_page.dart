@@ -51,9 +51,10 @@ class CollectionTimeLinePage extends ConsumerWidget {
                     );
                   }
                 },
-                onCameraCapture: () async {
-                  await storeAction.openCamera(collectionId: collection?.id);
-                },
+                onCameraCapture: ColanPlatformSupport.cameraUnsupported
+                    ? null
+                    : () =>
+                        storeAction.openCamera(collectionId: collection?.id),
               ),
             ),
           );

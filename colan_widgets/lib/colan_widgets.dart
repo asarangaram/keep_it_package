@@ -7,7 +7,6 @@ export 'src/basics/cl_button.dart';
 export 'src/basics/cl_buttons_grid.dart';
 export 'src/basics/cl_circled_icon.dart';
 export 'src/basics/cl_custom_chip.dart';
-
 export 'src/basics/cl_decorate_square.dart';
 export 'src/basics/cl_highlighted.dart';
 export 'src/basics/cl_icon.dart';
@@ -45,6 +44,7 @@ export 'src/services/selection/cl_selection_wrapper.dart';
 export 'src/theme/models/cl_colors.dart';
 export 'src/theme/models/note_theme.dart';
 export 'src/theme/state/cl_theme.dart';
+export 'src/utils/platform_support.dart';
 export 'src/utils/rand_image_generator.dart';
 export 'src/views/appearance/cl_error_view.dart';
 export 'src/views/appearance/cl_fullscreen_box.dart';

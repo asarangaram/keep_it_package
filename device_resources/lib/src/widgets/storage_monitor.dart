@@ -17,6 +17,7 @@ class StorageMonitor extends ConsumerWidget {
         return const SizedBox.shrink();
       },
       builder: (appSettings) {
+        print(appSettings.directories);
         final persistentDirs = CLStandardDirectories.values
             .where((stddir) => stddir.isStore)
             .map(appSettings.directories.standardDirectory)

@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
@@ -20,12 +19,13 @@ class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
 
   Future<void> load() async {
     final handler = ShareHandler.instance;
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (ColanPlatformSupport.isMobilePlatform) {
       receiveSharedMedia(await handler.getInitialSharedMedia());
+
+      intentDataStreamSubscription = handler.sharedMediaStream.listen(
+        receiveSharedMedia,
+      );
     }
-    intentDataStreamSubscription = handler.sharedMediaStream.listen(
-      receiveSharedMedia,
-    );
   }
 
   @override
@@ -81,7 +81,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
   bool pop() {
     final media = state.firstOrNull;
     if (media != null) {
-      if (media.isNotEmpty) {
+      if (ColanPlatformSupport.isMobilePlatform && media.isNotEmpty) {
         for (final item in media.entries) {
           if (item.id == null) {
             item.deleteFile();
