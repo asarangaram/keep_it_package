@@ -96,12 +96,15 @@ class InvokeEditor extends StatelessWidget {
           canDuplicateMedia: canDuplicateMedia,
         );
       case CLMediaType.video:
-        return VideoEditServices(
-          File(media.path),
-          onSave: onSave,
-          onDone: () => CLPopScreen.onPop(context),
-          canDuplicateMedia: canDuplicateMedia,
-        );
+        if (VideoEditServices.isSupported) {
+          return VideoEditServices(
+            File(media.path),
+            onSave: onSave,
+            onDone: () => CLPopScreen.onPop(context),
+            canDuplicateMedia: canDuplicateMedia,
+          );
+        }
+        return const CLErrorView(errorMessage: 'Not supported yet');
       case CLMediaType.text:
       case CLMediaType.url:
       case CLMediaType.audio:

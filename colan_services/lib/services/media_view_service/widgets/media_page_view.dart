@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,12 +94,15 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
             );
           }),
           onShare: ac.onShare(() => widget.storeAction.share([media])),
-          onEdit: ac.onEdit(
-            () => widget.storeAction.openEditor(
-              [media],
-              canDuplicateMedia: ac.canDuplicateMedia,
-            ),
-          ),
+          onEdit: (media.type == CLMediaType.video &&
+                  !VideoEditServices.isSupported)
+              ? null
+              : ac.onEdit(
+                  () => widget.storeAction.openEditor(
+                    [media],
+                    canDuplicateMedia: ac.canDuplicateMedia,
+                  ),
+                ),
           onPin: ac.onPin(() => widget.storeAction.togglePin([media])),
           media: media,
         ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,10 +39,13 @@ class MediaAsFile extends ConsumerWidget {
             );
           },
           onShare: () => storeAction.share([media]),
-          onEdit: () => storeAction.openEditor(
-            [media],
-            canDuplicateMedia: actionControl.canDuplicateMedia,
-          ),
+          onEdit: (media.type == CLMediaType.video &&
+                  !VideoEditServices.isSupported)
+              ? null
+              : () => storeAction.openEditor(
+                    [media],
+                    canDuplicateMedia: actionControl.canDuplicateMedia,
+                  ),
           onTap: onTap,
           child: getPreview(media),
         );

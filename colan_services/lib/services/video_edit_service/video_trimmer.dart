@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
@@ -17,6 +18,7 @@ class VideoEditServices extends StatefulWidget {
   final Future<void> Function(String outFile, {required bool overwrite}) onSave;
   final Future<void> Function() onDone;
   final bool canDuplicateMedia;
+  static bool get isSupported => ColanPlatformSupport.isMobilePlatform;
 
   @override
   State<VideoEditServices> createState() => _VideoEditServicesState();
