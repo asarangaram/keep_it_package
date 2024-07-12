@@ -13,7 +13,7 @@ import 'package:window_size/window_size.dart';
 import 'pages/camera_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
-import 'pages/deleted_media_page.dart';
+
 import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
 
@@ -140,13 +140,6 @@ class KeepItApp implements AppDescriptor {
               type = UniversalMediaSource.unclassified;
             }
             return MediaWizardPage(type: type);
-          },
-        ),
-
-        CLRouteDescriptor(
-          name: 'deleted_media',
-          builder: (context, GoRouterState state) {
-            return const DeleteMediaPage();
           },
         ),
 

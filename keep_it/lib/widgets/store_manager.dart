@@ -105,7 +105,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         openCamera: openCamera,
         openMedia: openMedia,
         openCollection: openCollection,
-        openDeletedMedia: openDeletedMedia,
         onShareFiles: ShareManager.onShareFiles,
       ),
     );
@@ -720,11 +719,5 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await context.push(
       '/items_by_collection/$collectionId',
     );
-  }
-
-  Future<void> openDeletedMedia({
-    int? collectionId,
-  }) async {
-    await context.push('/deleted_media');
   }
 }

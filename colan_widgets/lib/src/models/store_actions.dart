@@ -32,7 +32,6 @@ class StoreActions {
     required this.openCamera,
     required this.openMedia,
     required this.openCollection,
-    required this.openDeletedMedia,
     required this.onShareFiles,
   });
   final Future<bool> Function(
@@ -114,9 +113,6 @@ class StoreActions {
     int? collectionId,
   }) openCollection;
 
-  final Future<void> Function({
-    int? collectionId,
-  }) openDeletedMedia;
   final Future<void> Function(
     List<String> files, {
     Rect? sharePositionOrigin,
