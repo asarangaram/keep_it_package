@@ -8,10 +8,46 @@ import '../extensions/ext_datetime.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLMedia {
-  CLMedia({
+class CLMediaFile {
+  const CLMediaFile({
     required this.path,
     required this.type,
+    this.pin,
+  });
+  final String path;
+  final CLMediaType type;
+  final String? pin;
+  CLMediaFile copyWith({
+    String? path,
+    CLMediaType? type,
+    String? pin,
+  }) {
+    return CLMediaFile(
+      path: path ?? this.path,
+      type: type ?? this.type,
+      pin: pin ?? this.pin,
+    );
+  }
+
+  @override
+  bool operator ==(covariant CLMediaFile other) {
+    if (identical(this, other)) return true;
+
+    return other.path == path && other.type == type && other.pin == pin;
+  }
+
+  @override
+  int get hashCode => path.hashCode ^ type.hashCode ^ pin.hashCode;
+
+  @override
+  String toString() => 'CLMediaFile(path: $path, type: $type, pin: $pin)';
+}
+
+@immutable
+class CLMedia extends CLMediaFile {
+  CLMedia({
+    required super.path,
+    required super.type,
     this.ref,
     this.id,
     this.collectionId,
@@ -21,7 +57,7 @@ class CLMedia {
     this.md5String,
     this.isDeleted,
     this.isHidden,
-    this.pin,
+    super.pin,
   }) {
     /* switch (type) {
       case CLMediaType.text:
@@ -68,8 +104,6 @@ class CLMedia {
     );
   }
 
-  final String path;
-  final CLMediaType type;
   final String? ref;
   final int? id;
   final int? collectionId;
@@ -80,8 +114,8 @@ class CLMedia {
   final String? md5String;
   final bool? isDeleted;
   final bool? isHidden;
-  final String? pin;
 
+  @override
   CLMedia copyWith({
     String? path,
     CLMediaType? type,

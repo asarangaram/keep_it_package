@@ -35,6 +35,7 @@ class StoreActions {
     required this.onShareFiles,
     required this.createBackupFile,
     required this.reloadStore,
+    required this.dbGetMediaURL,
   });
   final Future<bool> Function(
     List<CLMedia> media,
@@ -95,7 +96,7 @@ class StoreActions {
     CLNote note, {
     required bool? confirmed,
   }) onDeleteNote;
-  final String Function(CLMedia media) getPreviewPath;
+  final String Function(CLMediaFile media) getPreviewPath;
 
   final Future<Collection> Function(Collection collection) upsertCollection;
   final Future<bool> Function(
@@ -123,4 +124,6 @@ class StoreActions {
   final Future<String> Function() createBackupFile;
 
   final Future<void> Function() reloadStore;
+
+  final String Function(CLMediaFile media) dbGetMediaURL;
 }

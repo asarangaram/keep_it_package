@@ -110,6 +110,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         onShareFiles: ShareManager.onShareFiles,
         createBackupFile: createBackupFile,
         reloadStore: reloadStore,
+        dbGetMediaURL: dbGetMediaURL,
       ),
     );
   }
@@ -574,7 +575,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return absolutePath;
   }
 
-  String getPreviewPath(CLMedia media) {
+  String dbGetMediaURL(CLMediaFile media) {
+    return path.join(
+      widget.appSettings.directories.media.pathString,
+      media.path,
+    );
+  }
+
+  String getPreviewPath(CLMediaFile media) {
     final relativePath = CLMedia.relativePath(
       media.path,
       pathPrefix: widget.appSettings.directories.media.pathString,

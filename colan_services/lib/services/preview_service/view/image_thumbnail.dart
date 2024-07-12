@@ -16,11 +16,11 @@ class ImageThumbnail extends ConsumerStatefulWidget {
     super.key,
     this.refresh = false,
   });
-  final CLMedia media;
+  final CLMediaFile media;
   final bool refresh;
   final Widget Function(BuildContext context, AsyncValue<File> thumbnailFile)
       builder;
-  final String Function(CLMedia media) getPreviewPath;
+  final String Function(CLMediaFile media) getPreviewPath;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => FetchThumbnailState();

@@ -16,9 +16,9 @@ class PreviewService extends StatelessWidget {
     this.keepAspectRatio = true,
     super.key,
   });
-  final CLMedia media;
+  final CLMediaFile media;
   final bool keepAspectRatio;
-  final String Function(CLMedia media) getPreviewPath;
+  final String Function(CLMediaFile media) getPreviewPath;
 
   @override
   Widget build(BuildContext context) {

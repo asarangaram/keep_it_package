@@ -12,7 +12,11 @@ class Preview extends StatelessWidget {
     return StoreManager(
       builder: ({required storeAction}) {
         return PreviewService(
-          media: media,
+          media: CLMediaFile(
+            path: storeAction.dbGetMediaURL(media),
+            type: media.type,
+            pin: media.pin,
+          ),
           getPreviewPath: storeAction.getPreviewPath,
           keepAspectRatio: false,
         );
