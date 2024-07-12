@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
+import 'package:device_resources/device_resources.dart';
 import 'package:flutter/foundation.dart';
 
 enum PathType { any, relative, absolute }
@@ -102,5 +104,63 @@ class MapFixer {
     }
 
     return map;
+  }
+}
+
+class NullablesFromMap {
+  static Collection? collection(
+    Map<String, dynamic> map, {
+    required AppSettings appSettings,
+  }) {
+    return Collection.fromMap(map);
+  }
+
+  static MapFixer incomingMapFixer(String basePath) => MapFixer(
+        pathType: PathType.absolute,
+        basePath: basePath,
+        mandatoryKeys: const ['type', 'path', 'md5String'],
+        pathKeys: const ['path'],
+        removeValues: const ['null'],
+      );
+
+  static CLMedia? media(
+    Map<String, dynamic> map1, {
+    required AppSettings appSettings,
+  }) {
+    final map = incomingMapFixer(appSettings.directories.media.pathString).fix(
+      map1,
+      /* onError: (errors) {
+        if (errors.isNotEmpty) {
+          logger.e(errors.join(','));
+          return false;
+        }
+        return true;
+      }, */
+    );
+    if (map.isEmpty) {
+      return null;
+    }
+    return CLMedia.fromMap(map);
+  }
+
+  static CLNote? note(
+    Map<String, dynamic> map1, {
+    // ignore: avoid_unused_constructor_parameters
+    required AppSettings appSettings,
+  }) {
+    final map = incomingMapFixer(appSettings.directories.notes.pathString).fix(
+      map1,
+      /* onError: (errors) {
+          if (errors.isNotEmpty) {
+            logger.e(errors.join(','));
+            return false;
+          }
+          return true;
+        }, */
+    );
+    if (map.isEmpty) {
+      return null;
+    }
+    return CLNote.fromMap(map);
   }
 }

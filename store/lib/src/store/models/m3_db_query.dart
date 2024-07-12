@@ -9,10 +9,7 @@ class DBQuery<T> {
   factory DBQuery({
     required String sql,
     required Set<String> triggerOnTables,
-    required T? Function(
-      Map<String, dynamic> map, {
-      required AppSettings appSettings,
-    }) fromMap,
+    required T? Function(Map<String, dynamic> map) fromMap,
     List<Object?>? parameters,
   }) {
     final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
@@ -34,18 +31,14 @@ class DBQuery<T> {
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
   final T? Function(
-    Map<String, dynamic> map, {
-    required AppSettings appSettings,
-  }) fromMap;
+    Map<String, dynamic> map,
+  ) fromMap;
 
   DBQuery<T> copyWith({
     String? sql,
     Set<String>? triggerOnTables,
     List<Object?>? parameters,
-    T Function(
-      Map<String, dynamic> map, {
-      required AppSettings appSettings,
-    })? fromMap,
+    T Function(Map<String, dynamic> map)? fromMap,
   }) {
     return DBQuery<T>(
       sql: sql ?? this.sql,
@@ -102,7 +95,7 @@ class DBQuery<T> {
   }) async {
     _infoLogger('cmd: $sql, $parameters');
     final objs = (await tx.getAll(sql, parameters ?? []))
-        .map((m) => fromMap(m, appSettings: appSettings))
+        .map(fromMap)
         .where((e) => e != null)
         .map((e) => e! as T)
         .toList();
@@ -116,9 +109,8 @@ class DBQuery<T> {
     required bool validate,
   }) async {
     _infoLogger('cmd: $sql, $parameters');
-    final obj = (await tx.getAll(sql, parameters ?? []))
-        .map((m) => fromMap(m, appSettings: appSettings))
-        .firstOrNull;
+    final obj =
+        (await tx.getAll(sql, parameters ?? [])).map(fromMap).firstOrNull;
     _infoLogger('read $obj');
     return obj;
   }

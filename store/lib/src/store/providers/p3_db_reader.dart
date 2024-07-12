@@ -1,4 +1,3 @@
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/src/store/extensions/ext_sqlite_database.dart';
 
@@ -9,8 +8,6 @@ import 'p2_db_manager.dart';
 final dbReaderProvider = StreamProvider.family<List<dynamic>, DBQuery<dynamic>>(
     (ref, dbQuery) async* {
   final dbManager = await ref.watch(storeProvider.future) as DBManager;
-  final appSettings = await ref.watch(appSettingsProvider.future);
-  // Handling 'IN ???'
 
   final sub = dbManager.db
       .watchRows(
@@ -19,10 +16,7 @@ final dbReaderProvider = StreamProvider.family<List<dynamic>, DBQuery<dynamic>>(
         parameters: dbQuery.parameters ?? [],
       )
       .map(
-        (rows) => rows
-            .map((e) => dbQuery.fromMap(e, appSettings: appSettings))
-            .where((e) => e != null)
-            .toList(),
+        (rows) => rows.map(dbQuery.fromMap).where((e) => e != null).toList(),
       );
   await for (final res in sub) {
     yield res;
