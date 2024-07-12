@@ -7,7 +7,7 @@ import '../providers/p2_db_manager.dart';
 
 class GetStore extends ConsumerWidget {
   const GetStore({required this.builder, super.key});
-  final Widget Function(Store dbManager) builder;
+  final Widget Function(Store storeInstance) builder;
 
   static Future<Store> getHandle(Ref ref) async {
     return await ref.watch(storeProvider.future);

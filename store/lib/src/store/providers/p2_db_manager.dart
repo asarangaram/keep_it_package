@@ -9,10 +9,10 @@ final storeProvider = FutureProvider<Store>((ref) async {
   final dbPath = appSettings.directories.database;
   final fullPath = join(dbPath.pathString, appSettings.dbName);
 
-  final dbManager = await DBManager.createInstances(
+  final storeInstance = await DBManager.createInstances(
     dbpath: fullPath,
     appSettings: appSettings,
   );
-  ref.onDispose(dbManager.dispose);
-  return dbManager;
+  ref.onDispose(storeInstance.dispose);
+  return storeInstance;
 });

@@ -11,12 +11,12 @@ import '../models/backup_files.dart';
 final backupNowProvider = StreamProvider<Progress>((ref) async* {
   final controller = StreamController<Progress>();
   final appSettings = await ref.watch(appSettingsProvider.future);
-  final dbManager = await GetStore.getHandle(ref);
+  final storeInstance = await GetStore.getHandle(ref);
 
   ref.listen(backupFileProvider, (prev, backupFileName) async {
     if (prev != backupFileName && backupFileName != null) {
       final backupManager = BackupManager(
-        dbManager: dbManager,
+        storeInstance: storeInstance,
         appSettings: appSettings,
       );
 

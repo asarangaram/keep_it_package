@@ -14,11 +14,11 @@ import 'files.dart';
 
 class BackupManager {
   AppSettings appSettings;
-  Store dbManager;
+  Store storeInstance;
 
   BackupManager({
     required this.appSettings,
-    required this.dbManager,
+    required this.storeInstance,
   });
 
   Future<String> backup({
@@ -26,7 +26,7 @@ class BackupManager {
     required void Function(Progress progress) onData,
     VoidCallback? onDone,
   }) async {
-    final dbArchive = await dbManager.getDBRecords();
+    final dbArchive = await storeInstance.getDBRecords();
     if (dbArchive == null || dbArchive.isEmpty) return '';
 
     final indexData = json.encode(dbArchive);

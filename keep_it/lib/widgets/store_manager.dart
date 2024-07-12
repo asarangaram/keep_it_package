@@ -51,9 +51,9 @@ class StoreManager extends StatelessWidget {
       loadingBuilder: () => const SizedBox.shrink(),
       builder: (appSettings) {
         return GetStore(
-          builder: (dbManager) {
+          builder: (storeInstance) {
             return MediaHandlerWidget0(
-              dbManager: dbManager,
+              storeInstance: storeInstance,
               appSettings: appSettings,
               builder: builder,
             );
@@ -67,12 +67,12 @@ class StoreManager extends StatelessWidget {
 class MediaHandlerWidget0 extends ConsumerStatefulWidget {
   const MediaHandlerWidget0({
     required this.builder,
-    required this.dbManager,
+    required this.storeInstance,
     required this.appSettings,
     super.key,
   });
 
-  final Store dbManager;
+  final Store storeInstance;
   final AppSettings appSettings;
   final Widget Function({required StoreActions storeAction})? builder;
 
@@ -177,13 +177,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return true;
     }
     if (selectedMedia.length == 1) {
-      await widget.dbManager.deleteMedia(
+      await widget.storeInstance.deleteMedia(
         selectedMedia[0],
         onDeleteFile: (f) async => f.deleteIfExists(),
         onRemovePin: (id) async => removeMediaFromGallery(id),
       );
     } else {
-      await widget.dbManager.deleteMediaMultiple(
+      await widget.storeInstance.deleteMediaMultiple(
         selectedMedia,
         onDeleteFile: (f) async => f.deleteIfExists(),
         onRemovePinMultiple: (id) async => removeMultipleMediaFromGallery(id),
@@ -231,7 +231,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return true;
     }
     if (selectedMedia.length == 1) {
-      await widget.dbManager.togglePin(
+      await widget.storeInstance.togglePin(
         selectedMedia[0],
         onPin: (media, {required title, desc}) {
           return albumManager.addMedia(
@@ -246,7 +246,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       );
       return true;
     } else {
-      await widget.dbManager.pinMediaMultiple(
+      await widget.storeInstance.pinMediaMultiple(
         selectedMedia,
         onPin: (media, {required title, desc}) {
           return albumManager.addMedia(
@@ -311,7 +311,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           updatedDate: selectedMedia[0].updatedDate,
         );
       }
-      await widget.dbManager.upsertMedia(
+      await widget.storeInstance.upsertMedia(
         collectionId: selectedMedia[0].collectionId!,
         media: updatedMedia,
         onPrepareMedia: (m, {required targetDir}) async {
@@ -339,7 +339,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         fractCompleted: 0,
         currentItem: 'Creating new collection',
       );
-      updatedCollection = await widget.dbManager.upsertCollection(
+      updatedCollection = await widget.storeInstance.upsertCollection(
         collection: collection,
       );
     } else {
@@ -350,7 +350,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       final streamController = StreamController<Progress>();
       var completedMedia = 0;
       unawaited(
-        widget.dbManager
+        widget.storeInstance
             .upsertMediaMultiple(
           media: selectedMedia.map((e) => e.copyWith(isHidden: false)).toList(),
           collectionId: updatedCollection.id!,
@@ -391,7 +391,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }) async {
     for (final item in selectedMedia) {
       if (item.id != null) {
-        await widget.dbManager.upsertMedia(
+        await widget.storeInstance.upsertMedia(
           collectionId: item.collectionId!,
           media: item.copyWith(isDeleted: false),
           onPrepareMedia: (
@@ -426,11 +426,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (collection == null) {
       final Collection tempCollection;
       tempCollection =
-          await widget.dbManager.getCollectionByLabel(tempCollectionName) ??
-              await widget.dbManager.upsertCollection(
+          await widget.storeInstance.getCollectionByLabel(tempCollectionName) ??
+              await widget.storeInstance.upsertCollection(
                 collection: const Collection(label: tempCollectionName),
               );
-      media = await widget.dbManager.upsertMedia(
+      media = await widget.storeInstance.upsertMedia(
         collectionId: tempCollection.id!,
         media: media.copyWith(isHidden: true),
         onPrepareMedia: (m, {required targetDir}) async {
@@ -440,7 +440,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         },
       );
     } else {
-      media = await widget.dbManager.upsertMedia(
+      media = await widget.storeInstance.upsertMedia(
         collectionId: collection.id!,
         media: media,
         onPrepareMedia: (m, {required targetDir}) async {
@@ -483,14 +483,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         final file = File(item.path);
         if (file.existsSync()) {
           final md5String = await file.checksum;
-          final duplicate = await widget.dbManager.getMediaByMD5(md5String);
+          final duplicate = await widget.storeInstance.getMediaByMD5(md5String);
           if (duplicate != null) {
             candidates.add(duplicate);
           } else {
             final Collection tempCollection;
-            tempCollection = await widget.dbManager
+            tempCollection = await widget.storeInstance
                     .getCollectionByLabel(tempCollectionName) ??
-                await widget.dbManager.upsertCollection(
+                await widget.storeInstance.upsertCollection(
                   collection: const Collection(label: tempCollectionName),
                 );
             final newMedia = CLMedia(
@@ -500,7 +500,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
               md5String: md5String,
               isHidden: true,
             );
-            final tempMedia = await widget.dbManager.upsertMedia(
+            final tempMedia = await widget.storeInstance.upsertMedia(
               collectionId: tempCollection.id!,
               media: newMedia.copyWith(isHidden: true),
               onPrepareMedia: (m, {required targetDir}) async {
@@ -535,7 +535,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<void> onUpsertNote(CLMedia media, CLNote note) async {
-    await widget.dbManager.upsertNote(
+    await widget.storeInstance.upsertNote(
       note,
       [media],
       onSaveNote: (note1, {required targetDir}) async {
@@ -549,7 +549,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     required bool? confirmed,
   }) async {
     if (note.id == null) return;
-    await widget.dbManager.deleteNote(
+    await widget.storeInstance.deleteNote(
       note,
       onDeleteFile: (file) async {
         await file.deleteIfExists();
@@ -590,7 +590,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
-    final updated = await widget.dbManager.upsertCollection(
+    final updated = await widget.storeInstance.upsertCollection(
       collection: collection,
     );
     await ref.read(notificationMessageProvider.notifier).push('Updated');
@@ -601,7 +601,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     Collection collection, {
     required bool? confirmed,
   }) async {
-    await widget.dbManager.deleteCollection(
+    await widget.storeInstance.deleteCollection(
       collection,
       onDeleteFile: (file) async {
         if (file.existsSync()) {
@@ -735,6 +735,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<void> reloadStore() async {
-    await widget.dbManager.reloadStore(ref);
+    await widget.storeInstance.reloadStore(ref);
   }
 }
