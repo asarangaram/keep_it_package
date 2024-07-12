@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:video_trimmer/video_trimmer.dart';
+
+import '../../internal/widgets/editor_finalizer.dart';
 
 class VideoEditServices extends StatefulWidget {
   const VideoEditServices(
@@ -23,8 +23,8 @@ class VideoEditServices extends StatefulWidget {
 class _VideoEditServicesState extends State<VideoEditServices> {
   final Trimmer _trimmer = Trimmer();
 
-  double _startValue = 0;
-  double _endValue = 0;
+  double? _startValue;
+  double? _endValue;
 
   bool _isPlaying = false;
   bool _progressVisibility = false;
@@ -40,14 +40,17 @@ class _VideoEditServicesState extends State<VideoEditServices> {
     _trimmer.loadVideo(videoFile: widget.file);
   }
 
+  bool get hasEditAction => _startValue != null && _endValue != null;
+
   Future<void> _saveVideo({bool overwrite = true}) async {
+    if (!hasEditAction) return;
     setState(() {
       _progressVisibility = true;
     });
     await Future<void>.delayed(const Duration(seconds: 1));
     await _trimmer.saveTrimmedVideo(
-      startValue: _startValue,
-      endValue: _endValue,
+      startValue: _startValue!,
+      endValue: _endValue!,
       storageDir: StorageDir.temporaryDirectory,
       onSave: (outputPath) async {
         if (outputPath != null) {
@@ -122,37 +125,19 @@ class _VideoEditServicesState extends State<VideoEditServices> {
                         ),
                   onPressed: () async {
                     final playbackState = await _trimmer.videoPlaybackControl(
-                      startValue: _startValue,
-                      endValue: _endValue,
+                      startValue: _startValue ?? 0,
+                      endValue: _endValue ?? 0,
                     );
                     setState(() => _isPlaying = playbackState);
                   },
                 ),
               ),
               Expanded(
-                child: PopupMenuButton<String>(
-                  child: CLIcon.standard(
-                    MdiIcons.check,
-                    color: Theme.of(context).colorScheme.surface,
-                  ),
-                  onSelected: (String value) {
-                    if (value == 'Save') {
-                      _saveVideo();
-                    } else if (value == 'Save Copy') {
-                      _saveVideo(overwrite: false);
-                    } else if (value == 'Discard') {
-                      widget.onDone();
-                    }
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return {'Save', 'Save Copy', 'Discard'}
-                        .map((String choice) {
-                      return PopupMenuItem<String>(
-                        value: choice,
-                        child: Text(choice),
-                      );
-                    }).toList();
-                  },
+                child: EditorFinalizer(
+                  allowCopy: false,
+                  hasEditAction: hasEditAction,
+                  onSave: _saveVideo,
+                  onDiscard: ({required done}) => widget.onDone(),
                 ),
               ),
             ],
