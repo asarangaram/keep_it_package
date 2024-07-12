@@ -1,11 +1,6 @@
 /// Colan Widgets
 library colon_widgets;
 
-/// APIs
-///
-///
-export 'src/models/store.dart';
-
 // Widgets
 
 // ignore: directives_ordering
@@ -29,6 +24,7 @@ export 'src/extensions/ext_cl_media.dart';
 export 'src/extensions/ext_cl_menu_item.dart';
 export 'src/extensions/ext_cl_rect.dart';
 export 'src/extensions/ext_color.dart';
+export 'src/extensions/ext_datetime.dart';
 export 'src/extensions/ext_double.dart';
 export 'src/extensions/ext_duration.dart';
 export 'src/extensions/ext_file.dart';
@@ -49,6 +45,10 @@ export 'src/models/cl_shared_media.dart';
 export 'src/models/collection.dart';
 export 'src/models/progress.dart';
 
+/// APIs
+///
+///
+export 'src/models/store.dart';
 export 'src/models/store_actions.dart';
 export 'src/models/universal_media_source.dart';
 export 'src/theme/models/cl_colors.dart';

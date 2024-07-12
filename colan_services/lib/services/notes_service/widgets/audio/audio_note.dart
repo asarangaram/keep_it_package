@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AudioNote extends StatefulWidget {
   const AudioNote(
@@ -61,8 +60,7 @@ class _AudioNoteState extends State<AudioNote> {
     final theme = CLTheme.of(context).noteTheme;
     final playerWaveStyle = theme.playerWaveStyle;
 
-    final label =
-        DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.note.createdDate);
+    final label = widget.note.createdDate.toSQL();
     return CLCustomChip(
       avatar: validAudio
           ? CLIcon.tiny(

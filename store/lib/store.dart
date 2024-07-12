@@ -1,7 +1,7 @@
 /// Local Store implementation
 library store;
 
-export 'src/store/widgets/w2_get_db_manager.dart' show GetStore;
+export 'src/store/widgets/get_store.dart' show GetStore;
 export 'src/store/widgets/w3_get_collection.dart'
     show GetCollection, GetCollectionMultiple;
 export 'src/store/widgets/w3_get_media.dart'

@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../providers/backup_stream.dart';
 
@@ -87,8 +86,7 @@ class _AvailableBackupState extends State<AvailableBackup> {
             appSettings.directories.backup.path.listSync().firstOrNull;
         if (backupFile == null) return const SizedBox.shrink();
         final stats = backupFile.statSync();
-        final backupTime =
-            DateFormat('MMM dd, yyyy HH:mm:ss').format(stats.modified);
+        final backupTime = stats.modified.toDisplayFormat();
         final fileSize = '(${stats.size.toHumanReadableFileSize()})';
         return ListTile(
           title: Row(

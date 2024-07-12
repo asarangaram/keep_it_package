@@ -2,11 +2,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 
 import '../extensions/ext_datetime.dart';
+import '../extensions/ext_string.dart';
+import 'cl_media_type.dart';
 
 @immutable
 class CLMedia {

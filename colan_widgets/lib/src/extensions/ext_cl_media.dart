@@ -1,7 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 
-import 'package:intl/intl.dart';
-
 extension ExtCLMediaList on List<CLMedia> {
   Map<String, List<CLMedia>> filterByDate() {
     final filterredMedia = <String, List<CLMedia>>{};
@@ -9,14 +7,13 @@ extension ExtCLMediaList on List<CLMedia> {
     for (final entry in this) {
       final String formattedDate;
       if (entry.originalDate != null) {
-        formattedDate = DateFormat('dd MMMM yyyy').format(entry.originalDate!);
+        formattedDate = entry.originalDate!.toDisplayFormat(dataOnly: true);
         if (!filterredMedia.containsKey(formattedDate)) {
           filterredMedia[formattedDate] = [];
         }
         filterredMedia[formattedDate]!.add(entry);
       } else if (entry.createdDate != null) {
-        formattedDate =
-            '${DateFormat('dd MMMM yyyy').format(entry.createdDate!)} '
+        formattedDate = '${entry.createdDate!.toDisplayFormat(dataOnly: true)} '
             '(upload date)';
         if (!filterredMedia.containsKey(formattedDate)) {
           filterredMedia[formattedDate] = [];
