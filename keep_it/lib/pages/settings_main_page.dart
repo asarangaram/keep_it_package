@@ -26,7 +26,12 @@ class SettingsMainPage extends ConsumerWidget {
                         leading: Icon(MdiIcons.delete),
                         trailing: IconButton(
                           icon: Icon(MdiIcons.arrowRight),
-                          onPressed: () async => storeAction.openDeletedMedia(),
+                          onPressed: () async {
+                            await storeAction.openWizard(
+                              deletedMedia,
+                              UniversalMediaSource.deleted,
+                            );
+                          },
                         ),
                         title: Text('Deleted Items (${deletedMedia.length})'),
                       ),

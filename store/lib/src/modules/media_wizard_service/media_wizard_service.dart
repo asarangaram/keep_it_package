@@ -6,6 +6,7 @@ import 'models/cl_shared_media.dart';
 
 import 'providers/gallery_group_provider.dart';
 import 'providers/universal_media.dart';
+import 'recycle_bin_service.dart';
 import 'views/create_collection_wizard.dart';
 import 'views/progress_bar.dart';
 import 'views/wizard_preview.dart';
@@ -36,6 +37,13 @@ class MediaWizardService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (type == UniversalMediaSource.deleted) {
+      return RecycleBinService(
+        type: type,
+        getPreview: getPreview,
+        storeAction: storeAction,
+      );
+    }
     final media = ref.watch(universalMediaProvider(type));
     if (media.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -85,14 +93,14 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   bool get hasCandidate => candidate.isNotEmpty;
   bool get hasCollection => targetCollection != null;
   String get keepActionLabel => [
-        widget.type.actionLabel,
+        widget.type.keepActionLabel,
         if (isSelectionMode)
           'Selected'
         else
           widget.media.entries.length > 1 ? 'All' : '',
       ].join(' ');
   String get deleteActionLabel => [
-        'Discard',
+        widget.type.deleteActionLabel,
         if (isSelectionMode)
           'Selected'
         else

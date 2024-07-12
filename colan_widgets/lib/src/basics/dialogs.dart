@@ -122,6 +122,52 @@ class ConfirmAction {
     );
   }
 
+  static Future<bool?> permanentlyDeleteMedia(
+    BuildContext context, {
+    required CLMedia media,
+    required Widget Function(CLMedia media) getPreview,
+    Future<bool?> Function()? onConfirm,
+  }) async =>
+      template(
+        context,
+        title: 'Confirm Delete',
+        message: 'Are you sure you want to PERMANENTLY delete '
+            'this ${media.type.name}?',
+        onConfirm: onConfirm,
+        child: getPreview(media),
+      );
+
+  static Future<bool?> permanentlyDeleteMediaMultiple(
+    BuildContext context, {
+    required List<CLMedia> media,
+    required Widget Function(CLMedia media) getPreview,
+    Future<bool?> Function()? onConfirm,
+  }) async {
+    if (media.isEmpty) {
+      return false;
+    }
+    final String msg;
+    if (media.length == 1) {
+      return ConfirmAction.permanentlyDeleteMedia(
+        context,
+        media: media[0],
+        getPreview: getPreview,
+        onConfirm: onConfirm,
+      );
+    } else {
+      msg = 'Are you sure you want to PERMANENTLY delete the above media + '
+          '${media.length - 1} items?';
+    }
+
+    return template(
+      context,
+      title: 'Confirm Delete',
+      message: msg,
+      onConfirm: onConfirm,
+      child: getPreview(media[0]),
+    );
+  }
+
   static Future<bool?> restoreMedia(
     BuildContext context, {
     required CLMedia media,
