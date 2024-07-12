@@ -3,10 +3,6 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:path/path.dart' as path_handler;
 
-import '../../../app_logger.dart';
-import '../../cl_media.dart';
-import '../../cl_media_type.dart';
-
 extension IOExtOnCLMedia on CLMedia {
   void deleteFile() {
     if (File(path).existsSync()) {
