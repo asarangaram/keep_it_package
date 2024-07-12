@@ -128,7 +128,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 }
 
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i('Incoming Media Handler: $msg');

@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../utils/platform_support.dart';
+
 @immutable
 class ActionControl {
   const ActionControl({
@@ -14,12 +16,12 @@ class ActionControl {
   });
 
   factory ActionControl.full() {
-    return const ActionControl(
+    return ActionControl(
       allowEdit: true,
       allowDelete: true,
       allowMove: true,
       allowShare: true,
-      allowPin: true,
+      allowPin: ColanPlatformSupport.isMobilePlatform,
     );
   }
   factory ActionControl.none() {
