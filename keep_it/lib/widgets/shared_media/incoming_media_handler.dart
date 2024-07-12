@@ -58,69 +58,79 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
 
   @override
   Widget build(BuildContext context) {
-    _infoLogger('build IncomingMediaHandler $candidate');
+    _infoLogger('build candidate: $candidate, isSaving:$isSaving');
+    _infoLogger('incoming Media: ${widget.incomingMedia}');
     final Widget widget0;
-    if (isSaving) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
     try {
-      widget0 = FullscreenLayout(
-        child: (candidate == null)
-            ? AnalysePage(
-                incomingMedia: widget.incomingMedia,
-                onDone: onSave,
-                onCancel: () => onDiscard(result: false),
-              )
-            : DuplicatePage(
-                incomingMedia: candidate!,
-                onDone: onSave,
-                onCancel: () => onDiscard(result: false),
-              ),
-      );
+      widget0 = isSaving
+          ? const Center(child: CircularProgressIndicator())
+          : (candidate == null)
+              ? AnalysePage(
+                  incomingMedia: widget.incomingMedia,
+                  onDone: onSave,
+                  onCancel: () => onDiscard(result: false),
+                )
+              : DuplicatePage(
+                  incomingMedia: candidate!,
+                  onDone: onSave,
+                  onCancel: () => onDiscard(result: false),
+                );
     } catch (e) {
-      return FullscreenLayout(
-        child: CLErrorView(errorMessage: e.toString()),
-      );
+      return CLErrorView(errorMessage: e.toString());
     }
     _infoLogger('build IncomingMediaHandler - Done');
-    return widget0;
+    return FullscreenLayout(child: widget0);
   }
 
-  Future<void> onSave({required CLSharedMedia? mg}) async {
-    if (mg?.hasTargetMismatchedItems ?? false) {
-      setState(() {
-        candidate = mg;
-      });
-      return;
-    }
-    if (widget.incomingMedia.type != null) {
-      await widget.onSave(mg?.entries ?? [], widget.incomingMedia.type!);
-    }
+  bool get isSavingState => isSaving;
 
-    onDiscard(result: !(mg == null || mg.isEmpty));
-    candidate = null;
-    isSaving = true;
+  set isSavingState(bool val) {
+    isSaving = val;
     if (mounted) {
       setState(() {});
     }
+  }
+
+  Future<void> onSave({required CLSharedMedia? mg}) async {
+    _infoLogger(mg.toString());
+    _infoLogger('onSave - Enter');
+    isSavingState = true;
+    {
+      if (mg?.hasTargetMismatchedItems ?? false) {
+        _infoLogger('duplicates found.');
+        setState(() {
+          candidate = mg;
+        });
+      } else if (mg == null || mg.isEmpty) {
+        _infoLogger('nothing to save. clear incoming media');
+        widget.onDiscard(result: false);
+        _infoLogger('nothing to save. send notification');
+        await widget.onSave([], widget.incomingMedia.type!);
+        _infoLogger('nothing to save. return');
+      } else {
+        candidate = null;
+        widget.onDiscard(result: true);
+        if (widget.incomingMedia.type != null) {
+          _infoLogger('saving, type: widget.incomingMedia.type ');
+          await widget.onSave(mg.entries, widget.incomingMedia.type!);
+          _infoLogger('Saving complete');
+        }
+      }
+    }
+    isSavingState = false;
+    _infoLogger('onSave - Return');
   }
 
   void onDiscard({required bool result}) {
     candidate = null;
-
+    _infoLogger('discard media');
     widget.onDiscard(result: result);
-    isSaving = false;
-    if (mounted) {
-      setState(() {});
-    }
   }
 }
 
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
-    logger.i(msg);
+    logger.i('Incoming Media Handler: $msg');
   }
 }
