@@ -13,6 +13,7 @@ class ActionControl {
     required this.allowMove,
     required this.allowShare,
     required this.allowPin,
+    required this.canDuplicateMedia,
   });
 
   factory ActionControl.full() {
@@ -22,6 +23,7 @@ class ActionControl {
       allowMove: true,
       allowShare: true,
       allowPin: ColanPlatformSupport.isMobilePlatform,
+      canDuplicateMedia: true,
     );
   }
   factory ActionControl.none() {
@@ -31,6 +33,7 @@ class ActionControl {
       allowMove: false,
       allowShare: false,
       allowPin: false,
+      canDuplicateMedia: false,
     );
   }
 
@@ -41,6 +44,7 @@ class ActionControl {
       allowMove: false,
       allowShare: true,
       allowPin: false,
+      canDuplicateMedia: false,
     );
   }
   final bool allowEdit;
@@ -48,6 +52,7 @@ class ActionControl {
   final bool allowMove;
   final bool allowShare;
   final bool allowPin;
+  final bool canDuplicateMedia;
 
   ActionControl copyWith({
     bool? allowEdit,
@@ -55,6 +60,7 @@ class ActionControl {
     bool? allowMove,
     bool? allowShare,
     bool? allowPin,
+    bool? canDuplicateMedia,
   }) {
     return ActionControl(
       allowEdit: allowEdit ?? this.allowEdit,
@@ -62,13 +68,14 @@ class ActionControl {
       allowMove: allowMove ?? this.allowMove,
       allowShare: allowShare ?? this.allowShare,
       allowPin: allowPin ?? this.allowPin,
+      canDuplicateMedia: canDuplicateMedia ?? this.canDuplicateMedia,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'ActionControl(allowEdit: $allowEdit, allowDelete: $allowDelete, allowMove: $allowMove, allowShare: $allowShare, AllowPin: $allowPin)';
+    return 'ActionControl(allowEdit: $allowEdit, allowDelete: $allowDelete, allowMove: $allowMove, allowShare: $allowShare, allowPin: $allowPin, canDuplicateMedia: $canDuplicateMedia)';
   }
 
   @override
@@ -79,7 +86,8 @@ class ActionControl {
         other.allowDelete == allowDelete &&
         other.allowMove == allowMove &&
         other.allowShare == allowShare &&
-        other.allowPin == allowPin;
+        other.allowPin == allowPin &&
+        other.canDuplicateMedia == canDuplicateMedia;
   }
 
   @override
@@ -88,7 +96,8 @@ class ActionControl {
         allowDelete.hashCode ^
         allowMove.hashCode ^
         allowShare.hashCode ^
-        allowPin.hashCode;
+        allowPin.hashCode ^
+        canDuplicateMedia.hashCode;
   }
 
   Future<bool?> Function()? onEdit(Future<bool?> Function() cb) =>
@@ -109,6 +118,7 @@ class ActionControl {
       'allowMove': allowMove,
       'allowShare': allowShare,
       'allowPin': allowPin,
+      'canDuplicateMedia': canDuplicateMedia,
     };
   }
 
@@ -119,6 +129,7 @@ class ActionControl {
       allowMove: map['allowMove'] as bool,
       allowShare: map['allowShare'] as bool,
       allowPin: map['allowPin'] as bool,
+      canDuplicateMedia: map['canDuplicateMedia'] as bool,
     );
   }
 

@@ -12,9 +12,11 @@ import '../widgets/store_manager.dart';
 class MediaEditorPage extends StatelessWidget {
   const MediaEditorPage({
     required this.mediaId,
+    required this.canDuplicateMedia,
     super.key,
   });
   final int? mediaId;
+  final bool canDuplicateMedia;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class MediaEditorPage extends StatelessWidget {
 
               return InvokeEditor(
                 media: media,
+                canDuplicateMedia: canDuplicateMedia,
                 onCreateNewFile: () async {
                   return storeAction.createTempFile(ext: 'jpg');
                 },
@@ -74,12 +77,13 @@ class InvokeEditor extends StatelessWidget {
     required this.media,
     required this.onCreateNewFile,
     required this.onSave,
+    required this.canDuplicateMedia,
     super.key,
   });
   final CLMedia media;
   final Future<String> Function() onCreateNewFile;
   final Future<void> Function(String, {required bool overwrite}) onSave;
-
+  final bool canDuplicateMedia;
   @override
   Widget build(BuildContext context) {
     switch (media.type) {
@@ -89,12 +93,14 @@ class InvokeEditor extends StatelessWidget {
           onDone: () => CLPopScreen.onPop(context),
           onSave: onSave,
           onCreateNewFile: onCreateNewFile,
+          canDuplicateMedia: canDuplicateMedia,
         );
       case CLMediaType.video:
         return VideoEditServices(
           File(media.path),
           onSave: onSave,
           onDone: () => CLPopScreen.onPop(context),
+          canDuplicateMedia: canDuplicateMedia,
         );
       case CLMediaType.text:
       case CLMediaType.url:

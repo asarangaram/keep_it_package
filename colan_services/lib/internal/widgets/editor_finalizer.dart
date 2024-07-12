@@ -20,16 +20,16 @@ class EditorFinalizer extends StatelessWidget {
   const EditorFinalizer({
     required this.onSave,
     required this.onDiscard,
+    required this.canDuplicateMedia,
+    required this.hasEditAction,
     this.child,
-    this.allowCopy = true,
-    this.hasEditAction = true,
     super.key,
   });
   final Future<void> Function({required bool overwrite}) onSave;
   final Future<void> Function({required bool done}) onDiscard;
   final Widget? child;
   final bool hasEditAction;
-  final bool allowCopy;
+  final bool canDuplicateMedia;
   @override
   Widget build(BuildContext context) {
     if (!hasEditAction) {
@@ -62,7 +62,7 @@ class EditorFinalizer extends StatelessWidget {
       itemBuilder: (BuildContext context) {
         final values = <EditorFinalActions>[
           EditorFinalActions.save,
-          if (allowCopy) EditorFinalActions.saveAsNew,
+          if (canDuplicateMedia) EditorFinalActions.saveAsNew,
           EditorFinalActions.revertToOriginal,
           EditorFinalActions.discard,
         ];

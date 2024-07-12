@@ -73,14 +73,22 @@ class KeepItApp implements AppDescriptor {
           name: 'mediaEditor',
           builder: (context, GoRouterState state) {
             final int? mediaId;
+            final bool canDuplicateMedia;
             if (state.uri.queryParameters.keys.contains('id')) {
               mediaId = int.parse(state.uri.queryParameters['id']!);
             } else {
               mediaId = null;
             }
+            if (state.uri.queryParameters.keys.contains('canDuplicateMedia')) {
+              canDuplicateMedia =
+                  state.uri.queryParameters['canDuplicateMedia']! == '1';
+            } else {
+              canDuplicateMedia = false;
+            }
 
             return MediaEditorPage(
               mediaId: mediaId,
+              canDuplicateMedia: canDuplicateMedia,
             );
           },
         ),
@@ -167,6 +175,7 @@ class KeepItApp implements AppDescriptor {
           name: 'items_by_collection/:collectionId',
           builder: (context, GoRouterState state) => CollectionTimeLinePage(
             collectionId: int.parse(state.pathParameters['collectionId']!),
+            actionControl: ActionControl.full(),
           ),
         ),
       ];

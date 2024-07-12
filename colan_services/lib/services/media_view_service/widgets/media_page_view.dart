@@ -15,6 +15,7 @@ class MediaPageView extends ConsumerStatefulWidget {
     required this.isLocked,
     required this.buildNotes,
     required this.getPreview,
+    required this.canDuplicateMedia,
     this.onLockPage,
     super.key,
   });
@@ -27,6 +28,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   final void Function({required bool lock})? onLockPage;
   final Widget Function(CLMedia media) buildNotes;
   final Widget Function(CLMedia media) getPreview;
+  final bool canDuplicateMedia;
   @override
   ConsumerState<MediaPageView> createState() => _ItemViewState();
 }
@@ -91,7 +93,12 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
             );
           }),
           onShare: ac.onShare(() => widget.storeAction.share([media])),
-          onEdit: ac.onEdit(() => widget.storeAction.openEditor([media])),
+          onEdit: ac.onEdit(
+            () => widget.storeAction.openEditor(
+              [media],
+              canDuplicateMedia: ac.canDuplicateMedia,
+            ),
+          ),
           onPin: ac.onPin(() => widget.storeAction.togglePin([media])),
           media: media,
         ),

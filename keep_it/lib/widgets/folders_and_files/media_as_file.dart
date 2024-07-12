@@ -13,13 +13,14 @@ class MediaAsFile extends ConsumerWidget {
     required this.quickMenuScopeKey,
     required this.onTap,
     required this.getPreview,
+    required this.actionControl,
     super.key,
   });
   final CLMedia media;
   final Future<bool?> Function()? onTap;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final Widget Function(CLMedia media) getPreview;
-
+  final ActionControl actionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return StoreManager(
@@ -37,7 +38,10 @@ class MediaAsFile extends ConsumerWidget {
             );
           },
           onShare: () => storeAction.share([media]),
-          onEdit: () => storeAction.openEditor([media]),
+          onEdit: () => storeAction.openEditor(
+            [media],
+            canDuplicateMedia: actionControl.canDuplicateMedia,
+          ),
           onTap: onTap,
           child: getPreview(media),
         );

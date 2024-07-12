@@ -18,10 +18,11 @@ class ImageEditService extends StatefulWidget {
     required this.onDone,
     required this.onCreateNewFile,
     required this.onSave,
+    required this.canDuplicateMedia,
     super.key,
   });
   final File file;
-
+  final bool canDuplicateMedia;
   final Future<void> Function() onDone;
 
   final Future<String> Function() onCreateNewFile;
@@ -126,7 +127,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
               });
             },
             saveWidget: EditorFinalizer(
-              allowCopy: false,
+              canDuplicateMedia: widget.canDuplicateMedia,
               hasEditAction: hasEditAction,
               onSave: ({required overwrite}) async {
                 if (controller.currentState == null) {

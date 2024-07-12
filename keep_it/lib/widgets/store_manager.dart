@@ -200,7 +200,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
   }
 
-  Future<bool> openEditor(List<CLMedia> selectedMedia) async {
+  Future<bool> openEditor(
+    List<CLMedia> selectedMedia, {
+    required bool canDuplicateMedia,
+  }) async {
     if (selectedMedia.isEmpty) {
       return true;
     }
@@ -211,7 +214,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             );
         return false;
       } else {
-        await context.push('/mediaEditor?id=${selectedMedia[0].id}');
+        await context.push(
+          '/mediaEditor?id=${selectedMedia[0].id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
+        );
         return true;
       }
     }
