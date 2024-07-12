@@ -1,5 +1,8 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../utils/key_listener.dart';
 
 enum CLScreenPopGesture { swipeLeft, onTap }
 
@@ -42,19 +45,26 @@ class CLPopScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap:
-          popGesture == CLScreenPopGesture.onTap ? () => onPop(context) : null,
-      onHorizontalDragEnd: popGesture == CLScreenPopGesture.swipeLeft
-          ? (DragEndDetails details) {
-              if (details.primaryVelocity == null) return;
-              // pop on Swipe
-              if (details.primaryVelocity! > 0) {
-                onPop(context, result: result);
-              }
-            }
+    return CLKeyListener(
+      onEsc: (popGesture == CLScreenPopGesture.swipeLeft) &&
+              !ColanPlatformSupport.isMobilePlatform
+          ? () => onPop(context, result: result)
           : null,
-      child: child,
+      child: GestureDetector(
+        onTap: popGesture == CLScreenPopGesture.onTap
+            ? () => onPop(context)
+            : null,
+        onHorizontalDragEnd: popGesture == CLScreenPopGesture.swipeLeft
+            ? (DragEndDetails details) {
+                if (details.primaryVelocity == null) return;
+                // pop on Swipe
+                if (details.primaryVelocity! > 0) {
+                  onPop(context, result: result);
+                }
+              }
+            : null,
+        child: child,
+      ),
     );
   }
 
