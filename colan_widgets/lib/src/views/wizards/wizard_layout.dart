@@ -41,6 +41,7 @@ class WizardLayout extends StatelessWidget {
         child: CLBackground(
           child: KeepItMainView(
             title: title ?? '',
+            backButton: null,
             actionsBuilder: [
               if (actions != null)
                 ...actions!.map((e) => (context, quickMenuScopeKey) => e),

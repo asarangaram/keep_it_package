@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MainHeader extends ConsumerWidget {
   const MainHeader({
     required this.quickMenuScopeKey,
+    required this.backButton,
     super.key,
     this.actionsBuilders,
     this.mainActionItems,
@@ -19,6 +20,7 @@ class MainHeader extends ConsumerWidget {
       )>? actionsBuilders;
   final List<List<CLMenuItem>>? mainActionItems;
   final String? title;
+  final Widget? backButton;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,6 +32,7 @@ class MainHeader extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                if (backButton != null) backButton!,
                 if (title != null)
                   Expanded(
                     child: Align(

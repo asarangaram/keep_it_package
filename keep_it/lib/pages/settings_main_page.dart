@@ -15,6 +15,7 @@ class SettingsMainPage extends ConsumerWidget {
       builder: ({required storeAction}) {
         return KeepItMainView(
           title: 'Settings',
+          backButton: null,
           pageBuilder: (context, quickMenuScopeKey) {
             return GetDeletedMedia(
               buildOnData: (deletedMedia) {

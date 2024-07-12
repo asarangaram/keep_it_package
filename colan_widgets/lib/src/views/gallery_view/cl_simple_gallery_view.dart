@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../basics/cl_button.dart';
+import '../../basics/cl_pop_screen.dart';
 import '../../basics/cl_refresh_indicator.dart';
 import '../../models/cl_menu_item.dart';
 import '../../models/typedefs.dart';
@@ -22,6 +23,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     required this.emptyState,
     required this.itemBuilder,
     required this.columns,
+    required this.backButton,
     this.onPickFiles,
     this.onCameraCapture,
     super.key,
@@ -42,6 +44,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
       selectionActions;
   final ItemBuilder<T> itemBuilder;
+  final Widget? backButton;
 
   @override
   State<CLSimpleGalleryView<T>> createState() => _CLSimpleGalleryViewState<T>();
@@ -57,6 +60,10 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
       return KeepItMainView(
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
+        backButton: CLButtonIcon.small(
+          MdiIcons.arrowRight,
+          onTap: () => CLPopScreen.onPop(context),
+        ),
         actionsBuilder: [
           if (widget.onCameraCapture != null)
             (context, quickMenuScopeKey) => CLButtonIcon.small(
@@ -79,6 +86,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         ],
         child: KeepItMainView(
           title: widget.title,
+          backButton: widget.backButton,
           actionsBuilder: [
             if (widget.selectionActions != null)
               (context, quickMenuScopeKey) => CLButtonText.small(

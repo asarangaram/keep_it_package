@@ -100,6 +100,10 @@ class TimeLineView extends ConsumerWidget {
         return CLSimpleGalleryView(
           key: ValueKey(label),
           title: label,
+          backButton: CLButtonIcon.small(
+            MdiIcons.arrowLeft,
+            onTap: () => CLPopScreen.onPop(context),
+          ),
           identifier: parentIdentifier,
           columns: 4,
           galleryMap: galleryGroups,

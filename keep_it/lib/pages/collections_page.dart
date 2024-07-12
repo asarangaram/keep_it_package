@@ -37,6 +37,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     return CLSimpleGalleryView(
                       key: ValueKey(identifier),
                       title: 'Collections',
+                      backButton: null,
                       columns: 3,
                       galleryMap: galleryGroups,
                       emptyState: const EmptyState(),

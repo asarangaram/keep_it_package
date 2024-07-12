@@ -24,6 +24,7 @@ class PinnedMediaPage extends ConsumerWidget {
                   child: CLSimpleGalleryView<CLMedia>(
                     key: const ValueKey(label),
                     title: 'Pinned Media',
+                    backButton: null,
                     itemBuilder:
                         (context, item, {required quickMenuScopeKey}) => Hero(
                       tag: '$parentIdentifier /item/${item.id}',

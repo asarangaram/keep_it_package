@@ -32,6 +32,7 @@ class DeleteMediaPage extends ConsumerWidget {
                       child: CLSimpleGalleryView<CLMedia>(
                         key: const ValueKey(label),
                         title: 'Deleted Media',
+                        backButton: null,
                         itemBuilder: (
                           context,
                           item, {

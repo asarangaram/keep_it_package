@@ -8,6 +8,7 @@ import 'main_header.dart';
 class KeepItMainView extends ConsumerStatefulWidget {
   const KeepItMainView({
     required this.pageBuilder,
+    required this.backButton,
     super.key,
     this.actionsBuilder,
     this.title,
@@ -23,6 +24,7 @@ class KeepItMainView extends ConsumerStatefulWidget {
       )>? actionsBuilder;
 
   final String? title;
+  final Widget? backButton;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => KeepItMainViewState();
@@ -45,7 +47,8 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
               actionsBuilders: widget.actionsBuilder,
               quickMenuScopeKey: quickMenuScopeKey,
               title: widget.title?.uptoLength(15),
-              
+              backButton: widget.backButton,
+
               /* mainActionItems: const [
                 [
                   CLMenuItem(
