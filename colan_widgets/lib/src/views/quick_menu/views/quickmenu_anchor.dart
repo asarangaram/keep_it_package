@@ -104,6 +104,7 @@ class CLQuickMenuAnchorState extends ConsumerState<CLQuickMenuAnchor> {
 
     final onTapDown = (!widget.isLongPress) ? (_) => getDetails() : null;
     final onLongPressDown = (widget.isLongPress) ? (_) => getDetails() : null;
+
     final onTap = (widget.isLongPress)
         ? widget.onTap
         : !canResponse
@@ -118,6 +119,8 @@ class CLQuickMenuAnchorState extends ConsumerState<CLQuickMenuAnchor> {
     return GestureDetector(
       onTapDown: onTapDown,
       onLongPressDown: onLongPressDown,
+      onSecondaryTap: !canResponse ? null : showMenu,
+      onSecondaryTapDown: onLongPressDown,
       onTap: onTap,
       onLongPress: onLongPress,
       child: widget.child,
