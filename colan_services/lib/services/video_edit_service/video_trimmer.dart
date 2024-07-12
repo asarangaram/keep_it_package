@@ -10,11 +10,13 @@ class VideoEditServices extends StatefulWidget {
     this.file, {
     required this.onSave,
     required this.onDone,
+    required this.canDuplicateMedia,
     super.key,
   });
   final File file;
   final Future<void> Function(String outFile, {required bool overwrite}) onSave;
   final Future<void> Function() onDone;
+  final bool canDuplicateMedia;
 
   @override
   State<VideoEditServices> createState() => _VideoEditServicesState();
@@ -134,7 +136,7 @@ class _VideoEditServicesState extends State<VideoEditServices> {
               ),
               Expanded(
                 child: EditorFinalizer(
-                  allowCopy: false,
+                  canDuplicateMedia: widget.canDuplicateMedia,
                   hasEditAction: hasEditAction,
                   onSave: _saveVideo,
                   onDiscard: ({required done}) => widget.onDone(),

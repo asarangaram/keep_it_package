@@ -57,7 +57,12 @@ class MediaView extends ConsumerWidget {
             );
           }),
           onShare: ac.onShare(() => storeAction.share([media])),
-          onEdit: ac.onEdit(() => storeAction.openEditor([media])),
+          onEdit: ac.onEdit(
+            () => storeAction.openEditor(
+              [media],
+              canDuplicateMedia: ac.canDuplicateMedia,
+            ),
+          ),
           onPin: ac.onPin(() => storeAction.togglePin([media])),
           media: item,
         ),

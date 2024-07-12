@@ -46,7 +46,10 @@ class StoreActions {
   }) delete;
   final Future<bool> Function(List<CLMedia> selectedMedia) share;
   final Future<bool> Function(List<CLMedia> selectedMedia) togglePin;
-  final Future<bool> Function(List<CLMedia> selectedMedia) openEditor;
+  final Future<bool> Function(
+    List<CLMedia> selectedMedia, {
+    required bool canDuplicateMedia,
+  }) openEditor;
 
   final Future<bool> Function(
     List<CLMedia> selectedMedia, {

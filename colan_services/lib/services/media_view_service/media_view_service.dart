@@ -155,6 +155,8 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                         actionControl: ActionControl.full(),
                         parentIdentifier: widget.parentIdentifier,
                         isLocked: lockPage,
+                        canDuplicateMedia:
+                            widget.actionControl.canDuplicateMedia,
                         buildNotes: widget.buildNotes,
                         onLockPage: ({required bool lock}) {
                           setState(() {

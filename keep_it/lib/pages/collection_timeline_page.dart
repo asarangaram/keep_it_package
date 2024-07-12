@@ -13,9 +13,14 @@ import '../widgets/preview.dart';
 import '../widgets/store_manager.dart';
 
 class CollectionTimeLinePage extends ConsumerWidget {
-  const CollectionTimeLinePage({required this.collectionId, super.key});
+  const CollectionTimeLinePage({
+    required this.collectionId,
+    required this.actionControl,
+    super.key,
+  });
 
   final int collectionId;
+  final ActionControl actionControl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => StoreManager(
@@ -27,6 +32,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
               buildOnData: (items) => TimeLineView(
                 label: collection?.label ?? 'All Media',
                 items: items,
+                actionControl: actionControl,
                 parentIdentifier:
                     'Gallery View Media CollectionId: ${collection?.id}',
                 onTapMedia: (
@@ -68,6 +74,7 @@ class TimeLineView extends ConsumerWidget {
     required this.parentIdentifier,
     required this.items,
     required this.onTapMedia,
+    required this.actionControl,
     this.onPickFiles,
     this.onCameraCapture,
     super.key,
@@ -82,6 +89,7 @@ class TimeLineView extends ConsumerWidget {
   }) onTapMedia;
   final void Function(BuildContext context)? onPickFiles;
   final void Function()? onCameraCapture;
+  final ActionControl actionControl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -103,6 +111,7 @@ class TimeLineView extends ConsumerWidget {
               getPreview: (media) => Preview(media: media),
               onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
               quickMenuScopeKey: quickMenuScopeKey,
+              actionControl: actionControl,
             ),
           ),
           onPickFiles: onPickFiles,
