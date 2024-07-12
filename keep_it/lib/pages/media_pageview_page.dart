@@ -24,6 +24,7 @@ class MediaPageViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FullscreenLayout(
+      useSafeArea: false,
       child: StoreManager(
         builder: ({required storeAction}) {
           if (collectionId == null) {
