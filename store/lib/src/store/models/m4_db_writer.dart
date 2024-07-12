@@ -401,7 +401,7 @@ class DBWriter {
 }
 
 const _filePrefix = 'DB Write: ';
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 // ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
