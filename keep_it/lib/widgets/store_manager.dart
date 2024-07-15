@@ -493,22 +493,28 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
                 await widget.storeInstance.upsertCollection(
                   collection: const Collection(label: tempCollectionName),
                 );
-            final newMedia = CLMedia(
-              path: item.path,
+
+            /// Approach
+            /// 1. First copy the content to media directory
+            ///   1a. Adjust file name if similar item is found
+            /// 2. Try updating the data base
+            /// 3a. If failed, delete the copy created
+            /// 3b. If succeed,
+            ///     delete the original file (if it is mobile platform)
+
+            final savedMediaFile = File(item.path)
+                .copyTo(widget.appSettings.directories.media.path);
+
+            final savedMedia = CLMedia(
+              path: path.basename(savedMediaFile.path),
               type: item.type,
               collectionId: tempCollection.id,
               md5String: md5String,
               isHidden: true,
             );
-            final tempMedia = await widget.storeInstance.upsertMedia(
-              collectionId: tempCollection.id!,
-              media: newMedia.copyWith(isHidden: true),
-              onPrepareMedia: (m, {required targetDir}) async {
-                final updated =
-                    (await m.moveFile(targetDir: targetDir)).getMetadata();
-                return updated;
-              },
-            );
+
+            final tempMedia =
+                await widget.storeInstance.upsertMediaNew(savedMedia);
             if (tempMedia != null) {
               candidates.add(tempMedia);
             } else {

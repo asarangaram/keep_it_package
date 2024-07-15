@@ -82,6 +82,18 @@ class DBManager extends Store {
   }
 
   @override
+  Future<CLMedia?> upsertMediaNew(CLMedia media) async {
+    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
+      try {
+        return await dbWriter.upsertMedia(tx, media);
+      } catch (e) {
+        return null;
+      }
+    });
+    return dbMedia;
+  }
+
+  @override
   Future<CLMedia?> upsertMedia({
     required int collectionId,
     required CLMedia media,
