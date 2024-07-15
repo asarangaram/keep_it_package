@@ -11,10 +11,7 @@ class AppSettings {
   final CLDirectories directories;
   final bool shouldValidate;
 
-  String validPrefix(int collectionID) =>
-      '${directories.media.pathString}/cluster_$collectionID';
-
-  String validRelativePrefix(int collectionID) => 'cluster_$collectionID';
+  String validPrefix() => directories.media.pathString;
 
   String get dbName => 'keepIt.db';
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/src/store/models/m3_db_query.dart';
 import 'package:store/src/store/models/m3_db_reader.dart';
@@ -48,15 +48,14 @@ class DBWriter {
             'Invalid Media',
             "Media can't be saved without collectionID",
           );
-        }
-
-        final prefix = appSettings.validRelativePrefix(collectionId!);
-        if (obj.type.isFile && !(map['path'] as String).startsWith(prefix)) {
-          exceptionLogger(
-            'Invalid Media',
-            'Media is not in the expected to be in the '
-                'folder: $prefix. \nCurrent file: ${map['path']}',
+          final media = p.join(
+            appSettings.directories.media.pathString,
+            map['path'] as String,
           );
+
+          if (!File(media).existsSync()) {
+            exceptionLogger('Invalid Media', 'file is missing');
+          }
         }
       }
       return map;
@@ -271,7 +270,7 @@ class DBWriter {
     if (media.id == null) return false;
 
     if (media.pin == null || media.pin!.isEmpty) {
-      final pin = await onPin(media, title: basename(media.path));
+      final pin = await onPin(media, title: p.basename(media.path));
       if (pin == null) return false;
       final pinnedMedia = media.copyWith(pin: pin);
       await upsertMedia(tx, pinnedMedia);

@@ -72,7 +72,7 @@ class DBManager extends Store {
         try {
           final updated = await onPrepareMedia(
             item.copyWith(collectionId: collectionId),
-            targetDir: dbWriter.appSettings.validPrefix(collectionId),
+            targetDir: dbWriter.appSettings.validPrefix(),
           );
           updatedMedia.add(updated);
         } catch (e) {/* */}
@@ -94,7 +94,7 @@ class DBManager extends Store {
       try {
         final updated = await onPrepareMedia(
           media.copyWith(collectionId: collectionId),
-          targetDir: dbWriter.appSettings.validPrefix(collectionId),
+          targetDir: dbWriter.appSettings.validPrefix(),
         );
         return await dbWriter.upsertMedia(tx, updated);
       } catch (e) {
@@ -131,7 +131,7 @@ class DBManager extends Store {
           }
           final updated = await onPrepareMedia(
             item0.copyWith(collectionId: collectionId),
-            targetDir: dbWriter.appSettings.validPrefix(collectionId),
+            targetDir: dbWriter.appSettings.validPrefix(),
           );
           updatedMedia.add(updated);
         } catch (e) {/* */}
@@ -163,7 +163,7 @@ class DBManager extends Store {
 
         final updated = await onPrepareMedia(
           media0,
-          targetDir: dbWriter.appSettings.validPrefix(collectionId),
+          targetDir: dbWriter.appSettings.validPrefix(),
         );
         return await dbWriter.upsertMedia(tx, updated);
       } catch (e) {
