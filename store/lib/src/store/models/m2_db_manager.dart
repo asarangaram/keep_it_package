@@ -82,7 +82,7 @@ class DBManager extends Store {
   }
 
   @override
-  Future<CLMedia?> upsertMediaNew(CLMedia media) async {
+  Future<CLMedia?> upsertMedia(CLMedia media) async {
     final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
       try {
         return await dbWriter.upsertMedia(tx, media);
@@ -93,7 +93,7 @@ class DBManager extends Store {
     return dbMedia;
   }
 
-  @override
+  /* @override
   Future<CLMedia?> upsertMedia({
     required int collectionId,
     required CLMedia media,
@@ -114,7 +114,7 @@ class DBManager extends Store {
       }
     });
     return dbMedia;
-  }
+  } */
 
   @override
   Future<void> setCollection4MultipleMedia({

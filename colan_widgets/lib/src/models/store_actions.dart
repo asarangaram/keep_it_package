@@ -58,13 +58,13 @@ class StoreActions {
   }) restoreDeleted;
 
   final Future<bool> Function(
-    List<CLMedia> selectedMedia,
+    CLMedia selectedMedia,
     String outFile, {
     required bool? confirmed,
   }) replaceMedia;
 
   final Future<bool> Function(
-    List<CLMedia> selectedMedia,
+    CLMedia selectedMedia,
     String outFile, {
     required bool? confirmed,
   }) cloneAndReplaceMedia;

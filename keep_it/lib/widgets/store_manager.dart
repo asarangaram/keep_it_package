@@ -264,7 +264,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> replaceMedia(
-    List<CLMedia> selectedMedia,
+    CLMedia selectedMedia,
     String outFile, {
     required bool? confirmed,
   }) {
@@ -272,7 +272,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> cloneAndReplaceMedia(
-    List<CLMedia> selectedMedia,
+    CLMedia selectedMedia,
     String outFile, {
     required bool? confirmed,
   }) {
@@ -280,48 +280,35 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> save(
-    List<CLMedia> selectedMedia,
+    CLMedia originalMedia,
     String outFile, {
     required bool duplicate,
     required bool? confirmed,
   }) async {
     if (confirmed == null || !confirmed) return false;
 
-    if (selectedMedia.isEmpty) {
-      return true;
-    }
     final overwrite = !duplicate;
-    if (selectedMedia.length == 1) {
-      final md5String = await File(outFile).checksum;
-      final CLMedia updatedMedia;
-      if (overwrite) {
-        updatedMedia = selectedMedia[0]
-            .copyWith(path: outFile, md5String: md5String)
-            .removePin();
-      } else {
-        updatedMedia = CLMedia(
-          path: outFile,
-          md5String: md5String,
-          type: selectedMedia[0].type,
-          collectionId: selectedMedia[0].collectionId,
-          originalDate: selectedMedia[0].originalDate,
-          createdDate: selectedMedia[0].createdDate,
-          isDeleted: selectedMedia[0].isDeleted,
-          isHidden: selectedMedia[0].isHidden,
-          updatedDate: selectedMedia[0].updatedDate,
-        );
-      }
-      await widget.storeInstance.upsertMedia(
-        collectionId: selectedMedia[0].collectionId!,
-        media: updatedMedia,
-        onPrepareMedia: (m, {required targetDir}) async {
-          final updated = await m.moveFile(targetDir: targetDir);
+    {
+      final savedFile =
+          File(outFile).copyTo(widget.appSettings.directories.media.path);
 
-          return updated;
-        },
-      );
+      final md5String = await savedFile.checksum;
+      final CLMedia updatedMedia;
+      updatedMedia = originalMedia
+          .copyWith(
+            path: path.basename(savedFile.path),
+            md5String: md5String,
+          )
+          .removePin();
+
+      final mediaFromDB = await widget.storeInstance
+          .upsertMedia(overwrite ? updatedMedia : updatedMedia.removeId());
+      if (mediaFromDB == null) {
+        updatedMedia.deleteFile();
+      }
+
       if (overwrite) {
-        await File(selectedMedia[0].path).deleteIfExists();
+        await File(originalMedia.path).deleteIfExists();
       }
     }
     return true;
@@ -391,66 +378,47 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }) async {
     for (final item in selectedMedia) {
       if (item.id != null) {
-        await widget.storeInstance.upsertMedia(
-          collectionId: item.collectionId!,
-          media: item.copyWith(isDeleted: false),
-          onPrepareMedia: (
-            m, {
-            required targetDir,
-          }) async {
-            final updated = (await m.moveFile(
-              targetDir: targetDir,
-            ))
-                .getMetadata();
-            return updated;
-          },
-        );
+        await widget.storeInstance.upsertMedia(item.copyWith(isDeleted: false));
       }
     }
     return true;
   }
 
   Future<CLMedia?> newMedia(
-    String path, {
+    String fileName, {
     required bool isVideo,
     Collection? collection,
   }) async {
-    final md5String = await File(path).checksum;
-    CLMedia? media = CLMedia(
-      path: path,
-      type: isVideo ? CLMediaType.video : CLMediaType.image,
-      collectionId: collection?.id,
-      md5String: md5String,
-    );
-
+    // Get Collection if required
+    Collection collection0;
     if (collection == null) {
-      final Collection tempCollection;
-      tempCollection =
+      collection0 =
           await widget.storeInstance.getCollectionByLabel(tempCollectionName) ??
               await widget.storeInstance.upsertCollection(
                 collection: const Collection(label: tempCollectionName),
               );
-      media = await widget.storeInstance.upsertMedia(
-        collectionId: tempCollection.id!,
-        media: media.copyWith(isHidden: true),
-        onPrepareMedia: (m, {required targetDir}) async {
-          final updated =
-              (await m.moveFile(targetDir: targetDir)).getMetadata();
-          return updated;
-        },
-      );
     } else {
-      media = await widget.storeInstance.upsertMedia(
-        collectionId: collection.id!,
-        media: media,
-        onPrepareMedia: (m, {required targetDir}) async {
-          final updated =
-              (await m.moveFile(targetDir: targetDir)).getMetadata();
-          return updated;
-        },
-      );
+      collection0 = collection;
     }
-    return media;
+
+    final savedMediaFile =
+        File(fileName).copyTo(widget.appSettings.directories.media.path);
+
+    final md5String = await File(fileName).checksum;
+    final savedMedia = CLMedia(
+      path: path.basename(savedMediaFile.path),
+      type: isVideo ? CLMediaType.video : CLMediaType.image,
+      collectionId: collection0.id,
+      md5String: md5String,
+      isHidden: collection == null,
+    );
+    final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
+    if (mediaFromDB == null) {
+      savedMedia.deleteFile();
+    } else {
+      await File(fileName).deleteIfExists();
+    }
+    return mediaFromDB;
   }
 
   static const tempCollectionName = '*** Recently Captured';
@@ -505,18 +473,18 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             final savedMediaFile = File(item.path)
                 .copyTo(widget.appSettings.directories.media.path);
 
-            final savedMedia = CLMedia(
+            final savedMedia = await CLMedia(
               path: path.basename(savedMediaFile.path),
               type: item.type,
               collectionId: tempCollection.id,
               md5String: md5String,
               isHidden: true,
-            );
+            ).getMetadata();
 
-            final tempMedia =
-                await widget.storeInstance.upsertMediaNew(savedMedia);
-            if (tempMedia != null) {
-              candidates.add(tempMedia);
+            final mediaFromDB =
+                await widget.storeInstance.upsertMedia(savedMedia);
+            if (mediaFromDB != null) {
+              candidates.add(mediaFromDB);
             } else {
               /* Failed to add media, handle here */
             }

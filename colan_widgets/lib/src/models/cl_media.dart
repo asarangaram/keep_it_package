@@ -234,4 +234,20 @@ class CLMedia {
       isHidden: isHidden,
     );
   }
+
+  CLMedia removeId() {
+    return CLMedia(
+      path: path,
+      type: type,
+      ref: ref,
+      collectionId: collectionId,
+      originalDate: originalDate,
+      createdDate: createdDate,
+      updatedDate: updatedDate,
+      md5String: md5String,
+      isDeleted: isDeleted,
+      isHidden: isHidden,
+      pin: pin,
+    );
+  }
 }

@@ -51,7 +51,7 @@ class MediaEditorPage extends StatelessWidget {
                       media: CLMedia(path: file, type: media.type),
                       getPreview: (CLMedia media) => Preview(media: media),
                       onConfirm: () async => storeAction
-                          .replaceMedia([media], file, confirmed: true),
+                          .replaceMedia(media, file, confirmed: true),
                     );
                   } else {
                     await ConfirmAction.cloneAndReplaceMedia(
@@ -59,7 +59,7 @@ class MediaEditorPage extends StatelessWidget {
                       media: CLMedia(path: file, type: media.type),
                       getPreview: (CLMedia media) => Preview(media: media),
                       onConfirm: () async => storeAction
-                          .cloneAndReplaceMedia([media], file, confirmed: true),
+                          .cloneAndReplaceMedia(media, file, confirmed: true),
                     );
                   }
                 },

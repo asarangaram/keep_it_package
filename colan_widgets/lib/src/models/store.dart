@@ -10,16 +10,16 @@ abstract class Store {
   Future<Collection> upsertCollection({
     required Collection collection,
   });
-  Future<CLMedia?> upsertMediaNew(CLMedia media);
+  Future<CLMedia?> upsertMedia(CLMedia media);
 
-  Future<CLMedia?> upsertMedia({
+  /* Future<CLMedia?> upsertMedia({
     required int collectionId,
     required CLMedia media,
     required Future<CLMedia> Function(
       CLMedia media, {
       required String targetDir,
     }) onPrepareMedia,
-  });
+  }); */
   Future<void> upsertMediaMultiple({
     required int collectionId,
     required List<CLMedia>? media,
