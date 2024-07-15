@@ -6,6 +6,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
+import '../models/cl_shared_media.dart';
+import '../models/on_device_media.dart';
+import '../models/universal_media_source.dart';
+
 class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
   IncomingMediaNotifier()
       : intentDataStreamSubscription = null,
@@ -18,7 +22,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
   Future<void> load() async {
     final handler = ShareHandler.instance;
     if (ColanPlatformSupport.isMobilePlatform) {
-      receiveSharedMedia(await handler.getInitialSharedMedia());
+      await receiveSharedMedia(await handler.getInitialSharedMedia());
 
       intentDataStreamSubscription = handler.sharedMediaStream.listen(
         receiveSharedMedia,
@@ -32,34 +36,20 @@ class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
     super.dispose();
   }
 
-  static CLMediaType toCLMediaType(SharedAttachmentType type) {
-    return switch (type) {
-      SharedAttachmentType.image => CLMediaType.image,
-      SharedAttachmentType.video => CLMediaType.video,
-      SharedAttachmentType.audio => CLMediaType.audio,
-      SharedAttachmentType.file => CLMediaType.file,
-    };
-  }
-
-  void receiveSharedMedia(SharedMedia? media) {
+  Future<void> receiveSharedMedia(SharedMedia? media) async {
     if (media == null) return;
     final attachements = [
-      if (media.content != null && media.content!.isNotEmpty)
+      // TODO(anandas): Handle URL
+      /* if (media.content != null && media.content!.isNotEmpty)
         if (media.content!.isURL())
           CLMedia(path: media.content!, type: CLMediaType.url)
         else
-          CLMedia(path: 'text:${media.content!}', type: CLMediaType.text),
+          CLMedia(path: 'text:${media.content!}', type: CLMediaType.text), */
       if (media.imageFilePath != null)
-        CLMedia(
-          path: media.imageFilePath!,
-          type: CLMediaType.image,
-        ),
+        await OnDeviceMedia.create(media.imageFilePath!),
       if (media.attachments != null)
-        ...media.attachments!.where((e) => e != null).map(
-          (e) {
-            return CLMedia(path: e!.path, type: toCLMediaType(e.type));
-          },
-        ),
+        for (final attachment in media.attachments!)
+          if (attachment != null) await OnDeviceMedia.create(attachment.path),
     ];
 
     if (attachements.isNotEmpty) {
@@ -82,7 +72,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLSharedMedia>> {
       if (ColanPlatformSupport.isMobilePlatform && media.isNotEmpty) {
         for (final item in media.entries) {
           if (item.id == null) {
-            item.deleteFile();
+            OnDeviceMedia(item).delete();
           }
         }
       }

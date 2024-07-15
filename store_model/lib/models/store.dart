@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'cl_media.dart';
 import 'cl_note.dart';
 import 'collection.dart';
@@ -102,5 +100,5 @@ abstract class Store {
     String md5String,
   );
 
-  Future<void> reloadStore(WidgetRef ref);
+  Future<void> reloadStore(dynamic refObject);
 }

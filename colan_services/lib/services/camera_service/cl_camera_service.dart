@@ -3,6 +3,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store_model/store_model.dart';
 
 import 'providers/captured_media.dart';
 import 'widgets/get_cameras.dart';

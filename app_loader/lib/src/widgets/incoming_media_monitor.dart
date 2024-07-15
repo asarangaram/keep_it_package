@@ -1,8 +1,12 @@
+import 'package:app_loader/src/models/on_device_media.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:store_model/store_model.dart';
 
+import '../models/cl_shared_media.dart';
+import '../models/universal_media_source.dart';
 import '../providers/incoming_media.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
@@ -31,11 +35,11 @@ class IncomingMediaMonitor extends ConsumerWidget {
     final pickedFileList = await picker.pickMultipleMedia();
 
     if (pickedFileList.isNotEmpty) {
-      final items = pickedFileList
-          .map(
-            (xfile) => CLMedia(path: xfile.path, type: CLMediaType.file),
-          )
-          .toList();
+      final items = <CLMedia>[];
+      for (final xfile in pickedFileList) {
+        items.add(await OnDeviceMedia.create(xfile.path));
+      }
+
       final sharedMedia = CLSharedMedia(
         entries: items,
         collection: collection,

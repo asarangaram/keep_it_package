@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../models/cl_route_descriptor.dart';
+import '../models/cl_shared_media.dart';
 import 'app_theme.dart';
 import 'incoming_media_monitor.dart';
 import 'validate_layout.dart';

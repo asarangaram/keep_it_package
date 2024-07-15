@@ -1,9 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:store_model/store_model.dart';
 
-import 'cl_media.dart';
-import 'cl_media_type.dart';
-import 'collection.dart';
 import 'universal_media_source.dart';
 
 @immutable
