@@ -1,5 +1,3 @@
-import 'package:app_loader/app_loader.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,7 +73,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
       return CLErrorView(errorMessage: e.toString());
     }
     _infoLogger('build IncomingMediaHandler - Done');
-    return FullscreenLayout(child: widget0);
+    return widget0;
   }
 
   bool get isSavingState => isSaving;

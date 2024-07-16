@@ -1,5 +1,3 @@
-import 'package:app_loader/app_loader.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it/widgets/preview.dart';
@@ -12,12 +10,10 @@ class MediaWizardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenLayout(
-      child: CLPopScreen.onSwipe(
-        child: MediaWizardService(
-          type: type,
-          getPreview: (media) => Preview(media: media),
-        ),
+    return CLPopScreen.onSwipe(
+      child: MediaWizardService(
+        type: type,
+        getPreview: (media) => Preview(media: media),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -22,46 +21,42 @@ class MediaEditorPage extends StatelessWidget {
       return BasicPageService.message(message: 'No Media Provided');
     }
 
-    return FullscreenLayout(
-      hasBackground: false,
-      backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-      child: GetMedia(
-        id: mediaId!,
-        buildOnData: (media) {
-          if (media == null || !File(media.path).existsSync()) {
-            return BasicPageService.message(
-              message: ' Media not found',
-            );
-          }
-
-          return InvokeEditor(
-            media: media,
-            canDuplicateMedia: canDuplicateMedia,
-            onCreateNewFile: () async {
-              return TheStore.of(context).createTempFile(ext: 'jpg');
-            },
-            onSave: (file, {required overwrite}) async {
-              if (overwrite) {
-                await ConfirmAction.replaceMedia(
-                  context,
-                  media: CLMedia(path: file, type: media.type),
-                  getPreview: (CLMedia media) => Preview(media: media),
-                  onConfirm: () async => TheStore.of(context)
-                      .replaceMedia(media, file, confirmed: true),
-                );
-              } else {
-                await ConfirmAction.cloneAndReplaceMedia(
-                  context,
-                  media: CLMedia(path: file, type: media.type),
-                  getPreview: (CLMedia media) => Preview(media: media),
-                  onConfirm: () async => TheStore.of(context)
-                      .cloneAndReplaceMedia(media, file, confirmed: true),
-                );
-              }
-            },
+    return GetMedia(
+      id: mediaId!,
+      buildOnData: (media) {
+        if (media == null || !File(media.path).existsSync()) {
+          return BasicPageService.message(
+            message: ' Media not found',
           );
-        },
-      ),
+        }
+
+        return InvokeEditor(
+          media: media,
+          canDuplicateMedia: canDuplicateMedia,
+          onCreateNewFile: () async {
+            return TheStore.of(context).createTempFile(ext: 'jpg');
+          },
+          onSave: (file, {required overwrite}) async {
+            if (overwrite) {
+              await ConfirmAction.replaceMedia(
+                context,
+                media: CLMedia(path: file, type: media.type),
+                getPreview: (CLMedia media) => Preview(media: media),
+                onConfirm: () async => TheStore.of(context)
+                    .replaceMedia(media, file, confirmed: true),
+              );
+            } else {
+              await ConfirmAction.cloneAndReplaceMedia(
+                context,
+                media: CLMedia(path: file, type: media.type),
+                getPreview: (CLMedia media) => Preview(media: media),
+                onConfirm: () async => TheStore.of(context)
+                    .cloneAndReplaceMedia(media, file, confirmed: true),
+              );
+            }
+          },
+        );
+      },
     );
   }
 }

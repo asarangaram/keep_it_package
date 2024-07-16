@@ -1,4 +1,3 @@
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
@@ -13,43 +12,40 @@ class CameraPage extends ConsumerWidget {
   final int? collectionId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FullscreenLayout(
-      useSafeArea: false,
-      child: GetCollection(
-        id: collectionId,
-        buildOnData: (collection) {
-          return CLCameraService(
-            onCancel: () => CLPopScreen.onPop(context),
-            onError: (String message, {required dynamic error}) async {
-              await ref
-                  .read(
-                    notificationMessageProvider.notifier,
-                  )
-                  .push(
-                    '$message [$error]',
-                  );
-            },
-            onNewMedia: (path, {required isVideo}) {
-              return TheStore.of(context).newMedia(
-                path,
-                isVideo: isVideo,
-                collection: collection,
-              );
-            },
-            onDone: (mediaList) async {
-              await TheStore.of(context).openWizard(
-                mediaList,
-                UniversalMediaSource.captured,
-              );
+    return GetCollection(
+      id: collectionId,
+      buildOnData: (collection) {
+        return CLCameraService(
+          onCancel: () => CLPopScreen.onPop(context),
+          onError: (String message, {required dynamic error}) async {
+            await ref
+                .read(
+                  notificationMessageProvider.notifier,
+                )
+                .push(
+                  '$message [$error]',
+                );
+          },
+          onNewMedia: (path, {required isVideo}) {
+            return TheStore.of(context).newMedia(
+              path,
+              isVideo: isVideo,
+              collection: collection,
+            );
+          },
+          onDone: (mediaList) async {
+            await TheStore.of(context).openWizard(
+              mediaList,
+              UniversalMediaSource.captured,
+            );
 
-              if (context.mounted) {
-                await CLPopScreen.onPop(context);
-              }
-            },
-            getPreview: (media) => Preview(media: media),
-          );
-        },
-      ),
+            if (context.mounted) {
+              await CLPopScreen.onPop(context);
+            }
+          },
+          getPreview: (media) => Preview(media: media),
+        );
+      },
     );
   }
 }
