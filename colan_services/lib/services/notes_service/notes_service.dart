@@ -9,22 +9,25 @@ class NotesService extends ConsumerWidget {
   const NotesService({
     required this.media,
     required this.notes,
-    required this.onCreateNewFile,
     required this.onUpsertNote,
     required this.onDeleteNote,
+    required this.onCreateNewFile,
     super.key,
   });
   final CLMedia media;
   final List<CLNote> notes;
-  final Future<String> Function({required String ext}) onCreateNewFile;
+
   final Future<void> Function(
-    CLMedia media,
-    CLNote note,
-  ) onUpsertNote;
+    String path,
+    CLNoteTypes type, {
+    required List<CLMedia> media,
+    CLNote? note,
+  }) onUpsertNote;
   final Future<void> Function(
     CLNote note, {
     required bool? confirmed,
   }) onDeleteNote;
+  final Future<String> Function({required String ext}) onCreateNewFile;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return NotesView(

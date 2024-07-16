@@ -18,7 +18,11 @@ class AudioRecorder extends StatefulWidget {
     this.editMode = false,
     this.onEditCancel,
   });
-  final Future<void> Function(CLNote note) onUpsertNote;
+  final Future<void> Function(
+    String path,
+    CLNoteTypes type, {
+    CLNote? note,
+  }) onUpsertNote;
   final Future<String> Function() onCreateNewAudioFile;
   final Widget? child;
   final bool editMode;
@@ -36,7 +40,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   bool isRecording = false;
   bool isRecordingCompleted = false;
 
-  CLAudioNote? audioMessage;
+  String? audioMessage;
 
   @override
   void initState() {
@@ -132,7 +136,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
       final message2Delete = audioMessage;
       audioMessage = null;
       setState(() {});
-      File((message2Delete!).path).delete();
+      File(message2Delete!).delete();
     }
   }
 
@@ -144,7 +148,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await widget.onUpsertNote(audioMessage!);
+      await widget.onUpsertNote(audioMessage!, CLNoteTypes.audio);
       audioMessage = null;
       setState(() {});
     }
@@ -162,11 +166,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
           //debugPrint('Recorded file size: ${File(path).lengthSync()}');
           //audioFiles.add(path);
-          audioMessage = CLAudioNote(
-            createdDate: DateTime.now(),
-            path: path,
-            id: null,
-          );
+          audioMessage = path;
           setState(() {});
         }
       } else {

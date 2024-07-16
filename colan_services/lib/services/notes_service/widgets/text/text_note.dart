@@ -20,8 +20,10 @@ class TextNote extends StatefulWidget {
   final CLTextNote? note;
   final Future<String> Function() onCreateNewTextFile;
   final Future<void> Function(
-    CLNote note,
-  ) onUpsertNote;
+    String path,
+    CLNoteTypes type, {
+    CLNote? note,
+  }) onUpsertNote;
 
   final Future<void> Function(
     CLNote note, {
@@ -162,23 +164,13 @@ class _TextNoteState extends State<TextNote> {
       );
 
       if (widget.note != null) {
-        await widget.onUpsertNote(
-          widget.note!.copyWith(
-            createdDate: DateTime.now(),
-            path: path,
-          ),
-        );
-        // delete old Note;
-        final f = File(widget.note!.path);
-        await f.deleteIfExists();
+        await widget.onUpsertNote(path, CLNoteTypes.text);
       } else {
         // Write  to file.
         await widget.onUpsertNote(
-          CLTextNote(
-            createdDate: DateTime.now(),
-            path: path,
-            id: null,
-          ),
+          path,
+          CLNoteTypes.text,
+          note: widget.note,
         );
       }
 

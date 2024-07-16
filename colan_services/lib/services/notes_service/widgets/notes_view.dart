@@ -16,7 +16,12 @@ class NotesView extends StatefulWidget {
   });
   final CLMedia media;
   final List<CLNote> notes;
-  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
+  final Future<void> Function(
+    String path,
+    CLNoteTypes type, {
+    required List<CLMedia> media,
+    CLNote? note,
+  }) onUpsertNote;
   final Future<void> Function(
     CLNote note, {
     required bool? confirmed,
@@ -102,8 +107,14 @@ class _NotesViewState extends State<NotesView> {
                 child: TextNotes(
                   onCreateNewTextFile: () => widget.onCreateNewFile(ext: 'txt'),
                   notes: textNotes,
-                  onUpsertNote: (note) =>
-                      widget.onUpsertNote(widget.media, note),
+                  onUpsertNote: (path, type, {note}) async {
+                    await widget.onUpsertNote(
+                      path,
+                      type,
+                      note: note,
+                      media: [widget.media],
+                    );
+                  },
                   onDeleteNote: widget.onDeleteNote,
                 ),
               ),

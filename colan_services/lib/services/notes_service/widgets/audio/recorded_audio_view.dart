@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 
 class RecordedAudioView extends StatefulWidget {
   const RecordedAudioView(
-    this.note, {
+    this.audioPath, {
     super.key,
     this.onDeleteAudio,
   });
-  final CLAudioNote note;
+  final String audioPath;
   final VoidCallback? onDeleteAudio;
 
   @override
@@ -32,7 +32,7 @@ class _RecordedAudioViewState extends State<RecordedAudioView> {
   }
 
   Future<void> _preparePlayer() async =>
-      controller.preparePlayer(path: widget.note.path, noOfSamples: 200);
+      controller.preparePlayer(path: widget.audioPath, noOfSamples: 200);
 
   @override
   void dispose() {

@@ -14,7 +14,12 @@ class AudioNotes extends StatefulWidget {
   });
   final CLMedia media;
   final List<CLAudioNote> notes;
-  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
+  final Future<void> Function(
+    String path,
+    CLNoteTypes type, {
+    required List<CLMedia> media,
+    CLNote? note,
+  }) onUpsertNote;
   final Future<void> Function(
     CLNote note, {
     required bool? confirmed,
@@ -37,7 +42,10 @@ class _AudioNotesState extends State<AudioNotes> {
   Widget build(BuildContext context) {
     return AudioRecorder(
       onCreateNewAudioFile: widget.onCreateNewAudioFile,
-      onUpsertNote: (note) => widget.onUpsertNote(widget.media, note),
+      onUpsertNote: (path, type, {note}) async {
+        await widget
+            .onUpsertNote(path, type, note: note, media: [widget.media]);
+      },
       editMode: editMode && widget.notes.isNotEmpty,
       onEditCancel: () => setState(() {
         editMode = false;

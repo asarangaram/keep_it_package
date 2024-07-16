@@ -90,7 +90,12 @@ class StoreActions {
 
   final Future<String> Function({required String ext}) createTempFile;
 
-  final Future<void> Function(CLMedia media, CLNote note) onUpsertNote;
+  final Future<void> Function(
+    String path,
+    CLNoteTypes type, {
+    required List<CLMedia> media,
+    CLNote? note,
+  }) onUpsertNote;
   final Future<void> Function(
     CLNote note, {
     required bool? confirmed,
