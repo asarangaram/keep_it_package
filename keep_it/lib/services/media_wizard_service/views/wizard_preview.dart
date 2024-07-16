@@ -40,44 +40,32 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       });
       return const SizedBox.expand();
     }
+    final galleryMap = ref.watch(singleGroupItemProvider(media0.entries));
 
-    return GetMediaMultiple(
-      idList: media0.entries.map((e) => e.id!).toList(),
-      buildOnData: (media) {
-        /* if (media.length == 1) {
-          return MediaViewService(
-            media: media[0],
+    return CLGalleryCore<CLMedia>(
+      key: ValueKey(type.identifier),
+      items: galleryMap,
+      itemBuilder: (
+        context,
+        item,
+      ) =>
+          Hero(
+        tag: '${type.identifier} /item/${item.id}',
+        child: GestureDetector(
+          onTap: () => TheStore.of(context).openMedia(
+            item.id!,
             parentIdentifier: type.identifier,
             actionControl: ActionControl.editOnly(),
-          );
-        } */
-        final galleryMap = ref.watch(singleGroupItemProvider(media));
-        return CLGalleryCore<CLMedia>(
-          key: ValueKey(type.identifier),
-          items: galleryMap,
-          itemBuilder: (
-            context,
-            item,
-          ) =>
-              Hero(
-            tag: '${type.identifier} /item/${item.id}',
-            child: GestureDetector(
-              onTap: () => TheStore.of(context).openMedia(
-                item.id!,
-                parentIdentifier: type.identifier,
-                actionControl: ActionControl.editOnly(),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: widget.getPreview(item),
-              ),
-            ),
           ),
-          columns: 4,
-          onSelectionChanged: onSelectionChanged,
-          keepSelected: freezeView,
-        );
-      },
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: widget.getPreview(item),
+          ),
+        ),
+      ),
+      columns: 4,
+      onSelectionChanged: onSelectionChanged,
+      keepSelected: freezeView,
     );
   }
 }
