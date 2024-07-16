@@ -16,7 +16,6 @@ import 'package:uuid/uuid.dart';
 
 import '../services/media_wizard_service/media_wizard_service.dart';
 import 'dialogs.dart';
-import 'preview.dart';
 
 extension ExtMetaData on CLMedia {
   Future<CLMedia> getMetadata({
@@ -199,7 +198,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           onConfirm: () async {
             return true;
           },
-          getPreview: (media) => Preview(media: media),
+          getPreview: (media) => PreviewService(media: media),
         ) ??
         false;
 
@@ -244,7 +243,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           onConfirm: () async {
             return true;
           },
-          getPreview: (media) => Preview(media: media),
+          getPreview: (media) => PreviewService(media: media),
         ) ??
         false;
 
@@ -381,7 +380,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await ConfirmAction.replaceMedia(
         context,
         media: updatedMedia,
-        getPreview: (CLMedia media) => Preview(media: media),
+        getPreview: (CLMedia media) => PreviewService(media: media),
         onConfirm: () async {
           final mediaFromDB = await widget.storeInstance.upsertMedia(
             updatedMedia,
@@ -429,7 +428,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await ConfirmAction.cloneAndReplaceMedia(
         context,
         media: updatedMedia,
-        getPreview: (CLMedia media) => Preview(media: media),
+        getPreview: (CLMedia media) => PreviewService(media: media),
         onConfirm: () async {
           final mediaFromDB = await widget.storeInstance.upsertMedia(
             updatedMedia.removeId(),
@@ -528,7 +527,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           onConfirm: () async {
             return true;
           },
-          getPreview: (media) => Preview(media: media),
+          getPreview: (media) => PreviewService(media: media),
         ) ??
         false;
 

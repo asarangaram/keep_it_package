@@ -1,7 +1,6 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
@@ -32,7 +31,7 @@ class MediaPageViewPage extends StatelessWidget {
           return CLPopScreen.onSwipe(
             child: MediaViewService(
               media: media,
-              getPreview: (media) => Preview(media: media),
+              getPreview: (media) => PreviewService(media: media),
               parentIdentifier: parentIdentifier,
               actionControl: actionControl,
               buildNotes: (media) {
@@ -66,7 +65,7 @@ class MediaPageViewPage extends StatelessWidget {
 
         return MediaViewService.pageView(
           media: items,
-          getPreview: (media) => Preview(media: media),
+          getPreview: (media) => PreviewService(media: media),
           parentIdentifier: parentIdentifier,
           initialMediaIndex: initialMediaIndex,
           buildNotes: (media) {

@@ -1,6 +1,6 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/widgets/preview.dart';
 
 import '../services/media_wizard_service/media_wizard_service.dart';
 
@@ -13,7 +13,7 @@ class MediaWizardPage extends StatelessWidget {
     return CLPopScreen.onSwipe(
       child: MediaWizardService(
         type: type,
-        getPreview: (media) => Preview(media: media),
+        getPreview: (media) => PreviewService(media: media),
       ),
     );
   }

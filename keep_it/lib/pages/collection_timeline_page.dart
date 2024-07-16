@@ -1,6 +1,7 @@
 // ignore_for_file: unused_element
 
 import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,6 @@ import 'package:store/store.dart';
 import '../providers/gallery_group_provider.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
-import '../widgets/preview.dart';
 
 class CollectionTimeLinePage extends ConsumerWidget {
   const CollectionTimeLinePage({
@@ -112,7 +112,7 @@ class TimeLineView extends ConsumerWidget {
         tag: '$parentIdentifier /item/${item.id}',
         child: MediaAsFile(
           media: item,
-          getPreview: (media) => Preview(media: media),
+          getPreview: (media) => PreviewService(media: media),
           onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
           quickMenuScopeKey: quickMenuScopeKey,
           actionControl: actionControl,

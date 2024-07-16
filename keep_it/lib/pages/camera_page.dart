@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../widgets/preview.dart';
-
 class CameraPage extends ConsumerWidget {
   const CameraPage({super.key, this.collectionId});
   final int? collectionId;
@@ -43,7 +41,7 @@ class CameraPage extends ConsumerWidget {
               await CLPopScreen.onPop(context);
             }
           },
-          getPreview: (media) => Preview(media: media),
+          getPreview: (media) => PreviewService(media: media),
         );
       },
     );

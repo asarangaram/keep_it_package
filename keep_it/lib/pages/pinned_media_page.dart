@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,7 +6,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:store/store.dart';
 
 import '../providers/gallery_group_provider.dart';
-import '../widgets/preview.dart';
 
 class PinnedMediaPage extends ConsumerWidget {
   const PinnedMediaPage({super.key});
@@ -38,7 +38,7 @@ class PinnedMediaPage extends ConsumerWidget {
                       },
                       onLongPress: () =>
                           TheStore.of(context).togglePinMultiple([item]),
-                      child: Preview(media: item),
+                      child: PreviewService(media: item),
                     ),
                   ),
                 ),

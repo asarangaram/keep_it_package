@@ -1,10 +1,9 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/empty_state.dart';
 import 'package:store/store.dart';
-
-import '../../widgets/preview.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
@@ -23,7 +22,7 @@ class DuplicatePage extends StatelessWidget {
       incomingMedia: incomingMedia,
       onDone: onDone,
       onCancel: onCancel,
-      getPreview: (media) => Preview(media: media),
+      getPreview: (media) => PreviewService(media: media),
     );
   }
 }
