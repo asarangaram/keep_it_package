@@ -7,27 +7,9 @@ import 'cl_note.dart';
 import 'collection.dart';
 
 abstract class Store {
-  Future<Collection> upsertCollection({
-    required Collection collection,
-  });
+  Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);
-
-  /* Future<CLMedia?> upsertMedia({
-    required int collectionId,
-    required CLMedia media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  }); */
-  Future<void> upsertMediaMultiple({
-    required int collectionId,
-    required List<CLMedia>? media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  });
+  Future<CLNote?> upsertNote(CLNote note, List<CLMedia> mediaList);
 
   Future<void> deleteCollection(
     Collection collection, {
@@ -65,10 +47,7 @@ abstract class Store {
     List<CLMedia> media, {
     required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   });
-  Future<CLNote?> upsertNote(
-    CLNote note,
-    List<CLMedia> mediaList,
-  );
+
   Future<List<Object?>?> rawQuery(
     String query,
   );

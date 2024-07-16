@@ -45,11 +45,23 @@ class DBManager extends Store {
   }
 
   @override
-  Future<Collection> upsertCollection({
-    required Collection collection,
-  }) async {
+  Future<Collection> upsertCollection(Collection collection) async {
     return db.writeTransaction<Collection>((tx) async {
       return dbWriter.upsertCollection(tx, collection);
+    });
+  }
+
+  @override
+  Future<CLMedia?> upsertMedia(CLMedia media) async {
+    return db.writeTransaction<CLMedia?>((tx) async {
+      return dbWriter.upsertMedia(tx, media);
+    });
+  }
+
+  @override
+  Future<CLNote?> upsertNote(CLNote note, List<CLMedia> mediaList) async {
+    return db.writeTransaction((tx) async {
+      return dbWriter.upsertNote(tx, note, mediaList);
     });
   }
 
@@ -65,33 +77,6 @@ class DBManager extends Store {
         onDeleteFile: onDeleteFile,
       );
     });
-  }
-
-  @override
-  Future<void> upsertMediaMultiple({
-    required int collectionId,
-    required List<CLMedia>? media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  }) async {
-    await db.writeTransaction((tx) async {
-      if (media?.isEmpty ?? true) return;
-      await dbWriter.upsertMediaMultiple(tx, media!);
-    });
-  }
-
-  @override
-  Future<CLMedia?> upsertMedia(CLMedia media) async {
-    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
-      try {
-        return await dbWriter.upsertMedia(tx, media);
-      } catch (e) {
-        return null;
-      }
-    });
-    return dbMedia;
   }
 
   @override
@@ -194,20 +179,6 @@ class DBManager extends Store {
         onRemovePinMultiple: onRemovePinMultiple,
       );
     });
-  }
-
-  @override
-  Future<CLNote?> upsertNote(
-    CLNote note,
-    List<CLMedia> mediaList,
-  ) async {
-    try {
-      return db.writeTransaction((tx) async {
-        return dbWriter.upsertNote(tx, note, mediaList);
-      });
-    } catch (e) {
-      return null;
-    }
   }
 
   @override

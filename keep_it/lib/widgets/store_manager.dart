@@ -326,37 +326,30 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         fractCompleted: 0,
         currentItem: 'Creating new collection',
       );
-      updatedCollection = await widget.storeInstance.upsertCollection(
-        collection: collection,
-      );
+      updatedCollection =
+          await widget.storeInstance.upsertCollection(collection);
     } else {
       updatedCollection = collection;
     }
 
     if (selectedMedia.isNotEmpty) {
       final streamController = StreamController<Progress>();
-      var completedMedia = 0;
-      unawaited(
-        widget.storeInstance
-            .upsertMediaMultiple(
-          media: selectedMedia.map((e) => e.copyWith(isHidden: false)).toList(),
-          collectionId: updatedCollection.id!,
-          onPrepareMedia: (m, {required targetDir}) async {
-            final updated =
-                (await m.moveFile(targetDir: targetDir)).getMetadata();
-            completedMedia++;
 
-            streamController.add(
-              Progress(
-                fractCompleted: completedMedia / selectedMedia.length,
-                currentItem: m.basename,
-              ),
-            );
+      unawaited(
+        upsertMediaMultiple(
+          selectedMedia
+              .map(
+                (e) => e.copyWith(
+                  isHidden: false,
+                  collectionId: updatedCollection.id,
+                ),
+              )
+              .toList(),
+          onProgress: (progress) async {
+            streamController.add(progress);
             await Future<void>.delayed(const Duration(microseconds: 1));
-            return updated;
           },
-        )
-            .then((updatedMedia) async {
+        ).then((updatedMedia) async {
           streamController.add(
             const Progress(
               fractCompleted: 1,
@@ -369,6 +362,21 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         }),
       );
       yield* streamController.stream;
+    }
+  }
+
+  Future<void> upsertMediaMultiple(
+    List<CLMedia> selectedMedia, {
+    void Function(Progress progress)? onProgress,
+  }) async {
+    for (final (i, m) in selectedMedia.indexed) {
+      await widget.storeInstance.upsertMedia(m);
+      onProgress?.call(
+        Progress(
+          fractCompleted: i / selectedMedia.length,
+          currentItem: m.path,
+        ),
+      );
     }
   }
 
@@ -395,7 +403,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       collection0 =
           await widget.storeInstance.getCollectionByLabel(tempCollectionName) ??
               await widget.storeInstance.upsertCollection(
-                collection: const Collection(label: tempCollectionName),
+                const Collection(label: tempCollectionName),
               );
     } else {
       collection0 = collection;
@@ -459,7 +467,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             tempCollection = await widget.storeInstance
                     .getCollectionByLabel(tempCollectionName) ??
                 await widget.storeInstance.upsertCollection(
-                  collection: const Collection(label: tempCollectionName),
+                  const Collection(label: tempCollectionName),
                 );
 
             /// Approach
@@ -581,9 +589,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
-    final updated = await widget.storeInstance.upsertCollection(
-      collection: collection,
-    );
+    final updated = await widget.storeInstance.upsertCollection(collection);
     await ref.read(notificationMessageProvider.notifier).push('Updated');
     return updated;
   }
