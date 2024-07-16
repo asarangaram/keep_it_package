@@ -34,6 +34,7 @@ export 'src/models/progress.dart';
 export 'src/models/store.dart';
 export 'src/models/store_actions.dart';
 export 'src/models/universal_media_source.dart';
+export 'src/store_model/the_store.dart';
 export 'src/theme/models/cl_colors.dart';
 export 'src/theme/models/note_theme.dart';
 export 'src/theme/state/cl_theme.dart';

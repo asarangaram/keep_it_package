@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -12,28 +13,40 @@ import 'universal_media_source.dart';
 @immutable
 class StoreActions {
   const StoreActions({
+    /// Actions that opens new screens
     required this.openWizard,
-    required this.delete,
-    required this.share,
-    required this.togglePin,
     required this.openEditor,
-    required this.restoreDeleted,
-    required this.replaceMedia,
-    required this.cloneAndReplaceMedia,
-    required this.moveToCollectionStream,
-    required this.newMedia,
-    required this.analyseMediaStream,
-    required this.createTempFile,
-    required this.onUpsertNote,
-    required this.onDeleteNote,
-    required this.getPreviewPath,
-    required this.upsertCollection,
-    required this.deleteCollection,
     required this.openCamera,
     required this.openMedia,
     required this.openCollection,
+
+    /// Actions that handle the database
+    /// Collection
+    required this.upsertCollection,
+    required this.deleteCollection,
+
+    /// Media - needs improvement
+    required this.newMedia,
+    required this.replaceMedia,
+    required this.cloneAndReplaceMedia,
+    required this.delete,
+    required this.restoreDeleted,
+    required this.togglePin,
+    required this.getPreviewPath,
+    required this.getMediaPath,
+    required this.getMediaLabel,
+
+    /// Notes
+    required this.onUpsertNote,
+    required this.onDeleteNote, // Streams when processing in bulk
+    required this.moveToCollectionStream,
+    required this.analyseMediaStream,
+    required this.share,
     required this.onShareFiles,
-    required this.createBackupFile,
+
+    /// Working with file system
+    required this.createTempFile,
+    required this.createBackupFile, // Refresh logic
     required this.reloadStore,
   });
   final Future<bool> Function(
@@ -101,6 +114,8 @@ class StoreActions {
     required bool? confirmed,
   }) onDeleteNote;
   final String Function(CLMedia media) getPreviewPath;
+  final String Function(CLMedia media) getMediaPath;
+  final String Function(CLMedia media) getMediaLabel;
 
   final Future<Collection> Function(Collection collection) upsertCollection;
   final Future<bool> Function(
@@ -128,4 +143,28 @@ class StoreActions {
   final Future<String> Function() createBackupFile;
 
   final Future<void> Function() reloadStore;
+
+  @override
+  bool operator ==(covariant StoreActions other) {
+    if (identical(this, other)) return true;
+
+    return other.share == share &&
+        other.togglePin == togglePin &&
+        other.getPreviewPath == getPreviewPath &&
+        other.getMediaPath == getMediaPath &&
+        other.upsertCollection == upsertCollection &&
+        other.createBackupFile == createBackupFile &&
+        other.reloadStore == reloadStore;
+  }
+
+  @override
+  int get hashCode {
+    return share.hashCode ^
+        togglePin.hashCode ^
+        getPreviewPath.hashCode ^
+        getMediaPath.hashCode ^
+        upsertCollection.hashCode ^
+        createBackupFile.hashCode ^
+        reloadStore.hashCode;
+  }
 }

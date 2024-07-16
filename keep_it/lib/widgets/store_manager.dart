@@ -17,18 +17,21 @@ import 'package:uuid/uuid.dart';
 import '../services/media_wizard_service/media_wizard_service.dart';
 
 extension ExtMetaData on CLMedia {
-  Future<CLMedia> getMetadata({bool? regenerate}) async {
+  Future<CLMedia> getMetadata({
+    required Directory location,
+    bool? regenerate,
+  }) async {
     if (type == CLMediaType.image) {
       return copyWith(
-        originalDate:
-            (await File(path).getImageMetaData(regenerate: regenerate))
-                ?.originalDate,
+        originalDate: (await File(path_handler.join(location.path, path))
+                .getImageMetaData(regenerate: regenerate))
+            ?.originalDate,
       );
     } else if (type == CLMediaType.video) {
       return copyWith(
-        originalDate:
-            (await File(path).getVideoMetaData(regenerate: regenerate))
-                ?.originalDate,
+        originalDate: (await File(path_handler.join(location.path, path))
+                .getVideoMetaData(regenerate: regenerate))
+            ?.originalDate,
       );
     } else {
       return this;
@@ -85,31 +88,37 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
   @override
   Widget build(BuildContext context) {
-    return widget.builder!(
-      storeAction: StoreActions(
-        openWizard: openWizard,
-        delete: delete,
-        share: share,
-        togglePin: togglePin,
-        openEditor: openEditor,
-        restoreDeleted: restoreDeleted,
-        replaceMedia: replaceMedia,
-        cloneAndReplaceMedia: cloneAndReplaceMedia,
-        moveToCollectionStream: moveToCollectionStream,
-        newMedia: newMedia,
-        analyseMediaStream: analyseMediaStream,
-        createTempFile: createTempFile,
-        onUpsertNote: onUpsertNote,
-        onDeleteNote: onDeleteNote,
-        getPreviewPath: getPreviewPath,
-        upsertCollection: upsertCollection,
-        deleteCollection: deleteCollection,
-        openCamera: openCamera,
-        openMedia: openMedia,
-        openCollection: openCollection,
-        onShareFiles: ShareManager.onShareFiles,
-        createBackupFile: createBackupFile,
-        reloadStore: reloadStore,
+    final storeAction = StoreActions(
+      openWizard: openWizard,
+      delete: delete,
+      share: share,
+      togglePin: togglePin,
+      openEditor: openEditor,
+      restoreDeleted: restoreDeleted,
+      replaceMedia: replaceMedia,
+      cloneAndReplaceMedia: cloneAndReplaceMedia,
+      moveToCollectionStream: moveToCollectionStream,
+      newMedia: newMedia,
+      analyseMediaStream: analyseMediaStream,
+      createTempFile: createTempFile,
+      onUpsertNote: onUpsertNote,
+      onDeleteNote: onDeleteNote,
+      getPreviewPath: getPreviewPath,
+      upsertCollection: upsertCollection,
+      deleteCollection: deleteCollection,
+      openCamera: openCamera,
+      openMedia: openMedia,
+      openCollection: openCollection,
+      onShareFiles: ShareManager.onShareFiles,
+      createBackupFile: createBackupFile,
+      reloadStore: reloadStore,
+      getMediaPath: getMediaPath,
+      getMediaLabel: getMediaLabel,
+    );
+    return TheStore(
+      storeAction: storeAction,
+      child: widget.builder!(
+        storeAction: storeAction,
       ),
     );
   }
@@ -487,7 +496,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
               collectionId: tempCollection.id,
               md5String: md5String,
               isHidden: true,
-            ).getMetadata();
+            ).getMetadata(location: widget.appSettings.directories.media.path);
 
             final mediaFromDB =
                 await widget.storeInstance.upsertMedia(savedMedia);
@@ -574,19 +583,19 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   String getPreviewPath(CLMedia media) {
-    final relativePath = CLMedia.relativePath(
-      media.path,
-      pathPrefix: widget.appSettings.directories.media.pathString,
-      validate: false,
-    );
-
-    final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, relativePath);
+    final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, media.path);
     final previewFileName = path_handler.join(
       widget.appSettings.directories.thumbnail.pathString,
       '$uuid.tn.jpeg',
     );
     return previewFileName;
   }
+
+  String getMediaPath(CLMedia media) => path_handler.join(
+        widget.appSettings.directories.media.path.path,
+        media.path,
+      );
+  String getMediaLabel(CLMedia media) => media.path;
 
   Future<Collection> upsertCollection(Collection collection) async {
     final updated = await widget.storeInstance.upsertCollection(collection);
