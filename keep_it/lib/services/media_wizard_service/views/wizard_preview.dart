@@ -12,14 +12,12 @@ class WizardPreview extends ConsumerStatefulWidget {
     required this.onSelectionChanged,
     required this.freezeView,
     required this.getPreview,
-    required this.storeAction,
     super.key,
   });
   final UniversalMediaSource type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
   final Widget Function(CLMedia media) getPreview;
-  final StoreActions storeAction;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -64,7 +62,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               Hero(
             tag: '${type.identifier} /item/${item.id}',
             child: GestureDetector(
-              onTap: () => widget.storeAction.openMedia(
+              onTap: () => TheStore.of(context).openMedia(
                 item.id!,
                 parentIdentifier: type.identifier,
                 actionControl: ActionControl.editOnly(),

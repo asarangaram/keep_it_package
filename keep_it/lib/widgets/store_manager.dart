@@ -41,11 +41,11 @@ extension ExtMetaData on CLMedia {
 
 class StoreManager extends StatelessWidget {
   const StoreManager({
-    required this.builder,
+    required this.child,
     super.key,
   });
 
-  final Widget Function({required StoreActions storeAction})? builder;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class StoreManager extends StatelessWidget {
             return MediaHandlerWidget0(
               storeInstance: storeInstance,
               appSettings: appSettings,
-              builder: builder,
+              child: child,
             );
           },
         );
@@ -69,7 +69,7 @@ class StoreManager extends StatelessWidget {
 
 class MediaHandlerWidget0 extends ConsumerStatefulWidget {
   const MediaHandlerWidget0({
-    required this.builder,
+    required this.child,
     required this.storeInstance,
     required this.appSettings,
     super.key,
@@ -77,7 +77,7 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
 
   final Store storeInstance;
   final AppSettings appSettings;
-  final Widget Function({required StoreActions storeAction})? builder;
+  final Widget child;
 
   @override
   ConsumerState<MediaHandlerWidget0> createState() =>
@@ -117,9 +117,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
     return TheStore(
       storeAction: storeAction,
-      child: widget.builder!(
-        storeAction: storeAction,
-      ),
+      child: widget.child,
     );
   }
 

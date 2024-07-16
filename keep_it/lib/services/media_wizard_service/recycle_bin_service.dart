@@ -10,12 +10,10 @@ class RecycleBinService extends ConsumerWidget {
   const RecycleBinService({
     required this.type,
     required this.getPreview,
-    required this.storeAction,
     super.key,
   });
   final UniversalMediaSource type;
   final Widget Function(CLMedia media) getPreview;
-  final StoreActions storeAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +28,6 @@ class RecycleBinService extends ConsumerWidget {
     return CLPopScreen.onSwipe(
       child: SelectAndRestoreMedia(
         media: media,
-        storeAction: storeAction,
         type: type,
         galleryMap: galleryMap,
         getPreview: getPreview,
@@ -45,13 +42,12 @@ class SelectAndRestoreMedia extends ConsumerStatefulWidget {
     required this.type,
     required this.galleryMap,
     required this.getPreview,
-    required this.storeAction,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
   final Widget Function(CLMedia media) getPreview;
-  final StoreActions storeAction;
+
   final List<GalleryGroup<CLMedia>> galleryMap;
 
   @override
@@ -118,7 +114,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                     context,
                     media: currMedia,
                     getPreview: widget.getPreview,
-                    onConfirm: () => widget.storeAction
+                    onConfirm: () => TheStore.of(context)
                         .restoreDeleted(currMedia, confirmed: true),
                   );
 
@@ -148,7 +144,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                           context,
                           media: currMedia,
                           getPreview: widget.getPreview,
-                          onConfirm: () => widget.storeAction
+                          onConfirm: () => TheStore.of(context)
                               .delete(currMedia, confirmed: true),
                         );
 
@@ -172,7 +168,6 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
       child: WizardPreview(
         getPreview: widget.getPreview,
         type: widget.type,
-        storeAction: widget.storeAction,
         onSelectionChanged: isSelectionMode
             ? (List<CLMedia> items) {
                 selectedMedia = selectedMedia.copyWith(entries: items);

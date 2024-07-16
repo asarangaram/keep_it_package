@@ -14,13 +14,12 @@ class MediaView extends ConsumerWidget {
     required this.actionControl,
     required this.buildNotes,
     required this.getPreview,
-    required this.storeAction,
     this.onLockPage,
     super.key,
   });
   final CLMedia item;
   final String parentIdentifier;
-  final StoreActions storeAction;
+
   final ActionControl actionControl;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
@@ -47,27 +46,29 @@ class MediaView extends ConsumerWidget {
         ),
         MediaControls(
           onMove: ac.onMove(
-            () => storeAction.openWizard([media], UniversalMediaSource.move),
+            () => TheStore.of(context)
+                .openWizard([media], UniversalMediaSource.move),
           ),
           onDelete: ac.onDelete(() async {
             return ConfirmAction.deleteMedia(
               context,
               media: media,
               getPreview: getPreview,
-              onConfirm: () => storeAction.delete([media], confirmed: true),
+              onConfirm: () =>
+                  TheStore.of(context).delete([media], confirmed: true),
             );
           }),
-          onShare: ac.onShare(() => storeAction.share([media])),
+          onShare: ac.onShare(() => TheStore.of(context).share([media])),
           onEdit: (media.type == CLMediaType.video &&
                   !VideoEditServices.isSupported)
               ? null
               : ac.onEdit(
-                  () => storeAction.openEditor(
+                  () => TheStore.of(context).openEditor(
                     [media],
                     canDuplicateMedia: ac.canDuplicateMedia,
                   ),
                 ),
-          onPin: ac.onPin(() => storeAction.togglePin([media])),
+          onPin: ac.onPin(() => TheStore.of(context).togglePin([media])),
           media: item,
         ),
       ],

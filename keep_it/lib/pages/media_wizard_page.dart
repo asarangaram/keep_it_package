@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:keep_it/widgets/preview.dart';
 
 import '../services/media_wizard_service/media_wizard_service.dart';
-import '../widgets/store_manager.dart';
 
 class MediaWizardPage extends StatelessWidget {
   const MediaWizardPage({required this.type, super.key});
@@ -15,14 +14,9 @@ class MediaWizardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FullscreenLayout(
       child: CLPopScreen.onSwipe(
-        child: StoreManager(
-          builder: ({required storeAction}) {
-            return MediaWizardService(
-              type: type,
-              storeAction: storeAction,
-              getPreview: (media) => Preview(media: media),
-            );
-          },
+        child: MediaWizardService(
+          type: type,
+          getPreview: (media) => Preview(media: media),
         ),
       ),
     );

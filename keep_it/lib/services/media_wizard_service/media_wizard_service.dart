@@ -13,12 +13,11 @@ class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({
     required this.type,
     required this.getPreview,
-    required this.storeAction,
     super.key,
   });
   final UniversalMediaSource type;
   final Widget Function(CLMedia media) getPreview;
-  final StoreActions storeAction;
+
   static Future<void> addMedia(
     BuildContext context,
     WidgetRef ref, {
@@ -39,7 +38,6 @@ class MediaWizardService extends ConsumerWidget {
       return RecycleBinService(
         type: type,
         getPreview: getPreview,
-        storeAction: storeAction,
       );
     }
     final media = ref.watch(universalMediaProvider(type));
@@ -53,7 +51,6 @@ class MediaWizardService extends ConsumerWidget {
     return CLPopScreen.onSwipe(
       child: SelectAndKeepMedia(
         media: media,
-        storeAction: storeAction,
         type: type,
         galleryMap: galleryMap,
         getPreview: getPreview,
@@ -68,13 +65,12 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     required this.type,
     required this.galleryMap,
     required this.getPreview,
-    required this.storeAction,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
   final Widget Function(CLMedia media) getPreview;
-  final StoreActions storeAction;
+
   final List<GalleryGroup<CLMedia>> galleryMap;
 
   @override
@@ -139,7 +135,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               /// the universalMediaProvider
               /// We only need to update the collectionId
               : StreamBuilder<Progress>(
-                  stream: widget.storeAction.moveToCollectionStream(
+                  stream: TheStore.of(context).moveToCollectionStream(
                     currMedia,
                     collection: targetCollection!,
                     onDone: () {
@@ -184,7 +180,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                 context,
                                 media: currMedia,
                                 getPreview: widget.getPreview,
-                                onConfirm: () => widget.storeAction
+                                onConfirm: () => TheStore.of(context)
                                     .delete(currMedia, confirmed: true),
                               );
 
@@ -209,7 +205,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       child: WizardPreview(
         getPreview: widget.getPreview,
         type: widget.type,
-        storeAction: widget.storeAction,
         onSelectionChanged: isSelectionMode
             ? (List<CLMedia> items) {
                 selectedMedia = selectedMedia.copyWith(entries: items);

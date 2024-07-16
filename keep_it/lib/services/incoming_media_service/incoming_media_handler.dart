@@ -3,7 +3,6 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/widgets/store_manager.dart';
 
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';
@@ -19,12 +18,10 @@ class IncomingMediaHandler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreManager(
-      builder: ({required storeAction}) => IncomingMediaHandler0(
-        incomingMedia: incomingMedia,
-        onDiscard: onDiscard,
-        onSave: storeAction.openWizard,
-      ),
+    return IncomingMediaHandler0(
+      incomingMedia: incomingMedia,
+      onDiscard: onDiscard,
+      onSave: TheStore.of(context).openWizard,
     );
   }
 }

@@ -6,7 +6,6 @@ import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
 import '../widgets/empty_state.dart';
-import '../widgets/store_manager.dart';
 
 class MediaPageViewPage extends StatelessWidget {
   const MediaPageViewPage({
@@ -23,63 +22,22 @@ class MediaPageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenLayout(
-      useSafeArea: false,
-      child: StoreManager(
-        builder: ({required storeAction}) {
-          if (collectionId == null) {
-            return GetMedia(
-              id: id,
-              buildOnData: (media) {
-                if (media == null) {
-                  return const EmptyState();
-                }
+    if (collectionId == null) {
+      return FullscreenLayout(
+        useSafeArea: false,
+        child: GetMedia(
+          id: id,
+          buildOnData: (media) {
+            if (media == null) {
+              return const EmptyState();
+            }
 
-                return CLPopScreen.onSwipe(
-                  child: MediaViewService(
-                    media: media,
-                    storeAction: storeAction,
-                    getPreview: (media) => Preview(media: media),
-                    parentIdentifier: parentIdentifier,
-                    actionControl: actionControl,
-                    buildNotes: (media) {
-                      return GetNotesByMediaId(
-                        mediaId: media.id!,
-                        buildOnData: (notes) {
-                          return NotesService(
-                            media: media,
-                            notes: notes,
-                            onUpsertNote: storeAction.onUpsertNote,
-                            onDeleteNote: storeAction.onDeleteNote,
-                            onCreateNewFile: storeAction.createTempFile,
-                          );
-                        },
-                      );
-                    },
-                  ),
-                );
-              },
-            );
-          }
-          return GetMediaByCollectionId(
-            collectionId: collectionId,
-            buildOnData: (items) {
-              if (items.isEmpty) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  CLPopScreen.onPop(context);
-                });
-                return const EmptyState(message: 'No Media');
-              }
-              final initialMedia = items.where((e) => e.id == id).firstOrNull;
-              final initialMediaIndex =
-                  initialMedia == null ? 0 : items.indexOf(initialMedia);
-
-              return MediaViewService.pageView(
-                media: items,
-                storeAction: storeAction,
+            return CLPopScreen.onSwipe(
+              child: MediaViewService(
+                media: media,
                 getPreview: (media) => Preview(media: media),
                 parentIdentifier: parentIdentifier,
-                initialMediaIndex: initialMediaIndex,
+                actionControl: actionControl,
                 buildNotes: (media) {
                   return GetNotesByMediaId(
                     mediaId: media.id!,
@@ -87,11 +45,49 @@ class MediaPageViewPage extends StatelessWidget {
                       return NotesService(
                         media: media,
                         notes: notes,
-                        onUpsertNote: storeAction.onUpsertNote,
-                        onDeleteNote: storeAction.onDeleteNote,
-                        onCreateNewFile: storeAction.createTempFile,
+                        onUpsertNote: TheStore.of(context).onUpsertNote,
+                        onDeleteNote: TheStore.of(context).onDeleteNote,
+                        onCreateNewFile: TheStore.of(context).createTempFile,
                       );
                     },
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      );
+    }
+    return FullscreenLayout(
+      useSafeArea: false,
+      child: GetMediaByCollectionId(
+        collectionId: collectionId,
+        buildOnData: (items) {
+          if (items.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CLPopScreen.onPop(context);
+            });
+            return const EmptyState(message: 'No Media');
+          }
+          final initialMedia = items.where((e) => e.id == id).firstOrNull;
+          final initialMediaIndex =
+              initialMedia == null ? 0 : items.indexOf(initialMedia);
+
+          return MediaViewService.pageView(
+            media: items,
+            getPreview: (media) => Preview(media: media),
+            parentIdentifier: parentIdentifier,
+            initialMediaIndex: initialMediaIndex,
+            buildNotes: (media) {
+              return GetNotesByMediaId(
+                mediaId: media.id!,
+                buildOnData: (notes) {
+                  return NotesService(
+                    media: media,
+                    notes: notes,
+                    onUpsertNote: TheStore.of(context).onUpsertNote,
+                    onDeleteNote: TheStore.of(context).onDeleteNote,
+                    onCreateNewFile: TheStore.of(context).createTempFile,
                   );
                 },
               );

@@ -1,7 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/widgets/store_manager.dart';
 
 import 'package:store/store.dart';
 
@@ -20,54 +19,50 @@ class CollectionAsFolder extends ConsumerWidget {
   final Widget Function(CLMedia media) getPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return StoreManager(
-      builder: ({required storeAction}) {
-        return WrapStandardQuickMenu(
-          quickMenuScopeKey: quickMenuScopeKey,
-          onEdit: () async {
-            final updated = await CollectionEditor.popupDialog(
-              context,
-              collection: collection,
-            );
-            if (updated != null) {
-              await storeAction.upsertCollection(updated);
-            }
+    return WrapStandardQuickMenu(
+      quickMenuScopeKey: quickMenuScopeKey,
+      onEdit: () async {
+        final updated = await CollectionEditor.popupDialog(
+          context,
+          collection: collection,
+        );
+        if (updated != null && context.mounted) {
+          await TheStore.of(context).upsertCollection(updated);
+        }
 
-            return true;
-          },
-          onDelete: () async {
-            return ConfirmAction.deleteCollection(
-              context,
-              collection: collection,
-              onConfirm: () =>
-                  storeAction.deleteCollection(collection, confirmed: true),
-            );
-          },
-          onTap: () async {
-            await storeAction.openCollection(collectionId: collection.id);
-            return true;
-          },
-          child: Column(
-            children: [
-              Flexible(
-                child: CollectionPreviewGenerator(
-                  collection: collection,
-                  getPreview: getPreview,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  collection.label,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+        return true;
+      },
+      onDelete: () async {
+        return ConfirmAction.deleteCollection(
+          context,
+          collection: collection,
+          onConfirm: () => TheStore.of(context)
+              .deleteCollection(collection, confirmed: true),
         );
       },
+      onTap: () async {
+        await TheStore.of(context).openCollection(collectionId: collection.id);
+        return true;
+      },
+      child: Column(
+        children: [
+          Flexible(
+            child: CollectionPreviewGenerator(
+              collection: collection,
+              getPreview: getPreview,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              collection.label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

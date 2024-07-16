@@ -10,7 +10,6 @@ class MediaPageView extends ConsumerStatefulWidget {
   const MediaPageView({
     required this.items,
     required this.startIndex,
-    required this.storeAction,
     required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
@@ -22,7 +21,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   });
   final List<CLMedia> items;
   final String parentIdentifier;
-  final StoreActions storeAction;
+
   final ActionControl actionControl;
   final int startIndex;
   final bool isLocked;
@@ -81,7 +80,7 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
         ),
         MediaControls(
           onMove: ac.onMove(
-            () => widget.storeAction
+            () => TheStore.of(context)
                 .openWizard([media], UniversalMediaSource.move),
           ),
           onDelete: ac.onDelete(() async {
@@ -90,20 +89,20 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
               media: media,
               getPreview: widget.getPreview,
               onConfirm: () =>
-                  widget.storeAction.delete([media], confirmed: true),
+                  TheStore.of(context).delete([media], confirmed: true),
             );
           }),
-          onShare: ac.onShare(() => widget.storeAction.share([media])),
+          onShare: ac.onShare(() => TheStore.of(context).share([media])),
           onEdit: (media.type == CLMediaType.video &&
                   !VideoEditServices.isSupported)
               ? null
               : ac.onEdit(
-                  () => widget.storeAction.openEditor(
+                  () => TheStore.of(context).openEditor(
                     [media],
                     canDuplicateMedia: ac.canDuplicateMedia,
                   ),
                 ),
-          onPin: ac.onPin(() => widget.storeAction.togglePin([media])),
+          onPin: ac.onPin(() => TheStore.of(context).togglePin([media])),
           media: media,
         ),
       ],

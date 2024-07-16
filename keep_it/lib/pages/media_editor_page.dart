@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
-import '../widgets/store_manager.dart';
-
 class MediaEditorPage extends StatelessWidget {
   const MediaEditorPage({
     required this.mediaId,
@@ -27,43 +25,39 @@ class MediaEditorPage extends StatelessWidget {
     return FullscreenLayout(
       hasBackground: false,
       backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-      child: StoreManager(
-        builder: ({required storeAction}) {
-          return GetMedia(
-            id: mediaId!,
-            buildOnData: (media) {
-              if (media == null || !File(media.path).existsSync()) {
-                return BasicPageService.message(
-                  message: ' Media not found',
+      child: GetMedia(
+        id: mediaId!,
+        buildOnData: (media) {
+          if (media == null || !File(media.path).existsSync()) {
+            return BasicPageService.message(
+              message: ' Media not found',
+            );
+          }
+
+          return InvokeEditor(
+            media: media,
+            canDuplicateMedia: canDuplicateMedia,
+            onCreateNewFile: () async {
+              return TheStore.of(context).createTempFile(ext: 'jpg');
+            },
+            onSave: (file, {required overwrite}) async {
+              if (overwrite) {
+                await ConfirmAction.replaceMedia(
+                  context,
+                  media: CLMedia(path: file, type: media.type),
+                  getPreview: (CLMedia media) => Preview(media: media),
+                  onConfirm: () async => TheStore.of(context)
+                      .replaceMedia(media, file, confirmed: true),
+                );
+              } else {
+                await ConfirmAction.cloneAndReplaceMedia(
+                  context,
+                  media: CLMedia(path: file, type: media.type),
+                  getPreview: (CLMedia media) => Preview(media: media),
+                  onConfirm: () async => TheStore.of(context)
+                      .cloneAndReplaceMedia(media, file, confirmed: true),
                 );
               }
-
-              return InvokeEditor(
-                media: media,
-                canDuplicateMedia: canDuplicateMedia,
-                onCreateNewFile: () async {
-                  return storeAction.createTempFile(ext: 'jpg');
-                },
-                onSave: (file, {required overwrite}) async {
-                  if (overwrite) {
-                    await ConfirmAction.replaceMedia(
-                      context,
-                      media: CLMedia(path: file, type: media.type),
-                      getPreview: (CLMedia media) => Preview(media: media),
-                      onConfirm: () async => storeAction
-                          .replaceMedia(media, file, confirmed: true),
-                    );
-                  } else {
-                    await ConfirmAction.cloneAndReplaceMedia(
-                      context,
-                      media: CLMedia(path: file, type: media.type),
-                      getPreview: (CLMedia media) => Preview(media: media),
-                      onConfirm: () async => storeAction
-                          .cloneAndReplaceMedia(media, file, confirmed: true),
-                    );
-                  }
-                },
-              );
             },
           );
         },
