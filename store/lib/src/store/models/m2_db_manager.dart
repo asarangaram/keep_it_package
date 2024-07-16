@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:sqlite_async/sqlite_async.dart';
@@ -13,9 +12,9 @@ import 'm3_db_reader.dart';
 import 'm4_db_writer.dart';
 
 class DBManager extends Store {
-  DBManager({required this.db, required AppSettings appSettings})
-      : dbWriter = DBWriter(appSettings: appSettings),
-        dbReader = DBReader(appSettings: appSettings);
+  DBManager({required this.db})
+      : dbWriter = DBWriter(),
+        dbReader = const DBReader();
 
   final SqliteDatabase db;
   final DBWriter dbWriter;
@@ -23,11 +22,10 @@ class DBManager extends Store {
 
   static Future<DBManager> createInstances({
     required String dbpath,
-    required AppSettings appSettings,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    return DBManager(db: db, appSettings: appSettings);
+    return DBManager(db: db);
   }
 
   void dispose() {
@@ -67,17 +65,8 @@ class DBManager extends Store {
   }) async {
     await db.writeTransaction((tx) async {
       if (media?.isEmpty ?? true) return;
-      final updatedMedia = <CLMedia>[];
-      for (final item in media!) {
-        try {
-          final updated = await onPrepareMedia(
-            item.copyWith(collectionId: collectionId),
-            targetDir: dbWriter.appSettings.validPrefix(),
-          );
-          updatedMedia.add(updated);
-        } catch (e) {/* */}
-      }
-      await dbWriter.upsertMediaMultiple(tx, updatedMedia);
+
+      await dbWriter.upsertMediaMultiple(tx, media!);
     });
   }
 
@@ -127,28 +116,8 @@ class DBManager extends Store {
   }) async {
     await db.writeTransaction((tx) async {
       if (media?.isEmpty ?? true) return;
-      final updatedMedia = <CLMedia>[];
-      for (final item in media!) {
-        try {
-          final CLMedia item0;
-          if (item.id != null) {
-            /// We must reload it as the media might have updated in DB
 
-            item0 = (await DBReader(appSettings: dbWriter.appSettings)
-                        .getMediaById(tx, item.id!))
-                    ?.copyWith(collectionId: collectionId) ??
-                item;
-          } else {
-            item0 = item;
-          }
-          final updated = await onPrepareMedia(
-            item0.copyWith(collectionId: collectionId),
-            targetDir: dbWriter.appSettings.validPrefix(),
-          );
-          updatedMedia.add(updated);
-        } catch (e) {/* */}
-      }
-      await dbWriter.upsertMediaMultiple(tx, updatedMedia);
+      await dbWriter.upsertMediaMultiple(tx, media!);
     });
   }
 
@@ -163,21 +132,7 @@ class DBManager extends Store {
   }) async {
     final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
       try {
-        final CLMedia media0;
-        if (media.id != null) {
-          media0 = (await DBReader(appSettings: dbWriter.appSettings)
-                      .getMediaById(tx, media.id!))
-                  ?.copyWith(collectionId: collectionId) ??
-              media;
-        } else {
-          media0 = media;
-        }
-
-        final updated = await onPrepareMedia(
-          media0,
-          targetDir: dbWriter.appSettings.validPrefix(),
-        );
-        return await dbWriter.upsertMedia(tx, updated);
+        return await dbWriter.upsertMedia(tx, media);
       } catch (e) {
         return null;
       }

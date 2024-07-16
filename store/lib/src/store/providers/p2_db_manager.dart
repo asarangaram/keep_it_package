@@ -11,7 +11,6 @@ final storeProvider = FutureProvider<Store>((ref) async {
 
   final storeInstance = await DBManager.createInstances(
     dbpath: fullPath,
-    appSettings: appSettings,
   );
   ref.onDispose(storeInstance.dispose);
   return storeInstance;

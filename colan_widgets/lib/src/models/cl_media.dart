@@ -174,16 +174,9 @@ class CLMedia {
         ' pin: $pin)';
   }
 
-  Map<String, dynamic> toMap({
-    required bool validate,
-    String? pathPrefix,
-  }) {
+  Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'path': relativePath(
-        path,
-        pathPrefix: pathPrefix,
-        validate: validate,
-      ),
+      'path': path,
       'type': type.name,
       'ref': ref,
       'id': id,
@@ -217,7 +210,7 @@ class CLMedia {
         validate: true,
       ); */
 
-  String toJson() => json.encode(toMap(validate: true));
+  String toJson() => json.encode(toMap());
 
   CLMedia removePin() {
     return CLMedia(

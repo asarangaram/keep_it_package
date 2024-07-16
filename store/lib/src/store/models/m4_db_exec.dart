@@ -1,6 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
@@ -12,31 +12,13 @@ class DBExec<T> {
     required this.readBack,
   });
   final String table;
-  final Map<String, dynamic>? Function(
-    T obj, {
-    required AppSettings appSettings,
-    required bool validate,
-  }) toMap;
-  final Future<T?> Function(
-    SqliteWriteContext tx,
-    T obj, {
-    required AppSettings appSettings,
-    required bool validate,
-  })? readBack;
+  final Map<String, dynamic>? Function(T obj) toMap;
+  final Future<T?> Function(SqliteWriteContext tx, T obj)? readBack;
 
   DBExec<T> copyWith({
     String? table,
-    Map<String, dynamic> Function(
-      T obj, {
-      required AppSettings appSettings,
-      required bool validate,
-    })? toMap,
-    Future<T?> Function(
-      SqliteWriteContext tx,
-      T obj, {
-      required AppSettings appSettings,
-      required bool validate,
-    })? readBack,
+    Map<String, dynamic>? Function(T obj)? toMap,
+    Future<T?> Function(SqliteWriteContext tx, T obj)? readBack,
   }) {
     return DBExec<T>(
       table: table ?? this.table,
@@ -50,26 +32,25 @@ class DBExec<T> {
     if (identical(this, other)) return true;
     final mapEquals = const DeepCollectionEquality().equals;
 
-    return other.table == table && mapEquals(other.toMap, toMap);
+    return other.table == table &&
+        mapEquals(other.toMap, toMap) &&
+        other.readBack == readBack;
   }
 
   @override
-  int get hashCode => table.hashCode ^ toMap.hashCode;
+  int get hashCode => table.hashCode ^ toMap.hashCode ^ readBack.hashCode;
 
   @override
-  String toString() => 'DBExec(table: $table, toMap: $toMap)';
+  String toString() =>
+      'DBExec(table: $table, toMap: $toMap, readBack: $readBack)';
 
   Future<T?> upsert(
     SqliteWriteContext tx,
     T obj, {
-    required AppSettings appSettings,
-    required bool validate,
     bool ignore = false,
   }) async {
     final cmd = _sql(
       obj,
-      appSettings: appSettings,
-      validate: validate,
       ignore: ignore,
     );
     if (cmd == null) return null;
@@ -77,26 +58,17 @@ class DBExec<T> {
     if (cmd.value.isNotEmpty) {
       await tx.execute(cmd.key, cmd.value);
     }
-    final result = await readBack?.call(
-      tx,
-      obj,
-      appSettings: appSettings,
-      validate: validate,
-    );
+    final result = await readBack?.call(tx, obj);
     _infoLogger('Readback:  $result');
     return result;
   }
 
   Future<List<T?>> upsertAll(
     SqliteWriteContext tx,
-    List<T> objList, {
-    required AppSettings appSettings,
-    required bool validate,
-  }) async {
+    List<T> objList,
+  ) async {
     for (final cmd in formatSQL(
       objList,
-      appSettings: appSettings,
-      validate: validate,
     ).entries) {
       _infoLogger('Exec:  $cmd');
       if (cmd.value.isNotEmpty) {
@@ -110,12 +82,7 @@ class DBExec<T> {
     final result = <T?>[];
     for (final obj in objList) {
       result.add(
-        await readBack?.call(
-          tx,
-          obj,
-          appSettings: appSettings,
-          validate: validate,
-        ),
+        await readBack?.call(tx, obj),
       );
     }
     _infoLogger('Readback:  $result');
@@ -136,17 +103,8 @@ class DBExec<T> {
     await tx.execute(sql, value);
   }
 
-  MapEntry<String, List<String>>? _sql(
-    T obj, {
-    required AppSettings appSettings,
-    required bool validate,
-    bool ignore = false,
-  }) {
-    final map = toMap(
-      obj,
-      appSettings: appSettings,
-      validate: validate,
-    );
+  MapEntry<String, List<String>>? _sql(T obj, {bool ignore = false}) {
+    final map = toMap(obj);
     if (map == null) {
       return null;
     }
@@ -171,15 +129,11 @@ class DBExec<T> {
     return MapEntry(sql, values);
   }
 
-  Map<String, List<List<String>>> formatSQL(
-    List<T> objList, {
-    required AppSettings appSettings,
-    required bool validate,
-  }) {
+  Map<String, List<List<String>>> formatSQL(List<T> objList) {
     final execCmdList = <String, List<List<String>>>{};
 
     for (final obj in objList) {
-      final entry = _sql(obj, appSettings: appSettings, validate: validate);
+      final entry = _sql(obj);
       if (entry != null) {
         if (!execCmdList.containsKey(entry.key)) {
           execCmdList[entry.key] = [];

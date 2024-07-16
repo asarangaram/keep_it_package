@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:device_resources/device_resources.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite_async/sqlite_async.dart';
@@ -13,105 +13,45 @@ import 'm4_db_exec.dart';
 
 @immutable
 class DBWriter {
-  DBWriter({required this.appSettings});
+  DBWriter();
   final DBExec<Collection> collectionTable = DBExec<Collection>(
     table: 'Collection',
-    toMap: (obj, {required appSettings, required validate}) {
+    toMap: (obj) {
       return obj.toMap();
     },
     readBack: (
       tx,
-      collection, {
-      required appSettings,
-      required validate,
-    }) async {
+      collection,
+    ) async {
       return (DBQueries.collectionByLabel.sql as DBQuery<Collection>)
-          .copyWith(parameters: [collection.label]).read(
-        tx,
-        appSettings: appSettings,
-        validate: validate,
-      );
+          .copyWith(parameters: [collection.label]).read(tx);
     },
   );
 
   final DBExec<CLMedia> mediaTable = DBExec<CLMedia>(
     table: 'Item',
-    toMap: (CLMedia obj, {required appSettings, required validate}) {
-      final map = obj.toMap(
-        pathPrefix: appSettings.directories.media.pathString,
-        validate: true,
-      );
-      if (validate) {
-        final collectionId = map['collectionId'] as int?;
-        if (collectionId == null) {
-          exceptionLogger(
-            'Invalid Media',
-            "Media can't be saved without collectionID",
-          );
-          final media = p.join(
-            appSettings.directories.media.pathString,
-            map['path'] as String,
-          );
-
-          if (!File(media).existsSync()) {
-            exceptionLogger('Invalid Media', 'file is missing');
-          }
-        }
-      }
-      return map;
-    },
-    readBack: (tx, item, {required appSettings, required validate}) {
-      final pathExpected = CLMedia.relativePath(
-        item.path,
-        pathPrefix: appSettings.directories.media.pathString,
-        validate: true,
-      );
-
+    toMap: (CLMedia obj) => obj.toMap(),
+    readBack: (tx, item) {
       return (DBQueries.mediaByPath.sql as DBQuery<CLMedia>)
-          .copyWith(parameters: [pathExpected]).read(
-        tx,
-        appSettings: appSettings,
-        validate: validate,
-      );
+          .copyWith(parameters: [item.path]).read(tx);
     },
   );
   final DBExec<CLNote> notesTable = DBExec<CLNote>(
     table: 'Notes',
-    toMap: (CLNote obj, {required appSettings, required validate}) {
-      final map = obj.toMap2(
-        validate: validate,
-        pathPrefix: appSettings.directories.notes.pathString,
-      );
-      if (validate) {}
-      return map;
-    },
-    readBack: (tx, item, {required appSettings, required validate}) async {
-      final pathExpected = CLMedia.relativePath(
-        item.path,
-        pathPrefix: appSettings.directories.notes.pathString,
-        validate: true,
-      );
+    toMap: (CLNote obj) => obj.toMap(),
+    readBack: (tx, item) async {
       return (DBQueries.noteByPath.sql as DBQuery<CLNote>)
-          .copyWith(parameters: [pathExpected]).read(
-        tx,
-        appSettings: appSettings,
-        validate: validate,
-      );
+          .copyWith(parameters: [item.path]).read(tx);
     },
   );
   final DBExec<NotesOnMedia> notesOnMediaTable = DBExec<NotesOnMedia>(
     table: 'ItemNote',
-    toMap: (NotesOnMedia obj, {required appSettings, required validate}) {
-      final map = obj.toMap();
-      if (validate) {}
-      return map;
-    },
-    readBack: (tx, item, {required appSettings, required validate}) async {
+    toMap: (NotesOnMedia obj) => obj.toMap(),
+    readBack: (tx, item) async {
+      // TODO(anandas): :readBack for ItemNote Can this be done?
       return item;
     },
   );
-
-  final AppSettings appSettings;
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
@@ -121,8 +61,6 @@ class DBWriter {
     final updated = await collectionTable.upsert(
       tx,
       collection,
-      appSettings: appSettings,
-      validate: true,
     );
     _infoLogger('upsertCollection: Done :  $updated');
     if (updated == null) {
@@ -142,8 +80,6 @@ class DBWriter {
     final updated = await mediaTable.upsertAll(
       tx,
       media,
-      appSettings: appSettings,
-      validate: true,
     );
     _infoLogger('upsertMediaMultiple: Done :  $updated');
     if (updated.any((e) => e == null)) {
@@ -160,8 +96,6 @@ class DBWriter {
     final updated = await mediaTable.upsert(
       tx,
       media,
-      appSettings: appSettings,
-      validate: true,
     );
     _infoLogger('upsertMedia: Done :  $updated');
     if (updated == null) {
@@ -180,8 +114,8 @@ class DBWriter {
   }) async {
     if (collection.id == null) return;
 
-    final items = await DBReader(appSettings: appSettings)
-        .getMediaByCollectionId(tx, collection.id!);
+    final items =
+        await const DBReader().getMediaByCollectionId(tx, collection.id!);
 
     /// Delete all media ignoring those already in Recycle
     /// Don't delete CollectionDir / Collection from Media, required for restore
@@ -196,7 +130,7 @@ class DBWriter {
     SqliteWriteContext tx, {
     required Future<void> Function(File file) onDeleteFile,
   }) async {
-    final notes = await DBReader(appSettings: appSettings).getOrphanNotes(tx);
+    final notes = await const DBReader().getOrphanNotes(tx);
     if (notes != null && notes.isNotEmpty) {
       for (final note in notes) {
         await deleteNote(tx, note, onDeleteFile: onDeleteFile);
@@ -215,8 +149,7 @@ class DBWriter {
       /// 2. Delete Media files
       /// 3. Delete Media from DB
       /// 4. Clear up if any note is orphan
-      final notes = await DBReader(appSettings: appSettings)
-          .getNotesByMediaID(tx, media.id!);
+      final notes = await const DBReader().getNotesByMediaID(tx, media.id!);
 
       if (notes != null && notes.isNotEmpty) {
         for (final m in notes) {
@@ -354,8 +287,6 @@ class DBWriter {
     final updated = await notesTable.upsert(
       tx,
       note,
-      appSettings: appSettings,
-      validate: true,
     );
     _infoLogger('upsertNote: Done :  $updated');
     if (updated == null) {
@@ -368,8 +299,6 @@ class DBWriter {
         await notesOnMediaTable.upsert(
           tx,
           NotesOnMedia(noteId: updated.id!, itemId: media.id!),
-          appSettings: appSettings,
-          validate: false,
           ignore: true,
         );
       }
@@ -384,8 +313,7 @@ class DBWriter {
   }) async {
     if (note.id == null) return;
 
-    final media =
-        await DBReader(appSettings: appSettings).getMediaByNoteID(tx, note.id!);
+    final media = await const DBReader().getMediaByNoteID(tx, note.id!);
     if (media != null && media.isNotEmpty) {
       for (final m in media) {
         await notesOnMediaTable.delete(

@@ -1,6 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
@@ -12,6 +12,7 @@ class DBQuery<T> {
     required T? Function(
       Map<String, dynamic> map,
     ) fromMap,
+    String dbPath = 'Not specified',
     List<Object?>? parameters,
   }) {
     final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
@@ -20,12 +21,14 @@ class DBQuery<T> {
       triggerOnTables: triggerOnTables,
       fromMap: fromMap,
       parameters: parameters0,
+      dbPath: dbPath,
     );
   }
   const DBQuery._({
     required this.sql,
     required this.triggerOnTables,
     required this.fromMap,
+    required this.dbPath,
     this.parameters,
   });
 
@@ -33,42 +36,40 @@ class DBQuery<T> {
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
   final T? Function(Map<String, dynamic> map) fromMap;
+  final String dbPath;
 
   DBQuery<T> copyWith({
     String? sql,
     Set<String>? triggerOnTables,
     List<Object?>? parameters,
-    T Function(Map<String, dynamic> map)? fromMap,
+    T? Function(Map<String, dynamic> map)? fromMap,
+    String? dbPath,
   }) {
     return DBQuery<T>(
       sql: sql ?? this.sql,
       triggerOnTables: triggerOnTables ?? this.triggerOnTables,
       parameters: parameters ?? this.parameters,
       fromMap: fromMap ?? this.fromMap,
+      dbPath: dbPath ?? this.dbPath,
     );
   }
 
   @override
   String toString() {
-    return 'DBQuery(sql: $sql, triggerOnTables: $triggerOnTables, '
-        'parameters: $parameters, fromMap: $fromMap)';
+    // ignore: lines_longer_than_80_chars
+    return 'DBQuery(sql: $sql, triggerOnTables: $triggerOnTables, parameters: $parameters, fromMap: $fromMap, dbPath: $dbPath)';
   }
 
   @override
   bool operator ==(covariant DBQuery<T> other) {
-    final bool res;
-    if (identical(this, other)) {
-      res = true;
-    } else {
-      final collectionEquals = const DeepCollectionEquality().equals;
+    if (identical(this, other)) return true;
+    final collectionEquals = const DeepCollectionEquality().equals;
 
-      res = other.sql == sql &&
-          collectionEquals(other.triggerOnTables, triggerOnTables) &&
-          collectionEquals(other.parameters, parameters) &&
-          other.fromMap == fromMap;
-    }
-
-    return res;
+    return other.sql == sql &&
+        collectionEquals(other.triggerOnTables, triggerOnTables) &&
+        collectionEquals(other.parameters, parameters) &&
+        other.fromMap == fromMap &&
+        other.dbPath == dbPath;
   }
 
   /// Fix:
@@ -78,21 +79,17 @@ class DBQuery<T> {
   ///
   @override
   int get hashCode {
-    var hashCode = sql.hashCode ^ triggerOnTables.hashCode ^ fromMap.hashCode;
-    if (parameters != null) {
-      for (final p in parameters!) {
-        hashCode ^= p.hashCode;
-      }
-    }
-    return hashCode;
+    return sql.hashCode ^
+        triggerOnTables.hashCode ^
+        parameters.hashCode ^
+        fromMap.hashCode ^
+        dbPath.hashCode;
   }
 
   // Use this only to pick specific items, not cached.
   Future<List<T>> readMultiple(
-    SqliteWriteContext tx, {
-    required AppSettings appSettings,
-    required bool validate,
-  }) async {
+    SqliteWriteContext tx,
+  ) async {
     _infoLogger('cmd: $sql, $parameters');
     final objs = (await tx.getAll(sql, parameters ?? []))
         .map(fromMap)
@@ -103,11 +100,7 @@ class DBQuery<T> {
     return objs;
   }
 
-  Future<T?> read(
-    SqliteWriteContext tx, {
-    required AppSettings appSettings,
-    required bool validate,
-  }) async {
+  Future<T?> read(SqliteWriteContext tx) async {
     _infoLogger('cmd: $sql, $parameters');
     final obj =
         (await tx.getAll(sql, parameters ?? [])).map(fromMap).firstOrNull;
