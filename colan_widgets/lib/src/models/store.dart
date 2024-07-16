@@ -28,22 +28,6 @@ abstract class Store {
       required String targetDir,
     }) onPrepareMedia,
   });
-  Future<CLMedia?> setCollection4Media({
-    required int collectionId,
-    required CLMedia media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  });
-  Future<void> setCollection4MultipleMedia({
-    required int collectionId,
-    required List<CLMedia>? media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  });
 
   Future<void> deleteCollection(
     Collection collection, {

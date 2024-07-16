@@ -49,95 +49,8 @@ class DBManager extends Store {
     required Collection collection,
   }) async {
     return db.writeTransaction<Collection>((tx) async {
-      final collectionWithId = await dbWriter.upsertCollection(tx, collection);
-      return collectionWithId;
+      return dbWriter.upsertCollection(tx, collection);
     });
-  }
-
-  @override
-  Future<void> upsertMediaMultiple({
-    required int collectionId,
-    required List<CLMedia>? media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  }) async {
-    await db.writeTransaction((tx) async {
-      if (media?.isEmpty ?? true) return;
-
-      await dbWriter.upsertMediaMultiple(tx, media!);
-    });
-  }
-
-  @override
-  Future<CLMedia?> upsertMedia(CLMedia media) async {
-    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
-      try {
-        return await dbWriter.upsertMedia(tx, media);
-      } catch (e) {
-        return null;
-      }
-    });
-    return dbMedia;
-  }
-
-  /* @override
-  Future<CLMedia?> upsertMedia({
-    required int collectionId,
-    required CLMedia media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  }) async {
-    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
-      try {
-        final updated = await onPrepareMedia(
-          media.copyWith(collectionId: collectionId),
-          targetDir: dbWriter.appSettings.validPrefix(),
-        );
-        return await dbWriter.upsertMedia(tx, updated);
-      } catch (e) {
-        return null;
-      }
-    });
-    return dbMedia;
-  } */
-
-  @override
-  Future<void> setCollection4MultipleMedia({
-    required int collectionId,
-    required List<CLMedia>? media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  }) async {
-    await db.writeTransaction((tx) async {
-      if (media?.isEmpty ?? true) return;
-
-      await dbWriter.upsertMediaMultiple(tx, media!);
-    });
-  }
-
-  @override
-  Future<CLMedia?> setCollection4Media({
-    required int collectionId,
-    required CLMedia media,
-    required Future<CLMedia> Function(
-      CLMedia media, {
-      required String targetDir,
-    }) onPrepareMedia,
-  }) async {
-    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
-      try {
-        return await dbWriter.upsertMedia(tx, media);
-      } catch (e) {
-        return null;
-      }
-    });
-    return dbMedia;
   }
 
   @override
@@ -152,6 +65,33 @@ class DBManager extends Store {
         onDeleteFile: onDeleteFile,
       );
     });
+  }
+
+  @override
+  Future<void> upsertMediaMultiple({
+    required int collectionId,
+    required List<CLMedia>? media,
+    required Future<CLMedia> Function(
+      CLMedia media, {
+      required String targetDir,
+    }) onPrepareMedia,
+  }) async {
+    await db.writeTransaction((tx) async {
+      if (media?.isEmpty ?? true) return;
+      await dbWriter.upsertMediaMultiple(tx, media!);
+    });
+  }
+
+  @override
+  Future<CLMedia?> upsertMedia(CLMedia media) async {
+    final dbMedia = await db.writeTransaction<CLMedia?>((tx) async {
+      try {
+        return await dbWriter.upsertMedia(tx, media);
+      } catch (e) {
+        return null;
+      }
+    });
+    return dbMedia;
   }
 
   @override
