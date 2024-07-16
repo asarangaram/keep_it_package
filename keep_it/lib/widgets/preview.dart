@@ -10,7 +10,6 @@ class Preview extends StatelessWidget {
   Widget build(BuildContext context) {
     return PreviewService(
       media: media,
-      getPreviewPath: TheStore.of(context).getPreviewPath,
       keepAspectRatio: false,
     );
   }

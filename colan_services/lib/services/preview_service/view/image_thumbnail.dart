@@ -12,7 +12,6 @@ class ImageThumbnail extends ConsumerStatefulWidget {
   const ImageThumbnail({
     required this.media,
     required this.builder,
-    required this.getPreviewPath,
     super.key,
     this.refresh = false,
   });
@@ -20,7 +19,6 @@ class ImageThumbnail extends ConsumerStatefulWidget {
   final bool refresh;
   final Widget Function(BuildContext context, AsyncValue<File> thumbnailFile)
       builder;
-  final String Function(CLMedia media) getPreviewPath;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => FetchThumbnailState();
@@ -49,7 +47,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
         });
       }
     }
-    final previewPath = widget.getPreviewPath(widget.media);
+    final previewPath = TheStore.of(context).getPreviewPath(widget.media);
 
     final hasThumbnail = !widget.refresh && File(previewPath).existsSync();
     if (hasThumbnail) {
