@@ -93,7 +93,7 @@ class StoreActions {
   }) moveToCollectionStream;
 
   final Stream<Progress> Function({
-    required List<CLMedia> media,
+    required List<CLMediaFile> mediaFiles,
     required void Function({
       required List<CLMedia> mg,
     }) onDone,

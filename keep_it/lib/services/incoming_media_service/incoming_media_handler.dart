@@ -11,7 +11,7 @@ class IncomingMediaHandler extends StatelessWidget {
     required this.onDiscard,
     super.key,
   });
-  final CLSharedMedia incomingMedia;
+  final CLMediaFileGroup incomingMedia;
   final void Function({required bool result}) onDiscard;
 
   @override
@@ -31,7 +31,7 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
     required this.onSave,
     super.key,
   });
-  final CLSharedMedia incomingMedia;
+  final CLMediaFileGroup incomingMedia;
   final void Function({required bool result}) onDiscard;
   final Future<void> Function(List<CLMedia> media, UniversalMediaSource type)
       onSave;

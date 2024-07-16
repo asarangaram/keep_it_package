@@ -21,7 +21,7 @@ class BottomNavigationPage extends ConsumerStatefulWidget {
   final List<CLShellRouteDescriptor> routes;
   final Widget Function(
     BuildContext context, {
-    required CLSharedMedia incomingMedia,
+    required CLMediaFileGroup incomingMedia,
     required void Function({required bool result}) onDiscard,
   }) onMedia;
 

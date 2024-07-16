@@ -492,7 +492,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   static const tempCollectionName = '*** Recently Captured';
 
   Stream<Progress> analyseMediaStream({
-    required List<CLMedia> media,
+    required List<CLMediaFile> mediaFiles,
     required void Function({
       required List<CLMedia> mg,
     }) onDone,
@@ -500,10 +500,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final candidates = <CLMedia>[];
     //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
-      currentItem: media[0].label,
+      currentItem: path_handler.basename(mediaFiles[0].path),
       fractCompleted: 0,
     );
-    for (final (i, item0) in media.indexed) {
+    for (final (i, item0) in mediaFiles.indexed) {
       final item1 = await tryDownloadMedia(
         item0,
         appSettings: widget.appSettings,
@@ -517,10 +517,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       }
       if (item.type.isFile) {
         final file = File(
-          path_handler.join(
-            widget.appSettings.directories.media.pathString,
-            item.label,
-          ),
+          item.path,
         );
         if (file.existsSync()) {
           final md5String = await file.checksum;
@@ -544,10 +541,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             ///     delete the original file (if it is mobile platform)
 
             final savedMediaFile = File(
-              path_handler.join(
-                widget.appSettings.directories.media.pathString,
-                item.label,
-              ),
+              item.path,
             ).copyTo(widget.appSettings.directories.media.path);
 
             final savedMedia = await CLMedia(
@@ -574,10 +568,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await Future<void>.delayed(const Duration(milliseconds: 10));
 
       yield Progress(
-        currentItem: (i + 1 == media.length) ? '' : media[i + 1].label,
-        fractCompleted: (i + 1) / media.length,
+        currentItem: (i + 1 == mediaFiles.length)
+            ? ''
+            : path_handler.basename(
+                mediaFiles[i + 1].path,
+              ),
+        fractCompleted: (i + 1) / mediaFiles.length,
       );
     }
+
     await Future<void>.delayed(const Duration(milliseconds: 10));
     onDone(
       mg: candidates,
@@ -678,19 +677,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
   final uuidGenerator = const Uuid();
 
-  // TODO
-  static Future<CLMedia> tryDownloadMedia(
-    CLMedia item0, {
+  static Future<CLMediaFile> tryDownloadMedia(
+    CLMediaFile mediaFile, {
     required AppSettings appSettings,
   }) async {
-    if (item0.type != CLMediaType.url) {
-      return item0;
+    if (mediaFile.type != CLMediaType.url) {
+      return mediaFile;
     }
     final mimeType = await URLHandler.getMimeType(
-      path_handler.join(
-        appSettings.directories.media.pathString,
-        item0.label,
-      ),
+      mediaFile.path,
     );
     if (![
       CLMediaType.image,
@@ -698,40 +693,35 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       CLMediaType.audio,
       CLMediaType.file,
     ].contains(mimeType)) {
-      return item0;
+      return mediaFile;
     }
     final downloadedFile = await URLHandler.download(
-      item0.label, // TODO:
+      mediaFile.path,
       appSettings.directories.downloadedMedia.path,
     );
     if (downloadedFile == null) {
-      return item0;
+      return mediaFile;
     }
-    return item0.copyWith(path: downloadedFile, type: mimeType);
+    return mediaFile.copyWith(path: downloadedFile, type: mimeType);
   }
 
-  static Future<CLMedia> identifyMediaType(
-    CLMedia item0, {
+  static Future<CLMediaFile> identifyMediaType(
+    CLMediaFile mediaFile, {
     required AppSettings appSettings,
   }) async {
-    if (item0.type != CLMediaType.file) {
-      return item0;
+    if (mediaFile.type != CLMediaType.file) {
+      return mediaFile;
     }
-    // TODO
-    final mimeType = switch (lookupMimeType(
-      path_handler.join(
-        appSettings.directories.media.pathString,
-        item0.label,
-      ),
-    )) {
+
+    final mimeType = switch (lookupMimeType(mediaFile.path)) {
       (final String mime) when mime.startsWith('image') => CLMediaType.image,
       (final String mime) when mime.startsWith('video') => CLMediaType.video,
       _ => CLMediaType.file
     };
     if (mimeType == CLMediaType.file) {
-      return item0;
+      return mediaFile;
     }
-    return item0.copyWith(type: mimeType);
+    return mediaFile.copyWith(type: mimeType);
   }
 
   Future<bool> removeMediaFromGallery(

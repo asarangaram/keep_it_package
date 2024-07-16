@@ -9,7 +9,7 @@ class AnalysePage extends StatelessWidget {
     required this.onCancel,
     super.key,
   });
-  final CLSharedMedia incomingMedia;
+  final CLMediaFileGroup incomingMedia;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
@@ -22,9 +22,15 @@ class AnalysePage extends StatelessWidget {
         onCancel: onCancel,
         child: StreamProgressView(
           stream: () => TheStore.of(context).analyseMediaStream(
-            media: incomingMedia.entries,
+            mediaFiles: incomingMedia.entries,
             onDone: ({required List<CLMedia> mg}) {
-              onDone(mg: incomingMedia.copyWith(entries: mg));
+              onDone(
+                mg: CLSharedMedia(
+                  entries: mg,
+                  collection: incomingMedia.collection,
+                  type: incomingMedia.type,
+                ),
+              );
             },
           ),
           onCancel: onCancel,

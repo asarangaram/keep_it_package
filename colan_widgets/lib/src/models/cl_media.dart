@@ -5,8 +5,46 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../extensions/ext_datetime.dart';
+import '../extensions/ext_file.dart';
 import '../extensions/ext_string.dart';
 import 'cl_media_type.dart';
+
+@immutable
+class CLMediaFile {
+  const CLMediaFile({
+    required this.path,
+    required this.type,
+  });
+  final String path;
+  final CLMediaType type;
+
+  Future<void> deleteFile() async {
+    await File(path).deleteIfExists();
+  }
+
+  CLMediaFile copyWith({
+    String? path,
+    CLMediaType? type,
+  }) {
+    return CLMediaFile(
+      path: path ?? this.path,
+      type: type ?? this.type,
+    );
+  }
+
+  @override
+  String toString() => 'CLMediaFile(path: $path, type: $type)';
+
+  @override
+  bool operator ==(covariant CLMediaFile other) {
+    if (identical(this, other)) return true;
+
+    return other.path == path && other.type == type;
+  }
+
+  @override
+  int get hashCode => path.hashCode ^ type.hashCode;
+}
 
 @immutable
 class CLMedia {

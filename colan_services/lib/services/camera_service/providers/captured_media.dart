@@ -8,13 +8,6 @@ class CapturedMediaNotifier extends StateNotifier<List<CLMedia>> {
     state = [...state, media];
   }
 
-  void onDiscard() {
-    for (final e in state) {
-      e.deleteFile();
-    }
-    state = [];
-  }
-
   void clear() {
     // Called after handing over the files to some other module.
     // We can ignore as deleting those files is the new owners responsibility

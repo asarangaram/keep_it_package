@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
@@ -5,6 +6,21 @@ import 'cl_media.dart';
 import 'cl_media_type.dart';
 import 'collection.dart';
 import 'universal_media_source.dart';
+
+@immutable
+class CLMediaFileGroup {
+  const CLMediaFileGroup({
+    required this.entries,
+    required this.type,
+    this.collection,
+  });
+  final List<CLMediaFile> entries;
+  final Collection? collection;
+  final UniversalMediaSource? type;
+
+  bool get isEmpty => entries.isEmpty;
+  bool get isNotEmpty => entries.isNotEmpty;
+}
 
 @immutable
 class CLSharedMedia {

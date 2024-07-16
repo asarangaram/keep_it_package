@@ -198,7 +198,7 @@ class KeepItApp implements AppDescriptor {
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
         BuildContext context, {
-        required CLSharedMedia incomingMedia,
+        required CLMediaFileGroup incomingMedia,
         required void Function({required bool result}) onDiscard,
       }) =>
           FullscreenLayout(

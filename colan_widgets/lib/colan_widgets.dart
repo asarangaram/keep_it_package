@@ -22,7 +22,7 @@ export 'src/extensions/ext_list.dart';
 export 'src/extensions/ext_string.dart';
 export 'src/models/action_control.dart';
 export 'src/models/cl_media.dart';
-export 'src/models/cl_media/extensions/io_ext_on_cl_media.dart';
+
 export 'src/models/cl_media/extensions/url_handler.dart';
 export 'src/models/cl_media_type.dart';
 export 'src/models/cl_menu_item.dart';

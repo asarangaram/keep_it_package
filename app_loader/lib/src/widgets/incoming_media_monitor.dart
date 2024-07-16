@@ -14,11 +14,11 @@ class IncomingMediaMonitor extends ConsumerWidget {
   final Widget child;
   final Widget Function(
     BuildContext context, {
-    required CLSharedMedia incomingMedia,
+    required CLMediaFileGroup incomingMedia,
     required void Function({required bool result}) onDiscard,
   }) onMedia;
 
-  static void pushMedia(WidgetRef ref, CLSharedMedia sharedMedia) {
+  static void pushMedia(WidgetRef ref, CLMediaFileGroup sharedMedia) {
     ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);
   }
 
@@ -33,10 +33,10 @@ class IncomingMediaMonitor extends ConsumerWidget {
     if (pickedFileList.isNotEmpty) {
       final items = pickedFileList
           .map(
-            (xfile) => CLMedia(path: xfile.path, type: CLMediaType.file),
+            (xfile) => CLMediaFile(path: xfile.path, type: CLMediaType.file),
           )
           .toList();
-      final sharedMedia = CLSharedMedia(
+      final sharedMedia = CLMediaFileGroup(
         entries: items,
         collection: collection,
         type: UniversalMediaSource.filePick,
