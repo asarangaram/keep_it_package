@@ -15,6 +15,7 @@ import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
 
 import '../services/media_wizard_service/media_wizard_service.dart';
+import 'dialogs.dart';
 import 'preview.dart';
 
 extension ExtMetaData on CLMedia {
@@ -105,6 +106,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       deleteCollection: deleteCollection,
       deleteNote: onDeleteNote,
       deleteMediaMultiple: deleteMediaMultiple,
+      permanentlyDeleteMediaMultiple: permanentlyDeleteMediaMultiple,
 
       /// Share modules
       shareMediaMultiple: shareMediaMultiple,
@@ -183,16 +185,26 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> deleteMediaMultiple(
-    List<CLMedia> mediaMultiple, {
-    required bool? confirmed,
-    bool deletePermanantly = false,
-  }) async {
-    if (confirmed == null || !confirmed) {
-      return false;
-    }
+  Future<bool> permanentlyDeleteMediaMultiple(
+    List<CLMedia> mediaMultiple,
+  ) async {
     if (mediaMultiple.isEmpty) {
       return true;
+    }
+    final bool confirmed;
+
+    confirmed = await ConfirmAction.permanentlyDeleteMediaMultiple(
+          context,
+          media: mediaMultiple,
+          onConfirm: () async {
+            return true;
+          },
+          getPreview: (media) => Preview(media: media),
+        ) ??
+        false;
+
+    if (!confirmed) {
+      return confirmed;
     }
 
     // Remove Pins first..
@@ -205,7 +217,56 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
 
     for (final m in mediaMultiple) {
-      await widget.storeInstance.deleteMedia(m, permanent: deletePermanantly);
+      await widget.storeInstance.deleteMedia(m, permanent: true);
+      await File(
+        path_handler.join(
+          widget.appSettings.directories.notes.pathString,
+          m.path,
+        ),
+      ).deleteIfExists();
+    }
+    // TODO(anandas): :  HAndle orphan Notes here.
+
+    return true;
+  }
+
+  Future<bool> deleteMediaMultiple(
+    List<CLMedia> mediaMultiple,
+  ) async {
+    if (mediaMultiple.isEmpty) {
+      return true;
+    }
+    final bool confirmed;
+
+    confirmed = await ConfirmAction.deleteMediaMultiple(
+          context,
+          media: mediaMultiple,
+          onConfirm: () async {
+            return true;
+          },
+          getPreview: (media) => Preview(media: media),
+        ) ??
+        false;
+
+    if (!confirmed) {
+      return confirmed;
+    }
+
+    if (!confirmed) {
+      return false;
+    }
+
+    // Remove Pins first..
+    await removeMultipleMediaFromGallery(
+      mediaMultiple
+          .map((e) => e.pin)
+          .where((e) => e != null)
+          .map((e) => e!)
+          .toList(),
+    );
+
+    for (final m in mediaMultiple) {
+      await widget.storeInstance.deleteMedia(m, permanent: false);
       await File(
         path_handler.join(
           widget.appSettings.directories.notes.pathString,
@@ -457,9 +518,24 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> restoreMediaMultiple(
-    List<CLMedia> mediaMultiple, {
-    required bool? confirmed,
-  }) async {
+    List<CLMedia> mediaMultiple,
+  ) async {
+    final bool confirmed;
+
+    confirmed = await ConfirmAction.restoreMediaMultiple(
+          context,
+          media: mediaMultiple,
+          onConfirm: () async {
+            return true;
+          },
+          getPreview: (media) => Preview(media: media),
+        ) ??
+        false;
+
+    if (!confirmed) {
+      return confirmed;
+    }
+
     for (final item in mediaMultiple) {
       if (item.id != null) {
         await widget.storeInstance.upsertMedia(item.copyWith(isDeleted: false));
@@ -630,14 +706,27 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
   }
 
-  Future<void> onDeleteNote(
-    CLNote note, {
-    required bool? confirmed,
-  }) async {
+  Future<void> onDeleteNote(CLNote note) async {
     if (note.id == null) return;
-    await widget.storeInstance.deleteNote(
-      note,
-    );
+    final bool confirmed;
+    if (note.type == CLNoteTypes.text) {
+      confirmed = await ConfirmAction.deleteNote(
+            context,
+            note: note,
+            onConfirm: () async {
+              return true;
+            },
+          ) ??
+          false;
+    } else {
+      confirmed = true;
+    }
+
+    if (!confirmed) {
+      return;
+    }
+
+    await widget.storeInstance.deleteNote(note);
   }
 
   Future<String> createTempFile({required String ext}) async {
@@ -679,11 +768,19 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> deleteCollection(
-    Collection collection, {
-    required bool? confirmed,
-  }) async {
+    Collection collection,
+  ) async {
+    final res = await ConfirmAction.deleteCollection(
+          context,
+          collection: collection,
+          onConfirm: () async => true,
+        ) ??
+        false;
+    if (!res) {
+      return res;
+    }
     await widget.storeInstance.deleteCollection(collection);
-    return true;
+    return res;
   }
 
   final uuidGenerator = const Uuid();

@@ -50,13 +50,7 @@ class MediaView extends ConsumerWidget {
                 .openWizard([media], UniversalMediaSource.move),
           ),
           onDelete: ac.onDelete(() async {
-            return ConfirmAction.deleteMedia(
-              context,
-              media: media,
-              getPreview: getPreview,
-              onConfirm: () => TheStore.of(context)
-                  .deleteMediaMultiple([media], confirmed: true),
-            );
+            return TheStore.of(context).deleteMediaMultiple([media]);
           }),
           onShare: ac
               .onShare(() => TheStore.of(context).shareMediaMultiple([media])),

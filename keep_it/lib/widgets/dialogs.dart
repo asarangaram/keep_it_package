@@ -1,8 +1,7 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../models/cl_media.dart';
-import '../models/cl_note.dart';
-import '../models/collection.dart';
+import 'store_manager.dart';
 
 class ConfirmAction {
   static Future<bool?> template(
@@ -14,55 +13,57 @@ class ConfirmAction {
   }) async =>
       showDialog<bool?>(
         context: context,
-        builder: (BuildContext context) => AlertDialog(
-          alignment: Alignment.center,
-          title: Text(title),
-          content: (child != null || message.isNotEmpty)
-              ? SizedBox.square(
-                  dimension: 200,
-                  child: Column(
-                    children: [
-                      Flexible(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
+        builder: (BuildContext context) => StoreManager(
+          child: AlertDialog(
+            alignment: Alignment.center,
+            title: Text(title),
+            content: (child != null || message.isNotEmpty)
+                ? SizedBox.square(
+                    dimension: 200,
+                    child: Column(
+                      children: [
+                        Flexible(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: child ?? const SizedBox.shrink(),
                             ),
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: child ?? const SizedBox.shrink(),
-                          ),
                         ),
-                      ),
-                      if (message.isNotEmpty) Text(message),
-                    ],
+                        if (message.isNotEmpty) Text(message),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
+            actions: [
+              ButtonBar(
+                alignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('No'),
                   ),
-                )
-              : const SizedBox.shrink(),
-          actions: [
-            ButtonBar(
-              alignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('No'),
-                ),
-                ElevatedButton(
-                  child: const Text('Yes'),
-                  onPressed: () async {
-                    await onConfirm?.call();
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
+                  ElevatedButton(
+                    child: const Text('Yes'),
+                    onPressed: () async {
+                      await onConfirm?.call();
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
 

@@ -30,6 +30,7 @@ class StoreActions {
     required this.replaceMedia,
     required this.cloneAndReplaceMedia,
     required this.deleteMediaMultiple,
+    required this.permanentlyDeleteMediaMultiple,
     required this.restoreMediaMultiple,
     required this.pinMediaMultiple,
     required this.removePinMediaMultiple,
@@ -102,24 +103,22 @@ class StoreActions {
 
   /////////////////////////////////////////////////////////////////////////////////
   final Future<bool> Function(
-    Collection collection, {
-    required bool? confirmed,
-  }) deleteCollection;
+    Collection collection,
+  ) deleteCollection;
 
   final Future<bool> Function(
-    List<CLMedia> mediaMultiple, {
-    required bool? confirmed,
-  }) deleteMediaMultiple;
+    List<CLMedia> mediaMultiple,
+  ) deleteMediaMultiple;
 
   final Future<bool> Function(
-    List<CLMedia> mediaMultiple, {
-    required bool? confirmed,
-  }) restoreMediaMultiple;
+    List<CLMedia> mediaMultiple,
+  ) permanentlyDeleteMediaMultiple;
 
-  final Future<void> Function(
-    CLNote note, {
-    required bool? confirmed,
-  }) deleteNote;
+  final Future<bool> Function(
+    List<CLMedia> mediaMultiple,
+  ) restoreMediaMultiple;
+
+  final Future<void> Function(CLNote note) deleteNote;
 
   /////////////////////////////////////////////////////////////////////////////////
 

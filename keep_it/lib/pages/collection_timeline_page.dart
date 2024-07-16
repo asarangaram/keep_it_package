@@ -127,15 +127,7 @@ class TimeLineView extends ConsumerWidget {
             title: 'Delete',
             icon: Icons.delete,
             onTap: () async {
-              return ConfirmAction.deleteMediaMultiple(
-                context,
-                media: items,
-                getPreview: (media) => Preview(
-                  media: media,
-                ),
-                onConfirm: () => TheStore.of(context)
-                    .deleteMediaMultiple(items, confirmed: true),
-              );
+              return TheStore.of(context).deleteMediaMultiple(items);
             },
           ),
           CLMenuItem(

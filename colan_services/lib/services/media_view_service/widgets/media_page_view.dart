@@ -84,13 +84,8 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                 .openWizard([media], UniversalMediaSource.move),
           ),
           onDelete: ac.onDelete(() async {
-            return ConfirmAction.deleteMedia(
-              context,
-              media: media,
-              getPreview: widget.getPreview,
-              onConfirm: () => TheStore.of(context)
-                  .deleteMediaMultiple([media], confirmed: true),
-            );
+            await TheStore.of(context).deleteMediaMultiple([media]);
+            return null;
           }),
           onShare: ac
               .onShare(() => TheStore.of(context).shareMediaMultiple([media])),

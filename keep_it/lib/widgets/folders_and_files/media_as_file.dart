@@ -28,13 +28,7 @@ class MediaAsFile extends ConsumerWidget {
       onMove: () =>
           TheStore.of(context).openWizard([media], UniversalMediaSource.move),
       onDelete: () async {
-        return ConfirmAction.deleteMedia(
-          context,
-          media: media,
-          getPreview: getPreview,
-          onConfirm: () => TheStore.of(context)
-              .deleteMediaMultiple([media], confirmed: true),
-        );
+        return TheStore.of(context).deleteMediaMultiple([media]);
       },
       onShare: () => TheStore.of(context).shareMediaMultiple([media]),
       onEdit:

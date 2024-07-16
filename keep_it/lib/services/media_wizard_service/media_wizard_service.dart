@@ -176,15 +176,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       onTap: hasCandidate
                           ? () async {
                               final res =
-                                  await ConfirmAction.deleteMediaMultiple(
-                                context,
-                                media: currMedia,
-                                getPreview: widget.getPreview,
-                                onConfirm: () =>
-                                    TheStore.of(context).deleteMediaMultiple(
-                                  currMedia,
-                                  confirmed: true,
-                                ),
+                                  TheStore.of(context).deleteMediaMultiple(
+                                currMedia,
                               );
 
                               await ref

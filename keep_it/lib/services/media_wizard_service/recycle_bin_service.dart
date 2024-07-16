@@ -110,25 +110,21 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                   keepSelected = true;
                   setState(() {});
 
-                  final res = await ConfirmAction.restoreMediaMultiple(
-                    context,
-                    media: currMedia,
-                    getPreview: widget.getPreview,
-                    onConfirm: () => TheStore.of(context)
-                        .restoreMediaMultiple(currMedia, confirmed: true),
-                  );
+                  final res = await TheStore.of(context)
+                      .restoreMediaMultiple(currMedia);
 
-                  await ref
-                      .read(
-                        universalMediaProvider(widget.type).notifier,
-                      )
-                      .remove(candidate.entries);
-                  selectedMedia = const CLSharedMedia(entries: []);
-                  keepSelected = false;
+                  if (res) {
+                    await ref
+                        .read(
+                          universalMediaProvider(widget.type).notifier,
+                        )
+                        .remove(candidate.entries);
+                    selectedMedia = const CLSharedMedia(entries: []);
+                    keepSelected = false;
 
-                  isSelectionMode = false;
-                  setState(() {});
-
+                    isSelectionMode = false;
+                    setState(() {});
+                  }
                   return res;
                 }
               : null,
@@ -139,25 +135,21 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                 icon: Icons.delete,
                 onTap: hasCandidate
                     ? () async {
-                        final res =
-                            await ConfirmAction.permanentlyDeleteMediaMultiple(
-                          context,
-                          media: currMedia,
-                          getPreview: widget.getPreview,
-                          onConfirm: () => TheStore.of(context)
-                              .deleteMediaMultiple(currMedia, confirmed: true),
-                        );
+                        final res = await TheStore.of(context)
+                            .permanentlyDeleteMediaMultiple(currMedia);
 
-                        await ref
-                            .read(
-                              universalMediaProvider(widget.type).notifier,
-                            )
-                            .remove(candidate.entries);
-                        selectedMedia = const CLSharedMedia(entries: []);
-                        keepSelected = false;
+                        if (res) {
+                          await ref
+                              .read(
+                                universalMediaProvider(widget.type).notifier,
+                              )
+                              .remove(candidate.entries);
+                          selectedMedia = const CLSharedMedia(entries: []);
+                          keepSelected = false;
 
-                        isSelectionMode = false;
-                        setState(() {});
+                          isSelectionMode = false;
+                          setState(() {});
+                        }
 
                         return res;
                       }
