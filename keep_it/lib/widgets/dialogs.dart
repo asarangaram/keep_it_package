@@ -48,15 +48,15 @@ class ConfirmAction {
                 alignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(context).pop(false),
                     child: const Text('No'),
                   ),
                   ElevatedButton(
                     child: const Text('Yes'),
                     onPressed: () async {
-                      await onConfirm?.call();
+                      final res = await onConfirm?.call();
                       if (context.mounted) {
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop(res);
                       }
                     },
                   ),
