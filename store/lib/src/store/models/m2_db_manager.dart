@@ -97,71 +97,10 @@ class DBManager extends Store {
   //////////////////////////////////////////////////////////////////////////////
 
   @override
-  Future<void> togglePin(
-    CLMedia media, {
-    required Future<String?> Function(
-      CLMedia media, {
-      required String title,
-      String? desc,
-    }) onPin,
-    required Future<bool> Function(String id) onRemovePin,
-  }) async {
-    await db.writeTransaction((tx) async {
-      await dbWriter.togglePin(
-        tx,
-        media,
-        onPin: onPin,
-        onRemovePin: onRemovePin,
-      );
-    });
-  }
-
-  @override
-  Future<void> pinMediaMultiple(
-    List<CLMedia> media, {
-    required Future<String?> Function(
-      CLMedia media, {
-      required String title,
-      String? desc,
-    }) onPin,
-    required Future<bool> Function(String id) onRemovePin,
-  }) async {
-    await db.writeTransaction((tx) async {
-      await dbWriter.pinMediaMultiple(
-        tx,
-        media,
-        onPin: onPin,
-        onRemovePin: onRemovePin,
-      );
-    });
-  }
-
-  @override
-  Future<void> unpinMediaMultiple(
-    List<CLMedia> media, {
-    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
-  }) async {
-    await db.writeTransaction((tx) async {
-      await dbWriter.unpinMediaMultiple(
-        tx,
-        media,
-        onRemovePinMultiple: onRemovePinMultiple,
-      );
-    });
-  }
-
-  @override
-  Future<List<Object?>?> rawQuery(
-    String query,
-  ) async {
-    final json = (await db.getAll(query, [])).rows.map((e) => e[0]).toList();
-
-    return json;
-  }
-
-  @override
   Future<List<Object?>?> getDBRecords() async {
-    final dbArchive = await rawQuery(backupQuery);
+    final dbArchive =
+        (await db.getAll(backupQuery, [])).rows.map((e) => e[0]).toList();
+
     return dbArchive;
   }
 

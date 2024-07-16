@@ -96,8 +96,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       newMediaMultipleStream: analyseMediaStream,
       moveToCollectionStream: moveToCollectionStream,
       restoreMediaMultiple: restoreMediaMultiple,
-      togglePin: togglePin,
-
+      pinMediaMultiple: pinMediaMultiple,
+      removePinMediaMultiple: removePinMediaMultiple,
+      togglePinMultiple: togglePinMultiple,
       replaceMedia: replaceMedia,
       cloneAndReplaceMedia: cloneAndReplaceMedia,
 
@@ -159,8 +160,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> openMoveWizard(List<CLMedia> selectedMedia) async {
-    if (selectedMedia.isEmpty) {
+  Future<bool> openMoveWizard(List<CLMedia> mediaMultiple) async {
+    if (mediaMultiple.isEmpty) {
       return true;
     }
 
@@ -168,7 +169,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       context,
       ref,
       media: CLSharedMedia(
-        entries: selectedMedia,
+        entries: mediaMultiple,
         type: UniversalMediaSource.move,
       ),
     );
@@ -217,13 +218,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> shareMediaMultiple(List<CLMedia> selectedMedia) async {
-    if (selectedMedia.isEmpty) {
+  Future<bool> shareMediaMultiple(List<CLMedia> mediaMultiple) async {
+    if (mediaMultiple.isEmpty) {
       return true;
     }
     final box = context.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
-      selectedMedia
+      mediaMultiple
           .map(
             (e) => path_handler.join(
               widget.appSettings.directories.media.pathString,
@@ -236,21 +237,21 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> openEditor(
-    List<CLMedia> selectedMedia, {
+    List<CLMedia> mediaMultiple, {
     required bool canDuplicateMedia,
   }) async {
-    if (selectedMedia.isEmpty) {
+    if (mediaMultiple.isEmpty) {
       return true;
     }
-    if (selectedMedia.length == 1) {
-      if (selectedMedia[0].pin != null) {
+    if (mediaMultiple.length == 1) {
+      if (mediaMultiple[0].pin != null) {
         await ref.read(notificationMessageProvider.notifier).push(
               "Unpin to edit.\n Pinned items can't be edited",
             );
         return false;
       } else {
         await context.push(
-          '/mediaEditor?id=${selectedMedia[0].id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
+          '/mediaEditor?id=${mediaMultiple[0].id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
         );
         return true;
       }
@@ -258,47 +259,50 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return false;
   }
 
-  Future<bool> togglePin(List<CLMedia> selectedMedia) async {
-    if (selectedMedia.isEmpty) {
-      return true;
-    }
-    if (selectedMedia.length == 1) {
-      await widget.storeInstance.togglePin(
-        selectedMedia[0],
-        onPin: (media, {required title, desc}) {
-          return albumManager.addMedia(
-            path_handler.join(
-              widget.appSettings.directories.media.pathString,
-              media.label,
-            ),
-            title: title,
-            isImage: media.type == CLMediaType.image,
-            isVideo: media.type == CLMediaType.video,
-            desc: desc,
-          );
-        },
-        onRemovePin: (id) async => removeMediaFromGallery(id),
-      );
-      return true;
+  Future<bool> togglePinMultiple(List<CLMedia> mediaMultiple) async {
+    if (mediaMultiple.any((e) => e.pin == null)) {
+      return pinMediaMultiple(mediaMultiple);
     } else {
-      await widget.storeInstance.pinMediaMultiple(
-        selectedMedia,
-        onPin: (media, {required title, desc}) {
-          return albumManager.addMedia(
-            path_handler.join(
-              widget.appSettings.directories.media.pathString,
-              media.label,
-            ),
-            title: title,
-            isImage: media.type == CLMediaType.image,
-            isVideo: media.type == CLMediaType.video,
-            desc: desc,
-          );
-        },
-        onRemovePin: (id) async => removeMediaFromGallery(id),
-      );
+      return removePinMediaMultiple(mediaMultiple);
+    }
+  }
+
+  Future<bool> removePinMediaMultiple(List<CLMedia> mediaMultiple) async {
+    final pinnedMedia = mediaMultiple.where((e) => e.pin != null).toList();
+    final res = await removeMultipleMediaFromGallery(
+      pinnedMedia.map((e) => e.pin!).toList(),
+    );
+    if (res) {
+      await upsertMediaMultiple(pinnedMedia.map((e) => e.removePin()).toList());
+      // store medial
+    }
+    return res;
+  }
+
+  Future<bool> pinMediaMultiple(List<CLMedia> mediaMultiple) async {
+    if (mediaMultiple.isEmpty) {
       return true;
     }
+    final updatedMedia = <CLMedia>[];
+    for (final media in mediaMultiple) {
+      if (media.pin != null) {
+        final pin = await albumManager.addMedia(
+          path_handler.join(
+            widget.appSettings.directories.media.pathString,
+            media.label,
+          ),
+          title: media.path,
+          isImage: media.type == CLMediaType.image,
+          isVideo: media.type == CLMediaType.video,
+          desc: 'KeepIT',
+        );
+        if (pin != null) {
+          updatedMedia.add(media.copyWith(pin: pin));
+        }
+      }
+    }
+    await upsertMediaMultiple(updatedMedia);
+    return true;
   }
 
   Future<bool> replaceMedia(CLMedia originalMedia, String outFile) async {
@@ -388,7 +392,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
   //Can be converted to non static
   Stream<Progress> moveToCollectionStream(
-    List<CLMedia> selectedMedia, {
+    List<CLMedia> mediaMultiple, {
     required Collection collection,
     required void Function() onDone,
   }) async* {
@@ -404,12 +408,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       updatedCollection = collection;
     }
 
-    if (selectedMedia.isNotEmpty) {
+    if (mediaMultiple.isNotEmpty) {
       final streamController = StreamController<Progress>();
 
       unawaited(
         upsertMediaMultiple(
-          selectedMedia
+          mediaMultiple
               .map(
                 (e) => e.copyWith(
                   isHidden: false,
@@ -438,14 +442,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<void> upsertMediaMultiple(
-    List<CLMedia> selectedMedia, {
+    List<CLMedia> mediaMultiple, {
     void Function(Progress progress)? onProgress,
   }) async {
-    for (final (i, m) in selectedMedia.indexed) {
+    for (final (i, m) in mediaMultiple.indexed) {
       await widget.storeInstance.upsertMedia(m);
       onProgress?.call(
         Progress(
-          fractCompleted: i / selectedMedia.length,
+          fractCompleted: i / mediaMultiple.length,
           currentItem: m.label,
         ),
       );
@@ -453,10 +457,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> restoreMediaMultiple(
-    List<CLMedia> selectedMedia, {
+    List<CLMedia> mediaMultiple, {
     required bool? confirmed,
   }) async {
-    for (final item in selectedMedia) {
+    for (final item in mediaMultiple) {
       if (item.id != null) {
         await widget.storeInstance.upsertMedia(item.copyWith(isDeleted: false));
       }

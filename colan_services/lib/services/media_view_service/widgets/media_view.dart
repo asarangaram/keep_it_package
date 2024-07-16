@@ -69,7 +69,8 @@ class MediaView extends ConsumerWidget {
                     canDuplicateMedia: ac.canDuplicateMedia,
                   ),
                 ),
-          onPin: ac.onPin(() => TheStore.of(context).togglePin([media])),
+          onPin:
+              ac.onPin(() => TheStore.of(context).togglePinMultiple([media])),
           media: item,
         ),
       ],

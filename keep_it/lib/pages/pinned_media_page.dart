@@ -36,7 +36,8 @@ class PinnedMediaPage extends ConsumerWidget {
                           actionControl: ActionControl.full(),
                         );
                       },
-                      onLongPress: () => TheStore.of(context).togglePin([item]),
+                      onLongPress: () =>
+                          TheStore.of(context).togglePinMultiple([item]),
                       child: Preview(media: item),
                     ),
                   ),
@@ -56,7 +57,7 @@ class PinnedMediaPage extends ConsumerWidget {
                       title: 'Remove Selected Pins',
                       icon: MdiIcons.pinOffOutline,
                       onTap: () async {
-                        await TheStore.of(context).togglePin(media);
+                        await TheStore.of(context).togglePinMultiple(media);
 
                         return true;
                       },

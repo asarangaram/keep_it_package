@@ -14,31 +14,6 @@ abstract class Store {
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
   Future<void> deleteNote(CLNote note);
 
-  Future<void> togglePin(
-    CLMedia media, {
-    required Future<String?> Function(
-      CLMedia media, {
-      required String title,
-      String? desc,
-    }) onPin,
-    required Future<bool> Function(String id) onRemovePin,
-  });
-  Future<void> pinMediaMultiple(
-    List<CLMedia> media, {
-    required Future<String?> Function(
-      CLMedia media, {
-      required String title,
-      String? desc,
-    }) onPin,
-    required Future<bool> Function(String id) onRemovePin,
-  });
-  Future<void> unpinMediaMultiple(
-    List<CLMedia> media, {
-    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
-  });
-
-  Future<List<Object?>?> rawQuery(String query);
-
   Future<List<Object?>?> getDBRecords();
 
   Future<Collection?> getCollectionByLabel(String label);

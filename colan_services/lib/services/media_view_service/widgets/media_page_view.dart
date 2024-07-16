@@ -103,7 +103,8 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                     canDuplicateMedia: ac.canDuplicateMedia,
                   ),
                 ),
-          onPin: ac.onPin(() => TheStore.of(context).togglePin([media])),
+          onPin:
+              ac.onPin(() => TheStore.of(context).togglePinMultiple([media])),
           media: media,
         ),
       ],

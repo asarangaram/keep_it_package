@@ -31,7 +31,9 @@ class StoreActions {
     required this.cloneAndReplaceMedia,
     required this.deleteMediaMultiple,
     required this.restoreMediaMultiple,
-    required this.togglePin,
+    required this.pinMediaMultiple,
+    required this.removePinMediaMultiple,
+    required this.togglePinMultiple,
     required this.getPreviewPath,
     required this.getMediaPath,
     required this.getMediaLabel,
@@ -86,7 +88,10 @@ class StoreActions {
   }) moveToCollectionStream;
 
   // update Pin
-  final Future<bool> Function(List<CLMedia> mediaMultiple) togglePin;
+  final Future<bool> Function(List<CLMedia> mediaMultiple)
+      removePinMediaMultiple;
+  final Future<bool> Function(List<CLMedia> mediaMultiple) pinMediaMultiple;
+  final Future<bool> Function(List<CLMedia> mediaMultiple) togglePinMultiple;
 
   final Future<void> Function(
     String path, // Absolute Path, can't go to CLNote
@@ -159,22 +164,24 @@ class StoreActions {
   bool operator ==(covariant StoreActions other) {
     if (identical(this, other)) return true;
 
-    return other.shareMediaMultiple == shareMediaMultiple &&
-        other.togglePin == togglePin &&
+    return other.upsertCollection == upsertCollection &&
+        other.pinMediaMultiple == pinMediaMultiple &&
         other.getPreviewPath == getPreviewPath &&
         other.getMediaPath == getMediaPath &&
-        other.upsertCollection == upsertCollection &&
+        other.getMediaLabel == getMediaLabel &&
+        other.shareMediaMultiple == shareMediaMultiple &&
         other.createBackupFile == createBackupFile &&
         other.reloadStore == reloadStore;
   }
 
   @override
   int get hashCode {
-    return shareMediaMultiple.hashCode ^
-        togglePin.hashCode ^
+    return upsertCollection.hashCode ^
+        pinMediaMultiple.hashCode ^
         getPreviewPath.hashCode ^
         getMediaPath.hashCode ^
-        upsertCollection.hashCode ^
+        getMediaLabel.hashCode ^
+        shareMediaMultiple.hashCode ^
         createBackupFile.hashCode ^
         reloadStore.hashCode;
   }

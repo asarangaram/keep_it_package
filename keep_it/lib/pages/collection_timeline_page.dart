@@ -153,7 +153,7 @@ class TimeLineView extends ConsumerWidget {
             CLMenuItem(
               title: 'Pin',
               icon: MdiIcons.pin,
-              onTap: () => TheStore.of(context).togglePin(items),
+              onTap: () => TheStore.of(context).togglePinMultiple(items),
             ),
         ];
       },
