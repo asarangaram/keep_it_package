@@ -72,15 +72,13 @@ class StoreActions {
 
   final Future<bool> Function(
     CLMedia selectedMedia,
-    String outFile, {
-    required bool? confirmed,
-  }) replaceMedia;
+    String outFile,
+  ) replaceMedia;
 
   final Future<bool> Function(
     CLMedia selectedMedia,
-    String outFile, {
-    required bool? confirmed,
-  }) cloneAndReplaceMedia;
+    String outFile,
+  ) cloneAndReplaceMedia;
 
   final Future<CLMedia?> Function(
     String path, {

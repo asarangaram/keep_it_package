@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/widgets/preview.dart';
 import 'package:store/store.dart';
 
 class MediaEditorPage extends StatelessWidget {
@@ -24,7 +23,8 @@ class MediaEditorPage extends StatelessWidget {
     return GetMedia(
       id: mediaId!,
       buildOnData: (media) {
-        if (media == null || !File(media.path).existsSync()) {
+        if (media == null ||
+            !File(TheStore.of(context).getMediaPath(media)).existsSync()) {
           return BasicPageService.message(
             message: ' Media not found',
           );
@@ -38,21 +38,9 @@ class MediaEditorPage extends StatelessWidget {
           },
           onSave: (file, {required overwrite}) async {
             if (overwrite) {
-              await ConfirmAction.replaceMedia(
-                context,
-                media: CLMedia(path: file, type: media.type),
-                getPreview: (CLMedia media) => Preview(media: media),
-                onConfirm: () async => TheStore.of(context)
-                    .replaceMedia(media, file, confirmed: true),
-              );
+              await TheStore.of(context).replaceMedia(media, file);
             } else {
-              await ConfirmAction.cloneAndReplaceMedia(
-                context,
-                media: CLMedia(path: file, type: media.type),
-                getPreview: (CLMedia media) => Preview(media: media),
-                onConfirm: () async => TheStore.of(context)
-                    .cloneAndReplaceMedia(media, file, confirmed: true),
-              );
+              await TheStore.of(context).cloneAndReplaceMedia(media, file);
             }
           },
         );
@@ -78,7 +66,7 @@ class InvokeEditor extends StatelessWidget {
     switch (media.type) {
       case CLMediaType.image:
         return ImageEditService(
-          file: File(media.path),
+          file: File(TheStore.of(context).getMediaPath(media)),
           onDone: () => CLPopScreen.onPop(context),
           onSave: onSave,
           onCreateNewFile: onCreateNewFile,
@@ -87,7 +75,7 @@ class InvokeEditor extends StatelessWidget {
       case CLMediaType.video:
         if (VideoEditServices.isSupported) {
           return VideoEditServices(
-            File(media.path),
+            File(TheStore.of(context).getMediaPath(media)),
             onSave: onSave,
             onDone: () => CLPopScreen.onPop(context),
             canDuplicateMedia: canDuplicateMedia,

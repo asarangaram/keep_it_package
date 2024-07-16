@@ -13,9 +13,9 @@ class CLMedia {
   CLMedia({
     required this.path,
     required this.type,
+    required this.collectionId,
     this.ref,
     this.id,
-    this.collectionId,
     this.originalDate,
     this.createdDate,
     this.updatedDate,
@@ -243,4 +243,6 @@ class CLMedia {
       pin: pin,
     );
   }
+
+  String get label => path;
 }

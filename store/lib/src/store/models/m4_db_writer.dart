@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as p;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/src/store/models/m3_db_query.dart';
 import 'package:store/src/store/models/m3_db_reader.dart';
@@ -33,7 +32,7 @@ class DBWriter {
     toMap: (CLMedia obj) => obj.toMap(),
     readBack: (tx, item) {
       return (DBQueries.mediaByPath.sql as DBQuery<CLMedia>)
-          .copyWith(parameters: [item.path]).read(tx);
+          .copyWith(parameters: [item.label]).read(tx);
     },
   );
   final DBExec<CLNote> notesTable = DBExec<CLNote>(
@@ -160,7 +159,7 @@ class DBWriter {
         }
       }
 
-      await onDeleteFile(File(media.path));
+      await onDeleteFile(File(media.label)); //TODO
       await deleteOrphanNotes(tx, onDeleteFile: onDeleteFile);
       await mediaTable.delete(tx, {'id': media.id.toString()});
     } else {
@@ -203,7 +202,7 @@ class DBWriter {
     if (media.id == null) return false;
 
     if (media.pin == null || media.pin!.isEmpty) {
-      final pin = await onPin(media, title: p.basename(media.path));
+      final pin = await onPin(media, title: media.label);
       if (pin == null) return false;
       final pinnedMedia = media.copyWith(pin: pin);
       await upsertMedia(tx, pinnedMedia);

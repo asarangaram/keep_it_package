@@ -8,6 +8,7 @@ import '../../basics/cl_matrix.dart';
 import '../../extensions/ext_double.dart';
 import '../../models/cl_dimension.dart';
 import '../../models/cl_media.dart';
+import '../../store_model/the_store.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({
@@ -81,7 +82,7 @@ class CLMediaCollage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaWithPreview = mediaList.where((e) {
-      return File(e.path).existsSync();
+      return File(TheStore.of(context).getMediaPath(e)).existsSync();
     }).toList();
     if (mediaWithPreview.isEmpty) {
       return onBuildItem(

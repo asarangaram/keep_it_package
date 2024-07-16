@@ -37,7 +37,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
     if (error != null) {
       return widget.builder(context, AsyncError(error!, st!));
     }
-    if (!File(widget.media.path).existsSync()) {
+    if (!File(TheStore.of(context).getMediaPath(widget.media)).existsSync()) {
       try {
         throw Exception('file not found');
       } catch (e, st) {
@@ -65,7 +65,7 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
           future: service.createThumbnail(
             info: ThumbnailServiceDataIn(
               uuid: path.basenameWithoutExtension(previewPath),
-              path: widget.media.path,
+              path: TheStore.of(context).getMediaPath(widget.media),
               thumbnailPath: previewPath,
               isVideo: widget.media.type == CLMediaType.video,
               dimension: 256,
