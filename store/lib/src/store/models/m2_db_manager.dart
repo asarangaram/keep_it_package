@@ -1,29 +1,30 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 
 import 'package:sqlite_async/sqlite_async.dart';
 
-import '../providers/p2_db_manager.dart';
 import 'm2_db_migration.dart';
 import 'm3_db_queries.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_writer.dart';
 
 class DBManager extends Store {
-  DBManager({required this.db})
+  DBManager({required this.db, required this.onReload})
       : dbWriter = DBWriter(),
         dbReader = const DBReader();
 
   final SqliteDatabase db;
   final DBWriter dbWriter;
   final DBReader dbReader;
+  final VoidCallback onReload;
 
   static Future<DBManager> createInstances({
     required String dbpath,
+    required VoidCallback onReload,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    return DBManager(db: db);
+    return DBManager(db: db, onReload: onReload);
   }
 
   void dispose() {
@@ -105,7 +106,7 @@ class DBManager extends Store {
   }
 
   @override
-  Future<void> reloadStore(WidgetRef ref) async {
-    ref.invalidate(storeProvider);
+  Future<void> reloadStore() async {
+    onReload();
   }
 }

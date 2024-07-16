@@ -2,10 +2,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/models/m3_db_query.dart';
-import 'package:store/src/store/models/m3_db_reader.dart';
 
 import 'm3_db_queries.dart';
+import 'm3_db_query.dart';
+import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
 
 @immutable

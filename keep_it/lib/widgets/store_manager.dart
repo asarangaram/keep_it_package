@@ -909,6 +909,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<void> reloadStore() async {
-    await widget.storeInstance.reloadStore(ref);
+    await widget.storeInstance.reloadStore();
   }
 }
