@@ -75,9 +75,7 @@ class CLMedia {
       case CLMediaType.video:
       case CLMediaType.audio:
       case CLMediaType.file:
-        if (!path.startsWith('/')) {
-          throw Exception('Invalid path');
-        }
+        break;
     }
   }
 

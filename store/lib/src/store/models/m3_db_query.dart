@@ -86,13 +86,30 @@ class DBQuery<T> {
         dbPath.hashCode;
   }
 
+  static Map<String, dynamic> fixedMap(Map<String, dynamic> map) {
+    final updatedMap = <String, dynamic>{};
+    const removeValues = ['null'];
+    for (final e in map.entries) {
+      final value = switch (e) {
+        (final MapEntry<String, dynamic> _)
+            when removeValues.contains(e.value) =>
+          null,
+        _ => e.value
+      };
+      if (value != null) {
+        updatedMap[e.key] = value;
+      }
+    }
+    return updatedMap;
+  }
+
   // Use this only to pick specific items, not cached.
   Future<List<T>> readMultiple(
     SqliteWriteContext tx,
   ) async {
     _infoLogger('cmd: $sql, $parameters');
     final objs = (await tx.getAll(sql, parameters ?? []))
-        .map(fromMap)
+        .map((e) => fromMap(fixedMap(e)))
         .where((e) => e != null)
         .map((e) => e! as T)
         .toList();
@@ -102,8 +119,9 @@ class DBQuery<T> {
 
   Future<T?> read(SqliteWriteContext tx) async {
     _infoLogger('cmd: $sql, $parameters');
-    final obj =
-        (await tx.getAll(sql, parameters ?? [])).map(fromMap).firstOrNull;
+    final obj = (await tx.getAll(sql, parameters ?? []))
+        .map((e) => fromMap(fixedMap(e)))
+        .firstOrNull;
     _infoLogger('read $obj');
     return obj;
   }

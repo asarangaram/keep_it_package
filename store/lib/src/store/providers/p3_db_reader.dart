@@ -17,7 +17,10 @@ final dbReaderProvider = StreamProvider.family<List<dynamic>, DBQuery<dynamic>>(
         parameters: dbQuery.parameters ?? [],
       )
       .map(
-        (rows) => rows.map(dbQuery.fromMap).where((e) => e != null).toList(),
+        (rows) => rows
+            .map((e) => dbQuery.fromMap(DBQuery.fixedMap(e)))
+            .where((e) => e != null)
+            .toList(),
       );
   await for (final res in sub) {
     yield res;
