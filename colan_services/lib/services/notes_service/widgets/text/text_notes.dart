@@ -5,31 +5,18 @@ import 'text_note.dart';
 
 class TextNotes extends StatelessWidget {
   const TextNotes({
+    required this.media,
     required this.notes,
-    required this.onUpsertNote,
-    required this.onDeleteNote,
-    required this.onCreateNewTextFile,
     super.key,
   });
   final List<CLTextNote> notes;
-  final Future<String> Function() onCreateNewTextFile;
-  final Future<void> Function(
-    String path,
-    CLNoteTypes type, {
-    CLNote? note,
-  }) onUpsertNote;
-  final Future<void> Function(
-    CLNote note, {
-    required bool? confirmed,
-  }) onDeleteNote;
+  final CLMedia media;
 
   @override
   Widget build(BuildContext context) {
     return TextNote(
+      media: media,
       note: notes.firstOrNull,
-      onUpsertNote: onUpsertNote,
-      onDeleteNote: onDeleteNote,
-      onCreateNewTextFile: onCreateNewTextFile,
     );
   }
 }

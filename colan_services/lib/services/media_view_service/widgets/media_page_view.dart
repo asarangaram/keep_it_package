@@ -88,11 +88,12 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
               context,
               media: media,
               getPreview: widget.getPreview,
-              onConfirm: () =>
-                  TheStore.of(context).delete([media], confirmed: true),
+              onConfirm: () => TheStore.of(context)
+                  .deleteMediaMultiple([media], confirmed: true),
             );
           }),
-          onShare: ac.onShare(() => TheStore.of(context).share([media])),
+          onShare: ac
+              .onShare(() => TheStore.of(context).shareMediaMultiple([media])),
           onEdit: (media.type == CLMediaType.video &&
                   !VideoEditServices.isSupported)
               ? null

@@ -36,7 +36,7 @@ class SettingsMainPage extends ConsumerWidget {
                   ),
                 const StorageMonitor(),
                 BackupView(
-                  onShareFiles: TheStore.of(context).onShareFiles,
+                  onShareFiles: TheStore.of(context).shareFiles,
                   onCreateBackupFile: TheStore.of(context).createBackupFile,
                 ),
               ],

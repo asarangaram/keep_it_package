@@ -115,7 +115,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                     media: currMedia,
                     getPreview: widget.getPreview,
                     onConfirm: () => TheStore.of(context)
-                        .restoreDeleted(currMedia, confirmed: true),
+                        .restoreMediaMultiple(currMedia, confirmed: true),
                   );
 
                   await ref
@@ -145,7 +145,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                           media: currMedia,
                           getPreview: widget.getPreview,
                           onConfirm: () => TheStore.of(context)
-                              .delete(currMedia, confirmed: true),
+                              .deleteMediaMultiple(currMedia, confirmed: true),
                         );
 
                         await ref

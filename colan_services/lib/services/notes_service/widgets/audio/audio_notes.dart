@@ -7,24 +7,11 @@ class AudioNotes extends StatefulWidget {
   const AudioNotes({
     required this.media,
     required this.notes,
-    required this.onUpsertNote,
-    required this.onDeleteNote,
-    required this.onCreateNewAudioFile,
     super.key,
   });
   final CLMedia media;
   final List<CLAudioNote> notes;
-  final Future<void> Function(
-    String path,
-    CLNoteTypes type, {
-    required List<CLMedia> media,
-    CLNote? note,
-  }) onUpsertNote;
-  final Future<void> Function(
-    CLNote note, {
-    required bool? confirmed,
-  }) onDeleteNote;
-  final Future<String> Function() onCreateNewAudioFile;
+
   @override
   State<AudioNotes> createState() => _AudioNotesState();
 }
@@ -41,11 +28,7 @@ class _AudioNotesState extends State<AudioNotes> {
   @override
   Widget build(BuildContext context) {
     return AudioRecorder(
-      onCreateNewAudioFile: widget.onCreateNewAudioFile,
-      onUpsertNote: (path, type, {note}) async {
-        await widget
-            .onUpsertNote(path, type, note: note, media: [widget.media]);
-      },
+      media: widget.media,
       editMode: editMode && widget.notes.isNotEmpty,
       onEditCancel: () => setState(() {
         editMode = false;
@@ -72,7 +55,8 @@ class _AudioNotesState extends State<AudioNotes> {
                           if (widget.notes.length == 1) {
                             editMode = false;
                           }
-                          widget.onDeleteNote(note, confirmed: null);
+                          TheStore.of(context)
+                              .deleteNote(note, confirmed: true);
                         },
                       ),
                     )

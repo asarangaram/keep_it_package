@@ -90,31 +90,39 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   @override
   Widget build(BuildContext context) {
     final storeAction = StoreActions(
-      openWizard: openWizard,
-      delete: delete,
-      share: share,
+      upsertCollection: upsertCollection,
+      upsertNote: upsertNote,
+      newMedia: newMedia,
+      newMediaMultipleStream: analyseMediaStream,
+      moveToCollectionStream: moveToCollectionStream,
+      restoreMediaMultiple: restoreMediaMultiple,
       togglePin: togglePin,
-      openEditor: openEditor,
-      restoreDeleted: restoreDeleted,
+
       replaceMedia: replaceMedia,
       cloneAndReplaceMedia: cloneAndReplaceMedia,
-      moveToCollectionStream: moveToCollectionStream,
-      newMedia: newMedia,
-      analyseMediaStream: analyseMediaStream,
-      createTempFile: createTempFile,
-      onUpsertNote: onUpsertNote,
-      onDeleteNote: onDeleteNote,
-      getPreviewPath: getPreviewPath,
-      upsertCollection: upsertCollection,
+
       deleteCollection: deleteCollection,
+      deleteNote: onDeleteNote,
+      deleteMediaMultiple: deleteMediaMultiple,
+
+      /// Share modules
+      shareMediaMultiple: shareMediaMultiple,
+      shareFiles: ShareManager.onShareFiles,
+
+      /// Open new screen
+      openWizard: openWizard,
+      openEditor: openEditor,
       openCamera: openCamera,
       openMedia: openMedia,
       openCollection: openCollection,
-      onShareFiles: ShareManager.onShareFiles,
+
+      createTempFile: createTempFile,
       createBackupFile: createBackupFile,
+
       reloadStore: reloadStore,
       getMediaPath: getMediaPath,
       getMediaLabel: getMediaLabel,
+      getPreviewPath: getPreviewPath,
     );
     return TheStore(
       storeAction: storeAction,
@@ -174,33 +182,42 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> delete(
-    List<CLMedia> selectedMedia, {
+  Future<bool> deleteMediaMultiple(
+    List<CLMedia> mediaMultiple, {
     required bool? confirmed,
+    bool deletePermanantly = false,
   }) async {
     if (confirmed == null || !confirmed) {
       return false;
     }
-    if (selectedMedia.isEmpty) {
+    if (mediaMultiple.isEmpty) {
       return true;
     }
-    if (selectedMedia.length == 1) {
-      await widget.storeInstance.deleteMedia(
-        selectedMedia[0],
-        onDeleteFile: (f) async => f.deleteIfExists(),
-        onRemovePin: (id) async => removeMediaFromGallery(id),
-      );
-    } else {
-      await widget.storeInstance.deleteMediaMultiple(
-        selectedMedia,
-        onDeleteFile: (f) async => f.deleteIfExists(),
-        onRemovePinMultiple: (id) async => removeMultipleMediaFromGallery(id),
-      );
+
+    // Remove Pins first..
+    await removeMultipleMediaFromGallery(
+      mediaMultiple
+          .map((e) => e.pin)
+          .where((e) => e != null)
+          .map((e) => e!)
+          .toList(),
+    );
+
+    for (final m in mediaMultiple) {
+      await widget.storeInstance.deleteMedia(m, permanent: deletePermanantly);
+      await File(
+        path_handler.join(
+          widget.appSettings.directories.notes.pathString,
+          m.path,
+        ),
+      ).deleteIfExists();
     }
+    // TODO(anandas): :  HAndle orphan Notes here.
+
     return true;
   }
 
-  Future<bool> share(List<CLMedia> selectedMedia) async {
+  Future<bool> shareMediaMultiple(List<CLMedia> selectedMedia) async {
     if (selectedMedia.isEmpty) {
       return true;
     }
@@ -435,7 +452,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
   }
 
-  Future<bool> restoreDeleted(
+  Future<bool> restoreMediaMultiple(
     List<CLMedia> selectedMedia, {
     required bool? confirmed,
   }) async {
@@ -494,7 +511,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   Stream<Progress> analyseMediaStream({
     required List<CLMediaFile> mediaFiles,
     required void Function({
-      required List<CLMedia> mg,
+      required List<CLMedia> mediaMultiple,
     }) onDone,
   }) async* {
     final candidates = <CLMedia>[];
@@ -579,14 +596,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
     await Future<void>.delayed(const Duration(milliseconds: 10));
     onDone(
-      mg: candidates,
+      mediaMultiple: candidates,
     );
   }
 
-  Future<void> onUpsertNote(
+  Future<void> upsertNote(
     String path,
     CLNoteTypes type, {
-    required List<CLMedia> media,
+    required List<CLMedia> mediaMultiple,
     CLNote? note,
   }) async {
     final savedNotesFile =
@@ -600,7 +617,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
     final notesInDB = await widget.storeInstance.upsertNote(
       savedNotes,
-      media,
+      mediaMultiple,
     );
     if (notesInDB == null) {
       await savedNotesFile.delete();
@@ -616,9 +633,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (note.id == null) return;
     await widget.storeInstance.deleteNote(
       note,
-      onDeleteFile: (file) async {
-        await file.deleteIfExists();
-      },
     );
   }
 
@@ -664,14 +678,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     Collection collection, {
     required bool? confirmed,
   }) async {
-    await widget.storeInstance.deleteCollection(
-      collection,
-      onDeleteFile: (file) async {
-        if (file.existsSync()) {
-          file.deleteSync();
-        }
-      },
-    );
+    await widget.storeInstance.deleteCollection(collection);
     return true;
   }
 

@@ -11,19 +11,13 @@ import 'recorded_audio_view.dart';
 
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({
-    required this.onUpsertNote,
-    required this.onCreateNewAudioFile,
+    required this.media,
     this.child,
     super.key,
     this.editMode = false,
     this.onEditCancel,
   });
-  final Future<void> Function(
-    String path,
-    CLNoteTypes type, {
-    CLNote? note,
-  }) onUpsertNote;
-  final Future<String> Function() onCreateNewAudioFile;
+  final CLMedia media;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
@@ -148,7 +142,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await widget.onUpsertNote(audioMessage!, CLNoteTypes.audio);
+      await TheStore.of(context)
+          .upsertNote(audioMessage!, CLNoteTypes.audio, mediaMultiple: []);
+
       audioMessage = null;
       setState(() {});
     }
@@ -170,7 +166,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
           setState(() {});
         }
       } else {
-        final path = await widget.onCreateNewAudioFile();
+        final path = await TheStore.of(context).createTempFile(ext: 'aac');
         await recorderController.record(path: path); // Path is optional
       }
     } catch (e) {

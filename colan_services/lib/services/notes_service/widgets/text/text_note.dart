@@ -11,24 +11,12 @@ import 'view_notes.dart';
 
 class TextNote extends StatefulWidget {
   const TextNote({
-    required this.onUpsertNote,
-    required this.onDeleteNote,
-    required this.onCreateNewTextFile,
-    super.key,
+    required this.media,
     this.note,
+    super.key,
   });
+  final CLMedia media;
   final CLTextNote? note;
-  final Future<String> Function() onCreateNewTextFile;
-  final Future<void> Function(
-    String path,
-    CLNoteTypes type, {
-    CLNote? note,
-  }) onUpsertNote;
-
-  final Future<void> Function(
-    CLNote note, {
-    required bool? confirmed,
-  }) onDeleteNote;
 
   @override
   State<TextNote> createState() => _TextNoteState();
@@ -96,7 +84,8 @@ class _TextNoteState extends State<TextNote> {
                     context,
                     note: widget.note!,
                     onConfirm: () async {
-                      await widget.onDeleteNote(widget.note!, confirmed: true);
+                      await TheStore.of(context)
+                          .deleteNote(widget.note!, confirmed: true);
                       textEditingController.clear();
                       return true;
                     },
@@ -158,18 +147,14 @@ class _TextNoteState extends State<TextNote> {
 
   Future<void> onEditDone() async {
     if (textModified) {
-      final path = await widget.onCreateNewTextFile();
-      await File(path).writeAsString(
-        textEditingController.text.trim(),
-      );
+      final path = await TheStore.of(context).createTempFile(ext: 'txt');
+      await File(path).writeAsString(textEditingController.text.trim());
 
-      if (widget.note != null) {
-        await widget.onUpsertNote(path, CLNoteTypes.text);
-      } else {
-        // Write  to file.
-        await widget.onUpsertNote(
+      if (mounted) {
+        await TheStore.of(context).upsertNote(
           path,
           CLNoteTypes.text,
+          mediaMultiple: [widget.media],
           note: widget.note,
         );
       }

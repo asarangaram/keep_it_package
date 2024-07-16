@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,6 +43,15 @@ class DBManager extends Store {
   }
 
   @override
+  Future<List<CLNote>?> getNotesByMediaID(
+    int noteId,
+  ) {
+    return dbReader.getNotesByMediaID(db, noteId);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  @override
   Future<Collection> upsertCollection(Collection collection) async {
     return db.writeTransaction<Collection>((tx) async {
       return dbWriter.upsertCollection(tx, collection);
@@ -65,67 +72,29 @@ class DBManager extends Store {
     });
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+
   @override
-  Future<void> deleteCollection(
-    Collection collection, {
-    required Future<void> Function(File file) onDeleteFile,
-  }) async {
+  Future<void> deleteCollection(Collection collection) async {
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteCollection(
-        tx,
-        collection,
-        onDeleteFile: onDeleteFile,
-      );
+      await dbWriter.deleteCollection(tx, collection);
     });
   }
 
   @override
-  Future<void> deleteMedia(
-    CLMedia media, {
-    required Future<void> Function(File file) onDeleteFile,
-    required Future<bool> Function(String id) onRemovePin,
-  }) async {
+  Future<void> deleteMedia(CLMedia media, {required bool permanent}) async {
     await db.writeTransaction((tx) async {
-      if (media.id == null) return;
-      if (media.pin != null) {
-        final res = await dbWriter.removePin(
-          tx,
-          media,
-          onRemovePin: onRemovePin,
-        );
-        if (!res) return;
-      }
-      await dbWriter.deleteMedia(
-        tx,
-        media,
-        onDeleteFile: onDeleteFile,
-      );
+      await dbWriter.deleteMedia(tx, media, deletePermanently: permanent);
     });
   }
 
   @override
-  Future<void> deleteMediaMultiple(
-    List<CLMedia> media, {
-    required Future<void> Function(File file) onDeleteFile,
-    required Future<bool> Function(List<String> ids) onRemovePinMultiple,
-  }) async {
-    if (media.isEmpty) return;
-
+  Future<void> deleteNote(CLNote note) async {
     await db.writeTransaction((tx) async {
-      final res = await dbWriter.unpinMediaMultiple(
-        tx,
-        media,
-        onRemovePinMultiple: onRemovePinMultiple,
-      );
-      if (res) {
-        await dbWriter.deleteMediaList(
-          tx,
-          media,
-          onDeleteFile: onDeleteFile,
-        );
-      }
+      await dbWriter.deleteNote(tx, note);
     });
   }
+  //////////////////////////////////////////////////////////////////////////////
 
   @override
   Future<void> togglePin(
@@ -178,16 +147,6 @@ class DBManager extends Store {
         media,
         onRemovePinMultiple: onRemovePinMultiple,
       );
-    });
-  }
-
-  @override
-  Future<void> deleteNote(
-    CLNote note, {
-    required Future<void> Function(File file) onDeleteFile,
-  }) async {
-    await db.writeTransaction((tx) async {
-      await dbWriter.deleteNote(tx, note, onDeleteFile: onDeleteFile);
     });
   }
 

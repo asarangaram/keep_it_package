@@ -9,24 +9,11 @@ class NotesView extends StatefulWidget {
     required this.media,
     required this.notes,
     required this.onClose,
-    required this.onUpsertNote,
-    required this.onDeleteNote,
-    required this.onCreateNewFile,
     super.key,
   });
   final CLMedia media;
   final List<CLNote> notes;
-  final Future<void> Function(
-    String path,
-    CLNoteTypes type, {
-    required List<CLMedia> media,
-    CLNote? note,
-  }) onUpsertNote;
-  final Future<void> Function(
-    CLNote note, {
-    required bool? confirmed,
-  }) onDeleteNote;
-  final Future<String> Function({required String ext}) onCreateNewFile;
+
   final VoidCallback onClose;
 
   @override
@@ -91,12 +78,8 @@ class _NotesViewState extends State<NotesView> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: AudioNotes(
-                  onCreateNewAudioFile: () =>
-                      widget.onCreateNewFile(ext: 'aac'),
                   media: widget.media,
                   notes: audioNotes,
-                  onUpsertNote: widget.onUpsertNote,
-                  onDeleteNote: widget.onDeleteNote,
                 ),
               ),
             ),
@@ -105,17 +88,8 @@ class _NotesViewState extends State<NotesView> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: TextNotes(
-                  onCreateNewTextFile: () => widget.onCreateNewFile(ext: 'txt'),
+                  media: widget.media,
                   notes: textNotes,
-                  onUpsertNote: (path, type, {note}) async {
-                    await widget.onUpsertNote(
-                      path,
-                      type,
-                      note: note,
-                      media: [widget.media],
-                    );
-                  },
-                  onDeleteNote: widget.onDeleteNote,
                 ),
               ),
             ),

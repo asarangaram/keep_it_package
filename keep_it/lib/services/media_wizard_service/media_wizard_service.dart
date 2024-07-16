@@ -180,8 +180,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                 context,
                                 media: currMedia,
                                 getPreview: widget.getPreview,
-                                onConfirm: () => TheStore.of(context)
-                                    .delete(currMedia, confirmed: true),
+                                onConfirm: () =>
+                                    TheStore.of(context).deleteMediaMultiple(
+                                  currMedia,
+                                  confirmed: true,
+                                ),
                               );
 
                               await ref

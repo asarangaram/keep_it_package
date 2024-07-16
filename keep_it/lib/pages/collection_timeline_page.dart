@@ -133,8 +133,8 @@ class TimeLineView extends ConsumerWidget {
                 getPreview: (media) => Preview(
                   media: media,
                 ),
-                onConfirm: () =>
-                    TheStore.of(context).delete(items, confirmed: true),
+                onConfirm: () => TheStore.of(context)
+                    .deleteMediaMultiple(items, confirmed: true),
               );
             },
           ),
@@ -147,7 +147,7 @@ class TimeLineView extends ConsumerWidget {
           CLMenuItem(
             title: 'Share',
             icon: MdiIcons.shareAll,
-            onTap: () => TheStore.of(context).share(items),
+            onTap: () => TheStore.of(context).shareMediaMultiple(items),
           ),
           if (ColanPlatformSupport.isMobilePlatform)
             CLMenuItem(

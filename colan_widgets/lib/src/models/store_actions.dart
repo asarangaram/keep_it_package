@@ -29,114 +29,127 @@ class StoreActions {
     required this.newMedia,
     required this.replaceMedia,
     required this.cloneAndReplaceMedia,
-    required this.delete,
-    required this.restoreDeleted,
+    required this.deleteMediaMultiple,
+    required this.restoreMediaMultiple,
     required this.togglePin,
     required this.getPreviewPath,
     required this.getMediaPath,
     required this.getMediaLabel,
 
     /// Notes
-    required this.onUpsertNote,
-    required this.onDeleteNote, // Streams when processing in bulk
+    required this.upsertNote,
+    required this.deleteNote, // Streams when processing in bulk
     required this.moveToCollectionStream,
-    required this.analyseMediaStream,
-    required this.share,
-    required this.onShareFiles,
+    required this.newMediaMultipleStream,
+    required this.shareMediaMultiple,
+    required this.shareFiles,
 
     /// Working with file system
     required this.createTempFile,
     required this.createBackupFile, // Refresh logic
     required this.reloadStore,
   });
-  final Future<bool> Function(
-    List<CLMedia> media,
-    UniversalMediaSource wizardType,
-  ) openWizard;
+  //////////////////////////////////////////////////////////////////////////////
 
-  final Future<bool> Function(
-    List<CLMedia> selectedMedia, {
-    required bool? confirmed,
-  }) delete;
-  final Future<bool> Function(List<CLMedia> selectedMedia) share;
-  final Future<bool> Function(List<CLMedia> selectedMedia) togglePin;
-  final Future<bool> Function(
-    List<CLMedia> selectedMedia, {
-    required bool canDuplicateMedia,
-  }) openEditor;
+  final Future<Collection> Function(Collection collection) upsertCollection;
 
-  final Future<bool> Function(
-    List<CLMedia> selectedMedia, {
-    required bool? confirmed,
-  }) restoreDeleted;
-
-  final Future<bool> Function(
-    CLMedia selectedMedia,
-    String outFile,
-  ) replaceMedia;
-
-  final Future<bool> Function(
-    CLMedia selectedMedia,
-    String outFile,
-  ) cloneAndReplaceMedia;
-
+  /// collection == null - interpreted as temp Media
   final Future<CLMedia?> Function(
     String path, {
     required bool isVideo,
     Collection? collection,
   }) newMedia;
+  final Stream<Progress> Function({
+    required List<CLMediaFile> mediaFiles,
+    required void Function({
+      required List<CLMedia> mediaMultiple,
+    }) onDone,
+  }) newMediaMultipleStream;
 
+  // For replacing path:
+
+  final Future<bool> Function(
+    CLMedia media,
+    String outFile,
+  ) replaceMedia;
+
+  final Future<bool> Function(
+    CLMedia media,
+    String outFile,
+  ) cloneAndReplaceMedia;
+
+  // replace collectionId
   final Stream<Progress> Function(
-    List<CLMedia> selectedMedia, {
+    List<CLMedia> mediaMultiple, {
     required Collection collection,
     required void Function() onDone,
   }) moveToCollectionStream;
 
-  final Stream<Progress> Function({
-    required List<CLMediaFile> mediaFiles,
-    required void Function({
-      required List<CLMedia> mg,
-    }) onDone,
-  }) analyseMediaStream;
-
-  final Future<String> Function({required String ext}) createTempFile;
+  // update Pin
+  final Future<bool> Function(List<CLMedia> mediaMultiple) togglePin;
 
   final Future<void> Function(
-    String path,
+    String path, // Absolute Path, can't go to CLNote
     CLNoteTypes type, {
-    required List<CLMedia> media,
+    required List<CLMedia> mediaMultiple,
     CLNote? note,
-  }) onUpsertNote;
-  final Future<void> Function(
-    CLNote note, {
-    required bool? confirmed,
-  }) onDeleteNote;
-  final String Function(CLMedia media) getPreviewPath;
-  final String Function(CLMedia media) getMediaPath;
-  final String Function(CLMedia media) getMediaLabel;
+  }) upsertNote;
 
-  final Future<Collection> Function(Collection collection) upsertCollection;
+  /////////////////////////////////////////////////////////////////////////////////
   final Future<bool> Function(
     Collection collection, {
     required bool? confirmed,
   }) deleteCollection;
 
-  final Future<void> Function({int? collectionId}) openCamera;
+  final Future<bool> Function(
+    List<CLMedia> mediaMultiple, {
+    required bool? confirmed,
+  }) deleteMediaMultiple;
 
+  final Future<bool> Function(
+    List<CLMedia> mediaMultiple, {
+    required bool? confirmed,
+  }) restoreMediaMultiple;
+
+  final Future<void> Function(
+    CLNote note, {
+    required bool? confirmed,
+  }) deleteNote;
+
+  /////////////////////////////////////////////////////////////////////////////////
+
+  final Future<bool> Function(
+    List<CLMedia> mediaMultiple,
+    UniversalMediaSource wizardType,
+  ) openWizard;
+
+  final Future<String> Function({required String ext}) createTempFile;
+  final String Function(CLMedia media) getPreviewPath;
+  final String Function(CLMedia media) getMediaPath;
+  final String Function(CLMedia media) getMediaLabel;
+
+  // Opens New page
+  final Future<void> Function({int? collectionId}) openCamera;
   final Future<void> Function(
     int mediaId, {
     required ActionControl actionControl,
     int? collectionId,
     String? parentIdentifier,
   }) openMedia;
+  final Future<bool> Function(
+    List<CLMedia> mediaMultiple, {
+    required bool canDuplicateMedia,
+  }) openEditor;
   final Future<void> Function({
     int? collectionId,
   }) openCollection;
 
+  final Future<bool> Function(List<CLMedia> mediaMultiple) shareMediaMultiple;
+
   final Future<void> Function(
     List<String> files, {
     Rect? sharePositionOrigin,
-  }) onShareFiles;
+  }) shareFiles;
 
   final Future<String> Function() createBackupFile;
 
@@ -146,7 +159,7 @@ class StoreActions {
   bool operator ==(covariant StoreActions other) {
     if (identical(this, other)) return true;
 
-    return other.share == share &&
+    return other.shareMediaMultiple == shareMediaMultiple &&
         other.togglePin == togglePin &&
         other.getPreviewPath == getPreviewPath &&
         other.getMediaPath == getMediaPath &&
@@ -157,7 +170,7 @@ class StoreActions {
 
   @override
   int get hashCode {
-    return share.hashCode ^
+    return shareMediaMultiple.hashCode ^
         togglePin.hashCode ^
         getPreviewPath.hashCode ^
         getMediaPath.hashCode ^

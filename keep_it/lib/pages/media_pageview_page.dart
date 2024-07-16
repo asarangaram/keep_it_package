@@ -42,9 +42,6 @@ class MediaPageViewPage extends StatelessWidget {
                     return NotesService(
                       media: media,
                       notes: notes,
-                      onUpsertNote: TheStore.of(context).onUpsertNote,
-                      onDeleteNote: TheStore.of(context).onDeleteNote,
-                      onCreateNewFile: TheStore.of(context).createTempFile,
                     );
                   },
                 );
@@ -79,9 +76,6 @@ class MediaPageViewPage extends StatelessWidget {
                 return NotesService(
                   media: media,
                   notes: notes,
-                  onUpsertNote: TheStore.of(context).onUpsertNote,
-                  onDeleteNote: TheStore.of(context).onDeleteNote,
-                  onCreateNewFile: TheStore.of(context).createTempFile,
                 );
               },
             );

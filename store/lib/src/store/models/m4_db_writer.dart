@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/foundation.dart';
@@ -108,9 +106,8 @@ class DBWriter {
 
   Future<void> deleteCollection(
     SqliteWriteContext tx,
-    Collection collection, {
-    required Future<void> Function(File file) onDeleteFile,
-  }) async {
+    Collection collection,
+  ) async {
     if (collection.id == null) return;
 
     final items =
@@ -118,21 +115,25 @@ class DBWriter {
 
     /// Delete all media ignoring those already in Recycle
     /// Don't delete CollectionDir / Collection from Media, required for restore
-    await deleteMediaList(
-      tx,
-      items.where((e) => !(e.isDeleted ?? false)).toList(),
-      onDeleteFile: onDeleteFile,
-    );
+
+    for (final m in items) {
+      if (!(m.isDeleted ?? false)) {
+        await deleteMedia(
+          tx,
+          m,
+          deletePermanently: false,
+        );
+      }
+    }
   }
 
   Future<void> deleteOrphanNotes(
-    SqliteWriteContext tx, {
-    required Future<void> Function(File file) onDeleteFile,
-  }) async {
+    SqliteWriteContext tx,
+  ) async {
     final notes = await const DBReader().getOrphanNotes(tx);
     if (notes != null && notes.isNotEmpty) {
       for (final note in notes) {
-        await deleteNote(tx, note, onDeleteFile: onDeleteFile);
+        await deleteNote(tx, note);
       }
     }
   }
@@ -140,52 +141,26 @@ class DBWriter {
   Future<void> deleteMedia(
     SqliteWriteContext tx,
     CLMedia media, {
-    required Future<void> Function(File file) onDeleteFile,
+    required bool deletePermanently,
   }) async {
-    if (media.isDeleted ?? false) {
-      /// Hard delete
-      /// 1. Find all notes and remove associations.
-      /// 2. Delete Media files
-      /// 3. Delete Media from DB
-      /// 4. Clear up if any note is orphan
+    if (deletePermanently) {
       final notes = await const DBReader().getNotesByMediaID(tx, media.id!);
-
       if (notes != null && notes.isNotEmpty) {
-        for (final m in notes) {
+        for (final n in notes) {
           await notesOnMediaTable.delete(
             tx,
-            {'noteId': m.id!.toString(), 'itemId': media.id!.toString()},
+            {'noteId': n.id!.toString(), 'itemId': media.id!.toString()},
           );
         }
       }
 
-      await onDeleteFile(File(media.label)); //TODO
-      await deleteOrphanNotes(tx, onDeleteFile: onDeleteFile);
       await mediaTable.delete(tx, {'id': media.id.toString()});
     } else {
       // Soft Delete
       await upsertMedia(
         tx,
-        media.removePin().copyWith(
-              isDeleted: true,
-            ),
+        media.removePin().copyWith(isDeleted: true),
       );
-    }
-  }
-
-  Future<void> deleteMediaList(
-    SqliteWriteContext tx,
-    List<CLMedia> media, {
-    required Future<void> Function(File file) onDeleteFile,
-  }) async {
-    for (final m in media) {
-      if (m.id != null) {
-        await deleteMedia(
-          tx,
-          m,
-          onDeleteFile: onDeleteFile,
-        );
-      }
     }
   }
 
@@ -307,9 +282,8 @@ class DBWriter {
 
   Future<void> deleteNote(
     SqliteWriteContext tx,
-    CLNote note, {
-    required Future<void> Function(File file) onDeleteFile,
-  }) async {
+    CLNote note,
+  ) async {
     if (note.id == null) return;
 
     final media = await const DBReader().getMediaByNoteID(tx, note.id!);
@@ -321,7 +295,7 @@ class DBWriter {
         );
       }
     }
-    await onDeleteFile(File(note.path));
+
     await notesTable.delete(tx, {'id': note.id.toString()});
   }
 }
