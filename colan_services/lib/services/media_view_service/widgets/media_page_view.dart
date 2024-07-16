@@ -45,7 +45,18 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (currIndex >= widget.items.length) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        CLPopScreen.onPop(context);
+      });
+      return BasicPageService.withNavBar(message: 'Media seems deleted');
+    }
     final media = widget.items[currIndex];
     final ac = widget.actionControl;
     return Stack(
@@ -84,7 +95,11 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                 .openWizard([media], UniversalMediaSource.move),
           ),
           onDelete: ac.onDelete(() async {
-            await TheStore.of(context).deleteMediaMultiple([media]);
+            final res = await TheStore.of(context).deleteMediaMultiple([media]);
+            if (res) {
+              currIndex = widget.startIndex;
+              setState(() {});
+            }
             return null;
           }),
           onShare: ac
