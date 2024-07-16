@@ -509,13 +509,20 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<void> onUpsertNote(CLMedia media, CLNote note) async {
-    await widget.storeInstance.upsertNote(
-      note,
+    final savedNotesFile =
+        File(note.path).copyTo(widget.appSettings.directories.notes.path);
+
+    final savedNotes = note.copyWith(path: path.basename(savedNotesFile.path));
+
+    final notesInDB = await widget.storeInstance.upsertNote(
+      savedNotes,
       [media],
-      onSaveNote: (note1, {required targetDir}) async {
-        return note1.moveFile(targetDir: targetDir);
-      },
     );
+    if (notesInDB == null) {
+      await savedNotesFile.delete();
+    } else {
+      await File(note.path).deleteIfExists();
+    }
   }
 
   Future<void> onDeleteNote(

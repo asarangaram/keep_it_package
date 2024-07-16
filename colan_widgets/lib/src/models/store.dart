@@ -81,14 +81,10 @@ abstract class Store {
     List<CLMedia> media, {
     required Future<bool> Function(List<String> ids) onRemovePinMultiple,
   });
-  Future<CLNote> upsertNote(
+  Future<CLNote?> upsertNote(
     CLNote note,
-    List<CLMedia> mediaList, {
-    required Future<CLNote> Function(
-      CLNote note, {
-      required String targetDir,
-    }) onSaveNote,
-  });
+    List<CLMedia> mediaList,
+  );
   Future<List<Object?>?> rawQuery(
     String query,
   );

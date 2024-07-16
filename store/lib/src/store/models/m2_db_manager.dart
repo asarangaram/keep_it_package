@@ -302,19 +302,17 @@ class DBManager extends Store {
   }
 
   @override
-  Future<CLNote> upsertNote(
+  Future<CLNote?> upsertNote(
     CLNote note,
-    List<CLMedia> mediaList, {
-    required Future<CLNote> Function(
-      CLNote note, {
-      required String targetDir,
-    }) onSaveNote,
-  }) async {
-    final targetDir = dbWriter.appSettings.directories.notes.pathString;
-    final updated = await onSaveNote(note, targetDir: targetDir);
-    return db.writeTransaction((tx) async {
-      return dbWriter.upsertNote(tx, updated, mediaList);
-    });
+    List<CLMedia> mediaList,
+  ) async {
+    try {
+      return db.writeTransaction((tx) async {
+        return dbWriter.upsertNote(tx, note, mediaList);
+      });
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
