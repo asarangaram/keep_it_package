@@ -147,7 +147,9 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                     onDone: () {
                       isSelectionMode = false;
                       //onDone();
-                      setState(() {});
+                      if (mounted) {
+                        setState(() {});
+                      }
                     },
                     selectionActions: widget.selectionActions,
                     parentKey: parentKey,
