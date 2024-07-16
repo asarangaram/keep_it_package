@@ -38,7 +38,10 @@ class PinnedMediaPage extends ConsumerWidget {
                       },
                       onLongPress: () =>
                           TheStore.of(context).togglePinMultiple([item]),
-                      child: PreviewService(media: item),
+                      child: PreviewService(
+                        media: item,
+                        keepAspectRatio: false,
+                      ),
                     ),
                   ),
                 ),

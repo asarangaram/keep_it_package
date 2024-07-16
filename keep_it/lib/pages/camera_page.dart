@@ -41,7 +41,10 @@ class CameraPage extends ConsumerWidget {
               await CLPopScreen.onPop(context);
             }
           },
-          getPreview: (media) => PreviewService(media: media),
+          getPreview: (media) => PreviewService(
+            media: media,
+            keepAspectRatio: false,
+          ),
         );
       },
     );

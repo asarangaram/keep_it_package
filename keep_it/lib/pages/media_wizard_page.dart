@@ -13,7 +13,10 @@ class MediaWizardPage extends StatelessWidget {
     return CLPopScreen.onSwipe(
       child: MediaWizardService(
         type: type,
-        getPreview: (media) => PreviewService(media: media),
+        getPreview: (media) => PreviewService(
+          media: media,
+          keepAspectRatio: false,
+        ),
       ),
     );
   }

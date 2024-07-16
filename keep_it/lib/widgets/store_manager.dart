@@ -198,7 +198,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           onConfirm: () async {
             return true;
           },
-          getPreview: (media) => PreviewService(media: media),
+          getPreview: (media) => PreviewService(
+            media: media,
+            keepAspectRatio: false,
+          ),
         ) ??
         false;
 
@@ -243,7 +246,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           onConfirm: () async {
             return true;
           },
-          getPreview: (media) => PreviewService(media: media),
+          getPreview: (media) => PreviewService(
+            media: media,
+            keepAspectRatio: false,
+          ),
         ) ??
         false;
 
@@ -380,7 +386,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await ConfirmAction.replaceMedia(
         context,
         media: updatedMedia,
-        getPreview: (CLMedia media) => PreviewService(media: media),
+        getPreview: (CLMedia media) => PreviewService(
+          media: media,
+          keepAspectRatio: false,
+        ),
         onConfirm: () async {
           final mediaFromDB = await widget.storeInstance.upsertMedia(
             updatedMedia,
@@ -428,7 +437,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await ConfirmAction.cloneAndReplaceMedia(
         context,
         media: updatedMedia,
-        getPreview: (CLMedia media) => PreviewService(media: media),
+        getPreview: (CLMedia media) => PreviewService(
+          media: media,
+          keepAspectRatio: false,
+        ),
         onConfirm: () async {
           final mediaFromDB = await widget.storeInstance.upsertMedia(
             updatedMedia.removeId(),
@@ -527,7 +539,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           onConfirm: () async {
             return true;
           },
-          getPreview: (media) => PreviewService(media: media),
+          getPreview: (media) => PreviewService(
+            media: media,
+            keepAspectRatio: false,
+          ),
         ) ??
         false;
 

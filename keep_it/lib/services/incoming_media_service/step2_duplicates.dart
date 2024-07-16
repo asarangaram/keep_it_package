@@ -22,7 +22,10 @@ class DuplicatePage extends StatelessWidget {
       incomingMedia: incomingMedia,
       onDone: onDone,
       onCancel: onCancel,
-      getPreview: (media) => PreviewService(media: media),
+      getPreview: (media) => PreviewService(
+        media: media,
+        keepAspectRatio: false,
+      ),
     );
   }
 }

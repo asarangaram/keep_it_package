@@ -47,7 +47,10 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                       CollectionAsFolder(
                     collection: item,
                     quickMenuScopeKey: quickMenuScopeKey,
-                    getPreview: (media) => PreviewService(media: media),
+                    getPreview: (media) => PreviewService(
+                      media: media,
+                      keepAspectRatio: false,
+                    ),
                   ),
                   identifier: identifier,
                   onPickFiles: (BuildContext c) async =>
