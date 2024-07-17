@@ -32,8 +32,7 @@ class CollectionAsFolder extends ConsumerWidget {
         return true;
       },
       onDelete: () async {
-        await TheStore.of(context).deleteCollection(collection);
-        return null;
+        return TheStore.of(context).deleteCollection(collection);
       },
       onTap: () async {
         await TheStore.of(context).openCollection(collectionId: collection.id);
