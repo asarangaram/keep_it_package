@@ -81,65 +81,13 @@ class DBManager extends Store {
   }
 
   @override
-  Future<CLMedia?> getMediaByMD5(
-    String md5String,
-  ) async {
-    return (getQuery(DBQueries.mediaByMD5) as DBQuery<CLMedia>)
-        .copyWith(parameters: [md5String]).read(db);
-  }
-
-  Future<CLMedia?> getMediaById(
-    int id,
-  ) async {
-    return (await (getQuery(DBQueries.mediaById) as DBQuery<CLMedia>)
-            .copyWith(parameters: [id]).readMultiple(
-      db,
-    ))
-        .firstOrNull;
-  }
-
-  Future<List<CLMedia>> getMediaByCollectionId(
-    SqliteWriteContext tx,
-    int collectionId,
-  ) async {
-    return (getQuery(DBQueries.mediaByCollectionId) as DBQuery<CLMedia>)
-        .copyWith(parameters: [collectionId]).readMultiple(
-      tx,
-    );
+  Future<T?> read<T>(StoreQuery<T> query) {
+    return (query as DBQuery<T>).read(db);
   }
 
   @override
-  Future<Collection?> getCollectionByLabel(
-    String label,
-  ) async {
-    return (getQuery(DBQueries.collectionByLabel) as DBQuery<Collection>)
-        .copyWith(parameters: [label]).read(db);
-  }
-
-  @override
-  Future<List<CLNote>?> getNotesByMediaID(
-    int mediaId,
-  ) {
-    return (getQuery(DBQueries.notesByMediaId) as DBQuery<CLNote>)
-        .copyWith(parameters: [mediaId]).readMultiple(
-      db,
-    );
-  }
-
-  Future<List<CLMedia>?> getMediaByNoteID(
-    int noteId,
-  ) async {
-    return (getQuery(DBQueries.mediaByNoteID) as DBQuery<CLMedia>)
-        .copyWith(parameters: [noteId]).readMultiple(
-      db,
-    );
-  }
-
-  Future<List<CLNote>?> getOrphanNotes(
-    SqliteWriteContext tx,
-  ) {
-    return (getQuery(DBQueries.notesOrphan) as DBQuery<CLNote>)
-        .readMultiple(tx);
+  Future<List<T>> readMultiple<T>(StoreQuery<T> query) {
+    return (query as DBQuery<T>).readMultiple(db);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -166,6 +114,15 @@ class DBManager extends Store {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  Future<List<CLMedia>> getMediaByCollectionId(
+    SqliteWriteContext tx,
+    int collectionId,
+  ) async {
+    return readMultiple<CLMedia>(
+      getQuery(DBQueries.mediaByCollectionId, parameters: [collectionId])
+          as DBQuery<CLMedia>,
+    );
+  }
 
   @override
   Future<void> deleteCollection(Collection collection) async {
@@ -186,6 +143,15 @@ class DBManager extends Store {
         }
       }
     });
+  }
+
+  Future<List<CLNote>?> getNotesByMediaID(
+    int mediaId,
+  ) {
+    return readMultiple(
+      getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
+          as DBQuery<CLNote>,
+    );
   }
 
   @override
@@ -209,6 +175,15 @@ class DBManager extends Store {
         );
       });
     }
+  }
+
+  Future<List<CLMedia>?> getMediaByNoteID(
+    int noteId,
+  ) async {
+    return readMultiple(
+      getQuery(DBQueries.mediaByNoteID, parameters: [noteId])
+          as DBQuery<CLMedia>,
+    );
   }
 
   @override

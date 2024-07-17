@@ -226,7 +226,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         ),
       ).deleteIfExists();
     }
-
+    final orphanNotes = await getOrphanNotes();
+    if (orphanNotes != null) {
+      for (final note in orphanNotes) {
+        if (note != null) {
+          await widget.storeInstance.deleteNote(note);
+          await File(getNotesPath(note)).deleteIfExists();
+        }
+      }
+    }
     return true;
   }
 
@@ -563,11 +571,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     // Get Collection if required
     Collection collection0;
     if (collection == null) {
-      collection0 =
-          await widget.storeInstance.getCollectionByLabel(tempCollectionName) ??
-              await widget.storeInstance.upsertCollection(
-                const Collection(label: tempCollectionName),
-              );
+      collection0 = await getCollectionByLabel(tempCollectionName) ??
+          await widget.storeInstance.upsertCollection(
+            const Collection(label: tempCollectionName),
+          );
     } else {
       collection0 = collection;
     }
@@ -629,13 +636,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         );
         if (file.existsSync()) {
           final md5String = await file.checksum;
-          final duplicate = await widget.storeInstance.getMediaByMD5(md5String);
+          final duplicate = await getMediaByMD5(md5String);
           if (duplicate != null) {
             candidates.add(duplicate);
           } else {
             final Collection tempCollection;
-            tempCollection = await widget.storeInstance
-                    .getCollectionByLabel(tempCollectionName) ??
+            tempCollection = await getCollectionByLabel(tempCollectionName) ??
                 await widget.storeInstance.upsertCollection(
                   const Collection(label: tempCollectionName),
                 );
@@ -747,6 +753,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
 
     await widget.storeInstance.deleteNote(note);
+    await File(getNotesPath(note)).deleteIfExists();
   }
 
   Future<String> createTempFile({required String ext}) async {
@@ -948,6 +955,32 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await context.push(
       '/items_by_collection/$collectionId',
     );
+  }
+
+  Future<Collection?> getCollectionByLabel(
+    String label,
+  ) async {
+    final q = widget.storeInstance.getQuery(
+      DBQueries.collectionByLabel,
+      parameters: [label],
+    ) as StoreQuery<Collection>;
+    return widget.storeInstance.read(q);
+  }
+
+  Future<CLMedia?> getMediaByMD5(
+    String md5String,
+  ) async {
+    final q = widget.storeInstance.getQuery(
+      DBQueries.mediaByMD5,
+      parameters: [md5String],
+    ) as StoreQuery<CLMedia>;
+    return widget.storeInstance.read(q);
+  }
+
+  Future<List<CLNote?>?> getOrphanNotes() {
+    final q = widget.storeInstance.getQuery(DBQueries.notesOrphan)
+        as StoreQuery<CLNote>;
+    return widget.storeInstance.readMultiple(q);
   }
 
   Future<void> reloadStore() async {

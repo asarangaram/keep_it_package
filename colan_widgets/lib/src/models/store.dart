@@ -42,9 +42,9 @@ abstract class Store {
 
   Future<List<Object?>?> getDBRecords();
 
-  Future<Collection?> getCollectionByLabel(String label);
-  Future<CLMedia?> getMediaByMD5(String md5String);
-  Future<List<CLNote>?> getNotesByMediaID(int mediaId);
+  Future<T?> read<T>(StoreQuery<T> query);
+
+  Future<List<T?>> readMultiple<T>(StoreQuery<T> query);
 
   Future<void> reloadStore();
 
