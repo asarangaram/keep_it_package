@@ -126,23 +126,7 @@ class DBManager extends Store {
 
   @override
   Future<void> deleteCollection(Collection collection) async {
-    if (collection.id == null) return;
-
-    final items = await getMediaByCollectionId(db, collection.id!);
-
-    /// Delete all media ignoring those already in Recycle
-    /// Don't delete CollectionDir / Collection from Media, required for restore
-
-    await db.writeTransaction((tx) async {
-      for (final m in items) {
-        if (!(m.isDeleted ?? false)) {
-          await deleteMedia(
-            m,
-            permanent: false,
-          );
-        }
-      }
-    });
+    throw Exception('currently not implelemented');
   }
 
   Future<List<CLNote>?> getNotesByMediaID(

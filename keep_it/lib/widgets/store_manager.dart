@@ -189,13 +189,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (mediaMultiple.isEmpty) {
       return true;
     }
-    final bool confirmed;
 
-    confirmed = await ConfirmAction.permanentlyDeleteMediaMultiple(
+    return await ConfirmAction.permanentlyDeleteMediaMultiple(
           context,
           media: mediaMultiple,
           onConfirm: () async {
-            return true;
+            return permanentlyDeleteMediaMultipleAlreadyConfirmed(
+              mediaMultiple,
+            );
           },
           getPreview: (media) => PreviewService(
             media: media,
@@ -203,11 +204,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           ),
         ) ??
         false;
+  }
 
-    if (!confirmed) {
-      return confirmed;
-    }
-
+  Future<bool> permanentlyDeleteMediaMultipleAlreadyConfirmed(
+    List<CLMedia> mediaMultiple,
+  ) async {
     // Remove Pins first..
     await removeMultipleMediaFromGallery(
       mediaMultiple
@@ -244,13 +245,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (mediaMultiple.isEmpty) {
       return true;
     }
-    final bool confirmed;
 
-    confirmed = await ConfirmAction.deleteMediaMultiple(
+    return await ConfirmAction.deleteMediaMultiple(
           context,
           media: mediaMultiple,
           onConfirm: () async {
-            return true;
+            return deleteMediaMultipleAlreadyConfirmed(
+              mediaMultiple,
+            );
           },
           getPreview: (media) => PreviewService(
             media: media,
@@ -259,14 +261,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         ) ??
         false;
 
-    if (!confirmed) {
-      return confirmed;
-    }
+    // Remove Pins first..
+  }
 
-    if (!confirmed) {
-      return false;
-    }
-
+  Future<bool> deleteMediaMultipleAlreadyConfirmed(
+    List<CLMedia> mediaMultiple,
+  ) async {
     // Remove Pins first..
     await removeMultipleMediaFromGallery(
       mediaMultiple
@@ -279,7 +279,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     for (final m in mediaMultiple) {
       await widget.storeInstance.deleteMedia(m, permanent: false);
     }
-
     return true;
   }
 
@@ -813,17 +812,26 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   Future<bool> deleteCollection(
     Collection collection,
   ) async {
-    final res = await ConfirmAction.deleteCollection(
+    return await ConfirmAction.deleteCollection(
           context,
           collection: collection,
-          onConfirm: () async => true,
+          onConfirm: () async => deleteCollectionAlreadyConfirmed(collection),
         ) ??
         false;
-    if (!res) {
-      return res;
-    }
-    await widget.storeInstance.deleteCollection(collection);
-    return res;
+  }
+
+  Future<bool> deleteCollectionAlreadyConfirmed(Collection collection) async {
+    if (collection.id == null) return true;
+
+    final mediaMultiple = await getMediaByCollectionId(collection.id!);
+
+    /// Delete all media ignoring those already in Recycle
+    /// Don't delete CollectionDir / Collection from Media, required for restore
+
+    await deleteMediaMultipleAlreadyConfirmed(
+      mediaMultiple.where((e) => e != null).map((e) => e!).toList(),
+    );
+    return true;
   }
 
   final uuidGenerator = const Uuid();
@@ -949,6 +957,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await context.push(
       '/items_by_collection/$collectionId',
     );
+  }
+
+  Future<List<CLMedia?>> getMediaByCollectionId(
+    int collectionId,
+  ) {
+    final q = widget.storeInstance.getQuery(
+      DBQueries.mediaByCollectionId,
+      parameters: [collectionId],
+    ) as StoreQuery<CLMedia>;
+    return widget.storeInstance.readMultiple(q);
   }
 
   Future<Collection?> getCollectionByLabel(
