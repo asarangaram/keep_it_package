@@ -704,7 +704,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }) async {
     final savedNotesFile =
         File(path).copyTo(widget.appSettings.directories.notes.path);
-    print('notes stored at ${savedNotesFile.path}');
+
     final savedNotes = note?.copyWith(
           path: path_handler.basename(savedNotesFile.path),
           type: type,
@@ -795,7 +795,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final String text;
     if (note != null) {
       final notesPath = getNotesPath(note);
-      print('looking for Notes at $notesPath');
+
       final notesFile = File(notesPath);
       if (!notesFile.existsSync()) {
         text = 'Content Missing. File is deleted';
