@@ -188,6 +188,13 @@ class ExistInDifferentCollection extends StatelessWidget {
                 final m = duplicates[index];
                 final currCollection =
                     collections.where((e) => e.id == m.collectionId).first;
+                final String currCollectionLabel;
+
+                if (m.isDeleted ?? false) {
+                  currCollectionLabel = 'Deleted Items';
+                } else {
+                  currCollectionLabel = currCollection.label;
+                }
 
                 return SizedBox(
                   height: 80,
@@ -220,7 +227,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: CLText.standard(
                                 'Found in '
-                                '"${currCollection.label.trim()}"',
+                                '"${currCollectionLabel.trim()}"',
                                 textAlign: TextAlign.start,
                               ),
                             ),

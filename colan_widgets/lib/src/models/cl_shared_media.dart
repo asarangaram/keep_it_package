@@ -62,7 +62,9 @@ class CLSharedMedia {
   bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
 
   CLSharedMedia mergeMismatch() {
-    final items = entries.map((e) => e.setCollectionId(collection?.id));
+    final items = entries.map(
+      (e) => e.setCollectionId(collection?.id).copyWith(isDeleted: false),
+    );
     return copyWith(entries: items.toList());
   }
 
