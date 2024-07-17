@@ -73,16 +73,17 @@ class _NotesViewState extends State<NotesView> {
                 ),
               ],
             ),
-            SizedBox(
-              height: kMinInteractiveDimension * 2,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: AudioNotes(
-                  media: widget.media,
-                  notes: audioNotes,
+            if (ColanPlatformSupport.isMobilePlatform || audioNotes.isNotEmpty)
+              SizedBox(
+                height: kMinInteractiveDimension * 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: AudioNotes(
+                    media: widget.media,
+                    notes: audioNotes,
+                  ),
                 ),
               ),
-            ),
             SizedBox(
               height: kMinInteractiveDimension * 3,
               child: Padding(

@@ -23,7 +23,7 @@ class ViewNotes extends StatelessWidget {
           child: SingleChildScrollView(
             padding: EdgeInsets.zero,
             child: Text(
-              note.text,
+              TheStore.of(context).getText(note),
               textAlign: TextAlign.start,
               style: Theme.of(context)
                   .textTheme

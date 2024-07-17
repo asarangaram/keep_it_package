@@ -38,6 +38,8 @@ class StoreActions {
     required this.getPreviewPath,
     required this.getMediaPath,
     required this.getMediaLabel,
+    required this.getNotesPath,
+    required this.getText,
 
     /// Notes
     required this.upsertNote,
@@ -131,6 +133,8 @@ class StoreActions {
   final String Function(CLMedia media) getPreviewPath;
   final String Function(CLMedia media) getMediaPath;
   final String Function(CLMedia media) getMediaLabel;
+  final String Function(CLNote media) getNotesPath;
+  final String Function(CLTextNote? note) getText;
 
   // Opens New page
   final Future<void> Function({int? collectionId}) openCamera;

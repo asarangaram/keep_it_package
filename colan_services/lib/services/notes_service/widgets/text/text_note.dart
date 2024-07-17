@@ -27,22 +27,23 @@ class _TextNoteState extends State<TextNote> {
   late final FocusNode focusNode;
   late bool isEditing;
   bool textModified = false;
-
+  late String textOriginal;
   @override
   void initState() {
     super.initState();
 
-    textEditingController = TextEditingController(text: widget.note?.text);
+    textEditingController = TextEditingController();
     isEditing = widget.note == null;
     focusNode = FocusNode();
   }
 
   @override
   void didChangeDependencies() {
-    textEditingController.text = widget.note?.text ?? '';
+    textOriginal = TheStore.of(context).getText(widget.note);
+    textEditingController.text = textOriginal;
     isEditing = widget.note == null;
     textModified = textEditingController.text.trim().isNotEmpty &&
-        textEditingController.text.trim() != widget.note?.text;
+        textEditingController.text.trim() != textOriginal;
     super.didChangeDependencies();
   }
 
@@ -98,7 +99,7 @@ class _TextNoteState extends State<TextNote> {
             note: widget.note,
             onTap: () {
               textModified = textEditingController.text.trim().isNotEmpty &&
-                  textEditingController.text.trim() != widget.note?.text;
+                  textEditingController.text.trim() != textOriginal;
               setState(() {});
             },
           ),
@@ -110,7 +111,7 @@ class _TextNoteState extends State<TextNote> {
                 MdiIcons.undoVariant,
                 onTap: () {
                   if (widget.note != null) {
-                    textEditingController.text = widget.note!.text;
+                    textEditingController.text = textOriginal;
                   } else {
                     textEditingController.clear();
                   }
@@ -139,16 +140,26 @@ class _TextNoteState extends State<TextNote> {
 
   Future<void> onEditDone() async {
     if (textModified) {
-      final path = await TheStore.of(context).createTempFile(ext: 'txt');
-      await File(path).writeAsString(textEditingController.text.trim());
+      final String path;
+      if (widget.note == null) {
+        path = await TheStore.of(context).createTempFile(ext: 'txt');
+        await File(path).writeAsString(textEditingController.text.trim());
 
-      if (mounted) {
-        await TheStore.of(context).upsertNote(
-          path,
-          CLNoteTypes.text,
-          mediaMultiple: [widget.media],
-          note: widget.note,
-        );
+        if (mounted) {
+          await TheStore.of(context).upsertNote(
+            path,
+            CLNoteTypes.text,
+            mediaMultiple: [widget.media],
+            note: widget.note,
+          );
+        }
+        textOriginal = textEditingController.text.trim();
+      } else {
+        path = TheStore.of(context).getNotesPath(widget.note!);
+        await File(path).writeAsString(textEditingController.text.trim());
+        if (mounted) {
+          textOriginal = TheStore.of(context).getText(widget.note);
+        }
       }
 
       isEditing = false;

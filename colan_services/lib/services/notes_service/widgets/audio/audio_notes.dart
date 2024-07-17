@@ -27,41 +27,45 @@ class _AudioNotesState extends State<AudioNotes> {
 
   @override
   Widget build(BuildContext context) {
+    final audioNotes = widget.notes.isEmpty
+        ? const SizedBox.shrink()
+        : SingleChildScrollView(
+            child: Wrap(
+              runSpacing: 2,
+              spacing: 2,
+              children: widget.notes
+                  .map(
+                    (note) => AudioNote(
+                      note,
+                      editMode: editMode && widget.notes.isNotEmpty,
+                      onEditMode: () {
+                        setState(() {
+                          if (widget.notes.isNotEmpty) {
+                            editMode = true;
+                          }
+                        });
+                      },
+                      onDeleteNote: () {
+                        if (widget.notes.length == 1) {
+                          editMode = false;
+                        }
+                        TheStore.of(context).deleteNote(note);
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
+          );
+    if (!ColanPlatformSupport.isMobilePlatform) {
+      return audioNotes;
+    }
     return AudioRecorder(
       media: widget.media,
       editMode: editMode && widget.notes.isNotEmpty,
       onEditCancel: () => setState(() {
         editMode = false;
       }),
-      child: widget.notes.isEmpty
-          ? null
-          : SingleChildScrollView(
-              child: Wrap(
-                runSpacing: 2,
-                spacing: 2,
-                children: widget.notes
-                    .map(
-                      (note) => AudioNote(
-                        note,
-                        editMode: editMode && widget.notes.isNotEmpty,
-                        onEditMode: () {
-                          setState(() {
-                            if (widget.notes.isNotEmpty) {
-                              editMode = true;
-                            }
-                          });
-                        },
-                        onDeleteNote: () {
-                          if (widget.notes.length == 1) {
-                            editMode = false;
-                          }
-                          TheStore.of(context).deleteNote(note);
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
+      child: audioNotes,
     );
   }
 }

@@ -125,6 +125,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       getMediaPath: getMediaPath,
       getMediaLabel: getMediaLabel,
       getPreviewPath: getPreviewPath,
+      getNotesPath: getNotesPath,
+      getText: getText,
     );
     return TheStore(
       storeAction: storeAction,
@@ -702,12 +704,17 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }) async {
     final savedNotesFile =
         File(path).copyTo(widget.appSettings.directories.notes.path);
-
+    print('notes stored at ${savedNotesFile.path}');
     final savedNotes = note?.copyWith(
           path: path_handler.basename(savedNotesFile.path),
           type: type,
         ) ??
-        CLNote(createdDate: DateTime.now(), type: type, path: path, id: null);
+        CLNote(
+          createdDate: DateTime.now(),
+          type: type,
+          path: path_handler.basename(savedNotesFile.path),
+          id: null,
+        );
 
     final notesInDB = await widget.storeInstance.upsertNote(
       savedNotes,
@@ -717,6 +724,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await savedNotesFile.delete();
     } else {
       await File(path).deleteIfExists();
+      if (note != null) {
+        // delete the older notes
+        await File(getNotesPath(note)).deleteIfExists();
+      }
     }
   }
 
@@ -774,6 +785,28 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         media.label,
       );
   String getMediaLabel(CLMedia media) => media.label;
+
+  String getNotesPath(CLNote note) => path_handler.join(
+        widget.appSettings.directories.notes.path.path,
+        note.path,
+      );
+
+  String getText(CLTextNote? note) {
+    final String text;
+    if (note != null) {
+      final notesPath = getNotesPath(note);
+      print('looking for Notes at $notesPath');
+      final notesFile = File(notesPath);
+      if (!notesFile.existsSync()) {
+        text = 'Content Missing. File is deleted';
+      } else {
+        text = notesFile.readAsStringSync();
+      }
+    } else {
+      text = '';
+    }
+    return text;
+  }
 
   Future<Collection> upsertCollection(Collection collection) async {
     final updated = await widget.storeInstance.upsertCollection(collection);

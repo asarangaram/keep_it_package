@@ -162,13 +162,6 @@ class CLTextNote extends CLNote {
     super.updatedDate,
     super.type = CLNoteTypes.text,
   });
-
-  String get text {
-    if (!File(path).existsSync()) {
-      return 'Content Missing. File is deleted';
-    }
-    return File(path).readAsStringSync();
-  }
 }
 
 @immutable

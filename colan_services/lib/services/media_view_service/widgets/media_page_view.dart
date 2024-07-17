@@ -82,7 +82,11 @@ class _ItemViewState extends ConsumerState<MediaPageView> {
                   autoStart: currIndex == index,
                   onLockPage: widget.onLockPage,
                   isLocked: widget.isLocked,
-                  buildNotes: widget.buildNotes,
+                  buildNotes: currIndex == index
+                      ? widget.buildNotes
+                      : (_) {
+                          return Container();
+                        },
                   getPreview: widget.getPreview,
                 ),
               );
