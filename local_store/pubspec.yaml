@@ -6,7 +6,6 @@ publish_to: none
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
-  flutter: ">=1.17.0"
 
 dependencies:
   colan_widgets:
@@ -15,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   sqlite3_flutter_libs: ^0.5.20
-  sqlite_async: ^0.7.0
+  sqlite_async: ^0.8.0
 
 dev_dependencies:
   flutter_lints: ^4.0.0

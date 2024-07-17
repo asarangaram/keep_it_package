@@ -6,8 +6,7 @@ homepage:
 publish_to: none
 
 environment:
-  sdk: '>=3.3.3 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
   audio_waveforms: ^1.0.5

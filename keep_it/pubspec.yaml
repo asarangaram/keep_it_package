@@ -6,7 +6,7 @@ homepage: htts://www.cloudonlanapps.com
 version: 0.1.0+1
 
 environment:
-  sdk: '>=3.1.2 <4.0.0'
+  sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
   app_loader:
