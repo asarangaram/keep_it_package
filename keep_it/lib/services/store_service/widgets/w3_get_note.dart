@@ -1,9 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/services/store_service/widgets/get_store.dart';
 
-import '../models/m3_db_queries.dart';
-import '../models/m3_db_query.dart';
 import 'w3_get_from_store.dart';
 
 class GetNote extends ConsumerWidget {
@@ -17,12 +16,17 @@ class GetNote extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetFromStore<CLNote>(
-      query: (DBQueries.noteById.sql.copyWith(parameters: [id]))
-          as DBQuery<CLNote>,
-      builder: (data) {
-        final note = data.where((e) => e.id == id).firstOrNull;
-        return buildOnData(note);
+    return GetStore(
+      builder: (store) {
+        final q = store.getQuery(DBQueries.notesByMediaId, parameters: [id])
+            as StoreQuery<CLNote>;
+        return GetFromStore<CLNote>(
+          query: q,
+          builder: (data) {
+            final note = data.where((e) => e.id == id).firstOrNull;
+            return buildOnData(note);
+          },
+        );
       },
     );
   }
@@ -39,10 +43,16 @@ class GetNotesByMediaId extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetFromStore<CLNote>(
-      query: (DBQueries.notesByMediaId.sql.copyWith(parameters: [mediaId]))
-          as DBQuery<CLNote>,
-      builder: buildOnData,
+    return GetStore(
+      builder: (store) {
+        final q =
+            store.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
+                as StoreQuery<CLNote>;
+        return GetFromStore<CLNote>(
+          query: q,
+          builder: buildOnData,
+        );
+      },
     );
   }
 }

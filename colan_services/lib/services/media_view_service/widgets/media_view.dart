@@ -36,7 +36,6 @@ class MediaView extends StatefulWidget {
 class _MediaViewState extends State<MediaView> {
   @override
   Widget build(BuildContext context) {
-    print('_MediaViewState');
     final ac = widget.actionControl;
 
     return GestureDetector(

@@ -26,7 +26,6 @@ class MediaViewerRaw extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('MediaViewerRaw');
     final showControl = ref.watch(showControlsProvider);
     return SafeArea(
       top: showControl.showNotes,

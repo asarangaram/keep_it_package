@@ -50,7 +50,6 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
 
   @override
   Widget build(BuildContext context) {
-    print('MediaPageViewState');
     if (currIndex >= widget.items.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         CLPopScreen.onPop(context);

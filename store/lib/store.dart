@@ -1,15 +1,4 @@
 /// Local Store implementation
 library store;
 
-export 'src/store/widgets/get_store.dart' show GetStore;
-export 'src/store/widgets/w3_get_collection.dart'
-    show GetCollection, GetCollectionMultiple;
-export 'src/store/widgets/w3_get_media.dart'
-    show
-        GetDeletedMedia,
-        GetMedia,
-        GetMediaByCollectionId,
-        GetMediaMultiple,
-        GetPinnedMedia,
-        GetStaleMedia;
-export 'src/store/widgets/w3_get_note.dart' show GetNotesByMediaId;
+export 'src/store/models/m2_db_manager.dart' show createStoreInstance;

@@ -3,9 +3,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:store/store.dart';
 
 import '../providers/gallery_group_provider.dart';
+import '../services/store_service/widgets/w3_get_media.dart';
 
 class PinnedMediaPage extends ConsumerWidget {
   const PinnedMediaPage({super.key});

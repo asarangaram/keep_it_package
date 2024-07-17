@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/m3_db_query.dart';
 import '../providers/p3_db_reader.dart';
 
 class GetFromStore<T> extends ConsumerWidget {
@@ -13,7 +12,7 @@ class GetFromStore<T> extends ConsumerWidget {
     required this.builder,
     super.key,
   });
-  final DBQuery<T> query;
+  final StoreQuery<T> query;
   final Widget Function(List<T> results) builder;
 
   @override

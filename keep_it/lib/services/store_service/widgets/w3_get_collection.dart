@@ -1,9 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/services/store_service/widgets/get_store.dart';
 
-import '../models/m3_db_queries.dart';
-import '../models/m3_db_query.dart';
 import 'w3_get_from_store.dart';
 
 class GetCollection extends ConsumerWidget {
@@ -20,12 +19,17 @@ class GetCollection extends ConsumerWidget {
     if (id == null) {
       return buildOnData(null);
     }
-    return GetFromStore<Collection>(
-      query: (DBQueries.collectionById.sql.copyWith(parameters: [id]))
-          as DBQuery<Collection>,
-      builder: (data) {
-        final collection = data.where((e) => e.id == id).firstOrNull;
-        return buildOnData(collection);
+    return GetStore(
+      builder: (store) {
+        final q = store.getQuery(DBQueries.collectionById, parameters: [id])
+            as StoreQuery<Collection>;
+        return GetFromStore<Collection>(
+          query: q,
+          builder: (data) {
+            final collection = data.where((e) => e.id == id).firstOrNull;
+            return buildOnData(collection);
+          },
+        );
       },
     );
   }
@@ -45,11 +49,16 @@ class GetCollectionMultiple extends ConsumerWidget {
     final qid = excludeEmpty
         ? DBQueries.collectionsExcludeEmpty
         : DBQueries.collectionsAll;
-    final q = qid.sql as DBQuery<Collection>;
-    final qWithParam = q.copyWith(parameters: []);
-    return GetFromStore<Collection>(
-      query: qWithParam,
-      builder: buildOnData,
+
+    return GetStore(
+      builder: (store) {
+        final q = store.getQuery(qid, parameters: []) as StoreQuery<Collection>;
+
+        return GetFromStore<Collection>(
+          query: q,
+          builder: buildOnData,
+        );
+      },
     );
   }
 }

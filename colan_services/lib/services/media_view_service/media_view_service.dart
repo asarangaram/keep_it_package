@@ -81,7 +81,6 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
 
   @override
   Widget build(BuildContext context) {
-    print('MediaViewServiceState');
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -97,7 +96,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
         overlays: SystemUiOverlay.values,
       );
     }
-
+    // TODO(anandas): provide Notes
     return (widget.media.length == 1)
         ? MediaView(
             media: widget.media[0],
@@ -106,7 +105,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
             isLocked: lockPage,
             onLockPage: onLockPage,
             actionControl: widget.actionControl,
-            notes: const [], // TODO
+            notes: const [],
           )
         : MediaPageView(
             items: widget.media,

@@ -4,14 +4,15 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
+
+import '../../store_service/providers/p2_db_manager.dart';
 
 import '../models/backup_files.dart';
 
 final backupNowProvider = StreamProvider<Progress>((ref) async* {
   final controller = StreamController<Progress>();
   final appSettings = await ref.watch(appSettingsProvider.future);
-  final storeInstance = await GetStore.getHandle(ref);
+  final storeInstance = await ref.watch(storeProvider.future);
 
   ref.listen(backupFileProvider, (prev, backupFileName) async {
     if (prev != backupFileName && backupFileName != null) {

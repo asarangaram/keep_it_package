@@ -2,7 +2,31 @@ import 'cl_media.dart';
 import 'cl_note.dart';
 import 'collection.dart';
 
-class StoreQuery<T> {
+enum DBQueries {
+  collectionById,
+  collectionByLabel,
+  collectionsAll,
+  collectionsExcludeEmpty,
+  collectionsEmpty,
+
+  mediaById,
+  mediaAll,
+  mediaByCollectionId,
+  mediaByPath,
+  mediaByMD5,
+  mediaPinned,
+  mediaStaled,
+  mediaDeleted,
+  mediaByIdList,
+  mediaByNoteID,
+  notesAll,
+  noteById,
+  noteByPath,
+  notesByMediaId,
+  notesOrphan;
+}
+
+abstract class StoreQuery<T> {
   const StoreQuery();
 }
 
@@ -20,9 +44,12 @@ abstract class Store {
 
   Future<Collection?> getCollectionByLabel(String label);
   Future<CLMedia?> getMediaByMD5(String md5String);
-  Future<List<CLNote>?> getNotesByMediaID(int noteId);
+  Future<List<CLNote>?> getNotesByMediaID(int mediaId);
 
   Future<void> reloadStore();
 
   Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
+  StoreQuery<Object> getQuery(DBQueries query, {List<Object?>? parameters});
+
+  void dispose();
 }

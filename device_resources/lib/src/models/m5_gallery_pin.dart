@@ -9,7 +9,7 @@ class AlbumManager {
     required this.albumName,
   });
 
-  // TODO(anandas): :  How to make this reactive??
+  // TODO(anandas): How to make this reactive??
   static Future<bool> isPinBroken(String? pin) async {
     if (pin != null) {
       final asset = await AssetEntity.fromId(pin);

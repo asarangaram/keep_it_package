@@ -3,7 +3,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
+
+import '../services/store_service/widgets/w3_get_collection.dart';
 
 class CameraPage extends ConsumerWidget {
   const CameraPage({super.key, this.collectionId});
@@ -12,7 +13,7 @@ class CameraPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetCollection(
       id: collectionId,
-      buildOnData: (collection) {
+      buildOnData: (Collection? collection) {
         return CLCameraService(
           onCancel: () => CLPopScreen.onPop(context),
           onError: (String message, {required dynamic error}) async {

@@ -1,8 +1,8 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:store/store.dart';
 
+import '../services/store_service/widgets/w3_get_media.dart';
 import '../widgets/empty_state.dart';
 
 class MediaPageViewPage extends StatelessWidget {
@@ -20,7 +20,6 @@ class MediaPageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('MediaPageViewPage');
     if (collectionId == null) {
       return GetMedia(
         id: id,

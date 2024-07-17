@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 
-import 'package:store/store.dart';
+import '../services/store_service/widgets/w3_get_collection.dart';
 
 class CollectionEditor extends StatelessWidget {
   factory CollectionEditor({
@@ -52,7 +52,7 @@ class CollectionEditor extends StatelessWidget {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
       child: GetCollectionMultiple(
-        buildOnData: (collections) {
+        buildOnData: (List<Collection> collections) {
           final collection =
               collections.where((e) => e.id == collectionId).first;
           return CLForm(

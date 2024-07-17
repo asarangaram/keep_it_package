@@ -1,23 +1,69 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/extensions/ext_sqlite_database.dart';
+import 'package:store/src/store/models/ext_sqlite_database.dart';
 
+import 'backup_query.dart';
 import 'm2_db_migration.dart';
-import 'm3_db_queries.dart';
 import 'm3_db_query.dart';
-import 'm3_db_reader.dart';
+import 'm4_db_exec.dart';
 import 'm4_db_writer.dart';
 
 class DBManager extends Store {
-  DBManager({required this.db, required this.onReload})
-      : dbWriter = DBWriter(),
-        dbReader = const DBReader();
+  DBManager({required this.db, required this.onReload}) {
+    final collectionTable = DBExec<Collection>(
+      table: 'Collection',
+      toMap: (obj) {
+        return obj.toMap();
+      },
+      readBack: (
+        tx,
+        collection,
+      ) async {
+        return (getQuery(
+          DBQueries.collectionByLabel,
+        ) as DBQuery<Collection>)
+            .copyWith(parameters: [collection.label]).read(tx);
+      },
+    );
+
+    final mediaTable = DBExec<CLMedia>(
+      table: 'Item',
+      toMap: (CLMedia obj) => obj.toMap(),
+      readBack: (tx, item) {
+        return (getQuery(DBQueries.mediaByPath) as DBQuery<CLMedia>)
+            .copyWith(parameters: [item.label]).read(tx);
+      },
+    );
+    final notesTable = DBExec<CLNote>(
+      table: 'Notes',
+      toMap: (CLNote obj) => obj.toMap(),
+      readBack: (tx, item) async {
+        return (getQuery(DBQueries.noteByPath) as DBQuery<CLNote>)
+            .copyWith(parameters: [item.path]).read(tx);
+      },
+    );
+    final notesOnMediaTable = DBExec<NotesOnMedia>(
+      table: 'ItemNote',
+      toMap: (NotesOnMedia obj) => obj.toMap(),
+      readBack: (tx, item) async {
+        // TODO(anandas): :readBack for ItemNote Can this be done?
+        return item;
+      },
+    );
+    dbWriter = DBWriter(
+      collectionTable: collectionTable,
+      mediaTable: mediaTable,
+      notesTable: notesTable,
+      notesOnMediaTable: notesOnMediaTable,
+    );
+  }
 
   final SqliteDatabase db;
-  final DBWriter dbWriter;
-  final DBReader dbReader;
+  late final DBWriter dbWriter;
+
   final VoidCallback onReload;
 
   static Future<DBManager> createInstances({
@@ -29,6 +75,7 @@ class DBManager extends Store {
     return DBManager(db: db, onReload: onReload);
   }
 
+  @override
   void dispose() {
     db.close();
   }
@@ -37,19 +84,62 @@ class DBManager extends Store {
   Future<CLMedia?> getMediaByMD5(
     String md5String,
   ) async {
-    return dbReader.getMediaByMD5(db, md5String);
+    return (getQuery(DBQueries.mediaByMD5) as DBQuery<CLMedia>)
+        .copyWith(parameters: [md5String]).read(db);
+  }
+
+  Future<CLMedia?> getMediaById(
+    int id,
+  ) async {
+    return (await (getQuery(DBQueries.mediaById) as DBQuery<CLMedia>)
+            .copyWith(parameters: [id]).readMultiple(
+      db,
+    ))
+        .firstOrNull;
+  }
+
+  Future<List<CLMedia>> getMediaByCollectionId(
+    SqliteWriteContext tx,
+    int collectionId,
+  ) async {
+    return (getQuery(DBQueries.mediaByCollectionId) as DBQuery<CLMedia>)
+        .copyWith(parameters: [collectionId]).readMultiple(
+      tx,
+    );
   }
 
   @override
-  Future<Collection?> getCollectionByLabel(String label) async {
-    return dbReader.getCollectionByLabel(db, label);
+  Future<Collection?> getCollectionByLabel(
+    String label,
+  ) async {
+    return (getQuery(DBQueries.collectionByLabel) as DBQuery<Collection>)
+        .copyWith(parameters: [label]).read(db);
   }
 
   @override
   Future<List<CLNote>?> getNotesByMediaID(
-    int noteId,
+    int mediaId,
   ) {
-    return dbReader.getNotesByMediaID(db, noteId);
+    return (getQuery(DBQueries.notesByMediaId) as DBQuery<CLNote>)
+        .copyWith(parameters: [mediaId]).readMultiple(
+      db,
+    );
+  }
+
+  Future<List<CLMedia>?> getMediaByNoteID(
+    int noteId,
+  ) async {
+    return (getQuery(DBQueries.mediaByNoteID) as DBQuery<CLMedia>)
+        .copyWith(parameters: [noteId]).readMultiple(
+      db,
+    );
+  }
+
+  Future<List<CLNote>?> getOrphanNotes(
+    SqliteWriteContext tx,
+  ) {
+    return (getQuery(DBQueries.notesOrphan) as DBQuery<CLNote>)
+        .readMultiple(tx);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -79,21 +169,61 @@ class DBManager extends Store {
 
   @override
   Future<void> deleteCollection(Collection collection) async {
+    if (collection.id == null) return;
+
+    final items = await getMediaByCollectionId(db, collection.id!);
+
+    /// Delete all media ignoring those already in Recycle
+    /// Don't delete CollectionDir / Collection from Media, required for restore
+
     await db.writeTransaction((tx) async {
-      await dbWriter.deleteCollection(tx, collection);
+      for (final m in items) {
+        if (!(m.isDeleted ?? false)) {
+          await deleteMedia(
+            m,
+            permanent: false,
+          );
+        }
+      }
     });
   }
 
   @override
   Future<void> deleteMedia(CLMedia media, {required bool permanent}) async {
-    await db.writeTransaction((tx) async {
-      await dbWriter.deleteMedia(tx, media, deletePermanently: permanent);
-    });
+    if (permanent) {
+      final notes = await getNotesByMediaID(media.id!);
+      await db.writeTransaction((tx) async {
+        if (notes != null && notes.isNotEmpty) {
+          for (final n in notes) {
+            await dbWriter.notesOnMediaTable.delete(
+              tx,
+              {'noteId': n.id!.toString(), 'itemId': media.id!.toString()},
+            );
+          }
+        }
+        await dbWriter.deleteMedia(tx, media);
+      });
+    } else {
+      // Soft Delete
+      await db.writeTransaction((tx) async {
+        await dbWriter.upsertMedia(
+          tx,
+          media.removePin().copyWith(isDeleted: true),
+        );
+      });
+    }
   }
 
   @override
   Future<void> deleteNote(CLNote note) async {
+    final media = await getMediaByNoteID(note.id!);
+
     await db.writeTransaction((tx) async {
+      if (media != null && media.isNotEmpty) {
+        for (final m in media) {
+          await dbWriter.disconnectNotes(tx, media: m, note: note);
+        }
+      }
       await dbWriter.deleteNote(tx, note);
     });
   }
@@ -131,4 +261,138 @@ class DBManager extends Store {
       yield res;
     }
   }
+
+  @override
+  DBQuery<Object> getQuery(DBQueries query, {List<Object?>? parameters}) {
+    final rawQuery = switch (query) {
+      DBQueries.collectionById => DBQuery<Collection>(
+          sql: 'SELECT * FROM Collection WHERE id = ? ',
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionByLabel => DBQuery<Collection>(
+          sql: 'SELECT * FROM Collection WHERE label = ? ',
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionsAll => DBQuery<Collection>(
+          sql: 'SELECT * FROM Collection '
+              "WHERE label NOT LIKE '***%'",
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionsExcludeEmpty => DBQuery<Collection>(
+          sql: 'SELECT DISTINCT Collection.* FROM Collection '
+              'JOIN Item ON Collection.id = Item.collectionId '
+              "WHERE label NOT LIKE '***%' AND "
+              'Item.isDeleted = 0',
+          triggerOnTables: const {'Collection', 'Item'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionsEmpty => DBQuery<Collection>(
+          sql: 'SELECT Collection.* FROM Collection '
+              'LEFT JOIN Item ON Collection.id = Item.collectionId '
+              'WHERE Item.collectionId IS NULL AND '
+              "label NOT LIKE '***%' AND "
+              'Item.isDeleted = 0',
+          triggerOnTables: const {'Collection', 'Item'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.mediaById => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE id = ?',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaAll => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE isHidden IS 0 AND isDeleted IS 0',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaByCollectionId => DBQuery<CLMedia>(
+          sql:
+              'SELECT * FROM Item WHERE collectionId = ? AND isHidden IS 0 AND isDeleted IS 0',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaByMD5 => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE md5String = ?',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaPinned => DBQuery<CLMedia>(
+          sql:
+              "SELECT * FROM Item WHERE NULLIF(pin, 'null') IS NOT NULL AND isHidden IS 0 AND isDeleted IS 0",
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaStaled => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE isHidden IS NOT 0 AND isDeleted IS 0',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaDeleted => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE isDeleted IS NOT 0 ',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaByPath => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE path = ?',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaByIdList => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE id IN (?)',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaByNoteID => DBQuery<CLMedia>(
+          sql:
+              'SELECT Item.* FROM Item JOIN ItemNote ON Item.id = ItemNote.itemId WHERE ItemNote.noteId = ?;',
+          triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.notesAll => DBQuery<CLNote>(
+          sql: 'SELECT * FROM Notes',
+          triggerOnTables: const {'Notes'},
+          fromMap: CLNote.fromMap,
+        ),
+      DBQueries.noteById => DBQuery<CLNote>(
+          sql: 'SELECT * FROM Notes WHERE id = ?;',
+          triggerOnTables: const {'Notes'},
+          fromMap: CLNote.fromMap,
+        ),
+      DBQueries.noteByPath => DBQuery<CLNote>(
+          sql: 'SELECT * FROM Notes WHERE path = ?;',
+          triggerOnTables: const {'Notes'},
+          fromMap: CLNote.fromMap,
+        ),
+      DBQueries.notesByMediaId => DBQuery<CLNote>(
+          sql:
+              'SELECT Notes.* FROM Notes JOIN ItemNote ON Notes.id = ItemNote.noteId WHERE ItemNote.itemId = ?;',
+          triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
+          fromMap: CLNote.fromMap,
+        ),
+      DBQueries.notesOrphan => DBQuery<CLNote>(
+          sql:
+              'SELECT n.* FROM Notes n LEFT JOIN ItemNote inote ON n.id = inote.noteId WHERE inote.noteId IS NULL',
+          triggerOnTables: const {'Notes', 'ItemNote'},
+          fromMap: CLNote.fromMap,
+        ),
+    };
+    if (parameters == null) {
+      return rawQuery;
+    } else {
+      return rawQuery.copyWith(parameters: parameters);
+    }
+  }
+}
+
+Future<Store> createStoreInstance(
+  String fullPath, {
+  required VoidCallback onReload,
+}) async {
+  return DBManager.createInstances(
+    dbpath: fullPath,
+    onReload: onReload,
+  );
 }
