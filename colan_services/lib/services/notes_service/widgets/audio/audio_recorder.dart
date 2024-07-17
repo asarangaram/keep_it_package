@@ -142,8 +142,11 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await TheStore.of(context).upsertNote(audioMessage!, CLNoteTypes.audio,
-          mediaMultiple: [widget.media]);
+      await TheStore.of(context).upsertNote(
+        audioMessage!,
+        CLNoteTypes.audio,
+        mediaMultiple: [widget.media],
+      );
 
       audioMessage = null;
       setState(() {});

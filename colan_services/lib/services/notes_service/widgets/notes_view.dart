@@ -39,7 +39,7 @@ class _NotesViewState extends State<NotesView> {
         )
         .map((e) => e as CLAudioNote)
         .toList();
-    print('audioNotes = ${audioNotes.length}');
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(8),
