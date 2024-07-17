@@ -195,10 +195,7 @@ class DBManager extends Store {
       await db.writeTransaction((tx) async {
         if (notes != null && notes.isNotEmpty) {
           for (final n in notes) {
-            await dbWriter.notesOnMediaTable.delete(
-              tx,
-              {'noteId': n.id!.toString(), 'itemId': media.id!.toString()},
-            );
+            await dbWriter.disconnectNotes(tx, note: n, media: media);
           }
         }
         await dbWriter.deleteMedia(tx, media);

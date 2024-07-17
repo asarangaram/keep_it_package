@@ -226,7 +226,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         ),
       ).deleteIfExists();
     }
-    // TODO(anandas): :  HAndle orphan Notes here.
 
     return true;
   }
@@ -278,7 +277,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         ),
       ).deleteIfExists();
     }
-    // TODO(anandas): :  HAndle orphan Notes here.
 
     return true;
   }
