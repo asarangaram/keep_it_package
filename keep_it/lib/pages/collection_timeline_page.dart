@@ -7,10 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../providers/gallery_group_provider.dart';
-import '../services/store_service/widgets/w3_get_collection.dart';
-import '../services/store_service/widgets/w3_get_media.dart';
-import '../widgets/empty_state.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
 
 class CollectionTimeLinePage extends ConsumerWidget {

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_loader/app_loader.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +19,6 @@ import 'pages/media_pageview_page.dart';
 import 'pages/media_wizard_page.dart';
 import 'pages/pinned_media_page.dart';
 import 'pages/settings_main_page.dart';
-import 'services/incoming_media_service/incoming_media_handler.dart';
-import 'widgets/empty_state.dart';
 
 class KeepItApp implements AppDescriptor {
   @override
@@ -203,7 +202,7 @@ class KeepItApp implements AppDescriptor {
       }) =>
           FullscreenLayout(
             child: StoreManager(
-              child: IncomingMediaHandler(
+              child: IncomingMediaService(
                 incomingMedia: incomingMedia,
                 onDiscard: onDiscard,
               ),

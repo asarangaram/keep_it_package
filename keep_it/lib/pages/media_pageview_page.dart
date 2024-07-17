@@ -2,9 +2,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../services/store_service/widgets/w3_get_media.dart';
-import '../widgets/empty_state.dart';
-
 class MediaPageViewPage extends StatelessWidget {
   const MediaPageViewPage({
     required this.id,

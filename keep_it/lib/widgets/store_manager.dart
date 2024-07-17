@@ -12,8 +12,6 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:uuid/uuid.dart';
 
-import '../services/media_wizard_service/media_wizard_service.dart';
-import '../services/store_service/widgets/get_store.dart';
 import 'dialogs.dart';
 
 extension ExtMetaData on CLMedia {

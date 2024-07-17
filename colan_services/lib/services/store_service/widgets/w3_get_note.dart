@@ -1,8 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/services/store_service/widgets/get_store.dart';
 
+import 'get_store.dart';
 import 'w3_get_from_store.dart';
 
 class GetNote extends ConsumerWidget {

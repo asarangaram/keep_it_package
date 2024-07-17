@@ -3,10 +3,10 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/backup_stream.dart';
+import 'providers/backup_stream.dart';
 
-class BackupView extends ConsumerWidget {
-  const BackupView({
+class BackupService extends ConsumerWidget {
+  const BackupService({
     required this.onShareFiles,
     required this.onCreateBackupFile,
     super.key,

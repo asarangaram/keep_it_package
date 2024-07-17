@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';
 
-class IncomingMediaHandler extends StatelessWidget {
-  const IncomingMediaHandler({
+class IncomingMediaService extends StatelessWidget {
+  const IncomingMediaService({
     required this.incomingMedia,
     required this.onDiscard,
     super.key,

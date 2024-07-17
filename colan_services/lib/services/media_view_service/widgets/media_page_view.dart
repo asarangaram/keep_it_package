@@ -68,7 +68,7 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
       },
       itemBuilder: (context, index) {
         final media = widget.items[index];
-
+        print('itemBuilder getting called from MediaPageViewState');
         return MediaView(
           media: media,
           notes: const [],
