@@ -1,12 +1,13 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'media_background.dart';
 import 'media_controls.dart';
 import 'media_viewer.dart';
 
-class MediaView extends StatefulWidget {
+class MediaView extends ConsumerStatefulWidget {
   const MediaView({
     required this.media,
     required this.notes,
@@ -30,17 +31,17 @@ class MediaView extends StatefulWidget {
   final Widget Function(CLMedia media) getPreview;
 
   @override
-  State<MediaView> createState() => _MediaViewState();
+  ConsumerState<MediaView> createState() => _MediaViewState();
 }
 
-class _MediaViewState extends State<MediaView> {
+class _MediaViewState extends ConsumerState<MediaView> {
   @override
   Widget build(BuildContext context) {
     final ac = widget.actionControl;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () => widget.onLockPage?.call(lock: widget.isLocked),
+      onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
       child: Stack(
         children: [
           const MediaBackground(),
