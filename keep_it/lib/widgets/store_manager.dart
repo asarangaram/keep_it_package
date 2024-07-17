@@ -221,7 +221,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await widget.storeInstance.deleteMedia(m, permanent: true);
       await File(
         path_handler.join(
-          widget.appSettings.directories.notes.pathString,
+          widget.appSettings.directories.media.pathString,
           m.path,
         ),
       ).deleteIfExists();
@@ -278,12 +278,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
     for (final m in mediaMultiple) {
       await widget.storeInstance.deleteMedia(m, permanent: false);
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.notes.pathString,
-          m.path,
-        ),
-      ).deleteIfExists();
     }
 
     return true;
