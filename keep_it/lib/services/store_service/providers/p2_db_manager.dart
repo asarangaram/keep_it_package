@@ -1,8 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_store/local_store.dart';
 import 'package:path/path.dart';
-import 'package:store/store.dart';
 
 final storeProvider = FutureProvider<Store>((ref) async {
   final appSettings = await ref.watch(appSettingsProvider.future);
