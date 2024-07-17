@@ -68,7 +68,6 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
       },
       itemBuilder: (context, index) {
         final media = widget.items[index];
-        print('itemBuilder getting called from MediaPageViewState');
         return GetNotesByMediaId(
           mediaId: media.id!,
           buildOnData: (notes) {

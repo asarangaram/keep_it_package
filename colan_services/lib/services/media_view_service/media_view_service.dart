@@ -97,7 +97,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
         overlays: SystemUiOverlay.values,
       );
     }
-    // TODO(anandas): provide Notes
+
     return (widget.media.length == 1)
         ? GetNotesByMediaId(
             mediaId: widget.media[0].id!,

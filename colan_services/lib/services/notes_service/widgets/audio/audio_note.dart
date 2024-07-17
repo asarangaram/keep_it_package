@@ -28,21 +28,28 @@ class _AudioNoteState extends State<AudioNote> {
   late PlayerController controller;
   late StreamSubscription<PlayerState>? playerStateSubscription;
   late bool validAudio;
+  late String notePath;
 
   @override
   void initState() {
     super.initState();
     controller = PlayerController();
-    if (File(widget.note.path).existsSync()) {
+  }
+
+  @override
+  void didChangeDependencies() {
+    notePath = TheStore.of(context).getNotesPath(widget.note);
+    if (File(notePath).existsSync()) {
       validAudio = true;
       _preparePlayer();
     } else {
       validAudio = false;
     }
+    super.didChangeDependencies();
   }
 
   Future<void> _preparePlayer() async {
-    await controller.preparePlayer(path: widget.note.path, noOfSamples: 200);
+    await controller.preparePlayer(path: notePath, noOfSamples: 200);
     playerStateSubscription = controller.onPlayerStateChanged.listen((_) {
       setState(() {});
     });
