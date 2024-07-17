@@ -3,9 +3,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/src/store/models/ext_sqlite_database.dart';
 
 import 'backup_query.dart';
+import 'ext_sqlite_database.dart';
 import 'm2_db_migration.dart';
 import 'm3_db_query.dart';
 import 'm4_db_exec.dart';
@@ -263,7 +263,7 @@ class DBManager extends Store {
   }
 
   @override
-  DBQuery<Object> getQuery(DBQueries query, {List<Object?>? parameters}) {
+  StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) {
     final rawQuery = switch (query) {
       DBQueries.collectionById => DBQuery<Collection>(
           sql: 'SELECT * FROM Collection WHERE id = ? ',
@@ -380,19 +380,9 @@ class DBManager extends Store {
         ),
     };
     if (parameters == null) {
-      return rawQuery;
+      return rawQuery as StoreQuery<T>;
     } else {
-      return rawQuery.copyWith(parameters: parameters);
+      return rawQuery.copyWith(parameters: parameters) as StoreQuery<T>;
     }
   }
-}
-
-Future<Store> createStoreInstance(
-  String fullPath, {
-  required VoidCallback onReload,
-}) async {
-  return DBManager.createInstances(
-    dbpath: fullPath,
-    onReload: onReload,
-  );
 }

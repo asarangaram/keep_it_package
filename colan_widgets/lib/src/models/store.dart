@@ -49,7 +49,7 @@ abstract class Store {
   Future<void> reloadStore();
 
   Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
-  StoreQuery<Object> getQuery(DBQueries query, {List<Object?>? parameters});
+  StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
 
   void dispose();
 }
