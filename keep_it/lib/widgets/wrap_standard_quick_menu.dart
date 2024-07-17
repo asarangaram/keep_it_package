@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 class WrapStandardQuickMenu extends StatelessWidget {
   const WrapStandardQuickMenu({
@@ -25,61 +26,61 @@ class WrapStandardQuickMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (onEdit == null && onDelete == null) {
-      return GestureDetector(
+    /* return GestureDetector(
         onTap: onTap,
         child: child,
-      );
-    }
-    return CLQuickMenuAnchor.longPress(
-      parentKey: quickMenuScopeKey,
-      menuBuilder: (
-        context,
-        boxconstraints, {
-        required void Function() onDone,
-      }) {
-        return CLButtonsGrid(
-          scaleType: CLScaleType.veryLarge,
-          size: const Size(
-            kMinInteractiveDimension * 1.5,
-            kMinInteractiveDimension * 1.5,
+      ); */
+
+    return WrapMenu(
+      builder: (context, showMenu) {
+        return GestureDetector(
+          onLongPress: showMenu,
+          child: Container(
+            decoration: BoxDecoration(border: Border.all()),
+            child: child,
           ),
-          children2D: [
-            [
-              if (onEdit != null)
-                CLMenuItem(
-                  title: 'Edit',
-                  icon: Icons.edit_rounded,
-                  onTap: onEdit,
-                ),
-              if (onDelete != null)
-                CLMenuItem(
-                  title: 'Delete',
-                  icon: Icons.delete_rounded,
-                  onTap: onDelete,
-                ),
-            ],
-            [
-              if (onMove != null)
-                CLMenuItem(
-                  title: 'Move',
-                  icon: MdiIcons.imageMove,
-                  onTap: onMove,
-                ),
-              if (onShare != null)
-                CLMenuItem(
-                  title: 'Share',
-                  icon: MdiIcons.share,
-                  onTap: () async {
-                    return onShare!();
-                  },
-                ),
-            ]
-          ].insertOnDone(onDone),
         );
       },
-      onTap: onTap,
-      child: child,
     );
   }
+}
+
+@immutable
+class WrapMenu extends StatelessWidget {
+  const WrapMenu({
+    required this.builder,
+    super.key,
+  });
+
+  final PullDownMenuButtonBuilder builder;
+
+  @override
+  Widget build(BuildContext context) => PullDownButton(
+        itemBuilder: (context) => [
+          PullDownMenuItem(
+            title: 'Edit',
+            onTap: () {},
+            icon: Icons.edit,
+          ),
+          PullDownMenuItem(
+            title: 'Move',
+            onTap: () {},
+            icon: MdiIcons.imageMove,
+          ),
+          PullDownMenuItem(
+            title: 'Share',
+            onTap: () {},
+            icon: MdiIcons.share,
+          ),
+          PullDownMenuItem(
+            onTap: () {},
+            title: 'Delete',
+            isDestructive: true,
+            icon: Icons.delete,
+          ),
+        ],
+        animationBuilder: null,
+        position: PullDownMenuPosition.over,
+        buttonBuilder: builder,
+      );
 }

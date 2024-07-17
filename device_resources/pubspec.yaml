@@ -6,8 +6,7 @@ homepage:
 publish_to: none
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: '>=3.2.2 <4.0.0'
 
 dependencies:
   
@@ -27,6 +26,6 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^6.0.0 
+  very_good_analysis: ^5.0.0+1
 
 flutter:
