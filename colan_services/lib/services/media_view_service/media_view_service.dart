@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../video_player_service/providers/show_controls.dart';
 
-import 'widgets/media_background.dart';
 import 'widgets/media_page_view.dart';
 import 'widgets/media_view.dart';
 
@@ -13,7 +12,6 @@ class MediaViewService extends ConsumerStatefulWidget {
   factory MediaViewService({
     required CLMedia media,
     required String parentIdentifier,
-    required Widget Function(CLMedia media) buildNotes,
     required Widget Function(CLMedia media) getPreview,
     ActionControl? actionControl,
     Key? key,
@@ -23,7 +21,6 @@ class MediaViewService extends ConsumerStatefulWidget {
       media: [media],
       parentIdentifier: parentIdentifier,
       actionControl: actionControl ?? ActionControl.full(),
-      buildNotes: buildNotes,
       key: key,
       getPreview: getPreview,
     );
@@ -32,7 +29,6 @@ class MediaViewService extends ConsumerStatefulWidget {
     required int initialMediaIndex,
     required List<CLMedia> media,
     required String parentIdentifier,
-    required Widget Function(CLMedia media) buildNotes,
     required Widget Function(CLMedia media) getPreview,
     ActionControl? actionControl,
     Key? key,
@@ -42,7 +38,6 @@ class MediaViewService extends ConsumerStatefulWidget {
       media: media,
       parentIdentifier: parentIdentifier,
       actionControl: actionControl ?? ActionControl.full(),
-      buildNotes: buildNotes,
       key: key,
       getPreview: getPreview,
     );
@@ -52,7 +47,6 @@ class MediaViewService extends ConsumerStatefulWidget {
     required this.media,
     required this.parentIdentifier,
     required this.actionControl,
-    required this.buildNotes,
     required this.getPreview,
     super.key,
   });
@@ -62,7 +56,7 @@ class MediaViewService extends ConsumerStatefulWidget {
   final String parentIdentifier;
 
   final ActionControl actionControl;
-  final Widget Function(CLMedia media) buildNotes;
+
   final Widget Function(CLMedia media) getPreview;
 
   @override
@@ -87,6 +81,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
 
   @override
   Widget build(BuildContext context) {
+    print('MediaViewServiceState');
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -103,74 +98,45 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
       );
     }
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
-        if (!lockPage) {
-          ref.read(showControlsProvider.notifier).toggleControls();
-        }
-      },
-      child: Stack(
-        children: [
-          const MediaBackground(),
-          LayoutBuilder(
-            builder: (context, boxConstraints) {
-              return SizedBox(
-                width: boxConstraints.maxWidth,
-                height: boxConstraints.maxHeight,
-                child: widget.media.length == 1
-                    ? MediaView(
-                        item: widget.media[0],
-                        getPreview: widget.getPreview,
-                        parentIdentifier: widget.parentIdentifier,
-                        isLocked: lockPage,
-                        onLockPage: ({required bool lock}) {
-                          setState(() {
-                            lockPage = lock;
-                            if (lock) {
-                              ref
-                                  .read(showControlsProvider.notifier)
-                                  .hideControls();
-                            } else {
-                              ref
-                                  .read(showControlsProvider.notifier)
-                                  .showControls();
-                            }
-                          });
-                        },
-                        actionControl: widget.actionControl,
-                        buildNotes: widget.buildNotes,
-                      )
-                    : MediaPageView(
-                        items: widget.media,
-                        getPreview: widget.getPreview,
-                        startIndex: widget.initialMediaIndex,
-                        actionControl: ActionControl.full(),
-                        parentIdentifier: widget.parentIdentifier,
-                        isLocked: lockPage,
-                        canDuplicateMedia:
-                            widget.actionControl.canDuplicateMedia,
-                        buildNotes: widget.buildNotes,
-                        onLockPage: ({required bool lock}) {
-                          setState(() {
-                            lockPage = lock;
-                            if (lock) {
-                              ref
-                                  .read(showControlsProvider.notifier)
-                                  .hideControls();
-                            } else {
-                              ref
-                                  .read(showControlsProvider.notifier)
-                                  .showControls();
-                            }
-                          });
-                        },
-                      ),
-              );
+    return (widget.media.length == 1)
+        ? MediaView(
+            media: widget.media[0],
+            getPreview: widget.getPreview,
+            parentIdentifier: widget.parentIdentifier,
+            isLocked: lockPage,
+            onLockPage: onLockPage,
+            actionControl: widget.actionControl,
+            notes: const [], // TODO
+          )
+        : MediaPageView(
+            items: widget.media,
+            getPreview: widget.getPreview,
+            startIndex: widget.initialMediaIndex,
+            actionControl: widget.actionControl,
+            parentIdentifier: widget.parentIdentifier,
+            isLocked: lockPage,
+            canDuplicateMedia: widget.actionControl.canDuplicateMedia,
+            onLockPage: ({required bool lock}) {
+              setState(() {
+                lockPage = lock;
+                if (lock) {
+                  ref.read(showControlsProvider.notifier).hideControls();
+                } else {
+                  ref.read(showControlsProvider.notifier).showControls();
+                }
+              });
             },
-          ),
-        ],
-      ),
-    );
+          );
+  }
+
+  void onLockPage({required bool lock}) {
+    setState(() {
+      lockPage = lock;
+      if (lock) {
+        ref.read(showControlsProvider.notifier).hideControls();
+      } else {
+        ref.read(showControlsProvider.notifier).showControls();
+      }
+    });
   }
 }

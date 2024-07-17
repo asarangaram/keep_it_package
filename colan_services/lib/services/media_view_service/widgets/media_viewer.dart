@@ -9,22 +9,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MediaViewerRaw extends ConsumerWidget {
   const MediaViewerRaw({
     required this.media,
+    required this.notes,
     required this.onLockPage,
     required this.autoStart,
     required this.isLocked,
-    required this.buildNotes,
     required this.getPreview,
     super.key,
   });
   final CLMedia media;
+  final List<CLNote> notes;
   final void Function({required bool lock})? onLockPage;
   final bool autoStart;
   final bool isLocked;
-  final Widget Function(CLMedia media) buildNotes;
+
   final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print('MediaViewerRaw');
     final showControl = ref.watch(showControlsProvider);
     return SafeArea(
       top: showControl.showNotes,
@@ -57,7 +59,10 @@ class MediaViewerRaw extends ConsumerWidget {
                   ref.read(showControlsProvider.notifier).hideNotes();
                 }
               },
-              child: buildNotes(media),
+              child: NotesService(
+                media: media,
+                notes: notes,
+              ),
             ),
         ],
       ),

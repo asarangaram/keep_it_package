@@ -20,6 +20,7 @@ class MediaPageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('MediaPageViewPage');
     if (collectionId == null) {
       return GetMedia(
         id: id,
@@ -34,17 +35,6 @@ class MediaPageViewPage extends StatelessWidget {
               getPreview: (media) => PreviewService(media: media),
               parentIdentifier: parentIdentifier,
               actionControl: actionControl,
-              buildNotes: (media) {
-                return GetNotesByMediaId(
-                  mediaId: media.id!,
-                  buildOnData: (notes) {
-                    return NotesService(
-                      media: media,
-                      notes: notes,
-                    );
-                  },
-                );
-              },
             ),
           );
         },
@@ -68,17 +58,6 @@ class MediaPageViewPage extends StatelessWidget {
           getPreview: (media) => PreviewService(media: media),
           parentIdentifier: parentIdentifier,
           initialMediaIndex: initialMediaIndex,
-          buildNotes: (media) {
-            return GetNotesByMediaId(
-              mediaId: media.id!,
-              buildOnData: (notes) {
-                return NotesService(
-                  media: media,
-                  notes: notes,
-                );
-              },
-            );
-          },
         );
       },
     );
