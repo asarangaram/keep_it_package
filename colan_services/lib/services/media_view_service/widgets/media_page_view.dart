@@ -56,7 +56,7 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
       });
       return BasicPageService.withNavBar(message: 'Media seems deleted');
     }
-
+    final showControl = ref.watch(showControlsProvider);
     return PageView.builder(
       controller: _pageController,
       itemCount: widget.items.length,
@@ -68,20 +68,34 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
       },
       itemBuilder: (context, index) {
         final media = widget.items[index];
-        return GetNotesByMediaId(
-          mediaId: media.id!,
-          buildOnData: (notes) {
-            return MediaView(
-              media: media,
-              notes: notes,
-              parentIdentifier: widget.parentIdentifier,
-              actionControl: widget.actionControl,
-              autoStart: currIndex == index,
-              onLockPage: widget.onLockPage,
-              isLocked: widget.isLocked,
-              getPreview: widget.getPreview,
-            );
-          },
+        return Column(
+          children: [
+            Expanded(
+              child: MediaView(
+                media: media,
+                notes: const [],
+                parentIdentifier: widget.parentIdentifier,
+                actionControl: widget.actionControl,
+                autoStart: currIndex == index,
+                onLockPage: widget.onLockPage,
+                isLocked: widget.isLocked,
+                getPreview: widget.getPreview,
+              ),
+            ),
+            if (showControl.showNotes && !widget.isLocked)
+              GestureDetector(
+                onVerticalDragEnd: (DragEndDetails details) {
+                  if (details.primaryVelocity == null) return;
+                  // pop on Swipe
+                  if (details.primaryVelocity! > 0) {
+                    ref.read(showControlsProvider.notifier).hideNotes();
+                  }
+                },
+                child: NotesService(
+                  media: media,
+                ),
+              ),
+          ],
         );
       },
     );

@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -7,12 +8,10 @@ import 'text/text_notes.dart';
 class NotesView extends StatefulWidget {
   const NotesView({
     required this.media,
-    required this.notes,
     required this.onClose,
     super.key,
   });
   final CLMedia media;
-  final List<CLNote> notes;
 
   final VoidCallback onClose;
 
@@ -23,23 +22,6 @@ class NotesView extends StatefulWidget {
 class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
-    final textNotes = widget.notes
-        .where(
-          (e) {
-            return e.type == CLNoteTypes.text;
-          },
-        )
-        .map((e) => e as CLTextNote)
-        .toList();
-    final audioNotes = widget.notes
-        .where(
-          (e) {
-            return e.type == CLNoteTypes.audio;
-          },
-        )
-        .map((e) => e as CLAudioNote)
-        .toList();
-
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(8),
@@ -73,25 +55,55 @@ class _NotesViewState extends State<NotesView> {
                 ),
               ],
             ),
-            if (ColanPlatformSupport.isMobilePlatform || audioNotes.isNotEmpty)
-              SizedBox(
-                height: kMinInteractiveDimension * 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: AudioNotes(
-                    media: widget.media,
-                    notes: audioNotes,
-                  ),
-                ),
-              ),
             SizedBox(
-              height: kMinInteractiveDimension * 3,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: TextNotes(
-                  media: widget.media,
-                  notes: textNotes,
-                ),
+              height: kMinInteractiveDimension * 5,
+              child: GetNotesByMediaId(
+                mediaId: widget.media.id!,
+                buildOnData: (notes) {
+                  final textNotes = notes
+                      .where(
+                        (e) {
+                          return e.type == CLNoteTypes.text;
+                        },
+                      )
+                      .map((e) => e as CLTextNote)
+                      .toList();
+                  final audioNotes = notes
+                      .where(
+                        (e) {
+                          return e.type == CLNoteTypes.audio;
+                        },
+                      )
+                      .map((e) => e as CLAudioNote)
+                      .toList();
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (ColanPlatformSupport.isMobilePlatform ||
+                          audioNotes.isNotEmpty)
+                        SizedBox(
+                          height: kMinInteractiveDimension * 2,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: AudioNotes(
+                              media: widget.media,
+                              notes: audioNotes,
+                            ),
+                          ),
+                        ),
+                      SizedBox(
+                        height: kMinInteractiveDimension * 3,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: TextNotes(
+                            media: widget.media,
+                            notes: textNotes,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],

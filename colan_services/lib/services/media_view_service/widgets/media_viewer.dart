@@ -49,20 +49,6 @@ class MediaViewerRaw extends ConsumerWidget {
               _ => throw UnimplementedError('Not yet implemented')
             },
           ),
-          if (showControl.showNotes && !isLocked)
-            GestureDetector(
-              onVerticalDragEnd: (DragEndDetails details) {
-                if (details.primaryVelocity == null) return;
-                // pop on Swipe
-                if (details.primaryVelocity! > 0) {
-                  ref.read(showControlsProvider.notifier).hideNotes();
-                }
-              },
-              child: NotesService(
-                media: media,
-                notes: notes,
-              ),
-            ),
         ],
       ),
     );
