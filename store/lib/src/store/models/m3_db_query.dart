@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
 @immutable
-class DBQuery<T> {
+class DBQuery<T> extends StoreQuery<T> {
   factory DBQuery({
     required String sql,
     required Set<String> triggerOnTables,

@@ -2,6 +2,10 @@ import 'cl_media.dart';
 import 'cl_note.dart';
 import 'collection.dart';
 
+class StoreQuery<T> {
+  const StoreQuery();
+}
+
 abstract class Store {
   /// upsertCollection - introduce NULL return
   Future<Collection> upsertCollection(Collection collection);
@@ -19,4 +23,6 @@ abstract class Store {
   Future<List<CLNote>?> getNotesByMediaID(int noteId);
 
   Future<void> reloadStore();
+
+  Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
 }

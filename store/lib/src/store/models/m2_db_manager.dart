@@ -2,9 +2,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/src/store/extensions/ext_sqlite_database.dart';
 
 import 'm2_db_migration.dart';
 import 'm3_db_queries.dart';
+import 'm3_db_query.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_writer.dart';
 
@@ -108,5 +110,25 @@ class DBManager extends Store {
   @override
   Future<void> reloadStore() async {
     onReload();
+  }
+
+  @override
+  Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery) async* {
+    final dbQuery = storeQuery as DBQuery<T>;
+    final sub = db
+        .watchRows(
+          dbQuery.sql,
+          triggerOnTables: dbQuery.triggerOnTables,
+          parameters: dbQuery.parameters ?? [],
+        )
+        .map(
+          (rows) => rows
+              .map((e) => dbQuery.fromMap(DBQuery.fixedMap(e)))
+              .where((e) => e != null)
+              .toList(),
+        );
+    await for (final res in sub) {
+      yield res;
+    }
   }
 }
