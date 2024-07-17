@@ -31,10 +31,43 @@ class WrapStandardQuickMenu extends StatelessWidget {
         child: child,
       ); */
 
-    return WrapMenu(
-      builder: (context, showMenu) {
+    return PullDownButton(
+      itemBuilder: (context) => [
+        PullDownMenuHeader(
+          leading: Container(
+            color: Colors.blue,
+          ),
+          title: 'Fish',
+          subtitle: 'Tap to open',
+          onTap: onTap,
+        ),
+        PullDownMenuItem(
+          title: 'Edit',
+          onTap: onEdit,
+          icon: Icons.edit,
+        ),
+        PullDownMenuItem(
+          title: 'Move',
+          onTap: onMove,
+          icon: MdiIcons.imageMove,
+        ),
+        PullDownMenuItem(
+          title: 'Share',
+          onTap: onShare,
+          icon: MdiIcons.share,
+        ),
+        PullDownMenuItem(
+          onTap: onDelete,
+          title: 'Delete',
+          isDestructive: true,
+          icon: Icons.delete,
+        ),
+      ],
+      animationBuilder: null,
+      buttonBuilder: (context, showMenu) {
         return GestureDetector(
           onLongPress: showMenu,
+          onTap: onTap,
           child: Container(
             decoration: BoxDecoration(border: Border.all()),
             child: child,
@@ -43,44 +76,4 @@ class WrapStandardQuickMenu extends StatelessWidget {
       },
     );
   }
-}
-
-@immutable
-class WrapMenu extends StatelessWidget {
-  const WrapMenu({
-    required this.builder,
-    super.key,
-  });
-
-  final PullDownMenuButtonBuilder builder;
-
-  @override
-  Widget build(BuildContext context) => PullDownButton(
-        itemBuilder: (context) => [
-          PullDownMenuItem(
-            title: 'Edit',
-            onTap: () {},
-            icon: Icons.edit,
-          ),
-          PullDownMenuItem(
-            title: 'Move',
-            onTap: () {},
-            icon: MdiIcons.imageMove,
-          ),
-          PullDownMenuItem(
-            title: 'Share',
-            onTap: () {},
-            icon: MdiIcons.share,
-          ),
-          PullDownMenuItem(
-            onTap: () {},
-            title: 'Delete',
-            isDestructive: true,
-            icon: Icons.delete,
-          ),
-        ],
-        animationBuilder: null,
-        position: PullDownMenuPosition.over,
-        buttonBuilder: builder,
-      );
 }
