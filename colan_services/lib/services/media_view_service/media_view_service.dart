@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../store_service/widgets/w3_get_note.dart';
 import '../video_player_service/providers/show_controls.dart';
 
 import 'widgets/media_page_view.dart';
@@ -98,14 +99,19 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
     }
     // TODO(anandas): provide Notes
     return (widget.media.length == 1)
-        ? MediaView(
-            media: widget.media[0],
-            getPreview: widget.getPreview,
-            parentIdentifier: widget.parentIdentifier,
-            isLocked: lockPage,
-            onLockPage: onLockPage,
-            actionControl: widget.actionControl,
-            notes: const [],
+        ? GetNotesByMediaId(
+            mediaId: widget.media[0].id!,
+            buildOnData: (notes) {
+              return MediaView(
+                media: widget.media[0],
+                getPreview: widget.getPreview,
+                parentIdentifier: widget.parentIdentifier,
+                isLocked: lockPage,
+                onLockPage: onLockPage,
+                actionControl: widget.actionControl,
+                notes: notes,
+              );
+            },
           )
         : MediaPageView(
             items: widget.media,

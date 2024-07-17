@@ -69,15 +69,20 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
       itemBuilder: (context, index) {
         final media = widget.items[index];
         print('itemBuilder getting called from MediaPageViewState');
-        return MediaView(
-          media: media,
-          notes: const [],
-          parentIdentifier: widget.parentIdentifier,
-          actionControl: widget.actionControl,
-          autoStart: currIndex == index,
-          onLockPage: widget.onLockPage,
-          isLocked: widget.isLocked,
-          getPreview: widget.getPreview,
+        return GetNotesByMediaId(
+          mediaId: media.id!,
+          buildOnData: (notes) {
+            return MediaView(
+              media: media,
+              notes: notes,
+              parentIdentifier: widget.parentIdentifier,
+              actionControl: widget.actionControl,
+              autoStart: currIndex == index,
+              onLockPage: widget.onLockPage,
+              isLocked: widget.isLocked,
+              getPreview: widget.getPreview,
+            );
+          },
         );
       },
     );
