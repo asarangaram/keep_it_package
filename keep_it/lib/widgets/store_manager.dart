@@ -338,7 +338,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
     if (res) {
       await upsertMediaMultiple(pinnedMedia.map((e) => e.removePin()).toList());
-      // store medial
     }
     return res;
   }
@@ -349,7 +348,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     final updatedMedia = <CLMedia>[];
     for (final media in mediaMultiple) {
-      if (media.pin != null) {
+      if (media.id != null) {
         final pin = await albumManager.addMedia(
           path_handler.join(
             widget.appSettings.directories.media.pathString,
@@ -381,39 +380,41 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         )
         .removePin();
     if (mounted) {
-      await ConfirmAction.replaceMedia(
-        context,
-        media: updatedMedia,
-        getPreview: (CLMedia media) => PreviewService(
-          media: media,
-          keepAspectRatio: false,
-        ),
-        onConfirm: () async {
-          final mediaFromDB = await widget.storeInstance.upsertMedia(
-            updatedMedia,
-          );
-          if (mediaFromDB == null) {
-            await File(
-              path_handler.join(
-                widget.appSettings.directories.media.pathString,
-                updatedMedia.label,
-              ),
-            ).deleteIfExists();
-          }
-
-          await File(
-            path_handler.join(
-              widget.appSettings.directories.media.pathString,
-              originalMedia.label,
+      final success = await ConfirmAction.replaceMedia(
+            context,
+            media: updatedMedia,
+            getPreview: (CLMedia media) => PreviewService(
+              media: media,
+              keepAspectRatio: false,
             ),
-          ).deleteIfExists();
-
-          return true;
-        },
-      );
+            onConfirm: () async {
+              final mediaFromDB = await widget.storeInstance.upsertMedia(
+                updatedMedia,
+              );
+              if (mediaFromDB != null) {
+                await File(
+                  path_handler.join(
+                    widget.appSettings.directories.media.pathString,
+                    originalMedia.label,
+                  ),
+                ).deleteIfExists();
+              }
+              return mediaFromDB != null;
+            },
+          ) ??
+          false;
+      if (!success) {
+        await File(
+          path_handler.join(
+            widget.appSettings.directories.media.pathString,
+            updatedMedia.label,
+          ),
+        ).deleteIfExists();
+      }
+      return success;
     }
 
-    return true;
+    return false;
   }
 
   Future<bool> cloneAndReplaceMedia(
@@ -432,32 +433,34 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         )
         .removePin();
     if (mounted) {
-      await ConfirmAction.cloneAndReplaceMedia(
-        context,
-        media: updatedMedia,
-        getPreview: (CLMedia media) => PreviewService(
-          media: media,
-          keepAspectRatio: false,
-        ),
-        onConfirm: () async {
-          final mediaFromDB = await widget.storeInstance.upsertMedia(
-            updatedMedia.removeId(),
-          );
-          if (mediaFromDB == null) {
-            await File(
-              path_handler.join(
-                widget.appSettings.directories.media.pathString,
-                updatedMedia.label,
-              ),
-            ).deleteIfExists();
-          }
+      final success = await ConfirmAction.cloneAndReplaceMedia(
+            context,
+            media: updatedMedia,
+            getPreview: (CLMedia media) => PreviewService(
+              media: media,
+              keepAspectRatio: false,
+            ),
+            onConfirm: () async {
+              final mediaFromDB = await widget.storeInstance.upsertMedia(
+                updatedMedia.removeId(),
+              );
 
-          return true;
-        },
-      );
+              return mediaFromDB != null;
+            },
+          ) ??
+          false;
+      if (!success) {
+        await File(
+          path_handler.join(
+            widget.appSettings.directories.media.pathString,
+            updatedMedia.label,
+          ),
+        ).deleteIfExists();
+      }
+      return success;
     }
 
-    return true;
+    return false;
   }
 
   //Can be converted to non static
