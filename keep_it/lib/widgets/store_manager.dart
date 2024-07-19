@@ -505,7 +505,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
               currentItem: 'Successfully Imported',
             ),
           );
-          await Future<void>.delayed(const Duration(microseconds: 10));
+          await Future<void>.delayed(const Duration(microseconds: 1));
           await streamController.close();
           onDone();
         }),
@@ -675,7 +675,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         }
       }
 
-      await Future<void>.delayed(const Duration(milliseconds: 10));
+      await Future<void>.delayed(const Duration(milliseconds: 1));
 
       yield Progress(
         currentItem: (i + 1 == mediaFiles.length)
@@ -687,7 +687,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       );
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 10));
+    await Future<void>.delayed(const Duration(milliseconds: 1));
     onDone(
       mediaMultiple: candidates,
     );
