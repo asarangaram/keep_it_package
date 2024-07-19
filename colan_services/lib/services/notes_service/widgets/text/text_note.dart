@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../../backup_service/dialogs.dart';
 import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
@@ -81,8 +82,17 @@ class _TextNoteState extends State<TextNote> {
               CLButtonIcon.small(
                 MdiIcons.delete,
                 onTap: () async {
-                  await TheStore.of(context).deleteNote(widget.note!);
-                  textEditingController.clear();
+                  final confirmed = await ConfirmAction.deleteNote(
+                        context,
+                        note: widget.note!,
+                      ) ??
+                      false;
+                  if (!confirmed) return;
+                  if (context.mounted) {
+                    await TheStore.of(context)
+                        .deleteNote(context, widget.note!);
+                    textEditingController.clear();
+                  }
                 },
               ),
             ],

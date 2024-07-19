@@ -54,8 +54,8 @@ class CollectionTimeLinePage extends ConsumerWidget {
             },
             onCameraCapture: ColanPlatformSupport.cameraUnsupported
                 ? null
-                : () => TheStore.of(context)
-                    .openCamera(collectionId: collection?.id),
+                : (ctx) => TheStore.of(ctx)
+                    .openCamera(ctx, collectionId: collection?.id),
           ),
         ),
       );
@@ -81,7 +81,9 @@ class TimeLineView extends ConsumerWidget {
     required String parentIdentifier,
   }) onTapMedia;
   final void Function(BuildContext context)? onPickFiles;
-  final void Function()? onCameraCapture;
+  final void Function(
+    BuildContext context,
+  )? onCameraCapture;
   final ActionControl actionControl;
 
   @override
@@ -126,25 +128,36 @@ class TimeLineView extends ConsumerWidget {
             title: 'Delete',
             icon: Icons.delete,
             onTap: () async {
-              return TheStore.of(context).deleteMediaMultiple(items);
+              final confirmed = await ConfirmAction.deleteMediaMultiple(
+                    context,
+                    media: items,
+                  ) ??
+                  false;
+              if (!confirmed) return confirmed;
+              if (context.mounted) {
+                return TheStore.of(context).deleteMediaMultiple(context, items);
+              }
+              return null;
             },
           ),
           CLMenuItem(
             title: 'Move',
             icon: MdiIcons.imageMove,
             onTap: () => TheStore.of(context)
-                .openWizard(items, UniversalMediaSource.move),
+                .openWizard(context, items, UniversalMediaSource.move),
           ),
           CLMenuItem(
             title: 'Share',
             icon: MdiIcons.shareAll,
-            onTap: () => TheStore.of(context).shareMediaMultiple(items),
+            onTap: () =>
+                TheStore.of(context).shareMediaMultiple(context, items),
           ),
           if (ColanPlatformSupport.isMobilePlatform)
             CLMenuItem(
               title: 'Pin',
               icon: MdiIcons.pin,
-              onTap: () => TheStore.of(context).togglePinMultiple(items),
+              onTap: () =>
+                  TheStore.of(context).togglePinMultiple(context, items),
             ),
         ];
       },

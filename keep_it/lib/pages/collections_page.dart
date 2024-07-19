@@ -83,6 +83,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     ),
                     ElevatedButton(
                       onPressed: () => TheStore.of(context).openWizard(
+                        context,
                         media,
                         UniversalMediaSource.unclassified,
                       ),

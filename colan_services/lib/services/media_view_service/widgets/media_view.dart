@@ -60,26 +60,44 @@ class _MediaViewState extends ConsumerState<MediaView> {
           ),
           MediaControls(
             onMove: ac.onMove(
-              () => TheStore.of(context)
-                  .openWizard([widget.media], UniversalMediaSource.move),
+              () => TheStore.of(context).openWizard(
+                context,
+                [widget.media],
+                UniversalMediaSource.move,
+              ),
             ),
             onDelete: ac.onDelete(() async {
-              return TheStore.of(context).deleteMediaMultiple([widget.media]);
+              final confirmed = await ConfirmAction.deleteMediaMultiple(
+                    context,
+                    media: [widget.media],
+                  ) ??
+                  false;
+              if (!confirmed) return confirmed;
+              if (context.mounted) {
+                return TheStore.of(context).deleteMediaMultiple(
+                  context,
+                  [widget.media],
+                );
+              }
+              return false;
             }),
             onShare: ac.onShare(
-              () => TheStore.of(context).shareMediaMultiple([widget.media]),
+              () => TheStore.of(context)
+                  .shareMediaMultiple(context, [widget.media]),
             ),
             onEdit: (widget.media.type == CLMediaType.video &&
                     !VideoEditServices.isSupported)
                 ? null
                 : ac.onEdit(
                     () => TheStore.of(context).openEditor(
+                      context,
                       [widget.media],
                       canDuplicateMedia: ac.canDuplicateMedia,
                     ),
                   ),
             onPin: ac.onPin(
-              () => TheStore.of(context).togglePinMultiple([widget.media]),
+              () => TheStore.of(context)
+                  .togglePinMultiple(context, [widget.media]),
             ),
             media: widget.media,
           ),

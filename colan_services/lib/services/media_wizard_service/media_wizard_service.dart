@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../backup_service/dialogs.dart';
 import '../store_service/providers/gallery_group_provider.dart';
 import 'providers/universal_media.dart';
 import 'recycle_bin_service.dart';
@@ -175,24 +176,36 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       icon: Icons.delete,
                       onTap: hasCandidate
                           ? () async {
-                              final res =
-                                  TheStore.of(context).deleteMediaMultiple(
-                                currMedia,
-                              );
+                              final confirmed =
+                                  await ConfirmAction.deleteMediaMultiple(
+                                        context,
+                                        media: currMedia,
+                                      ) ??
+                                      false;
+                              if (!confirmed) return confirmed;
+                              if (context.mounted) {
+                                final res =
+                                    TheStore.of(context).deleteMediaMultiple(
+                                  context,
+                                  currMedia,
+                                );
 
-                              await ref
-                                  .read(
-                                    universalMediaProvider(widget.type)
-                                        .notifier,
-                                  )
-                                  .remove(candidate.entries);
-                              selectedMedia = const CLSharedMedia(entries: []);
-                              keepSelected = false;
-                              targetCollection = null;
-                              isSelectionMode = false;
-                              setState(() {});
+                                await ref
+                                    .read(
+                                      universalMediaProvider(widget.type)
+                                          .notifier,
+                                    )
+                                    .remove(candidate.entries);
+                                selectedMedia =
+                                    const CLSharedMedia(entries: []);
+                                keepSelected = false;
+                                targetCollection = null;
+                                isSelectionMode = false;
+                                setState(() {});
 
-                              return res;
+                                return res;
+                              }
+                              return null;
                             }
                           : null,
                     )

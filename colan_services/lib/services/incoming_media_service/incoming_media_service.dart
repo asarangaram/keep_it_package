@@ -33,8 +33,11 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
   });
   final CLMediaFileGroup incomingMedia;
   final void Function({required bool result}) onDiscard;
-  final Future<void> Function(List<CLMedia> media, UniversalMediaSource type)
-      onSave;
+  final Future<void> Function(
+    BuildContext context,
+    List<CLMedia> media,
+    UniversalMediaSource type,
+  ) onSave;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -99,14 +102,14 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
         _infoLogger('nothing to save. clear incoming media');
         widget.onDiscard(result: false);
         _infoLogger('nothing to save. send notification');
-        await widget.onSave([], widget.incomingMedia.type!);
+        await widget.onSave(context, [], widget.incomingMedia.type!);
         _infoLogger('nothing to save. return');
       } else {
         candidate = null;
         widget.onDiscard(result: true);
         if (widget.incomingMedia.type != null) {
           _infoLogger('saving, type: widget.incomingMedia.type ');
-          await widget.onSave(mg.entries, widget.incomingMedia.type!);
+          await widget.onSave(context, mg.entries, widget.incomingMedia.type!);
           _infoLogger('Saving complete');
         }
       }

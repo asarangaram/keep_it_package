@@ -12,8 +12,6 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:uuid/uuid.dart';
 
-import 'dialogs.dart';
-
 extension ExtMetaData on CLMedia {
   Future<CLMedia> getMetadata({
     required Directory location,
@@ -132,6 +130,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> openWizard(
+    BuildContext ctx,
     List<CLMedia> media,
     UniversalMediaSource wizardType,
   ) async {
@@ -150,8 +149,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         type: wizardType,
       ),
     );
-    if (mounted) {
-      await context.push(
+    if (ctx.mounted) {
+      await ctx.push(
         '/media_wizard?type='
         '${wizardType.name}',
       );
@@ -184,33 +183,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> permanentlyDeleteMediaMultiple(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) async {
     if (mediaMultiple.isEmpty) {
       return true;
     }
-
-    return await ConfirmAction.permanentlyDeleteMediaMultiple(
-          context,
-          media: mediaMultiple,
-          onConfirm: () async {
-            return permanentlyDeleteMediaMultipleAlreadyConfirmed(
-              mediaMultiple,
-            );
-          },
-          getPreview: (media) => PreviewService(
-            media: media,
-            keepAspectRatio: false,
-          ),
-        ) ??
-        false;
-  }
-
-  Future<bool> permanentlyDeleteMediaMultipleAlreadyConfirmed(
-    List<CLMedia> mediaMultiple,
-  ) async {
     // Remove Pins first..
     await removeMultipleMediaFromGallery(
+      ctx,
       mediaMultiple
           .map((e) => e.pin)
           .where((e) => e != null)
@@ -240,35 +221,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> deleteMediaMultiple(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) async {
     if (mediaMultiple.isEmpty) {
       return true;
     }
-
-    return await ConfirmAction.deleteMediaMultiple(
-          context,
-          media: mediaMultiple,
-          onConfirm: () async {
-            return deleteMediaMultipleAlreadyConfirmed(
-              mediaMultiple,
-            );
-          },
-          getPreview: (media) => PreviewService(
-            media: media,
-            keepAspectRatio: false,
-          ),
-        ) ??
-        false;
-
-    // Remove Pins first..
-  }
-
-  Future<bool> deleteMediaMultipleAlreadyConfirmed(
-    List<CLMedia> mediaMultiple,
-  ) async {
     // Remove Pins first..
     await removeMultipleMediaFromGallery(
+      ctx,
       mediaMultiple
           .map((e) => e.pin)
           .where((e) => e != null)
@@ -282,12 +243,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> shareMediaMultiple(List<CLMedia> mediaMultiple) async {
+  Future<bool> shareMediaMultiple(
+    BuildContext ctx,
+    List<CLMedia> mediaMultiple,
+  ) async {
     if (mediaMultiple.isEmpty) {
       return true;
     }
-    final box = context.findRenderObject() as RenderBox?;
+    final box = ctx.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
+      ctx,
       mediaMultiple
           .map(
             (e) => path_handler.join(
@@ -301,6 +266,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> openEditor(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple, {
     required bool canDuplicateMedia,
   }) async {
@@ -314,7 +280,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             );
         return false;
       } else {
-        await context.push(
+        await ctx.push(
           '/mediaEditor?id=${mediaMultiple[0].id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
         );
         return true;
@@ -323,17 +289,24 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return false;
   }
 
-  Future<bool> togglePinMultiple(List<CLMedia> mediaMultiple) async {
+  Future<bool> togglePinMultiple(
+    BuildContext ctx,
+    List<CLMedia> mediaMultiple,
+  ) async {
     if (mediaMultiple.any((e) => e.pin == null)) {
-      return pinMediaMultiple(mediaMultiple);
+      return pinMediaMultiple(context, mediaMultiple);
     } else {
-      return removePinMediaMultiple(mediaMultiple);
+      return removePinMediaMultiple(ctx, mediaMultiple);
     }
   }
 
-  Future<bool> removePinMediaMultiple(List<CLMedia> mediaMultiple) async {
+  Future<bool> removePinMediaMultiple(
+    BuildContext ctx,
+    List<CLMedia> mediaMultiple,
+  ) async {
     final pinnedMedia = mediaMultiple.where((e) => e.pin != null).toList();
     final res = await removeMultipleMediaFromGallery(
+      ctx,
       pinnedMedia.map((e) => e.pin!).toList(),
     );
     if (res) {
@@ -342,7 +315,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return res;
   }
 
-  Future<bool> pinMediaMultiple(List<CLMedia> mediaMultiple) async {
+  Future<bool> pinMediaMultiple(
+    BuildContext ctx,
+    List<CLMedia> mediaMultiple,
+  ) async {
     if (mediaMultiple.isEmpty) {
       return true;
     }
@@ -368,7 +344,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> replaceMedia(CLMedia originalMedia, String outFile) async {
+  Future<bool> replaceMedia(
+    BuildContext ctx,
+    CLMedia originalMedia,
+    String outFile,
+  ) async {
     final savedFile =
         File(outFile).copyTo(widget.appSettings.directories.media.path);
 
@@ -379,45 +359,23 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           md5String: md5String,
         )
         .removePin();
-    if (mounted) {
-      final success = await ConfirmAction.replaceMedia(
-            context,
-            media: updatedMedia,
-            getPreview: (CLMedia media) => PreviewService(
-              media: media,
-              keepAspectRatio: false,
-            ),
-            onConfirm: () async {
-              final mediaFromDB = await widget.storeInstance.upsertMedia(
-                updatedMedia,
-              );
-              if (mediaFromDB != null) {
-                await File(
-                  path_handler.join(
-                    widget.appSettings.directories.media.pathString,
-                    originalMedia.label,
-                  ),
-                ).deleteIfExists();
-              }
-              return mediaFromDB != null;
-            },
-          ) ??
-          false;
-      if (!success) {
-        await File(
-          path_handler.join(
-            widget.appSettings.directories.media.pathString,
-            updatedMedia.label,
-          ),
-        ).deleteIfExists();
-      }
-      return success;
-    }
 
-    return false;
+    final mediaFromDB = await widget.storeInstance.upsertMedia(
+      updatedMedia,
+    );
+    if (mediaFromDB != null) {
+      await File(
+        path_handler.join(
+          widget.appSettings.directories.media.pathString,
+          originalMedia.label,
+        ),
+      ).deleteIfExists();
+    }
+    return mediaFromDB != null;
   }
 
   Future<bool> cloneAndReplaceMedia(
+    BuildContext ctx,
     CLMedia originalMedia,
     String outFile,
   ) async {
@@ -432,35 +390,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           md5String: md5String,
         )
         .removePin();
-    if (mounted) {
-      final success = await ConfirmAction.cloneAndReplaceMedia(
-            context,
-            media: updatedMedia,
-            getPreview: (CLMedia media) => PreviewService(
-              media: media,
-              keepAspectRatio: false,
-            ),
-            onConfirm: () async {
-              final mediaFromDB = await widget.storeInstance.upsertMedia(
-                updatedMedia.removeId(),
-              );
 
-              return mediaFromDB != null;
-            },
-          ) ??
-          false;
-      if (!success) {
-        await File(
-          path_handler.join(
-            widget.appSettings.directories.media.pathString,
-            updatedMedia.label,
-          ),
-        ).deleteIfExists();
-      }
-      return success;
-    }
+    final mediaFromDB = await widget.storeInstance.upsertMedia(
+      updatedMedia.removeId(),
+    );
 
-    return false;
+    return mediaFromDB != null;
   }
 
   //Can be converted to non static
@@ -530,27 +465,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> restoreMediaMultiple(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) async {
-    final bool confirmed;
-
-    confirmed = await ConfirmAction.restoreMediaMultiple(
-          context,
-          media: mediaMultiple,
-          onConfirm: () async {
-            return true;
-          },
-          getPreview: (media) => PreviewService(
-            media: media,
-            keepAspectRatio: false,
-          ),
-        ) ??
-        false;
-
-    if (!confirmed) {
-      return confirmed;
-    }
-
     for (final item in mediaMultiple) {
       if (item.id != null) {
         await widget.storeInstance.upsertMedia(item.copyWith(isDeleted: false));
@@ -728,25 +645,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
   }
 
-  Future<void> onDeleteNote(CLNote note) async {
+  Future<void> onDeleteNote(BuildContext ctx, CLNote note) async {
     if (note.id == null) return;
-    final bool confirmed;
-    if (note.type == CLNoteTypes.text) {
-      confirmed = await ConfirmAction.deleteNote(
-            context,
-            note: note,
-            onConfirm: () async {
-              return true;
-            },
-          ) ??
-          false;
-    } else {
-      confirmed = true;
-    }
-
-    if (!confirmed) {
-      return;
-    }
 
     await widget.storeInstance.deleteNote(note);
     await File(getNotesPath(note)).deleteIfExists();
@@ -813,31 +713,26 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> deleteCollection(
+    BuildContext ctx,
     Collection collection,
   ) async {
-    return await ConfirmAction.deleteCollection(
-          context,
-          collection: collection,
-          onConfirm: () async => deleteCollectionAlreadyConfirmed(collection),
-        ) ??
-        false;
-  }
-
-  Future<bool> deleteCollectionAlreadyConfirmed(Collection collection) async {
     if (collection.id == null) return true;
 
     final mediaMultiple = await getMediaByCollectionId(collection.id!);
 
     /// Delete all media ignoring those already in Recycle
     /// Don't delete CollectionDir / Collection from Media, required for restore
-
-    await deleteMediaMultipleAlreadyConfirmed(
-      mediaMultiple.where((e) => e != null).map((e) => e!).toList(),
-    );
-    return true;
+    if (ctx.mounted) {
+      await deleteMediaMultiple(
+        ctx,
+        mediaMultiple.where((e) => e != null).map((e) => e!).toList(),
+      );
+      return true;
+    }
+    return false;
   }
 
-  final uuidGenerator = const Uuid();
+  static const uuidGenerator = Uuid();
 
   static Future<CLMediaFile> tryDownloadMedia(
     CLMediaFile mediaFile, {
@@ -887,11 +782,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> removeMediaFromGallery(
+    BuildContext ctx,
     String ids,
   ) async {
     final res = await albumManager.removeMedia(ids);
     if (!res) {
-      if (context.mounted) {
+      if (ctx.mounted) {
         await ref
             .read(
               notificationMessageProvider.notifier,
@@ -905,11 +801,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<bool> removeMultipleMediaFromGallery(
+    BuildContext ctx,
     List<String> ids,
   ) async {
     final res = await albumManager.removeMultipleMedia(ids);
     if (!res) {
-      if (context.mounted) {
+      if (ctx.mounted) {
         await ref
             .read(
               notificationMessageProvider.notifier,
@@ -922,9 +819,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return res;
   }
 
-  Future<void> openCamera({int? collectionId}) async {
+  Future<void> openCamera(BuildContext ctx, {int? collectionId}) async {
     await CLCameraService.invokeWithSufficientPermission(
-      context,
+      ctx,
       () async {
         if (context.mounted) {
           await context.push(
@@ -954,7 +851,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await context.push('/media/$mediaId$query');
   }
 
-  Future<void> openCollection({
+  Future<void> openCollection(
+    BuildContext ctx, {
     int? collectionId,
   }) async {
     await context.push(

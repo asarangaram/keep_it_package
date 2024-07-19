@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../collection_editor.dart';
+
 import '../wrap_standard_quick_menu.dart';
 
 class CollectionAsFolder extends ConsumerWidget {
@@ -32,10 +33,20 @@ class CollectionAsFolder extends ConsumerWidget {
         return true;
       },
       onDelete: () async {
-        return TheStore.of(context).deleteCollection(collection);
+        final confirmed = await ConfirmAction.deleteCollection(
+              context,
+              collection: collection,
+            ) ??
+            false;
+        if (!confirmed) return confirmed;
+        if (context.mounted) {
+          return TheStore.of(context).deleteCollection(context, collection);
+        }
+        return null;
       },
       onTap: () async {
-        await TheStore.of(context).openCollection(collectionId: collection.id);
+        await TheStore.of(context)
+            .openCollection(context, collectionId: collection.id);
         return true;
       },
       child: Column(

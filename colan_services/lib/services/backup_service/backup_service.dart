@@ -12,6 +12,7 @@ class BackupService extends ConsumerWidget {
     super.key,
   });
   final Future<void> Function(
+    BuildContext context,
     List<String> files, {
     Rect? sharePositionOrigin,
   }) onShareFiles;
@@ -67,6 +68,7 @@ class BackupService extends ConsumerWidget {
 class AvailableBackup extends StatefulWidget {
   const AvailableBackup({required this.onShareFiles, super.key});
   final Future<void> Function(
+    BuildContext context,
     List<String> files, {
     Rect? sharePositionOrigin,
   }) onShareFiles;
@@ -131,6 +133,7 @@ class _AvailableBackupState extends State<AvailableBackup> {
                 onPressed: () async {
                   final box = context.findRenderObject() as RenderBox?;
                   await widget.onShareFiles(
+                    context,
                     [backupFile.path],
                     sharePositionOrigin:
                         box!.localToGlobal(Offset.zero) & box.size,

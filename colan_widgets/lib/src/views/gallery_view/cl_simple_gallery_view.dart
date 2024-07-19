@@ -38,7 +38,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
   final Widget emptyState;
   final String identifier;
   final void Function(BuildContext context)? onPickFiles;
-  final void Function()? onCameraCapture;
+  final void Function(BuildContext context)? onCameraCapture;
 
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
@@ -68,7 +68,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
           if (widget.onCameraCapture != null)
             (context, quickMenuScopeKey) => CLButtonIcon.small(
                   MdiIcons.camera,
-                  onTap: widget.onCameraCapture,
+                  onTap: () => widget.onCameraCapture?.call(context),
                 ),
           if (widget.onPickFiles != null)
             (context, quickMenuScopeKey) => CLButtonIcon.standard(
@@ -108,7 +108,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                       if (widget.onCameraCapture != null)
                         CLButtonIcon.small(
                           MdiIcons.camera,
-                          onTap: widget.onCameraCapture,
+                          onTap: () => widget.onCameraCapture?.call(context),
                         ),
                     ],
                   ),

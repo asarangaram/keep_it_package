@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import 'action_control.dart';
 import 'cl_media.dart';
@@ -74,11 +73,13 @@ class StoreActions {
   // For replacing path:
 
   final Future<bool> Function(
+    BuildContext ctx,
     CLMedia media,
     String outFile,
   ) replaceMedia;
 
   final Future<bool> Function(
+    BuildContext ctx,
     CLMedia media,
     String outFile,
   ) cloneAndReplaceMedia;
@@ -91,10 +92,12 @@ class StoreActions {
   }) moveToCollectionStream;
 
   // update Pin
-  final Future<bool> Function(List<CLMedia> mediaMultiple)
+  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
       removePinMediaMultiple;
-  final Future<bool> Function(List<CLMedia> mediaMultiple) pinMediaMultiple;
-  final Future<bool> Function(List<CLMedia> mediaMultiple) togglePinMultiple;
+  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
+      pinMediaMultiple;
+  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
+      togglePinMultiple;
 
   final Future<void> Function(
     String path, // Absolute Path, can't go to CLNote
@@ -105,26 +108,31 @@ class StoreActions {
 
   /////////////////////////////////////////////////////////////////////////////////
   final Future<bool> Function(
+    BuildContext ctx,
     Collection collection,
   ) deleteCollection;
 
   final Future<bool> Function(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) deleteMediaMultiple;
 
   final Future<bool> Function(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) permanentlyDeleteMediaMultiple;
 
   final Future<bool> Function(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) restoreMediaMultiple;
 
-  final Future<void> Function(CLNote note) deleteNote;
+  final Future<void> Function(BuildContext ctx, CLNote note) deleteNote;
 
   /////////////////////////////////////////////////////////////////////////////////
 
   final Future<bool> Function(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple,
     UniversalMediaSource wizardType,
   ) openWizard;
@@ -137,7 +145,7 @@ class StoreActions {
   final String Function(CLTextNote? note) getText;
 
   // Opens New page
-  final Future<void> Function({int? collectionId}) openCamera;
+  final Future<void> Function(BuildContext ctx, {int? collectionId}) openCamera;
   final Future<void> Function(
     int mediaId, {
     required ActionControl actionControl,
@@ -145,16 +153,20 @@ class StoreActions {
     String? parentIdentifier,
   }) openMedia;
   final Future<bool> Function(
+    BuildContext ctx,
     List<CLMedia> mediaMultiple, {
     required bool canDuplicateMedia,
   }) openEditor;
-  final Future<void> Function({
+  final Future<void> Function(
+    BuildContext ctx, {
     int? collectionId,
   }) openCollection;
 
-  final Future<bool> Function(List<CLMedia> mediaMultiple) shareMediaMultiple;
+  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
+      shareMediaMultiple;
 
   final Future<void> Function(
+    BuildContext ctx,
     List<String> files, {
     Rect? sharePositionOrigin,
   }) shareFiles;

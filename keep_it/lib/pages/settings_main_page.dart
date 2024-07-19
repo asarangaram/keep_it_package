@@ -25,6 +25,7 @@ class SettingsMainPage extends ConsumerWidget {
                       icon: Icon(MdiIcons.arrowRight),
                       onPressed: () async {
                         await TheStore.of(context).openWizard(
+                          context,
                           deletedMedia,
                           UniversalMediaSource.deleted,
                         );

@@ -32,6 +32,7 @@ class CameraPage extends ConsumerWidget {
           },
           onDone: (mediaList) async {
             await TheStore.of(context).openWizard(
+              context,
               mediaList,
               UniversalMediaSource.captured,
             );

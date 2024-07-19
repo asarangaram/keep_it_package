@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../backup_service/dialogs.dart';
 import '../store_service/providers/gallery_group_provider.dart';
 import 'providers/universal_media.dart';
 import 'views/wizard_preview.dart';
@@ -109,23 +110,31 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
               ? () async {
                   keepSelected = true;
                   setState(() {});
+                  final confirmed = await ConfirmAction.restoreMediaMultiple(
+                        context,
+                        media: currMedia,
+                      ) ??
+                      false;
+                  if (!confirmed) return confirmed;
+                  if (context.mounted) {
+                    final res = await TheStore.of(context)
+                        .restoreMediaMultiple(context, currMedia);
 
-                  final res = await TheStore.of(context)
-                      .restoreMediaMultiple(currMedia);
+                    if (res) {
+                      await ref
+                          .read(
+                            universalMediaProvider(widget.type).notifier,
+                          )
+                          .remove(candidate.entries);
+                      selectedMedia = const CLSharedMedia(entries: []);
+                      keepSelected = false;
 
-                  if (res) {
-                    await ref
-                        .read(
-                          universalMediaProvider(widget.type).notifier,
-                        )
-                        .remove(candidate.entries);
-                    selectedMedia = const CLSharedMedia(entries: []);
-                    keepSelected = false;
-
-                    isSelectionMode = false;
-                    setState(() {});
+                      isSelectionMode = false;
+                      setState(() {});
+                    }
+                    return res;
                   }
-                  return res;
+                  return null;
                 }
               : null,
         ),
@@ -135,23 +144,36 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                 icon: Icons.delete,
                 onTap: hasCandidate
                     ? () async {
-                        final res = await TheStore.of(context)
-                            .permanentlyDeleteMediaMultiple(currMedia);
+                        final confirmed =
+                            await ConfirmAction.permanentlyDeleteMediaMultiple(
+                                  context,
+                                  media: currMedia,
+                                ) ??
+                                false;
+                        if (!confirmed) return confirmed;
+                        if (context.mounted) {
+                          final res = await TheStore.of(context)
+                              .permanentlyDeleteMediaMultiple(
+                            context,
+                            currMedia,
+                          );
 
-                        if (res) {
-                          await ref
-                              .read(
-                                universalMediaProvider(widget.type).notifier,
-                              )
-                              .remove(candidate.entries);
-                          selectedMedia = const CLSharedMedia(entries: []);
-                          keepSelected = false;
+                          if (res) {
+                            await ref
+                                .read(
+                                  universalMediaProvider(widget.type).notifier,
+                                )
+                                .remove(candidate.entries);
+                            selectedMedia = const CLSharedMedia(entries: []);
+                            keepSelected = false;
 
-                          isSelectionMode = false;
-                          setState(() {});
+                            isSelectionMode = false;
+                            setState(() {});
+                          }
+
+                          return res;
                         }
-
-                        return res;
+                        return false;
                       }
                     : null,
               )

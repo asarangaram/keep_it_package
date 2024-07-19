@@ -1,9 +1,9 @@
-import 'dart:ui';
-
+import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ShareManager {
   static Future<bool> onShareFiles(
+    BuildContext ctx,
     List<String> files, {
     Rect? sharePositionOrigin,
   }) async {

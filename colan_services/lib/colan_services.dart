@@ -1,4 +1,5 @@
 export 'services/backup_service/backup_service.dart';
+export 'services/backup_service/dialogs.dart';
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
 export 'services/basic_page_service/empty_state.dart';

@@ -37,9 +37,26 @@ class MediaEditorPage extends StatelessWidget {
           },
           onSave: (file, {required overwrite}) async {
             if (overwrite) {
-              await TheStore.of(context).replaceMedia(media, file);
+              final confirmed = await ConfirmAction.replaceMedia(
+                    context,
+                    media: media,
+                  ) ??
+                  false;
+              if (!confirmed) return;
+              if (context.mounted) {
+                await TheStore.of(context).replaceMedia(context, media, file);
+              }
             } else {
-              await TheStore.of(context).cloneAndReplaceMedia(media, file);
+              final confirmed = await ConfirmAction.cloneAndReplaceMedia(
+                    context,
+                    media: media,
+                  ) ??
+                  false;
+              if (!confirmed) return;
+              if (context.mounted) {
+                await TheStore.of(context)
+                    .cloneAndReplaceMedia(context, media, file);
+              }
             }
           },
         );
