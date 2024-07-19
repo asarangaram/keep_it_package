@@ -189,14 +189,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (mediaMultiple.isEmpty) {
       return true;
     }
+    final pinnedMedia = mediaMultiple.where((e) => e.pin != null).toList();
     // Remove Pins first..
     await removeMultipleMediaFromGallery(
       ctx,
-      mediaMultiple
-          .map((e) => e.pin)
-          .where((e) => e != null)
-          .map((e) => e!)
-          .toList(),
+      pinnedMedia.map((e) => e.pin!).toList(),
     );
 
     for (final m in mediaMultiple) {
@@ -228,13 +225,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return true;
     }
     // Remove Pins first..
+    final pinnedMedia = mediaMultiple.where((e) => e.pin != null).toList();
+    // Remove Pins first..
     await removeMultipleMediaFromGallery(
       ctx,
-      mediaMultiple
-          .map((e) => e.pin)
-          .where((e) => e != null)
-          .map((e) => e!)
-          .toList(),
+      pinnedMedia.map((e) => e.pin!).toList(),
     );
 
     for (final m in mediaMultiple) {
@@ -804,6 +799,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     BuildContext ctx,
     List<String> ids,
   ) async {
+    if (ids.isEmpty) return true;
     final res = await albumManager.removeMultipleMedia(ids);
     if (!res) {
       if (ctx.mounted) {
