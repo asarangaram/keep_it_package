@@ -1,30 +1,32 @@
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
-import '../../internal/widgets/editor_finalizer.dart';
+import '../../../internal/widgets/editor_finalizer.dart';
 
-class VideoEditServices extends StatefulWidget {
-  const VideoEditServices(
+class VideoTrimmerView extends StatefulWidget {
+  const VideoTrimmerView(
     this.file, {
     required this.onSave,
     required this.onDone,
     required this.canDuplicateMedia,
+    required this.audioMuter,
+    required this.isMuted,
     super.key,
   });
   final File file;
   final Future<void> Function(String outFile, {required bool overwrite}) onSave;
   final Future<void> Function() onDone;
   final bool canDuplicateMedia;
-  static bool get isSupported => ColanPlatformSupport.isMobilePlatform;
+  final Widget audioMuter;
+  final bool isMuted;
 
   @override
-  State<VideoEditServices> createState() => _VideoEditServicesState();
+  State<VideoTrimmerView> createState() => _VideoTrimmerViewState();
 }
 
-class _VideoEditServicesState extends State<VideoEditServices> {
+class _VideoTrimmerViewState extends State<VideoTrimmerView> {
   final Trimmer _trimmer = Trimmer();
 
   double? _startValue;
@@ -36,8 +38,12 @@ class _VideoEditServicesState extends State<VideoEditServices> {
   @override
   void initState() {
     super.initState();
+  }
 
+  @override
+  void didChangeDependencies() {
     _loadVideo();
+    super.didChangeDependencies();
   }
 
   void _loadVideo() {
@@ -47,10 +53,26 @@ class _VideoEditServicesState extends State<VideoEditServices> {
   bool get hasEditAction => _startValue != null && _endValue != null;
 
   Future<void> _saveVideo({bool overwrite = true}) async {
-    if (!hasEditAction) return;
+    if (!hasEditAction) {
+      setState(() {
+        _progressVisibility = true;
+      });
+      // If only the audio is muted, just save the file.
+      if (widget.isMuted) {
+        await widget.onSave(widget.file.path, overwrite: overwrite);
+        await widget.onDone();
+      }
+      if (mounted) {
+        setState(() {
+          _progressVisibility = false;
+        });
+      }
+      return;
+    }
     setState(() {
       _progressVisibility = true;
     });
+
     await Future<void>.delayed(const Duration(seconds: 1));
     await _trimmer.saveTrimmedVideo(
       startValue: _startValue!,
@@ -136,12 +158,22 @@ class _VideoEditServicesState extends State<VideoEditServices> {
                   },
                 ),
               ),
+              Container(
+                child: _isPlaying ? null : widget.audioMuter,
+              ),
               Expanded(
                 child: EditorFinalizer(
                   canDuplicateMedia: widget.canDuplicateMedia,
-                  hasEditAction: hasEditAction,
+                  hasEditAction: hasEditAction || widget.isMuted,
                   onSave: _saveVideo,
                   onDiscard: ({required done}) => widget.onDone(),
+                  child: Icon(
+                    Icons.check,
+                    size: 60,
+                    color: hasEditAction || widget.isMuted
+                        ? Colors.red
+                        : Colors.white,
+                  ),
                 ),
               ),
             ],

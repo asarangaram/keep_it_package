@@ -33,12 +33,15 @@ class EditorFinalizer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!hasEditAction) {
-      return CLButtonIcon.small(
-        MdiIcons.check,
-        color: CLTheme.of(context).colors.iconColor,
+      return GestureDetector(
         onTap: () {
           onDiscard(done: true);
         },
+        child: child ??
+            CLIcon.small(
+              MdiIcons.check,
+              color: CLTheme.of(context).colors.iconColor,
+            ),
       );
     }
     return PopupMenuButton<EditorFinalActions>(

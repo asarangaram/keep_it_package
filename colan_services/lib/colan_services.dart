@@ -16,7 +16,8 @@ export 'services/notes_service/notes_service.dart' show NotesService;
 export 'services/preview_service/view/preview.dart' show PreviewService;
 export 'services/store_service/providers/gallery_group_provider.dart';
 export 'services/store_service/store_service.dart';
-export 'services/video_edit_service/video_trimmer.dart' show VideoEditServices;
+export 'services/video_edit_service/video_edit_service.dart'
+    show VideoEditServices;
 //This must be removed!!
 export 'services/video_player_service/providers/show_controls.dart';
 export 'services/video_player_service/video_player.dart'
