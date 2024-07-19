@@ -23,7 +23,7 @@ class ProgressBar extends StatelessWidget {
               animationDuration: 2000,
               percent: percentage / 100,
               animateFromLastPercent: true,
-              center: Text('$percentage'),
+              center: Text(percentage.toStringAsFixed(2)),
               barRadius: const Radius.elliptical(5, 15),
               progressColor: Theme.of(context).colorScheme.primary,
               maskFilter: const MaskFilter.blur(BlurStyle.solid, 3),
