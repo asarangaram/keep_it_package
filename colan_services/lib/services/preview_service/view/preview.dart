@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../internal/widgets/broken_image.dart';
 import '../../image_view_service/image_view.dart';
@@ -49,12 +50,46 @@ class PreviewService extends StatelessWidget {
                   },
                 ),
                 error: (_, __) => const BrokenImage(),
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const GreyShadowShimmerContainer(),
               );
             },
           ),
         _ => const BrokenImage()
       },
+    );
+  }
+}
+
+class GreyShadowShimmerContainer extends StatelessWidget {
+  const GreyShadowShimmerContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Text(
+            'Shimmering',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
     );
   }
 }
