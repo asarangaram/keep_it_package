@@ -6,12 +6,25 @@ final groupedItemsProvider =
         (ref, items) {
   final galleryGroups = <GalleryGroup<CLMedia>>[];
   for (final entry in items.filterByDate().entries) {
-    galleryGroups.add(
-      GalleryGroup(
-        entry.value,
-        label: entry.key,
-      ),
-    );
+    if (entry.value.length > 20) {
+      final groups = entry.value.convertTo2D(20);
+
+      galleryGroups
+        ..add(
+          GalleryGroup(
+            groups[0],
+            label: entry.key,
+          ),
+        )
+        ..addAll(groups.sublist(1).map(GalleryGroup.new));
+    } else {
+      galleryGroups.add(
+        GalleryGroup(
+          entry.value,
+          label: entry.key,
+        ),
+      );
+    }
   }
   return galleryGroups;
 });
