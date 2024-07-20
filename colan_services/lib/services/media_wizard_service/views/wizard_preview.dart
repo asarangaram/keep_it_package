@@ -51,11 +51,32 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           Hero(
         tag: '${type.identifier} /item/${item.id}',
         child: GestureDetector(
-          onTap: () => TheStore.of(context).openMedia(
-            item.id!,
-            parentIdentifier: type.identifier,
-            actionControl: ActionControl.editOnly(),
-          ),
+          onTap: () async {
+            await TheStore.of(context).openMedia(
+              item.id!,
+              parentIdentifier: type.identifier,
+              actionControl: ActionControl.editOnly(),
+            );
+
+            /// MEdia might have got updated, better reload and update the
+            ///  provider
+            if (context.mounted) {
+              final refreshedMedia =
+                  await TheStore.of(context).getMediaMultipleByIds(
+                media0.entries
+                    .where((e) => e.id != null)
+                    .map((e) => e.id!)
+                    .toList(),
+              );
+              ref.read(universalMediaProvider(type).notifier).mediaGroup =
+                  media0.copyWith(
+                entries: refreshedMedia
+                    .where((e) => e != null)
+                    .map((e) => e!)
+                    .toList(),
+              );
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.all(4),
             child: widget.getPreview(item),

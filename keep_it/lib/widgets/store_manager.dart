@@ -122,6 +122,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       getPreviewPath: getPreviewPath,
       getNotesPath: getNotesPath,
       getText: getText,
+
+      getMediaMultipleByIds: getMediaMultipleByIds,
     );
     return TheStore(
       storeAction: storeAction,
@@ -862,6 +864,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final q = widget.storeInstance.getQuery(
       DBQueries.mediaByCollectionId,
       parameters: [collectionId],
+    ) as StoreQuery<CLMedia>;
+    return widget.storeInstance.readMultiple(q);
+  }
+
+  Future<List<CLMedia?>> getMediaMultipleByIds(
+    List<int> ids,
+  ) {
+    final q = widget.storeInstance.getQuery(
+      DBQueries.mediaByIdList,
+      parameters: [ids],
     ) as StoreQuery<CLMedia>;
     return widget.storeInstance.readMultiple(q);
   }

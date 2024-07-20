@@ -34,6 +34,9 @@ class StoreActions {
     required this.pinMediaMultiple,
     required this.removePinMediaMultiple,
     required this.togglePinMultiple,
+
+    /// fetch
+    required this.getMediaMultipleByIds,
     required this.getPreviewPath,
     required this.getMediaPath,
     required this.getMediaLabel,
@@ -174,6 +177,7 @@ class StoreActions {
   final Future<String> Function() createBackupFile;
 
   final Future<void> Function() reloadStore;
+  final Future<List<CLMedia?>> Function(List<int> ids) getMediaMultipleByIds;
 
   @override
   bool operator ==(covariant StoreActions other) {
