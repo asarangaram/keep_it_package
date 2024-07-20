@@ -31,17 +31,17 @@ class MediaAsFile extends ConsumerWidget {
         return TheStore.of(context).deleteMediaMultiple(context, [media]);
       },
       onShare: () => TheStore.of(context).shareMediaMultiple(context, [media]),
-      onEdit:
-          (media.type == CLMediaType.video && !VideoEditServices.isSupported)
-              ? null
-              : () async {
-                  final updatedMedia = await TheStore.of(context).openEditor(
-                    context,
-                    media,
-                    canDuplicateMedia: actionControl.canDuplicateMedia,
-                  );
-                  return true;
-                },
+      onEdit: (media.type == CLMediaType.video &&
+              !VideoEditServices.isSupported)
+          ? null
+          : () async {
+              /* final updatedMedia =  */ await TheStore.of(context).openEditor(
+                context,
+                media,
+                canDuplicateMedia: actionControl.canDuplicateMedia,
+              );
+              return true;
+            },
       onTap: onTap,
       child: getPreview(media),
     );
