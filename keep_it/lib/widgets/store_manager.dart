@@ -11,6 +11,129 @@ import 'package:go_router/go_router.dart';
 
 import '../models/file_system_manager.dart';
 
+@immutable
+class MediaHandler {
+  const MediaHandler({
+    required this.fsManager,
+    required this.store,
+  });
+  final FileSystemManager fsManager;
+  final Store store;
+
+  static const tempCollectionName = '*** Recently Captured';
+
+  Future<Collection?> getCollectionByLabel(
+    String label,
+  ) async {
+    final q = store.getQuery(
+      DBQueries.collectionByLabel,
+      parameters: [label],
+    ) as StoreQuery<Collection>;
+    return store.read(q);
+  }
+
+  Future<CLMedia?> getMediaByMD5(
+    String md5String,
+  ) async {
+    final q = store.getQuery(
+      DBQueries.mediaByMD5,
+      parameters: [md5String],
+    ) as StoreQuery<CLMedia>;
+    return store.read(q);
+  }
+
+  Future<CLMedia?> newMedia(
+    String fileName, {
+    required bool isVideo,
+    Collection? collection,
+  }) async {
+    // Get Collection if required
+    Collection collection0;
+    if (collection == null) {
+      collection0 = await getCollectionByLabel(tempCollectionName) ??
+          await store.upsertCollection(
+            const Collection(label: tempCollectionName),
+          );
+    } else {
+      collection0 = collection;
+    }
+    final candidate = await fsManager.createMediaCandidate(
+      fileName,
+      isVideo ? CLMediaType.video : CLMediaType.image,
+    );
+
+    final savedMedia = CLMedia(
+      path: candidate.basename,
+      type: candidate.type,
+      collectionId: collection0.id,
+      md5String: await candidate.md5String,
+      isHidden: collection == null,
+    );
+    final mediaFromDB = await store.upsertMedia(savedMedia);
+    if (mediaFromDB == null) {
+      await fsManager.deleteMediaFiles(savedMedia);
+    } else {}
+    return mediaFromDB;
+  }
+
+  Stream<Progress> newMediaMultipleStream({
+    required List<CLMediaFile> mediaFiles,
+    required void Function({
+      required List<CLMedia> mediaMultiple,
+    }) onDone,
+  }) async* {
+    final candidates = <CLMedia>[];
+    //await Future<void>.delayed(const Duration(seconds: 3));
+    yield Progress(
+      currentItem: mediaFiles[0].basename,
+      fractCompleted: 0,
+    );
+    final Collection tempCollection;
+    tempCollection = await getCollectionByLabel(tempCollectionName) ??
+        await store.upsertCollection(
+          const Collection(label: tempCollectionName),
+        );
+    for (final (i, item0) in mediaFiles.indexed) {
+      final candidate =
+          await fsManager.tryCreateMediaCandidate(item0.path, item0.type);
+      if (candidate != null) {
+        final duplicate = await getMediaByMD5(await candidate.md5String);
+        if (duplicate != null) {
+          candidates.add(duplicate);
+        } else {
+          final savedMedia = await fsManager.getMetadata(
+            CLMedia(
+              path: candidate.basename,
+              type: candidate.type,
+              collectionId: tempCollection.id,
+              md5String: await candidate.md5String,
+              isHidden: true,
+            ),
+          );
+
+          final mediaFromDB = await store.upsertMedia(savedMedia);
+          if (mediaFromDB != null) {
+            candidates.add(mediaFromDB);
+          }
+        }
+      }
+
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+
+      yield Progress(
+        currentItem:
+            (i + 1 == mediaFiles.length) ? '' : mediaFiles[i + 1].basename,
+        fractCompleted: (i + 1) / mediaFiles.length,
+      );
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    onDone(
+      mediaMultiple: candidates,
+    );
+  }
+}
+
 class StoreManager extends StatelessWidget {
   const StoreManager({
     required this.child,
@@ -25,11 +148,16 @@ class StoreManager extends StatelessWidget {
       errorBuilder: (object, st) => const SizedBox.shrink(),
       loadingBuilder: () => const SizedBox.shrink(),
       builder: (appSettings) {
+        final fsManager = FileSystemManager(appSettings);
         return GetStore(
           builder: (storeInstance) {
             return MediaHandlerWidget0(
               storeInstance: storeInstance,
-              fsManager: FileSystemManager(appSettings),
+              fsManager: fsManager,
+              mediaHandeler: MediaHandler(
+                fsManager: fsManager,
+                store: storeInstance,
+              ),
               child: child,
             );
           },
@@ -44,9 +172,10 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
     required this.child,
     required this.storeInstance,
     required this.fsManager,
+    required this.mediaHandeler,
     super.key,
   });
-
+  final MediaHandler mediaHandeler;
   final Store storeInstance;
 
   final Widget child;
@@ -64,8 +193,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final storeAction = StoreActions(
       upsertCollection: upsertCollection,
       upsertNote: upsertNote,
-      newMedia: newMedia,
-      newMediaMultipleStream: analyseMediaStream,
+      newMedia: widget.mediaHandeler.newMedia,
+      newMediaMultipleStream: widget.mediaHandeler.newMediaMultipleStream,
       moveToCollectionStream: moveToCollectionStream,
       restoreMediaMultiple: restoreMediaMultiple,
       pinMediaMultiple: pinMediaMultiple,
@@ -427,125 +556,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<CLMedia?> newMedia(
-    String fileName, {
-    required bool isVideo,
-    Collection? collection,
-  }) async {
-    // Get Collection if required
-    Collection collection0;
-    if (collection == null) {
-      collection0 = await getCollectionByLabel(tempCollectionName) ??
-          await widget.storeInstance.upsertCollection(
-            const Collection(label: tempCollectionName),
-          );
-    } else {
-      collection0 = collection;
-    }
-    final candidate = await widget.fsManager.createMediaCandidate(
-      fileName,
-      isVideo ? CLMediaType.video : CLMediaType.image,
-    );
-
-    final savedMedia = CLMedia(
-      path: candidate.basename,
-      type: candidate.type,
-      collectionId: collection0.id,
-      md5String: await candidate.md5String,
-      isHidden: collection == null,
-    );
-    final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
-    if (mediaFromDB == null) {
-      await widget.fsManager.deleteMediaFiles(savedMedia);
-    } else {}
-    return mediaFromDB;
-  }
-
-  static const tempCollectionName = '*** Recently Captured';
-
-  Stream<Progress> analyseMediaStream({
-    required List<CLMediaFile> mediaFiles,
-    required void Function({
-      required List<CLMedia> mediaMultiple,
-    }) onDone,
-  }) async* {
-    final candidates = <CLMedia>[];
-    //await Future<void>.delayed(const Duration(seconds: 3));
-    yield Progress(
-      currentItem: mediaFiles[0].basename,
-      fractCompleted: 0,
-    );
-    for (final (i, item0) in mediaFiles.indexed) {
-      final item1 = await widget.fsManager.tryDownloadMedia(item0);
-      final item = await widget.fsManager.identifyMediaType(item1);
-      if (!item.type.isFile) {
-        // Skip for now
-      } else {
-        final file = File(
-          item.path,
-        );
-        if (file.existsSync()) {
-          final md5String = await item.md5String;
-          final duplicate = await getMediaByMD5(md5String);
-          if (duplicate != null) {
-            candidates.add(duplicate);
-          } else {
-            final Collection tempCollection;
-            tempCollection = await getCollectionByLabel(tempCollectionName) ??
-                await widget.storeInstance.upsertCollection(
-                  const Collection(label: tempCollectionName),
-                );
-
-            /// Approach
-            /// 1. First copy the content to media directory
-            ///   1a. Adjust file name if similar item is found
-            /// 2. Try updating the data base
-            /// 3a. If failed, delete the copy created
-            /// 3b. If succeed,
-            ///     delete the original file (if it is mobile platform)
-            final candidate = await widget.fsManager.createMediaCandidate(
-              item.path,
-              item.type,
-            );
-
-            final savedMedia = await widget.fsManager.getMetadata(
-              CLMedia(
-                path: candidate.basename,
-                type: candidate.type,
-                collectionId: tempCollection.id,
-                md5String: await candidate.md5String,
-                isHidden: true,
-              ),
-            );
-
-            final mediaFromDB =
-                await widget.storeInstance.upsertMedia(savedMedia);
-            if (mediaFromDB != null) {
-              candidates.add(mediaFromDB);
-            } else {
-              /* Failed to add media, handle here */
-            }
-          }
-        } else {
-          /* Missing file? ignoring */
-        }
-      }
-
-      await Future<void>.delayed(const Duration(milliseconds: 1));
-
-      yield Progress(
-        currentItem:
-            (i + 1 == mediaFiles.length) ? '' : mediaFiles[i + 1].basename,
-        fractCompleted: (i + 1) / mediaFiles.length,
-      );
-    }
-
-    await Future<void>.delayed(const Duration(milliseconds: 1));
-    onDone(
-      mediaMultiple: candidates,
-    );
-  }
-
   Future<void> upsertNote(
     String path,
     CLNoteTypes type, {
@@ -698,26 +708,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       parameters: ['(${idList.join(', ')})'],
     ) as StoreQuery<CLMedia>;
     return widget.storeInstance.readMultiple(q);
-  }
-
-  Future<Collection?> getCollectionByLabel(
-    String label,
-  ) async {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.collectionByLabel,
-      parameters: [label],
-    ) as StoreQuery<Collection>;
-    return widget.storeInstance.read(q);
-  }
-
-  Future<CLMedia?> getMediaByMD5(
-    String md5String,
-  ) async {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.mediaByMD5,
-      parameters: [md5String],
-    ) as StoreQuery<CLMedia>;
-    return widget.storeInstance.read(q);
   }
 
   Future<List<CLNote?>?> getOrphanNotes() {

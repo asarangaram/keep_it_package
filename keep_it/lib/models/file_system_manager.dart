@@ -109,7 +109,25 @@ class FileSystemManager {
     CLMediaType type,
   ) async {
     final savedFile = File(path).moveTo(appSettings.directories.media.path);
-    return CLMediaFile(path: savedFile.path, type: type);
+
+    final item0 = CLMediaFile(path: savedFile.path, type: type);
+
+    return item0;
+  }
+
+  Future<CLMediaFile?> tryCreateMediaCandidate(
+    String path,
+    CLMediaType type,
+  ) async {
+    final item0 = CLMediaFile(path: path, type: type);
+    final item1 = await tryDownloadMedia(item0);
+    final item2 = await identifyMediaType(item1);
+    if (!item2.type.isFile) return null;
+    if (!File(item2.path).existsSync()) return null;
+    final item = item2.copyWith(
+      path: File(item2.path).moveTo(appSettings.directories.media.path).path,
+    );
+    return item;
   }
 
   Future<CLNoteFile> createNoteCandidate(String path, CLNoteTypes type) async {
