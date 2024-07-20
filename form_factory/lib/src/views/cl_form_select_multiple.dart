@@ -7,7 +7,7 @@ import '../models/cl_form_field_descriptors.dart';
 import '../models/cl_form_field_state.dart';
 import '../style/cl_form_design.dart';
 
-class CLFormSelectMultiple extends StatelessWidget {
+class CLFormSelectMultiple<T> extends StatelessWidget {
   const CLFormSelectMultiple({
     required this.descriptors,
     required this.state,
@@ -15,16 +15,16 @@ class CLFormSelectMultiple extends StatelessWidget {
     this.actionBuilder,
     super.key,
   });
-  final CLFormSelectMultipleDescriptors descriptors;
+  final CLFormSelectMultipleDescriptors<T> descriptors;
 
-  final CLFormSelectMultipleState state;
+  final CLFormSelectMultipleState<T> state;
 
   final void Function() onRefresh;
   final Widget Function(BuildContext context)? actionBuilder;
 
   @override
   Widget build(BuildContext context) {
-    return FormField<List<Object>>(
+    return FormField<List<T>>(
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
           {
@@ -126,12 +126,12 @@ class CLFormSelectMultiple extends StatelessWidget {
   FutureOr<Iterable<Widget>> suggestionsBuilder(
     BuildContext context, {
     required SearchController controller,
-    required String Function(Object e) labelBuilder,
-    String Function(Object e)? descriptionBuilder,
-    List<Object>? suggestions,
-    required FormFieldState<List<Object>> fieldState,
+    required String Function(T e) labelBuilder,
+    String Function(T e)? descriptionBuilder,
+    List<T>? suggestions,
+    required FormFieldState<List<T>> fieldState,
   }) {
-    final List<Object>? filterredSuggestion;
+    final List<T>? filterredSuggestion;
     final controllerText = controller.text.trim();
     if (controllerText.isEmpty) {
       filterredSuggestion = suggestions;
@@ -193,8 +193,8 @@ class CLFormSelectMultiple extends StatelessWidget {
   }
 
   Future<void> _onSelect(
-    FormFieldState<List<Object>> fieldState,
-    Object item,
+    FormFieldState<List<T>> fieldState,
+    T item,
     void Function() onRefresh,
   ) async {
     final entityUpdated = await descriptors.onSelectSuggestion(item);
@@ -206,7 +206,7 @@ class CLFormSelectMultiple extends StatelessWidget {
   }
 
   Future<void> _onCreateByLabel(
-    FormFieldState<List<Object>> fieldState,
+    FormFieldState<List<T>> fieldState,
     String label,
     void Function() onRefresh,
   ) async {

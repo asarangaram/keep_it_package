@@ -28,7 +28,7 @@ class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
 }
 
 @immutable
-class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
+class CLFormSelectMultipleDescriptors<T> extends CLFormFieldDescriptors {
   const CLFormSelectMultipleDescriptors({
     required super.title,
     required super.label,
@@ -41,13 +41,13 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
     required this.onValidate,
   });
 
-  final List<Object> suggestionsAvailable;
-  final List<Object> initialValues;
-  final String Function(Object e) labelBuilder;
-  final String? Function(Object e)? descriptionBuilder;
-  final Future<Object?> Function(Object item) onSelectSuggestion;
-  final Future<Object?> Function(String label) onCreateByLabel;
-  final String? Function(List<Object>?)? onValidate;
+  final List<T> suggestionsAvailable;
+  final List<T> initialValues;
+  final String Function(T e) labelBuilder;
+  final String? Function(T e)? descriptionBuilder;
+  final Future<T?> Function(T item) onSelectSuggestion;
+  final Future<T?> Function(String label) onCreateByLabel;
+  final String? Function(List<T>?)? onValidate;
 
   @override
   String toString() {
@@ -56,7 +56,7 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
 }
 
 @immutable
-class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
+class CLFormSelectSingleDescriptors<T> extends CLFormFieldDescriptors {
   const CLFormSelectSingleDescriptors({
     required super.title,
     required super.label,
@@ -69,13 +69,13 @@ class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
     required this.onValidate,
   });
 
-  final List<Object> suggestionsAvailable;
-  final Object? initialValues;
-  final String Function(Object e) labelBuilder;
-  final String? Function(Object e)? descriptionBuilder;
-  final Future<Object?> Function(Object item) onSelectSuggestion;
-  final Future<Object?> Function(String label) onCreateByLabel;
-  final String? Function(Object?)? onValidate;
+  final List<T> suggestionsAvailable;
+  final T? initialValues;
+  final String Function(T e) labelBuilder;
+  final String? Function(T e)? descriptionBuilder;
+  final Future<T?> Function(T item) onSelectSuggestion;
+  final Future<T?> Function(String label) onCreateByLabel;
+  final String? Function(T?)? onValidate;
 
   @override
   String toString() {

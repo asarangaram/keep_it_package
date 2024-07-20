@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'cl_grid_media.dart';
 import 'placeholder_grid.dart';
 
-class CLGridLazy extends StatefulWidget {
+class CLGridLazy<T> extends StatefulWidget {
   const CLGridLazy({
     required this.mediaList,
     required this.currentIndexStream,
@@ -21,7 +21,7 @@ class CLGridLazy extends StatefulWidget {
     super.key,
   });
 
-  final List<Object> mediaList;
+  final List<T> mediaList;
   final List<Widget>? additionalItems;
   final int columns;
   final int? rows;
@@ -31,16 +31,16 @@ class CLGridLazy extends StatefulWidget {
   final double crossAxisSpacing;
   final double mainAxisSpacing;
 
-  final Widget Function(BuildContext context, Object item) itemBuilder;
+  final Widget Function(BuildContext context, T item) itemBuilder;
 
   final int index;
   final Stream<int> currentIndexStream;
 
   @override
-  State<StatefulWidget> createState() => CLGridLazyState();
+  State<StatefulWidget> createState() => CLGridLazyState<T>();
 }
 
-class CLGridLazyState extends State<CLGridLazy> {
+class CLGridLazyState<T> extends State<CLGridLazy<T>> {
   static const numberOfGroupsToRenderBeforeAndAfter = 8;
   bool _shouldRender = true;
   final bool _isVisible = false;
@@ -82,7 +82,7 @@ class CLGridLazyState extends State<CLGridLazy> {
   @override
   Widget build(BuildContext context) {
     if (_shouldRender) {
-      return CLGridMedia(
+      return CLGridMedia<T>(
         mediaList: widget.mediaList,
         additionalItems: widget.additionalItems,
         columns: widget.columns,

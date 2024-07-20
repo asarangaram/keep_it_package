@@ -33,7 +33,7 @@ class CLFormTextFieldState extends CLFormFieldState {
 }
 
 @immutable
-class CLFormSelectMultipleState extends CLFormFieldState {
+class CLFormSelectMultipleState<T> extends CLFormFieldState {
   CLFormSelectMultipleState({
     required this.scrollController,
     required this.wrapKey,
@@ -44,7 +44,7 @@ class CLFormSelectMultipleState extends CLFormFieldState {
   final ScrollController scrollController;
   final GlobalKey wrapKey;
   final SearchController searchController;
-  final List<Object> selectedEntities;
+  final List<T> selectedEntities;
 
   void scrollToEnd() {
     if (wrapKey.currentContext != null) {

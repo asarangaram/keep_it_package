@@ -11,13 +11,13 @@ class CLFormTextFieldResult extends CLFormFieldResult {
 }
 
 @immutable
-class CLFormSelectMultipleResult extends CLFormFieldResult {
+class CLFormSelectMultipleResult<T> extends CLFormFieldResult {
   CLFormSelectMultipleResult(this.selectedEntities);
-  final List<Object> selectedEntities;
+  final List<T> selectedEntities;
 }
 
 @immutable
-class CLFormSelectSingleResult extends CLFormFieldResult {
+class CLFormSelectSingleResult<T> extends CLFormFieldResult {
   CLFormSelectSingleResult(this.selectedEntitry);
-  final Object selectedEntitry;
+  final T selectedEntitry;
 }

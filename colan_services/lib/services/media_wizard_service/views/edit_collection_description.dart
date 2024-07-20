@@ -14,7 +14,7 @@ class EditCollectionDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CLWizardFormField(
+    return CLWizardFormField<Collection>(
       actionMenu: (context, onTap) => CLMenuItem(
         icon: MdiIcons.arrowRight,
         title: 'Save',
@@ -26,7 +26,13 @@ class EditCollectionDescription extends StatelessWidget {
         initialValue: collection.label,
         hint: 'What is the best thing,'
             ' you can say about "${collection.label}"?',
-        onValidate: (val) => null,
+        onValidate: (value) => Collection.validateDescription(
+          description: value,
+          existingDescription: collection.description,
+
+          /// Provide collection list here if at all needs comparision
+          collections: [],
+        ),
         maxLines: 4,
       ),
       onSubmit: (CLFormFieldResult result) async {

@@ -18,7 +18,7 @@ class PickCollection extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetCollectionMultiple(
       buildOnData: (collections) {
-        return CLWizardFormField(
+        return CLWizardFormField<Collection>(
           actionMenu: (context, onTap) => CLMenuItem(
             icon: MdiIcons.arrowRight,
             title: 'Next',
@@ -27,8 +27,8 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as Collection).label,
-            descriptionBuilder: (e) => (e as Collection).description,
+            labelBuilder: (e) => e.label,
+            descriptionBuilder: (e) => e.description,
             suggestionsAvailable: [
               ...collections,
             ],
@@ -39,10 +39,11 @@ class PickCollection extends StatelessWidget {
               if (value == null) {
                 return "can't be empty";
               }
-              if ((value as Collection).label.length > 20) {
-                return "length can't exceed 20 characters";
-              }
-              return null;
+              return Collection.validateName(
+                newLabel: value.label,
+                existingLabel: collection?.label,
+                collections: collections,
+              );
             },
           ),
           onSubmit: (CLFormFieldResult result) async {

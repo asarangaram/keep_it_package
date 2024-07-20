@@ -8,7 +8,7 @@ import 'package:form_factory/src/views/cl_form_textfield.dart';
 import '../models/cl_form_field_state.dart';
 import 'cl_form_select_multiple.dart';
 
-class CLWizardFormField extends StatefulWidget {
+class CLWizardFormField<T> extends StatefulWidget {
   const CLWizardFormField({
     required this.descriptor,
     required this.actionMenu,

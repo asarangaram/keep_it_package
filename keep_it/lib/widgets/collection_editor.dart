@@ -61,7 +61,7 @@ class CollectionEditor extends StatelessWidget {
                 title: 'Name',
                 label: 'Collection Name',
                 initialValue: collection.label,
-                onValidate: (value) => validateName(
+                onValidate: (value) => Collection.validateName(
                   newLabel: value,
                   existingLabel: collection.label,
                   collections: collections,
@@ -71,7 +71,11 @@ class CollectionEditor extends StatelessWidget {
                 title: 'About',
                 label: 'Describe about this collection',
                 initialValue: collection.description ?? '',
-                onValidate: (_) => null,
+                onValidate: (value) => Collection.validateDescription(
+                  description: value,
+                  existingDescription: collection.description,
+                  collections: collections,
+                ),
                 maxLines: 4,
               ),
             },
@@ -92,27 +96,6 @@ class CollectionEditor extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String? validateName({
-    required String? newLabel,
-    required String? existingLabel,
-    required List<Collection> collections,
-  }) {
-    final newLabel0 = newLabel?.trim();
-
-    if (newLabel0?.isEmpty ?? true) {
-      return "Name can't be empty";
-    }
-
-    if (existingLabel?.trim() == newLabel0) {
-      // Nothing changed.
-      return null;
-    }
-    if (collections.map((e) => e.label.trim()).contains(newLabel0)) {
-      return '$newLabel0 already exists';
-    }
-    return null;
   }
 
   static Future<Collection?> popupDialog(
