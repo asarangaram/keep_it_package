@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MediaEditorPage extends StatelessWidget {
   const MediaEditorPage({
@@ -35,16 +36,20 @@ class MediaEditorPage extends StatelessWidget {
           onCreateNewFile: () async {
             return TheStore.of(context).createTempFile(ext: 'jpg');
           },
+          onCancel: () async => context.pop(),
           onSave: (file, {required overwrite}) async {
+            final CLMedia resultMedia;
             if (overwrite) {
               final confirmed = await ConfirmAction.replaceMedia(
                     context,
                     media: media,
                   ) ??
                   false;
-              if (!confirmed) return;
-              if (context.mounted) {
-                await TheStore.of(context).replaceMedia(context, media, file);
+              if (confirmed && context.mounted) {
+                resultMedia = await TheStore.of(context)
+                    .replaceMedia(context, media, file);
+              } else {
+                resultMedia = media;
               }
             } else {
               final confirmed = await ConfirmAction.cloneAndReplaceMedia(
@@ -52,11 +57,16 @@ class MediaEditorPage extends StatelessWidget {
                     media: media,
                   ) ??
                   false;
-              if (!confirmed) return;
-              if (context.mounted) {
-                await TheStore.of(context)
+              if (confirmed && context.mounted) {
+                resultMedia = await TheStore.of(context)
                     .cloneAndReplaceMedia(context, media, file);
+              } else {
+                resultMedia = media;
               }
+            }
+
+            if (context.mounted) {
+              context.pop(resultMedia);
             }
           },
         );
@@ -70,12 +80,14 @@ class InvokeEditor extends StatelessWidget {
     required this.media,
     required this.onCreateNewFile,
     required this.onSave,
+    required this.onCancel,
     required this.canDuplicateMedia,
     super.key,
   });
   final CLMedia media;
   final Future<String> Function() onCreateNewFile;
   final Future<void> Function(String, {required bool overwrite}) onSave;
+  final Future<void> Function() onCancel;
   final bool canDuplicateMedia;
   @override
   Widget build(BuildContext context) {
@@ -83,7 +95,7 @@ class InvokeEditor extends StatelessWidget {
       case CLMediaType.image:
         return ImageEditService(
           file: File(TheStore.of(context).getMediaPath(media)),
-          onDone: () => CLPopScreen.onPop(context),
+          onCancel: onCancel,
           onSave: onSave,
           onCreateNewFile: onCreateNewFile,
           canDuplicateMedia: canDuplicateMedia,
@@ -93,7 +105,7 @@ class InvokeEditor extends StatelessWidget {
           return VideoEditServices(
             File(TheStore.of(context).getMediaPath(media)),
             onSave: onSave,
-            onDone: () => CLPopScreen.onPop(context),
+            onDone: onCancel,
             canDuplicateMedia: canDuplicateMedia,
           );
         }

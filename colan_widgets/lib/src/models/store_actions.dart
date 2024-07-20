@@ -75,13 +75,13 @@ class StoreActions {
 
   // For replacing path:
 
-  final Future<bool> Function(
+  final Future<CLMedia> Function(
     BuildContext ctx,
     CLMedia media,
     String outFile,
   ) replaceMedia;
 
-  final Future<bool> Function(
+  final Future<CLMedia> Function(
     BuildContext ctx,
     CLMedia media,
     String outFile,
@@ -155,11 +155,12 @@ class StoreActions {
     int? collectionId,
     String? parentIdentifier,
   }) openMedia;
-  final Future<bool> Function(
+  final Future<CLMedia> Function(
     BuildContext ctx,
-    List<CLMedia> mediaMultiple, {
+    CLMedia media, {
     required bool canDuplicateMedia,
   }) openEditor;
+
   final Future<void> Function(
     BuildContext ctx, {
     int? collectionId,

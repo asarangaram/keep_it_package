@@ -35,6 +35,13 @@ class MediaView extends ConsumerStatefulWidget {
 }
 
 class _MediaViewState extends ConsumerState<MediaView> {
+  late CLMedia media;
+  @override
+  void initState() {
+    media = widget.media;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ac = widget.actionControl;
@@ -47,9 +54,9 @@ class _MediaViewState extends ConsumerState<MediaView> {
           const MediaBackground(),
           Positioned.fill(
             child: Hero(
-              tag: '${widget.parentIdentifier} /item/${widget.media.id}',
+              tag: '${widget.parentIdentifier} /item/${media.id}',
               child: MediaViewerRaw(
-                media: widget.media,
+                media: media,
                 notes: widget.notes,
                 autoStart: widget.autoStart,
                 onLockPage: widget.onLockPage,
@@ -62,44 +69,52 @@ class _MediaViewState extends ConsumerState<MediaView> {
             onMove: ac.onMove(
               () => TheStore.of(context).openWizard(
                 context,
-                [widget.media],
+                [media],
                 UniversalMediaSource.move,
               ),
             ),
             onDelete: ac.onDelete(() async {
               final confirmed = await ConfirmAction.deleteMediaMultiple(
                     context,
-                    media: [widget.media],
+                    media: [media],
                   ) ??
                   false;
               if (!confirmed) return confirmed;
               if (context.mounted) {
                 return TheStore.of(context).deleteMediaMultiple(
                   context,
-                  [widget.media],
+                  [media],
                 );
               }
               return false;
             }),
             onShare: ac.onShare(
-              () => TheStore.of(context)
-                  .shareMediaMultiple(context, [widget.media]),
+              () => TheStore.of(context).shareMediaMultiple(context, [media]),
             ),
-            onEdit: (widget.media.type == CLMediaType.video &&
+            onEdit: (media.type == CLMediaType.video &&
                     !VideoEditServices.isSupported)
                 ? null
                 : ac.onEdit(
-                    () => TheStore.of(context).openEditor(
-                      context,
-                      [widget.media],
-                      canDuplicateMedia: ac.canDuplicateMedia,
-                    ),
+                    () async {
+                      final updatedMedia =
+                          await TheStore.of(context).openEditor(
+                        context,
+                        media,
+                        canDuplicateMedia: ac.canDuplicateMedia,
+                      );
+                      if (updatedMedia != media && context.mounted) {
+                        setState(() {
+                          media = updatedMedia;
+                        });
+                      }
+
+                      return true;
+                    },
                   ),
             onPin: ac.onPin(
-              () => TheStore.of(context)
-                  .togglePinMultiple(context, [widget.media]),
+              () => TheStore.of(context).togglePinMultiple(context, [media]),
             ),
-            media: widget.media,
+            media: media,
           ),
         ],
       ),

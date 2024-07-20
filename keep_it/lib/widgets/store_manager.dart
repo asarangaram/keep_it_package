@@ -262,28 +262,22 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
   }
 
-  Future<bool> openEditor(
+  Future<CLMedia> openEditor(
     BuildContext ctx,
-    List<CLMedia> mediaMultiple, {
+    CLMedia media, {
     required bool canDuplicateMedia,
   }) async {
-    if (mediaMultiple.isEmpty) {
-      return true;
+    if (media.pin != null) {
+      await ref.read(notificationMessageProvider.notifier).push(
+            "Unpin to edit.\n Pinned items can't be edited",
+          );
+      return media;
+    } else {
+      final edittedMedia = await ctx.push<CLMedia>(
+        '/mediaEditor?id=${media.id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
+      );
+      return edittedMedia ?? media;
     }
-    if (mediaMultiple.length == 1) {
-      if (mediaMultiple[0].pin != null) {
-        await ref.read(notificationMessageProvider.notifier).push(
-              "Unpin to edit.\n Pinned items can't be edited",
-            );
-        return false;
-      } else {
-        await ctx.push(
-          '/mediaEditor?id=${mediaMultiple[0].id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
-        );
-        return true;
-      }
-    }
-    return false;
   }
 
   Future<bool> togglePinMultiple(
@@ -341,7 +335,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<bool> replaceMedia(
+  Future<CLMedia> replaceMedia(
     BuildContext ctx,
     CLMedia originalMedia,
     String outFile,
@@ -368,10 +362,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         ),
       ).deleteIfExists();
     }
-    return mediaFromDB != null;
+
+    return mediaFromDB ?? originalMedia;
   }
 
-  Future<bool> cloneAndReplaceMedia(
+  Future<CLMedia> cloneAndReplaceMedia(
     BuildContext ctx,
     CLMedia originalMedia,
     String outFile,
@@ -392,7 +387,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       updatedMedia.removeId(),
     );
 
-    return mediaFromDB != null;
+    return mediaFromDB ?? originalMedia;
   }
 
   //Can be converted to non static
@@ -869,11 +864,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<List<CLMedia?>> getMediaMultipleByIds(
-    List<int> ids,
+    List<int> idList,
   ) {
     final q = widget.storeInstance.getQuery(
       DBQueries.mediaByIdList,
-      parameters: [ids],
+      parameters: ['(${idList.join(', ')})'],
     ) as StoreQuery<CLMedia>;
     return widget.storeInstance.readMultiple(q);
   }

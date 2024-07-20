@@ -93,7 +93,9 @@ class _AudioMuterState extends State<AudioMuter> {
                       .createTempFile(ext: extension(widget.inFile));
                   await File(videoWithoutAudio).deleteIfExists();
                   final session = await FFmpegKit.execute(
-                    '-i ${widget.inFile} -vcodec copy -an -f mp4 $videoWithoutAudio',
+                    '-i ${widget.inFile} '
+                    '-vcodec copy -an '
+                    '-f mp4 $videoWithoutAudio',
                   );
                   final returnCode = await session.getReturnCode();
                   if (ReturnCode.isSuccess(returnCode)) {
