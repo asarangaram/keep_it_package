@@ -117,7 +117,6 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                 trimmer: _trimmer,
                 viewerWidth: MediaQuery.of(context).size.width,
                 durationStyle: DurationStyle.FORMAT_MM_SS,
-                maxVideoLength: const Duration(seconds: 10),
                 editorProperties: TrimEditorProperties(
                   borderPaintColor: Colors.yellow,
                   borderWidth: 4,
@@ -127,8 +126,15 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                 areaProperties: TrimAreaProperties.edgeBlur(
                   thumbnailQuality: 10,
                 ),
-                onChangeStart: (value) => _startValue = value,
-                onChangeEnd: (value) => _endValue = value,
+                onChangeStart: (value) {
+                  _startValue = value;
+                  setState(() {});
+                },
+                onChangeEnd: (value) {
+                  _endValue = value;
+
+                  setState(() {});
+                },
                 onChangePlaybackState: (value) =>
                     setState(() => _isPlaying = value),
               ),
