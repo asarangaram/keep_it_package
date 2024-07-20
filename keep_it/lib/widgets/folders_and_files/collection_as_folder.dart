@@ -27,7 +27,7 @@ class CollectionAsFolder extends ConsumerWidget {
           collection: collection,
         );
         if (updated != null && context.mounted) {
-          await TheStore.of(context).upsertCollection(updated);
+          await TheScreenHandler.of(context).upsertCollection(updated);
         }
 
         return true;
@@ -40,12 +40,12 @@ class CollectionAsFolder extends ConsumerWidget {
             false;
         if (!confirmed) return confirmed;
         if (context.mounted) {
-          return TheStore.of(context).deleteCollection(collection);
+          return TheScreenHandler.of(context).deleteCollection(collection);
         }
         return null;
       },
       onTap: () async {
-        await TheStore.of(context)
+        await TheScreenHandler.of(context)
             .openCollection(context, collectionId: collection.id);
         return true;
       },

@@ -67,7 +67,7 @@ class _MediaViewState extends ConsumerState<MediaView> {
           ),
           MediaControls(
             onMove: ac.onMove(
-              () => TheStore.of(context).openWizard(
+              () => TheScreenHandler.of(context).openWizard(
                 context,
                 [media],
                 UniversalMediaSource.move,
@@ -81,14 +81,15 @@ class _MediaViewState extends ConsumerState<MediaView> {
                   false;
               if (!confirmed) return confirmed;
               if (context.mounted) {
-                return TheStore.of(context).deleteMediaMultiple(
+                return TheScreenHandler.of(context).deleteMediaMultiple(
                   [media],
                 );
               }
               return false;
             }),
             onShare: ac.onShare(
-              () => TheStore.of(context).shareMediaMultiple(context, [media]),
+              () => TheScreenHandler.of(context)
+                  .shareMediaMultiple(context, [media]),
             ),
             onEdit: (media.type == CLMediaType.video &&
                     !VideoEditServices.isSupported)
@@ -96,7 +97,7 @@ class _MediaViewState extends ConsumerState<MediaView> {
                 : ac.onEdit(
                     () async {
                       final updatedMedia =
-                          await TheStore.of(context).openEditor(
+                          await TheScreenHandler.of(context).openEditor(
                         context,
                         media,
                         canDuplicateMedia: ac.canDuplicateMedia,
@@ -111,7 +112,7 @@ class _MediaViewState extends ConsumerState<MediaView> {
                     },
                   ),
             onPin: ac.onPin(
-              () => TheStore.of(context).togglePinMultiple([media]),
+              () => TheScreenHandler.of(context).togglePinMultiple([media]),
             ),
             media: media,
           ),

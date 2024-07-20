@@ -58,8 +58,9 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                   ),
                   onCameraCapture: ColanPlatformSupport.cameraUnsupported
                       ? null
-                      : TheStore.of(context).openCamera,
-                  onRefresh: () async => TheStore.of(context).reloadStore(),
+                      : TheScreenHandler.of(context).openCamera,
+                  onRefresh: () async =>
+                      TheScreenHandler.of(context).reloadStore(),
                 );
               },
             ),
@@ -82,7 +83,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () => TheStore.of(context).openWizard(
+                      onPressed: () => TheScreenHandler.of(context).openWizard(
                         context,
                         media,
                         UniversalMediaSource.unclassified,

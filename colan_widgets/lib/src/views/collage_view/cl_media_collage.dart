@@ -82,7 +82,7 @@ class CLMediaCollage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaWithPreview = mediaList.where((e) {
-      return File(TheStore.of(context).getMediaPath(e)).existsSync();
+      return File(TheScreenHandler.of(context).getMediaPath(e)).existsSync();
     }).toList();
     if (mediaWithPreview.isEmpty) {
       return onBuildItem(

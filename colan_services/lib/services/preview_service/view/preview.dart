@@ -22,7 +22,7 @@ class PreviewService extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (media.type.isFile &&
-        !File(TheStore.of(context).getMediaPath(media)).existsSync()) {
+        !File(TheScreenHandler.of(context).getMediaPath(media)).existsSync()) {
       //throw Exception('File not found ${media.path}');
       return const BrokenImage();
     }

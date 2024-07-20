@@ -24,7 +24,7 @@ class SettingsMainPage extends ConsumerWidget {
                     trailing: IconButton(
                       icon: Icon(MdiIcons.arrowRight),
                       onPressed: () async {
-                        await TheStore.of(context).openWizard(
+                        await TheScreenHandler.of(context).openWizard(
                           context,
                           deletedMedia,
                           UniversalMediaSource.deleted,
@@ -35,8 +35,9 @@ class SettingsMainPage extends ConsumerWidget {
                   ),
                 const StorageMonitor(),
                 BackupService(
-                  onShareFiles: TheStore.of(context).shareFiles,
-                  onCreateBackupFile: TheStore.of(context).createBackupFile,
+                  onShareFiles: TheScreenHandler.of(context).shareFiles,
+                  onCreateBackupFile:
+                      TheScreenHandler.of(context).createBackupFile,
                 ),
               ],
             );

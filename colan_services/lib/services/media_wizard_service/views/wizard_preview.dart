@@ -52,7 +52,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         tag: '${type.identifier} /item/${item.id}',
         child: GestureDetector(
           onTap: () async {
-            await TheStore.of(context).openMedia(
+            await TheScreenHandler.of(context).openMedia(
               item.id!,
               parentIdentifier: type.identifier,
               actionControl: ActionControl.editOnly(),
@@ -62,7 +62,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             ///  provider
             if (context.mounted) {
               final refreshedMedia =
-                  await TheStore.of(context).getMediaMultipleByIds(
+                  await TheScreenHandler.of(context).getMediaMultipleByIds(
                 media0.entries
                     .where((e) => e.id != null)
                     .map((e) => e.id!)

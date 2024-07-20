@@ -24,7 +24,8 @@ class MediaEditorPage extends StatelessWidget {
       id: mediaId!,
       buildOnData: (media) {
         if (media == null ||
-            !File(TheStore.of(context).getMediaPath(media)).existsSync()) {
+            !File(TheScreenHandler.of(context).getMediaPath(media))
+                .existsSync()) {
           return BasicPageService.message(
             message: ' Media not found',
           );
@@ -34,7 +35,7 @@ class MediaEditorPage extends StatelessWidget {
           media: media,
           canDuplicateMedia: canDuplicateMedia,
           onCreateNewFile: () async {
-            return TheStore.of(context).createTempFile(ext: 'jpg');
+            return TheScreenHandler.of(context).createTempFile(ext: 'jpg');
           },
           onCancel: () async => context.pop(),
           onSave: (file, {required overwrite}) async {
@@ -46,8 +47,8 @@ class MediaEditorPage extends StatelessWidget {
                   ) ??
                   false;
               if (confirmed && context.mounted) {
-                resultMedia =
-                    await TheStore.of(context).replaceMedia(media, file);
+                resultMedia = await TheScreenHandler.of(context)
+                    .replaceMedia(media, file);
               } else {
                 resultMedia = media;
               }
@@ -58,7 +59,7 @@ class MediaEditorPage extends StatelessWidget {
                   ) ??
                   false;
               if (confirmed && context.mounted) {
-                resultMedia = await TheStore.of(context)
+                resultMedia = await TheScreenHandler.of(context)
                     .cloneAndReplaceMedia(media, file);
               } else {
                 resultMedia = media;
@@ -94,7 +95,7 @@ class InvokeEditor extends StatelessWidget {
     switch (media.type) {
       case CLMediaType.image:
         return ImageEditService(
-          file: File(TheStore.of(context).getMediaPath(media)),
+          file: File(TheScreenHandler.of(context).getMediaPath(media)),
           onCancel: onCancel,
           onSave: onSave,
           onCreateNewFile: onCreateNewFile,
@@ -103,7 +104,7 @@ class InvokeEditor extends StatelessWidget {
       case CLMediaType.video:
         if (VideoEditServices.isSupported) {
           return VideoEditServices(
-            File(TheStore.of(context).getMediaPath(media)),
+            File(TheScreenHandler.of(context).getMediaPath(media)),
             onSave: onSave,
             onDone: onCancel,
             canDuplicateMedia: canDuplicateMedia,

@@ -19,7 +19,7 @@ class IncomingMediaService extends StatelessWidget {
     return IncomingMediaHandler0(
       incomingMedia: incomingMedia,
       onDiscard: onDiscard,
-      onSave: TheStore.of(context).openWizard,
+      onSave: TheScreenHandler.of(context).openWizard,
     );
   }
 }

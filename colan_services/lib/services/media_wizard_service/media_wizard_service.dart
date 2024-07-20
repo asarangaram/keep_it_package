@@ -136,7 +136,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               /// the universalMediaProvider
               /// We only need to update the collectionId
               : StreamBuilder<Progress>(
-                  stream: TheStore.of(context).moveToCollectionStream(
+                  stream: TheScreenHandler.of(context).moveToCollectionStream(
                     currMedia,
                     collection: targetCollection!,
                     onDone: () {
@@ -184,8 +184,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                       false;
                               if (!confirmed) return confirmed;
                               if (context.mounted) {
-                                final res =
-                                    TheStore.of(context).deleteMediaMultiple(
+                                final res = TheScreenHandler.of(context)
+                                    .deleteMediaMultiple(
                                   currMedia,
                                 );
 

@@ -10,8 +10,8 @@ import 'progress.dart';
 import 'universal_media_source.dart';
 
 @immutable
-class StoreActions {
-  const StoreActions({
+class ScreenHandler {
+  const ScreenHandler({
     /// Actions that opens new screens
     required this.openWizard,
     required this.openEditor,
@@ -173,7 +173,7 @@ class StoreActions {
   final Future<List<CLMedia?>> Function(List<int> ids) getMediaMultipleByIds;
 
   @override
-  bool operator ==(covariant StoreActions other) {
+  bool operator ==(covariant ScreenHandler other) {
     if (identical(this, other)) return true;
 
     return other.upsertCollection == upsertCollection &&

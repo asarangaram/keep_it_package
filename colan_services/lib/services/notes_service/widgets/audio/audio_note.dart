@@ -38,7 +38,7 @@ class _AudioNoteState extends State<AudioNote> {
 
   @override
   void didChangeDependencies() {
-    notePath = TheStore.of(context).getNotesPath(widget.note);
+    notePath = TheScreenHandler.of(context).getNotesPath(widget.note);
     if (File(notePath).existsSync()) {
       validAudio = true;
       _preparePlayer();

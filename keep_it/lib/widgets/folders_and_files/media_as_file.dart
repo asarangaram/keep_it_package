@@ -25,23 +25,25 @@ class MediaAsFile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
-      onMove: () => TheStore.of(context)
+      onMove: () => TheScreenHandler.of(context)
           .openWizard(context, [media], UniversalMediaSource.move),
       onDelete: () async {
-        return TheStore.of(context).deleteMediaMultiple([media]);
+        return TheScreenHandler.of(context).deleteMediaMultiple([media]);
       },
-      onShare: () => TheStore.of(context).shareMediaMultiple(context, [media]),
-      onEdit: (media.type == CLMediaType.video &&
-              !VideoEditServices.isSupported)
-          ? null
-          : () async {
-              /* final updatedMedia =  */ await TheStore.of(context).openEditor(
-                context,
-                media,
-                canDuplicateMedia: actionControl.canDuplicateMedia,
-              );
-              return true;
-            },
+      onShare: () =>
+          TheScreenHandler.of(context).shareMediaMultiple(context, [media]),
+      onEdit:
+          (media.type == CLMediaType.video && !VideoEditServices.isSupported)
+              ? null
+              : () async {
+                  /* final updatedMedia =  */ await TheScreenHandler.of(context)
+                      .openEditor(
+                    context,
+                    media,
+                    canDuplicateMedia: actionControl.canDuplicateMedia,
+                  );
+                  return true;
+                },
       onTap: onTap,
       child: getPreview(media),
     );

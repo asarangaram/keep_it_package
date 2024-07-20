@@ -49,7 +49,7 @@ class _AudioNotesState extends State<AudioNotes> {
                         if (widget.notes.length == 1) {
                           editMode = false;
                         }
-                        TheStore.of(context).deleteNote(note);
+                        TheScreenHandler.of(context).deleteNote(note);
                       },
                     ),
                   )

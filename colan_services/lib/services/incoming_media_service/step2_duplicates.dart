@@ -199,7 +199,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                 return SizedBox(
                   height: 80,
                   child: Dismissible(
-                    key: Key(TheStore.of(context).getMediaPath(m)),
+                    key: Key(TheScreenHandler.of(context).getMediaPath(m)),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
                       onRemove(m);

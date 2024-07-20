@@ -37,7 +37,7 @@ class MediaViewerRaw extends ConsumerWidget {
           Expanded(
             child: switch (media.type) {
               CLMediaType.image => ImageViewService(
-                  file: File(TheStore.of(context).getMediaPath(media)),
+                  file: File(TheScreenHandler.of(context).getMediaPath(media)),
                   onLockPage: onLockPage,
                 ),
               CLMediaType.video => VideoPlayerService.player(

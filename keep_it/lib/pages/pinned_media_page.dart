@@ -27,14 +27,14 @@ class PinnedMediaPage extends ConsumerWidget {
                     padding: const EdgeInsets.all(4),
                     child: GestureDetector(
                       onTap: () async {
-                        await TheStore.of(context).openMedia(
+                        await TheScreenHandler.of(context).openMedia(
                           item.id!,
                           parentIdentifier: parentIdentifier,
                           actionControl: ActionControl.full(),
                         );
                       },
-                      onLongPress: () =>
-                          TheStore.of(context).togglePinMultiple([item]),
+                      onLongPress: () => TheScreenHandler.of(context)
+                          .togglePinMultiple([item]),
                       child: PreviewService(
                         media: item,
                         keepAspectRatio: false,
@@ -50,14 +50,16 @@ class PinnedMediaPage extends ConsumerWidget {
                 ),
                 identifier: 'Pinned Media',
                 columns: 2,
-                onRefresh: () async => TheStore.of(context).reloadStore(),
+                onRefresh: () async =>
+                    TheScreenHandler.of(context).reloadStore(),
                 selectionActions: (context, items) {
                   return [
                     CLMenuItem(
                       title: 'Remove Selected Pins',
                       icon: MdiIcons.pinOffOutline,
                       onTap: () async {
-                        await TheStore.of(context).togglePinMultiple(media);
+                        await TheScreenHandler.of(context)
+                            .togglePinMultiple(media);
 
                         return true;
                       },

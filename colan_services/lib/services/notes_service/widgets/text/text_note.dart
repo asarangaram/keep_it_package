@@ -40,7 +40,7 @@ class _TextNoteState extends State<TextNote> {
 
   @override
   void didChangeDependencies() {
-    textOriginal = TheStore.of(context).getText(widget.note);
+    textOriginal = TheScreenHandler.of(context).getText(widget.note);
     textEditingController.text = textOriginal;
     isEditing = widget.note == null;
     textModified = textEditingController.text.trim().isNotEmpty &&
@@ -89,7 +89,7 @@ class _TextNoteState extends State<TextNote> {
                       false;
                   if (!confirmed) return;
                   if (context.mounted) {
-                    await TheStore.of(context).deleteNote(widget.note!);
+                    await TheScreenHandler.of(context).deleteNote(widget.note!);
                     textEditingController.clear();
                   }
                 },
@@ -151,11 +151,11 @@ class _TextNoteState extends State<TextNote> {
     if (textModified) {
       final String path;
       if (widget.note == null) {
-        path = await TheStore.of(context).createTempFile(ext: 'txt');
+        path = await TheScreenHandler.of(context).createTempFile(ext: 'txt');
         await File(path).writeAsString(textEditingController.text.trim());
 
         if (mounted) {
-          await TheStore.of(context).upsertNote(
+          await TheScreenHandler.of(context).upsertNote(
             path,
             CLNoteTypes.text,
             mediaMultiple: [widget.media],
@@ -164,10 +164,10 @@ class _TextNoteState extends State<TextNote> {
         }
         textOriginal = textEditingController.text.trim();
       } else {
-        path = TheStore.of(context).getNotesPath(widget.note!);
+        path = TheScreenHandler.of(context).getNotesPath(widget.note!);
         await File(path).writeAsString(textEditingController.text.trim());
         if (mounted) {
-          textOriginal = TheStore.of(context).getText(widget.note);
+          textOriginal = TheScreenHandler.of(context).getText(widget.note);
         }
       }
 

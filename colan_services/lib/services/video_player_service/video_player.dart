@@ -61,7 +61,7 @@ class VideoPlayerService extends ConsumerWidget {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (context.mounted && autoStart) {
             await ref.read(videoPlayerStateProvider.notifier).setVideo(
-                  TheStore.of(context).getMediaPath(media),
+                  TheScreenHandler.of(context).getMediaPath(media),
                   autoPlay: autoPlay,
                 );
           }
@@ -72,7 +72,8 @@ class VideoPlayerService extends ConsumerWidget {
             VideoPlayerState state,
             VideoPlayerController controller,
           ) {
-            if (state.path == TheStore.of(context).getMediaPath(media)) {
+            if (state.path ==
+                TheScreenHandler.of(context).getMediaPath(media)) {
               return VideoLayer(
                 controller: controller,
                 inplaceControl: inplaceControl,
@@ -105,7 +106,8 @@ class VideoPlayerService extends ConsumerWidget {
             VideoPlayerState state,
             VideoPlayerController controller,
           ) {
-            if (state.path == TheStore.of(context).getMediaPath(media)) {
+            if (state.path ==
+                TheScreenHandler.of(context).getMediaPath(media)) {
               return VideoControls(controller: controller);
             } else {
               return Container();
@@ -129,7 +131,7 @@ class VideoPlayerService extends ConsumerWidget {
         VideoPlayerState state,
         VideoPlayerController controller,
       ) {
-        if (state.path == TheStore.of(context).getMediaPath(media)) {
+        if (state.path == TheScreenHandler.of(context).getMediaPath(media)) {
           return PlayerStateMonitor(
             controller: controller,
             builder: builder!,

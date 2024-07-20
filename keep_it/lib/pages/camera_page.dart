@@ -24,14 +24,14 @@ class CameraPage extends ConsumerWidget {
                 );
           },
           onNewMedia: (path, {required isVideo}) {
-            return TheStore.of(context).newMedia(
+            return TheScreenHandler.of(context).newMedia(
               path,
               isVideo: isVideo,
               collection: collection,
             );
           },
           onDone: (mediaList) async {
-            await TheStore.of(context).openWizard(
+            await TheScreenHandler.of(context).openWizard(
               context,
               mediaList,
               UniversalMediaSource.captured,

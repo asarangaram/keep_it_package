@@ -34,7 +34,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
               CLMedia media, {
               required String parentIdentifier,
             }) async {
-              await TheStore.of(context).openMedia(
+              await TheScreenHandler.of(context).openMedia(
                 media.id!,
                 collectionId: collectionId,
                 parentIdentifier: parentIdentifier,
@@ -54,7 +54,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
             },
             onCameraCapture: ColanPlatformSupport.cameraUnsupported
                 ? null
-                : (ctx) => TheStore.of(ctx)
+                : (ctx) => TheScreenHandler.of(ctx)
                     .openCamera(ctx, collectionId: collection?.id),
           ),
         ),
@@ -121,7 +121,7 @@ class TimeLineView extends ConsumerWidget {
       ),
       onPickFiles: onPickFiles,
       onCameraCapture: onCameraCapture,
-      onRefresh: () async => TheStore.of(context).reloadStore(),
+      onRefresh: () async => TheScreenHandler.of(context).reloadStore(),
       selectionActions: (context, items) {
         return [
           CLMenuItem(
@@ -135,7 +135,7 @@ class TimeLineView extends ConsumerWidget {
                   false;
               if (!confirmed) return confirmed;
               if (context.mounted) {
-                return TheStore.of(context).deleteMediaMultiple(items);
+                return TheScreenHandler.of(context).deleteMediaMultiple(items);
               }
               return null;
             },
@@ -143,20 +143,21 @@ class TimeLineView extends ConsumerWidget {
           CLMenuItem(
             title: 'Move',
             icon: MdiIcons.imageMove,
-            onTap: () => TheStore.of(context)
+            onTap: () => TheScreenHandler.of(context)
                 .openWizard(context, items, UniversalMediaSource.move),
           ),
           CLMenuItem(
             title: 'Share',
             icon: MdiIcons.shareAll,
             onTap: () =>
-                TheStore.of(context).shareMediaMultiple(context, items),
+                TheScreenHandler.of(context).shareMediaMultiple(context, items),
           ),
           if (ColanPlatformSupport.isMobilePlatform)
             CLMenuItem(
               title: 'Pin',
               icon: MdiIcons.pin,
-              onTap: () => TheStore.of(context).togglePinMultiple(items),
+              onTap: () =>
+                  TheScreenHandler.of(context).togglePinMultiple(items),
             ),
         ];
       },

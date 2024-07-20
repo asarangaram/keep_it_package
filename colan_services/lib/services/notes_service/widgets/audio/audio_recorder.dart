@@ -142,7 +142,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await TheStore.of(context).upsertNote(
+      await TheScreenHandler.of(context).upsertNote(
         audioMessage!,
         CLNoteTypes.audio,
         mediaMultiple: [widget.media],
@@ -169,7 +169,8 @@ class _AudioRecorderState extends State<AudioRecorder> {
           setState(() {});
         }
       } else {
-        final path = await TheStore.of(context).createTempFile(ext: 'aac');
+        final path =
+            await TheScreenHandler.of(context).createTempFile(ext: 'aac');
         await recorderController.record(path: path); // Path is optional
       }
     } catch (e) {

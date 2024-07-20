@@ -21,7 +21,7 @@ class AnalysePage extends StatelessWidget {
         title: 'Analysing Shared Media',
         onCancel: onCancel,
         child: StreamProgressView(
-          stream: () => TheStore.of(context).newMediaMultipleStream(
+          stream: () => TheScreenHandler.of(context).newMediaMultipleStream(
             mediaFiles: incomingMedia.entries,
             onDone: ({required List<CLMedia> mediaMultiple}) {
               onDone(

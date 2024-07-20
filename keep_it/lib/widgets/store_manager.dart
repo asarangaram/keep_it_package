@@ -64,7 +64,7 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
 class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   @override
   Widget build(BuildContext context) {
-    final storeAction = StoreActions(
+    final storeAction = ScreenHandler(
       upsertCollection: widget.mediaHandeler.upsertCollection,
       upsertNote: widget.mediaHandeler.upsertNote,
       newMedia: widget.mediaHandeler.newMedia,
@@ -106,7 +106,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
       getMediaMultipleByIds: widget.mediaHandeler.getMediaMultipleByIds,
     );
-    return TheStore(
+    return TheScreenHandler(
       storeAction: storeAction,
       child: widget.child,
     );

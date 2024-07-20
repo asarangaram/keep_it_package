@@ -89,7 +89,7 @@ class _AudioMuterState extends State<AudioMuter> {
                 });
 
                 if (outFile == null) {
-                  final videoWithoutAudio = await TheStore.of(context)
+                  final videoWithoutAudio = await TheScreenHandler.of(context)
                       .createTempFile(ext: extension(widget.inFile));
                   await File(videoWithoutAudio).deleteIfExists();
                   final session = await FFmpegKit.execute(
