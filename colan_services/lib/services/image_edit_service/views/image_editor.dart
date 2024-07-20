@@ -15,7 +15,7 @@ import 'crop_control.dart';
 class ImageEditService extends StatefulWidget {
   const ImageEditService({
     required this.file,
-    required this.onDone,
+    required this.onCancel,
     required this.onCreateNewFile,
     required this.onSave,
     required this.canDuplicateMedia,
@@ -23,7 +23,7 @@ class ImageEditService extends StatefulWidget {
   });
   final File file;
   final bool canDuplicateMedia;
-  final Future<void> Function() onDone;
+  final Future<void> Function() onCancel;
 
   final Future<String> Function() onCreateNewFile;
   final Future<void> Function(String, {required bool overwrite}) onSave;
@@ -151,12 +151,11 @@ class _ImageEditServiceState extends State<ImageEditService> {
                   overwrite: overwrite,
                   onSave: widget.onSave,
                 );
-                await widget.onDone();
               },
               onDiscard: ({required done}) async {
                 reset();
                 if (done) {
-                  await widget.onDone();
+                  await widget.onCancel();
                 }
               },
             ),

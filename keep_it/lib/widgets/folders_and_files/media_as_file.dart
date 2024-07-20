@@ -34,11 +34,14 @@ class MediaAsFile extends ConsumerWidget {
       onEdit:
           (media.type == CLMediaType.video && !VideoEditServices.isSupported)
               ? null
-              : () => TheStore.of(context).openEditor(
+              : () async {
+                  final updatedMedia = await TheStore.of(context).openEditor(
                     context,
-                    [media],
+                    media,
                     canDuplicateMedia: actionControl.canDuplicateMedia,
-                  ),
+                  );
+                  return true;
+                },
       onTap: onTap,
       child: getPreview(media),
     );

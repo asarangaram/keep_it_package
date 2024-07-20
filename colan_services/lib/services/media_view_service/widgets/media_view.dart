@@ -89,11 +89,15 @@ class _MediaViewState extends ConsumerState<MediaView> {
                     !VideoEditServices.isSupported)
                 ? null
                 : ac.onEdit(
-                    () => TheStore.of(context).openEditor(
-                      context,
-                      [widget.media],
-                      canDuplicateMedia: ac.canDuplicateMedia,
-                    ),
+                    () async {
+                      final updatedMedia =
+                          await TheStore.of(context).openEditor(
+                        context,
+                        widget.media,
+                        canDuplicateMedia: ac.canDuplicateMedia,
+                      );
+                      return true;
+                    },
                   ),
             onPin: ac.onPin(
               () => TheStore.of(context)
