@@ -8,7 +8,6 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
 
 import '../models/file_system_manager.dart';
 
@@ -30,7 +29,6 @@ class StoreManager extends StatelessWidget {
           builder: (storeInstance) {
             return MediaHandlerWidget0(
               storeInstance: storeInstance,
-              appSettings: appSettings,
               fsManager: FileSystemManager(appSettings),
               child: child,
             );
@@ -45,13 +43,12 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
   const MediaHandlerWidget0({
     required this.child,
     required this.storeInstance,
-    required this.appSettings,
     required this.fsManager,
     super.key,
   });
 
   final Store storeInstance;
-  final AppSettings appSettings;
+
   final Widget child;
   final FileSystemManager fsManager;
 
@@ -305,14 +302,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile =
-        File(outFile).copyTo(widget.appSettings.directories.media.path);
+    final candidate = await widget.fsManager
+        .createMediaCandidate(outFile, originalMedia.type);
 
-    final md5String = await savedFile.checksum;
     final updatedMedia = originalMedia
         .copyWith(
-          path: savedFile.basename,
-          md5String: md5String,
+          path: candidate.basename,
+          type: candidate.type,
+          md5String: await candidate.md5String,
         )
         .removePin();
 
@@ -333,15 +330,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile =
-        File(outFile).copyTo(widget.appSettings.directories.media.path);
+    final candidate = await widget.fsManager
+        .createMediaCandidate(outFile, originalMedia.type);
 
-    final md5String = await savedFile.checksum;
     final CLMedia updatedMedia;
     updatedMedia = originalMedia
         .copyWith(
-          path: savedFile.basename,
-          md5String: md5String,
+          path: candidate.basename,
+          type: candidate.type,
+          md5String: await candidate.md5String,
         )
         .removePin();
 
@@ -445,16 +442,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     } else {
       collection0 = collection;
     }
+    final candidate = await widget.fsManager.createMediaCandidate(
+      fileName,
+      isVideo ? CLMediaType.video : CLMediaType.image,
+    );
 
-    final savedFile =
-        File(fileName).moveTo(widget.appSettings.directories.media.path);
-
-    final md5String = await File(fileName).checksum;
     final savedMedia = CLMedia(
-      path: savedFile.basename,
-      type: isVideo ? CLMediaType.video : CLMediaType.image,
+      path: candidate.basename,
+      type: candidate.type,
       collectionId: collection0.id,
-      md5String: md5String,
+      md5String: await candidate.md5String,
       isHidden: collection == null,
     );
     final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
@@ -479,23 +476,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       fractCompleted: 0,
     );
     for (final (i, item0) in mediaFiles.indexed) {
-      final item1 = await tryDownloadMedia(
-        item0,
-        appSettings: widget.appSettings,
-      );
-      final item = await identifyMediaType(
-        item1,
-        appSettings: widget.appSettings,
-      );
+      final item1 = await widget.fsManager.tryDownloadMedia(item0);
+      final item = await widget.fsManager.identifyMediaType(item1);
       if (!item.type.isFile) {
         // Skip for now
-      }
-      if (item.type.isFile) {
+      } else {
         final file = File(
           item.path,
         );
         if (file.existsSync()) {
-          final md5String = await file.checksum;
+          final md5String = await item.md5String;
           final duplicate = await getMediaByMD5(md5String);
           if (duplicate != null) {
             candidates.add(duplicate);
@@ -513,17 +503,17 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             /// 3a. If failed, delete the copy created
             /// 3b. If succeed,
             ///     delete the original file (if it is mobile platform)
-
-            final savedFile = File(
+            final candidate = await widget.fsManager.createMediaCandidate(
               item.path,
-            ).copyTo(widget.appSettings.directories.media.path);
+              item.type,
+            );
 
             final savedMedia = await widget.fsManager.getMetadata(
               CLMedia(
-                path: savedFile.basename,
-                type: item.type,
+                path: candidate.basename,
+                type: candidate.type,
                 collectionId: tempCollection.id,
-                md5String: md5String,
+                md5String: await candidate.md5String,
                 isHidden: true,
               ),
             );
@@ -562,30 +552,18 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     required List<CLMedia> mediaMultiple,
     CLNote? originalNote,
   }) async {
-    final savedNotesFile =
-        File(path).moveTo(widget.appSettings.directories.notes.path);
-
-    final savedNotes = originalNote?.copyWith(
-          path: savedNotesFile.basename,
-          type: type,
-        ) ??
-        CLNote(
-          createdDate: DateTime.now(),
-          type: type,
-          path: savedNotesFile.basename,
-          id: null,
-        );
+    final candidate = await widget.fsManager.createNoteCandidate(path, type);
+    final savedNote =
+        CLNote.fromNoteFile(noteFile: candidate, originalNote: originalNote);
 
     final notesInDB = await widget.storeInstance.upsertNote(
-      savedNotes,
+      savedNote,
       mediaMultiple,
     );
     if (notesInDB == null) {
-      await savedNotesFile.delete();
+      await candidate.delete();
     } else {
-      if (originalNote != null) {
-        await widget.fsManager.deleteNoteFiles(originalNote);
-      }
+      await widget.fsManager.deleteNoteFiles(originalNote);
     }
   }
 
@@ -620,53 +598,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return true;
     }
     return false;
-  }
-
-  static Future<CLMediaFile> tryDownloadMedia(
-    CLMediaFile mediaFile, {
-    required AppSettings appSettings,
-  }) async {
-    if (mediaFile.type != CLMediaType.url) {
-      return mediaFile;
-    }
-    final mimeType = await URLHandler.getMimeType(
-      mediaFile.path,
-    );
-    if (![
-      CLMediaType.image,
-      CLMediaType.video,
-      CLMediaType.audio,
-      CLMediaType.file,
-    ].contains(mimeType)) {
-      return mediaFile;
-    }
-    final downloadedFile = await URLHandler.download(
-      mediaFile.path,
-      appSettings.directories.downloadedMedia.path,
-    );
-    if (downloadedFile == null) {
-      return mediaFile;
-    }
-    return mediaFile.copyWith(path: downloadedFile, type: mimeType);
-  }
-
-  static Future<CLMediaFile> identifyMediaType(
-    CLMediaFile mediaFile, {
-    required AppSettings appSettings,
-  }) async {
-    if (mediaFile.type != CLMediaType.file) {
-      return mediaFile;
-    }
-
-    final mimeType = switch (lookupMimeType(mediaFile.path)) {
-      (final String mime) when mime.startsWith('image') => CLMediaType.image,
-      (final String mime) when mime.startsWith('video') => CLMediaType.video,
-      _ => CLMediaType.file
-    };
-    if (mimeType == CLMediaType.file) {
-      return mediaFile;
-    }
-    return mediaFile.copyWith(type: mimeType);
   }
 
   Future<bool> removeMediaFromGallery(

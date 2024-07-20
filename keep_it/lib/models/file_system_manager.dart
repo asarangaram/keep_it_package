@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:uuid/uuid.dart';
 
@@ -23,7 +24,8 @@ class FileSystemManager {
     await File(getPreviewPath(media)).deleteIfExists();
   }
 
-  Future<void> deleteNoteFiles(CLNote note) async {
+  Future<void> deleteNoteFiles(CLNote? note) async {
+    if (note == null) return;
     await File(getNotesPath(note)).deleteIfExists();
   }
 
@@ -100,5 +102,63 @@ class FileSystemManager {
     } else {
       return media;
     }
+  }
+
+  Future<CLMediaFile> createMediaCandidate(
+    String path,
+    CLMediaType type,
+  ) async {
+    final savedFile = File(path).moveTo(appSettings.directories.media.path);
+    return CLMediaFile(path: savedFile.path, type: type);
+  }
+
+  Future<CLNoteFile> createNoteCandidate(String path, CLNoteTypes type) async {
+    return CLNoteFile(
+      path: File(path).moveTo(appSettings.directories.notes.path).path,
+      type: type,
+    );
+  }
+
+  Future<CLMediaFile> tryDownloadMedia(
+    CLMediaFile mediaFile,
+  ) async {
+    if (mediaFile.type != CLMediaType.url) {
+      return mediaFile;
+    }
+    final mimeType = await URLHandler.getMimeType(
+      mediaFile.path,
+    );
+    if (![
+      CLMediaType.image,
+      CLMediaType.video,
+      CLMediaType.audio,
+      CLMediaType.file,
+    ].contains(mimeType)) {
+      return mediaFile;
+    }
+    final downloadedFile = await URLHandler.download(
+      mediaFile.path,
+      appSettings.directories.downloadedMedia.path,
+    );
+    if (downloadedFile == null) {
+      return mediaFile;
+    }
+    return mediaFile.copyWith(path: downloadedFile, type: mimeType);
+  }
+
+  Future<CLMediaFile> identifyMediaType(CLMediaFile mediaFile) async {
+    if (mediaFile.type != CLMediaType.file) {
+      return mediaFile;
+    }
+
+    final mimeType = switch (lookupMimeType(mediaFile.path)) {
+      (final String mime) when mime.startsWith('image') => CLMediaType.image,
+      (final String mime) when mime.startsWith('video') => CLMediaType.video,
+      _ => CLMediaType.file
+    };
+    if (mimeType == CLMediaType.file) {
+      return mediaFile;
+    }
+    return mediaFile.copyWith(type: mimeType);
   }
 }

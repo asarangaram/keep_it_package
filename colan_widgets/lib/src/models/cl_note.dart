@@ -11,6 +11,18 @@ import 'cl_media.dart';
 enum CLNoteTypes { text, audio }
 
 @immutable
+class CLNoteFile {
+  final CLNoteTypes type;
+  final String path;
+  const CLNoteFile({
+    required this.type,
+    required this.path,
+  });
+  String get basename => p.basename(path);
+  Future<void> delete() async => File(path).deleteSync();
+}
+
+@immutable
 class CLNote {
   const CLNote({
     required this.createdDate,
@@ -44,6 +56,21 @@ class CLNote {
           updatedDate: updatedDate,
         )
     };
+  }
+  factory CLNote.fromNoteFile({
+    required CLNoteFile noteFile,
+    required CLNote? originalNote,
+  }) {
+    return originalNote?.copyWith(
+          path: noteFile.basename,
+          type: noteFile.type,
+        ) ??
+        CLNote(
+          createdDate: DateTime.now(),
+          type: noteFile.type,
+          path: noteFile.basename,
+          id: null,
+        );
   }
   final int? id;
   final DateTime createdDate;

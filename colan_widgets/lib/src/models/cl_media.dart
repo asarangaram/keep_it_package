@@ -47,6 +47,8 @@ class CLMediaFile {
   int get hashCode => path.hashCode ^ type.hashCode;
 
   String get basename => p.basename(path);
+
+  Future<String> get md5String async => File(path).checksum;
 }
 
 @immutable
