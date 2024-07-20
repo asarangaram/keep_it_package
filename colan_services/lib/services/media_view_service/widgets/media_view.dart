@@ -82,7 +82,6 @@ class _MediaViewState extends ConsumerState<MediaView> {
               if (!confirmed) return confirmed;
               if (context.mounted) {
                 return TheStore.of(context).deleteMediaMultiple(
-                  context,
                   [media],
                 );
               }
@@ -112,7 +111,7 @@ class _MediaViewState extends ConsumerState<MediaView> {
                     },
                   ),
             onPin: ac.onPin(
-              () => TheStore.of(context).togglePinMultiple(context, [media]),
+              () => TheStore.of(context).togglePinMultiple([media]),
             ),
             media: media,
           ),

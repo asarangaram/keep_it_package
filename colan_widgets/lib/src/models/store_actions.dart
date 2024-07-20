@@ -76,13 +76,11 @@ class StoreActions {
   // For replacing path:
 
   final Future<CLMedia> Function(
-    BuildContext ctx,
     CLMedia media,
     String outFile,
   ) replaceMedia;
 
   final Future<CLMedia> Function(
-    BuildContext ctx,
     CLMedia media,
     String outFile,
   ) cloneAndReplaceMedia;
@@ -95,12 +93,10 @@ class StoreActions {
   }) moveToCollectionStream;
 
   // update Pin
-  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
+  final Future<bool> Function(List<CLMedia> mediaMultiple)
       removePinMediaMultiple;
-  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
-      pinMediaMultiple;
-  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
-      togglePinMultiple;
+  final Future<bool> Function(List<CLMedia> mediaMultiple) pinMediaMultiple;
+  final Future<bool> Function(List<CLMedia> mediaMultiple) togglePinMultiple;
 
   final Future<void> Function(
     String path, // Absolute Path, can't go to CLNote
@@ -111,26 +107,22 @@ class StoreActions {
 
   /////////////////////////////////////////////////////////////////////////////////
   final Future<bool> Function(
-    BuildContext ctx,
     Collection collection,
   ) deleteCollection;
 
   final Future<bool> Function(
-    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) deleteMediaMultiple;
 
   final Future<bool> Function(
-    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) permanentlyDeleteMediaMultiple;
 
   final Future<bool> Function(
-    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) restoreMediaMultiple;
 
-  final Future<void> Function(BuildContext ctx, CLNote note) deleteNote;
+  final Future<void> Function(CLNote note) deleteNote;
 
   /////////////////////////////////////////////////////////////////////////////////
 

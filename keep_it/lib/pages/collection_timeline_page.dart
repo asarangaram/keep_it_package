@@ -135,7 +135,7 @@ class TimeLineView extends ConsumerWidget {
                   false;
               if (!confirmed) return confirmed;
               if (context.mounted) {
-                return TheStore.of(context).deleteMediaMultiple(context, items);
+                return TheStore.of(context).deleteMediaMultiple(items);
               }
               return null;
             },
@@ -156,8 +156,7 @@ class TimeLineView extends ConsumerWidget {
             CLMenuItem(
               title: 'Pin',
               icon: MdiIcons.pin,
-              onTap: () =>
-                  TheStore.of(context).togglePinMultiple(context, items),
+              onTap: () => TheStore.of(context).togglePinMultiple(items),
             ),
         ];
       },

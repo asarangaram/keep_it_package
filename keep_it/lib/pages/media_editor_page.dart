@@ -46,8 +46,8 @@ class MediaEditorPage extends StatelessWidget {
                   ) ??
                   false;
               if (confirmed && context.mounted) {
-                resultMedia = await TheStore.of(context)
-                    .replaceMedia(context, media, file);
+                resultMedia =
+                    await TheStore.of(context).replaceMedia(media, file);
               } else {
                 resultMedia = media;
               }
@@ -59,7 +59,7 @@ class MediaEditorPage extends StatelessWidget {
                   false;
               if (confirmed && context.mounted) {
                 resultMedia = await TheStore.of(context)
-                    .cloneAndReplaceMedia(context, media, file);
+                    .cloneAndReplaceMedia(media, file);
               } else {
                 resultMedia = media;
               }
