@@ -48,21 +48,51 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         context,
         item,
       ) =>
-          Hero(
-        tag: '${type.identifier} /item/${item.id}',
-        child: GestureDetector(
-          onTap: () => TheStore.of(context).openMedia(
-            item.id!,
-            parentIdentifier: type.identifier,
-            actionControl: ActionControl.editOnly(),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: widget.getPreview(item),
-          ),
+          Card(
+        child: Stack(
+          children: [
+            Hero(
+              tag: '${type.identifier} /item/${item.id}',
+              child: GestureDetector(
+                onTap: () => TheStore.of(context).openMedia(
+                  item.id!,
+                  parentIdentifier: type.identifier,
+                  actionControl: ActionControl.none(),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: widget.getPreview(item),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 8,
+              left: 4,
+              right: 4,
+              child: ColoredBox(
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(128),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(
+                      Icons.edit,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 8),
+                    Icon(
+                      Icons.delete,
+                      size: 40,
+                      color: Colors.red,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      columns: 4,
+      columns: 2,
       onSelectionChanged: onSelectionChanged,
       keepSelected: freezeView,
     );
