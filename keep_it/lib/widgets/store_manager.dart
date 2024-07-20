@@ -30,7 +30,6 @@ class StoreManager extends StatelessWidget {
           builder: (storeInstance) {
             return MediaHandlerWidget0(
               storeInstance: storeInstance,
-              fsManager: fsManager,
               mediaHandeler: MediaHandler(
                 fsManager: fsManager,
                 store: storeInstance,
@@ -49,7 +48,6 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
   const MediaHandlerWidget0({
     required this.child,
     required this.storeInstance,
-    required this.fsManager,
     required this.mediaHandeler,
     super.key,
   });
@@ -57,7 +55,6 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
   final Store storeInstance;
 
   final Widget child;
-  final FileSystemManager fsManager;
 
   @override
   ConsumerState<MediaHandlerWidget0> createState() =>
@@ -65,7 +62,6 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
 }
 
 class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
-  final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
   @override
   Widget build(BuildContext context) {
     final storeAction = StoreActions(
@@ -163,7 +159,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final box = ctx.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
       ctx,
-      mediaMultiple.map((e) => widget.fsManager.getMediaPath(e)).toList(),
+      mediaMultiple
+          .map((e) => widget.mediaHandeler.fsManager.getMediaPath(e))
+          .toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }
