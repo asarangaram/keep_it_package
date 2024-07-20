@@ -70,6 +70,36 @@ class Collection {
     return 'Collection(id: $id, label: $label, description: $description, '
         'createdDate: $createdDate, updatedDate: $updatedDate)';
   }
+
+  static String? validateName({
+    required String? newLabel,
+    required String? existingLabel,
+    required List<Collection> collections,
+  }) {
+    final newLabel0 = newLabel?.trim();
+
+    if (newLabel0?.isEmpty ?? true) {
+      return "Name can't be empty";
+    }
+
+    if (existingLabel?.trim() == newLabel0) {
+      // Nothing changed.
+      return null;
+    }
+    if (collections.map((e) => e.label.trim()).contains(newLabel0)) {
+      return '$newLabel0 already exists';
+    }
+    return null;
+  }
+
+  static String? validateDescription({
+    required String? description,
+    required String? existingDescription,
+    required List<Collection> collections,
+  }) {
+    // No validation speccified as of now.
+    return null;
+  }
 }
 
 class Collections {
