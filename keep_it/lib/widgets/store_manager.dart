@@ -9,31 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
-import 'package:path/path.dart' as path_handler;
-import 'package:uuid/uuid.dart';
 
-extension ExtMetaData on CLMedia {
-  Future<CLMedia> getMetadata({
-    required Directory location,
-    bool? regenerate,
-  }) async {
-    if (type == CLMediaType.image) {
-      return copyWith(
-        originalDate: (await File(path_handler.join(location.path, label))
-                .getImageMetaData(regenerate: regenerate))
-            ?.originalDate,
-      );
-    } else if (type == CLMediaType.video) {
-      return copyWith(
-        originalDate: (await File(path_handler.join(location.path, label))
-                .getVideoMetaData(regenerate: regenerate))
-            ?.originalDate,
-      );
-    } else {
-      return this;
-    }
-  }
-}
+import '../models/file_system_manager.dart';
 
 class StoreManager extends StatelessWidget {
   const StoreManager({
@@ -54,6 +31,7 @@ class StoreManager extends StatelessWidget {
             return MediaHandlerWidget0(
               storeInstance: storeInstance,
               appSettings: appSettings,
+              fsManager: FileSystemManager(appSettings),
               child: child,
             );
           },
@@ -68,12 +46,14 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
     required this.child,
     required this.storeInstance,
     required this.appSettings,
+    required this.fsManager,
     super.key,
   });
 
   final Store storeInstance;
   final AppSettings appSettings;
   final Widget child;
+  final FileSystemManager fsManager;
 
   @override
   ConsumerState<MediaHandlerWidget0> createState() =>
@@ -113,15 +93,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       openMedia: openMedia,
       openCollection: openCollection,
 
-      createTempFile: createTempFile,
-      createBackupFile: createBackupFile,
+      createTempFile: widget.fsManager.createTempFile,
+      createBackupFile: widget.fsManager.createBackupFile,
 
       reloadStore: reloadStore,
-      getMediaPath: getMediaPath,
-      getMediaLabel: getMediaLabel,
-      getPreviewPath: getPreviewPath,
-      getNotesPath: getNotesPath,
-      getText: getText,
+      getMediaPath: widget.fsManager.getMediaPath,
+      getMediaLabel: widget.fsManager.getMediaLabel,
+      getPreviewPath: widget.fsManager.getPreviewPath,
+      getNotesPath: widget.fsManager.getNotesPath,
+      getText: widget.fsManager.getText,
 
       getMediaMultipleByIds: getMediaMultipleByIds,
     );
@@ -200,19 +180,14 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
     for (final m in mediaMultiple) {
       await widget.storeInstance.deleteMedia(m, permanent: true);
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          m.path,
-        ),
-      ).deleteIfExists();
+      await widget.fsManager.deleteMediaFiles(m);
     }
     final orphanNotes = await getOrphanNotes();
     if (orphanNotes != null) {
       for (final note in orphanNotes) {
         if (note != null) {
           await widget.storeInstance.deleteNote(note);
-          await File(getNotesPath(note)).deleteIfExists();
+          await widget.fsManager.deleteNoteFiles(note);
         }
       }
     }
@@ -250,14 +225,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final box = ctx.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
       ctx,
-      mediaMultiple
-          .map(
-            (e) => path_handler.join(
-              widget.appSettings.directories.media.pathString,
-              e.label,
-            ),
-          )
-          .toList(),
+      mediaMultiple.map((e) => widget.fsManager.getMediaPath(e)).toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }
@@ -317,10 +285,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     for (final media in mediaMultiple) {
       if (media.id != null) {
         final pin = await albumManager.addMedia(
-          path_handler.join(
-            widget.appSettings.directories.media.pathString,
-            media.label,
-          ),
+          widget.fsManager.getMediaPath(media),
           title: media.path,
           isImage: media.type == CLMediaType.image,
           isVideo: media.type == CLMediaType.video,
@@ -346,7 +311,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final md5String = await savedFile.checksum;
     final updatedMedia = originalMedia
         .copyWith(
-          path: path_handler.basename(savedFile.path),
+          path: savedFile.basename,
           md5String: md5String,
         )
         .removePin();
@@ -355,12 +320,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       updatedMedia,
     );
     if (mediaFromDB != null) {
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          originalMedia.label,
-        ),
-      ).deleteIfExists();
+      await widget.fsManager.deleteMediaFiles(originalMedia);
+    } else {
+      await widget.fsManager.deleteMediaFiles(updatedMedia);
     }
 
     return mediaFromDB ?? originalMedia;
@@ -378,7 +340,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final CLMedia updatedMedia;
     updatedMedia = originalMedia
         .copyWith(
-          path: path_handler.basename(savedFile.path),
+          path: savedFile.basename,
           md5String: md5String,
         )
         .removePin();
@@ -484,12 +446,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       collection0 = collection;
     }
 
-    final savedMediaFile =
-        File(fileName).copyTo(widget.appSettings.directories.media.path);
+    final savedFile =
+        File(fileName).moveTo(widget.appSettings.directories.media.path);
 
     final md5String = await File(fileName).checksum;
     final savedMedia = CLMedia(
-      path: path_handler.basename(savedMediaFile.path),
+      path: savedFile.basename,
       type: isVideo ? CLMediaType.video : CLMediaType.image,
       collectionId: collection0.id,
       md5String: md5String,
@@ -497,15 +459,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
     final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
     if (mediaFromDB == null) {
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          savedMedia.label,
-        ),
-      ).deleteIfExists();
-    } else {
-      await File(fileName).deleteIfExists();
-    }
+      await widget.fsManager.deleteMediaFiles(savedMedia);
+    } else {}
     return mediaFromDB;
   }
 
@@ -520,7 +475,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final candidates = <CLMedia>[];
     //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
-      currentItem: path_handler.basename(mediaFiles[0].path),
+      currentItem: mediaFiles[0].basename,
       fractCompleted: 0,
     );
     for (final (i, item0) in mediaFiles.indexed) {
@@ -559,17 +514,19 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             /// 3b. If succeed,
             ///     delete the original file (if it is mobile platform)
 
-            final savedMediaFile = File(
+            final savedFile = File(
               item.path,
             ).copyTo(widget.appSettings.directories.media.path);
 
-            final savedMedia = await CLMedia(
-              path: path_handler.basename(savedMediaFile.path),
-              type: item.type,
-              collectionId: tempCollection.id,
-              md5String: md5String,
-              isHidden: true,
-            ).getMetadata(location: widget.appSettings.directories.media.path);
+            final savedMedia = await widget.fsManager.getMetadata(
+              CLMedia(
+                path: savedFile.basename,
+                type: item.type,
+                collectionId: tempCollection.id,
+                md5String: md5String,
+                isHidden: true,
+              ),
+            );
 
             final mediaFromDB =
                 await widget.storeInstance.upsertMedia(savedMedia);
@@ -587,11 +544,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await Future<void>.delayed(const Duration(milliseconds: 1));
 
       yield Progress(
-        currentItem: (i + 1 == mediaFiles.length)
-            ? ''
-            : path_handler.basename(
-                mediaFiles[i + 1].path,
-              ),
+        currentItem:
+            (i + 1 == mediaFiles.length) ? '' : mediaFiles[i + 1].basename,
         fractCompleted: (i + 1) / mediaFiles.length,
       );
     }
@@ -606,19 +560,19 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     String path,
     CLNoteTypes type, {
     required List<CLMedia> mediaMultiple,
-    CLNote? note,
+    CLNote? originalNote,
   }) async {
     final savedNotesFile =
-        File(path).copyTo(widget.appSettings.directories.notes.path);
+        File(path).moveTo(widget.appSettings.directories.notes.path);
 
-    final savedNotes = note?.copyWith(
-          path: path_handler.basename(savedNotesFile.path),
+    final savedNotes = originalNote?.copyWith(
+          path: savedNotesFile.basename,
           type: type,
         ) ??
         CLNote(
           createdDate: DateTime.now(),
           type: type,
-          path: path_handler.basename(savedNotesFile.path),
+          path: savedNotesFile.basename,
           id: null,
         );
 
@@ -629,10 +583,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (notesInDB == null) {
       await savedNotesFile.delete();
     } else {
-      await File(path).deleteIfExists();
-      if (note != null) {
-        // delete the older notes
-        await File(getNotesPath(note)).deleteIfExists();
+      if (originalNote != null) {
+        await widget.fsManager.deleteNoteFiles(originalNote);
       }
     }
   }
@@ -641,61 +593,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (note.id == null) return;
 
     await widget.storeInstance.deleteNote(note);
-    await File(getNotesPath(note)).deleteIfExists();
-  }
-
-  Future<String> createTempFile({required String ext}) async {
-    final dir = widget.appSettings.directories.downloadedMedia.path;
-    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '${dir.path}/$fileBasename.$ext';
-
-    return absolutePath;
-  }
-
-  Future<String> createBackupFile() async {
-    final dir = widget.appSettings.directories.backup.path;
-    final fileBasename =
-        'keep_it_backup_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '${dir.path}/$fileBasename.tar.gz';
-
-    return absolutePath;
-  }
-
-  String getPreviewPath(CLMedia media) {
-    final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, media.label);
-    final previewFileName = path_handler.join(
-      widget.appSettings.directories.thumbnail.pathString,
-      '$uuid.tn.jpeg',
-    );
-    return previewFileName;
-  }
-
-  String getMediaPath(CLMedia media) => path_handler.join(
-        widget.appSettings.directories.media.path.path,
-        media.label,
-      );
-  String getMediaLabel(CLMedia media) => media.label;
-
-  String getNotesPath(CLNote note) => path_handler.join(
-        widget.appSettings.directories.notes.path.path,
-        note.path,
-      );
-
-  String getText(CLTextNote? note) {
-    final String text;
-    if (note != null) {
-      final notesPath = getNotesPath(note);
-
-      final notesFile = File(notesPath);
-      if (!notesFile.existsSync()) {
-        text = 'Content Missing. File is deleted';
-      } else {
-        text = notesFile.readAsStringSync();
-      }
-    } else {
-      text = '';
-    }
-    return text;
+    await widget.fsManager.deleteNoteFiles(note);
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
@@ -723,8 +621,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     return false;
   }
-
-  static const uuidGenerator = Uuid();
 
   static Future<CLMediaFile> tryDownloadMedia(
     CLMediaFile mediaFile, {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 
 import '../extensions/ext_datetime.dart';
 import '../extensions/ext_file.dart';
@@ -44,6 +45,8 @@ class CLMediaFile {
 
   @override
   int get hashCode => path.hashCode ^ type.hashCode;
+
+  String get basename => p.basename(path);
 }
 
 @immutable

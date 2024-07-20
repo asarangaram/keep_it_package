@@ -106,7 +106,7 @@ class StoreActions {
     String path, // Absolute Path, can't go to CLNote
     CLNoteTypes type, {
     required List<CLMedia> mediaMultiple,
-    CLNote? note,
+    CLNote? originalNote,
   }) upsertNote;
 
   /////////////////////////////////////////////////////////////////////////////////

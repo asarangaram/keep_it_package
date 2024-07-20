@@ -160,7 +160,7 @@ class _TextNoteState extends State<TextNote> {
             path,
             CLNoteTypes.text,
             mediaMultiple: [widget.media],
-            note: widget.note,
+            originalNote: widget.note,
           );
         }
         textOriginal = textEditingController.text.trim();

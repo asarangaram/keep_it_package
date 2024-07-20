@@ -31,6 +31,19 @@ extension ExtFile on File {
     final updatedTarget = Utils.getAvailableFileName(targetPath);
     return copySync(updatedTarget);
   }
+
+  File moveTo(Directory directory) {
+    final targetPath = p.join(directory.path, p.basename(path));
+    if (targetPath == path) {
+      return this;
+    }
+    final updatedTarget = Utils.getAvailableFileName(targetPath);
+    final newFile = copySync(updatedTarget);
+    deleteSync();
+    return newFile;
+  }
+
+  String get basename => p.basename(path);
 }
 
 class Utils {
