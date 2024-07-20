@@ -90,8 +90,8 @@ class _MediaViewState extends ConsumerState<MediaView> {
                 ? null
                 : ac.onEdit(
                     () async {
-                      final updatedMedia =
-                          await TheStore.of(context).openEditor(
+                      /* final updatedMedia = */
+                      await TheStore.of(context).openEditor(
                         context,
                         widget.media,
                         canDuplicateMedia: ac.canDuplicateMedia,
