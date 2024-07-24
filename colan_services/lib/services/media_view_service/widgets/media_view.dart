@@ -39,7 +39,6 @@ class _MediaViewState extends ConsumerState<MediaView> {
   late CLMedia media;
   @override
   void initState() {
-    media = widget.media;
     super.initState();
   }
 
@@ -47,78 +46,93 @@ class _MediaViewState extends ConsumerState<MediaView> {
   Widget build(BuildContext context) {
     final ac = widget.actionControl;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
-      child: Stack(
-        children: [
-          const MediaBackground(),
-          Positioned.fill(
-            child: Hero(
-              tag: '${widget.parentIdentifier} /item/${media.id}',
-              child: MediaViewerRaw(
-                media: media,
-                autoStart: widget.autoStart,
-                autoPlay: widget.autoPlay,
-                onLockPage: widget.onLockPage,
-                isLocked: widget.isLocked,
-                getPreview: widget.getPreview,
-              ),
-            ),
-          ),
-          MediaControls(
-            onMove: ac.onMove(
-              () => TheStore.of(context).openWizard(
-                context,
-                [media],
-                UniversalMediaSource.move,
-              ),
-            ),
-            onDelete: ac.onDelete(() async {
-              final confirmed = await ConfirmAction.deleteMediaMultiple(
-                    context,
-                    media: [media],
-                  ) ??
-                  false;
-              if (!confirmed) return confirmed;
-              if (context.mounted) {
-                return TheStore.of(context).deleteMediaMultiple(
-                  context,
-                  [media],
-                );
-              }
-              return false;
-            }),
-            onShare: ac.onShare(
-              () => TheStore.of(context).shareMediaMultiple(context, [media]),
-            ),
-            onEdit: (media.type == CLMediaType.video &&
-                    !VideoEditServices.isSupported)
-                ? null
-                : ac.onEdit(
-                    () async {
-                      final updatedMedia =
-                          await TheStore.of(context).openEditor(
-                        context,
-                        media,
-                        canDuplicateMedia: ac.canDuplicateMedia,
-                      );
-                      if (updatedMedia != media && context.mounted) {
-                        setState(() {
-                          media = updatedMedia;
-                        });
-                      }
-
-                      return true;
-                    },
+    return GetMedia(
+      id: widget.media.id!,
+      buildOnData: (media0) {
+        if (media0 == null) return Container();
+        final media = media0;
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
+          child: Stack(
+            children: [
+              const MediaBackground(),
+              Positioned.fill(
+                child: Hero(
+                  tag: '${widget.parentIdentifier} /item/${media.id}',
+                  child: MediaViewerRaw(
+                    media: media,
+                    autoStart: widget.autoStart,
+                    autoPlay: widget.autoPlay,
+                    onLockPage: widget.onLockPage,
+                    isLocked: widget.isLocked,
+                    getPreview: widget.getPreview,
                   ),
-            onPin: ac.onPin(
-              () => TheStore.of(context).togglePinMultiple(context, [media]),
-            ),
-            media: media,
+                ),
+              ),
+              MediaControls(
+                onMove: ac.onMove(
+                  () => TheStore.of(context).openWizard(
+                    context,
+                    [media],
+                    UniversalMediaSource.move,
+                  ),
+                ),
+                onDelete: ac.onDelete(() async {
+                  final confirmed = await ConfirmAction.deleteMediaMultiple(
+                        context,
+                        media: [media],
+                      ) ??
+                      false;
+                  if (!confirmed) return confirmed;
+                  if (context.mounted) {
+                    return TheStore.of(context).deleteMediaMultiple(
+                      context,
+                      [media],
+                    );
+                  }
+                  return false;
+                }),
+                onShare: ac.onShare(
+                  () =>
+                      TheStore.of(context).shareMediaMultiple(context, [media]),
+                ),
+                onEdit: (media.type == CLMediaType.video &&
+                        !VideoEditServices.isSupported)
+                    ? null
+                    : ac.onEdit(
+                        () async {
+                          final updatedMedia =
+                              await TheStore.of(context).openEditor(
+                            context,
+                            media,
+                            canDuplicateMedia: ac.canDuplicateMedia,
+                          );
+                          if (updatedMedia != media && context.mounted) {
+                            setState(() {
+                              //media = updatedMedia;
+                            });
+                          }
+
+                          return true;
+                        },
+                      ),
+                onPin: ac.onPin(
+                  () async {
+                    final res = await TheStore.of(context)
+                        .togglePinMultiple(context, [media]);
+                    if (res) {
+                      setState(() {});
+                    }
+                    return res;
+                  },
+                ),
+                media: media,
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
