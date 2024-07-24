@@ -52,23 +52,25 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
     _trimmer.loadVideo(videoFile: widget.file);
   }
 
-  bool get hasEditAction => _startValue != null && _endValue != null;
+  bool get trimmerUpdated => _startValue != null && _endValue != null;
+  bool get hasEditAction => trimmerUpdated || widget.isMuted;
 
   Future<void> _saveVideo({bool overwrite = true}) async {
-    if (!hasEditAction) {
-      setState(() {
-        _progressVisibility = true;
-      });
+    if (!trimmerUpdated) {
       // If only the audio is muted, just save the file.
       if (widget.isMuted) {
+        setState(() {
+          _progressVisibility = true;
+        });
         await widget.onSave(widget.file.path, overwrite: overwrite);
         await widget.onDone();
+        if (mounted) {
+          setState(() {
+            _progressVisibility = false;
+          });
+        }
       }
-      if (mounted) {
-        setState(() {
-          _progressVisibility = false;
-        });
-      }
+
       return;
     }
     setState(() {
@@ -180,7 +182,7 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
               Expanded(
                 child: EditorFinalizer(
                   canDuplicateMedia: widget.canDuplicateMedia,
-                  hasEditAction: hasEditAction || widget.isMuted,
+                  hasEditAction: hasEditAction,
                   onSave: _saveVideo,
                   onDiscard: ({required done}) async {
                     if (done) {
@@ -190,9 +192,11 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                     }
                   },
                   child: Icon(
-                    Icons.check,
+                    trimmerUpdated || widget.isMuted
+                        ? Icons.close
+                        : Icons.check,
                     size: 60,
-                    color: hasEditAction || widget.isMuted
+                    color: trimmerUpdated || widget.isMuted
                         ? Colors.red
                         : Colors.white,
                   ),

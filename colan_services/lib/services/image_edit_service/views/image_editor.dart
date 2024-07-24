@@ -37,16 +37,18 @@ class _ImageEditServiceState extends State<ImageEditService> {
 
   double rotateAngle = 0;
   aratio.AspectRatio? aspectRatio;
-  bool hasEditAction = false;
+  bool editActionDetailsIsChanged = false;
 
   void reset() {
     setState(() {
       aspectRatio = null;
       rotateAngle = 0.0;
       controller.currentState?.reset();
-      hasEditAction = false;
+      editActionDetailsIsChanged = false;
     });
   }
+
+  bool get hasEditAction => editActionDetailsIsChanged || (aspectRatio != null);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,7 @@ class _ImageEditServiceState extends State<ImageEditService> {
                     editActionDetailsIsChanged: (actions) {
                       setState(() {
                         rotateAngle = actions.rotateAngle;
-                        hasEditAction = true;
+                        editActionDetailsIsChanged = true;
                       });
 
                       /* 
