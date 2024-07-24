@@ -30,6 +30,7 @@ class VideoEditServices extends StatefulWidget {
 
 class _VideoEditServicesState extends State<VideoEditServices> {
   String? audioRemovedFile;
+  GlobalKey key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +38,23 @@ class _VideoEditServicesState extends State<VideoEditServices> {
 
     return VideoTrimmerView(
       File(currFile),
-      key: ValueKey(audioRemovedFile != null),
+      key: key,
       onSave: widget.onSave,
       onDone: widget.onDone,
       canDuplicateMedia: widget.canDuplicateMedia,
       isMuted: audioRemovedFile != null,
+      onReset: () {
+        setState(() {
+          audioRemovedFile = null;
+          key = GlobalKey();
+        });
+      },
       audioMuter: AudioMuter(
         widget.file.path,
         onDone: (file) {
           setState(() {
             audioRemovedFile = file;
+            key = GlobalKey();
           });
         },
         isMuted: audioRemovedFile != null,

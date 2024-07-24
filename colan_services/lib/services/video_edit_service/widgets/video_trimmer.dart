@@ -12,6 +12,7 @@ class VideoTrimmerView extends StatefulWidget {
     required this.onDone,
     required this.canDuplicateMedia,
     required this.audioMuter,
+    required this.onReset,
     required this.isMuted,
     super.key,
   });
@@ -21,6 +22,7 @@ class VideoTrimmerView extends StatefulWidget {
   final bool canDuplicateMedia;
   final Widget audioMuter;
   final bool isMuted;
+  final void Function() onReset;
 
   @override
   State<VideoTrimmerView> createState() => _VideoTrimmerViewState();
@@ -128,10 +130,18 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                 ),
                 onChangeStart: (value) {
                   _startValue = value;
+                  _endValue ??= _trimmer
+                      .videoPlayerController?.value.duration.inMilliseconds
+                      .toDouble();
                   setState(() {});
                 },
                 onChangeEnd: (value) {
-                  _endValue = value;
+                  if (value !=
+                      _trimmer.videoPlayerController?.value.duration
+                          .inMilliseconds) {
+                    _endValue = value;
+                    _startValue ??= 0;
+                  }
 
                   setState(() {});
                 },
@@ -172,7 +182,13 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                   canDuplicateMedia: widget.canDuplicateMedia,
                   hasEditAction: hasEditAction || widget.isMuted,
                   onSave: _saveVideo,
-                  onDiscard: ({required done}) => widget.onDone(),
+                  onDiscard: ({required done}) async {
+                    if (done) {
+                      await widget.onDone();
+                    } else {
+                      widget.onReset();
+                    }
+                  },
                   child: Icon(
                     Icons.check,
                     size: 60,
