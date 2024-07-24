@@ -11,6 +11,7 @@ class MediaViewerRaw extends ConsumerWidget {
     required this.media,
     required this.onLockPage,
     required this.autoStart,
+    required this.autoPlay,
     required this.isLocked,
     required this.getPreview,
     super.key,
@@ -19,6 +20,7 @@ class MediaViewerRaw extends ConsumerWidget {
 
   final void Function({required bool lock})? onLockPage;
   final bool autoStart;
+  final bool autoPlay;
   final bool isLocked;
 
   final Widget Function(CLMedia media) getPreview;
@@ -43,6 +45,7 @@ class MediaViewerRaw extends ConsumerWidget {
                   media: media,
                   alternate: getPreview(media),
                   autoStart: autoStart,
+                  autoPlay: autoPlay,
                   inplaceControl: showControl.showNotes,
                 ),
               _ => throw UnimplementedError('Not yet implemented')

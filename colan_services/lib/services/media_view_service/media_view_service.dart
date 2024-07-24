@@ -109,6 +109,8 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
                   isLocked: lockPage,
                   onLockPage: onLockPage,
                   actionControl: widget.actionControl,
+                  autoStart: true,
+                  autoPlay: true,
                 ),
               ),
               if (showControl.showNotes && !lockPage)

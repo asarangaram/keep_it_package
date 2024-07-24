@@ -76,6 +76,7 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
                 parentIdentifier: widget.parentIdentifier,
                 actionControl: widget.actionControl,
                 autoStart: currIndex == index,
+                autoPlay: currIndex == index,
                 onLockPage: widget.onLockPage,
                 isLocked: widget.isLocked,
                 getPreview: widget.getPreview,

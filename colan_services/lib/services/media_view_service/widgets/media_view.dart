@@ -14,8 +14,9 @@ class MediaView extends ConsumerStatefulWidget {
     required this.isLocked,
     required this.actionControl,
     required this.getPreview,
+    required this.autoStart,
+    required this.autoPlay,
     this.onLockPage,
-    this.autoStart = true,
     super.key,
   });
   final CLMedia media;
@@ -24,6 +25,7 @@ class MediaView extends ConsumerStatefulWidget {
 
   final ActionControl actionControl;
   final bool autoStart;
+  final bool autoPlay;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
 
@@ -57,6 +59,7 @@ class _MediaViewState extends ConsumerState<MediaView> {
               child: MediaViewerRaw(
                 media: media,
                 autoStart: widget.autoStart,
+                autoPlay: widget.autoPlay,
                 onLockPage: widget.onLockPage,
                 isLocked: widget.isLocked,
                 getPreview: widget.getPreview,
