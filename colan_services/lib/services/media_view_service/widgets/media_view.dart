@@ -10,7 +10,6 @@ import 'media_viewer.dart';
 class MediaView extends ConsumerStatefulWidget {
   const MediaView({
     required this.media,
-    required this.notes,
     required this.parentIdentifier,
     required this.isLocked,
     required this.actionControl,
@@ -20,7 +19,7 @@ class MediaView extends ConsumerStatefulWidget {
     super.key,
   });
   final CLMedia media;
-  final List<CLNote> notes;
+
   final String parentIdentifier;
 
   final ActionControl actionControl;
@@ -57,7 +56,6 @@ class _MediaViewState extends ConsumerState<MediaView> {
               tag: '${widget.parentIdentifier} /item/${media.id}',
               child: MediaViewerRaw(
                 media: media,
-                notes: widget.notes,
                 autoStart: widget.autoStart,
                 onLockPage: widget.onLockPage,
                 isLocked: widget.isLocked,

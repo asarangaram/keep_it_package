@@ -23,12 +23,12 @@ class VideoLayer extends ConsumerWidget {
         if (controller.value.isPlaying) {
           ref
               .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 3));
+              .briefHover(timeout: const Duration(seconds: 5));
           controller.pause();
         } else {
           ref
               .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 1));
+              .briefHover(timeout: const Duration(seconds: 5));
           controller.play();
         }
       },
@@ -36,14 +36,14 @@ class VideoLayer extends ConsumerWidget {
         if (controller.value.isPlaying) {
           ref
               .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 3));
+              .briefHover(timeout: const Duration(seconds: 5));
           if (inplaceControl) {
             controller.pause();
           }
         } else {
           ref
               .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 1));
+              .briefHover(timeout: const Duration(seconds: 5));
           controller.play();
         }
       },

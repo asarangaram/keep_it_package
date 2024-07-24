@@ -69,12 +69,12 @@ class VideoControlsState extends ConsumerState<VideoControls> {
         onPointerDown: (_) {
           ref
               .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 3));
+              .briefHover(timeout: const Duration(seconds: 5));
         },
         onPointerHover: (_) {
           ref
               .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 3));
+              .briefHover(timeout: const Duration(seconds: 5));
         },
         child: ColoredBox(
           color: const Color.fromRGBO(0, 0, 0, 0.5),

@@ -9,7 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MediaViewerRaw extends ConsumerWidget {
   const MediaViewerRaw({
     required this.media,
-    required this.notes,
     required this.onLockPage,
     required this.autoStart,
     required this.isLocked,
@@ -17,7 +16,7 @@ class MediaViewerRaw extends ConsumerWidget {
     super.key,
   });
   final CLMedia media;
-  final List<CLNote> notes;
+
   final void Function({required bool lock})? onLockPage;
   final bool autoStart;
   final bool isLocked;
