@@ -192,13 +192,9 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                     }
                   },
                   child: Icon(
-                    trimmerUpdated || widget.isMuted
-                        ? Icons.close
-                        : Icons.check,
+                    hasEditAction ? Icons.check : Icons.close,
                     size: 60,
-                    color: trimmerUpdated || widget.isMuted
-                        ? Colors.red
-                        : Colors.white,
+                    color: hasEditAction ? Colors.red : Colors.white,
                   ),
                 ),
               ),
