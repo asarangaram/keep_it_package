@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../notes_service/notes_service.dart';
-import '../store_service/widgets/w3_get_note.dart';
 import '../video_player_service/providers/show_controls.dart';
 
 import 'widgets/media_page_view.dart';
