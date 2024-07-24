@@ -11,6 +11,7 @@ import '../models/extensions.dart';
 import '../state/camera_theme.dart';
 import 'camera_mode.dart';
 import 'camera_settings.dart';
+import 'cl_blink.dart';
 import 'cl_circular_button.dart';
 import 'flash_control.dart';
 
@@ -59,6 +60,10 @@ class CLCameraCoreState extends State<CLCameraCore>
 
   late CameraMode cameraMode;
   bool _isRecordingInProgress = false;
+  bool isPaused = false;
+  Timer? timer;
+  int recordingDuration = 0; // in seconds
+
   CameraDescription? currDescription;
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -93,6 +98,8 @@ class CLCameraCoreState extends State<CLCameraCore>
     controller = null;
     WidgetsBinding.instance.removeObserver(this);
     cameraSettingsController.dispose();
+    timer?.cancel();
+    timer = null;
     super.dispose();
   }
 
@@ -227,6 +234,31 @@ class CLCameraCoreState extends State<CLCameraCore>
               builder: (context, constraints) {
                 return Column(
                   children: [
+                    if (isPaused && _isRecordingInProgress)
+                      CLBlink(
+                        blinkDuration: const Duration(milliseconds: 300),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 32),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              formatDuration(recordingDuration),
+                              style: const TextStyle(fontSize: 30),
+                            ),
+                          ),
+                        ),
+                      )
+                    else if (_isRecordingInProgress)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 32),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            formatDuration(recordingDuration),
+                            style: const TextStyle(fontSize: 30),
+                          ),
+                        ),
+                      ),
                     SizedBox(
                       width: constraints.maxWidth,
                       height: kMinInteractiveDimension,
@@ -583,7 +615,16 @@ class CLCameraCoreState extends State<CLCameraCore>
       onSuccess: () {
         if (mounted) {
           setState(() {
+            isPaused = false;
             _isRecordingInProgress = true;
+            recordingDuration = 0;
+          });
+          timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            if (!isPaused) {
+              setState(() {
+                recordingDuration++;
+              });
+            }
           });
         }
       },
@@ -595,8 +636,12 @@ class CLCameraCoreState extends State<CLCameraCore>
         onSuccess: (videoFilePath) {
           if (mounted) {
             widget.onCapture(videoFilePath, isVideo: true);
+            timer?.cancel();
+
             setState(() {
               _isRecordingInProgress = false;
+              isPaused = false;
+              recordingDuration = 0;
             });
           }
         },
@@ -607,7 +652,9 @@ class CLCameraCoreState extends State<CLCameraCore>
       onError: widget.onError,
       onSuccess: () {
         if (mounted) {
-          setState(() {});
+          setState(() {
+            isPaused = true;
+          });
         }
       },
     );
@@ -618,7 +665,9 @@ class CLCameraCoreState extends State<CLCameraCore>
       onError: widget.onError,
       onSuccess: () {
         if (mounted) {
-          setState(() {});
+          setState(() {
+            isPaused = false;
+          });
         }
       },
     );
@@ -1057,5 +1106,19 @@ class CLCameraCoreState extends State<CLCameraCore>
         color: config.enableAudio ? null : Theme.of(context).colorScheme.error,
       ),
     );
+  }
+
+  String formatDuration(int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
+    if (hours > 0) {
+      return '${hours.toString().padLeft(2, '0')}:'
+          '${minutes.toString().padLeft(2, '0')}:'
+          '${secs.toString().padLeft(2, '0')}';
+    } else {
+      return '${minutes.toString().padLeft(2, '0')}:'
+          '${secs.toString().padLeft(2, '0')}';
+    }
   }
 }
