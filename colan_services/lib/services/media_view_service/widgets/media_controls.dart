@@ -106,26 +106,36 @@ class MediaControls extends ConsumerWidget {
                   ) {
                     return ControllerMenu(
                       media: media,
-                      onEdit: () async {
-                        await controller.pause();
-                        return onEdit?.call();
-                      },
-                      onDelete: () async {
-                        await controller.pause();
-                        return onDelete?.call();
-                      },
-                      onMove: () async {
-                        await controller.pause();
-                        return onMove?.call();
-                      },
-                      onShare: () async {
-                        await controller.pause();
-                        return onShare?.call();
-                      },
-                      onPin: () async {
-                        await controller.pause();
-                        return onPin?.call();
-                      },
+                      onEdit: onEdit == null
+                          ? null
+                          : () async {
+                              await controller.pause();
+                              return onEdit?.call();
+                            },
+                      onDelete: onDelete == null
+                          ? null
+                          : () async {
+                              await controller.pause();
+                              return onDelete?.call();
+                            },
+                      onMove: onMove == null
+                          ? null
+                          : () async {
+                              await controller.pause();
+                              return onMove?.call();
+                            },
+                      onShare: onShare == null
+                          ? null
+                          : () async {
+                              await controller.pause();
+                              return onShare?.call();
+                            },
+                      onPin: onPin == null
+                          ? null
+                          : () async {
+                              await controller.pause();
+                              return onPin?.call();
+                            },
                     );
                   },
                 ),
