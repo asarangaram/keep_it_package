@@ -35,6 +35,7 @@ class CameraPage extends ConsumerWidget {
               context,
               mediaList,
               UniversalMediaSource.captured,
+              collection: collection,
             );
 
             if (context.mounted) {

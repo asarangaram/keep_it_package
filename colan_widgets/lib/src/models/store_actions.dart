@@ -137,8 +137,9 @@ class StoreActions {
   final Future<bool> Function(
     BuildContext ctx,
     List<CLMedia> mediaMultiple,
-    UniversalMediaSource wizardType,
-  ) openWizard;
+    UniversalMediaSource wizardType, {
+    Collection? collection,
+  }) openWizard;
 
   final Future<String> Function({required String ext}) createTempFile;
   final String Function(CLMedia media) getPreviewPath;
