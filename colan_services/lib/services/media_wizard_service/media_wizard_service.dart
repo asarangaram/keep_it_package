@@ -114,7 +114,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   void initState() {
     keepSelected = widget.type == UniversalMediaSource.move;
     targetCollection = widget.media.collection;
-    print(targetCollection);
+
     super.initState();
   }
 
