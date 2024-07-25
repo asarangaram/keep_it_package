@@ -39,9 +39,9 @@ class PickCollection extends StatelessWidget {
               if (value == null) {
                 return "can't be empty";
               }
-              if ((value as Collection).label.length > 20) {
+              /* if ((value as Collection).label.length > 20) {
                 return "length can't exceed 20 characters";
-              }
+              } */
               return null;
             },
           ),
