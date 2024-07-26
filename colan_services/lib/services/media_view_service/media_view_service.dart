@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../store_service/widgets/w3_get_note.dart';
+import '../notes_service/notes_service.dart';
 import '../video_player_service/providers/show_controls.dart';
 
 import 'widgets/media_page_view.dart';
@@ -99,19 +99,34 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
     }
 
     return (widget.media.length == 1)
-        ? GetNotesByMediaId(
-            mediaId: widget.media[0].id!,
-            buildOnData: (notes) {
-              return MediaView(
-                media: widget.media[0],
-                getPreview: widget.getPreview,
-                parentIdentifier: widget.parentIdentifier,
-                isLocked: lockPage,
-                onLockPage: onLockPage,
-                actionControl: widget.actionControl,
-                notes: notes,
-              );
-            },
+        ? Column(
+            children: [
+              Expanded(
+                child: MediaView(
+                  media: widget.media[0],
+                  getPreview: widget.getPreview,
+                  parentIdentifier: widget.parentIdentifier,
+                  isLocked: lockPage,
+                  onLockPage: onLockPage,
+                  actionControl: widget.actionControl,
+                  autoStart: true,
+                  autoPlay: true,
+                ),
+              ),
+              if (showControl.showNotes && !lockPage)
+                GestureDetector(
+                  onVerticalDragEnd: (DragEndDetails details) {
+                    if (details.primaryVelocity == null) return;
+                    // pop on Swipe
+                    if (details.primaryVelocity! > 0) {
+                      ref.read(showControlsProvider.notifier).hideNotes();
+                    }
+                  },
+                  child: NotesService(
+                    media: widget.media[0],
+                  ),
+                ),
+            ],
           )
         : MediaPageView(
             items: widget.media,
@@ -121,16 +136,7 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
             parentIdentifier: widget.parentIdentifier,
             isLocked: lockPage,
             canDuplicateMedia: widget.actionControl.canDuplicateMedia,
-            onLockPage: ({required bool lock}) {
-              setState(() {
-                lockPage = lock;
-                if (lock) {
-                  ref.read(showControlsProvider.notifier).hideControls();
-                } else {
-                  ref.read(showControlsProvider.notifier).showControls();
-                }
-              });
-            },
+            onLockPage: onLockPage,
           );
   }
 

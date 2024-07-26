@@ -52,10 +52,10 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         tag: '${type.identifier} /item/${item.id}',
         child: GestureDetector(
           onTap: () async {
-            await TheStore.of(context).openMedia(
-              item.id!,
-              parentIdentifier: type.identifier,
-              actionControl: ActionControl.editOnly(),
+            await TheStore.of(context).openEditor(
+              context,
+              item,
+              canDuplicateMedia: false,
             );
 
             /// MEdia might have got updated, better reload and update the

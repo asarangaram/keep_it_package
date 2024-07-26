@@ -73,10 +73,10 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
             Expanded(
               child: MediaView(
                 media: media,
-                notes: const [],
                 parentIdentifier: widget.parentIdentifier,
                 actionControl: widget.actionControl,
                 autoStart: currIndex == index,
+                autoPlay: currIndex == index,
                 onLockPage: widget.onLockPage,
                 isLocked: widget.isLocked,
                 getPreview: widget.getPreview,

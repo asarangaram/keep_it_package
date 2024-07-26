@@ -80,8 +80,8 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
 
 class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
-  Collection? targetCollection;
-  bool keepSelected = false;
+  late Collection? targetCollection;
+  late bool keepSelected;
   bool isSelectionMode = false;
 
   CLSharedMedia get candidate => isSelectionMode ? selectedMedia : widget.media;
@@ -108,6 +108,14 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     setState(() {
       isSelectionMode = !isSelectionMode;
     });
+  }
+
+  @override
+  void initState() {
+    keepSelected = widget.type == UniversalMediaSource.move;
+    targetCollection = widget.media.collection;
+
+    super.initState();
   }
 
   @override

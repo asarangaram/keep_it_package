@@ -39,7 +39,7 @@ class EditorFinalizer extends StatelessWidget {
         },
         child: child ??
             CLIcon.small(
-              MdiIcons.check,
+              MdiIcons.close,
               color: CLTheme.of(context).colors.iconColor,
             ),
       );

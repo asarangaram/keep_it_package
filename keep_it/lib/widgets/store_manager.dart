@@ -134,8 +134,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   Future<bool> openWizard(
     BuildContext ctx,
     List<CLMedia> media,
-    UniversalMediaSource wizardType,
-  ) async {
+    UniversalMediaSource wizardType, {
+    Collection? collection,
+  }) async {
     if (media.isEmpty) {
       await ref
           .read(notificationMessageProvider.notifier)
@@ -149,6 +150,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       media: CLSharedMedia(
         entries: media,
         type: wizardType,
+        collection: collection,
       ),
     );
     if (ctx.mounted) {

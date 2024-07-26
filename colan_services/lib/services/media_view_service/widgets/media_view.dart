@@ -10,21 +10,22 @@ import 'media_viewer.dart';
 class MediaView extends ConsumerStatefulWidget {
   const MediaView({
     required this.media,
-    required this.notes,
     required this.parentIdentifier,
     required this.isLocked,
     required this.actionControl,
     required this.getPreview,
+    required this.autoStart,
+    required this.autoPlay,
     this.onLockPage,
-    this.autoStart = true,
     super.key,
   });
   final CLMedia media;
-  final List<CLNote> notes;
+
   final String parentIdentifier;
 
   final ActionControl actionControl;
   final bool autoStart;
+  final bool autoPlay;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
 
@@ -35,15 +36,14 @@ class MediaView extends ConsumerStatefulWidget {
 }
 
 class _MediaViewState extends ConsumerState<MediaView> {
-  late CLMedia media;
   @override
   void initState() {
-    media = widget.media;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final media = widget.media;
     final ac = widget.actionControl;
 
     return GestureDetector(
@@ -57,8 +57,8 @@ class _MediaViewState extends ConsumerState<MediaView> {
               tag: '${widget.parentIdentifier} /item/${media.id}',
               child: MediaViewerRaw(
                 media: media,
-                notes: widget.notes,
                 autoStart: widget.autoStart,
+                autoPlay: widget.autoPlay,
                 onLockPage: widget.onLockPage,
                 isLocked: widget.isLocked,
                 getPreview: widget.getPreview,
@@ -104,7 +104,7 @@ class _MediaViewState extends ConsumerState<MediaView> {
                       );
                       if (updatedMedia != media && context.mounted) {
                         setState(() {
-                          media = updatedMedia;
+                          //media = updatedMedia;
                         });
                       }
 
@@ -112,7 +112,14 @@ class _MediaViewState extends ConsumerState<MediaView> {
                     },
                   ),
             onPin: ac.onPin(
-              () => TheStore.of(context).togglePinMultiple(context, [media]),
+              () async {
+                final res = await TheStore.of(context)
+                    .togglePinMultiple(context, [media]);
+                if (res) {
+                  setState(() {});
+                }
+                return res;
+              },
             ),
             media: media,
           ),

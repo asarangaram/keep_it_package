@@ -12,6 +12,7 @@ class VideoTrimmerView extends StatefulWidget {
     required this.onDone,
     required this.canDuplicateMedia,
     required this.audioMuter,
+    required this.onReset,
     required this.isMuted,
     super.key,
   });
@@ -21,6 +22,7 @@ class VideoTrimmerView extends StatefulWidget {
   final bool canDuplicateMedia;
   final Widget audioMuter;
   final bool isMuted;
+  final void Function() onReset;
 
   @override
   State<VideoTrimmerView> createState() => _VideoTrimmerViewState();
@@ -50,23 +52,25 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
     _trimmer.loadVideo(videoFile: widget.file);
   }
 
-  bool get hasEditAction => _startValue != null && _endValue != null;
+  bool get trimmerUpdated => _startValue != null && _endValue != null;
+  bool get hasEditAction => trimmerUpdated || widget.isMuted;
 
   Future<void> _saveVideo({bool overwrite = true}) async {
-    if (!hasEditAction) {
-      setState(() {
-        _progressVisibility = true;
-      });
+    if (!trimmerUpdated) {
       // If only the audio is muted, just save the file.
       if (widget.isMuted) {
+        setState(() {
+          _progressVisibility = true;
+        });
         await widget.onSave(widget.file.path, overwrite: overwrite);
         await widget.onDone();
+        if (mounted) {
+          setState(() {
+            _progressVisibility = false;
+          });
+        }
       }
-      if (mounted) {
-        setState(() {
-          _progressVisibility = false;
-        });
-      }
+
       return;
     }
     setState(() {
@@ -117,7 +121,6 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                 trimmer: _trimmer,
                 viewerWidth: MediaQuery.of(context).size.width,
                 durationStyle: DurationStyle.FORMAT_MM_SS,
-                maxVideoLength: const Duration(seconds: 10),
                 editorProperties: TrimEditorProperties(
                   borderPaintColor: Colors.yellow,
                   borderWidth: 4,
@@ -127,8 +130,23 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                 areaProperties: TrimAreaProperties.edgeBlur(
                   thumbnailQuality: 10,
                 ),
-                onChangeStart: (value) => _startValue = value,
-                onChangeEnd: (value) => _endValue = value,
+                onChangeStart: (value) {
+                  _startValue = value;
+                  _endValue ??= _trimmer
+                      .videoPlayerController?.value.duration.inMilliseconds
+                      .toDouble();
+                  setState(() {});
+                },
+                onChangeEnd: (value) {
+                  if (value !=
+                      _trimmer.videoPlayerController?.value.duration
+                          .inMilliseconds) {
+                    _endValue = value;
+                    _startValue ??= 0;
+                  }
+
+                  setState(() {});
+                },
                 onChangePlaybackState: (value) =>
                     setState(() => _isPlaying = value),
               ),
@@ -164,15 +182,19 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
               Expanded(
                 child: EditorFinalizer(
                   canDuplicateMedia: widget.canDuplicateMedia,
-                  hasEditAction: hasEditAction || widget.isMuted,
+                  hasEditAction: hasEditAction,
                   onSave: _saveVideo,
-                  onDiscard: ({required done}) => widget.onDone(),
+                  onDiscard: ({required done}) async {
+                    if (done) {
+                      await widget.onDone();
+                    } else {
+                      widget.onReset();
+                    }
+                  },
                   child: Icon(
-                    Icons.check,
+                    hasEditAction ? Icons.check : Icons.close,
                     size: 60,
-                    color: hasEditAction || widget.isMuted
-                        ? Colors.red
-                        : Colors.white,
+                    color: hasEditAction ? Colors.red : Colors.white,
                   ),
                 ),
               ),

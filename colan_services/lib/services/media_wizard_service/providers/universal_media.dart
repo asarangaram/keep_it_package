@@ -9,9 +9,10 @@ class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
   UniversalMediaSource mediaTypes;
 
   set mediaGroup(CLSharedMedia sharedMedia) {
-    state = state.copyWith(
+    state = CLSharedMedia(
       entries: sharedMedia.entries,
       collection: sharedMedia.collection,
+      type: sharedMedia.type,
     );
   }
 

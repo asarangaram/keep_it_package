@@ -9,17 +9,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MediaViewerRaw extends ConsumerWidget {
   const MediaViewerRaw({
     required this.media,
-    required this.notes,
     required this.onLockPage,
     required this.autoStart,
+    required this.autoPlay,
     required this.isLocked,
     required this.getPreview,
     super.key,
   });
   final CLMedia media;
-  final List<CLNote> notes;
+
   final void Function({required bool lock})? onLockPage;
   final bool autoStart;
+  final bool autoPlay;
   final bool isLocked;
 
   final Widget Function(CLMedia media) getPreview;
@@ -44,6 +45,7 @@ class MediaViewerRaw extends ConsumerWidget {
                   media: media,
                   alternate: getPreview(media),
                   autoStart: autoStart,
+                  autoPlay: autoPlay,
                   inplaceControl: showControl.showNotes,
                 ),
               _ => throw UnimplementedError('Not yet implemented')
