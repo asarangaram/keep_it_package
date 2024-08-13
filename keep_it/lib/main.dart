@@ -18,6 +18,7 @@ import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
 import 'pages/media_wizard_page.dart';
 import 'pages/pinned_media_page.dart';
+import 'pages/server_page.dart';
 import 'pages/settings_main_page.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -44,6 +45,12 @@ class KeepItApp implements AppDescriptor {
               const StoreManager(child: PinnedMediaPage()),
           iconData: MdiIcons.pin,
           label: 'Pinned',
+        ),
+        CLShellRouteDescriptor(
+          name: 'servers',
+          builder: (context, state) => const ServersPage(),
+          iconData: MdiIcons.clouds,
+          label: 'Servers',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
