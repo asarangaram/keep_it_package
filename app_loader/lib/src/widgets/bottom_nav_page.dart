@@ -33,6 +33,8 @@ class BottomNavigationPage extends ConsumerStatefulWidget {
 class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
   @override
   Widget build(BuildContext context) {
+    //const connectionStatusColor = Color.fromARGB(255, 231, 249, 234);
+    const connectionStatusColor = Color.fromARGB(255, 231, 249, 234);
     return AppTheme(
       child: IncomingMediaMonitor(
         onMedia: widget.onMedia,
@@ -41,6 +43,9 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
           child: CLFullscreenBox(
             useSafeArea: true,
             bottomNavigationBar: BottomNavigationBar(
+              backgroundColor: connectionStatusColor.reduceBrightness(0.2),
+              selectedFontSize: 0,
+              unselectedFontSize: 0,
               type: BottomNavigationBarType.fixed,
               currentIndex: widget.child.currentIndex,
               onTap: (index) {
@@ -55,7 +60,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
               items: [
                 ...widget.routes.map((e) {
                   return BottomNavigationBarItem(
-                    icon: Icon(e.iconData),
+                    icon: e.iconData,
                     label: e.label,
                   );
                 }),

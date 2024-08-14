@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'rest_api.dart';
+
 @immutable
 class CLServer {
   const CLServer({required this.name, required this.port});
@@ -31,6 +33,12 @@ class CLServer {
   int get hashCode => name.hashCode ^ port.hashCode;
 
   Future<bool> get hasResonse async {
-    return true;
+    try {
+      final response = await RestApi('http://$name:$port').getURLStatus();
+      print('Response is : $response');
+      return response == null;
+    } catch (e) {
+      return false;
+    }
   }
 }

@@ -8,6 +8,7 @@ environment:
 dependencies:
   audio_waveforms: ^1.0.5 
   collection: ^1.18.0
+  connectivity_plus: ^6.0.5
   crypto: ^3.0.3
   event_bus: ^2.0.0
   flutter:
@@ -19,6 +20,7 @@ dependencies:
   intl: ^0.18.1
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
+  multicast_dns: ^0.3.2+7
   path: ^1.9.0
   percent_indicator: ^4.2.3
   

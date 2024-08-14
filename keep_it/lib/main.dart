@@ -36,28 +36,28 @@ class KeepItApp implements AppDescriptor {
           name: '',
           builder: (context, GoRouterState state) =>
               const StoreManager(child: CollectionsPage()),
-          iconData: MdiIcons.home,
+          iconData: Icon(MdiIcons.home),
           label: 'main',
         ),
         CLShellRouteDescriptor(
           name: 'Pinned',
           builder: (context, state) =>
               const StoreManager(child: PinnedMediaPage()),
-          iconData: MdiIcons.pin,
+          iconData: Icon(MdiIcons.pin),
           label: 'Pinned',
-        ),
-        CLShellRouteDescriptor(
-          name: 'servers',
-          builder: (context, state) => const ServersPage(),
-          iconData: MdiIcons.clouds,
-          label: 'Servers',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
           builder: (context, state) =>
               const StoreManager(child: SettingsMainPage()),
-          iconData: MdiIcons.cog,
+          iconData: Icon(MdiIcons.cog),
           label: 'Settings',
+        ),
+        CLShellRouteDescriptor(
+          name: 'servers',
+          builder: (context, state) => const ServersPage(),
+          iconData: Icon(MdiIcons.wifi),
+          label: 'Servers',
         ),
       ];
 
@@ -256,7 +256,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        const redirectTo = '';
+        const redirectTo = '/servers';
         if (redirectTo.isNotEmpty) {
           if (location != redirectTo) return redirectTo;
         }

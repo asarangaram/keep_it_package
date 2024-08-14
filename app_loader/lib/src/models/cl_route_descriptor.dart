@@ -19,7 +19,7 @@ class CLRouteDescriptor {
 
 @immutable
 class CLShellRouteDescriptor extends CLRouteDescriptor {
-  final IconData iconData;
+  final Icon iconData;
   final String? label;
 
   const CLShellRouteDescriptor({

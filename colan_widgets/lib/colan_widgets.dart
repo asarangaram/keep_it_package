@@ -11,10 +11,10 @@ export 'src/basics/cl_decorate_square.dart';
 export 'src/basics/cl_icon.dart';
 export 'src/basics/cl_pop_screen.dart';
 export 'src/basics/cl_text.dart';
-
 export 'src/basics/progress_bar.dart';
 export 'src/extensions/ext_cl_media.dart';
 export 'src/extensions/ext_cl_menu_item.dart';
+export 'src/extensions/ext_color.dart';
 export 'src/extensions/ext_datetime.dart';
 export 'src/extensions/ext_duration.dart';
 export 'src/extensions/ext_file.dart';
@@ -22,7 +22,6 @@ export 'src/extensions/ext_list.dart';
 export 'src/extensions/ext_string.dart';
 export 'src/models/action_control.dart';
 export 'src/models/cl_media.dart';
-
 export 'src/models/cl_media/extensions/url_handler.dart';
 export 'src/models/cl_media_type.dart';
 export 'src/models/cl_menu_item.dart';
@@ -34,6 +33,7 @@ export 'src/models/progress.dart';
 export 'src/models/store.dart';
 export 'src/models/store_actions.dart';
 export 'src/models/universal_media_source.dart';
+export 'src/server_model/server_model.dart';
 export 'src/store_model/the_store.dart';
 export 'src/theme/models/cl_colors.dart';
 export 'src/theme/models/note_theme.dart';
