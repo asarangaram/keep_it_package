@@ -8,6 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  collection: ^1.19.0
   crypto: ^3.0.4
   intl: ^0.18.0
   logger: ^2.4.0

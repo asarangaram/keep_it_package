@@ -12,24 +12,23 @@ class Collection {
     this.updatedDate,
   });
 
-  factory Collection.fromMap(
-    Map<String, dynamic> map,
-  ) {
+  factory Collection.fromMap(Map<String, dynamic> map) {
     return Collection(
       id: map['id'] != null ? map['id'] as int : null,
       label: map['label'] as String,
       description:
           map['description'] != null ? map['description'] as String : null,
       createdDate: map['createdDate'] != null
-          ? DateTime.parse(map['createdDate'] as String).toLocal()
+          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
           : null,
       updatedDate: map['updatedDate'] != null
-          ? DateTime.parse(map['updatedDate'] as String).toLocal()
+          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : null,
     );
   }
-  /* factory Collection.fromJson(String source) =>
-      Collection.fromMap(json.decode(source) as Map<String, dynamic>); */
+
+  factory Collection.fromJson(String source) =>
+      Collection.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final int? id;
   final String label;
@@ -53,75 +52,41 @@ class Collection {
     );
   }
 
+  @override
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'Collection(id: $id, label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate)';
+  }
+
+  @override
+  bool operator ==(covariant Collection other) {
+    if (identical(this, other)) return true;
+
+    return other.id == id &&
+        other.label == label &&
+        other.description == description &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        label.hashCode ^
+        description.hashCode ^
+        createdDate.hashCode ^
+        updatedDate.hashCode;
+  }
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
       'label': label,
       'description': description,
+      'createdDate': createdDate?.millisecondsSinceEpoch,
+      'updatedDate': updatedDate?.millisecondsSinceEpoch,
     };
   }
 
   String toJson() => json.encode(toMap());
-
-  @override
-  String toString() {
-    return 'Collection(id: $id, label: $label, description: $description, '
-        'createdDate: $createdDate, updatedDate: $updatedDate)';
-  }
-
-  static String? validateName({
-    required String? newLabel,
-    required String? existingLabel,
-    required List<Collection> collections,
-  }) {
-    final newLabel0 = newLabel?.trim();
-
-    if (newLabel0?.isEmpty ?? true) {
-      return "Name can't be empty";
-    }
-
-    if (existingLabel?.trim() == newLabel0) {
-      // Nothing changed.
-      return null;
-    }
-    if (collections.map((e) => e.label.trim()).contains(newLabel0)) {
-      return '$newLabel0 already exists';
-    }
-    return null;
-  }
-
-  static String? validateDescription({
-    required String? description,
-    required String? existingDescription,
-    required List<Collection> collections,
-  }) {
-    // No validation speccified as of now.
-    return null;
-  }
-}
-
-class Collections {
-  Collections(this.entries, {this.lastupdatedID});
-  final List<Collection> entries;
-
-  final int? lastupdatedID;
-
-  bool get isEmpty => entries.isEmpty;
-  bool get isNotEmpty => entries.isNotEmpty;
-
-  Collections copyWith({
-    List<Collection>? entries,
-    int? lastupdatedID,
-  }) {
-    return Collections(
-      entries ?? this.entries,
-      lastupdatedID: lastupdatedID ?? this.lastupdatedID,
-    );
-  }
-
-  Collections clearLastUpdated() {
-    return Collections(entries);
-  }
-
-  Collection? getByID(int id) => entries.where((e) => e.id == id).firstOrNull;
 }
