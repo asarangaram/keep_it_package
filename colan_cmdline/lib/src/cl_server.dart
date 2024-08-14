@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
-
 import 'rest_api.dart';
 
 @immutable
@@ -86,7 +85,6 @@ class CLServer {
   factory CLServer.fromJson(String source) =>
       CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  Future<String> getEndpoint(String endPoint) async {
-    return await RestApi('http://$name:$port').get(endPoint);
-  }
+  Future<String> getEndpoint(String endPoint) async =>
+      RestApi('http://$name:$port').get(endPoint);
 }
