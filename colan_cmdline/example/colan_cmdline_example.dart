@@ -1,11 +1,8 @@
-import 'dart:io';
-
-import 'package:colan_cmdline/colan_cmdline.dart';
-import 'package:json_diff/json_diff.dart';
-
 void main() async {
-  final server = await CLServer(name: 'udesktop.local', port: 5000).withId;
-  print(server);
+  /*
+  final server =
+      await const CLServer(name: 'udesktop.local', port: 5000).withId;
+   print(server);
   if (server != null) {
     final String? collectionsPrev;
     final collectionStore = File('data.json');
@@ -36,7 +33,7 @@ void main() async {
       var file = File('data.json');
       await file.writeAsString(collections);
     }
-  }
+  } */
 }
 
 
