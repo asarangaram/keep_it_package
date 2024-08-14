@@ -66,4 +66,12 @@ class Servers {
 
   bool get isEmpty => servers.isEmpty;
   bool get isNotEmpty => servers.isNotEmpty;
+
+  Future<Servers> clearMyServer() async {
+    return Servers(
+      lanStatus: lanStatus,
+      servers: servers,
+      myServerOnline: false,
+    );
+  }
 }

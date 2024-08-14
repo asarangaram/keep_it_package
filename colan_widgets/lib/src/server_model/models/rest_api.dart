@@ -36,25 +36,19 @@ class RestApi {
     }
   }
 
-  Future<String?> getURLStatus() async {
+  Future<int?> getURLStatus() async {
     //await Future.delayed(const Duration(seconds: 2));
-    try {
-      final response = await http
-          .get(Uri.parse(_server))
-          .timeout(const Duration(seconds: 2));
-      if (response.statusCode == 200) {
-        final info = jsonDecode(response.body) as Map<String, dynamic>;
-        if ((info['name'] as String) == 'colan_server') {
-          return null;
-        }
-        throw Exception(info['name']);
-      } else {
-        throw Exception('${response.statusCode} ${response.body}');
+
+    final response =
+        await http.get(Uri.parse(_server)).timeout(const Duration(seconds: 2));
+    if (response.statusCode == 200) {
+      final info = jsonDecode(response.body) as Map<String, dynamic>;
+      if ((info['name'] as String) == 'colan_server') {
+        return info['id'] as int;
       }
-    } on TimeoutException catch (_) {
-      return 'Server not reachable';
-    } on Exception catch (e) {
-      return e.toString();
+      throw Exception(info['name']);
+    } else {
+      throw Exception('${response.statusCode} ${response.body}');
     }
   }
 

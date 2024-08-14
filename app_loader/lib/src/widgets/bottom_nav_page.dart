@@ -35,6 +35,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
   Widget build(BuildContext context) {
     //const connectionStatusColor = Color.fromARGB(255, 231, 249, 234);
     const connectionStatusColor = Color.fromARGB(255, 231, 249, 234);
+
     return AppTheme(
       child: IncomingMediaMonitor(
         onMedia: widget.onMedia,

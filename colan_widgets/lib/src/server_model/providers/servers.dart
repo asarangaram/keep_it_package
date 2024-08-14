@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multicast_dns/multicast_dns.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../app_logger.dart';
 import '../models/cl_server.dart';
 import '../models/servers.dart';
 
@@ -24,6 +25,12 @@ class ServersNotifier extends StateNotifier<Servers> {
       ((state.myServer != null) ? keepConnectionActive() : updateServers());
 
   Future<void> search() async {
+    final prefs = await SharedPreferences.getInstance();
+    final myServerJSON = prefs.getString('myServer');
+
+    if (myServerJSON != null) {
+      state = state.copyWith(myServer: CLServer.fromJson(myServerJSON));
+    }
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> result) {
@@ -54,21 +61,24 @@ class ServersNotifier extends StateNotifier<Servers> {
 
   Future<void> keepConnectionActive() async {
     if (state.myServer != null) {
-      state = state.copyWith(myServerOnline: await state.myServer!.hasResonse);
+      state =
+          state.copyWith(myServerOnline: await state.myServer!.hasConnection);
       _infoLogger('keepConnectionActive: $state');
     }
   }
 
   Future<void> updateServers() async {
     final detectedServers = await searchForServers();
-    final servers = {...state.servers, ...detectedServers};
+    final servers = {...detectedServers};
     final availableServers = <CLServer>{};
     for (final server in servers) {
-      if (await server.hasResonse) {
-        availableServers.add(server);
+      final availableServer = await server.withId;
+
+      if (availableServer?.hasID ?? false) {
+        availableServers.add(availableServer!);
       }
     }
-    state = state.copyWith(servers: servers);
+    state = state.copyWith(servers: availableServers);
     _infoLogger('updateServers: $state');
   }
 
@@ -94,7 +104,18 @@ class ServersNotifier extends StateNotifier<Servers> {
   CLServer? get myServer => state.myServer;
 
   set myServer(CLServer? value) {
-    state = state.copyWith(myServer: value, myServerOnline: true);
+    myServerAsync(value);
+  }
+
+  Future<void> myServerAsync(CLServer? value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value != null) {
+      await prefs.setString('myServer', value.toJson());
+      state = state.copyWith(myServer: value, myServerOnline: true);
+    } else {
+      await prefs.remove('myServer');
+      state = await state.clearMyServer();
+    }
   }
 }
 
