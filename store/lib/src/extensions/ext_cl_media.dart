@@ -1,33 +1,60 @@
 import '../models/cl_media.dart';
-import 'ext_datetime.dart';
 
-extension ExtCLMediaList on List<CLMedia> {
-  Map<String, List<CLMedia>> filterByDate() {
-    final filterredMedia = <String, List<CLMedia>>{};
-    final noDate = <CLMedia>[];
-    for (final entry in this) {
-      final String formattedDate;
-      if (entry.originalDate != null) {
-        formattedDate = entry.originalDate!.toDisplayFormat(dataOnly: true);
-        if (!filterredMedia.containsKey(formattedDate)) {
-          filterredMedia[formattedDate] = [];
-        }
-        filterredMedia[formattedDate]!.add(entry);
-      } else if (entry.createdDate != null) {
-        formattedDate = '${entry.createdDate!.toDisplayFormat(dataOnly: true)} '
-            '(upload date)';
-        if (!filterredMedia.containsKey(formattedDate)) {
-          filterredMedia[formattedDate] = [];
-        }
-        filterredMedia[formattedDate]!.add(entry);
-      } else {
-        noDate.add(entry);
-      }
-    }
-    if (noDate.isNotEmpty) {
-      filterredMedia['No Date'] = noDate;
-    }
-
-    return filterredMedia;
+extension ExtCLMedia on CLMedia {
+  // replace with removeCollectionId
+  CLMedia setCollectionId(int? newCollectionId) {
+    return CLMedia.regid(
+      id: id,
+      name: name,
+      type: type,
+      collectionId: newCollectionId,
+      md5String: md5String,
+      createdDate: createdDate,
+      originalDate: originalDate,
+      updatedDate: updatedDate,
+      ref: ref,
+      isDeleted: isDeleted,
+      path: path,
+      isHidden: isHidden,
+      pin: pin,
+    );
   }
+
+  CLMedia removePin() {
+    return CLMedia.regid(
+      id: id,
+      name: name,
+      type: type,
+      collectionId: collectionId,
+      md5String: md5String,
+      createdDate: createdDate,
+      originalDate: originalDate,
+      updatedDate: updatedDate,
+      ref: ref,
+      isDeleted: isDeleted,
+      path: path,
+      isHidden: isHidden,
+      pin: null,
+    );
+  }
+
+  CLMedia removeId() {
+    return CLMedia.regid(
+      id: null,
+      name: name,
+      type: type,
+      collectionId: collectionId,
+      md5String: md5String,
+      createdDate: createdDate,
+      originalDate: originalDate,
+      updatedDate: updatedDate,
+      ref: ref,
+      isDeleted: isDeleted,
+      path: path,
+      isHidden: isHidden,
+      pin: pin,
+    );
+  }
+
+  String get label => path;
 }

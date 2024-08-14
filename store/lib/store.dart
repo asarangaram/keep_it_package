@@ -5,7 +5,8 @@ library store;
 
 export 'app_logger.dart';
 export 'extensions.dart';
-export 'src/models/cl_media.dart';
+export 'src/extensions/ext_cl_media.dart' show ExtCLMedia;
+export 'src/models/cl_media.dart' show CLMedia;
 export 'src/models/cl_media_file.dart' show CLMediaFile;
 export 'src/models/cl_media_type.dart' show CLMediaType;
 export 'src/models/cl_note.dart' show CLAudioNote, CLNote, CLTextNote;

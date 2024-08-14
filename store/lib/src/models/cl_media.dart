@@ -1,246 +1,197 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:meta/meta.dart';
 
-import '../extensions/ext_datetime.dart';
-
-import '../extensions/ext_string.dart';
 import 'cl_media_type.dart';
+
+/*
+
+*/
 
 @immutable
 class CLMedia {
-  CLMedia({
-    required this.path,
-    required this.type,
-    required this.collectionId,
-    this.ref,
-    this.id,
-    this.originalDate,
-    this.createdDate,
-    this.updatedDate,
-    this.md5String,
-    this.isDeleted,
-    this.isHidden,
-    this.pin,
-  }) {
-    switch (type) {
-      case CLMediaType.text:
-        if (!path.startsWith('text:')) {
-          throw Exception('text should be prefixed with text:');
-        }
-      case CLMediaType.url:
-        if (!path.isURL()) {
-          throw Exception('invalid URL');
-        }
-      case CLMediaType.image:
-      case CLMediaType.video:
-      case CLMediaType.audio:
-      case CLMediaType.file:
-        break;
-    }
-  }
-
-  factory CLMedia.fromMap(Map<String, dynamic> map) {
-    return CLMedia(
-      path: map['path'] as String,
-      type: CLMediaType.values.asNameMap()[map['type'] as String]!,
-      ref: map['ref'] != null ? map['ref'] as String : null,
-      id: map['id'] != null ? map['id'] as int : null,
-      collectionId:
-          map['collectionId'] != null ? map['collectionId'] as int : null,
-      createdDate: map['createdDate'] != null
-          ? DateTime.parse(map['createdDate'] as String)
-          : DateTime.now(),
-      updatedDate: map['updatedDate'] != null
-          ? DateTime.parse(map['updatedDate'] as String)
-          : null,
-      originalDate: map['originalDate'] != null
-          ? DateTime.parse(map['originalDate'] as String)
-          : map['createdDate'] != null
-              ? DateTime.parse(map['createdDate'] as String)
-              : DateTime.now(),
-      md5String: map['md5String'] as String,
-      isDeleted: (map['isDeleted'] as int) != 0,
-      isHidden: (map['isHidden'] as int) != 0,
-      pin: map['pin'] != null ? map['pin'] as String : null,
-    );
-  }
-
-  final String path;
-  final CLMediaType type;
-  final String? ref;
   final int? id;
+  final String name;
+  final CLMediaType type;
   final int? collectionId;
-
-  final DateTime? originalDate;
-  final DateTime? createdDate;
-  final DateTime? updatedDate;
   final String? md5String;
+  final DateTime? createdDate;
+  final DateTime? originalDate;
+  final DateTime? updatedDate;
+  final String? ref;
   final bool? isDeleted;
+  final String path;
   final bool? isHidden;
   final String? pin;
 
-  CLMedia copyWith({
-    String? path,
-    CLMediaType? type,
-    String? ref,
-    int? id,
+  factory CLMedia({
+    required CLMediaType type,
+    required String path,
     int? collectionId,
-    DateTime? originalDate,
-    DateTime? createdDate,
-    DateTime? updatedDate,
     String? md5String,
+    DateTime? createdDate,
+    DateTime? originalDate,
+    DateTime? updatedDate,
+    String? ref,
     bool? isDeleted,
+    bool? isHidden,
+    String? pin,
+    int? id,
+    String name = 'Unnamed',
+  }) {
+    return CLMedia.regid(
+      id: id,
+      name: name,
+      type: type,
+      collectionId: collectionId,
+      md5String: md5String,
+      createdDate: createdDate,
+      originalDate: originalDate,
+      updatedDate: updatedDate,
+      ref: ref,
+      isDeleted: isDeleted,
+      path: path,
+      isHidden: isHidden,
+      pin: pin,
+    );
+  }
+
+  const CLMedia.regid({
+    required this.name,
+    required this.type,
+    required this.path,
+    required this.id,
+    required this.collectionId,
+    required this.md5String,
+    required this.createdDate,
+    required this.originalDate,
+    required this.updatedDate,
+    required this.ref,
+    required this.isDeleted,
+    required this.isHidden,
+    required this.pin,
+  });
+
+  CLMedia copyWith({
+    int? id,
+    String? name,
+    CLMediaType? type,
+    int? collectionId,
+    String? md5String,
+    DateTime? createdDate,
+    DateTime? originalDate,
+    DateTime? updatedDate,
+    String? ref,
+    bool? isDeleted,
+    String? path,
     bool? isHidden,
     String? pin,
   }) {
     return CLMedia(
-      path: path ?? this.path,
-      type: type ?? this.type,
-      ref: ref ?? this.ref,
       id: id ?? this.id,
+      name: name ?? this.name,
+      type: type ?? this.type,
       collectionId: collectionId ?? this.collectionId,
-      originalDate: originalDate ?? this.originalDate,
-      createdDate: createdDate ?? this.createdDate,
-      updatedDate: updatedDate ?? this.updatedDate,
       md5String: md5String ?? this.md5String,
+      createdDate: createdDate ?? this.createdDate,
+      originalDate: originalDate ?? this.originalDate,
+      updatedDate: updatedDate ?? this.updatedDate,
+      ref: ref ?? this.ref,
       isDeleted: isDeleted ?? this.isDeleted,
+      path: path ?? this.path,
       isHidden: isHidden ?? this.isHidden,
       pin: pin ?? this.pin,
     );
   }
 
-  CLMedia setCollectionId(int? newCollectionId) {
-    return CLMedia(
-      path: path,
-      type: type,
-      ref: ref,
-      id: id,
-      collectionId: newCollectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      pin: pin,
-    );
+  @override
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'CLMedia(id: $id, name: $name, type: $type, collectionId: $collectionId, md5String: $md5String, createdDate: $createdDate, originalDate: $originalDate, updatedDate: $updatedDate, ref: $ref, isDeleted: $isDeleted, path: $path, isHidden: $isHidden, pin: $pin)';
   }
 
   @override
   bool operator ==(covariant CLMedia other) {
     if (identical(this, other)) return true;
 
-    return other.path == path &&
+    return other.id == id &&
+        other.name == name &&
         other.type == type &&
-        other.ref == ref &&
-        other.id == id &&
         other.collectionId == collectionId &&
-        other.originalDate == originalDate &&
-        other.createdDate == createdDate &&
-        other.updatedDate == updatedDate &&
         other.md5String == md5String &&
+        other.createdDate == createdDate &&
+        other.originalDate == originalDate &&
+        other.updatedDate == updatedDate &&
+        other.ref == ref &&
         other.isDeleted == isDeleted &&
+        other.path == path &&
         other.isHidden == isHidden &&
         other.pin == pin;
   }
 
   @override
   int get hashCode {
-    return path.hashCode ^
+    return id.hashCode ^
+        name.hashCode ^
         type.hashCode ^
-        ref.hashCode ^
-        id.hashCode ^
         collectionId.hashCode ^
-        originalDate.hashCode ^
-        createdDate.hashCode ^
-        updatedDate.hashCode ^
         md5String.hashCode ^
+        createdDate.hashCode ^
+        originalDate.hashCode ^
+        updatedDate.hashCode ^
+        ref.hashCode ^
         isDeleted.hashCode ^
+        path.hashCode ^
         isHidden.hashCode ^
         pin.hashCode;
   }
 
-  @override
-  String toString() {
-    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, '
-        'collectionId: $collectionId, '
-        'originalDate: $originalDate, createdDate: $createdDate, '
-        'updatedDate: $updatedDate, md5String: $md5String, '
-        'isDeleted: $isDeleted, isHidden: $isHidden, '
-        ' pin: $pin)';
-  }
-
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'path': path,
-      'type': type.name,
-      'ref': ref,
       'id': id,
+      'name': name,
+      'type': type.name,
       'collectionId': collectionId,
-      'originalDate': originalDate?.toSQL(),
       'md5String': md5String,
-      'isDeleted': (isDeleted ?? false) ? 1 : 0,
-      'isHidden': (isHidden ?? false) ? 1 : 0,
+      'createdDate': createdDate?.millisecondsSinceEpoch,
+      'originalDate': originalDate?.millisecondsSinceEpoch,
+      'updatedDate': updatedDate?.millisecondsSinceEpoch,
+      'ref': ref,
+      'isDeleted': isDeleted,
+      'path': path,
+      'isHidden': isHidden,
       'pin': pin,
     };
   }
 
-  static String relativePath(
-    String fullPath, {
-    required String? pathPrefix,
-    required bool validate,
-  }) {
-    if (validate && !File(fullPath).existsSync()) {
-      throw Exception('file not found');
-    }
-
-    if (pathPrefix != null && fullPath.startsWith(pathPrefix)) {
-      return fullPath.replaceFirst('$pathPrefix/', '').replaceAll('//', '/');
-    }
-    return fullPath;
+  factory CLMedia.fromMap(Map<String, dynamic> map) {
+    return CLMedia(
+      id: map['id'] != null ? map['id'] as int : null,
+      name: map['name'] as String,
+      type: CLMediaType.values.asNameMap()[map['type'] as String]!,
+      collectionId:
+          map['collectionId'] != null ? map['collectionId'] as int : null,
+      md5String: map['md5String'] != null ? map['md5String'] as String : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
+          : null,
+      originalDate: map['originalDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
+          : null,
+      updatedDate: map['updatedDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+          : null,
+      ref: map['ref'] != null ? map['ref'] as String : null,
+      isDeleted: map['isDeleted'] != null ? map['isDeleted'] as bool : null,
+      path: map['path'] as String,
+      isHidden: map['isHidden'] != null ? map['isHidden'] as bool : null,
+      pin: map['pin'] != null ? map['pin'] as String : null,
+    );
   }
-
-  /*  /// Not used
-  factory CLMedia.fromJson(String source) => CLMedia.fromMap(
-        json.decode(source) as Map<String, dynamic>,
-        validate: true,
-      ); */
 
   String toJson() => json.encode(toMap());
 
-  CLMedia removePin() {
-    return CLMedia(
-      path: path,
-      type: type,
-      ref: ref,
-      id: id,
-      collectionId: collectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-    );
-  }
-
-  CLMedia removeId() {
-    return CLMedia(
-      path: path,
-      type: type,
-      ref: ref,
-      collectionId: collectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      pin: pin,
-    );
-  }
-
-  String get label => path;
+  factory CLMedia.fromJson(String source) =>
+      CLMedia.fromMap(json.decode(source) as Map<String, dynamic>);
 }
