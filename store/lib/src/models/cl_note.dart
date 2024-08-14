@@ -1,48 +1,42 @@
-import 'dart:io';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as p;
 
-import '../extensions/ext_datetime.dart';
-import 'cl_media.dart';
+import 'cl_note_type.dart';
 
-enum CLNoteTypes { text, audio }
+@immutable
+class CLTextNote extends CLNote {
+  const CLTextNote({
+    required super.id,
+    required super.createdDate,
+    required super.path,
+    super.updatedDate,
+    super.type = CLNoteTypes.text,
+  });
+}
+
+@immutable
+class CLAudioNote extends CLNote {
+  const CLAudioNote({
+    required super.id,
+    required super.createdDate,
+    required super.path,
+    super.type = CLNoteTypes.audio,
+    super.updatedDate,
+  });
+}
 
 @immutable
 class CLNote {
   const CLNote({
+    required this.id,
     required this.createdDate,
     required this.type,
     required this.path,
-    required this.id,
     this.updatedDate,
   });
 
-  factory CLNote.fromMap(Map<String, dynamic> map) {
-    if (CLNoteTypes.values.asNameMap()[map['type'] as String] == null) {
-      throw Exception('Incorrect type');
-    }
-    final type = CLNoteTypes.values.asNameMap()[map['type'] as String]!;
-    final createdDate = DateTime.parse(map['updatedDate'] as String);
-    final updatedDate = map['updatedDate'] != null
-        ? DateTime.parse(map['updatedDate'] as String)
-        : null;
-    final path = map['path'] as String;
-    return switch (type) {
-      CLNoteTypes.audio => CLAudioNote(
-          id: map['id'] == null ? null : map['id']! as int,
-          createdDate: createdDate,
-          path: path,
-          updatedDate: updatedDate,
-        ),
-      CLNoteTypes.text => CLTextNote(
-          id: map['id'] == null ? null : map['id']! as int,
-          createdDate: createdDate,
-          path: path,
-          updatedDate: updatedDate,
-        )
-    };
-  }
   final int? id;
   final DateTime createdDate;
   final DateTime? updatedDate;
@@ -68,7 +62,7 @@ class CLNote {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLNote(id: $id, createdDate: $createdDate, updatedDate: $updatedDate, type: $type, note: $path)';
+    return 'CLNote(id: $id, createdDate: $createdDate, updatedDate: $updatedDate, type: $type, path: $path)';
   }
 
   @override
@@ -94,81 +88,40 @@ class CLNote {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'createdDate': createdDate.toSQL(),
+      'createdDate': createdDate.millisecondsSinceEpoch,
+      'updatedDate': updatedDate?.millisecondsSinceEpoch,
       'type': type.name,
       'path': path,
     };
   }
 
-  Map<String, dynamic> toMap2({
-    required bool validate,
-    String? pathPrefix,
-  }) {
-    return <String, dynamic>{
-      'id': id,
-      'createdDate': createdDate.toSQL(),
-      'type': type.name,
-      'path': CLMedia.relativePath(
-        path,
-        pathPrefix: pathPrefix,
-        validate: validate,
-      ),
+  factory CLNote.fromMap(Map<String, dynamic> map) {
+    final type = CLNoteTypes.values.asNameMap()[map['type'] as String]!;
+
+    return switch (type) {
+      CLNoteTypes.text => CLTextNote(
+          id: map['id'] != null ? map['id'] as int : null,
+          createdDate:
+              DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int),
+          updatedDate: map['updatedDate'] != null
+              ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+              : null,
+          path: map['path'] as String,
+        ),
+      CLNoteTypes.audio => CLAudioNote(
+          id: map['id'] != null ? map['id'] as int : null,
+          createdDate:
+              DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int),
+          updatedDate: map['updatedDate'] != null
+              ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+              : null,
+          path: map['path'] as String,
+        ),
     };
   }
 
-  /* String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-  factory CLMessage.fromJson(String source) =>
-      CLMessage.fromMap(json.decode(source) as Map<String, dynamic>); */
-
-  Future<CLNote> moveFile({
-    required String targetDir,
-  }) async {
-    final sourceFile = File(path);
-    final dir = Directory(targetDir);
-
-    if (!sourceFile.existsSync()) {
-      throw FileSystemException('Source file does not exist', path);
-    }
-
-    if (!dir.existsSync()) {
-      dir.createSync(recursive: true);
-    }
-
-    final baseName = p.basenameWithoutExtension(path);
-    final extension = p.extension(path);
-    var newFilePath = p.join(dir.path, p.basename(path));
-
-    var counter = 1;
-
-    while (File(newFilePath).existsSync()) {
-      newFilePath = p.join(dir.path, '${baseName}_($counter)$extension');
-      counter++;
-    }
-
-    final copiedFile = await sourceFile.copy(newFilePath);
-    return copyWith(path: copiedFile.path);
-  }
-}
-
-@immutable
-class CLTextNote extends CLNote {
-  const CLTextNote({
-    required super.id,
-    required super.createdDate,
-    required super.path,
-    super.updatedDate,
-    super.type = CLNoteTypes.text,
-  });
-}
-
-@immutable
-class CLAudioNote extends CLNote {
-  const CLAudioNote({
-    required super.id,
-    required super.createdDate,
-    required super.path,
-    super.type = CLNoteTypes.audio,
-    super.updatedDate,
-  });
+  factory CLNote.fromJson(String source) =>
+      CLNote.fromMap(json.decode(source) as Map<String, dynamic>);
 }
