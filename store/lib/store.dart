@@ -9,6 +9,7 @@ export 'src/extensions/ext_cl_media.dart' show ExtCLMedia;
 export 'src/models/cl_media.dart' show CLMedia;
 export 'src/models/cl_media_file.dart' show CLMediaFile;
 export 'src/models/cl_media_type.dart' show CLMediaType;
+export 'src/models/cl_medias.dart' show CLMedias;
 export 'src/models/cl_note.dart' show CLAudioNote, CLNote, CLTextNote;
 export 'src/models/cl_note_type.dart' show CLNoteTypes;
 export 'src/models/cl_notes_on_media.dart' show NotesOnMedia;

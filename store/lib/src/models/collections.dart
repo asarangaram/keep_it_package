@@ -50,9 +50,18 @@ class Collections {
       ),
     );
   }
+  factory Collections.fromList(List<dynamic> map) {
+    return Collections(
+      List<Collection>.from(
+        map.map<Collection>(
+          (x) => Collection.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
 
   String toJson() => json.encode(toMap());
 
   factory Collections.fromJson(String source) =>
-      Collections.fromMap(json.decode(source) as Map<String, dynamic>);
+      Collections.fromList(json.decode(source) as List<dynamic>);
 }

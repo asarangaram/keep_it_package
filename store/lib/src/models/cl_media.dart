@@ -180,10 +180,9 @@ class CLMedia {
           ? DateTime.parse(map['updatedDate'] as String)
           : null,
       ref: map['ref'] != null ? map['ref'] as String : null,
-      isDeleted:
-          map['isDeleted'] != null ? (map['isDeleted'] as int) != 0 : null,
-      path: map['path'] as String,
-      isHidden: map['isHidden'] != null ? (map['isHidden'] as int) != 0 : null,
+      isDeleted: map['isDeleted'] != null ? map['isDeleted'] as bool : null,
+      path: map['path'] != null ? map['path'] as String : '',
+      isHidden: map['isHidden'] != null ? map['isHidden'] as bool : null,
       pin: map['pin'] != null ? map['pin'] as String : null,
     );
   }
