@@ -11,6 +11,8 @@ environment:
 dependencies:
   app_loader:
     path: ../app_loader
+  colan_cmdline:
+    path: ../colan_cmdline
   colan_services:
     path: ../colan_services
   colan_widgets:
@@ -32,6 +34,7 @@ dependencies:
   mime: ^1.0.5
   multicast_dns: ^0.3.2+7
   path: ^1.9.0
+  shared_preferences: ^2.3.1
   store:
     path: ../store
   

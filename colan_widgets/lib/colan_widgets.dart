@@ -26,7 +26,6 @@ export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
 export 'src/models/progress.dart';
 export 'src/models/universal_media_source.dart';
-export 'src/server_model/server_model.dart';
 export 'src/store_model/the_store.dart';
 export 'src/theme/models/cl_colors.dart';
 export 'src/theme/models/note_theme.dart';

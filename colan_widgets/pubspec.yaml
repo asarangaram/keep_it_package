@@ -9,6 +9,8 @@ environment:
 
 dependencies:
   audio_waveforms: ^1.0.5 
+  colan_cmdline:
+    path: ../colan_cmdline
   collection: ^1.18.0
   connectivity_plus: ^6.0.5
   crypto: ^3.0.3

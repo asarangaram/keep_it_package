@@ -4,3 +4,5 @@
 library;
 
 export 'src/cl_server.dart';
+export 'src/rest_api.dart';
+export 'src/servers.dart';

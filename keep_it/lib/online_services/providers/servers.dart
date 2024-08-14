@@ -1,13 +1,11 @@
 import 'dart:async';
 
+import 'package:colan_cmdline/colan_cmdline.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/app_logger.dart';
-
-import '../models/cl_server.dart';
-import '../models/servers.dart';
 
 class ServersNotifier extends StateNotifier<Servers> {
   ServersNotifier({required this.serviceName, required this.checkInterval})
