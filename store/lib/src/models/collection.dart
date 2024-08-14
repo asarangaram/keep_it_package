@@ -1,8 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 @immutable
 class Collection {
@@ -103,10 +101,10 @@ class Collection {
 }
 
 class Collections {
+  Collections(this.entries, {this.lastupdatedID});
   final List<Collection> entries;
 
   final int? lastupdatedID;
-  Collections(this.entries, {this.lastupdatedID});
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;

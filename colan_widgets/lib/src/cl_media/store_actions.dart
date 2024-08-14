@@ -1,13 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
-import 'action_control.dart';
-import 'cl_media.dart';
-import 'cl_note.dart';
-import 'collection.dart';
-import 'progress.dart';
-import 'universal_media_source.dart';
+import '../models/action_control.dart';
+
+import '../models/progress.dart';
+import '../models/universal_media_source.dart';
 
 @immutable
 class StoreActions {

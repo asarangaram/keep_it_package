@@ -1,6 +1,5 @@
-import '../extensions/ext_datetime.dart';
-
 import '../models/cl_media.dart';
+import 'ext_datetime.dart';
 
 extension ExtCLMediaList on List<CLMedia> {
   Map<String, List<CLMedia>> filterByDate() {

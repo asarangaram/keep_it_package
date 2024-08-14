@@ -61,6 +61,7 @@ class Servers {
 
   @override
   String toString() {
+    // ignore: lines_longer_than_80_chars
     return 'Servers(lanStatus: $lanStatus, servers: $servers, myServer: $myServer, myServerOnline: $myServerOnline)';
   }
 

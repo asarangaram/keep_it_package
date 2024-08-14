@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
+import 'package:store/store.dart';
 
 import '../model/thumbnail_services.dart';
 import '../provider/thumbnail_services.dart';

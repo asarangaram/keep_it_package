@@ -1,5 +1,5 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 class CapturedMediaNotifier extends StateNotifier<List<CLMedia>> {
   CapturedMediaNotifier() : super([]);
