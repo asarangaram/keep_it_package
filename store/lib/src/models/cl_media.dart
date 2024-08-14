@@ -5,10 +5,6 @@ import 'package:meta/meta.dart';
 
 import 'cl_media_type.dart';
 
-/*
-
-*/
-
 @immutable
 class CLMedia {
   final int? id;
