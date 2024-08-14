@@ -12,8 +12,10 @@ dependencies:
   collection: ^1.18.0
   http: ^1.2.2
   json_diff: ^0.2.1
+  logger: ^2.4.0
   meta: ^1.12.0
   # path: ^1.8.0
+  sqlite_async: ^0.7.0
   store:
     path: ../store
 
