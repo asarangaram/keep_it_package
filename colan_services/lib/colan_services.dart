@@ -14,6 +14,7 @@ export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_wizard_service/media_wizard_service.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;
+export 'services/preview_service/view/cl_media_collage.dart';
 export 'services/preview_service/view/preview.dart' show PreviewService;
 export 'services/store_service/providers/gallery_group_provider.dart';
 export 'services/store_service/store_service.dart';

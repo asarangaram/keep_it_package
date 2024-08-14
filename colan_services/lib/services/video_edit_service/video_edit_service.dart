@@ -6,6 +6,7 @@ import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path/path.dart';
+import 'package:store/store.dart';
 
 import 'widgets/video_trimmer.dart';
 

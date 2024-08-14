@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import '../app_logger.dart';
+import '../../app_logger.dart';
 
-extension ColonExtensionOnString on String {
+extension StoreExtensionOnString on String {
   bool isURL() {
     try {
       final uri = Uri.parse(this);

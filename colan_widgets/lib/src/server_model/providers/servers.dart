@@ -4,8 +4,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store/app_logger.dart';
 
-import '../../app_logger.dart';
 import '../models/cl_server.dart';
 import '../models/servers.dart';
 
