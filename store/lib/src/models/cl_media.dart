@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
+import 'package:store/src/extensions/ext_datetime.dart';
 
 import 'cl_media_type.dart';
 
@@ -150,13 +151,13 @@ class CLMedia {
       'type': type.name,
       'collectionId': collectionId,
       'md5String': md5String,
-      'createdDate': createdDate?.millisecondsSinceEpoch,
-      'originalDate': originalDate?.millisecondsSinceEpoch,
-      'updatedDate': updatedDate?.millisecondsSinceEpoch,
+      'createdDate': createdDate?.toSQL(),
+      'originalDate': originalDate?.toSQL(),
+      'updatedDate': updatedDate?.toSQL(),
       'ref': ref,
-      'isDeleted': isDeleted,
+      'isDeleted': (isDeleted ?? false) ? 1 : 0,
       'path': path,
-      'isHidden': isHidden,
+      'isHidden': (isHidden ?? false) ? 1 : 0,
       'pin': pin,
     };
   }
@@ -164,24 +165,25 @@ class CLMedia {
   factory CLMedia.fromMap(Map<String, dynamic> map) {
     return CLMedia(
       id: map['id'] != null ? map['id'] as int : null,
-      name: map['name'] as String,
+      name: map['name'] != null ? map['name'] as String : 'Name not found',
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       collectionId:
           map['collectionId'] != null ? map['collectionId'] as int : null,
       md5String: map['md5String'] != null ? map['md5String'] as String : null,
       createdDate: map['createdDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
+          ? DateTime.parse(map['createdDate'] as String)
           : null,
       originalDate: map['originalDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
+          ? DateTime.parse(map['originalDate'] as String)
           : null,
       updatedDate: map['updatedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+          ? DateTime.parse(map['updatedDate'] as String)
           : null,
       ref: map['ref'] != null ? map['ref'] as String : null,
-      isDeleted: map['isDeleted'] != null ? map['isDeleted'] as bool : null,
+      isDeleted:
+          map['isDeleted'] != null ? (map['isDeleted'] as int) != 0 : null,
       path: map['path'] as String,
-      isHidden: map['isHidden'] != null ? map['isHidden'] as bool : null,
+      isHidden: map['isHidden'] != null ? (map['isHidden'] as int) != 0 : null,
       pin: map['pin'] != null ? map['pin'] as String : null,
     );
   }

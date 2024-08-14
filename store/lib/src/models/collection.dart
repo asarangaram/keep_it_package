@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
+import 'package:store/src/extensions/ext_datetime.dart';
 
 @immutable
 class Collection {
@@ -19,10 +20,10 @@ class Collection {
       description:
           map['description'] != null ? map['description'] as String : null,
       createdDate: map['createdDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
+          ? DateTime.parse(map['createdDate'] as String)
           : null,
       updatedDate: map['updatedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+          ? DateTime.parse(map['updatedDate'] as String)
           : null,
     );
   }
@@ -83,8 +84,8 @@ class Collection {
       'id': id,
       'label': label,
       'description': description,
-      'createdDate': createdDate?.millisecondsSinceEpoch,
-      'updatedDate': updatedDate?.millisecondsSinceEpoch,
+      'createdDate': createdDate?.toSQL(),
+      'updatedDate': updatedDate?.toSQL(),
     };
   }
 
