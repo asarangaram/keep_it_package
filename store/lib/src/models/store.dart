@@ -30,7 +30,7 @@ abstract class StoreQuery<T> {
   const StoreQuery();
 }
 
-abstract mixin class Store {
+abstract class Store {
   /// upsertCollection - introduce NULL return
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);

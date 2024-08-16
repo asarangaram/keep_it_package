@@ -12,7 +12,12 @@ Future<int> main() async {
   if (dbFile.existsSync()) {
     dbFile.deleteSync();
   }
-  final dbManager = await createStoreInstance(dbFile.path, onReload: () {});
+  final dbManager = await createServerCache(
+    dbDir: './basic_sqlite_testing',
+    onReload: () {},
+    server: null,
+    isOnline: null,
+  );
 
   final collections = [
     Collection(

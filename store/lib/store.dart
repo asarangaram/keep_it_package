@@ -15,4 +15,5 @@ export 'src/models/cl_note_type.dart' show CLNoteTypes;
 export 'src/models/cl_notes_on_media.dart' show NotesOnMedia;
 export 'src/models/collection.dart' show Collection;
 export 'src/models/collections.dart' show Collections;
+export 'src/models/server_cache.dart' show ServerCache;
 export 'src/models/store.dart' show DBQueries, Store, StoreQuery;

@@ -1,5 +1,6 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'package:colan_cmdline/colan_cmdline.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
@@ -10,8 +11,13 @@ import 'm3_db_query.dart';
 import 'm4_db_exec.dart';
 import 'm4_db_writer.dart';
 
-class DBManager extends Store {
-  DBManager({required this.db, required this.onReload}) {
+class DBManager extends ServerCache {
+  DBManager({
+    required this.db,
+    required this.onReload,
+    required this.server,
+    required this.isOnline,
+  }) {
     final collectionTable = DBExec<Collection>(
       table: 'Collection',
       jsonSQLCmd: r"""
@@ -81,14 +87,35 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
   late final DBWriter dbWriter;
 
   final void Function() onReload;
+  final CLServer? server;
+  final bool? isOnline;
 
   static Future<DBManager> createInstances({
     required String dbpath,
     required void Function() onReload,
+    required CLServer? server,
+    required bool? isOnline,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    return DBManager(db: db, onReload: onReload);
+    return DBManager(
+      db: db,
+      onReload: onReload,
+      server: server,
+      isOnline: isOnline,
+    );
+  }
+
+  DBManager updateOnlineStatus({required bool value}) {
+    if (value != isOnline) {
+      return DBManager(
+        db: db,
+        onReload: onReload,
+        server: server,
+        isOnline: value,
+      );
+    }
+    return this;
   }
 
   @override
@@ -109,21 +136,34 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
   //////////////////////////////////////////////////////////////////////////////
 
   @override
-  Future<Collection> upsertCollection(Collection collection) async {
+  Future<Collection> upsertCollection(
+    Collection collection, {
+    bool forceUpdate = false,
+    bool fromServer = false,
+  }) async {
     return db.writeTransaction<Collection>((tx) async {
       return dbWriter.upsertCollection(tx, collection);
     });
   }
 
   @override
-  Future<CLMedia?> upsertMedia(CLMedia media) async {
+  Future<CLMedia?> upsertMedia(
+    CLMedia media, {
+    bool forceUpdate = false,
+    bool fromServer = false,
+  }) async {
     return db.writeTransaction<CLMedia?>((tx) async {
       return dbWriter.upsertMedia(tx, media);
     });
   }
 
   @override
-  Future<CLNote?> upsertNote(CLNote note, List<CLMedia> mediaList) async {
+  Future<CLNote?> upsertNote(
+    CLNote note,
+    List<CLMedia> mediaList, {
+    bool forceUpdate = false,
+    bool fromServer = false,
+  }) async {
     return db.writeTransaction((tx) async {
       return dbWriter.upsertNote(tx, note, mediaList);
     });
@@ -141,7 +181,11 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
   }
 
   @override
-  Future<void> deleteCollection(Collection collection) async {
+  Future<void> deleteCollection(
+    Collection collection, {
+    bool forceUpdate = false,
+    bool fromServer = false,
+  }) async {
     throw Exception('currently not implelemented');
   }
 
@@ -155,7 +199,12 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
   }
 
   @override
-  Future<void> deleteMedia(CLMedia media, {required bool permanent}) async {
+  Future<void> deleteMedia(
+    CLMedia media, {
+    required bool permanent,
+    bool forceUpdate = false,
+    bool fromServer = false,
+  }) async {
     if (permanent) {
       final notes = await getNotesByMediaID(media.id!);
       await db.writeTransaction((tx) async {
@@ -187,7 +236,11 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
   }
 
   @override
-  Future<void> deleteNote(CLNote note) async {
+  Future<void> deleteNote(
+    CLNote note, {
+    bool forceUpdate = false,
+    bool fromServer = false,
+  }) async {
     final media = await getMediaByNoteID(note.id!);
 
     await db.writeTransaction((tx) async {
@@ -357,4 +410,23 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
       return rawQuery.copyWith(parameters: parameters) as StoreQuery<T>;
     }
   }
+
+  Future<void> sync() async {
+    // Upload all local items
+    // New Items
+    // deleted Items
+    // changed items
+
+    // Sync back from server
+  }
+
+  /* Future<void> downloadCollections() async {
+    if(isOnline ?? false)
+    final json = await server.getEndpoint('/collection');
+    final collections = Collections.fromJson(json);
+    if (collections.entries.isEmpty) return;
+    for (final collection in collections.entries) {
+      await cachedStore.upsertCollection(collection);
+    }
+  } */
 }

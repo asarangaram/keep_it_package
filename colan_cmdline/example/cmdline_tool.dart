@@ -1,5 +1,4 @@
 import 'package:colan_cmdline/colan_cmdline.dart';
-import 'package:colan_cmdline/src/cache/cached_server.dart';
 import 'package:logger/logger.dart';
 
 Logger logger = Logger(
@@ -30,14 +29,14 @@ Future<int> main() async {
   }
   _infoLogger('Server found: id: ${server.id}');
   // ignore: unused_local_variable
-  final cachedServer = await CachedServer.create(
+  /* final cachedServer = await CachedServer.create(
     name: server.name,
     port: server.port,
     id: server.id!,
     isOnline: await server.hasConnection,
     cacheDir: './test_db',
     onReload: () {},
-  );
+  ); */
 
   return 0;
 }
