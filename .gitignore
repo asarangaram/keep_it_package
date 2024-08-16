@@ -5,3 +5,5 @@ pub.dev/.venv/**
 pub.dev/package_info.json
 local_store/.flutter-plugins-dependencies
 colan_server/**
+colan_cmdline/test_db/**
+colan_cmdline/basic_sqlite_testing/**

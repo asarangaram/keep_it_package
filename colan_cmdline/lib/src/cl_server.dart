@@ -87,6 +87,4 @@ class CLServer {
 
   Future<String> getEndpoint(String endPoint) async =>
       RestApi('http://$name:$port').get(endPoint);
-
-  String get dbPath => '$id.sqlite.db';
 }

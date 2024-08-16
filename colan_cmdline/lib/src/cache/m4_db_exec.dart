@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:sqlite_async/sqlite3_common.dart';
 
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';

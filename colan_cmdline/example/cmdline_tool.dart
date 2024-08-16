@@ -1,4 +1,5 @@
 import 'package:colan_cmdline/colan_cmdline.dart';
+import 'package:colan_cmdline/src/cache/cached_server.dart';
 import 'package:logger/logger.dart';
 
 Logger logger = Logger(
@@ -23,19 +24,28 @@ Future<int> main() async {
 
   final server =
       await const CLServer(name: 'udesktop.local', port: 5000).withId;
-  if (server == null) {
-    logger.f('Server not found');
+  if (server == null || server.id == null) {
+    _infoLogger('Server not found');
     return -1;
   }
   _infoLogger('Server found: id: ${server.id}');
+  // ignore: unused_local_variable
+  final cachedServer = await CachedServer.create(
+    name: server.name,
+    port: server.port,
+    id: server.id!,
+    isOnline: await server.hasConnection,
+    cacheDir: './test_db',
+    onReload: () {},
+  );
 
-  final collections = await ExtServerOnCollection.fetch(server);
-  logger.i("Collections\n\t${collections.entries.join('\n\t')}");
-
-  final medias = await ExtServerOnCLMedias.fetch(server);
-  logger.i("Medias\n\t${medias.entries.join('\n\t')}");
   return 0;
-  /*
+}
+
+/*
+
+
+/*
   
    print(server);
   if (server != null) {
@@ -69,9 +79,6 @@ Future<int> main() async {
       await file.writeAsString(collections);
     }
   } */
-}
-
-/*
 import 'package:json_diff/json_diff.dart';
 
 void main() {

@@ -3,6 +3,7 @@
 /// More dartdocs go here.
 library;
 
+export 'src/cache/create.dart';
 export 'src/cl_server.dart';
 export 'src/extensions.dart';
 export 'src/rest_api.dart';

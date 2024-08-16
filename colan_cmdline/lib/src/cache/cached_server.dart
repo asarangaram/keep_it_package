@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
@@ -14,14 +16,19 @@ class CachedServer extends CLServer with Store {
     required this.cachedStore,
   }) : super(id: id);
 
-  Future<CachedServer> createCachedServer({
+  static Future<CachedServer> create({
     required String name,
     required int port,
     required int id,
     required String cacheDir,
+    required bool isOnline,
+    required void Function() onReload,
   }) async {
+    if (!Directory(cacheDir).existsSync()) {
+      Directory(cacheDir).createSync(recursive: true);
+    }
     final cachedStore = await createStoreInstance(
-      '$cacheDir/${super.dbPath}',
+      '$cacheDir/${'$id.sqlite.db'}',
       onReload: onReload,
     );
 
@@ -34,13 +41,20 @@ class CachedServer extends CLServer with Store {
     );
 
     //download Collections and Media
-    await downloadCollections();
-    await downloadMedia();
+    await cachedServer.downloadCollections();
+    //await downloadMedia();
 
     return cachedServer;
   }
 
-  Future<void> downloadCollections() async {}
+  Future<void> downloadCollections() async {
+    final json = await getEndpoint('/collection');
+    final collections = Collections.fromJson(json);
+    if (collections.entries.isEmpty) return;
+    for (final collection in collections.entries) {
+      await cachedStore.upsertCollection(collection);
+    }
+  }
 
   Future<void> downloadMedia() async {}
 
@@ -50,10 +64,6 @@ class CachedServer extends CLServer with Store {
 
   final Store cachedStore;
   final bool isOnline;
-
-  void onReload() {
-    reloadStore();
-  }
 
   @override
   CachedServer copyWith({
