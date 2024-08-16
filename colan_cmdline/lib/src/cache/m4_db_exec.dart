@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+import 'package:sqlite_async/sqlite3_common.dart';
 
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
@@ -10,8 +13,10 @@ class DBExec<T> {
     required this.table,
     required this.toMap,
     required this.readBack,
+    this.jsonSQLCmd,
   });
   final String table;
+  final String? jsonSQLCmd;
   final Map<String, dynamic>? Function(T obj) toMap;
   final Future<T?> Function(SqliteWriteContext tx, T obj)? readBack;
 
@@ -49,15 +54,28 @@ class DBExec<T> {
     T obj, {
     bool ignore = false,
   }) async {
-    final cmd = _sql(
-      obj,
-      ignore: ignore,
-    );
-    if (cmd == null) return null;
-    _infoLogger('Exec:  $cmd');
-    if (cmd.value.isNotEmpty) {
-      await tx.execute(cmd.key, cmd.value);
+    if (jsonSQLCmd != null) {
+      final jsonObj = toMap(obj);
+
+      if (jsonObj == null) {
+        return null;
+      }
+
+      final result =
+          await tx.execute(jsonSQLCmd!, List.filled(12, jsonEncode(jsonObj)));
+      print(result.length);
+    } else {
+      final cmd = _sql(
+        obj,
+        ignore: ignore,
+      );
+      if (cmd == null) return null;
+      _infoLogger('Exec:  $cmd');
+      if (cmd.value.isNotEmpty) {
+        await tx.execute(cmd.key, cmd.value);
+      }
     }
+
     final result = await readBack?.call(tx, obj);
     _infoLogger('Readback:  $result');
     return result;
@@ -146,7 +164,7 @@ class DBExec<T> {
 }
 
 const _filePrefix = 'DB Write (internal): ';
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 // ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
