@@ -18,8 +18,10 @@ class DBWriter {
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
-    Collection collection,
-  ) async {
+    Collection collection, {
+    required bool forceUpdate,
+    required bool fromServer,
+  }) async {
     _infoLogger('upsertCollection: $collection');
     final updated = await collectionTable.upsert(
       tx,
@@ -37,8 +39,10 @@ class DBWriter {
 
   Future<List<CLMedia?>> upsertMediaMultiple(
     SqliteWriteContext tx,
-    List<CLMedia> media,
-  ) async {
+    List<CLMedia> media, {
+    required bool forceUpdate,
+    required bool fromServer,
+  }) async {
     _infoLogger('upsertMediaMultiple: $media');
     final updated = await mediaTable.upsertAll(
       tx,
@@ -54,7 +58,12 @@ class DBWriter {
     return updated;
   }
 
-  Future<CLMedia> upsertMedia(SqliteWriteContext tx, CLMedia media) async {
+  Future<CLMedia> upsertMedia(
+    SqliteWriteContext tx,
+    CLMedia media, {
+    required bool forceUpdate,
+    required bool fromServer,
+  }) async {
     _infoLogger('upsertMedia: $media');
     final updated = await mediaTable.upsert(
       tx,
@@ -72,8 +81,10 @@ class DBWriter {
 
   Future<void> deleteMedia(
     SqliteWriteContext tx,
-    CLMedia media,
-  ) async {
+    CLMedia media, {
+    required bool forceUpdate,
+    required bool fromServer,
+  }) async {
     await mediaTable.delete(tx, {'id': media.id.toString()});
   }
 
@@ -93,14 +104,19 @@ class DBWriter {
       final pin = await onPin(media, title: media.label);
       if (pin == null) return false;
       final pinnedMedia = media.copyWith(pin: pin);
-      await upsertMedia(tx, pinnedMedia);
+      await upsertMedia(tx, pinnedMedia, forceUpdate: true, fromServer: false);
       return true;
     } else {
       final id = media.pin!;
       final res = await onRemovePin(id);
       if (res) {
         final pinnedMedia = media.removePin();
-        await upsertMedia(tx, pinnedMedia);
+        await upsertMedia(
+          tx,
+          pinnedMedia,
+          forceUpdate: true,
+          fromServer: false,
+        );
       }
       return res;
     }
@@ -120,7 +136,8 @@ class DBWriter {
       final res = await onRemovePin(id);
       if (res) {
         final pinnedMedia = media.removePin();
-        await upsertMedia(tx, pinnedMedia);
+        await upsertMedia(tx, pinnedMedia,
+            forceUpdate: true, fromServer: false);
       }
       return res;
     }
@@ -129,8 +146,10 @@ class DBWriter {
   Future<CLNote> upsertNote(
     SqliteWriteContext tx,
     CLNote note,
-    List<CLMedia> mediaList,
-  ) async {
+    List<CLMedia> mediaList, {
+    required bool forceUpdate,
+    required bool fromServer,
+  }) async {
     _infoLogger('upsertNote: $note');
 
     final updated = await notesTable.upsert(
@@ -157,8 +176,10 @@ class DBWriter {
 
   Future<void> deleteNote(
     SqliteWriteContext tx,
-    CLNote note,
-  ) async {
+    CLNote note, {
+    required bool forceUpdate,
+    required bool fromServer,
+  }) async {
     if (note.id == null) return;
 
     await notesTable.delete(tx, {'id': note.id.toString()});
@@ -168,6 +189,8 @@ class DBWriter {
     SqliteWriteContext tx, {
     required CLNote note,
     required CLMedia media,
+    required bool forceUpdate,
+    required bool fromServer,
   }) async {
     await notesOnMediaTable.delete(
       tx,

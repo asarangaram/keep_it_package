@@ -16,8 +16,8 @@ class DBManager extends ServerCache {
     required this.db,
     required this.onReload,
     required this.server,
-    required this.isOnline,
-  }) {
+    required bool? isOnline,
+  }) : _isOnline = isOnline ?? false {
     final collectionTable = DBExec<Collection>(
       table: 'Collection',
       jsonSQLCmd: r"""
@@ -88,7 +88,9 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
 
   final void Function() onReload;
   final CLServer? server;
-  final bool? isOnline;
+  final bool? _isOnline;
+
+  bool get isOnline => _isOnline ?? false;
 
   static Future<DBManager> createInstances({
     required String dbpath,
@@ -107,7 +109,7 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
   }
 
   DBManager updateOnlineStatus({required bool value}) {
-    if (value != isOnline) {
+    if (value != _isOnline) {
       return DBManager(
         db: db,
         onReload: onReload,
@@ -142,7 +144,12 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
     bool fromServer = false,
   }) async {
     return db.writeTransaction<Collection>((tx) async {
-      return dbWriter.upsertCollection(tx, collection);
+      return dbWriter.upsertCollection(
+        tx,
+        collection,
+        fromServer: fromServer,
+        forceUpdate: forceUpdate,
+      );
     });
   }
 
@@ -153,7 +160,12 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
     bool fromServer = false,
   }) async {
     return db.writeTransaction<CLMedia?>((tx) async {
-      return dbWriter.upsertMedia(tx, media);
+      return dbWriter.upsertMedia(
+        tx,
+        media,
+        fromServer: fromServer,
+        forceUpdate: forceUpdate,
+      );
     });
   }
 
@@ -165,7 +177,13 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
     bool fromServer = false,
   }) async {
     return db.writeTransaction((tx) async {
-      return dbWriter.upsertNote(tx, note, mediaList);
+      return dbWriter.upsertNote(
+        tx,
+        note,
+        mediaList,
+        fromServer: fromServer,
+        forceUpdate: forceUpdate,
+      );
     });
   }
 
@@ -210,10 +228,21 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
       await db.writeTransaction((tx) async {
         if (notes != null && notes.isNotEmpty) {
           for (final n in notes) {
-            await dbWriter.disconnectNotes(tx, note: n, media: media);
+            await dbWriter.disconnectNotes(
+              tx,
+              note: n,
+              media: media,
+              fromServer: fromServer,
+              forceUpdate: forceUpdate,
+            );
           }
         }
-        await dbWriter.deleteMedia(tx, media);
+        await dbWriter.deleteMedia(
+          tx,
+          media,
+          fromServer: fromServer,
+          forceUpdate: forceUpdate,
+        );
       });
     } else {
       // Soft Delete
@@ -221,6 +250,8 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
         await dbWriter.upsertMedia(
           tx,
           media.removePin().copyWith(isDeleted: true),
+          fromServer: fromServer,
+          forceUpdate: forceUpdate,
         );
       });
     }
@@ -246,10 +277,21 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
     await db.writeTransaction((tx) async {
       if (media != null && media.isNotEmpty) {
         for (final m in media) {
-          await dbWriter.disconnectNotes(tx, media: m, note: note);
+          await dbWriter.disconnectNotes(
+            tx,
+            media: m,
+            note: note,
+            fromServer: fromServer,
+            forceUpdate: forceUpdate,
+          );
         }
       }
-      await dbWriter.deleteNote(tx, note);
+      await dbWriter.deleteNote(
+        tx,
+        note,
+        fromServer: fromServer,
+        forceUpdate: forceUpdate,
+      );
     });
   }
   //////////////////////////////////////////////////////////////////////////////
@@ -418,15 +460,17 @@ INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirt
     // changed items
 
     // Sync back from server
+    // Update everything that are from Server.
   }
 
-  /* Future<void> downloadCollections() async {
-    if(isOnline ?? false)
-    final json = await server.getEndpoint('/collection');
-    final collections = Collections.fromJson(json);
-    if (collections.entries.isEmpty) return;
-    for (final collection in collections.entries) {
-      await cachedStore.upsertCollection(collection);
+  Future<void> downloadCollections() async {
+    if (isOnline) {
+      final json = await server!.getEndpoint('/collection');
+      final collections = Collections.fromJson(json);
+      if (collections.entries.isEmpty) return;
+      for (final collection in collections.entries) {
+        await upsertCollection(collection);
+      }
     }
-  } */
+  }
 }
