@@ -85,7 +85,7 @@ class DBWriter {
     required bool forceUpdate,
     required bool fromServer,
   }) async {
-    await mediaTable.delete(tx, {'id': media.id.toString()});
+    await mediaTable.delete(tx, media);
   }
 
   Future<bool> togglePin(
@@ -136,8 +136,12 @@ class DBWriter {
       final res = await onRemovePin(id);
       if (res) {
         final pinnedMedia = media.removePin();
-        await upsertMedia(tx, pinnedMedia,
-            forceUpdate: true, fromServer: false);
+        await upsertMedia(
+          tx,
+          pinnedMedia,
+          forceUpdate: true,
+          fromServer: false,
+        );
       }
       return res;
     }
@@ -182,7 +186,7 @@ class DBWriter {
   }) async {
     if (note.id == null) return;
 
-    await notesTable.delete(tx, {'id': note.id.toString()});
+    await notesTable.delete(tx, note);
   }
 
   Future<void> disconnectNotes(
@@ -192,7 +196,7 @@ class DBWriter {
     required bool forceUpdate,
     required bool fromServer,
   }) async {
-    await notesOnMediaTable.delete(
+    await notesOnMediaTable.deleteFromMap(
       tx,
       {'noteId': note.id!.toString(), 'itemId': media.id!.toString()},
     );

@@ -12,7 +12,7 @@ class DBCommand {
     this.parameters,
   );
 
-  factory DBCommand.upsertFromMap(
+  factory DBCommand.upsert(
     Map<String, dynamic> map, {
     required String table,
     required bool Function(int id) isPresent,
@@ -23,12 +23,12 @@ class DBCommand {
     update = map.hasID && isPresent(map.id!);
 
     if (update) {
-      return DBCommand.updateFromMap(
+      return DBCommand.update(
         map,
         table: table,
       );
     } else {
-      return DBCommand.insertFromMap(
+      return DBCommand.insert(
         map,
         table: table,
         autoIncrementId: autoIncrementId,
@@ -36,7 +36,7 @@ class DBCommand {
       );
     }
   }
-  factory DBCommand.insertFromMap(
+  factory DBCommand.insert(
     Map<String, dynamic> map, {
     required String table,
     bool autoIncrementId = true,
@@ -54,7 +54,7 @@ class DBCommand {
     return DBCommand(sql, [parameters]);
   }
 
-  factory DBCommand.updateFromMap(
+  factory DBCommand.update(
     Map<String, dynamic> map, {
     required String table,
   }) {
@@ -75,7 +75,7 @@ class DBCommand {
     return DBCommand(sql, [parameters]);
   }
 
-  factory DBCommand.deleteFromMap(
+  factory DBCommand.delete(
     Map<String, dynamic> map, {
     required String table,
     List<String>? identifiers,
@@ -90,9 +90,11 @@ class DBCommand {
       sql = 'DELETE FROM $table WHERE id = ?';
       parameters = [map.id];
     } else {
+      final keys = map.keys.where((e) => identifiers.contains(e));
+      final map1 = {for (final e in keys) e: map[e]};
       sql = 'DELETE FROM $table '
-          'WHERE ${map.keys.map((e) => '$e = ?').join(' AND ')}';
-      parameters = identifiers;
+          'WHERE ${map1.keys.map((e) => '$e = ?').join(' AND ')}';
+      parameters = map1.values.toList();
     }
     return DBCommand(sql, [parameters]);
   }

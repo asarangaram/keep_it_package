@@ -8,7 +8,7 @@ import 'db_extension_on_map.dart';
 class DBBatchCommand {
   const DBBatchCommand(this.commands);
 
-  factory DBBatchCommand.upsertFromList(
+  factory DBBatchCommand.upsert(
     List<Map<String, dynamic>> list, {
     required String table,
     required List<int> Function(List<int> id) getPresentIdList,
@@ -22,13 +22,13 @@ class DBBatchCommand {
 
     return DBBatchCommand([
       ...items2Update.map(
-        (e) => DBCommand.updateFromMap(
+        (e) => DBCommand.update(
           e,
           table: table,
         ),
       ),
       ...items2insert.map(
-        (e) => DBCommand.insertFromMap(
+        (e) => DBCommand.insert(
           e,
           table: table,
           autoIncrementId: autoIncrementId,
@@ -38,7 +38,7 @@ class DBBatchCommand {
     ]);
   }
 
-  factory DBBatchCommand.insertFromList(
+  factory DBBatchCommand.insert(
     List<Map<String, dynamic>> list, {
     required String table,
     bool autoIncrementId = true,
@@ -47,7 +47,7 @@ class DBBatchCommand {
     return DBBatchCommand(
       list
           .map(
-            (e) => DBCommand.insertFromMap(
+            (e) => DBCommand.insert(
               e,
               table: table,
               autoIncrementId: autoIncrementId,
@@ -57,14 +57,14 @@ class DBBatchCommand {
           .toList(),
     ).merge();
   }
-  factory DBBatchCommand.updateFromList(
+  factory DBBatchCommand.update(
     List<Map<String, dynamic>> list, {
     required String table,
   }) {
     return DBBatchCommand(
       list
           .map(
-            (e) => DBCommand.updateFromMap(
+            (e) => DBCommand.update(
               e,
               table: table,
             ),
@@ -72,7 +72,7 @@ class DBBatchCommand {
           .toList(),
     ).merge();
   }
-  factory DBBatchCommand.deleteFromList(
+  factory DBBatchCommand.delete(
     List<Map<String, dynamic>> list, {
     required String table,
     List<String>? identifiers,
@@ -80,7 +80,7 @@ class DBBatchCommand {
     return DBBatchCommand(
       list
           .map(
-            (e) => DBCommand.deleteFromMap(
+            (e) => DBCommand.delete(
               e,
               table: table,
               identifiers: identifiers,
