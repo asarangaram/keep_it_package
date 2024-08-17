@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/extensions.dart';
 
-import '../../extensions/ext_string.dart';
 import '../quick_menu/cl_quickmenu.dart';
 import 'main_header.dart';
 

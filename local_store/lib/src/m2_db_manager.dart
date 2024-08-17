@@ -1,8 +1,8 @@
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/store.dart';
 
 import 'backup_query.dart';
 import 'ext_sqlite_database.dart';

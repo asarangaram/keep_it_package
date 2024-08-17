@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
 class AudioNote extends StatefulWidget {
   const AudioNote(

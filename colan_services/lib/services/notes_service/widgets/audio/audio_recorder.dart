@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
 import 'decorations.dart';
 import 'live_audio_view.dart';

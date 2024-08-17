@@ -1,14 +1,9 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
-import '../../basics/cl_decorate_square.dart';
-import '../../basics/cl_matrix.dart';
-import '../../extensions/ext_double.dart';
-import '../../models/cl_dimension.dart';
-import '../../models/cl_media.dart';
-import '../../store_model/the_store.dart';
+import 'package:store/store.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({

@@ -7,12 +7,12 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:store/app_logger.dart';
 
 import '../models/app_descriptor.dart';
 import '../models/cl_route_descriptor.dart';
 
 import 'bottom_nav_page.dart';
-import 'incoming_media_monitor.dart';
 
 class AppView extends ConsumerStatefulWidget {
   const AppView({

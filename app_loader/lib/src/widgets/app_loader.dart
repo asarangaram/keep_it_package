@@ -11,6 +11,7 @@ library;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/app_logger.dart';
 
 import '../models/app_descriptor.dart';
 import '../providers/app_init.dart';

@@ -1,8 +1,7 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 import '../extensions/ext_datetime.dart';
 import '../extensions/ext_file.dart';

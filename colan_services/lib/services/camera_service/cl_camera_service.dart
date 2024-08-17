@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import 'package:store/store.dart';
+
 import 'providers/captured_media.dart';
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';

@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keep_it/widgets/store_manager.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:store/store.dart';
 import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';

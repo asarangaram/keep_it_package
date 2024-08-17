@@ -2,8 +2,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:store/store.dart';
 
-import '../providers/incoming_media.dart';
+import 'incoming_media.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
   const IncomingMediaMonitor({

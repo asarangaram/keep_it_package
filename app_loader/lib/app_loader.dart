@@ -10,4 +10,3 @@ export 'src/models/cl_route_descriptor.dart'
 
 export 'src/widgets/app_loader.dart' show AppLoader;
 export 'src/widgets/fullscreen_layout.dart';
-export 'src/widgets/incoming_media_monitor.dart' show IncomingMediaMonitor;

@@ -1,11 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:store/store.dart';
 
-import 'cl_media.dart';
-import 'cl_media_type.dart';
-import 'collection.dart';
-import 'universal_media_source.dart';
+import '../models/universal_media_source.dart';
 
 @immutable
 class CLMediaFileGroup {
