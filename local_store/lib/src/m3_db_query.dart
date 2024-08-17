@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
+
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 

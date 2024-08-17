@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 import 'm4_db_exec.dart';

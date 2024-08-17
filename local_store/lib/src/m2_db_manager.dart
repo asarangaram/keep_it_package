@@ -1,6 +1,5 @@
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'package:flutter/material.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
@@ -64,11 +63,11 @@ class DBManager extends Store {
   final SqliteDatabase db;
   late final DBWriter dbWriter;
 
-  final VoidCallback onReload;
+  final void Function() onReload;
 
   static Future<DBManager> createInstances({
     required String dbpath,
-    required VoidCallback onReload,
+    required void Function() onReload,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
