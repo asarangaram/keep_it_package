@@ -20,23 +20,6 @@ class DBManager extends ServerCache {
   }) : _isOnline = isOnline ?? false {
     final collectionTable = DBExec<Collection>(
       table: 'Collection',
-      jsonSQLCmd: r"""
-INSERT INTO Collection (id, label, createdDate, updatedDate, description, isDirty)
-      SELECT 
-        json_extract(?, '$.id'),
-        json_extract(?, '$.label'),
-        json_extract(?, '$.createdDate'),
-        json_extract(?, '$.updatedDate'),
-        json_extract(?, '$.description'),
-        COALESCE(json_extract(?, '$.isDirty'), 1) -- set as true as default !
-      ON CONFLICT(id) DO UPDATE SET
-        label = json_extract(?, '$.label'),
-        createdDate = json_extract(?, '$.createdDate'),
-        updatedDate = json_extract(?, '$.updatedDate'),
-        description = json_extract(?, '$.description'),
-        isDirty = COALESCE(json_extract(?, '$.isDirty'), isDirty)
-      WHERE id = json_extract(?, '$.id')
-""",
       toMap: (obj) {
         return obj.toMap();
       },

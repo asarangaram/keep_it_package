@@ -12,10 +12,8 @@ class DBExec<T> {
     required this.table,
     required this.toMap,
     required this.readBack,
-    this.jsonSQLCmd,
   });
   final String table;
-  final String? jsonSQLCmd;
   final Map<String, dynamic>? Function(T obj) toMap;
   final Future<T?> Function(SqliteWriteContext tx, T obj)? readBack;
 
@@ -53,17 +51,7 @@ class DBExec<T> {
     T obj, {
     bool ignore = false,
   }) async {
-    if (jsonSQLCmd != null) {
-      final jsonObj = toMap(obj);
-
-      if (jsonObj == null) {
-        return null;
-      }
-
-      final result =
-          await tx.execute(jsonSQLCmd!, List.filled(12, jsonEncode(jsonObj)));
-      print(result.length);
-    } else {
+    {
       final cmd = _sql(
         obj,
         ignore: ignore,
