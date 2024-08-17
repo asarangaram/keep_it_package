@@ -4,7 +4,9 @@ enum DBErrorCode {
   unknownDBException,
   autoIncrementIdViolationException,
   updateWithoutIdException,
-  deleteWithoutIdException
+  deleteWithoutIdException,
+  mergeFailedException,
+  executionFailed,
 }
 
 @immutable
