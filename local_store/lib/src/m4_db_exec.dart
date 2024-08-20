@@ -108,7 +108,7 @@ class DBExec<T> {
 }
 
 const _filePrefix = 'DB Write (internal): ';
-bool _disableInfoLogger = false;
+bool _disableInfoLogger = true;
 // ignore: unused_element
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
