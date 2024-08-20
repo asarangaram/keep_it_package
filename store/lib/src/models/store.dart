@@ -25,6 +25,11 @@ enum DBQueries {
   noteByPath,
   notesByMediaId,
   noteByIdList,
+
+  collectionLocallyModified,
+  mediaLocallyModified,
+  noteLocallyModified,
+
   notesOrphan;
 }
 

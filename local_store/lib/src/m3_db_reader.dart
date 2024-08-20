@@ -231,11 +231,50 @@ class DBReader {
           triggerOnTables: const {'Notes', 'ItemNote'},
           fromMap: CLNote.fromMap,
         ),
+      DBQueries.collectionLocallyModified => DBQuery<Collection>(
+          sql: 'SELECT * FROM Collection WHERE locallyModified = True;',
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.mediaLocallyModified => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Item WHERE locallyModified = True;',
+          triggerOnTables: const {'Item'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.noteLocallyModified => DBQuery<CLNote>(
+          sql: 'SELECT * FROM Notes WHERE locallyModified = True;',
+          triggerOnTables: const {'Notes'},
+          fromMap: CLNote.fromMap,
+        ),
     };
     if (parameters == null) {
       return rawQuery as StoreQuery<T>;
     } else {
       return rawQuery.copyWith(parameters: parameters) as StoreQuery<T>;
     }
+  }
+
+  Future<List<Collection>> locallyModifiedCollections() {
+    return readMultiple<Collection>(
+      getQuery(
+        DBQueries.collectionLocallyModified,
+      ) as DBQuery<Collection>,
+    );
+  }
+
+  Future<List<CLMedia>> locallyModifiedMedias() {
+    return readMultiple<CLMedia>(
+      getQuery(
+        DBQueries.mediaLocallyModified,
+      ) as DBQuery<CLMedia>,
+    );
+  }
+
+  Future<List<CLNote>> locallyModifiedNotes() {
+    return readMultiple<CLNote>(
+      getQuery(
+        DBQueries.noteLocallyModified,
+      ) as DBQuery<CLNote>,
+    );
   }
 }
