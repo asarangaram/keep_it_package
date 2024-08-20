@@ -98,4 +98,60 @@ final migrations = SqliteMigrations()
       )
     ''');
     }),
+  )
+  ..add(
+    SqliteMigration(5, (tx) async {
+      await tx.execute(
+        'ALTER TABLE Collection ADD COLUMN locallyModified INTEGER DEFAULT 1',
+      );
+      await tx.execute(
+        'ALTER TABLE Item ADD COLUMN locallyModified INTEGER DEFAULT 1',
+      );
+      await tx.execute(
+        'ALTER TABLE Notes ADD COLUMN locallyModified INTEGER DEFAULT 1',
+      );
+
+      await tx.execute(
+        'ALTER TABLE Collection ADD COLUMN serverUID INTEGER ',
+      );
+      await tx.execute(
+        'ALTER TABLE Item ADD COLUMN serverUID INTEGER ',
+      );
+      await tx.execute(
+        'ALTER TABLE Notes ADD COLUMN serverUID INTEGER ',
+      );
+
+      await tx.execute('UPDATE Collection SET locallyModified = 1');
+      await tx.execute('UPDATE Item SET locallyModified = 1');
+      await tx.execute('UPDATE Notes SET locallyModified = 1');
+
+      await tx.execute('UPDATE Collection SET serverUID = NULL');
+      await tx.execute('UPDATE Item SET serverUID = NULL');
+      await tx.execute('UPDATE Notes SET serverUID = NULL');
+    }),
+  )
+  ..add(
+    SqliteMigration(6, (tx) async {
+      await tx.execute(
+        'CREATE UNIQUE INDEX idx_collection_serverUID ON Collection(serverUID)',
+      );
+
+      await tx.execute(
+        'CREATE UNIQUE INDEX idx_item_serverUID ON Item(serverUID)',
+      );
+
+      await tx.execute(
+        'CREATE UNIQUE INDEX idx_notes_serverUID ON Notes(serverUID)',
+      );
+    }),
+  )
+  ..add(
+    SqliteMigration(7, (tx) async {
+      await tx.execute('''
+      CREATE TABLE IF NOT EXISTS Server (
+        UUID TEXT NOT NULL UNIQUE,
+        INFO TEXT 
+      )
+      ''');
+    }),
   );
