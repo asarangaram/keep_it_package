@@ -1,3 +1,4 @@
+import 'package:local_store/src/cl_server.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
@@ -9,7 +10,7 @@ import 'm4_db_exec.dart';
 import 'm4_db_writer.dart';
 
 class DBManager extends Store {
-  DBManager({required this.db, required this.onReload}) {
+  DBManager({required this.db, required this.onReload, required this.server}) {
     final collectionTable = DBExec<Collection>(
       table: 'Collection',
       toMap: (obj) {
@@ -62,16 +63,23 @@ class DBManager extends Store {
   final SqliteDatabase db;
   late final DBWriter dbWriter;
   late final DBReader dbReader;
+  final CLServer? server;
 
   final void Function() onReload;
 
   static Future<DBManager> createInstances({
     required String dbpath,
     required void Function() onReload,
+    CLServer? server,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    return DBManager(db: db, onReload: onReload);
+    if (server != null) {
+      print('Syncing with server ${server.id}');
+    } else {
+      print('running Offline Mode');
+    }
+    return DBManager(db: db, onReload: onReload, server: server);
   }
 
   @override
