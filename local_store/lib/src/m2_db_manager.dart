@@ -90,7 +90,6 @@ class DBManager extends Store {
       return dbWriter.upsertCollection(
         tx,
         collection,
-        getById: (id) async => DBReader(tx).getCollectionByID(id),
       );
     });
   }
@@ -101,7 +100,6 @@ class DBManager extends Store {
       return dbWriter.upsertMedia(
         tx,
         media,
-        getById: (id) async => DBReader(tx).getMediaByID(id),
       );
     });
   }
@@ -133,14 +131,15 @@ class DBManager extends Store {
       /// PATCH ============================================================
       /// This patch is required as for some reasons, DELETE on CASCASDE
       /// didn't work.
-      if (permanent) {
+      // TODO(anandas): : Fix this
+      /* if (permanent) {
         final notes = await DBReader(tx).getNotesByMediaID(media.id!);
         if (notes != null && notes.isNotEmpty) {
           for (final n in notes) {
             await dbWriter.disconnectNotes(tx, note: n, media: media);
           }
         }
-      }
+      } */
 
       /// PATCH ENDS ========================================================
       await dbWriter.deleteMedia(

@@ -18,9 +18,8 @@ class DBWriter {
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
-    Collection collection, {
-    required Future<Collection?> Function(int id) getById,
-  }) async {
+    Collection collection,
+  ) async {
     final Collection? updated;
 
     _infoLogger('upsertCollection: $collection');
@@ -43,14 +42,14 @@ class DBWriter {
 
   Future<CLMedia> upsertMedia(
     SqliteWriteContext tx,
-    CLMedia media, {
-    required Future<CLMedia?> Function(int id) getById,
-  }) async {
+    CLMedia media,
+  ) async {
     _infoLogger('upsertMedia: $media');
 
-    final updated = await mediaTable.insert(
+    final updated = await mediaTable.upsert(
       tx,
       media,
+      uniqueColumn: ['id', 'serverUID', 'md5String'],
     );
     _infoLogger('upsertMedia: Done :  $updated');
     if (updated == null) {
@@ -113,7 +112,6 @@ class DBWriter {
       await upsertMedia(
         tx,
         media.removePin().copyWith(isDeleted: true),
-        getById: getById,
       );
     }
   }
