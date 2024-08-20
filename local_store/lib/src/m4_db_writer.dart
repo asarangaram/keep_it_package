@@ -74,7 +74,7 @@ class DBWriter {
     SqliteWriteContext tx,
     CLMedia media,
   ) async {
-    await mediaTable.delete(tx, {'id': media.id.toString()});
+    await mediaTable.delete(tx, media);
   }
 
   Future<bool> togglePin(
@@ -161,7 +161,7 @@ class DBWriter {
   ) async {
     if (note.id == null) return;
 
-    await notesTable.delete(tx, {'id': note.id.toString()});
+    await notesTable.delete(tx, note);
   }
 
   Future<void> disconnectNotes(
@@ -171,7 +171,8 @@ class DBWriter {
   }) async {
     await notesOnMediaTable.delete(
       tx,
-      {'noteId': note.id!.toString(), 'itemId': media.id!.toString()},
+      NotesOnMedia(noteId: note.id!, itemId: media.id!),
+      identifier: ['noteId', 'itemId'],
     );
   }
 }
