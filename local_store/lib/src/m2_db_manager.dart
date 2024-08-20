@@ -84,21 +84,34 @@ class DBManager extends Store {
   @override
   Future<Collection> upsertCollection(Collection collection) async {
     return db.writeTransaction<Collection>((tx) async {
-      return dbWriter.upsertCollection(tx, collection);
+      return dbWriter.upsertCollection(
+        tx,
+        collection,
+        getById: (id) async => dbReader.getCollectionByID(tx, id),
+      );
     });
   }
 
   @override
   Future<CLMedia?> upsertMedia(CLMedia media) async {
     return db.writeTransaction<CLMedia?>((tx) async {
-      return dbWriter.upsertMedia(tx, media);
+      return dbWriter.upsertMedia(
+        tx,
+        media,
+        getById: (id) async => dbReader.getMediaByID(tx, id),
+      );
     });
   }
 
   @override
   Future<CLNote?> upsertNote(CLNote note, List<CLMedia> mediaList) async {
     return db.writeTransaction((tx) async {
-      return dbWriter.upsertNote(tx, note, mediaList);
+      return dbWriter.upsertNote(
+        tx,
+        note,
+        mediaList,
+        getById: (id) async => dbReader.getNoteByID(tx, id),
+      );
     });
   }
 
@@ -127,7 +140,12 @@ class DBManager extends Store {
       }
 
       /// PATCH ENDS ========================================================
-      await dbWriter.deleteMedia(tx, media, permanent: permanent);
+      await dbWriter.deleteMedia(
+        tx,
+        media,
+        permanent: permanent,
+        getById: (id) async => dbReader.getMediaByID(tx, id),
+      );
     });
   }
 

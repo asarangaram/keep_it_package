@@ -18,12 +18,14 @@ class DBWriter {
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
-    Collection collection,
-  ) async {
+    Collection collection, {
+    required Future<Collection?> Function(int id) getById,
+  }) async {
     _infoLogger('upsertCollection: $collection');
     final updated = await collectionTable.upsert(
       tx,
       collection,
+      isPresent: (id) async => (await getById(id))?.id != null,
     );
     _infoLogger('upsertCollection: Done :  $updated');
     if (updated == null) {
@@ -37,12 +39,17 @@ class DBWriter {
 
   Future<List<CLMedia?>> upsertMediaMultiple(
     SqliteWriteContext tx,
-    List<CLMedia> media,
-  ) async {
+    List<CLMedia> media, {
+    required Future<List<CLMedia>> Function(List<int>) getByIdList,
+  }) async {
     _infoLogger('upsertMediaMultiple: $media');
     final updated = await mediaTable.upsertAll(
       tx,
       media,
+      getPresentIdList: (idList) async => (await getByIdList(idList))
+          .where((e) => e.id != null)
+          .map((e) => e.id!)
+          .toList(),
     );
     _infoLogger('upsertMediaMultiple: Done :  $updated');
     if (updated.any((e) => e == null)) {
@@ -54,11 +61,16 @@ class DBWriter {
     return updated;
   }
 
-  Future<CLMedia> upsertMedia(SqliteWriteContext tx, CLMedia media) async {
+  Future<CLMedia> upsertMedia(
+    SqliteWriteContext tx,
+    CLMedia media, {
+    required Future<CLMedia?> Function(int id) getById,
+  }) async {
     _infoLogger('upsertMedia: $media');
     final updated = await mediaTable.upsert(
       tx,
       media,
+      isPresent: (id) async => (await getById(id))?.id != null,
     );
     _infoLogger('upsertMedia: Done :  $updated');
     if (updated == null) {
@@ -73,13 +85,15 @@ class DBWriter {
   Future<CLNote> upsertNote(
     SqliteWriteContext tx,
     CLNote note,
-    List<CLMedia> mediaList,
-  ) async {
+    List<CLMedia> mediaList, {
+    required Future<CLNote?> Function(int id) getById,
+  }) async {
     _infoLogger('upsertNote: $note');
 
     final updated = await notesTable.upsert(
       tx,
       note,
+      isPresent: (id) async => (await getById(id))?.id != null,
     );
     _infoLogger('upsertNote: Done :  $updated');
     if (updated == null) {
@@ -93,6 +107,8 @@ class DBWriter {
           tx,
           NotesOnMedia(noteId: updated.id!, itemId: media.id!),
           ignore: true,
+          isPresent: (id) async =>
+              false, // Always try to insert, ignore if present
         );
       }
     }
@@ -110,6 +126,7 @@ class DBWriter {
     SqliteWriteContext tx,
     CLMedia media, {
     required bool permanent,
+    required Future<CLMedia?> Function(int id) getById,
   }) async {
     if (permanent) {
       await mediaTable.delete(tx, media);
@@ -118,6 +135,7 @@ class DBWriter {
       await upsertMedia(
         tx,
         media.removePin().copyWith(isDeleted: true),
+        getById: getById,
       );
     }
   }

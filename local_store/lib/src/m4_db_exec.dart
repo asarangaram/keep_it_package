@@ -49,18 +49,18 @@ class DBExec<T> {
   Future<T?> upsert(
     SqliteWriteContext tx,
     T obj, {
+    required Future<bool> Function(int) isPresent,
     bool ignore = false,
   }) async {
     final map = toMap(obj);
     if (map == null) return null;
 
-    await DBCommand.upsert(
+    await (await DBCommand.upsertAsync(
       map,
       table: table,
-      isPresent: (id) {
-        throw UnimplementedError('isPresent not implemented');
-      },
-    ).execute(tx);
+      isPresent: isPresent,
+    ))
+        .execute(tx);
 
     final result = await readBack?.call(tx, obj);
     _infoLogger('Readback:  $result');
@@ -69,18 +69,18 @@ class DBExec<T> {
 
   Future<List<T?>> upsertAll(
     SqliteWriteContext tx,
-    List<T> objList,
-  ) async {
+    List<T> objList, {
+    required Future<List<int>> Function(List<int>) getPresentIdList,
+  }) async {
     final list =
         objList.map(toMap).where((e) => e != null).map((e) => e!).toList();
 
-    DBBatchCommand.upsert(
+    await (await DBBatchCommand.upsertAsync(
       list,
       table: table,
-      getPresentIdList: (ids) {
-        throw UnimplementedError('isPresent not implemented');
-      },
-    );
+      getPresentIdList: getPresentIdList,
+    ))
+        .execute(tx);
 
     final result = <T?>[];
     for (final obj in objList) {

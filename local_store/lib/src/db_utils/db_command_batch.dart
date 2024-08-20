@@ -8,36 +8,6 @@ import 'db_extension_on_map.dart';
 class DBBatchCommand {
   const DBBatchCommand(this.commands);
 
-  factory DBBatchCommand.upsert(
-    List<Map<String, dynamic>> list, {
-    required String table,
-    required List<int> Function(List<int> id) getPresentIdList,
-    bool autoIncrementId = true,
-    bool ignore = false,
-  }) {
-    final idsPresent =
-        getPresentIdList(list.where((e) => e.hasID).map((e) => e.id!).toList());
-    final items2Update = list.where((e) => idsPresent.contains(e.id)).toList();
-    final items2insert = list.where((e) => !idsPresent.contains(e.id)).toList();
-
-    return DBBatchCommand([
-      ...items2Update.map(
-        (e) => DBCommand.update(
-          e,
-          table: table,
-        ),
-      ),
-      ...items2insert.map(
-        (e) => DBCommand.insert(
-          e,
-          table: table,
-          autoIncrementId: autoIncrementId,
-          ignore: ignore,
-        ),
-      ),
-    ]);
-  }
-
   factory DBBatchCommand.insert(
     List<Map<String, dynamic>> list, {
     required String table,
@@ -88,6 +58,37 @@ class DBBatchCommand {
           )
           .toList(),
     ).merge();
+  }
+
+  static Future<DBBatchCommand> upsertAsync(
+    List<Map<String, dynamic>> list, {
+    required String table,
+    required Future<List<int>> Function(List<int> id) getPresentIdList,
+    bool autoIncrementId = true,
+    bool ignore = false,
+  }) async {
+    final idsPresent = await getPresentIdList(
+      list.where((e) => e.hasID).map((e) => e.id!).toList(),
+    );
+    final items2Update = list.where((e) => idsPresent.contains(e.id)).toList();
+    final items2insert = list.where((e) => !idsPresent.contains(e.id)).toList();
+
+    return DBBatchCommand([
+      ...items2Update.map(
+        (e) => DBCommand.update(
+          e,
+          table: table,
+        ),
+      ),
+      ...items2insert.map(
+        (e) => DBCommand.insert(
+          e,
+          table: table,
+          autoIncrementId: autoIncrementId,
+          ignore: ignore,
+        ),
+      ),
+    ]);
   }
 
   final List<DBCommand> commands;

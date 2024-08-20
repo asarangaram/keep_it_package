@@ -11,31 +11,6 @@ class DBCommand {
     this.sql,
     this.parameters,
   );
-
-  factory DBCommand.upsert(
-    Map<String, dynamic> map, {
-    required String table,
-    required bool Function(int id) isPresent,
-    bool autoIncrementId = true,
-    bool ignore = false,
-  }) {
-    final bool update;
-    update = map.hasID && isPresent(map.id!);
-
-    if (update) {
-      return DBCommand.update(
-        map,
-        table: table,
-      );
-    } else {
-      return DBCommand.insert(
-        map,
-        table: table,
-        autoIncrementId: autoIncrementId,
-        ignore: ignore,
-      );
-    }
-  }
   factory DBCommand.insert(
     Map<String, dynamic> map, {
     required String table,
@@ -98,6 +73,32 @@ class DBCommand {
     }
     return DBCommand(sql, [parameters]);
   }
+
+  static Future<DBCommand> upsertAsync(
+    Map<String, dynamic> map, {
+    required String table,
+    required Future<bool> Function(int id) isPresent,
+    bool autoIncrementId = true,
+    bool ignore = false,
+  }) async {
+    final bool update;
+    update = map.hasID && await isPresent(map.id!);
+
+    if (update) {
+      return DBCommand.update(
+        map,
+        table: table,
+      );
+    } else {
+      return DBCommand.insert(
+        map,
+        table: table,
+        autoIncrementId: autoIncrementId,
+        ignore: ignore,
+      );
+    }
+  }
+
   final String sql;
   final List<List<Object?>> parameters;
 

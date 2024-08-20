@@ -25,6 +25,66 @@ class DBReader {
     return dbArchive;
   }
 
+  Future<Collection?> getCollectionByID(
+    SqliteWriteContext tx,
+    int id,
+  ) async {
+    return read<Collection>(
+      getQuery(DBQueries.collectionById, parameters: [id])
+          as DBQuery<Collection>,
+    );
+  }
+
+  Future<CLMedia?> getMediaByID(
+    SqliteWriteContext tx,
+    int id,
+  ) {
+    return read<CLMedia>(
+      getQuery(DBQueries.mediaById, parameters: [id]) as DBQuery<CLMedia>,
+    );
+  }
+
+  Future<CLNote?> getNoteByID(
+    SqliteWriteContext tx,
+    int id,
+  ) {
+    return read<CLNote>(
+      getQuery(DBQueries.noteById, parameters: [id]) as DBQuery<CLNote>,
+    );
+  }
+
+  Future<List<Collection>> getCollectionsByIDList(
+    SqliteWriteContext tx,
+    List<int> idList,
+  ) {
+    return readMultiple<Collection>(
+      getQuery(
+        DBQueries.collectionByIdList,
+        parameters: ['(${idList.join(', ')})'],
+      ) as DBQuery<Collection>,
+    );
+  }
+
+  Future<List<CLMedia>> getMediasByIDList(
+    SqliteWriteContext tx,
+    List<int> idList,
+  ) {
+    return readMultiple<CLMedia>(
+      getQuery(DBQueries.mediaByIdList, parameters: ['(${idList.join(', ')})'])
+          as DBQuery<CLMedia>,
+    );
+  }
+
+  Future<List<CLNote>> getNotesByIDList(
+    SqliteWriteContext tx,
+    List<int> idList,
+  ) {
+    return readMultiple<CLNote>(
+      getQuery(DBQueries.noteByIdList, parameters: ['(${idList.join(', ')})'])
+          as DBQuery<CLNote>,
+    );
+  }
+
   Future<List<CLMedia>> getMediaByCollectionId(
     SqliteWriteContext tx,
     int collectionId,
@@ -86,6 +146,11 @@ class DBReader {
               "label NOT LIKE '***%' AND "
               'Item.isDeleted = 0',
           triggerOnTables: const {'Collection', 'Item'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionByIdList => DBQuery<Collection>(
+          sql: 'SELECT * FROM Collection WHERE id IN (?)',
+          triggerOnTables: const {'Collection'},
           fromMap: Collection.fromMap,
         ),
       DBQueries.mediaById => DBQuery<CLMedia>(
@@ -160,6 +225,11 @@ class DBReader {
           sql:
               'SELECT Notes.* FROM Notes JOIN ItemNote ON Notes.id = ItemNote.noteId WHERE ItemNote.itemId = ?;',
           triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
+          fromMap: CLNote.fromMap,
+        ),
+      DBQueries.noteByIdList => DBQuery<CLNote>(
+          sql: 'SELECT * FROM Notes WHERE id IN (?)',
+          triggerOnTables: const {'Notes'},
           fromMap: CLNote.fromMap,
         ),
       DBQueries.notesOrphan => DBQuery<CLNote>(

@@ -8,6 +8,7 @@ enum DBQueries {
   collectionsAll,
   collectionsExcludeEmpty,
   collectionsEmpty,
+  collectionByIdList,
 
   mediaById,
   mediaAll,
@@ -23,6 +24,7 @@ enum DBQueries {
   noteById,
   noteByPath,
   notesByMediaId,
+  noteByIdList,
   notesOrphan;
 }
 
