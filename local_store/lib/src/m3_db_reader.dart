@@ -7,26 +7,25 @@ import 'backup_query.dart';
 import 'm3_db_query.dart';
 
 class DBReader {
-  DBReader(this.db);
-  final SqliteDatabase db;
+  DBReader(this.tx);
+  SqliteWriteContext tx;
 
   Future<T?> read<T>(StoreQuery<T> query) {
-    return (query as DBQuery<T>).read(db);
+    return (query as DBQuery<T>).read(tx);
   }
 
   Future<List<T>> readMultiple<T>(StoreQuery<T> query) {
-    return (query as DBQuery<T>).readMultiple(db);
+    return (query as DBQuery<T>).readMultiple(tx);
   }
 
   Future<List<Object?>?> getDBRecords() async {
     final dbArchive =
-        (await db.getAll(backupQuery, [])).rows.map((e) => e[0]).toList();
+        (await tx.getAll(backupQuery, [])).rows.map((e) => e[0]).toList();
 
     return dbArchive;
   }
 
   Future<Collection?> getCollectionByID(
-    SqliteWriteContext tx,
     int id,
   ) async {
     return read<Collection>(
@@ -36,7 +35,6 @@ class DBReader {
   }
 
   Future<CLMedia?> getMediaByID(
-    SqliteWriteContext tx,
     int id,
   ) {
     return read<CLMedia>(
@@ -45,7 +43,6 @@ class DBReader {
   }
 
   Future<CLNote?> getNoteByID(
-    SqliteWriteContext tx,
     int id,
   ) {
     return read<CLNote>(
@@ -54,7 +51,6 @@ class DBReader {
   }
 
   Future<List<Collection>> getCollectionsByIDList(
-    SqliteWriteContext tx,
     List<int> idList,
   ) {
     return readMultiple<Collection>(
@@ -66,7 +62,6 @@ class DBReader {
   }
 
   Future<List<CLMedia>> getMediasByIDList(
-    SqliteWriteContext tx,
     List<int> idList,
   ) {
     return readMultiple<CLMedia>(
@@ -76,7 +71,6 @@ class DBReader {
   }
 
   Future<List<CLNote>> getNotesByIDList(
-    SqliteWriteContext tx,
     List<int> idList,
   ) {
     return readMultiple<CLNote>(
@@ -86,7 +80,6 @@ class DBReader {
   }
 
   Future<List<CLMedia>> getMediaByCollectionId(
-    SqliteWriteContext tx,
     int collectionId,
   ) async {
     return readMultiple<CLMedia>(

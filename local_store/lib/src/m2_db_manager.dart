@@ -56,12 +56,10 @@ class DBManager extends Store {
       notesTable: notesTable,
       notesOnMediaTable: notesOnMediaTable,
     );
-    dbReader = DBReader(db);
   }
 
   final SqliteDatabase db;
   late final DBWriter dbWriter;
-  late final DBReader dbReader;
 
   final void Function() onReload;
 
@@ -87,7 +85,7 @@ class DBManager extends Store {
       return dbWriter.upsertCollection(
         tx,
         collection,
-        getById: (id) async => dbReader.getCollectionByID(tx, id),
+        getById: (id) async => DBReader(tx).getCollectionByID(id),
       );
     });
   }
@@ -98,7 +96,7 @@ class DBManager extends Store {
       return dbWriter.upsertMedia(
         tx,
         media,
-        getById: (id) async => dbReader.getMediaByID(tx, id),
+        getById: (id) async => DBReader(tx).getMediaByID(id),
       );
     });
   }
@@ -110,7 +108,7 @@ class DBManager extends Store {
         tx,
         note,
         mediaList,
-        getById: (id) async => dbReader.getNoteByID(tx, id),
+        getById: (id) async => DBReader(tx).getNoteByID(id),
       );
     });
   }
@@ -131,7 +129,7 @@ class DBManager extends Store {
       /// This patch is required as for some reasons, DELETE on CASCASDE
       /// didn't work.
       if (permanent) {
-        final notes = await dbReader.getNotesByMediaID(media.id!);
+        final notes = await DBReader(tx).getNotesByMediaID(media.id!);
         if (notes != null && notes.isNotEmpty) {
           for (final n in notes) {
             await dbWriter.disconnectNotes(tx, note: n, media: media);
@@ -144,7 +142,7 @@ class DBManager extends Store {
         tx,
         media,
         permanent: permanent,
-        getById: (id) async => dbReader.getMediaByID(tx, id),
+        getById: (id) async => DBReader(tx).getMediaByID(id),
       );
     });
   }
@@ -155,7 +153,7 @@ class DBManager extends Store {
       /// PATCH ============================================================
       /// This patch is required as for some reasons, DELETE on CASCASDE
       /// didn't work.
-      final media = await dbReader.getMediaByNoteID(note.id!);
+      final media = await DBReader(tx).getMediaByNoteID(note.id!);
       if (media != null && media.isNotEmpty) {
         for (final m in media) {
           await dbWriter.disconnectNotes(tx, media: m, note: note);
@@ -194,16 +192,16 @@ class DBManager extends Store {
   }
 
   @override
-  Future<List<Object?>?> getDBRecords() => dbReader.getDBRecords();
+  Future<List<Object?>?> getDBRecords() => DBReader(db).getDBRecords();
 
   @override
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
-      dbReader.getQuery(query, parameters: parameters);
+      DBReader(db).getQuery(query, parameters: parameters);
 
   @override
-  Future<T?> read<T>(StoreQuery<T> query) => dbReader.read(query);
+  Future<T?> read<T>(StoreQuery<T> query) => DBReader(db).read(query);
 
   @override
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query) =>
-      dbReader.readMultiple(query);
+      DBReader(db).readMultiple(query);
 }
