@@ -74,11 +74,6 @@ class DBManager extends Store {
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    if (server != null) {
-      print('Syncing with server ${server.id}');
-    } else {
-      print('running Offline Mode');
-    }
     return DBManager(db: db, onReload: onReload, server: server);
   }
 
@@ -214,4 +209,10 @@ class DBManager extends Store {
   @override
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query) =>
       dbReader.readMultiple(query);
+
+  Future<void> syncLocal2Server() async {
+    /// get all items that are marked as locally Modifed
+    // ignore: unused_local_variable
+    final updatedCollections = await dbReader.locallyModifiedCollections();
+  }
 }

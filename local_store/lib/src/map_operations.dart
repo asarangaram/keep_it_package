@@ -49,4 +49,6 @@ class MapDiff {
 
   Map<String, dynamic> get diffMap => {...added, ...changed};
   Map<String, dynamic> get diffMapFull => {...added, ...changed, ...deleted};
+
+  bool get hasChange => diffMapFull.isNotEmpty;
 }

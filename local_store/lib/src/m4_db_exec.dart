@@ -49,18 +49,58 @@ class DBExec<T> {
   Future<T?> upsert(
     SqliteWriteContext tx,
     T obj, {
-    required Future<bool> Function(int) isPresent,
+    required List<String> uniqueColumn,
     bool ignore = false,
   }) async {
     final map = toMap(obj);
     if (map == null) return null;
 
-    await (await DBCommand.upsertAsync(
+    await DBCommand.upsert(
+      tx,
       map,
       table: table,
-      isPresent: isPresent,
-    ))
-        .execute(tx);
+      getItemByColumnValue: (key, value) async {
+        return (await tx.getAll('SELECT * FROM $table WHERE $key = ?', [value]))
+            .firstOrNull;
+      },
+      uniqueColumn: uniqueColumn,
+    );
+
+    final result = await readBack?.call(tx, obj);
+    _infoLogger('Readback:  $result');
+    return result;
+  }
+
+  Future<T?> insert(
+    SqliteWriteContext tx,
+    T obj, {
+    bool ignore = false,
+  }) async {
+    final map = toMap(obj);
+    if (map == null) return null;
+
+    await DBCommand.insert(
+      map,
+      table: table,
+    ).execute(tx);
+
+    final result = await readBack?.call(tx, obj);
+    _infoLogger('Readback:  $result');
+    return result;
+  }
+
+  Future<T?> update(
+    SqliteWriteContext tx,
+    T obj, {
+    bool ignore = false,
+  }) async {
+    final map = toMap(obj);
+    if (map == null) return null;
+
+    await DBCommand.update(
+      map,
+      table: table,
+    ).execute(tx);
 
     final result = await readBack?.call(tx, obj);
     _infoLogger('Readback:  $result');

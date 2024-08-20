@@ -4,8 +4,8 @@ import 'package:test/test.dart';
 void main() {
   group('MapDiff', () {
     test(
-        'should correctly identify added, deleted, and changed items with various data types',
-        () {
+        'should correctly identify added, deleted, and '
+        'changed items with various data types', () {
       final oldMap = {
         'int': 1,
         'float': 2.5,

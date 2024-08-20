@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
+import '../map_operations.dart';
 import 'db_exception.dart';
 import 'db_extension_on_map.dart';
 
@@ -134,6 +135,38 @@ class DBCommand {
       return mergeParameters(other);
     } else {
       throw const DBException(DBErrorCode.mergeFailedException);
+    }
+  }
+
+  static Future<bool> upsert(
+    SqliteWriteContext tx,
+    Map<String, dynamic> newMap, {
+    required String table,
+    required Future<Map<String, dynamic>?> Function(String column, Object id)
+        getItemByColumnValue,
+    required List<String> uniqueColumn,
+  }) async {
+    Map<String, dynamic>? existing;
+    for (final uC in uniqueColumn) {
+      if (newMap.containsKey(uC) && newMap[uC] != null) {
+        existing = await getItemByColumnValue(uC, newMap[uC] as Object);
+        if (existing != null) break;
+      }
+    }
+    if (existing == null) {
+      return DBCommand.insert(newMap, table: table).execute(tx);
+    } else {
+      final changes = MapDiff.scan(existing, newMap);
+      if (!changes.hasChange) {
+        return true;
+      }
+      final update = changes.diffMap;
+      // Put back ID, as it may be removed in diffMap
+      // also force locallyModified, precaution, ideally this should
+      // reflect in changes.diffMap
+      update['id'] = existing['id'];
+      update['locallyModified'] = newMap['locallyModified'];
+      return DBCommand.update(update, table: table).execute(tx);
     }
   }
 
