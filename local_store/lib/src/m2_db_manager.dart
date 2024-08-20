@@ -106,42 +106,45 @@ class DBManager extends Store {
 
   @override
   Future<void> deleteCollection(Collection collection) async {
-    throw Exception('currently not implelemented');
+    return db.writeTransaction((tx) async {
+      await dbWriter.deleteCollection(tx, collection);
+    });
   }
 
   @override
   Future<void> deleteMedia(CLMedia media, {required bool permanent}) async {
-    if (permanent) {
-      final notes = await dbReader.getNotesByMediaID(media.id!);
-      await db.writeTransaction((tx) async {
+    await db.writeTransaction((tx) async {
+      /// PATCH ============================================================
+      /// This patch is required as for some reasons, DELETE on CASCASDE
+      /// didn't work.
+      if (permanent) {
+        final notes = await dbReader.getNotesByMediaID(media.id!);
         if (notes != null && notes.isNotEmpty) {
           for (final n in notes) {
             await dbWriter.disconnectNotes(tx, note: n, media: media);
           }
         }
-        await dbWriter.deleteMedia(tx, media);
-      });
-    } else {
-      // Soft Delete
-      await db.writeTransaction((tx) async {
-        await dbWriter.upsertMedia(
-          tx,
-          media.removePin().copyWith(isDeleted: true),
-        );
-      });
-    }
+      }
+
+      /// PATCH ENDS ========================================================
+      await dbWriter.deleteMedia(tx, media, permanent: permanent);
+    });
   }
 
   @override
   Future<void> deleteNote(CLNote note) async {
-    final media = await dbReader.getMediaByNoteID(note.id!);
-
     await db.writeTransaction((tx) async {
+      /// PATCH ============================================================
+      /// This patch is required as for some reasons, DELETE on CASCASDE
+      /// didn't work.
+      final media = await dbReader.getMediaByNoteID(note.id!);
       if (media != null && media.isNotEmpty) {
         for (final m in media) {
           await dbWriter.disconnectNotes(tx, media: m, note: note);
         }
       }
+
+      /// PATCH ENDS ========================================================
       await dbWriter.deleteNote(tx, note);
     });
   }

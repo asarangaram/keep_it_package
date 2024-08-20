@@ -70,62 +70,6 @@ class DBWriter {
     return updated!;
   }
 
-  Future<void> deleteMedia(
-    SqliteWriteContext tx,
-    CLMedia media,
-  ) async {
-    await mediaTable.delete(tx, media);
-  }
-
-  Future<bool> togglePin(
-    SqliteWriteContext tx,
-    CLMedia media, {
-    required Future<String?> Function(
-      CLMedia media, {
-      required String title,
-      String? desc,
-    }) onPin,
-    required Future<bool> Function(String id) onRemovePin,
-  }) async {
-    if (media.id == null) return false;
-
-    if (media.pin == null || media.pin!.isEmpty) {
-      final pin = await onPin(media, title: media.label);
-      if (pin == null) return false;
-      final pinnedMedia = media.copyWith(pin: pin);
-      await upsertMedia(tx, pinnedMedia);
-      return true;
-    } else {
-      final id = media.pin!;
-      final res = await onRemovePin(id);
-      if (res) {
-        final pinnedMedia = media.removePin();
-        await upsertMedia(tx, pinnedMedia);
-      }
-      return res;
-    }
-  }
-
-  Future<bool> removePin(
-    SqliteWriteContext tx,
-    CLMedia media, {
-    required Future<bool> Function(String id) onRemovePin,
-  }) async {
-    if (media.id == null) return false;
-
-    if (media.pin == null || media.pin!.isEmpty) {
-      return false;
-    } else {
-      final id = media.pin!;
-      final res = await onRemovePin(id);
-      if (res) {
-        final pinnedMedia = media.removePin();
-        await upsertMedia(tx, pinnedMedia);
-      }
-      return res;
-    }
-  }
-
   Future<CLNote> upsertNote(
     SqliteWriteContext tx,
     CLNote note,
@@ -153,6 +97,29 @@ class DBWriter {
       }
     }
     return updated!;
+  }
+
+  Future<void> deleteCollection(
+    SqliteWriteContext tx,
+    Collection collection,
+  ) async {
+    await collectionTable.delete(tx, collection);
+  }
+
+  Future<void> deleteMedia(
+    SqliteWriteContext tx,
+    CLMedia media, {
+    required bool permanent,
+  }) async {
+    if (permanent) {
+      await mediaTable.delete(tx, media);
+    } else {
+      // Soft Delete
+      await upsertMedia(
+        tx,
+        media.removePin().copyWith(isDeleted: true),
+      );
+    }
   }
 
   Future<void> deleteNote(
