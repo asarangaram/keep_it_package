@@ -56,10 +56,12 @@ class DBManager extends Store {
       notesTable: notesTable,
       notesOnMediaTable: notesOnMediaTable,
     );
+    dbReader = DBReader(db);
   }
 
   final SqliteDatabase db;
   late final DBWriter dbWriter;
+  late final DBReader dbReader;
 
   final void Function() onReload;
 
@@ -192,16 +194,16 @@ class DBManager extends Store {
   }
 
   @override
-  Future<List<Object?>?> getDBRecords() => DBReader(db).getDBRecords();
+  Future<List<Object?>?> getDBRecords() => dbReader.getDBRecords();
 
   @override
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
-      DBReader(db).getQuery(query, parameters: parameters);
+      dbReader.getQuery(query, parameters: parameters);
 
   @override
-  Future<T?> read<T>(StoreQuery<T> query) => DBReader(db).read(query);
+  Future<T?> read<T>(StoreQuery<T> query) => dbReader.read(query);
 
   @override
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query) =>
-      DBReader(db).readMultiple(query);
+      dbReader.readMultiple(query);
 }
