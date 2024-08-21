@@ -4,6 +4,13 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 import 'rest_api.dart';
 
+enum SyncStatus {
+  success,
+  partial,
+  serverNotConfigured,
+  serverNotReachable,
+}
+
 @immutable
 class CLServer {
   const CLServer({
