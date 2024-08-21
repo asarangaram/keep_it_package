@@ -1,29 +1,34 @@
-import 'package:local_store/src/cl_server.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
 import 'ext_sqlite_database.dart';
 import 'm2_db_migration.dart';
+import 'm3_db_queries.dart';
 import 'm3_db_query.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
 import 'm4_db_writer.dart';
+import 'm4_db_writer_server_extension.dart';
 
+@immutable
 class DBManager extends Store {
-  DBManager({required this.db, required this.onReload, required this.server}) {
+  factory DBManager({
+    required SqliteDatabase db,
+    required void Function() onReload,
+    required CLServer? server,
+  }) {
     final collectionTable = DBExec<Collection>(
       table: 'Collection',
-      toMap: (obj) {
-        return obj.toMap();
-      },
-      readBack: (
-        tx,
-        collection,
-      ) async {
-        return (getQuery(
+      toMap: (obj) => obj.toMap(),
+      readBack: (tx, collection) async {
+        return (Queries.getQuery(
           DBQueries.collectionByLabel,
+          parameters: [collection.label],
         ) as DBQuery<Collection>)
-            .copyWith(parameters: [collection.label]).read(tx);
+            .read(tx);
       },
     );
 
@@ -31,8 +36,11 @@ class DBManager extends Store {
       table: 'Media',
       toMap: (CLMedia obj) => obj.toMap(),
       readBack: (tx, media) {
-        return (getQuery(DBQueries.mediaByPath) as DBQuery<CLMedia>)
-            .copyWith(parameters: [media.label]).read(tx);
+        return (Queries.getQuery(
+          DBQueries.mediaByPath,
+          parameters: [media.label],
+        ) as DBQuery<CLMedia>)
+            .read(tx);
       },
     );
 
@@ -44,17 +52,31 @@ class DBManager extends Store {
         return item;
       },
     );
-    dbWriter = DBWriter(
+    final dbWriter = DBWriter(
       collectionTable: collectionTable,
       mediaTable: mediaTable,
       notesOnMediaTable: notesOnMediaTable,
     );
-    dbReader = DBReader(db);
+    final dbReader = DBReader(db);
+    return DBManager._(
+      db: db,
+      onReload: onReload,
+      server: server,
+      dbReader: dbReader,
+      dbWriter: dbWriter,
+    );
   }
+  DBManager._({
+    required this.db,
+    required this.onReload,
+    required this.server,
+    required this.dbWriter,
+    required this.dbReader,
+  });
 
   final SqliteDatabase db;
-  late final DBWriter dbWriter;
-  late final DBReader dbReader;
+  final DBWriter dbWriter;
+  final DBReader dbReader;
   final CLServer? server;
 
   final void Function() onReload;
@@ -66,7 +88,9 @@ class DBManager extends Store {
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    return DBManager(db: db, onReload: onReload, server: server);
+    final dbManager = DBManager(db: db, onReload: onReload, server: server);
+    await dbManager.pull();
+    return dbManager;
   }
 
   @override
@@ -146,4 +170,83 @@ class DBManager extends Store {
   @override
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query) =>
       dbReader.readMultiple(query);
+
+  DBManager copyWith({
+    SqliteDatabase? db,
+    DBWriter? dbWriter,
+    DBReader? dbReader,
+    CLServer? server,
+    void Function()? onReload,
+  }) {
+    return DBManager._(
+      db: db ?? this.db,
+      dbWriter: dbWriter ?? this.dbWriter,
+      dbReader: dbReader ?? this.dbReader,
+      server: server ?? this.server,
+      onReload: onReload ?? this.onReload,
+    );
+  }
+
+  @override
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'DBManager(db: $db, dbWriter: $dbWriter, dbReader: $dbReader, server: $server, onReload: $onReload)';
+  }
+
+  @override
+  bool operator ==(covariant DBManager other) {
+    if (identical(this, other)) return true;
+
+    return other.db == db &&
+        other.dbWriter == dbWriter &&
+        other.dbReader == dbReader &&
+        other.server == server &&
+        other.onReload == onReload;
+  }
+
+  @override
+  int get hashCode {
+    return db.hashCode ^
+        dbWriter.hashCode ^
+        dbReader.hashCode ^
+        server.hashCode ^
+        onReload.hashCode;
+  }
+
+  @override
+  Future<DBManager> attachServer(CLServer? value) async {
+    final dbManager = DBManager._(
+      db: db,
+      onReload: onReload,
+      dbWriter: dbWriter,
+      dbReader: dbReader,
+      server: value,
+    );
+    await dbManager.pull();
+    return dbManager;
+  }
+
+  Future<SyncStatus> push() async {
+    /* final updatedCollections =  */ await dbReader
+        .locallyModifiedCollections();
+    if ((await server?.hasConnection()) ?? false) {
+    } else {
+      throw Exception('Server not found');
+    }
+    throw UnimplementedError();
+  }
+
+  Future<SyncStatus> pull({
+    http.Client? client,
+  }) async {
+    if (server == null) return SyncStatus.serverNotConfigured;
+    await db.writeTransaction((tx) async {
+      final res =
+          await dbWriter.pullCollection(tx, server: server!, client: client);
+      if (res != SyncStatus.success) {
+        return res;
+      }
+    });
+    return SyncStatus.success;
+  }
 }

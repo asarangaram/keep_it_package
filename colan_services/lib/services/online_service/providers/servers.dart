@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:store/app_logger.dart';
+import 'package:store/store.dart';
 
 import '../models/servers.dart';
 
@@ -32,7 +32,7 @@ class ServersNotifier extends StateNotifier<Servers> {
     final myServerJSON = prefs.getString('myServer');
 
     if (myServerJSON != null) {
-      state = state.copyWith(myServer: CLServer.fromJson(myServerJSON));
+      state = state.copyWith(myServer: CLServerImpl.fromJson(myServerJSON));
     }
     subscription = Connectivity()
         .onConnectivityChanged
@@ -96,7 +96,7 @@ class ServersNotifier extends StateNotifier<Servers> {
           in client.lookup<SrvResourceRecord>(
         ResourceRecordQuery.service(ptr.domainName),
       )) {
-        final server = CLServer(name: srv.target, port: srv.port);
+        final server = CLServerImpl(name: srv.target, port: srv.port);
         servers.add(server);
       }
     }
@@ -113,7 +113,7 @@ class ServersNotifier extends StateNotifier<Servers> {
   Future<void> attatch(CLServer? value) async {
     final prefs = await SharedPreferences.getInstance();
     if (value != null) {
-      await prefs.setString('myServer', value.toJson());
+      await prefs.setString('myServer', (value as CLServerImpl).toJson());
       state = state.copyWith(myServer: value, myServerOnline: true);
     } else {
       await prefs.remove('myServer');

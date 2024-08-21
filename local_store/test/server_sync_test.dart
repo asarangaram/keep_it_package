@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:local_store/local_store.dart';
-import 'package:local_store/src/cl_server.dart';
+
 import 'package:local_store/src/m2_db_manager.dart';
 import 'package:mockito/annotations.dart';
 
@@ -60,7 +60,7 @@ void main() {
       }
 
       dbFile.parent.createSync(recursive: true);
-      const server = CLServer(name: 'test_server', port: 5000);
+      const server = CLServerImpl(name: 'test_server', port: 5000);
       mockClient = MockClient((request) async {
         return switch (request.url.path) {
           '/collection' => http.Response(mockCollections.toJsonList(), 200),

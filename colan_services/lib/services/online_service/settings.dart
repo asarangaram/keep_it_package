@@ -47,8 +47,8 @@ class CloudOnLANSettings extends ConsumerWidget {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text:
-                              '${serv.identifier}@${serv.name}:${serv.port} is ',
+                          text: '${serv.identifier}@${serv.name}:${serv.port} '
+                              'is ',
                         ),
                         TextSpan(
                           text: servers.myServerOnline ? 'online' : 'offline',

@@ -4,16 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
-import 'cl_server.dart';
 import 'm4_db_writer.dart';
 
 extension DBWRiterServerExt on DBWriter {
   Future<SyncStatus> pullCollection(
     SqliteWriteContext tx, {
-    CLServer? server,
+    required CLServer server,
     http.Client? client,
   }) async {
-    if (server == null) return SyncStatus.serverNotConfigured;
     if (!await server.hasConnection(client: client)) {
       return SyncStatus.serverNotReachable;
     }

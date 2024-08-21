@@ -3,44 +3,34 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:store/store.dart';
 import 'rest_api.dart';
 
-enum SyncStatus {
-  success,
-  partial,
-  serverNotConfigured,
-  serverNotReachable,
-}
-
 @immutable
-class CLServer {
-  const CLServer({
-    required this.name,
-    required this.port,
-    this.id,
+class CLServerImpl extends CLServer {
+  const CLServerImpl({
+    required super.name,
+    required super.port,
+    super.id,
   });
 
-  final String name;
-  final int port;
-  final int? id;
-
-  CLServer copyWith({
+  CLServerImpl copyWith({
     String? name,
     int? port,
     int? id,
   }) {
-    return CLServer(
-      name: name ?? this.name,
-      port: port ?? this.port,
-      id: id ?? this.id,
+    return CLServerImpl(
+      name: name ?? super.name,
+      port: port ?? super.port,
+      id: id ?? super.id,
     );
   }
 
   @override
-  String toString() => 'CLServer(name: $name, port: $port, id: $id)';
+  String toString() => 'CLServerImpl(name: $name, port: $port, id: $id)';
 
   @override
-  bool operator ==(covariant CLServer other) {
+  bool operator ==(covariant CLServerImpl other) {
     if (identical(this, other)) return true;
 
     return other.name == name && other.port == port && other.id == id;
@@ -49,7 +39,8 @@ class CLServer {
   @override
   int get hashCode => name.hashCode ^ port.hashCode ^ id.hashCode;
 
-  Future<CLServer?> withId({http.Client? client}) async {
+  @override
+  Future<CLServerImpl?> withId({http.Client? client}) async {
     try {
       final id =
           await RestApi('http://$name:$port', client: client).getURLStatus();
@@ -62,6 +53,7 @@ class CLServer {
     }
   }
 
+  @override
   Future<bool> hasConnection({http.Client? client}) async {
     try {
       final id =
@@ -82,8 +74,8 @@ class CLServer {
     };
   }
 
-  factory CLServer.fromMap(Map<String, dynamic> map) {
-    return CLServer(
+  factory CLServerImpl.fromMap(Map<String, dynamic> map) {
+    return CLServerImpl(
       name: map['name'] as String,
       port: map['port'] as int,
       id: map['id'] != null ? map['id'] as int : null,
@@ -92,9 +84,10 @@ class CLServer {
 
   String toJson() => json.encode(toMap());
 
-  factory CLServer.fromJson(String source) =>
-      CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory CLServerImpl.fromJson(String source) =>
+      CLServerImpl.fromMap(json.decode(source) as Map<String, dynamic>);
 
+  @override
   String get identifier {
     const separator = '_';
     if (id == null) return 'Unknown';
@@ -111,6 +104,7 @@ class CLServer {
     return identifierString;
   }
 
+  @override
   Future<String> getEndpoint(
     String endPoint, {
     http.Client? client,

@@ -1,4 +1,5 @@
 import 'cl_media.dart';
+import 'cl_server.dart';
 import 'collection.dart';
 
 enum DBQueries {
@@ -52,4 +53,6 @@ abstract class Store {
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
 
   void dispose();
+
+  Future<Store> attachServer(CLServer? value);
 }

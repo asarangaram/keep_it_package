@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:local_store/local_store.dart';
+import 'package:store/store.dart';
 
 @immutable
 class Servers {
