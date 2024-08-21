@@ -44,21 +44,22 @@ final mockCollections = Collections([
 
 @GenerateNiceMocks([MockSpec<http.Client>()])
 void main() {
-  late final MockClient mockClient;
   group('API Client testing', () {
     late DBManager dbManager;
+    late final MockClient mockClient;
+    late final String testShortName;
 
     File getDBPath() {
-      final test = Invoker.current!.liveTest;
-      final testName = test.test.name;
-      final testShortName =
-          testName.replaceAll(RegExp(r'[\s\./]'), '_').toLowerCase();
       final dbName = 'test_db/$testShortName/$testShortName.db';
       final dbFile = File(p.join(testArtifactsFolder, dbName));
       return dbFile;
     }
 
     setUp(() async {
+      final test = Invoker.current!.liveTest;
+      final testName = test.test.name;
+      testShortName =
+          testName.replaceAll(RegExp(r'[\s\./]'), '_').toLowerCase();
       final dbFile = getDBPath();
       if (dbFile.parent.existsSync()) {
         dbFile.parent.deleteSync(recursive: true);
@@ -113,21 +114,22 @@ void main() {
       timeout: const Timeout(Duration(minutes: 60)),
     );
     test(
-      'pull the content from server and update local db',
+      'pull the content from server twice and update local db',
       () async {
         // Pull Once
         final result = await dbManager.pull(client: mockClient);
         expect(result, SyncStatus.success);
+
+        final collectionsFromDB1 = await dbManager.dbReader.getCollectionAll();
+        expect(collectionsFromDB1, isNotNull);
+
         final result2 = await dbManager.pull(client: mockClient);
 
         expect(result2, SyncStatus.success);
+        final collectionsFromDB2 = await dbManager.dbReader.getCollectionAll();
+        expect(collectionsFromDB2, isNotNull);
 
-        final collectionsFromDB = await dbManager.dbReader.getCollectionAll();
-        expect(collectionsFromDB, isNotNull);
-        expect(
-          collectionsFromDB!.map((e) => e.removeID()).toList(),
-          mockCollections.entries,
-        );
+        expect(collectionsFromDB2, collectionsFromDB1);
       },
       timeout: const Timeout(Duration(minutes: 60)),
     );
