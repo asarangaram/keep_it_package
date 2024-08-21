@@ -33,7 +33,7 @@ LEFT JOIN
 LEFT JOIN 
     MediaNote ON Media.id = MediaNote.itemId
 LEFT JOIN 
-    Notes ON MediaNote.noteId = Media.id
+    Media as Notes ON MediaNote.noteId = Media.id
 GROUP BY
     Media.id;
 ''';

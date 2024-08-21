@@ -27,7 +27,7 @@ final migrations = SqliteMigrations()
         updatedDate DATETIME,
         isDeleted INTEGER NOT NULL,
         isHidden INTEGER NOT NULL,
-        pin TEXT NOT NULL,
+        pin TEXT ,
         locallyModified INTEGER NOT NULL,
         serverUID INTEGER,
         isAux INTEGER NOT NULL,
