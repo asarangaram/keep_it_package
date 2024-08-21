@@ -23,7 +23,15 @@ extension DBWRiterServerExt on DBWriter {
     final updated = <Collection>[];
     for (final collection in collections.entries) {
       try {
-        updated.add(await upsertCollection(tx, collection));
+        updated.add(
+          await upsertCollection(
+            tx,
+            collection.copyWith(
+              serverUID: server.id,
+              locallyModified: false,
+            ),
+          ),
+        );
       } catch (e) {
         /** */
       }
