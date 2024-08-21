@@ -81,6 +81,41 @@ class CLMediaBase {
         updatedDate.hashCode ^
         md5String.hashCode;
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'path': path,
+      'type': type.name,
+      'ref': ref,
+      'originalDate': originalDate?.millisecondsSinceEpoch,
+      'createdDate': createdDate?.millisecondsSinceEpoch,
+      'updatedDate': updatedDate?.millisecondsSinceEpoch,
+      'md5String': md5String,
+    };
+  }
+
+  factory CLMediaBase.fromMap(Map<String, dynamic> map) {
+    return CLMediaBase(
+      path: map['path'] as String,
+      type: CLMediaType.values.asNameMap()[map['type'] as String]!,
+      ref: map['ref'] != null ? map['ref'] as String : null,
+      originalDate: map['originalDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
+          : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
+          : null,
+      updatedDate: map['updatedDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+          : null,
+      md5String: map['md5String'] != null ? map['md5String'] as String : null,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory CLMediaBase.fromJson(String source) =>
+      CLMediaBase.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 @immutable
@@ -253,6 +288,7 @@ class CLMedia extends CLMediaBase {
     return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, collectionId: $collectionId, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, serverUID: $serverUID, locallyModified: $locallyModified)';
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'path': path,
@@ -291,6 +327,7 @@ class CLMedia extends CLMediaBase {
         validate: true,
       ); */
 
+  @override
   String toJson() => json.encode(toMap());
 
   CLMedia removePin() {
