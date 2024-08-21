@@ -1,9 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 @immutable
