@@ -6,7 +6,7 @@ import '../../models/input_decoration.dart';
 
 class ViewNotes extends StatelessWidget {
   const ViewNotes({required this.note, super.key, this.onTap});
-  final CLTextNote note;
+  final CLNote note;
   final VoidCallback? onTap;
 
   @override
