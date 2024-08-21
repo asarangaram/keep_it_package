@@ -21,24 +21,18 @@ const withIdResponseBody = '''
                 "name": "colan_server"
             }''';
 
-final mockCollections = Collections([
+const mockCollections = Collections([
   Collection(
     label: 'localCollection1',
     description: 'Description for new collection1',
-    createdDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
-    updatedDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
   ),
   Collection(
     label: 'localCollection2',
     description: 'Description for new collection2',
-    createdDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
-    updatedDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
   ),
   Collection(
     label: 'localCollection3',
     description: 'Description for new collection3',
-    createdDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
-    updatedDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
   ),
 ]);
 
@@ -46,8 +40,8 @@ final mockCollections = Collections([
 void main() {
   group('API Client testing', () {
     late DBManager dbManager;
-    late final MockClient mockClient;
-    late final String testShortName;
+    late MockClient mockClient;
+    late String testShortName;
 
     File getDBPath() {
       final dbName = 'test_db/$testShortName/$testShortName.db';
@@ -94,25 +88,6 @@ void main() {
       expect(dbManager.server?.id, 100);
     });
 
-    test(
-      'pull the content from server and update local db',
-      () async {
-        // Pull Once
-        final result = await dbManager.pull(client: mockClient);
-        expect(result, SyncStatus.success);
-        final result2 = await dbManager.pull(client: mockClient);
-
-        expect(result2, SyncStatus.success);
-
-        final collectionsFromDB = await dbManager.dbReader.getCollectionAll();
-        expect(collectionsFromDB, isNotNull);
-        expect(
-          collectionsFromDB!.map((e) => e.removeID()).toList(),
-          mockCollections.entries,
-        );
-      },
-      timeout: const Timeout(Duration(minutes: 60)),
-    );
     test(
       'pull the content from server twice and update local db',
       () async {
