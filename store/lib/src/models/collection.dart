@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
@@ -11,6 +12,8 @@ class Collection {
     this.description,
     this.createdDate,
     this.updatedDate,
+    this.serverUID,
+    this.locallyModified = true,
   });
 
   factory Collection.fromMap(Map<String, dynamic> map) {
@@ -25,6 +28,8 @@ class Collection {
       updatedDate: map['updatedDate'] != null
           ? DateTime.parse(map['updatedDate'] as String).toLocal()
           : null,
+      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
+      locallyModified: (map['locallyModified'] as int? ?? 1) == 1,
     );
   }
 
@@ -36,6 +41,8 @@ class Collection {
   final String? description;
   final DateTime? createdDate;
   final DateTime? updatedDate;
+  final int? serverUID;
+  final bool locallyModified;
 
   Collection copyWith({
     int? id,
@@ -43,6 +50,8 @@ class Collection {
     String? description,
     DateTime? createdDate,
     DateTime? updatedDate,
+    int? serverUID,
+    bool? locallyModified,
   }) {
     return Collection(
       id: id ?? this.id,
@@ -50,13 +59,15 @@ class Collection {
       description: description ?? this.description,
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
+      serverUID: serverUID ?? this.serverUID,
+      locallyModified: locallyModified ?? this.locallyModified,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'Collection(id: $id, label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate)';
+    return 'Collection(id: $id, label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, serverUID: $serverUID, locallyModified: $locallyModified)';
   }
 
   @override
@@ -67,7 +78,9 @@ class Collection {
         other.label == label &&
         other.description == description &&
         other.createdDate == createdDate &&
-        other.updatedDate == updatedDate;
+        other.updatedDate == updatedDate &&
+        other.serverUID == serverUID &&
+        other.locallyModified == locallyModified;
   }
 
   @override
@@ -76,7 +89,9 @@ class Collection {
         label.hashCode ^
         description.hashCode ^
         createdDate.hashCode ^
-        updatedDate.hashCode;
+        updatedDate.hashCode ^
+        serverUID.hashCode ^
+        locallyModified.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -86,6 +101,8 @@ class Collection {
       'description': description,
       'createdDate': createdDate?.toSQL(),
       'updatedDate': updatedDate?.toSQL(),
+      'serverUID': serverUID,
+      'locallyModified': locallyModified,
     };
   }
 
@@ -97,6 +114,8 @@ class Collection {
       description: description,
       createdDate: createdDate,
       updatedDate: updatedDate,
+      serverUID: serverUID,
+      locallyModified: locallyModified,
     );
   }
 }

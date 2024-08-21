@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:io';
 
@@ -60,6 +61,8 @@ class CLMedia {
     this.isDeleted,
     this.isHidden,
     this.pin,
+    this.serverUID,
+    this.locallyModified = true,
   }) {
     switch (type) {
       case CLMediaType.text:
@@ -101,6 +104,8 @@ class CLMedia {
       isDeleted: (map['isDeleted'] as int) != 0,
       isHidden: (map['isHidden'] as int) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
+      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
+      locallyModified: (map['locallyModified'] as int? ?? 1) == 1,
     );
   }
 
@@ -117,6 +122,8 @@ class CLMedia {
   final bool? isDeleted;
   final bool? isHidden;
   final String? pin;
+  final int? serverUID;
+  final bool locallyModified;
 
   CLMedia copyWith({
     String? path,
@@ -131,6 +138,8 @@ class CLMedia {
     bool? isDeleted,
     bool? isHidden,
     String? pin,
+    int? serverUID,
+    bool? locallyModified,
   }) {
     return CLMedia(
       path: path ?? this.path,
@@ -145,6 +154,8 @@ class CLMedia {
       isDeleted: isDeleted ?? this.isDeleted,
       isHidden: isHidden ?? this.isHidden,
       pin: pin ?? this.pin,
+      serverUID: serverUID ?? this.serverUID,
+      locallyModified: locallyModified ?? this.locallyModified,
     );
   }
 
@@ -162,6 +173,8 @@ class CLMedia {
       isDeleted: isDeleted,
       isHidden: isHidden,
       pin: pin,
+      serverUID: serverUID,
+      /* locallyModified: true, */
     );
   }
 
@@ -180,7 +193,9 @@ class CLMedia {
         other.md5String == md5String &&
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
-        other.pin == pin;
+        other.pin == pin &&
+        other.serverUID == serverUID &&
+        other.locallyModified == locallyModified;
   }
 
   @override
@@ -196,17 +211,15 @@ class CLMedia {
         md5String.hashCode ^
         isDeleted.hashCode ^
         isHidden.hashCode ^
-        pin.hashCode;
+        pin.hashCode ^
+        serverUID.hashCode ^
+        locallyModified.hashCode;
   }
 
   @override
   String toString() {
-    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, '
-        'collectionId: $collectionId, '
-        'originalDate: $originalDate, createdDate: $createdDate, '
-        'updatedDate: $updatedDate, md5String: $md5String, '
-        'isDeleted: $isDeleted, isHidden: $isHidden, '
-        ' pin: $pin)';
+    // ignore: lines_longer_than_80_chars
+    return 'CLMedia(path: $path, type: $type, ref: $ref, id: $id, collectionId: $collectionId, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, serverUID: $serverUID, locallyModified: $locallyModified)';
   }
 
   Map<String, dynamic> toMap() {
@@ -221,6 +234,8 @@ class CLMedia {
       'isDeleted': (isDeleted ?? false) ? 1 : 0,
       'isHidden': (isHidden ?? false) ? 1 : 0,
       'pin': pin,
+      'serverUID': serverUID,
+      'locallyModified': locallyModified,
     };
   }
 
@@ -260,6 +275,8 @@ class CLMedia {
       md5String: md5String,
       isDeleted: isDeleted,
       isHidden: isHidden,
+      serverUID: serverUID,
+      /* locallyModified: true */
     );
   }
 
@@ -276,6 +293,8 @@ class CLMedia {
       isDeleted: isDeleted,
       isHidden: isHidden,
       pin: pin,
+      serverUID: serverUID,
+      /* locallyModified: true */
     );
   }
 

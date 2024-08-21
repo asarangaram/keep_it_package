@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:io';
 
@@ -17,6 +18,8 @@ class CLNote {
     required this.path,
     required this.id,
     this.updatedDate,
+    this.serverUID,
+    this.locallyModified = true,
   });
 
   factory CLNote.fromMap(Map<String, dynamic> map) {
@@ -29,18 +32,24 @@ class CLNote {
         ? DateTime.parse(map['updatedDate'] as String)
         : null;
     final path = map['path'] as String;
+    final serverUID = map['serverUID'] != null ? map['serverUID'] as int : null;
+    final locallyModified = (map['locallyModified'] as int? ?? 1) == 1;
     return switch (type) {
       CLNoteTypes.audio => CLAudioNote(
           id: map['id'] == null ? null : map['id']! as int,
           createdDate: createdDate,
           path: path,
           updatedDate: updatedDate,
+          serverUID: serverUID,
+          locallyModified: locallyModified,
         ),
       CLNoteTypes.text => CLTextNote(
           id: map['id'] == null ? null : map['id']! as int,
           createdDate: createdDate,
           path: path,
           updatedDate: updatedDate,
+          serverUID: serverUID,
+          locallyModified: locallyModified,
         )
     };
   }
@@ -49,6 +58,8 @@ class CLNote {
   final DateTime? updatedDate;
   final CLNoteTypes type;
   final String path;
+  final int? serverUID;
+  final bool locallyModified;
 
   CLNote copyWith({
     int? id,
@@ -56,6 +67,8 @@ class CLNote {
     DateTime? updatedDate,
     CLNoteTypes? type,
     String? path,
+    int? serverUID,
+    bool? locallyModified,
   }) {
     return CLNote(
       id: id ?? this.id,
@@ -63,13 +76,15 @@ class CLNote {
       updatedDate: updatedDate ?? this.updatedDate,
       type: type ?? this.type,
       path: path ?? this.path,
+      serverUID: serverUID ?? this.serverUID,
+      locallyModified: locallyModified ?? this.locallyModified,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLNote(id: $id, createdDate: $createdDate, updatedDate: $updatedDate, type: $type, note: $path)';
+    return 'CLNote(id: $id, createdDate: $createdDate, updatedDate: $updatedDate, type: $type, path: $path, serverUID: $serverUID, locallyModified: $locallyModified)';
   }
 
   @override
@@ -80,7 +95,9 @@ class CLNote {
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
         other.type == type &&
-        other.path == path;
+        other.path == path &&
+        other.serverUID == serverUID &&
+        other.locallyModified == locallyModified;
   }
 
   @override
@@ -89,7 +106,9 @@ class CLNote {
         createdDate.hashCode ^
         updatedDate.hashCode ^
         type.hashCode ^
-        path.hashCode;
+        path.hashCode ^
+        serverUID.hashCode ^
+        locallyModified.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -160,6 +179,8 @@ class CLTextNote extends CLNote {
     required super.path,
     super.updatedDate,
     super.type = CLNoteTypes.text,
+    super.serverUID,
+    super.locallyModified,
   });
 }
 
@@ -171,6 +192,8 @@ class CLAudioNote extends CLNote {
     required super.path,
     super.type = CLNoteTypes.audio,
     super.updatedDate,
+    super.serverUID,
+    super.locallyModified,
   });
 }
 
