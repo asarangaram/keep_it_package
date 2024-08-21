@@ -47,18 +47,18 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     final attachements = [
       if (media.content != null && media.content!.isNotEmpty)
         if (media.content!.isURL())
-          CLMediaFile(path: media.content!, type: CLMediaType.url)
+          CLMediaBase(path: media.content!, type: CLMediaType.url)
         else
-          CLMediaFile(path: 'text:${media.content!}', type: CLMediaType.text),
+          CLMediaBase(path: 'text:${media.content!}', type: CLMediaType.text),
       if (media.imageFilePath != null)
-        CLMediaFile(
+        CLMediaBase(
           path: media.imageFilePath!,
           type: CLMediaType.image,
         ),
       if (media.attachments != null)
         ...media.attachments!.where((e) => e != null).map(
           (e) {
-            return CLMediaFile(path: e!.path, type: toCLMediaType(e.type));
+            return CLMediaBase(path: e!.path, type: toCLMediaType(e.type));
           },
         ),
     ];

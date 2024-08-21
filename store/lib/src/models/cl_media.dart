@@ -10,54 +10,91 @@ import '../extensions/ext_string.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLMediaFile {
-  const CLMediaFile({
+class CLMediaBase {
+  const CLMediaBase({
     required this.path,
     required this.type,
+    this.ref,
+    this.originalDate,
+    this.createdDate,
+    this.updatedDate,
+    this.md5String,
   });
   final String path;
   final CLMediaType type;
+  final String? ref;
+  final DateTime? originalDate;
+  final DateTime? createdDate;
+  final DateTime? updatedDate;
+  final String? md5String;
 
   Future<void> deleteFile() async {
     await File(path).deleteIfExists();
   }
 
-  CLMediaFile copyWith({
+  CLMediaBase copyWith({
     String? path,
     CLMediaType? type,
+    String? ref,
+    DateTime? originalDate,
+    DateTime? createdDate,
+    DateTime? updatedDate,
+    String? md5String,
   }) {
-    return CLMediaFile(
+    return CLMediaBase(
       path: path ?? this.path,
       type: type ?? this.type,
+      ref: ref ?? this.ref,
+      originalDate: originalDate ?? this.originalDate,
+      createdDate: createdDate ?? this.createdDate,
+      updatedDate: updatedDate ?? this.updatedDate,
+      md5String: md5String ?? this.md5String,
     );
   }
 
   @override
-  String toString() => 'CLMediaFile(path: $path, type: $type)';
-
-  @override
-  bool operator ==(covariant CLMediaFile other) {
-    if (identical(this, other)) return true;
-
-    return other.path == path && other.type == type;
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'CLMediaFile(path: $path, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String)';
   }
 
   @override
-  int get hashCode => path.hashCode ^ type.hashCode;
+  bool operator ==(covariant CLMediaBase other) {
+    if (identical(this, other)) return true;
+
+    return other.path == path &&
+        other.type == type &&
+        other.ref == ref &&
+        other.originalDate == originalDate &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate &&
+        other.md5String == md5String;
+  }
+
+  @override
+  int get hashCode {
+    return path.hashCode ^
+        type.hashCode ^
+        ref.hashCode ^
+        originalDate.hashCode ^
+        createdDate.hashCode ^
+        updatedDate.hashCode ^
+        md5String.hashCode;
+  }
 }
 
 @immutable
-class CLMedia {
+class CLMedia extends CLMediaBase {
   CLMedia({
-    required this.path,
-    required this.type,
+    required super.path,
+    required super.type,
     required this.collectionId,
-    this.ref,
+    super.ref,
     this.id,
-    this.originalDate,
-    this.createdDate,
-    this.updatedDate,
-    this.md5String,
+    super.originalDate,
+    super.createdDate,
+    super.updatedDate,
+    super.md5String,
     this.isDeleted,
     this.isHidden,
     this.pin,
@@ -109,22 +146,16 @@ class CLMedia {
     );
   }
 
-  final String path;
-  final CLMediaType type;
-  final String? ref;
-  final int? id;
-  final int? collectionId;
-
-  final DateTime? originalDate;
-  final DateTime? createdDate;
-  final DateTime? updatedDate;
-  final String? md5String;
   final bool? isDeleted;
   final bool? isHidden;
   final String? pin;
+
+  final int? id;
+  final int? collectionId;
   final int? serverUID;
   final bool locallyModified;
 
+  @override
   CLMedia copyWith({
     String? path,
     CLMediaType? type,

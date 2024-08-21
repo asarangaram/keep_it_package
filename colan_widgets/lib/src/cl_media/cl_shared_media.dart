@@ -12,7 +12,7 @@ class CLMediaFileGroup {
     required this.type,
     this.collection,
   });
-  final List<CLMediaFile> entries;
+  final List<CLMediaBase> entries;
   final Collection? collection;
   final UniversalMediaSource? type;
 

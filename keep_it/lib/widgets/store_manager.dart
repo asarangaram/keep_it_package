@@ -515,7 +515,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   static const tempCollectionName = '*** Recently Captured';
 
   Stream<Progress> analyseMediaStream({
-    required List<CLMediaFile> mediaFiles,
+    required List<CLMediaBase> mediaFiles,
     required void Function({
       required List<CLMedia> mediaMultiple,
     }) onDone,
@@ -729,8 +729,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
   static const uuidGenerator = Uuid();
 
-  static Future<CLMediaFile> tryDownloadMedia(
-    CLMediaFile mediaFile, {
+  static Future<CLMediaBase> tryDownloadMedia(
+    CLMediaBase mediaFile, {
     required AppSettings appSettings,
   }) async {
     if (mediaFile.type != CLMediaType.url) {
@@ -757,8 +757,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return mediaFile.copyWith(path: downloadedFile, type: mimeType);
   }
 
-  static Future<CLMediaFile> identifyMediaType(
-    CLMediaFile mediaFile, {
+  static Future<CLMediaBase> identifyMediaType(
+    CLMediaBase mediaFile, {
     required AppSettings appSettings,
   }) async {
     if (mediaFile.type != CLMediaType.file) {

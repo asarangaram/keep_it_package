@@ -66,7 +66,7 @@ class StoreActions {
     Collection? collection,
   }) newMedia;
   final Stream<Progress> Function({
-    required List<CLMediaFile> mediaFiles,
+    required List<CLMediaBase> mediaFiles,
     required void Function({
       required List<CLMedia> mediaMultiple,
     }) onDone,
