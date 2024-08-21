@@ -158,7 +158,7 @@ class _TextNoteState extends State<TextNote> {
         if (mounted) {
           await TheStore.of(context).upsertNote(
             path,
-            CLNoteTypes.text,
+            CLMediaType.text,
             mediaMultiple: [widget.media],
             note: widget.note,
           );

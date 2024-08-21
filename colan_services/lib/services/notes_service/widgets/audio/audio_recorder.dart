@@ -145,7 +145,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
     if (hasAudioMessage) {
       await TheStore.of(context).upsertNote(
         audioMessage!,
-        CLNoteTypes.audio,
+        CLMediaType.audio,
         mediaMultiple: [widget.media],
       );
 

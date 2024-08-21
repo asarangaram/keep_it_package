@@ -607,7 +607,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
   Future<void> upsertNote(
     String path,
-    CLNoteTypes type, {
+    CLMediaType type, {
     required List<CLMedia> mediaMultiple,
     CLNote? note,
   }) async {

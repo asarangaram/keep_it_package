@@ -103,7 +103,7 @@ class StoreActions {
 
   final Future<void> Function(
     String path, // Absolute Path, can't go to CLNote
-    CLNoteTypes type, {
+    CLMediaType type, {
     required List<CLMedia> mediaMultiple,
     CLNote? note,
   }) upsertNote;

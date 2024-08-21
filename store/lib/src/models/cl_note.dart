@@ -4,11 +4,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
-
-import '../extensions/ext_datetime.dart';
-import 'cl_media.dart';
-
-enum CLNoteTypes { text, audio }
+import 'package:store/store.dart';
 
 @immutable
 class CLNote {
@@ -23,10 +19,10 @@ class CLNote {
   });
 
   factory CLNote.fromMap(Map<String, dynamic> map) {
-    if (CLNoteTypes.values.asNameMap()[map['type'] as String] == null) {
+    if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
       throw Exception('Incorrect type');
     }
-    final type = CLNoteTypes.values.asNameMap()[map['type'] as String]!;
+    final type = CLMediaType.values.asNameMap()[map['type'] as String]!;
     final createdDate = DateTime.parse(map['updatedDate'] as String);
     final updatedDate = map['updatedDate'] != null
         ? DateTime.parse(map['updatedDate'] as String)
@@ -35,7 +31,7 @@ class CLNote {
     final serverUID = map['serverUID'] != null ? map['serverUID'] as int : null;
     final locallyModified = (map['locallyModified'] as int? ?? 1) == 1;
     return switch (type) {
-      CLNoteTypes.audio => CLAudioNote(
+      CLMediaType.audio => CLAudioNote(
           id: map['id'] == null ? null : map['id']! as int,
           createdDate: createdDate,
           path: path,
@@ -43,20 +39,21 @@ class CLNote {
           serverUID: serverUID,
           locallyModified: locallyModified,
         ),
-      CLNoteTypes.text => CLTextNote(
+      CLMediaType.text => CLTextNote(
           id: map['id'] == null ? null : map['id']! as int,
           createdDate: createdDate,
           path: path,
           updatedDate: updatedDate,
           serverUID: serverUID,
           locallyModified: locallyModified,
-        )
+        ),
+      _ => throw UnimplementedError('Unsupported Notes')
     };
   }
   final int? id;
   final DateTime createdDate;
   final DateTime? updatedDate;
-  final CLNoteTypes type;
+  final CLMediaType type;
   final String path;
   final int? serverUID;
   final bool locallyModified;
@@ -65,7 +62,7 @@ class CLNote {
     int? id,
     DateTime? createdDate,
     DateTime? updatedDate,
-    CLNoteTypes? type,
+    CLMediaType? type,
     String? path,
     int? serverUID,
     bool? locallyModified,
@@ -180,7 +177,7 @@ class CLTextNote extends CLNote {
     required super.createdDate,
     required super.path,
     super.updatedDate,
-    super.type = CLNoteTypes.text,
+    super.type = CLMediaType.text,
     super.serverUID,
     super.locallyModified,
   });
@@ -192,7 +189,7 @@ class CLAudioNote extends CLNote {
     required super.id,
     required super.createdDate,
     required super.path,
-    super.type = CLNoteTypes.audio,
+    super.type = CLMediaType.audio,
     super.updatedDate,
     super.serverUID,
     super.locallyModified,

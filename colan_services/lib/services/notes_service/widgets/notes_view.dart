@@ -64,7 +64,7 @@ class _NotesViewState extends State<NotesView> {
                   final textNotes = notes
                       .where(
                         (e) {
-                          return e.type == CLNoteTypes.text;
+                          return e.type == CLMediaType.text;
                         },
                       )
                       .map((e) => e as CLTextNote)
@@ -72,7 +72,7 @@ class _NotesViewState extends State<NotesView> {
                   final audioNotes = notes
                       .where(
                         (e) {
-                          return e.type == CLNoteTypes.audio;
+                          return e.type == CLMediaType.audio;
                         },
                       )
                       .map((e) => e as CLAudioNote)
