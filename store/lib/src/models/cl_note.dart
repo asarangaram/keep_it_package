@@ -110,65 +110,20 @@ class CLNote extends CLMediaBase {
       serverUID.hashCode ^
       locallyModified.hashCode;
 
+  @override
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
-      'createdDate': createdDate.toSQL(),
-      'type': type.name,
       'path': path,
+      'type': type.name,
+      'ref': ref,
+      'originalDate': originalDate?.millisecondsSinceEpoch,
+      'createdDate': createdDate?.millisecondsSinceEpoch,
+      'updatedDate': updatedDate?.millisecondsSinceEpoch,
+      'md5String': md5String,
+      'id': id,
       'serverUID': serverUID,
       'locallyModified': locallyModified ? 1 : 0,
     };
-  }
-
-  Map<String, dynamic> toMap2({
-    required bool validate,
-    String? pathPrefix,
-  }) {
-    return <String, dynamic>{
-      'id': id,
-      'createdDate': createdDate.toSQL(),
-      'type': type.name,
-      'path': CLMedia.relativePath(
-        path,
-        pathPrefix: pathPrefix,
-        validate: validate,
-      ),
-    };
-  }
-
-  /* String toJson() => json.encode(toMap());
-
-  factory CLMessage.fromJson(String source) =>
-      CLMessage.fromMap(json.decode(source) as Map<String, dynamic>); */
-
-  Future<CLNote> moveFile({
-    required String targetDir,
-  }) async {
-    final sourceFile = File(path);
-    final dir = Directory(targetDir);
-
-    if (!sourceFile.existsSync()) {
-      throw FileSystemException('Source file does not exist', path);
-    }
-
-    if (!dir.existsSync()) {
-      dir.createSync(recursive: true);
-    }
-
-    final baseName = p.basenameWithoutExtension(path);
-    final extension = p.extension(path);
-    var newFilePath = p.join(dir.path, p.basename(path));
-
-    var counter = 1;
-
-    while (File(newFilePath).existsSync()) {
-      newFilePath = p.join(dir.path, '${baseName}_($counter)$extension');
-      counter++;
-    }
-
-    final copiedFile = await sourceFile.copy(newFilePath);
-    return copyWith(path: copiedFile.path);
   }
 }
 
