@@ -176,7 +176,7 @@ class ExistInDifferentCollection extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: CLText.verySmall(
-                'Swipe individual items to leave it in the same group.',
+                'Swipe individual media to leave it in the same group.',
                 color: Theme.of(context).disabledColor,
               ),
             ),
@@ -209,7 +209,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       alignment: AlignmentDirectional.center,
                       child: Text(
-                        'Keep the item in "${currCollection.label.trim()}"',
+                        'Keep the media in "${currCollection.label.trim()}"',
                       ),
                     ),
                     child: Row(

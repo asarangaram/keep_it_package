@@ -55,7 +55,7 @@ class _MediaViewState extends ConsumerState<MediaView> {
           const MediaBackground(),
           Positioned.fill(
             child: Hero(
-              tag: '${widget.parentIdentifier} /item/${media.id}',
+              tag: '${widget.parentIdentifier} /media/${media.id}',
               child: MediaViewerRaw(
                 media: media,
                 autoStart: widget.autoStart,

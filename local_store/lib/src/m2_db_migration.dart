@@ -35,12 +35,12 @@ final migrations = SqliteMigrations()
       )
     ''');
       await tx.execute('''
-      CREATE TABLE IF NOT EXISTS ItemNote (
+      CREATE TABLE IF NOT EXISTS mediaNote (
         noteId INTEGER,
         itemId INTEGER,
         PRIMARY KEY (noteId, itemId),
-        FOREIGN KEY (noteId) REFERENCES Item(id) ON DELETE CASCADE,
-        FOREIGN KEY (itemId) REFERENCES Item(id) ON DELETE CASCADE
+        FOREIGN KEY (noteId) REFERENCES Media(id) ON DELETE CASCADE,
+        FOREIGN KEY (itemId) REFERENCES Media(id) ON DELETE CASCADE
       )
     ''');
       await tx.execute('''

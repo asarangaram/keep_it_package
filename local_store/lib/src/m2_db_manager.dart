@@ -28,19 +28,19 @@ class DBManager extends Store {
     );
 
     final mediaTable = DBExec<CLMedia>(
-      table: 'Item',
+      table: 'Media',
       toMap: (CLMedia obj) => obj.toMap(),
-      readBack: (tx, item) {
+      readBack: (tx, media) {
         return (getQuery(DBQueries.mediaByPath) as DBQuery<CLMedia>)
-            .copyWith(parameters: [item.label]).read(tx);
+            .copyWith(parameters: [media.label]).read(tx);
       },
     );
     final notesTable = DBExec<CLMedia>(
-      table: 'Item',
+      table: 'Media',
       toMap: (CLMedia obj) => obj.toMap(),
-      readBack: (tx, item) async {
+      readBack: (tx, media) async {
         return (getQuery(DBQueries.noteByPath) as DBQuery<CLMedia>)
-            .copyWith(parameters: [item.path]).read(tx);
+            .copyWith(parameters: [media.path]).read(tx);
       },
     );
     final notesOnMediaTable = DBExec<NotesOnMedia>(
