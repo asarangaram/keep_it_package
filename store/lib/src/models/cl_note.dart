@@ -7,13 +7,16 @@ import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 @immutable
-class CLNote {
+class CLNote extends CLMediaBase {
   const CLNote({
-    required this.createdDate,
-    required this.type,
-    required this.path,
+    required super.path,
+    required super.type,
     required this.id,
-    this.updatedDate,
+    super.ref,
+    super.originalDate,
+    super.createdDate,
+    super.updatedDate,
+    super.md5String,
     this.serverUID,
     this.locallyModified = true,
   });
@@ -51,19 +54,19 @@ class CLNote {
     };
   }
   final int? id;
-  final DateTime createdDate;
-  final DateTime? updatedDate;
-  final CLMediaType type;
-  final String path;
   final int? serverUID;
   final bool locallyModified;
 
+  @override
   CLNote copyWith({
-    int? id,
+    String? path,
+    CLMediaType? type,
+    String? ref,
+    DateTime? originalDate,
     DateTime? createdDate,
     DateTime? updatedDate,
-    CLMediaType? type,
-    String? path,
+    String? md5String,
+    int? id,
     int? serverUID,
     bool? locallyModified,
   }) {
@@ -79,34 +82,33 @@ class CLNote {
   }
 
   @override
-  String toString() {
-    // ignore: lines_longer_than_80_chars
-    return 'CLNote(id: $id, createdDate: $createdDate, updatedDate: $updatedDate, type: $type, path: $path, serverUID: $serverUID, locallyModified: $locallyModified)';
-  }
+  String toString() =>
+      // ignore: lines_longer_than_80_chars
+      'CLNote(super: ${super.toString()}, id: $id, serverUID: $serverUID, locallyModified: $locallyModified)';
 
   @override
   bool operator ==(covariant CLNote other) {
     if (identical(this, other)) return true;
 
-    return other.id == id &&
+    return other.path == path &&
+        other.type == type &&
+        other.ref == ref &&
+        other.originalDate == originalDate &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
-        other.type == type &&
-        other.path == path &&
+        other.md5String == md5String &&
+        // new variables
+        other.id == id &&
         other.serverUID == serverUID &&
         other.locallyModified == locallyModified;
   }
 
   @override
-  int get hashCode {
-    return id.hashCode ^
-        createdDate.hashCode ^
-        updatedDate.hashCode ^
-        type.hashCode ^
-        path.hashCode ^
-        serverUID.hashCode ^
-        locallyModified.hashCode;
-  }
+  int get hashCode =>
+      super.hashCode ^
+      id.hashCode ^
+      serverUID.hashCode ^
+      locallyModified.hashCode;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{

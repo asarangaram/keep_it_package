@@ -68,7 +68,7 @@ class _AudioNoteState extends State<AudioNote> {
     final theme = CLTheme.of(context).noteTheme;
     final playerWaveStyle = theme.playerWaveStyle;
 
-    final label = widget.note.createdDate.toSQL();
+    final label = widget.note.createdDate.toSQL() ?? 'No Date';
     return CLCustomChip(
       avatar: validAudio
           ? CLIcon.tiny(
