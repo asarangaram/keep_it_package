@@ -110,8 +110,14 @@ class RestApi {
         //print("Returning Result");
         return response.bodyBytes;
     }
+
     if (response != null) {
-      return response.body;
+      if ([200, 201].contains(response.statusCode)) {
+        return response.body;
+      }
+      throw Exception(
+        'http error: code: ${response.statusCode}, ${response.body}',
+      );
     }
     throw Exception(
       'Unknown http method $method expected get, post, put or delete',
