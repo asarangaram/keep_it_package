@@ -235,7 +235,7 @@ class CLMedia {
       'isHidden': (isHidden ?? false) ? 1 : 0,
       'pin': pin,
       'serverUID': serverUID,
-      'locallyModified': locallyModified,
+      'locallyModified': locallyModified ? 1 : 0,
     };
   }
 

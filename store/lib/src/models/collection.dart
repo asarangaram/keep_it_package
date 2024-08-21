@@ -102,7 +102,7 @@ class Collection {
       'createdDate': createdDate?.toSQL(),
       'updatedDate': updatedDate?.toSQL(),
       'serverUID': serverUID,
-      'locallyModified': locallyModified,
+      'locallyModified': locallyModified ? 1 : 0,
     };
   }
 

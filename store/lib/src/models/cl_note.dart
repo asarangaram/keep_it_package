@@ -117,6 +117,8 @@ class CLNote {
       'createdDate': createdDate.toSQL(),
       'type': type.name,
       'path': path,
+      'serverUID': serverUID,
+      'locallyModified': locallyModified ? 1 : 0,
     };
   }
 
