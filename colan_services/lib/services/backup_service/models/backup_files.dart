@@ -117,7 +117,7 @@ class BackupManager {
             var mediaFile = MediaFile(path: file, absPath: absPath);
 
             if ((mediaMap['notes'] as dynamic).runtimeType == List) {
-              final noteFiles = <NotesFile>[];
+              final noteFiles = <MediaFile>[];
               // We have notes
               for (final n in mediaMap['notes'] as List) {
                 final note =
@@ -131,7 +131,7 @@ class BackupManager {
 
                 if (File(noteAbsPath).existsSync()) {
                   final noteFile =
-                      NotesFile(path: notePath, absPath: noteAbsPath);
+                      MediaFile(path: notePath, absPath: noteAbsPath);
                   noteFiles.add(noteFile);
                 }
               }

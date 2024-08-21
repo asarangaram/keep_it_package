@@ -36,7 +36,7 @@ class DBManager extends Store {
       },
     );
     final notesTable = DBExec<CLMedia>(
-      table: 'Notes',
+      table: 'Item',
       toMap: (CLMedia obj) => obj.toMap(),
       readBack: (tx, item) async {
         return (getQuery(DBQueries.noteByPath) as DBQuery<CLMedia>)

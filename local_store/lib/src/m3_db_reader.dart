@@ -214,39 +214,39 @@ class DBReader {
       DBQueries.mediaByNoteID => DBQuery<CLMedia>(
           sql:
               'SELECT Item.* FROM Item JOIN ItemNote ON Item.id = ItemNote.itemId WHERE ItemNote.noteId = ?;',
-          triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
+          triggerOnTables: const {'Item', 'ItemNote'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.notesAll => DBQuery<CLMedia>(
           sql: 'SELECT * FROM Notes',
-          triggerOnTables: const {'Notes'},
+          triggerOnTables: const {'Item'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.noteById => DBQuery<CLMedia>(
           sql: 'SELECT * FROM Notes WHERE id = ?;',
-          triggerOnTables: const {'Notes'},
+          triggerOnTables: const {'Item'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.noteByPath => DBQuery<CLMedia>(
           sql: 'SELECT * FROM Notes WHERE path = ?;',
-          triggerOnTables: const {'Notes'},
+          triggerOnTables: const {'Item'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.notesByMediaId => DBQuery<CLMedia>(
           sql:
               'SELECT Notes.* FROM Notes JOIN ItemNote ON Notes.id = ItemNote.noteId WHERE ItemNote.itemId = ?;',
-          triggerOnTables: const {'Item', 'Notes', 'ItemNote'},
+          triggerOnTables: const {'Item', 'ItemNote'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.noteByIdList => DBQuery<CLMedia>(
           sql: 'SELECT * FROM Notes WHERE id IN (?)',
-          triggerOnTables: const {'Notes'},
+          triggerOnTables: const {'Item'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.notesOrphan => DBQuery<CLMedia>(
           sql:
               'SELECT n.* FROM Notes n LEFT JOIN ItemNote inote ON n.id = inote.noteId WHERE inote.noteId IS NULL',
-          triggerOnTables: const {'Notes', 'ItemNote'},
+          triggerOnTables: const {'Item', 'ItemNote'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.collectionLocallyModified => DBQuery<Collection>(
@@ -261,7 +261,7 @@ class DBReader {
         ),
       DBQueries.noteLocallyModified => DBQuery<CLMedia>(
           sql: 'SELECT * FROM Notes WHERE locallyModified = True;',
-          triggerOnTables: const {'Notes'},
+          triggerOnTables: const {'Item'},
           fromMap: CLMedia.fromMap,
         ),
     };

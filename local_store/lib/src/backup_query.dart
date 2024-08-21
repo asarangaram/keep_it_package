@@ -33,7 +33,7 @@ LEFT JOIN
 LEFT JOIN 
     ItemNote ON Item.id = ItemNote.itemId
 LEFT JOIN 
-    Notes ON ItemNote.noteId = Notes.id
+    Notes ON ItemNote.noteId = Item.id
 GROUP BY
     Item.id;
 ''';
