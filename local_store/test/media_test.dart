@@ -58,7 +58,7 @@ void main() {
         // Verify insertion
         expect(updated, isNotNull);
         final insertedMedia =
-            await dbManager.dbReader.getMediaByID(updated!.id!);
+            await dbManager.dbReader.getMediaByID(updated.id!);
         expect(insertedMedia?.path, equals('path/to/media1'));
         expect(insertedMedia?.md5String, equals('md5hash1'));
 
@@ -93,7 +93,7 @@ void main() {
       expect(updated, isNotNull);
 
       // Ensure the media item is inserted
-      final insertedMedia = await dbManager.dbReader.getMediaByID(updated!.id!);
+      final insertedMedia = await dbManager.dbReader.getMediaByID(updated.id!);
       expect(insertedMedia?.path, equals('path/to/media_to_delete'));
 
       // Delete the media item
@@ -118,7 +118,7 @@ void main() {
 
       expect(updated, isNotNull);
       // Retrieve the media item by ID
-      final fetchedMedia = await dbManager.dbReader.getMediaByID(updated!.id!);
+      final fetchedMedia = await dbManager.dbReader.getMediaByID(updated.id!);
 
       // Verify retrieval
       expect(fetchedMedia, isNotNull);
