@@ -61,22 +61,16 @@ class _NotesViewState extends State<NotesView> {
               child: GetNotesByMediaId(
                 mediaId: widget.media.id!,
                 buildOnData: (notes) {
-                  final textNotes = notes
-                      .where(
-                        (e) {
-                          return e.type == CLMediaType.text;
-                        },
-                      )
-                      .map((e) => e as CLTextNote)
-                      .toList();
-                  final audioNotes = notes
-                      .where(
-                        (e) {
-                          return e.type == CLMediaType.audio;
-                        },
-                      )
-                      .map((e) => e as CLAudioNote)
-                      .toList();
+                  final textNotes = notes.where(
+                    (e) {
+                      return e.type == CLMediaType.text;
+                    },
+                  ).toList();
+                  final audioNotes = notes.where(
+                    (e) {
+                      return e.type == CLMediaType.audio;
+                    },
+                  ).toList();
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [

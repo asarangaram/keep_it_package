@@ -145,7 +145,7 @@ class StoreActions {
   final String Function(CLMedia media) getMediaPath;
   final String Function(CLMedia media) getMediaLabel;
   final String Function(CLNote media) getNotesPath;
-  final String Function(CLTextNote? note) getText;
+  final String Function(CLNote? note) getText;
 
   // Opens New page
   final Future<void> Function(BuildContext ctx, {int? collectionId}) openCamera;

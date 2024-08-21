@@ -20,36 +20,24 @@ class CLNote extends CLMediaBase {
   });
 
   factory CLNote.fromMap(Map<String, dynamic> map) {
-    if (CLMediaType.values.asNameMap()[map['type'] as String] == null) {
-      throw Exception('Incorrect type');
-    }
-    final type = CLMediaType.values.asNameMap()[map['type'] as String]!;
-    final createdDate = DateTime.parse(map['updatedDate'] as String);
-    final updatedDate = map['updatedDate'] != null
-        ? DateTime.parse(map['updatedDate'] as String)
-        : null;
-    final path = map['path'] as String;
-    final serverUID = map['serverUID'] != null ? map['serverUID'] as int : null;
-    final locallyModified = (map['locallyModified'] as int? ?? 1) == 1;
-    return switch (type) {
-      CLMediaType.audio => CLAudioNote(
-          id: map['id'] == null ? null : map['id']! as int,
-          createdDate: createdDate,
-          path: path,
-          updatedDate: updatedDate,
-          serverUID: serverUID,
-          locallyModified: locallyModified,
-        ),
-      CLMediaType.text => CLTextNote(
-          id: map['id'] == null ? null : map['id']! as int,
-          createdDate: createdDate,
-          path: path,
-          updatedDate: updatedDate,
-          serverUID: serverUID,
-          locallyModified: locallyModified,
-        ),
-      _ => throw UnimplementedError('Unsupported Notes')
-    };
+    return CLNote(
+      path: map['path'] as String,
+      type: CLMediaType.values.asNameMap()[map['type'] as String]!,
+      ref: map['ref'] != null ? map['ref'] as String : null,
+      originalDate: map['originalDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
+          : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
+          : null,
+      updatedDate: map['updatedDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+          : null,
+      md5String: map['md5String'] != null ? map['md5String'] as String : null,
+      id: map['id'] == null ? null : map['id']! as int,
+      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
+      locallyModified: (map['locallyModified'] as int? ?? 1) == 1,
+    );
   }
   final int? id;
   final int? serverUID;
@@ -123,32 +111,6 @@ class CLNote extends CLMediaBase {
       'locallyModified': locallyModified ? 1 : 0,
     };
   }
-}
-
-@immutable
-class CLTextNote extends CLNote {
-  const CLTextNote({
-    required super.id,
-    required super.createdDate,
-    required super.path,
-    super.updatedDate,
-    super.type = CLMediaType.text,
-    super.serverUID,
-    super.locallyModified,
-  });
-}
-
-@immutable
-class CLAudioNote extends CLNote {
-  const CLAudioNote({
-    required super.id,
-    required super.createdDate,
-    required super.path,
-    super.type = CLMediaType.audio,
-    super.updatedDate,
-    super.serverUID,
-    super.locallyModified,
-  });
 }
 
 @immutable

@@ -17,7 +17,7 @@ class TextNote extends StatefulWidget {
     super.key,
   });
   final CLMedia media;
-  final CLTextNote? note;
+  final CLNote? note;
 
   @override
   State<TextNote> createState() => _TextNoteState();

@@ -684,21 +684,24 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         note.path,
       );
 
-  String getText(CLTextNote? note) {
-    final String text;
-    if (note != null) {
-      final notesPath = getNotesPath(note);
+  String getText(CLNote? note) {
+    if (note?.type == CLMediaType.text) {
+      final String text;
+      if (note != null) {
+        final notesPath = getNotesPath(note);
 
-      final notesFile = File(notesPath);
-      if (!notesFile.existsSync()) {
-        text = 'Content Missing. File is deleted';
+        final notesFile = File(notesPath);
+        if (!notesFile.existsSync()) {
+          text = 'Content Missing. File is deleted';
+        } else {
+          text = notesFile.readAsStringSync();
+        }
       } else {
-        text = notesFile.readAsStringSync();
+        text = '';
       }
-    } else {
-      text = '';
+      return text;
     }
-    return text;
+    return '';
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
