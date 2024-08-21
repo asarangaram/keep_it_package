@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 
 import 'providers/servers.dart';
 
-class CloudOnLANService extends ConsumerWidget {
-  const CloudOnLANService({super.key});
+class CloudOnLANSettings extends ConsumerWidget {
+  const CloudOnLANSettings({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
