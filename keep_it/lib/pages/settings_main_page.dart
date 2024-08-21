@@ -38,6 +38,7 @@ class SettingsMainPage extends ConsumerWidget {
                   onShareFiles: TheStore.of(context).shareFiles,
                   onCreateBackupFile: TheStore.of(context).createBackupFile,
                 ),
+                const CloudOnLANService(),
               ],
             );
           },

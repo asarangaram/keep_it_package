@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keep_it/pages/server_page.dart';
 import 'package:keep_it/widgets/store_manager.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
@@ -159,6 +160,12 @@ class KeepItApp implements AppDescriptor {
             return FullscreenLayout(
               child: StoreManager(child: MediaWizardPage(type: type)),
             );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'servers',
+          builder: (context, GoRouterState state) {
+            return const FullscreenLayout(child: ServersPage());
           },
         ),
 

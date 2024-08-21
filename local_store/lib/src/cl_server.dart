@@ -95,6 +95,22 @@ class CLServer {
   factory CLServer.fromJson(String source) =>
       CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
+  String get identifier {
+    const separator = '_';
+    if (id == null) return 'Unknown';
+
+    var hexString = id!.toRadixString(16).toUpperCase();
+    hexString = hexString.padLeft(4, '0');
+    final formattedHex = hexString.replaceAllMapped(
+      RegExp('.{4}'),
+      (match) => '${match.group(0)}$separator',
+    );
+    final identifierString = formattedHex.endsWith(separator)
+        ? formattedHex.substring(0, formattedHex.length - 1)
+        : formattedHex;
+    return identifierString;
+  }
+
   Future<String> getEndpoint(
     String endPoint, {
     http.Client? client,
