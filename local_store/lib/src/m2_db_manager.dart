@@ -244,8 +244,6 @@ class DBManager extends Store {
 
     final collections =
         await (server! as CLServerImpl).downloadCollections(client: client);
-    final medias =
-        await (server! as CLServerImpl).downloadMedias(client: client);
 
     await db.writeTransaction((tx) async {
       // ignore: unused_local_variable
@@ -256,6 +254,10 @@ class DBManager extends Store {
       }
       return DBSyncStatus.partial; */
     });
+    final medias = await (server! as CLServerImpl).downloadMedias(
+      client: client,
+      getCollectionByLabel: dbReader.getCollectionByLabel,
+    );
 
     await db.writeTransaction((tx) async {
       // ignore: unused_local_variable

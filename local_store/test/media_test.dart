@@ -47,7 +47,7 @@ void main() {
       () async {
         // Insert a new media item
         const media = CLMedia(
-          path: 'path/to/media1',
+          name: 'path/to/media1',
           type: CLMediaType.image, // Adjust based on your enum or type
           md5String: 'md5hash1',
           collectionId: null,
@@ -64,7 +64,7 @@ void main() {
 
         // Update the media item
         final updatedMedia = insertedMedia!.copyWith(
-          path: 'path/to/updated_media',
+          name: 'path/to/updated_media',
           md5String: 'md5hash2',
         );
 
@@ -82,7 +82,7 @@ void main() {
     test('deleteMedia - delete media item', () async {
       // Insert a media item to delete
       const media = CLMedia(
-        path: 'path/to/media_to_delete',
+        name: 'path/to/media_to_delete',
         type: CLMediaType.video,
         md5String: 'md5hash_to_delete',
         collectionId: null,
@@ -108,7 +108,7 @@ void main() {
     test('getMediaByID - retrieve media item', () async {
       // Insert a media item
       const media = CLMedia(
-        path: 'path/to/media_for_retrieval',
+        name: 'path/to/media_for_retrieval',
         type: CLMediaType.audio,
         md5String: 'md5hash_for_retrieval',
         collectionId: null,
@@ -129,7 +129,7 @@ void main() {
     test('upsertMedia - handle unique constraint violation', () async {
       // Insert a media item with a unique constraint
       const media1 = CLMedia(
-        path: 'path/to/media_unique1',
+        name: 'path/to/media_unique1',
         type: CLMediaType.image,
         md5String: 'md5hash_unique1',
         collectionId: null,
@@ -139,7 +139,7 @@ void main() {
 
       // Try to insert another media item with the same path and md5String
       const media2 = CLMedia(
-        path: 'path/to/media_unique1',
+        name: 'path/to/media_unique1',
         type: CLMediaType.image,
         md5String: 'md5hash_unique1',
         collectionId: null,
@@ -154,7 +154,7 @@ void main() {
       // Try to delete a media item that does not exist
       const nonExistingMedia = CLMedia(
         id: 999,
-        path: 'path/to/non_existing_media',
+        name: 'path/to/non_existing_media',
         type: CLMediaType.audio,
         md5String: 'md5hash_non_existing',
         collectionId: null,

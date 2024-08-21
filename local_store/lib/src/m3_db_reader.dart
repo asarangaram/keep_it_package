@@ -35,6 +35,15 @@ class DBReader {
     );
   }
 
+  Future<Collection?> getCollectionByLabel(
+    String label,
+  ) async {
+    return read<Collection>(
+      getQuery(DBQueries.collectionByLabel, parameters: [label])
+          as DBQuery<Collection>,
+    );
+  }
+
   Future<CLMedia?> getMediaByID(
     int id,
   ) {

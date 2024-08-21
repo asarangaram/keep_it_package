@@ -131,13 +131,29 @@ class CLServerImpl extends CLServer {
   }
 
   Future<CLMedias> downloadMedias({
+    required Future<Collection?> Function(String label) getCollectionByLabel,
     http.Client? client,
   }) async {
     if (!await hasConnection(client: client)) {
       throw Exception(DBSyncStatus.serverNotReachable.name);
     }
     final mediaJSON = await getEndpoint('/media?type=image', client: client);
-    final medias = CLMedias.fromJson(mediaJSON);
+    final list = jsonDecode(mediaJSON) as List<dynamic>;
+
+    final listUpdated = <Map<String, dynamic>>[];
+    for (final m in list) {
+      final map = m as Map<String, dynamic>;
+      if (map.containsKey('collectionLabel')) {
+        final mapUpdated = Map<String, dynamic>.from(map);
+        mapUpdated['collectionId'] =
+            (await getCollectionByLabel(map['collectionLabel'] as String))?.id;
+        listUpdated.add(mapUpdated);
+      } else {
+        listUpdated.add(map);
+      }
+    }
+
+    final medias = CLMedias.fromList(listUpdated);
     return CLMedias(
       medias.entries
           .map(
