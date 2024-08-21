@@ -82,98 +82,43 @@ class DBManager extends Store {
     db.close();
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  @override
+  Future<Collection> upsertCollection(Collection collection) async =>
+      db.writeTransaction((tx) async {
+        return dbWriter.upsertCollection(tx, collection);
+      });
 
   @override
-  Future<Collection> upsertCollection(Collection collection) async {
-    return db.writeTransaction<Collection>((tx) async {
-      return dbWriter.upsertCollection(
-        tx,
-        collection,
-      );
-    });
-  }
+  Future<CLMedia> upsertMedia(CLMedia media) async =>
+      db.writeTransaction((tx) async {
+        return dbWriter.upsertMedia(tx, media);
+      });
 
   @override
-  Future<CLMedia?> upsertMedia(CLMedia media) async {
-    return db.writeTransaction<CLMedia?>((tx) async {
-      return dbWriter.upsertMedia(
-        tx,
-        media,
-      );
-    });
-  }
+  Future<CLNote> upsertNote(CLNote note, List<CLMedia> mediaList) async =>
+      db.writeTransaction((tx) async {
+        return dbWriter.upsertNote(tx, note, mediaList);
+      });
 
   @override
-  Future<CLNote?> upsertNote(CLNote note, List<CLMedia> mediaList) async {
-    return db.writeTransaction((tx) async {
-      return dbWriter.upsertNote(
-        tx,
-        note,
-        mediaList,
-        getById: (id) async => DBReader(tx).getNoteByID(id),
-      );
-    });
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
+  Future<void> deleteCollection(Collection collection) async =>
+      db.writeTransaction((tx) async {
+        await dbWriter.deleteCollection(tx, collection);
+      });
 
   @override
-  Future<void> deleteCollection(Collection collection) async {
-    return db.writeTransaction((tx) async {
-      await dbWriter.deleteCollection(tx, collection);
-    });
-  }
+  Future<void> deleteMedia(CLMedia media, {required bool permanent}) async =>
+      db.writeTransaction((tx) async {
+        await dbWriter.deleteMedia(tx, media, permanent: permanent);
+      });
 
   @override
-  Future<void> deleteMedia(CLMedia media, {required bool permanent}) async {
-    await db.writeTransaction((tx) async {
-      /// PATCH ============================================================
-      /// This patch is required as for some reasons, DELETE on CASCASDE
-      /// didn't work.
-      // TODO(anandas): : Fix this
-      /* if (permanent) {
-        final notes = await DBReader(tx).getNotesByMediaID(media.id!);
-        if (notes != null && notes.isNotEmpty) {
-          for (final n in notes) {
-            await dbWriter.disconnectNotes(tx, note: n, media: media);
-          }
-        }
-      } */
-
-      /// PATCH ENDS ========================================================
-      await dbWriter.deleteMedia(
-        tx,
-        media,
-        permanent: permanent,
-        getById: (id) async => DBReader(tx).getMediaByID(id),
-      );
-    });
-  }
+  Future<void> deleteNote(CLNote note) async => db.writeTransaction((tx) async {
+        await dbWriter.deleteNote(tx, note);
+      });
 
   @override
-  Future<void> deleteNote(CLNote note) async {
-    await db.writeTransaction((tx) async {
-      /// PATCH ============================================================
-      /// This patch is required as for some reasons, DELETE on CASCASDE
-      /// didn't work.
-      final media = await DBReader(tx).getMediaByNoteID(note.id!);
-      if (media != null && media.isNotEmpty) {
-        for (final m in media) {
-          await dbWriter.disconnectNotes(tx, media: m, note: note);
-        }
-      }
-
-      /// PATCH ENDS ========================================================
-      await dbWriter.deleteNote(tx, note);
-    });
-  }
-  //////////////////////////////////////////////////////////////////////////////
-
-  @override
-  Future<void> reloadStore() async {
-    onReload();
-  }
+  Future<void> reloadStore() async => onReload();
 
   @override
   Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery) async* {

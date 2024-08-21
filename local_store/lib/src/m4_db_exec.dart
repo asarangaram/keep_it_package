@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -52,22 +54,47 @@ class DBExec<T> {
     required List<String> uniqueColumn,
     bool ignore = false,
   }) async {
+    final T? result;
     final map = toMap(obj);
-    if (map == null) return null;
 
-    await DBCommand.upsert(
-      tx,
-      map,
-      table: table,
-      getItemByColumnValue: (key, value) async {
-        return (await tx.getAll('SELECT * FROM $table WHERE $key = ?', [value]))
-            .firstOrNull;
-      },
-      uniqueColumn: uniqueColumn,
-    );
+    _infoLogger('upsert to $table: $obj');
+    if (ignore) {
+      if (map == null) return null;
+      await DBCommand.insert(
+        map,
+        table: table,
+        ignore: ignore,
+      ).execute(tx);
+      result = await readBack?.call(tx, obj);
+    } else {
+      if (map == null) {
+        throw Exception("couldn't not get map for the given object");
+      }
 
-    final result = await readBack?.call(tx, obj);
-    _infoLogger('Readback:  $result');
+      final bool insertStatus;
+
+      insertStatus = await DBCommand.upsert(
+        tx,
+        map,
+        table: table,
+        getItemByColumnValue: (key, value) async {
+          return (await tx
+                  .getAll('SELECT * FROM $table WHERE $key = ?', [value]))
+              .firstOrNull;
+        },
+        uniqueColumn: uniqueColumn,
+      );
+
+      if (!insertStatus) {
+        throw Exception("couldn't not get map for the given object");
+      }
+
+      result = await readBack?.call(tx, obj);
+      if (result == null) {
+        throw Exception('Upsert to $table failed');
+      }
+    }
+    _infoLogger('upsertNote: Done :  $result');
     return result;
   }
 
@@ -112,8 +139,7 @@ class DBExec<T> {
     List<T> objList, {
     required Future<List<int>> Function(List<int>) getPresentIdList,
   }) async {
-    final list =
-        objList.map(toMap).where((e) => e != null).map((e) => e!).toList();
+    final list = [...objList.map(toMap).where((e) => e != null).map((e) => e!)];
 
     await (await DBBatchCommand.upsertAsync(
       list,
