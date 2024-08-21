@@ -5,13 +5,51 @@ import 'package:meta/meta.dart';
 import 'package:store/src/extensions/ext_datetime.dart';
 
 @immutable
-class Collection {
-  const Collection({
+class CollectionBase {
+  const CollectionBase({
     required this.label,
-    this.id,
     this.description,
     this.createdDate,
     this.updatedDate,
+  });
+  final String label;
+  final String? description;
+  final DateTime? createdDate;
+  final DateTime? updatedDate;
+
+  @override
+  bool operator ==(covariant CollectionBase other) {
+    if (identical(this, other)) return true;
+
+    return other.label == label &&
+        other.description == description &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate;
+  }
+
+  @override
+  int get hashCode {
+    return label.hashCode ^
+        description.hashCode ^
+        createdDate.hashCode ^
+        updatedDate.hashCode;
+  }
+
+  @override
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'CollectionBase(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate)';
+  }
+}
+
+@immutable
+class Collection extends CollectionBase {
+  const Collection({
+    required super.label,
+    this.id,
+    super.description,
+    super.createdDate,
+    super.updatedDate,
     this.serverUID,
     this.locallyModified = true,
   });
@@ -37,10 +75,6 @@ class Collection {
       Collection.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final int? id;
-  final String label;
-  final String? description;
-  final DateTime? createdDate;
-  final DateTime? updatedDate;
   final int? serverUID;
   final bool locallyModified;
 
