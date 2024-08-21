@@ -67,7 +67,6 @@ void main() {
       dbFile.parent.createSync(recursive: true);
       const server = CLServer(name: 'test_server', port: 5000);
       mockClient = MockClient((request) async {
-        print('path: ${request.url.path}');
         return switch (request.url.path) {
           '/collection' => http.Response(mockCollections.toJsonList(), 200),
           '' => http.Response(withIdResponseBody, 200),
