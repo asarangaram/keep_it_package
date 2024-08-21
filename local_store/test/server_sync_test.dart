@@ -44,21 +44,36 @@ void main() {
     });
 
     test('sync locally Modifed Collection', () async {
-      final collection = Collection(
-        label: 'localCollection',
-        description: 'Description for new collection',
-        createdDate: DateTime.now(),
-        updatedDate: DateTime.now(),
-      );
+      final collections = [
+        Collection(
+          label: 'localCollection1',
+          description: 'Description for new collection1',
+          createdDate: DateTime.now(),
+          updatedDate: DateTime.now(),
+        ),
+        Collection(
+          label: 'localCollection2',
+          description: 'Description for new collection2',
+          createdDate: DateTime.now(),
+          updatedDate: DateTime.now(),
+        ),
+        Collection(
+          label: 'localCollection3',
+          description: 'Description for new collection3',
+          createdDate: DateTime.now(),
+          updatedDate: DateTime.now(),
+        ),
+      ];
 
-      final insertedCollection = await dbManager.upsertCollection(collection);
-      expect(insertedCollection.label, equals('localCollection'));
+      for (final collection in collections) {
+        await dbManager.upsertCollection(collection);
+      }
 
       // ignore: unused_local_variable
       final updatedCollections =
           await dbManager.dbReader.locallyModifiedCollections();
 
-      expect(true, true);
+      expect(updatedCollections.length, 3);
     });
 
     // Add more tests for other cases as needed
