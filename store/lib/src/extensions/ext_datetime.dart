@@ -1,9 +1,9 @@
 import 'package:intl/intl.dart';
 
 extension ExtDATETIME on DateTime {
-  String toSQL() {
+  /*  String toSQL() {
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
-  }
+  } */
 
   String toDisplayFormat({bool dataOnly = false}) {
     if (dataOnly) {
@@ -15,10 +15,10 @@ extension ExtDATETIME on DateTime {
 }
 
 extension ExtDATETIMENullable on DateTime? {
-  String? toSQL() {
+  /* String? toSQL() {
     if (this == null) {
       return null;
     }
     return this!.toSQL();
-  }
+  } */
 }
