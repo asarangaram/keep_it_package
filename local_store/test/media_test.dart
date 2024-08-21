@@ -59,7 +59,7 @@ void main() {
         expect(updated, isNotNull);
         final insertedMedia =
             await dbManager.dbReader.getMediaByID(updated.id!);
-        expect(insertedMedia?.path, equals('path/to/media1'));
+        expect(insertedMedia?.name, equals('path/to/media1'));
         expect(insertedMedia?.md5String, equals('md5hash1'));
 
         // Update the media item
@@ -73,7 +73,7 @@ void main() {
         // Verify update
         final fetchedMedia =
             await dbManager.dbReader.getMediaByID(updatedMedia.id!);
-        expect(fetchedMedia?.path, equals('path/to/updated_media'));
+        expect(fetchedMedia?.name, equals('path/to/updated_media'));
         expect(fetchedMedia?.md5String, equals('md5hash2'));
       },
       timeout: const Timeout(Duration(minutes: 20)),
@@ -94,7 +94,7 @@ void main() {
 
       // Ensure the media item is inserted
       final insertedMedia = await dbManager.dbReader.getMediaByID(updated.id!);
-      expect(insertedMedia?.path, equals('path/to/media_to_delete'));
+      expect(insertedMedia?.name, equals('path/to/media_to_delete'));
 
       // Delete the media item
       await dbManager.deleteMedia(insertedMedia!, permanent: true);
@@ -122,7 +122,7 @@ void main() {
 
       // Verify retrieval
       expect(fetchedMedia, isNotNull);
-      expect(fetchedMedia!.path, equals('path/to/media_for_retrieval'));
+      expect(fetchedMedia!.name, equals('path/to/media_for_retrieval'));
       expect(fetchedMedia.md5String, equals('md5hash_for_retrieval'));
     });
 

@@ -10,7 +10,7 @@ import 'cl_media_type.dart';
 @immutable
 class CLMediaBase {
   const CLMediaBase({
-    required this.path,
+    required this.name,
     required this.type,
     this.ref,
     this.originalDate,
@@ -25,7 +25,7 @@ class CLMediaBase {
 
   factory CLMediaBase.fromMap(Map<String, dynamic> map) {
     return CLMediaBase(
-      path: map['path'] as String,
+      name: map['name'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       ref: map['ref'] != null ? map['ref'] as String : null,
       originalDate: map['originalDate'] != null
@@ -48,7 +48,7 @@ class CLMediaBase {
 
   factory CLMediaBase.fromJson(String source) =>
       CLMediaBase.fromMap(json.decode(source) as Map<String, dynamic>);
-  final String path;
+  final String name;
   final CLMediaType type;
   final String? ref;
   final DateTime? originalDate;
@@ -61,11 +61,11 @@ class CLMediaBase {
   final int? collectionId;
 
   Future<void> deleteFile() async {
-    await File(path).deleteIfExists();
+    await File(name).deleteIfExists();
   }
 
   CLMediaBase copyWith({
-    String? path,
+    String? name,
     CLMediaType? type,
     String? ref,
     DateTime? originalDate,
@@ -78,7 +78,7 @@ class CLMediaBase {
     int? collectionId,
   }) {
     return CLMediaBase(
-      path: path ?? this.path,
+      name: name ?? this.name,
       type: type ?? this.type,
       ref: ref ?? this.ref,
       originalDate: originalDate ?? this.originalDate,
@@ -95,14 +95,14 @@ class CLMediaBase {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLMediaBase(path: $path, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId)';
+    return 'CLMediaBase(name: $name, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId)';
   }
 
   @override
   bool operator ==(covariant CLMediaBase other) {
     if (identical(this, other)) return true;
 
-    return other.path == path &&
+    return other.name == name &&
         other.type == type &&
         other.ref == ref &&
         other.originalDate == originalDate &&
@@ -117,7 +117,7 @@ class CLMediaBase {
 
   @override
   int get hashCode {
-    return path.hashCode ^
+    return name.hashCode ^
         type.hashCode ^
         ref.hashCode ^
         originalDate.hashCode ^
@@ -132,7 +132,7 @@ class CLMediaBase {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'path': path,
+      'name': name,
       'type': type.name,
       'ref': ref,
       'originalDate': originalDate?.millisecondsSinceEpoch,

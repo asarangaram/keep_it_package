@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:local_store/local_store.dart';
 
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -11,7 +12,6 @@ import 'm3_db_query.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
 import 'm4_db_writer.dart';
-import 'm4_db_writer_server_extension.dart';
 
 @immutable
 class DBManager extends Store {
@@ -86,6 +86,7 @@ class DBManager extends Store {
     required void Function() onReload,
     CLServer? server,
   }) async {
+    print(dbpath);
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
     final dbManager = DBManager(db: db, onReload: onReload, server: server);
@@ -226,7 +227,7 @@ class DBManager extends Store {
     return dbManager;
   }
 
-  Future<SyncStatus> push() async {
+  Future<DBSyncStatus> push() async {
     /* final updatedCollections =  */ await dbReader
         .locallyModifiedCollections();
     if ((await server?.hasConnection()) ?? false) {
@@ -236,17 +237,36 @@ class DBManager extends Store {
     throw UnimplementedError();
   }
 
-  Future<SyncStatus> pull({
+  Future<DBSyncStatus> pull({
     http.Client? client,
   }) async {
-    if (server == null) return SyncStatus.serverNotConfigured;
+    if (server == null) return DBSyncStatus.serverNotConfigured;
+
+    final collections =
+        await (server! as CLServerImpl).downloadCollections(client: client);
+    final medias =
+        await (server! as CLServerImpl).downloadMedias(client: client);
+
     await db.writeTransaction((tx) async {
-      final res =
-          await dbWriter.pullCollection(tx, server: server!, client: client);
-      if (res != SyncStatus.success) {
-        return res;
+      // ignore: unused_local_variable
+      final Collections updated;
+      updated = await dbWriter.upsertCollections(tx, collections: collections);
+      /* if (updated.entries.length == collections.entries.length) {
+        return DBSyncStatus.success;
       }
+      return DBSyncStatus.partial; */
     });
-    return SyncStatus.success;
+
+    await db.writeTransaction((tx) async {
+      // ignore: unused_local_variable
+      final CLMedias updated;
+      updated = await dbWriter.upsertMedias(tx, medias: medias);
+      /* if (updated.entries.length == collections.entries.length) {
+        return DBSyncStatus.success;
+      }
+      return DBSyncStatus.partial; */
+    });
+
+    return DBSyncStatus.success;
   }
 }

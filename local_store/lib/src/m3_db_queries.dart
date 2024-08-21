@@ -86,7 +86,7 @@ class Queries {
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaByPath => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Media WHERE path = ?',
+          sql: 'SELECT * FROM Media WHERE name = ?',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),

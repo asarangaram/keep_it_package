@@ -9,7 +9,7 @@ import 'cl_media_type.dart';
 @immutable
 class CLMedia extends CLMediaBase {
   const CLMedia({
-    required super.path,
+    required super.name,
     required super.type,
     required super.collectionId,
     this.id,
@@ -28,7 +28,7 @@ class CLMedia extends CLMediaBase {
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
     return CLMedia(
-      path: map['path'] as String,
+      name: map['name'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       ref: map['ref'] != null ? map['ref'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
@@ -45,11 +45,11 @@ class CLMedia extends CLMediaBase {
           : null,
       md5String: map['md5String'] != null ? map['md5String'] as String : null,
       isDeleted: (map['isDeleted'] as int) != 0,
-      isHidden: (map['isHidden'] as int) != 0,
+      isHidden: (map['isHidden'] as int? ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
-      isAux: (map['isAux'] as int) != 0,
+      isAux: (map['isAux'] as int? ?? 0) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      locallyModified: (map['locallyModified'] as int? ?? 1) == 1,
+      locallyModified: (map['locallyModified'] as int? ?? 1) != 0,
     );
   }
   final int? id;
@@ -59,7 +59,7 @@ class CLMedia extends CLMediaBase {
 
   @override
   CLMedia copyWith({
-    String? path,
+    String? name,
     CLMediaType? type,
     String? ref,
     int? id,
@@ -76,7 +76,7 @@ class CLMedia extends CLMediaBase {
     bool? locallyModified,
   }) {
     return CLMedia(
-      path: path ?? this.path,
+      name: name ?? this.name,
       type: type ?? this.type,
       ref: ref ?? this.ref,
       id: id ?? this.id,
@@ -103,7 +103,7 @@ class CLMedia extends CLMediaBase {
   bool operator ==(covariant CLMedia other) {
     if (identical(this, other)) return true;
 
-    return other.path == path &&
+    return other.name == name &&
         other.type == type &&
         other.ref == ref &&
         other.id == id &&
@@ -122,7 +122,7 @@ class CLMedia extends CLMediaBase {
 
   @override
   int get hashCode {
-    return path.hashCode ^
+    return name.hashCode ^
         type.hashCode ^
         ref.hashCode ^
         id.hashCode ^
@@ -142,7 +142,7 @@ class CLMedia extends CLMediaBase {
   @override
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'path': path,
+      'name': name,
       'type': type.name,
       'ref': ref,
       'id': id,
@@ -169,7 +169,7 @@ class CLMedia extends CLMediaBase {
 
   CLMedia removePin() {
     return CLMedia(
-      path: path,
+      name: name,
       type: type,
       ref: ref,
       id: id,
@@ -189,7 +189,7 @@ class CLMedia extends CLMediaBase {
 
   CLMedia removeId() {
     return CLMedia(
-      path: path,
+      name: name,
       type: type,
       ref: ref,
       collectionId: collectionId,
@@ -208,7 +208,7 @@ class CLMedia extends CLMediaBase {
 
   CLMedia setCollectionId(int? newCollectionId) {
     return CLMedia(
-      path: path,
+      name: name,
       type: type,
       ref: ref,
       id: id,
@@ -226,5 +226,5 @@ class CLMedia extends CLMediaBase {
     );
   }
 
-  String get label => path;
+  String get label => name;
 }

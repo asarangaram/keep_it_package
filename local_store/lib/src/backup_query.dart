@@ -2,7 +2,7 @@ const backupQuery = '''
 SELECT 
     json_object(
         'itemId', Media.id,
-        'itemPath', Media.path,
+        'itemName', Media.name,
         'itemRef', Media.ref,
         'collectionLabel', Collection.label,
         'itemType', Media.type,
@@ -19,7 +19,7 @@ SELECT
             )
             THEN  json_group_array(
                     json_object(
-                        'notePath', Notes.path,
+                        'noteName', Notes.name,
                         'noteType', Notes.type
                     ))
                 

@@ -7,24 +7,24 @@ import 'package:store/store.dart';
 import 'm4_db_writer.dart';
 
 extension DBWRiterServerExt on DBWriter {
-  Future<SyncStatus> pullCollection(
+  Future<DBSyncStatus> pullMedia(
     SqliteWriteContext tx, {
     required CLServer server,
     http.Client? client,
   }) async {
     if (!await server.hasConnection(client: client)) {
-      return SyncStatus.serverNotReachable;
+      return DBSyncStatus.serverNotReachable;
     }
-    final collectionJSON =
-        await server.getEndpoint('/collection', client: client);
-    final collections = Collections.fromJson(collectionJSON);
-    final updated = <Collection>[];
-    for (final collection in collections.entries) {
+    final mediaJSON =
+        await server.getEndpoint('/media?type=image', client: client);
+    final medias = CLMedias.fromJson(mediaJSON);
+    final updated = <CLMedia>[];
+    for (final media in medias.entries) {
       try {
         updated.add(
-          await upsertCollection(
+          await upsertMedia(
             tx,
-            collection.copyWith(
+            media.copyWith(
               serverUID: server.id,
               locallyModified: false,
             ),
@@ -34,9 +34,9 @@ extension DBWRiterServerExt on DBWriter {
         /** */
       }
     }
-    if (updated.length == collections.entries.length) {
-      return SyncStatus.success;
+    if (updated.length == medias.entries.length) {
+      return DBSyncStatus.success;
     }
-    return SyncStatus.partial;
+    return DBSyncStatus.partial;
   }
 }

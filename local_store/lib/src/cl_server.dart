@@ -110,4 +110,42 @@ class CLServerImpl extends CLServer {
     http.Client? client,
   }) async =>
       RestApi('http://$name:$port', client: client).get(endPoint);
+
+  Future<Collections> downloadCollections({
+    http.Client? client,
+  }) async {
+    if (!await hasConnection(client: client)) {
+      throw Exception(DBSyncStatus.serverNotReachable.name);
+    }
+    final collectionJSON = await getEndpoint('/collection', client: client);
+    final collections = Collections.fromJson(collectionJSON);
+    return Collections(
+      collections.entries
+          .map(
+            (e) => e.copyWith(
+              locallyModified: false,
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Future<CLMedias> downloadMedias({
+    http.Client? client,
+  }) async {
+    if (!await hasConnection(client: client)) {
+      throw Exception(DBSyncStatus.serverNotReachable.name);
+    }
+    final mediaJSON = await getEndpoint('/media?type=image', client: client);
+    final medias = CLMedias.fromJson(mediaJSON);
+    return CLMedias(
+      medias.entries
+          .map(
+            (e) => e.copyWith(
+              locallyModified: false,
+            ),
+          )
+          .toList(),
+    );
+  }
 }

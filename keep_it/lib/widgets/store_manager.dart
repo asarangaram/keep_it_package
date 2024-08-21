@@ -206,7 +206,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await File(
         path_handler.join(
           widget.appSettings.directories.media.pathString,
-          m.path,
+          m.name,
         ),
       ).deleteIfExists();
     }
@@ -324,7 +324,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             widget.appSettings.directories.media.pathString,
             media.label,
           ),
-          title: media.path,
+          title: media.name,
           isImage: media.type == CLMediaType.image,
           isVideo: media.type == CLMediaType.video,
           desc: 'KeepIT',
@@ -349,7 +349,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final md5String = await savedFile.checksum;
     final updatedMedia = originalMedia
         .copyWith(
-          path: path_handler.basename(savedFile.path),
+          name: path_handler.basename(savedFile.path),
           md5String: md5String,
         )
         .removePin();
@@ -381,7 +381,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final CLMedia updatedMedia;
     updatedMedia = originalMedia
         .copyWith(
-          path: path_handler.basename(savedFile.path),
+          name: path_handler.basename(savedFile.path),
           md5String: md5String,
         )
         .removePin();
@@ -492,7 +492,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
     final md5String = await File(fileName).checksum;
     final savedMedia = CLMedia(
-      path: path_handler.basename(savedMediaFile.path),
+      name: path_handler.basename(savedMediaFile.path),
       type: isVideo ? CLMediaType.video : CLMediaType.image,
       collectionId: collection0.id,
       md5String: md5String,
@@ -523,7 +523,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final candidates = <CLMedia>[];
     //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
-      currentItem: path_handler.basename(mediaFiles[0].path),
+      currentItem: path_handler.basename(mediaFiles[0].name),
       fractCompleted: 0,
     );
     for (final (i, item0) in mediaFiles.indexed) {
@@ -540,7 +540,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       }
       if (item.type.isFile) {
         final file = File(
-          item.path,
+          item.name,
         );
         if (file.existsSync()) {
           final md5String = await file.checksum;
@@ -563,11 +563,11 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             ///     delete the original file (if it is mobile platform)
 
             final savedMediaFile = File(
-              item.path,
+              item.name,
             ).copyTo(widget.appSettings.directories.media.path);
 
             final savedMedia = await CLMedia(
-              path: path_handler.basename(savedMediaFile.path),
+              name: path_handler.basename(savedMediaFile.path),
               type: item.type,
               collectionId: tempCollection.id,
               md5String: md5String,
@@ -593,7 +593,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         currentItem: (i + 1 == mediaFiles.length)
             ? ''
             : path_handler.basename(
-                mediaFiles[i + 1].path,
+                mediaFiles[i + 1].name,
               ),
         fractCompleted: (i + 1) / mediaFiles.length,
       );
@@ -615,13 +615,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         File(path).copyTo(widget.appSettings.directories.notes.path);
 
     final savedNotes = note?.copyWith(
-          path: path_handler.basename(savedNotesFile.path),
+          name: path_handler.basename(savedNotesFile.path),
           type: type,
         ) ??
         CLMedia(
           createdDate: DateTime.now(),
           type: type,
-          path: path_handler.basename(savedNotesFile.path),
+          name: path_handler.basename(savedNotesFile.path),
           collectionId: null,
         );
 
@@ -681,7 +681,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
   String getNotesPath(CLMedia note) => path_handler.join(
         widget.appSettings.directories.notes.path.path,
-        note.path,
+        note.name,
       );
 
   String getText(CLMedia? note) {
@@ -740,7 +740,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return mediaFile;
     }
     final mimeType = await URLHandler.getMimeType(
-      mediaFile.path,
+      mediaFile.name,
     );
     if (![
       CLMediaType.image,
@@ -751,13 +751,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return mediaFile;
     }
     final downloadedFile = await URLHandler.download(
-      mediaFile.path,
+      mediaFile.name,
       appSettings.directories.downloadedMedia.path,
     );
     if (downloadedFile == null) {
       return mediaFile;
     }
-    return mediaFile.copyWith(path: downloadedFile, type: mimeType);
+    return mediaFile.copyWith(name: downloadedFile, type: mimeType);
   }
 
   static Future<CLMediaBase> identifyMediaType(
@@ -768,7 +768,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       return mediaFile;
     }
 
-    final mimeType = switch (lookupMimeType(mediaFile.path)) {
+    final mimeType = switch (lookupMimeType(mediaFile.name)) {
       (final String mime) when mime.startsWith('image') => CLMediaType.image,
       (final String mime) when mime.startsWith('video') => CLMediaType.video,
       _ => CLMediaType.file

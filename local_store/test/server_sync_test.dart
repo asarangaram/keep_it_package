@@ -93,14 +93,14 @@ void main() {
       () async {
         // Pull Once
         final result = await dbManager.pull(client: mockClient);
-        expect(result, SyncStatus.success);
+        expect(result, DBSyncStatus.success);
 
         final collectionsFromDB1 = await dbManager.dbReader.getCollectionAll();
         expect(collectionsFromDB1, isNotNull);
 
         final result2 = await dbManager.pull(client: mockClient);
 
-        expect(result2, SyncStatus.success);
+        expect(result2, DBSyncStatus.success);
         final collectionsFromDB2 = await dbManager.dbReader.getCollectionAll();
         expect(collectionsFromDB2, isNotNull);
 

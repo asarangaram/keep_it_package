@@ -81,6 +81,24 @@ class DBExec<T> {
       identifiers: identifier,
     ).execute(tx);
   }
+
+  Future<List<T>> upsertAll(
+    SqliteWriteContext tx,
+    List<T> objs, {
+    required List<String> uniqueColumn,
+  }) async {
+    final updated = <T>[];
+    for (final obj in objs) {
+      try {
+        updated.add(
+          (await upsert(tx, obj, uniqueColumn: uniqueColumn)) as T,
+        );
+      } catch (e) {
+        /** */
+      }
+    }
+    return updated;
+  }
 }
 
 const _filePrefix = 'DB Write (internal): ';

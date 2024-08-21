@@ -138,6 +138,32 @@ class DBWriter {
       identifier: ['noteId', 'itemId'],
     );
   }
+
+  Future<Collections> upsertCollections(
+    SqliteWriteContext tx, {
+    required Collections collections,
+  }) async {
+    return Collections(
+      await collectionTable.upsertAll(
+        tx,
+        collections.entries,
+        uniqueColumn: ['id', 'serverUID', 'label'],
+      ),
+    );
+  }
+
+  Future<CLMedias> upsertMedias(
+    SqliteWriteContext tx, {
+    required CLMedias medias,
+  }) async {
+    return CLMedias(
+      await mediaTable.upsertAll(
+        tx,
+        medias.entries,
+        uniqueColumn: ['id', 'serverUID', 'md5String'],
+      ),
+    );
+  }
 }
 
 const _filePrefix = 'DB Write: ';
