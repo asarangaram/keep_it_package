@@ -90,4 +90,13 @@ class Collection {
   }
 
   String toJson() => json.encode(toMap());
+
+  Collection removeID() {
+    return Collection(
+      label: label,
+      description: description,
+      createdDate: createdDate,
+      updatedDate: updatedDate,
+    );
+  }
 }

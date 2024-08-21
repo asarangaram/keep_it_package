@@ -12,15 +12,7 @@ final migrations = SqliteMigrations()
         updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     ''');
-      await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_collection
-        AFTER UPDATE ON Collection
-        BEGIN
-            UPDATE Collection
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-    ''');
+
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS Item (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,15 +26,6 @@ final migrations = SqliteMigrations()
         updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (collectionId) REFERENCES Collection(id)
       )
-    ''');
-      await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_item
-        AFTER UPDATE ON Item
-        BEGIN
-            UPDATE Item
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
     ''');
     }),
   )
@@ -79,15 +62,7 @@ final migrations = SqliteMigrations()
         updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )
       ''');
-      await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_notes
-        AFTER UPDATE ON Notes
-        BEGIN
-            UPDATE Notes
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-      ''');
+
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS ItemNote (
         noteId INTEGER,

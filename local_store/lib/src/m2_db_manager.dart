@@ -8,6 +8,7 @@ import 'm3_db_query.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
 import 'm4_db_writer.dart';
+import 'm4_db_writer_server_extension.dart';
 
 class DBManager extends Store {
   DBManager({required this.db, required this.onReload, required this.server}) {
@@ -153,10 +154,4 @@ class DBManager extends Store {
   @override
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query) =>
       dbReader.readMultiple(query);
-
-  Future<void> syncLocal2Server() async {
-    /// get all items that are marked as locally Modifed
-    // ignore: unused_local_variable
-    final updatedCollections = await dbReader.locallyModifiedCollections();
-  }
 }

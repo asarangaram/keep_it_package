@@ -21,6 +21,6 @@ final storeProvider = FutureProvider<Store>((ref) async {
 
 final serverProvider = FutureProvider<CLServer?>((ref) async {
   final server =
-      await const CLServer(name: 'udesktop.local', port: 5000).withId;
+      await const CLServer(name: 'udesktop.local', port: 5000).withId();
   return server;
 });

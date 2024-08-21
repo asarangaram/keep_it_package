@@ -106,6 +106,24 @@ class DBReader {
     );
   }
 
+  Future<List<Collection>?> getCollectionAll() async {
+    return readMultiple<Collection>(
+      getQuery(DBQueries.collectionsAll) as DBQuery<Collection>,
+    );
+  }
+
+  Future<List<CLMedia>> getMediaAll() {
+    return readMultiple<CLMedia>(
+      getQuery(DBQueries.mediaAll) as DBQuery<CLMedia>,
+    );
+  }
+
+  Future<List<CLNote>> getNotesAll() {
+    return readMultiple<CLNote>(
+      getQuery(DBQueries.notesAll) as DBQuery<CLNote>,
+    );
+  }
+
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) {
     final rawQuery = switch (query) {
       DBQueries.collectionById => DBQuery<Collection>(

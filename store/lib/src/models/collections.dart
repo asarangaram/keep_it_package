@@ -41,6 +41,10 @@ class Collections {
     };
   }
 
+  List<dynamic> toList() {
+    return entries.map((x) => x.toMap()).toList();
+  }
+
   factory Collections.fromMap(Map<String, dynamic> map) {
     return Collections(
       List<Collection>.from(
@@ -61,6 +65,7 @@ class Collections {
   }
 
   String toJson() => json.encode(toMap());
+  String toJsonList() => json.encode(toList());
 
   factory Collections.fromJson(String source) =>
       Collections.fromList(json.decode(source) as List<dynamic>);

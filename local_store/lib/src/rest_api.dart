@@ -5,9 +5,10 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class RestApi {
-  RestApi(this._server, {this.connectViaMobile = true});
+  RestApi(this._server, {this.connectViaMobile = true, this.client});
   final String _server;
   final bool connectViaMobile;
+  final http.Client? client;
   final Map<String, String> postMethodHeader = {
     'Content-Type': 'application/json',
   };
@@ -20,11 +21,14 @@ class RestApi {
     return Uri.parse('$_server$endPoint');
   }
 
+  http.Client get myClient => client ?? http.Client();
+
   Future<int?> getURLStatus() async {
     //await Future.delayed(const Duration(seconds: 2));
 
-    final response =
-        await http.get(Uri.parse(_server)).timeout(const Duration(seconds: 2));
+    final response = await myClient
+        .get(Uri.parse(_server))
+        .timeout(const Duration(seconds: 2));
     if (response.statusCode == 200) {
       final info = jsonDecode(response.body) as Map<String, dynamic>;
       if ((info['name'] as String) == 'colan_server') {
@@ -60,15 +64,15 @@ class RestApi {
     http.Response? response;
     switch (method) {
       case 'post':
-        response = await http.post(uri, headers: headers, body: bodyJSON);
+        response = await myClient.post(uri, headers: headers, body: bodyJSON);
       case 'put':
-        response = await http.put(uri, headers: headers, body: bodyJSON);
+        response = await myClient.put(uri, headers: headers, body: bodyJSON);
       case 'get':
-        response = await http.get(uri, headers: headers);
+        response = await myClient.get(uri, headers: headers);
       case 'delete':
-        response = await http.delete(uri, headers: headers);
+        response = await myClient.delete(uri, headers: headers);
 
-      case 'img_upload':
+      /* case 'img_upload':
         if (imageData == null) {
           throw Exception('Image not provider');
         }
@@ -104,11 +108,11 @@ class RestApi {
         }
 
       case 'audio':
-        response = await http.post(uri, headers: headers, body: bodyJSON);
+        response = await myClient.post(uri, headers: headers, body: bodyJSON);
 
         //assert(response.bodyBytes.runtimeType == Uint8List);
         //print("Returning Result");
-        return response.bodyBytes;
+        return response.bodyBytes; */
     }
 
     if (response != null) {

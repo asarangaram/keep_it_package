@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
-import 'cl_server.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
 
@@ -138,29 +137,6 @@ class DBWriter {
       NotesOnMedia(noteId: note.id!, itemId: media.id!),
       identifier: ['noteId', 'itemId'],
     );
-  }
-
-  Future<SyncStatus> pullCollection(
-    SqliteWriteContext tx, {
-    CLServer? server,
-  }) async {
-    if (server == null) return SyncStatus.serverNotConfigured;
-    if (await server.hasConnection) return SyncStatus.serverNotReachable;
-
-    final collections =
-        Collections.fromJson(await server.getEndpoint('/collection'));
-    final updated = <Collection>[];
-    for (final collection in collections.entries) {
-      try {
-        updated.add(await upsertCollection(tx, collection));
-      } catch (e) {
-        /** */
-      }
-    }
-    if (updated.length == collections.entries.length) {
-      return SyncStatus.success;
-    }
-    return SyncStatus.partial;
   }
 }
 

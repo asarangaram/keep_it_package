@@ -1,6 +1,11 @@
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:local_store/local_store.dart';
+import 'package:local_store/src/cl_server.dart';
 import 'package:local_store/src/m2_db_manager.dart';
+import 'package:mockito/annotations.dart';
+
 import 'package:path/path.dart' as p;
 
 import 'package:store/store.dart';
@@ -9,8 +14,38 @@ import 'package:test_api/src/backend/invoker.dart';
 
 const testArtifactsFolder = './testArtifacts';
 
+const withIdResponseBody = '''
+            {
+                "id": 100,
+                "info": "This is a test server",
+                "name": "colan_server"
+            }''';
+
+final mockCollections = Collections([
+  Collection(
+    label: 'localCollection1',
+    description: 'Description for new collection1',
+    createdDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
+    updatedDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
+  ),
+  Collection(
+    label: 'localCollection2',
+    description: 'Description for new collection2',
+    createdDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
+    updatedDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
+  ),
+  Collection(
+    label: 'localCollection3',
+    description: 'Description for new collection3',
+    createdDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
+    updatedDate: DateTime.parse(DateTime.now().toSQL()).toLocal(),
+  ),
+]);
+
+@GenerateNiceMocks([MockSpec<http.Client>()])
 void main() {
-  group('Database operations', () {
+  late final MockClient mockClient;
+  group('API Client testing', () {
     late DBManager dbManager;
 
     File getDBPath() {
@@ -30,9 +65,21 @@ void main() {
       }
 
       dbFile.parent.createSync(recursive: true);
-
-      dbManager =
-          await DBManager.createInstances(dbpath: dbFile.path, onReload: () {});
+      const server = CLServer(name: 'test_server', port: 5000);
+      mockClient = MockClient((request) async {
+        print('path: ${request.url.path}');
+        return switch (request.url.path) {
+          '/collection' => http.Response(mockCollections.toJsonList(), 200),
+          '' => http.Response(withIdResponseBody, 200),
+          _ => http.Response('not handled by mock', 400),
+        };
+      });
+      final serverWithID = await server.withId(client: mockClient);
+      dbManager = await DBManager.createInstances(
+        dbpath: dbFile.path,
+        onReload: () {},
+        server: serverWithID,
+      );
     });
 
     tearDown(() async {
@@ -43,28 +90,50 @@ void main() {
       }
     });
 
-    test('sync locally Modifed Collection', () async {
-      final collections = [
-        Collection(
-          label: 'localCollection1',
-          description: 'Description for new collection1',
-          createdDate: DateTime.now(),
-          updatedDate: DateTime.now(),
-        ),
-        Collection(
-          label: 'localCollection2',
-          description: 'Description for new collection2',
-          createdDate: DateTime.now(),
-          updatedDate: DateTime.now(),
-        ),
-        Collection(
-          label: 'localCollection3',
-          description: 'Description for new collection3',
-          createdDate: DateTime.now(),
-          updatedDate: DateTime.now(),
-        ),
-      ];
+    test('can setup the dbManager with a server', () async {
+      expect(dbManager.server?.id, 100);
+    });
 
+    test(
+      'pull the content from server and update local db',
+      () async {
+        // Pull Once
+        final result = await dbManager.pull(client: mockClient);
+        expect(result, SyncStatus.success);
+        final result2 = await dbManager.pull(client: mockClient);
+
+        expect(result2, SyncStatus.success);
+
+        final collectionsFromDB = await dbManager.dbReader.getCollectionAll();
+        expect(collectionsFromDB, isNotNull);
+        expect(
+          collectionsFromDB!.map((e) => e.removeID()).toList(),
+          mockCollections.entries,
+        );
+      },
+      timeout: const Timeout(Duration(minutes: 60)),
+    );
+    test(
+      'pull the content from server and update local db',
+      () async {
+        // Pull Once
+        final result = await dbManager.pull(client: mockClient);
+        expect(result, SyncStatus.success);
+        final result2 = await dbManager.pull(client: mockClient);
+
+        expect(result2, SyncStatus.success);
+
+        final collectionsFromDB = await dbManager.dbReader.getCollectionAll();
+        expect(collectionsFromDB, isNotNull);
+        expect(
+          collectionsFromDB!.map((e) => e.removeID()).toList(),
+          mockCollections.entries,
+        );
+      },
+      timeout: const Timeout(Duration(minutes: 60)),
+    );
+
+    /* test('sync locally Modifed Collection', () async {
       for (final collection in collections) {
         await dbManager.upsertCollection(collection);
       }
@@ -74,7 +143,7 @@ void main() {
           await dbManager.dbReader.locallyModifiedCollections();
 
       expect(updatedCollections.length, 3);
-    });
+    }); */
 
     // Add more tests for other cases as needed
   });

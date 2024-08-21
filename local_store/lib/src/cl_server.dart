@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'rest_api.dart';
 
@@ -48,9 +49,10 @@ class CLServer {
   @override
   int get hashCode => name.hashCode ^ port.hashCode ^ id.hashCode;
 
-  Future<CLServer?> get withId async {
+  Future<CLServer?> withId({http.Client? client}) async {
     try {
-      final id = await RestApi('http://$name:$port').getURLStatus();
+      final id =
+          await RestApi('http://$name:$port', client: client).getURLStatus();
       if (id == null) {
         throw Exception('Missing id');
       }
@@ -60,9 +62,10 @@ class CLServer {
     }
   }
 
-  Future<bool> get hasConnection async {
+  Future<bool> hasConnection({http.Client? client}) async {
     try {
-      final id = await RestApi('http://$name:$port').getURLStatus();
+      final id =
+          await RestApi('http://$name:$port', client: client).getURLStatus();
       return this.id != null && this.id == id;
     } catch (e) {
       return false;
@@ -92,6 +95,9 @@ class CLServer {
   factory CLServer.fromJson(String source) =>
       CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  Future<String> getEndpoint(String endPoint) async =>
-      RestApi('http://$name:$port').get(endPoint);
+  Future<String> getEndpoint(
+    String endPoint, {
+    http.Client? client,
+  }) async =>
+      RestApi('http://$name:$port', client: client).get(endPoint);
 }
