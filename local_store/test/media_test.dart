@@ -46,7 +46,7 @@ void main() {
       'upsertMedia - insert and update',
       () async {
         // Insert a new media item
-        final media = CLMedia(
+        const media = CLMedia(
           path: 'path/to/media1',
           type: CLMediaType.image, // Adjust based on your enum or type
           md5String: 'md5hash1',
@@ -81,7 +81,7 @@ void main() {
 
     test('deleteMedia - delete media item', () async {
       // Insert a media item to delete
-      final media = CLMedia(
+      const media = CLMedia(
         path: 'path/to/media_to_delete',
         type: CLMediaType.video,
         md5String: 'md5hash_to_delete',
@@ -107,7 +107,7 @@ void main() {
 
     test('getMediaByID - retrieve media item', () async {
       // Insert a media item
-      final media = CLMedia(
+      const media = CLMedia(
         path: 'path/to/media_for_retrieval',
         type: CLMediaType.audio,
         md5String: 'md5hash_for_retrieval',
@@ -128,7 +128,7 @@ void main() {
 
     test('upsertMedia - handle unique constraint violation', () async {
       // Insert a media item with a unique constraint
-      final media1 = CLMedia(
+      const media1 = CLMedia(
         path: 'path/to/media_unique1',
         type: CLMediaType.image,
         md5String: 'md5hash_unique1',
@@ -138,7 +138,7 @@ void main() {
       final updated1 = await dbManager.upsertMedia(media1);
 
       // Try to insert another media item with the same path and md5String
-      final media2 = CLMedia(
+      const media2 = CLMedia(
         path: 'path/to/media_unique1',
         type: CLMediaType.image,
         md5String: 'md5hash_unique1',
@@ -152,7 +152,7 @@ void main() {
 
     test('deleteMedia - handle non-existing media item', () async {
       // Try to delete a media item that does not exist
-      final nonExistingMedia = CLMedia(
+      const nonExistingMedia = CLMedia(
         id: 999,
         path: 'path/to/non_existing_media',
         type: CLMediaType.audio,

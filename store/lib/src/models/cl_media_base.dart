@@ -1,42 +1,36 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:meta/meta.dart';
 
-import '../extensions/ext_datetime.dart';
-import 'cl_media_base.dart';
+import '../extensions/ext_file.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLNote extends CLMediaBase {
-  const CLNote({
-    required super.path,
-    required super.type,
-    required super.collectionId,
-    required this.id,
-    super.ref,
-    super.originalDate,
-    super.createdDate,
-    super.updatedDate,
-    super.md5String,
-    super.isDeleted,
-    super.isHidden,
-    super.pin,
-    this.serverUID,
-    this.locallyModified = true,
+class CLMediaBase {
+  const CLMediaBase({
+    required this.path,
+    required this.type,
+    this.ref,
+    this.originalDate,
+    this.createdDate,
+    this.updatedDate,
+    this.md5String,
+    this.isDeleted,
+    this.isHidden,
+    this.pin,
+    this.collectionId,
   });
 
-  factory CLNote.fromMap(Map<String, dynamic> map) {
-    return CLNote(
+  factory CLMediaBase.fromMap(Map<String, dynamic> map) {
+    return CLMediaBase(
       path: map['path'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       ref: map['ref'] != null ? map['ref'] as String : null,
-      id: map['id'] != null ? map['id'] as int : null,
       originalDate: map['originalDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
           : null,
-      collectionId:
-          map['collectionId'] != null ? map['collectionId'] as int : null,
       createdDate: map['createdDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
           : null,
@@ -47,21 +41,33 @@ class CLNote extends CLMediaBase {
       isDeleted: (map['isDeleted'] as int) != 0,
       isHidden: (map['isHidden'] as int) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
-      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      locallyModified: (map['locallyModified'] as int? ?? 1) == 1,
+      collectionId:
+          map['collectionId'] != null ? map['collectionId'] as int : null,
     );
   }
-  final int? id;
-  final int? serverUID;
-  final bool locallyModified;
 
-  @override
-  CLNote copyWith({
+  factory CLMediaBase.fromJson(String source) =>
+      CLMediaBase.fromMap(json.decode(source) as Map<String, dynamic>);
+  final String path;
+  final CLMediaType type;
+  final String? ref;
+  final DateTime? originalDate;
+  final DateTime? createdDate;
+  final DateTime? updatedDate;
+  final String? md5String;
+  final bool? isDeleted;
+  final bool? isHidden;
+  final String? pin;
+  final int? collectionId;
+
+  Future<void> deleteFile() async {
+    await File(path).deleteIfExists();
+  }
+
+  CLMediaBase copyWith({
     String? path,
     CLMediaType? type,
     String? ref,
-    int? id,
-    int? collectionId,
     DateTime? originalDate,
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -69,15 +75,12 @@ class CLNote extends CLMediaBase {
     bool? isDeleted,
     bool? isHidden,
     String? pin,
-    int? serverUID,
-    bool? locallyModified,
+    int? collectionId,
   }) {
-    return CLNote(
+    return CLMediaBase(
       path: path ?? this.path,
       type: type ?? this.type,
       ref: ref ?? this.ref,
-      id: id ?? this.id,
-      collectionId: collectionId ?? this.collectionId,
       originalDate: originalDate ?? this.originalDate,
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
@@ -85,25 +88,23 @@ class CLNote extends CLMediaBase {
       isDeleted: isDeleted ?? this.isDeleted,
       isHidden: isHidden ?? this.isHidden,
       pin: pin ?? this.pin,
-      serverUID: serverUID ?? this.serverUID,
-      locallyModified: locallyModified ?? this.locallyModified,
+      collectionId: collectionId ?? this.collectionId,
     );
   }
 
   @override
-  String toString() =>
-      // ignore: lines_longer_than_80_chars
-      'CLNote(super: ${super.toString()}, id: $id, serverUID: $serverUID, locallyModified: $locallyModified)';
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'CLMediaBase(path: $path, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId)';
+  }
 
   @override
-  bool operator ==(covariant CLNote other) {
+  bool operator ==(covariant CLMediaBase other) {
     if (identical(this, other)) return true;
 
     return other.path == path &&
         other.type == type &&
         other.ref == ref &&
-        other.id == id &&
-        other.collectionId == collectionId &&
         other.originalDate == originalDate &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
@@ -111,8 +112,7 @@ class CLNote extends CLMediaBase {
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
         other.pin == pin &&
-        other.serverUID == serverUID &&
-        other.locallyModified == locallyModified;
+        other.collectionId == collectionId;
   }
 
   @override
@@ -120,8 +120,6 @@ class CLNote extends CLMediaBase {
     return path.hashCode ^
         type.hashCode ^
         ref.hashCode ^
-        id.hashCode ^
-        collectionId.hashCode ^
         originalDate.hashCode ^
         createdDate.hashCode ^
         updatedDate.hashCode ^
@@ -129,32 +127,20 @@ class CLNote extends CLMediaBase {
         isDeleted.hashCode ^
         isHidden.hashCode ^
         pin.hashCode ^
-        serverUID.hashCode ^
-        locallyModified.hashCode;
+        collectionId.hashCode;
   }
 
-  @override
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'path': path,
       'type': type.name,
       'ref': ref,
-      'id': id,
-      'collectionId': collectionId,
-      'originalDate': originalDate?.toSQL(),
+      'originalDate': originalDate?.millisecondsSinceEpoch,
+      'createdDate': createdDate?.millisecondsSinceEpoch,
+      'updatedDate': updatedDate?.millisecondsSinceEpoch,
       'md5String': md5String,
-      'isDeleted': (isDeleted ?? false) ? 1 : 0,
-      'isHidden': (isHidden ?? false) ? 1 : 0,
-      'pin': pin,
-      'serverUID': serverUID,
-      'locallyModified': locallyModified ? 1 : 0,
     };
   }
 
-  factory CLNote.fromJson(String source) => CLNote.fromMap(
-        json.decode(source) as Map<String, dynamic>,
-      );
-
-  @override
   String toJson() => json.encode(toMap());
 }

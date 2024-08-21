@@ -623,6 +623,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           type: type,
           path: path_handler.basename(savedNotesFile.path),
           id: null,
+          collectionId: null,
         );
 
     final notesInDB = await widget.storeInstance.upsertNote(
