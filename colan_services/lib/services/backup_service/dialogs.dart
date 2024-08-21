@@ -168,7 +168,7 @@ class ConfirmAction {
       );
   static Future<bool?> deleteNote(
     BuildContext context, {
-    required CLNote note,
+    required CLMedia note,
   }) async =>
       template(
         context,

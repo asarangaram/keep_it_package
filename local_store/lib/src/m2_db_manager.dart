@@ -35,11 +35,11 @@ class DBManager extends Store {
             .copyWith(parameters: [item.label]).read(tx);
       },
     );
-    final notesTable = DBExec<CLNote>(
+    final notesTable = DBExec<CLMedia>(
       table: 'Notes',
-      toMap: (CLNote obj) => obj.toMap(),
+      toMap: (CLMedia obj) => obj.toMap(),
       readBack: (tx, item) async {
-        return (getQuery(DBQueries.noteByPath) as DBQuery<CLNote>)
+        return (getQuery(DBQueries.noteByPath) as DBQuery<CLMedia>)
             .copyWith(parameters: [item.path]).read(tx);
       },
     );
@@ -95,7 +95,7 @@ class DBManager extends Store {
       });
 
   @override
-  Future<CLNote> upsertNote(CLNote note, List<CLMedia> mediaList) async =>
+  Future<CLMedia> upsertNote(CLMedia note, List<CLMedia> mediaList) async =>
       db.writeTransaction((tx) async {
         return dbWriter.upsertNote(tx, note, mediaList);
       });
@@ -113,7 +113,8 @@ class DBManager extends Store {
       });
 
   @override
-  Future<void> deleteNote(CLNote note) async => db.writeTransaction((tx) async {
+  Future<void> deleteNote(CLMedia note) async =>
+      db.writeTransaction((tx) async {
         await dbWriter.deleteNote(tx, note);
       });
 

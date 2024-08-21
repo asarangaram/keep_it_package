@@ -1,5 +1,4 @@
 import 'cl_media.dart';
-import 'cl_note.dart';
 import 'collection.dart';
 
 enum DBQueries {
@@ -41,11 +40,11 @@ abstract class Store {
   /// upsertCollection - introduce NULL return
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);
-  Future<CLNote?> upsertNote(CLNote note, List<CLMedia> mediaList);
+  Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
-  Future<void> deleteNote(CLNote note);
+  Future<void> deleteNote(CLMedia note);
 
   Future<List<Object?>?> getDBRecords();
 

@@ -16,7 +16,7 @@ class AudioNote extends StatefulWidget {
     this.onEditMode,
   });
 
-  final CLNote note;
+  final CLMedia note;
   final bool editMode;
   final VoidCallback? onEditMode;
   final VoidCallback onDeleteNote;

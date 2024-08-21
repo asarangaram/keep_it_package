@@ -12,7 +12,7 @@ class AudioNotes extends StatefulWidget {
     super.key,
   });
   final CLMedia media;
-  final List<CLNote> notes;
+  final List<CLMedia> notes;
 
   @override
   State<AudioNotes> createState() => _AudioNotesState();

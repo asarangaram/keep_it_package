@@ -1,4 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: lines_longer_than_80_chars
+
+/* // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
@@ -158,3 +160,4 @@ class CLNote extends CLMediaBase {
   @override
   String toJson() => json.encode(toMap());
 }
+ */

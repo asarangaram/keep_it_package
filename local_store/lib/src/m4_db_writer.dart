@@ -16,7 +16,7 @@ class DBWriter {
   });
   final DBExec<Collection> collectionTable;
   final DBExec<CLMedia> mediaTable;
-  final DBExec<CLNote> notesTable;
+  final DBExec<CLMedia> notesTable;
   final DBExec<NotesOnMedia> notesOnMediaTable;
 
   Future<Collection> upsertCollection(
@@ -41,9 +41,9 @@ class DBWriter {
     ))!;
   }
 
-  Future<CLNote> upsertNote(
+  Future<CLMedia> upsertNote(
     SqliteWriteContext tx,
-    CLNote note,
+    CLMedia note,
     List<CLMedia> mediaList,
   ) async {
     final updatedNote = (await notesTable.upsert(
@@ -98,7 +98,7 @@ class DBWriter {
 
   Future<void> deleteNote(
     SqliteWriteContext tx,
-    CLNote note,
+    CLMedia note,
   ) async {
     // PATCH ============================================================
     // This patch is required as for some reasons, DELETE on CASCASDE
@@ -116,7 +116,7 @@ class DBWriter {
 
   Future<void> connectNotes(
     SqliteWriteContext tx, {
-    required CLNote note,
+    required CLMedia note,
     required CLMedia media,
   }) async {
     await notesOnMediaTable.upsert(
@@ -129,7 +129,7 @@ class DBWriter {
 
   Future<void> disconnectNotes(
     SqliteWriteContext tx, {
-    required CLNote note,
+    required CLMedia note,
     required CLMedia media,
   }) async {
     await notesOnMediaTable.delete(

@@ -609,7 +609,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     String path,
     CLMediaType type, {
     required List<CLMedia> mediaMultiple,
-    CLNote? note,
+    CLMedia? note,
   }) async {
     final savedNotesFile =
         File(path).copyTo(widget.appSettings.directories.notes.path);
@@ -618,11 +618,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           path: path_handler.basename(savedNotesFile.path),
           type: type,
         ) ??
-        CLNote(
+        CLMedia(
           createdDate: DateTime.now(),
           type: type,
           path: path_handler.basename(savedNotesFile.path),
-          id: null,
           collectionId: null,
         );
 
@@ -641,7 +640,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
   }
 
-  Future<void> onDeleteNote(BuildContext ctx, CLNote note) async {
+  Future<void> onDeleteNote(BuildContext ctx, CLMedia note) async {
     if (note.id == null) return;
 
     await widget.storeInstance.deleteNote(note);
@@ -680,12 +679,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       );
   String getMediaLabel(CLMedia media) => media.label;
 
-  String getNotesPath(CLNote note) => path_handler.join(
+  String getNotesPath(CLMedia note) => path_handler.join(
         widget.appSettings.directories.notes.path.path,
         note.path,
       );
 
-  String getText(CLNote? note) {
+  String getText(CLMedia? note) {
     if (note?.type == CLMediaType.text) {
       final String text;
       if (note != null) {
@@ -900,9 +899,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return widget.storeInstance.read(q);
   }
 
-  Future<List<CLNote?>?> getOrphanNotes() {
+  Future<List<CLMedia?>?> getOrphanNotes() {
     final q = widget.storeInstance.getQuery(DBQueries.notesOrphan)
-        as StoreQuery<CLNote>;
+        as StoreQuery<CLMedia>;
     return widget.storeInstance.readMultiple(q);
   }
 

@@ -14,7 +14,7 @@ class EditNotes extends StatelessWidget {
   });
   final TextEditingController controller;
   final FocusNode? focusNode;
-  final CLNote? note;
+  final CLMedia? note;
   final VoidCallback? onTap;
 
   @override

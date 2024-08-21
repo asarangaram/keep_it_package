@@ -105,7 +105,7 @@ class StoreActions {
     String path, // Absolute Path, can't go to CLNote
     CLMediaType type, {
     required List<CLMedia> mediaMultiple,
-    CLNote? note,
+    CLMedia? note,
   }) upsertNote;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +129,7 @@ class StoreActions {
     List<CLMedia> mediaMultiple,
   ) restoreMediaMultiple;
 
-  final Future<void> Function(BuildContext ctx, CLNote note) deleteNote;
+  final Future<void> Function(BuildContext ctx, CLMedia note) deleteNote;
 
   /////////////////////////////////////////////////////////////////////////////////
 
@@ -144,8 +144,8 @@ class StoreActions {
   final String Function(CLMedia media) getPreviewPath;
   final String Function(CLMedia media) getMediaPath;
   final String Function(CLMedia media) getMediaLabel;
-  final String Function(CLNote media) getNotesPath;
-  final String Function(CLNote? note) getText;
+  final String Function(CLMedia media) getNotesPath;
+  final String Function(CLMedia? note) getText;
 
   // Opens New page
   final Future<void> Function(BuildContext ctx, {int? collectionId}) openCamera;

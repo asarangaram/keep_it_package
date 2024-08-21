@@ -9,7 +9,7 @@ class TextNotes extends StatelessWidget {
     required this.notes,
     super.key,
   });
-  final List<CLNote> notes;
+  final List<CLMedia> notes;
   final CLMedia media;
 
   @override
