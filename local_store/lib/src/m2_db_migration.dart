@@ -35,7 +35,7 @@ final migrations = SqliteMigrations()
       )
     ''');
       await tx.execute('''
-      CREATE TABLE IF NOT EXISTS mediaNote (
+      CREATE TABLE IF NOT EXISTS MediaNote (
         noteId INTEGER,
         itemId INTEGER,
         PRIMARY KEY (noteId, itemId),

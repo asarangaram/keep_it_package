@@ -42,14 +42,6 @@ class DBReader {
     );
   }
 
-  Future<CLMedia?> getNoteByID(
-    int id,
-  ) {
-    return read<CLMedia>(
-      getQuery(DBQueries.noteById, parameters: [id]) as DBQuery<CLMedia>,
-    );
-  }
-
   Future<List<Collection>> getCollectionsByIDList(
     List<int> idList,
   ) {
@@ -66,15 +58,6 @@ class DBReader {
   ) {
     return readMultiple<CLMedia>(
       getQuery(DBQueries.mediaByIdList, parameters: ['(${idList.join(', ')})'])
-          as DBQuery<CLMedia>,
-    );
-  }
-
-  Future<List<CLMedia>> getNotesByIDList(
-    List<int> idList,
-  ) {
-    return readMultiple<CLMedia>(
-      getQuery(DBQueries.noteByIdList, parameters: ['(${idList.join(', ')})'])
           as DBQuery<CLMedia>,
     );
   }
@@ -217,32 +200,19 @@ class DBReader {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
+      DBQueries.notesByMediaId => DBQuery<CLMedia>(
+          sql:
+              'SELECT Media.* FROM Media JOIN MediaNote ON Media.id = MediaNote.noteId WHERE MediaNote.itemId = ?;',
+          triggerOnTables: const {'Media', 'MediaNote'},
+          fromMap: CLMedia.fromMap,
+        ),
+      // FIXME - Look for AUX
       DBQueries.notesAll => DBQuery<CLMedia>(
           sql: 'SELECT * FROM Notes',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.noteById => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Notes WHERE id = ?;',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.noteByPath => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Notes WHERE path = ?;',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.notesByMediaId => DBQuery<CLMedia>(
-          sql:
-              'SELECT Notes.* FROM Notes JOIN MediaNote ON Notes.id = MediaNote.noteId WHERE MediaNote.itemId = ?;',
-          triggerOnTables: const {'Media', 'MediaNote'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.noteByIdList => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Notes WHERE id IN (?)',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
+      // FIXME - Look for AUX
       DBQueries.notesOrphan => DBQuery<CLMedia>(
           sql:
               'SELECT n.* FROM Notes n LEFT JOIN MediaNote inote ON n.id = inote.noteId WHERE inote.noteId IS NULL',
@@ -256,11 +226,6 @@ class DBReader {
         ),
       DBQueries.mediaLocallyModified => DBQuery<CLMedia>(
           sql: 'SELECT * FROM Media WHERE locallyModified = True;',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.noteLocallyModified => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Notes WHERE locallyModified = True;',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
@@ -284,14 +249,6 @@ class DBReader {
     return readMultiple<CLMedia>(
       getQuery(
         DBQueries.mediaLocallyModified,
-      ) as DBQuery<CLMedia>,
-    );
-  }
-
-  Future<List<CLMedia>> locallyModifiedNotes() {
-    return readMultiple<CLMedia>(
-      getQuery(
-        DBQueries.noteLocallyModified,
       ) as DBQuery<CLMedia>,
     );
   }

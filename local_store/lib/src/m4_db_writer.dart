@@ -11,12 +11,11 @@ class DBWriter {
   const DBWriter({
     required this.collectionTable,
     required this.mediaTable,
-    required this.notesTable,
     required this.notesOnMediaTable,
   });
   final DBExec<Collection> collectionTable;
   final DBExec<CLMedia> mediaTable;
-  final DBExec<CLMedia> notesTable;
+
   final DBExec<NotesOnMedia> notesOnMediaTable;
 
   Future<Collection> upsertCollection(
@@ -46,18 +45,19 @@ class DBWriter {
     CLMedia note,
     List<CLMedia> mediaList,
   ) async {
-    final updatedNote = (await notesTable.upsert(
+    final updatedNote = await mediaTable.upsert(
       tx,
       note,
       uniqueColumn: ['id'],
-    ))!;
+    );
 
     _infoLogger('upsertNote: Done :  $updatedNote');
 
     for (final media in mediaList) {
-      await connectNotes(tx, note: updatedNote, media: media);
+      await connectNotes(tx, note: updatedNote!, media: media);
     }
-    return updatedNote;
+
+    return updatedNote!;
   }
 
   Future<void> deleteCollection(
@@ -111,7 +111,7 @@ class DBWriter {
     }
     // PATCH ENDS ========================================================
 
-    await notesTable.delete(tx, note);
+    await mediaTable.delete(tx, note);
   }
 
   Future<void> connectNotes(

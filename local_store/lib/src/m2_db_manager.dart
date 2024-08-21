@@ -35,14 +35,7 @@ class DBManager extends Store {
             .copyWith(parameters: [media.label]).read(tx);
       },
     );
-    final notesTable = DBExec<CLMedia>(
-      table: 'Media',
-      toMap: (CLMedia obj) => obj.toMap(),
-      readBack: (tx, media) async {
-        return (getQuery(DBQueries.noteByPath) as DBQuery<CLMedia>)
-            .copyWith(parameters: [media.path]).read(tx);
-      },
-    );
+
     final notesOnMediaTable = DBExec<NotesOnMedia>(
       table: 'ItemNote',
       toMap: (NotesOnMedia obj) => obj.toMap(),
@@ -54,7 +47,6 @@ class DBManager extends Store {
     dbWriter = DBWriter(
       collectionTable: collectionTable,
       mediaTable: mediaTable,
-      notesTable: notesTable,
       notesOnMediaTable: notesOnMediaTable,
     );
     dbReader = DBReader(db);
