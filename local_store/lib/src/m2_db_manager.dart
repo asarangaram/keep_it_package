@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
@@ -284,21 +285,29 @@ class DBManager extends Store {
 
     final tasks = <DownloadTask>[];
     for (final media in updated.entries) {
-      tasks.addAll(downloadTask(media));
+      tasks.addAll(downloadTask(media, reDownload: true));
     }
 
-    final result = await FileDownloader().downloadBatch(
-      tasks,
-      batchProgressCallback: (succeeded, failed) => print(
-        'Completed ${succeeded + failed} out of ${tasks.length}, $failed failed',
-      ),
+    unawaited(
+      FileDownloader()
+          .downloadBatch(
+        tasks,
+        /* batchProgressCallback: (succeeded, failed) => print(
+          'Completed ${succeeded + failed} out of ${tasks.length}, $failed failed',
+        ), */
+      )
+          .then((result) {
+        print(
+          'Completed ${result.numSucceeded + result.numFailed} '
+          'out of ${result.tasks.length}, ${result.numFailed} failed',
+        );
+      }),
     );
-    print(result);
 
     return DBSyncStatus.success;
   }
 
-  List<DownloadTask> downloadTask(CLMedia media) {
+  List<DownloadTask> downloadTask(CLMedia media, {bool reDownload = false}) {
     // TODO(anandas): : Work on extension !
     final mediaPath = path_handler.join(
       appSettings.directories.media.pathString,
@@ -311,7 +320,7 @@ class DBManager extends Store {
     final fileName = '${media.serverUID}.jpg';
 
     return [
-      if (!File(mediaPath).existsSync())
+      if (!File(mediaPath).existsSync() || reDownload)
         DownloadTask(
           url: server!
               .getEndpointURI('/media/${media.serverUID}/download')
