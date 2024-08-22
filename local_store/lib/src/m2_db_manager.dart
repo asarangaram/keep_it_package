@@ -37,8 +37,8 @@ class DBManager extends Store {
       toMap: (CLMedia obj) => obj.toMap(),
       readBack: (tx, media) {
         return (Queries.getQuery(
-          DBQueries.mediaByPath,
-          parameters: [media.label],
+          DBQueries.mediaByMD5,
+          parameters: [media.md5String],
         ) as DBQuery<CLMedia>)
             .read(tx);
       },
