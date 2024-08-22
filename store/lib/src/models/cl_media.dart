@@ -225,6 +225,4 @@ class CLMedia extends CLMediaBase {
       /* locallyModified: true, */
     );
   }
-
-  String get label => name;
 }

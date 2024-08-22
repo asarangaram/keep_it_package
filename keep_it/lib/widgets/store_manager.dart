@@ -11,28 +11,26 @@ import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
-import 'package:uuid/uuid.dart';
 
 extension ExtMetaData on CLMedia {
-  Future<CLMedia> getMetadata({
-    required Directory location,
+  Future<CLMedia> getMetadata(
+    String path, {
     bool? regenerate,
   }) async {
-    if (type == CLMediaType.image) {
-      return copyWith(
-        originalDate: (await File(path_handler.join(location.path, label))
-                .getImageMetaData(regenerate: regenerate))
-            ?.originalDate,
-      );
-    } else if (type == CLMediaType.video) {
-      return copyWith(
-        originalDate: (await File(path_handler.join(location.path, label))
-                .getVideoMetaData(regenerate: regenerate))
-            ?.originalDate,
-      );
-    } else {
-      return this;
+    if (originalDate == null || (regenerate ?? false)) {
+      if (type == CLMediaType.image) {
+        return copyWith(
+          originalDate: (await File(path).getImageMetaData())?.originalDate,
+        );
+      } else if (type == CLMediaType.video) {
+        return copyWith(
+          originalDate: (await File(path).getVideoMetaData())?.originalDate,
+        );
+      } else {
+        return this;
+      }
     }
+    return this;
   }
 }
 
@@ -253,14 +251,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final box = ctx.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
       ctx,
-      mediaMultiple
-          .map(
-            (e) => path_handler.join(
-              widget.appSettings.directories.media.pathString,
-              e.label,
-            ),
-          )
-          .toList(),
+      mediaMultiple.map(getMediaPath).toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }
@@ -320,10 +311,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     for (final media in mediaMultiple) {
       if (media.id != null) {
         final pin = await albumManager.addMedia(
-          path_handler.join(
-            widget.appSettings.directories.media.pathString,
-            media.label,
-          ),
+          getMediaPath(media),
           title: media.name,
           isImage: media.type == CLMediaType.image,
           isVideo: media.type == CLMediaType.video,
@@ -358,12 +346,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       updatedMedia,
     );
     if (mediaFromDB != null) {
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          originalMedia.label,
-        ),
-      ).deleteIfExists();
+      await File(getMediaPath(originalMedia)).deleteIfExists();
     }
 
     return mediaFromDB ?? originalMedia;
@@ -453,7 +436,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       onProgress?.call(
         Progress(
           fractCompleted: i / mediaMultiple.length,
-          currentItem: m.label,
+          currentItem: m.name,
         ),
       );
     }
@@ -500,12 +483,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
     final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
     if (mediaFromDB == null) {
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          savedMedia.label,
-        ),
-      ).deleteIfExists();
+      await File(getMediaPath(savedMedia)).deleteIfExists();
     } else {
       await File(fileName).deleteIfExists();
     }
@@ -572,7 +550,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
               collectionId: tempCollection.id,
               md5String: md5String,
               isHidden: true,
-            ).getMetadata(location: widget.appSettings.directories.media.path);
+            ).getMetadata(savedMediaFile.path);
 
             final mediaFromDB =
                 await widget.storeInstance.upsertMedia(savedMedia);
@@ -665,19 +643,18 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   String getPreviewPath(CLMedia media) {
-    final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, media.label);
     final previewFileName = path_handler.join(
       widget.appSettings.directories.thumbnail.pathString,
-      '$uuid.tn.jpeg',
+      '${media.md5String}.tn.jpeg',
     );
     return previewFileName;
   }
 
   String getMediaPath(CLMedia media) => path_handler.join(
         widget.appSettings.directories.media.path.path,
-        media.label,
+        media.name,
       );
-  String getMediaLabel(CLMedia media) => media.label;
+  String getMediaLabel(CLMedia media) => media.name;
 
   String getNotesPath(CLMedia note) => path_handler.join(
         widget.appSettings.directories.notes.path.path,
@@ -729,8 +706,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     return false;
   }
-
-  static const uuidGenerator = Uuid();
 
   static Future<CLMediaBase> tryDownloadMedia(
     CLMediaBase mediaFile, {
