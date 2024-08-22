@@ -1,8 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
+import 'package:background_downloader/background_downloader.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:http/http.dart' as http;
 import 'package:local_store/local_store.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path_handler;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
@@ -277,14 +281,48 @@ class DBManager extends Store {
     final updated = await db.writeTransaction((tx) async {
       return dbWriter.upsertMedias(tx, medias: medias);
     });
+
+    final tasks = <DownloadTask>[];
     for (final media in updated.entries) {
-      await bufferURI(media);
+      tasks.addAll(downloadTask(media));
     }
+
+    final result = await FileDownloader().downloadBatch(
+      tasks,
+      batchProgressCallback: (succeeded, failed) => print(
+        'Completed ${succeeded + failed} out of ${tasks.length}, $failed failed',
+      ),
+    );
+    print(result);
 
     return DBSyncStatus.success;
   }
 
-  Future<void> bufferURI(CLMedia media) async {
-    //Default settings: keep offline, keep preview offline, keeporiginal offline
+  List<DownloadTask> downloadTask(CLMedia media) {
+    // TODO(anandas): : Work on extension !
+    final mediaPath = path_handler.join(
+      appSettings.directories.media.pathString,
+      'server_${server!.identifier}',
+    );
+    final directory = path_handler.relative(
+      mediaPath,
+      from: appSettings.directories.persistent.path,
+    );
+    final fileName = '${media.serverUID}.jpg';
+
+    return [
+      if (!File(mediaPath).existsSync())
+        DownloadTask(
+          url: server!
+              .getEndpointURI('/media/${media.serverUID}/download')
+              .toString(),
+          filename: fileName,
+          directory: directory,
+          updates: Updates.statusAndProgress,
+          requiresWiFi: true,
+          retries: 5,
+          metaData: '${media.id}',
+        ),
+    ];
   }
 }

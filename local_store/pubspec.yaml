@@ -8,6 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  background_downloader: ^8.5.3
   collection: ^1.18.0
   device_resources:
     path: ../device_resources
