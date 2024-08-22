@@ -2,12 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+const defaultAsyncUru = AsyncLoading<Uri>();
+
 @immutable
 class MediaStorage {
   const MediaStorage({
-    required this.previewPath,
-    required this.mediaPath,
-    required this.originalMediaPath,
+    this.previewPath = defaultAsyncUru,
+    this.mediaPath = defaultAsyncUru,
+    this.originalMediaPath = defaultAsyncUru,
   });
   final AsyncValue<Uri> previewPath;
   final AsyncValue<Uri> mediaPath;
@@ -45,11 +47,7 @@ class MediaStorage {
       previewPath.hashCode ^ mediaPath.hashCode ^ originalMediaPath.hashCode;
 
   factory MediaStorage.asyncLoading() {
-    return const MediaStorage(
-      previewPath: AsyncLoading(),
-      mediaPath: AsyncLoading(),
-      originalMediaPath: AsyncLoading(),
-    );
+    return const MediaStorage();
   }
   factory MediaStorage.asyncError(Object e, StackTrace st) {
     return MediaStorage(
