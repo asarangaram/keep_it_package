@@ -14,8 +14,7 @@ class CollectionsPage extends ConsumerStatefulWidget {
 }
 
 class CollectionsPageState extends ConsumerState<CollectionsPage> {
-  bool isLoading = false;
-  bool excludeEmpty = false;
+  bool excludeEmpty = true;
 
   @override
   Widget build(BuildContext context) => Column(
