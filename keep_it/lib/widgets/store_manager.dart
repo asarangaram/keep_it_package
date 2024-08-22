@@ -208,7 +208,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         ),
       ).deleteIfExists();
     }
-    final orphanNotes = await getOrphanNotes();
+    /* final orphanNotes = await getOrphanNotes();
     if (orphanNotes != null) {
       for (final note in orphanNotes) {
         if (note != null) {
@@ -216,7 +216,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           await File(getNotesPath(note)).deleteIfExists();
         }
       }
-    }
+    } */
     return true;
   }
 
