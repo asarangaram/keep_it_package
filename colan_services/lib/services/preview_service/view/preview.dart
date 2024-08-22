@@ -9,10 +9,47 @@ import 'package:store/store.dart';
 
 import '../../../internal/widgets/broken_image.dart';
 import '../../image_view_service/image_view.dart';
+import '../../store_service/providers/media_storage.dart';
 import 'image_thumbnail.dart';
 
-class PreviewService extends StatelessWidget {
+class PreviewService extends ConsumerWidget {
   const PreviewService({
+    required this.media,
+    this.keepAspectRatio = true,
+    super.key,
+  });
+  final CLMedia media;
+  final bool keepAspectRatio;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mediaStorageAsync = ref.watch(mediaStorageProvider(media));
+
+    return KeepAspectRatio(
+      keepAspectRatio: keepAspectRatio,
+      child: mediaStorageAsync.when(
+        data: (store) {
+          print('store got data $store');
+          return store.previewPath.when(
+            data: (previewPath) => Center(
+              child: Text(previewPath),
+            ),
+            error: error,
+            loading: loading,
+          );
+        },
+        error: error,
+        loading: loading,
+      ),
+    );
+  }
+
+  Widget loading() => const Center(child: CircularProgressIndicator());
+  Widget error(Object e, StackTrace st) => const BrokenImage();
+}
+
+class PreviewServiceOld extends StatelessWidget {
+  const PreviewServiceOld({
     required this.media,
     this.keepAspectRatio = true,
     super.key,
