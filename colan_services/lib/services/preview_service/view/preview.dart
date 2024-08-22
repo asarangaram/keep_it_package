@@ -24,16 +24,21 @@ class PreviewService extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaStorageAsync = ref.watch(mediaStorageProvider(media));
-
+    final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
     return KeepAspectRatio(
       keepAspectRatio: keepAspectRatio,
       child: mediaStorageAsync.when(
         data: (store) {
-          print('store got data $store');
           return store.previewPath.when(
-            data: (previewPath) => Center(
-              child: Text(previewPath),
-            ),
+            data: (previewPath) => previewPath.scheme == 'file'
+                ? ImageViewerFile(
+                    media,
+                    filePath: previewPath.path,
+                    fit: fit,
+                  )
+                : Center(
+                    child: Text(previewPath.path),
+                  ),
             error: error,
             loading: loading,
           );
@@ -46,6 +51,35 @@ class PreviewService extends ConsumerWidget {
 
   Widget loading() => const Center(child: CircularProgressIndicator());
   Widget error(Object e, StackTrace st) => const BrokenImage();
+}
+
+class ImageViewerFile extends ConsumerWidget {
+  const ImageViewerFile(
+    this.media, {
+    required this.filePath,
+    super.key,
+    this.fit,
+  });
+  final String filePath;
+  final CLMedia media;
+  final BoxFit? fit;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder(
+      future: AlbumManager.isPinBroken(media.pin),
+      builder: (context, snapshot) {
+        return ImageViewerBasic(
+          file: File(filePath),
+          fit: fit,
+          isPinned: media.pin != null,
+          isPinBroken: snapshot.data ?? false,
+          overlayIcon:
+              (media.type == CLMediaType.video) ? Icons.play_arrow_sharp : null,
+        );
+      },
+    );
+  }
 }
 
 class PreviewServiceOld extends StatelessWidget {

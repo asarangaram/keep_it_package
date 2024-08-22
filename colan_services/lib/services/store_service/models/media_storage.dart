@@ -9,14 +9,14 @@ class MediaStorage {
     required this.mediaPath,
     required this.originalMediaPath,
   });
-  final AsyncValue<String> previewPath;
-  final AsyncValue<String> mediaPath;
-  final AsyncValue<String> originalMediaPath;
+  final AsyncValue<Uri> previewPath;
+  final AsyncValue<Uri> mediaPath;
+  final AsyncValue<Uri> originalMediaPath;
 
   MediaStorage copyWith({
-    AsyncValue<String>? previewPath,
-    AsyncValue<String>? mediaPath,
-    AsyncValue<String>? originalMediaPath,
+    AsyncValue<Uri>? previewPath,
+    AsyncValue<Uri>? mediaPath,
+    AsyncValue<Uri>? originalMediaPath,
   }) {
     return MediaStorage(
       previewPath: previewPath ?? this.previewPath,
