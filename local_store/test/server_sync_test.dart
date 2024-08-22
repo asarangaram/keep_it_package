@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:device_resources/device_resources.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:local_store/local_store.dart';
@@ -7,6 +8,7 @@ import 'package:local_store/src/m2_db_manager.dart';
 import 'package:mockito/annotations.dart';
 
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import 'package:store/store.dart';
 import 'package:test/test.dart';
@@ -69,10 +71,17 @@ void main() {
         };
       });
       final serverWithID = await server.withId(client: mockClient);
+      final directories = CLDirectories(
+        persistent: await getApplicationDocumentsDirectory(),
+        temporary: await getApplicationCacheDirectory(),
+        systemTemp: Directory.systemTemp,
+      );
+      final appSettings = AppSettings(directories);
       dbManager = await DBManager.createInstances(
         dbpath: dbFile.path,
         onReload: () {},
         server: serverWithID,
+        appSettings: appSettings,
       );
     });
 

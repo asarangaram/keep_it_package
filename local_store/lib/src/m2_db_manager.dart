@@ -1,6 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:device_resources/device_resources.dart';
 import 'package:http/http.dart' as http;
 import 'package:local_store/local_store.dart';
-
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
@@ -19,6 +20,7 @@ class DBManager extends Store {
     required SqliteDatabase db,
     required void Function() onReload,
     required CLServer? server,
+    required AppSettings appSettings,
   }) {
     final collectionTable = DBExec<Collection>(
       table: 'Collection',
@@ -64,6 +66,7 @@ class DBManager extends Store {
       server: server,
       dbReader: dbReader,
       dbWriter: dbWriter,
+      appSettings: appSettings,
     );
   }
   DBManager._({
@@ -72,23 +75,31 @@ class DBManager extends Store {
     required this.server,
     required this.dbWriter,
     required this.dbReader,
+    required this.appSettings,
   });
 
   final SqliteDatabase db;
   final DBWriter dbWriter;
   final DBReader dbReader;
   final CLServer? server;
+  final AppSettings appSettings;
 
   final void Function() onReload;
 
   static Future<DBManager> createInstances({
     required String dbpath,
     required void Function() onReload,
+    required AppSettings appSettings,
     CLServer? server,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    final dbManager = DBManager(db: db, onReload: onReload, server: server);
+    final dbManager = DBManager(
+      db: db,
+      onReload: onReload,
+      server: server,
+      appSettings: appSettings,
+    );
     await dbManager.pull();
     return dbManager;
   }
@@ -176,6 +187,7 @@ class DBManager extends Store {
     DBWriter? dbWriter,
     DBReader? dbReader,
     CLServer? server,
+    AppSettings? appSettings,
     void Function()? onReload,
   }) {
     return DBManager._(
@@ -183,6 +195,7 @@ class DBManager extends Store {
       dbWriter: dbWriter ?? this.dbWriter,
       dbReader: dbReader ?? this.dbReader,
       server: server ?? this.server,
+      appSettings: appSettings ?? this.appSettings,
       onReload: onReload ?? this.onReload,
     );
   }
@@ -190,7 +203,7 @@ class DBManager extends Store {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'DBManager(db: $db, dbWriter: $dbWriter, dbReader: $dbReader, server: $server, onReload: $onReload)';
+    return 'DBManager(db: $db, dbWriter: $dbWriter, dbReader: $dbReader, server: $server, appSettings: $appSettings, onReload: $onReload)';
   }
 
   @override
@@ -201,6 +214,7 @@ class DBManager extends Store {
         other.dbWriter == dbWriter &&
         other.dbReader == dbReader &&
         other.server == server &&
+        other.appSettings == appSettings &&
         other.onReload == onReload;
   }
 
@@ -210,6 +224,7 @@ class DBManager extends Store {
         dbWriter.hashCode ^
         dbReader.hashCode ^
         server.hashCode ^
+        appSettings.hashCode ^
         onReload.hashCode;
   }
 
@@ -221,6 +236,7 @@ class DBManager extends Store {
       dbWriter: dbWriter,
       dbReader: dbReader,
       server: value,
+      appSettings: appSettings,
     );
     await dbManager.pull();
     return dbManager;
@@ -258,16 +274,17 @@ class DBManager extends Store {
       getCollectionByLabel: dbReader.getCollectionByLabel,
     );
 
-    await db.writeTransaction((tx) async {
-      // ignore: unused_local_variable
-      final CLMedias updated;
-      updated = await dbWriter.upsertMedias(tx, medias: medias);
-      /* if (updated.entries.length == collections.entries.length) {
-        return DBSyncStatus.success;
-      }
-      return DBSyncStatus.partial; */
+    final updated = await db.writeTransaction((tx) async {
+      return dbWriter.upsertMedias(tx, medias: medias);
     });
+    for (final media in updated.entries) {
+      await bufferURI(media);
+    }
 
     return DBSyncStatus.success;
+  }
+
+  Future<void> bufferURI(CLMedia media) async {
+    //Default settings: keep offline, keep preview offline, keeporiginal offline
   }
 }

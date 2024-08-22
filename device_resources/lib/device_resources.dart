@@ -1,6 +1,7 @@
 export 'src/extensions/ext_directory.dart';
 export 'src/extensions/ext_file.dart';
 export 'src/extensions/human_readable.dart';
+export 'src/models/file_system/models/cl_directories.dart' show CLDirectories;
 export 'src/models/m1_app_settings.dart' show AppSettings;
 export 'src/models/m5_gallery_pin.dart' show AlbumManager;
 export 'src/models/share_files.dart' show ShareManager;

@@ -8,13 +8,14 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  
-  
   collection: ^1.18.0
+  device_resources:
+    path: ../device_resources
   http: ^1.2.2
   meta: ^1.12.0
   mockito: ^5.4.4
   path: ^1.9.0
+  path_provider: ^2.1.4
   sqlite3_flutter_libs: ^0.5.20
   sqlite_async: ^0.8.0
   store:
@@ -27,3 +28,4 @@ dev_dependencies:
   test: ^1.24.0
   very_good_analysis: ^6.0.0
 
+ 
