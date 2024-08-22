@@ -4,9 +4,9 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'thumbnail_services.dart';
 import '../models/media_storage.dart';
 import '../models/path_algorithm.dart';
+import 'thumbnail_services.dart';
 
 final mediaStorageProvider =
     StreamProvider.family.autoDispose<MediaStorage, CLMedia>((ref, media) {

@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
-import 'thumbnail_services.dart';
 import 'media_storage.dart';
+import 'thumbnail_services.dart';
 
 // TODO(anandas): This should be variable and determined
 // differently for mobile platforms
@@ -32,7 +32,6 @@ class MediaPathAlgorithm {
 
   set currStorage(MediaStorage value) {
     _currStorage = value;
-    print(_currStorage);
     controller.add(_currStorage);
   }
 
