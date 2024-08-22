@@ -11,7 +11,7 @@ export 'src/basics/cl_icon.dart';
 export 'src/basics/cl_matrix.dart';
 export 'src/basics/cl_pop_screen.dart';
 export 'src/basics/cl_text.dart';
-
+export 'src/basics/image_viewer.dart';
 export 'src/basics/progress_bar.dart';
 export 'src/cl_media/cl_shared_media.dart';
 export 'src/cl_media/incoming_media_monitor.dart' show IncomingMediaMonitor;

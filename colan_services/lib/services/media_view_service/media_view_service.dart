@@ -142,13 +142,14 @@ class MediaViewServiceState extends ConsumerState<MediaViewService> {
   }
 
   void onLockPage({required bool lock}) {
-    setState(() {
+    if (lockPage != lock) {
       lockPage = lock;
       if (lock) {
         ref.read(showControlsProvider.notifier).hideControls();
       } else {
         ref.read(showControlsProvider.notifier).showControls();
       }
-    });
+    }
+    setState(() {});
   }
 }

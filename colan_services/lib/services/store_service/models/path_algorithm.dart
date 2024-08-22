@@ -129,7 +129,7 @@ class MediaPathAlgorithm {
         currStorage = currStorage.copyWith(previewPath: previewPath);
       }
     } else {
-      final myServer = await servers.getMyServer();
+      final myServer = servers.myServer;
       // check for local copy "somehow"
       if (myServer == null) {
         // Local copy not available, return Error
@@ -138,6 +138,9 @@ class MediaPathAlgorithm {
           previewPath: AsyncData(
             myServer
                 .getEndpointURI('/media/${media.serverUID}/download?preview'),
+          ),
+          mediaPath: AsyncData(
+            myServer.getEndpointURI('/media/${media.serverUID}/download'),
           ),
         );
       }

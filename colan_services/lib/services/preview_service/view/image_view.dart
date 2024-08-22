@@ -1,24 +1,20 @@
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../internal/widgets/broken_image.dart';
-
-class ImageViewerBasic extends StatelessWidget {
-  const ImageViewerBasic({
+class ImageViewerIconView extends StatelessWidget {
+  const ImageViewerIconView({
     required this.uri,
     this.overlayIcon,
     this.fit,
     super.key,
-    this.isFullScreen = false,
     this.isPinned = false,
     this.isPinBroken = false,
   });
   final Uri uri;
-  final bool isFullScreen;
 
   final BoxFit? fit;
   final IconData? overlayIcon;
@@ -27,20 +23,13 @@ class ImageViewerBasic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(uri.path);
     return Stack(
       children: [
         Positioned.fill(
-          child: switch (uri.scheme) {
-            'file' => Image.file(
-                File(uri.path),
-                fit: fit,
-              ),
-            _ => Image.network(
-                uri.toString(),
-                fit: fit,
-              )
-          },
+          child: ImageViewer.basic(
+            uri: uri,
+            fit: fit,
+          ),
         ),
         if (isPinned)
           Positioned.fill(
@@ -89,44 +78,3 @@ class ImageViewerBasic extends StatelessWidget {
     );
   }
 }
-
-
-
-/* 
-class MediaPlaceHolder extends StatelessWidget {
-  const MediaPlaceHolder({
-    required this.media,
-    super.key,
-  });
-
-  final CLMedia media;
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
-      child: FittedBox(
-        fit: BoxFit.fill,
-        child: SizedBox.square(
-          dimension: 60 + 16,
-          child: Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(1),
-              child: Center(
-                child: Text(
-                  path.basename(media.path),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
- */

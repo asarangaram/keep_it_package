@@ -1,7 +1,5 @@
-import 'dart:io';
-
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -28,6 +26,7 @@ class MediaViewerRaw extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
+
     return SafeArea(
       top: showControl.showNotes,
       bottom: showControl.showNotes,
@@ -38,7 +37,7 @@ class MediaViewerRaw extends ConsumerWidget {
           Expanded(
             child: switch (media.type) {
               CLMediaType.image => ImageViewService(
-                  file: File(TheStore.of(context).getMediaPath(media)),
+                  media: media,
                   onLockPage: onLockPage,
                 ),
               CLMediaType.video => VideoPlayerService.player(
