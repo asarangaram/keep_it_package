@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../model/thumbnail_services.dart';
+import '../models/thumbnail_services.dart';
 
 final thumbnailServiceProvider = FutureProvider<ThumbnailService>((ref) async {
   final service = ThumbnailService();

@@ -49,7 +49,7 @@ class PreviewService extends ConsumerWidget {
     );
   }
 
-  Widget loading() => const Center(child: CircularProgressIndicator());
+  Widget loading() => const GreyShadowShimmerContainer();
   Widget error(Object e, StackTrace st) => const BrokenImage();
 }
 
@@ -82,6 +82,7 @@ class ImageViewerFile extends ConsumerWidget {
   }
 }
 
+/* 
 class PreviewServiceOld extends StatelessWidget {
   const PreviewServiceOld({
     required this.media,
@@ -131,7 +132,7 @@ class PreviewServiceOld extends StatelessWidget {
     );
   }
 }
-
+ */
 class GreyShadowShimmerContainer extends StatelessWidget {
   const GreyShadowShimmerContainer({super.key});
 

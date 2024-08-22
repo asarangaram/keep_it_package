@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
-import '../../preview_service/model/thumbnail_services.dart';
+import 'thumbnail_services.dart';
 import 'media_storage.dart';
 
 // TODO(anandas): This should be variable and determined
