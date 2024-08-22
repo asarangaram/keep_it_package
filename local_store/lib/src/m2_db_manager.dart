@@ -86,7 +86,6 @@ class DBManager extends Store {
     required void Function() onReload,
     CLServer? server,
   }) async {
-    print(dbpath);
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
     final dbManager = DBManager(db: db, onReload: onReload, server: server);
