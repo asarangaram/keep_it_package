@@ -82,4 +82,11 @@ class Servers {
       servers: null,
     );
   }
+
+  Future<CLServer?> getMyServer() async {
+    if (!(await myServer?.hasConnection() ?? false)) {
+      return null;
+    }
+    return myServer;
+  }
 }

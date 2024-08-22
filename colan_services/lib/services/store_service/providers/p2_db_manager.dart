@@ -9,7 +9,9 @@ final storeProvider = FutureProvider<Store>((ref) async {
   final dbInstance = await ref.watch(dbInstanceProvider.future);
   final servers = ref.watch(serversProvider);
 
-  return dbInstance.attachServer(servers.myServer);
+  final server = await servers.getMyServer();
+
+  return dbInstance.attachServer(server);
 });
 
 final dbInstanceProvider = FutureProvider<Store>((ref) async {
