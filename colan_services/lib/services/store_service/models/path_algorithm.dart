@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
+import '../../online_service/models/servers.dart';
 import 'media_storage.dart';
 import 'thumbnail_services.dart';
 
@@ -15,16 +16,18 @@ int thumbnailDimension = 640;
 
 class MediaPathAlgorithm {
   MediaPathAlgorithm(
-    this.media,
-    this.appSettings,
-    this.thumbnailServiceFuture,
-  ) {
+    this.media, {
+    required this.appSettingsFuture,
+    required this.thumbnailServiceFuture,
+    required this.servers,
+  }) {
     controller = StreamController<MediaStorage>();
   }
 
   final CLMedia media;
-  final AppSettings appSettings;
+  final Future<AppSettings> appSettingsFuture;
   final Future<ThumbnailService> thumbnailServiceFuture;
+  final Servers servers;
   late final StreamController<MediaStorage> controller;
   MediaStorage _currStorage = MediaStorage.asyncLoading();
 
@@ -35,10 +38,12 @@ class MediaPathAlgorithm {
     controller.add(_currStorage);
   }
 
-  AsyncValue<Uri> getLocalmediaPath(CLMedia media) {
+  Future<AppSettings> get appSettings async => appSettingsFuture;
+
+  Future<AsyncValue<Uri>> getLocalmediaPath(CLMedia media) async {
     try {
       final fPath = path_handler.join(
-        appSettings.directories.media.path.path,
+        (await appSettings).directories.media.path.path,
         media.name,
       );
       if (!File(fPath).existsSync()) {
@@ -52,11 +57,11 @@ class MediaPathAlgorithm {
 
   Future<AsyncValue<Uri>> getLocalpreviewPath(CLMedia media) async {
     final fPath = path_handler.join(
-      appSettings.directories.media.path.path,
+      (await appSettings).directories.media.path.path,
       media.name,
     );
     final fpreviewPath = path_handler.join(
-      appSettings.directories.thumbnail.pathString,
+      (await appSettings).directories.thumbnail.pathString,
       '${media.md5String}.tn.jpeg',
     );
     if (!File(fpreviewPath).existsSync()) {
@@ -108,7 +113,7 @@ class MediaPathAlgorithm {
 
     if (media.serverUID == null) {
       // Check if original Media is available
-      final path = getLocalmediaPath(media);
+      final path = await getLocalmediaPath(media);
       if (path.hasError) {
         currStorage = MediaStorage.asyncError(
           path.asError!.error,
@@ -122,6 +127,19 @@ class MediaPathAlgorithm {
 
         final previewPath = await getLocalpreviewPath(media);
         currStorage = currStorage.copyWith(previewPath: previewPath);
+      }
+    } else {
+      final myServer = await servers.getMyServer();
+      // check for local copy "somehow"
+      if (myServer == null) {
+        // Local copy not available, return Error
+      } else {
+        currStorage = currStorage.copyWith(
+          previewPath: AsyncData(
+            myServer
+                .getEndpointURI('/media/${media.serverUID}/download?preview'),
+          ),
+        );
       }
     }
   }

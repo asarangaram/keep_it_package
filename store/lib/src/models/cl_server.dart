@@ -23,4 +23,5 @@ abstract class CLServer {
   Future<bool> hasConnection({http.Client? client});
   String get identifier;
   Future<String> getEndpoint(String endPoint, {http.Client? client});
+  Uri getEndpointURI(String endPoint);
 }

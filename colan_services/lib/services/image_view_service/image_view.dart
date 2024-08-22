@@ -9,7 +9,7 @@ import '../../internal/widgets/broken_image.dart';
 
 class ImageViewerBasic extends StatelessWidget {
   const ImageViewerBasic({
-    required this.file,
+    required this.uri,
     this.overlayIcon,
     this.fit,
     super.key,
@@ -17,7 +17,7 @@ class ImageViewerBasic extends StatelessWidget {
     this.isPinned = false,
     this.isPinBroken = false,
   });
-  final File file;
+  final Uri uri;
   final bool isFullScreen;
 
   final BoxFit? fit;
@@ -27,15 +27,20 @@ class ImageViewerBasic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(uri.path);
     return Stack(
       children: [
         Positioned.fill(
-          child: file.existsSync()
-              ? Image.file(
-                  file,
-                  fit: fit,
-                )
-              : const Center(child: BrokenImage()),
+          child: switch (uri.scheme) {
+            'file' => Image.file(
+                File(uri.path),
+                fit: fit,
+              ),
+            _ => Image.network(
+                uri.toString(),
+                fit: fit,
+              )
+          },
         ),
         if (isPinned)
           Positioned.fill(

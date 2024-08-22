@@ -105,6 +105,11 @@ class CLServerImpl extends CLServer {
   }
 
   @override
+  Uri getEndpointURI(String endPoint) {
+    return Uri.parse('http://$name:$port$endPoint');
+  }
+
+  @override
   Future<String> getEndpoint(
     String endPoint, {
     http.Client? client,

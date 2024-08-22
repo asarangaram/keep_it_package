@@ -4,28 +4,26 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../online_service/providers/servers.dart';
 import '../models/media_storage.dart';
 import '../models/path_algorithm.dart';
 import 'thumbnail_services.dart';
 
 final mediaStorageProvider =
     StreamProvider.family.autoDispose<MediaStorage, CLMedia>((ref, media) {
-  final controller = StreamController<MediaStorage>();
   StreamSubscription<MediaStorage>? subscription;
-  final serviceFuture = ref.watch(thumbnailServiceProvider.future);
-  ref.watch(appSettingsProvider).whenOrNull(
-        data: (appSettings) {
-          // Cancel previous and listen new
-          subscription?.cancel();
-          subscription = MediaPathAlgorithm(
-            media,
-            appSettings,
-            serviceFuture,
-          ).stream().listen(controller.add);
-        },
-        loading: () => controller.add(MediaStorage.asyncLoading()),
-        error: (e, st) => controller.add(MediaStorage.asyncError(e, st)),
-      );
+  final controller = StreamController<MediaStorage>();
+
+  final appSettingsFuture = ref.watch(appSettingsProvider.future);
+  final thumbnailServiceFuture = ref.watch(thumbnailServiceProvider.future);
+
+  final servers = ref.watch(serversProvider);
+  subscription = MediaPathAlgorithm(
+    media,
+    appSettingsFuture: appSettingsFuture,
+    thumbnailServiceFuture: thumbnailServiceFuture,
+    servers: servers,
+  ).stream().listen(controller.add);
   ref.onDispose(() {
     subscription?.cancel();
     controller.close();

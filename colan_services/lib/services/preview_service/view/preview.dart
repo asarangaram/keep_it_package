@@ -28,15 +28,11 @@ class PreviewService extends ConsumerWidget {
       child: mediaStorageAsync.when(
         data: (store) {
           return store.previewPath.when(
-            data: (previewPath) => previewPath.scheme == 'file'
-                ? ImageViewerFile(
-                    media,
-                    filePath: previewPath.path,
-                    fit: fit,
-                  )
-                : Center(
-                    child: Text(previewPath.path),
-                  ),
+            data: (previewPath) => ImageViewerFile(
+              media,
+              uri: previewPath,
+              fit: fit,
+            ),
             error: error,
             loading: loading,
           );
@@ -54,11 +50,11 @@ class PreviewService extends ConsumerWidget {
 class ImageViewerFile extends ConsumerWidget {
   const ImageViewerFile(
     this.media, {
-    required this.filePath,
+    required this.uri,
     super.key,
     this.fit,
   });
-  final String filePath;
+  final Uri uri;
   final CLMedia media;
   final BoxFit? fit;
 
@@ -68,7 +64,7 @@ class ImageViewerFile extends ConsumerWidget {
       future: AlbumManager.isPinBroken(media.pin),
       builder: (context, snapshot) {
         return ImageViewerBasic(
-          file: File(filePath),
+          uri: uri,
           fit: fit,
           isPinned: media.pin != null,
           isPinBroken: snapshot.data ?? false,
