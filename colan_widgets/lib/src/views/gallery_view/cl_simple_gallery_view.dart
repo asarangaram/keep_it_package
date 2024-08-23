@@ -61,7 +61,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
         backButton: CLButtonIcon.small(
-          MdiIcons.arrowRight,
+          MdiIcons.arrowLeft,
           onTap: () => CLPopScreen.onPop(context),
         ),
         actionsBuilder: [
