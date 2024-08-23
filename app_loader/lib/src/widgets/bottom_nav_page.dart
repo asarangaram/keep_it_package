@@ -7,8 +7,6 @@ import 'package:go_router/go_router.dart';
 import '../models/cl_route_descriptor.dart';
 import 'app_theme.dart';
 
-import 'validate_layout.dart';
-
 class BottomNavigationPage extends ConsumerStatefulWidget {
   const BottomNavigationPage({
     required this.child,
@@ -36,35 +34,32 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
     return AppTheme(
       child: IncomingMediaMonitor(
         onMedia: widget.onMedia,
-        child: ValidateLayout(
-          validLayout: true,
-          child: CLFullscreenBox(
-            useSafeArea: true,
-            bottomNavigationBar: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              currentIndex: widget.child.currentIndex,
-              onTap: (index) {
-                CLQuickMenuAnchor.clearQuickMenu(context, ref);
+        child: CLFullscreenBox(
+          useSafeArea: true,
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: widget.child.currentIndex,
+            onTap: (index) {
+              CLQuickMenuAnchor.clearQuickMenu(context, ref);
 
-                widget.child.goBranch(
-                  index,
-                  initialLocation: index == widget.child.currentIndex,
+              widget.child.goBranch(
+                index,
+                initialLocation: index == widget.child.currentIndex,
+              );
+              setState(() {});
+            },
+            items: [
+              ...widget.routes.map((e) {
+                return BottomNavigationBarItem(
+                  icon: Icon(e.iconData),
+                  label: e.label,
                 );
-                setState(() {});
-              },
-              items: [
-                ...widget.routes.map((e) {
-                  return BottomNavigationBarItem(
-                    icon: Icon(e.iconData),
-                    label: e.label,
-                  );
-                }),
-              ],
-            ),
-            child: NotificationService(
-              child: CLPopScreen.onSwipe(
-                child: widget.child,
-              ),
+              }),
+            ],
+          ),
+          child: NotificationService(
+            child: CLPopScreen.onSwipe(
+              child: widget.child,
             ),
           ),
         ),
