@@ -55,4 +55,6 @@ abstract class Store {
   void dispose();
 
   Future<Store> attachServer(CLServer? value);
+
+  CLServer? get server;
 }

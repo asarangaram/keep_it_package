@@ -86,6 +86,7 @@ class DBManager extends Store {
   final SqliteDatabase db;
   final DBWriter dbWriter;
   final DBReader dbReader;
+  @override
   final CLServer? server;
   final AppSettings appSettings;
 
@@ -279,30 +280,10 @@ class DBManager extends Store {
       getCollectionByLabel: dbReader.getCollectionByLabel,
     );
 
+    // ignore: unused_local_variable
     final updated = await db.writeTransaction((tx) async {
       return dbWriter.upsertMedias(tx, medias: medias);
     });
-
-    final tasks = <DownloadTask>[];
-    for (final media in updated.entries) {
-      tasks.addAll(downloadTask(media, reDownload: true));
-    }
-
-    unawaited(
-      FileDownloader()
-          .downloadBatch(
-        tasks,
-        /* batchProgressCallback: (succeeded, failed) => print(
-          'Completed ${succeeded + failed} out of ${tasks.length}, $failed failed',
-        ), */
-      )
-          .then((result) {
-        print(
-          'Completed ${result.numSucceeded + result.numFailed} '
-          'out of ${result.tasks.length}, ${result.numFailed} failed',
-        );
-      }),
-    );
 
     return DBSyncStatus.success;
   }
