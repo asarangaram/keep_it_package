@@ -1,13 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:io';
 
-import 'package:background_downloader/background_downloader.dart';
 import 'package:device_resources/device_resources.dart';
-import 'package:http/http.dart' as http;
-import 'package:local_store/local_store.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path_handler;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
@@ -106,7 +101,7 @@ class DBManager extends Store {
       server: server,
       appSettings: appSettings,
     );
-    await dbManager.pull();
+
     return dbManager;
   }
 
@@ -244,75 +239,18 @@ class DBManager extends Store {
       server: value,
       appSettings: appSettings,
     );
-    await dbManager.pull();
     return dbManager;
   }
 
-  Future<DBSyncStatus> push() async {
-    /* final updatedCollections =  */ await dbReader
-        .locallyModifiedCollections();
-    if ((await server?.hasConnection()) ?? false) {
-    } else {
-      throw Exception('Server not found');
-    }
-    throw UnimplementedError();
+  Future<Collections> upsertCollections(Collections collections) async {
+    return db.writeTransaction((tx) async {
+      return dbWriter.upsertCollections(tx, collections: collections);
+    });
   }
 
-  Future<DBSyncStatus> pull({
-    http.Client? client,
-  }) async {
-    if (server == null) return DBSyncStatus.serverNotConfigured;
-
-    final collections =
-        await (server! as CLServerImpl).downloadCollections(client: client);
-
-    await db.writeTransaction((tx) async {
-      // ignore: unused_local_variable
-      final Collections updated;
-      updated = await dbWriter.upsertCollections(tx, collections: collections);
-      /* if (updated.entries.length == collections.entries.length) {
-        return DBSyncStatus.success;
-      }
-      return DBSyncStatus.partial; */
-    });
-    final medias = await (server! as CLServerImpl).downloadMedias(
-      client: client,
-      getCollectionByLabel: dbReader.getCollectionByLabel,
-    );
-
-    // ignore: unused_local_variable
-    final updated = await db.writeTransaction((tx) async {
+  Future<CLMedias> upsertMedias(CLMedias medias) async {
+    return db.writeTransaction((tx) async {
       return dbWriter.upsertMedias(tx, medias: medias);
     });
-
-    return DBSyncStatus.success;
-  }
-
-  List<DownloadTask> downloadTask(CLMedia media, {bool reDownload = false}) {
-    // TODO(anandas): : Work on extension !
-    final mediaPath = path_handler.join(
-      appSettings.directories.media.pathString,
-      'server_${server!.identifier}',
-    );
-    final directory = path_handler.relative(
-      mediaPath,
-      from: appSettings.directories.persistent.path,
-    );
-    final fileName = '${media.serverUID}.jpg';
-
-    return [
-      if (!File(mediaPath).existsSync() || reDownload)
-        DownloadTask(
-          url: server!
-              .getEndpointURI('/media/${media.serverUID}/download')
-              .toString(),
-          filename: fileName,
-          directory: directory,
-          updates: Updates.statusAndProgress,
-          requiresWiFi: true,
-          retries: 5,
-          metaData: '${media.id}',
-        ),
-    ];
   }
 }
