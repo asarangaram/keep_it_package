@@ -130,6 +130,21 @@ class Queries {
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
+      DBQueries.mediaServerInfoById => DBQuery<MediaServerInfo>(
+          sql: 'SELECT * FROM MediaServerInfo WHERE id = ?',
+          triggerOnTables: const {'Media', 'MediaServerInfo'},
+          fromMap: MediaServerInfo.fromMap,
+        ),
+      DBQueries.mediaServerInfoByServerUID => DBQuery<MediaServerInfo>(
+          sql: 'SELECT * FROM MediaServerInfo WHERE serverUID = ?',
+          triggerOnTables: const {'Media', 'MediaServerInfo'},
+          fromMap: MediaServerInfo.fromMap,
+        ),
+      DBQueries.mediaServerInfoAll => DBQuery<MediaServerInfo>(
+          sql: 'SELECT * FROM MediaServerInfo',
+          triggerOnTables: const {'Media', 'MediaServerInfo'},
+          fromMap: MediaServerInfo.fromMap,
+        ),
     };
     if (parameters == null) {
       return rawQuery as StoreQuery<T>;

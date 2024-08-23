@@ -54,10 +54,24 @@ class DBManager extends Store {
         return item;
       },
     );
+
+    final mediaServerInfoTable = DBExec<MediaServerInfo>(
+      table: 'MediaServerInfo',
+      toMap: (MediaServerInfo obj) => obj.toMap(),
+      readBack: (tx, mediaServerInfo) async {
+        return (Queries.getQuery(
+          DBQueries.mediaServerInfoByServerUID,
+          parameters: [mediaServerInfo.serverUID],
+        ) as DBQuery<MediaServerInfo>)
+            .read(tx);
+      },
+    );
+
     final dbWriter = DBWriter(
       collectionTable: collectionTable,
       mediaTable: mediaTable,
       notesOnMediaTable: notesOnMediaTable,
+      mediaServerInfoTable: mediaServerInfoTable,
     );
     final dbReader = DBReader(db);
     return DBManager._(
@@ -128,6 +142,12 @@ class DBManager extends Store {
       });
 
   @override
+  Future<MediaServerInfo> upsertServerInfo(MediaServerInfo mediaServerInfo) =>
+      db.writeTransaction((tx) async {
+        return dbWriter.upsertServerInfo(tx, mediaServerInfo);
+      });
+
+  @override
   Future<void> deleteCollection(Collection collection) async =>
       db.writeTransaction((tx) async {
         await dbWriter.deleteCollection(tx, collection);
@@ -144,6 +164,12 @@ class DBManager extends Store {
       db.writeTransaction((tx) async {
         await dbWriter.deleteNote(tx, note);
       });
+  @override
+  Future<void> deleteServerInfo(MediaServerInfo mediaServerInfo) {
+    return db.writeTransaction((tx) async {
+      await dbWriter.deleteServerInfo(tx, mediaServerInfo);
+    });
+  }
 
   @override
   Future<void> reloadStore() async => onReload();

@@ -1,6 +1,7 @@
 import 'cl_media.dart';
 import 'cl_server.dart';
 import 'collection.dart';
+import 'server_media_info.dart';
 
 enum DBQueries {
   collectionById,
@@ -20,6 +21,11 @@ enum DBQueries {
   mediaDeleted,
   mediaByIdList,
   mediaByNoteID,
+
+  mediaServerInfoById,
+  mediaServerInfoByServerUID,
+  mediaServerInfoAll,
+
   notesAll,
   notesByMediaId,
   notesOrphan,
@@ -36,10 +42,12 @@ abstract class Store {
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);
   Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
+  Future<MediaServerInfo> upsertServerInfo(MediaServerInfo mediaServerInfo);
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
   Future<void> deleteNote(CLMedia note);
+  Future<void> deleteServerInfo(MediaServerInfo mediaServerInfo);
 
   Future<List<Object?>?> getDBRecords();
 

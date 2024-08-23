@@ -13,4 +13,5 @@ export 'src/models/cl_server.dart' show CLServer, DBSyncStatus;
 export 'src/models/collection.dart' show Collection;
 export 'src/models/collections.dart' show Collections;
 export 'src/models/notes_on_media.dart' show NotesOnMedia;
+export 'src/models/server_media_info.dart' show MediaServerInfo;
 export 'src/models/store.dart' show DBQueries, Store, StoreQuery;
