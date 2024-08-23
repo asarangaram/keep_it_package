@@ -46,4 +46,21 @@ final migrations = SqliteMigrations()
       )
     ''');
     }),
+  )
+  ..add(
+    SqliteMigration(1, (tx) async {
+      await tx.execute('''
+      CREATE TABLE IF NOT EXISTS MediaServerInfo (
+          id INTEGER PRIMARY KEY,
+          serverUID INTEGER NOT NULL,
+          haveItOffline INTEGER NOT NULL CHECK(haveItOffline IN (0, 1)),
+          mustDownloadOriginal INTEGER NOT NULL CHECK(mustDownloadOriginal IN (0, 1)),
+          previewDownloaded INTEGER NOT NULL CHECK(previewDownloaded IN (0, 1)),
+          mediaDownloaded INTEGER NOT NULL CHECK(mediaDownloaded IN (0, 1)),
+          isMediaOriginal INTEGER NOT NULL CHECK(isOriginal IN (0, 1)),
+          locally_modified INTEGER NOT NULL CHECK(locally_modified IN (0, 1)),
+          FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
+      );
+  ''');
+    }),
   );
