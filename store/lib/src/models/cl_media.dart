@@ -24,6 +24,9 @@ class CLMedia extends CLMediaBase {
     this.serverUID,
     this.locallyModified = true,
     this.isAux = false,
+    this.haveItOffline = true,
+    this.mustDownloadOriginal = true,
+    this.alreadyDownloaded = true,
   });
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
@@ -50,20 +53,25 @@ class CLMedia extends CLMediaBase {
       isAux: (map['isAux'] as int? ?? 0) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       locallyModified: (map['locallyModified'] as int? ?? 1) != 0,
+      haveItOffline: (map['haveItOffline'] as int? ?? 1) != 0,
+      mustDownloadOriginal: (map['mustDownloadOriginal'] as int? ?? 1) != 0,
+      alreadyDownloaded: (map['alreadyDownloaded'] as int? ?? 1) != 0,
     );
   }
   final int? id;
   final int? serverUID;
   final bool locallyModified;
   final bool isAux;
+  final bool haveItOffline;
+  final bool mustDownloadOriginal;
+  final bool alreadyDownloaded;
 
   @override
   CLMedia copyWith({
+    int? id,
     String? name,
     CLMediaType? type,
     String? ref,
-    int? id,
-    int? collectionId,
     DateTime? originalDate,
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -71,16 +79,19 @@ class CLMedia extends CLMediaBase {
     bool? isDeleted,
     bool? isHidden,
     String? pin,
-    bool? isAux,
+    int? collectionId,
     int? serverUID,
     bool? locallyModified,
+    bool? isAux,
+    bool? haveItOffline,
+    bool? mustDownloadOriginal,
+    bool? alreadyDownloaded,
   }) {
     return CLMedia(
+      id: id ?? this.id,
       name: name ?? this.name,
       type: type ?? this.type,
       ref: ref ?? this.ref,
-      id: id ?? this.id,
-      collectionId: collectionId ?? this.collectionId,
       originalDate: originalDate ?? this.originalDate,
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
@@ -88,26 +99,30 @@ class CLMedia extends CLMediaBase {
       isDeleted: isDeleted ?? this.isDeleted,
       isHidden: isHidden ?? this.isHidden,
       pin: pin ?? this.pin,
-      isAux: isAux ?? this.isAux,
+      collectionId: collectionId ?? this.collectionId,
       serverUID: serverUID ?? this.serverUID,
       locallyModified: locallyModified ?? this.locallyModified,
+      isAux: isAux ?? this.isAux,
+      haveItOffline: haveItOffline ?? this.haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal ?? this.mustDownloadOriginal,
+      alreadyDownloaded: alreadyDownloaded ?? this.alreadyDownloaded,
     );
   }
 
   @override
-  String toString() =>
-      // ignore: lines_longer_than_80_chars
-      'CLMedia(super: ${super.toString()}, id: $id, isAux: $isAux , serverUID: $serverUID, locallyModified: $locallyModified)';
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'CLMedia(id: $id, name: $name, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, serverUID: $serverUID, locallyModified: $locallyModified, isAux: $isAux, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal, alreadyDownloaded: $alreadyDownloaded)';
+  }
 
   @override
   bool operator ==(covariant CLMedia other) {
     if (identical(this, other)) return true;
 
-    return other.name == name &&
+    return other.id == id &&
+        other.name == name &&
         other.type == type &&
         other.ref == ref &&
-        other.id == id &&
-        other.collectionId == collectionId &&
         other.originalDate == originalDate &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
@@ -115,18 +130,21 @@ class CLMedia extends CLMediaBase {
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
         other.pin == pin &&
-        other.isAux == isAux &&
+        other.collectionId == collectionId &&
         other.serverUID == serverUID &&
-        other.locallyModified == locallyModified;
+        other.locallyModified == locallyModified &&
+        other.isAux == isAux &&
+        other.haveItOffline == haveItOffline &&
+        other.mustDownloadOriginal == mustDownloadOriginal &&
+        other.alreadyDownloaded == alreadyDownloaded;
   }
 
   @override
   int get hashCode {
-    return name.hashCode ^
+    return id.hashCode ^
+        name.hashCode ^
         type.hashCode ^
         ref.hashCode ^
-        id.hashCode ^
-        collectionId.hashCode ^
         originalDate.hashCode ^
         createdDate.hashCode ^
         updatedDate.hashCode ^
@@ -134,9 +152,13 @@ class CLMedia extends CLMediaBase {
         isDeleted.hashCode ^
         isHidden.hashCode ^
         pin.hashCode ^
-        isAux.hashCode ^
+        collectionId.hashCode ^
         serverUID.hashCode ^
-        locallyModified.hashCode;
+        locallyModified.hashCode ^
+        isAux.hashCode ^
+        haveItOffline.hashCode ^
+        mustDownloadOriginal.hashCode ^
+        alreadyDownloaded.hashCode;
   }
 
   @override
@@ -157,6 +179,9 @@ class CLMedia extends CLMediaBase {
       'isAux': isAux,
       'serverUID': serverUID,
       'locallyModified': locallyModified ? 1 : 0,
+      'haveItOffline': haveItOffline ? 1 : 0,
+      'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
+      'alreadyDownloaded': alreadyDownloaded ? 1 : 0,
     };
   }
 
@@ -182,6 +207,9 @@ class CLMedia extends CLMediaBase {
       isHidden: isHidden,
       isAux: isAux,
       serverUID: serverUID,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+      alreadyDownloaded: alreadyDownloaded,
 
       /* locallyModified: true */
     );
@@ -203,6 +231,9 @@ class CLMedia extends CLMediaBase {
       isAux: isAux,
       serverUID: serverUID,
       /* locallyModified: true */
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+      alreadyDownloaded: alreadyDownloaded,
     );
   }
 
@@ -223,6 +254,9 @@ class CLMedia extends CLMediaBase {
       isAux: isAux,
       serverUID: serverUID,
       /* locallyModified: true, */
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+      alreadyDownloaded: alreadyDownloaded,
     );
   }
 }
