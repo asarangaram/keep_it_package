@@ -50,4 +50,26 @@ final migrations = SqliteMigrations()
       )
     ''');
     }),
+  )
+  ..add(
+    SqliteMigration(2, (tx) async {
+      // Add new columns
+      await tx.execute('''
+      ALTER TABLE Media ADD COLUMN haveItOffline INTEGER NOT NULL DEFAULT 1
+    ''');
+      await tx.execute('''
+      ALTER TABLE Media ADD COLUMN mustDownloadOriginal INTEGER NOT NULL DEFAULT 0
+    ''');
+      await tx.execute('''
+      ALTER TABLE Media ADD COLUMN alreadyDownloaded INTEGER NOT NULL DEFAULT 0
+    ''');
+
+      // Set default values for existing rows
+      await tx.execute('''
+      UPDATE Media
+      SET haveItOffline = 1,
+          mustDownloadOriginal = 0,
+          alreadyDownloaded = 0
+    ''');
+    }),
   );
