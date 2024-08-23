@@ -127,9 +127,7 @@ class CLServerImpl extends CLServer {
     return Collections(
       collections.entries
           .map(
-            (e) => e.copyWith(
-              locallyModified: false,
-            ),
+            (e) => e.copyWith(),
           )
           .toList(),
     );
@@ -162,9 +160,7 @@ class CLServerImpl extends CLServer {
     return CLMedias(
       medias.entries
           .map(
-            (e) => e.copyWith(
-              locallyModified: false,
-            ),
+            (e) => e.copyWith(),
           )
           .toList(),
     );

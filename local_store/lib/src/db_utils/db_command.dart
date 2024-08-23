@@ -165,7 +165,7 @@ class DBCommand {
       // also force locallyModified, precaution, ideally this should
       // reflect in changes.diffMap
       update['id'] = existing['id'];
-      update['locallyModified'] = newMap['locallyModified'];
+
       return DBCommand.update(update, table: table).execute(tx);
     }
   }

@@ -9,7 +9,7 @@ final migrations = SqliteMigrations()
         label TEXT NOT NULL UNIQUE,
         description TEXT,
         createdDate DATETIME,
-        updatedDate DATETIME,
+        updatedDate DATETIME
       )
     ''');
       await tx.execute('''
