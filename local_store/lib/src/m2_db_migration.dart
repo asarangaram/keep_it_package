@@ -61,15 +61,14 @@ final migrations = SqliteMigrations()
       ALTER TABLE Media ADD COLUMN mustDownloadOriginal INTEGER NOT NULL DEFAULT 0
     ''');
       await tx.execute('''
-      ALTER TABLE Media ADD COLUMN alreadyDownloaded INTEGER NOT NULL DEFAULT 0
+      ALTER TABLE Media ADD COLUMN downloadStatus TEXT
     ''');
 
       // Set default values for existing rows
       await tx.execute('''
       UPDATE Media
       SET haveItOffline = 1,
-          mustDownloadOriginal = 0,
-          alreadyDownloaded = 0
+          mustDownloadOriginal = 0
     ''');
     }),
   );

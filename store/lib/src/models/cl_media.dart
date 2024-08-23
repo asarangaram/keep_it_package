@@ -26,7 +26,7 @@ class CLMedia extends CLMediaBase {
     this.isAux = false,
     this.haveItOffline = true,
     this.mustDownloadOriginal = true,
-    this.alreadyDownloaded = true,
+    this.downloadStatus,
   });
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
@@ -55,7 +55,7 @@ class CLMedia extends CLMediaBase {
       locallyModified: (map['locallyModified'] as int? ?? 1) != 0,
       haveItOffline: (map['haveItOffline'] as int? ?? 1) != 0,
       mustDownloadOriginal: (map['mustDownloadOriginal'] as int? ?? 1) != 0,
-      alreadyDownloaded: (map['alreadyDownloaded'] as int? ?? 1) != 0,
+      downloadStatus: map['alreadyDownloaded'] as String?,
     );
   }
   final int? id;
@@ -64,7 +64,7 @@ class CLMedia extends CLMediaBase {
   final bool isAux;
   final bool haveItOffline;
   final bool mustDownloadOriginal;
-  final bool alreadyDownloaded;
+  final String? downloadStatus;
 
   @override
   CLMedia copyWith({
@@ -85,7 +85,7 @@ class CLMedia extends CLMediaBase {
     bool? isAux,
     bool? haveItOffline,
     bool? mustDownloadOriginal,
-    bool? alreadyDownloaded,
+    String? alreadyDownloaded,
   }) {
     return CLMedia(
       id: id ?? this.id,
@@ -105,14 +105,14 @@ class CLMedia extends CLMediaBase {
       isAux: isAux ?? this.isAux,
       haveItOffline: haveItOffline ?? this.haveItOffline,
       mustDownloadOriginal: mustDownloadOriginal ?? this.mustDownloadOriginal,
-      alreadyDownloaded: alreadyDownloaded ?? this.alreadyDownloaded,
+      downloadStatus: alreadyDownloaded ?? downloadStatus,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLMedia(id: $id, name: $name, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, serverUID: $serverUID, locallyModified: $locallyModified, isAux: $isAux, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal, alreadyDownloaded: $alreadyDownloaded)';
+    return 'CLMedia(id: $id, name: $name, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, serverUID: $serverUID, locallyModified: $locallyModified, isAux: $isAux, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal, alreadyDownloaded: $downloadStatus)';
   }
 
   @override
@@ -136,7 +136,7 @@ class CLMedia extends CLMediaBase {
         other.isAux == isAux &&
         other.haveItOffline == haveItOffline &&
         other.mustDownloadOriginal == mustDownloadOriginal &&
-        other.alreadyDownloaded == alreadyDownloaded;
+        other.downloadStatus == downloadStatus;
   }
 
   @override
@@ -158,7 +158,7 @@ class CLMedia extends CLMediaBase {
         isAux.hashCode ^
         haveItOffline.hashCode ^
         mustDownloadOriginal.hashCode ^
-        alreadyDownloaded.hashCode;
+        downloadStatus.hashCode;
   }
 
   @override
@@ -181,7 +181,7 @@ class CLMedia extends CLMediaBase {
       'locallyModified': locallyModified ? 1 : 0,
       'haveItOffline': haveItOffline ? 1 : 0,
       'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
-      'alreadyDownloaded': alreadyDownloaded ? 1 : 0,
+      'alreadyDownloaded': downloadStatus,
     };
   }
 
@@ -209,7 +209,7 @@ class CLMedia extends CLMediaBase {
       serverUID: serverUID,
       haveItOffline: haveItOffline,
       mustDownloadOriginal: mustDownloadOriginal,
-      alreadyDownloaded: alreadyDownloaded,
+      downloadStatus: downloadStatus,
 
       /* locallyModified: true */
     );
@@ -233,7 +233,7 @@ class CLMedia extends CLMediaBase {
       /* locallyModified: true */
       haveItOffline: haveItOffline,
       mustDownloadOriginal: mustDownloadOriginal,
-      alreadyDownloaded: alreadyDownloaded,
+      downloadStatus: downloadStatus,
     );
   }
 
@@ -256,7 +256,7 @@ class CLMedia extends CLMediaBase {
       /* locallyModified: true, */
       haveItOffline: haveItOffline,
       mustDownloadOriginal: mustDownloadOriginal,
-      alreadyDownloaded: alreadyDownloaded,
+      downloadStatus: downloadStatus,
     );
   }
 }
