@@ -49,8 +49,6 @@ class Collection extends CollectionBase {
     super.description,
     super.createdDate,
     super.updatedDate,
-    this.serverUID,
-    this.locallyModified = true,
   });
 
   factory Collection.fromMap(Map<String, dynamic> map) {
@@ -65,8 +63,6 @@ class Collection extends CollectionBase {
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : null,
-      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      locallyModified: (map['locallyModified'] as int? ?? 1) == 1,
     );
   }
 
@@ -74,8 +70,6 @@ class Collection extends CollectionBase {
       Collection.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final int? id;
-  final int? serverUID;
-  final bool locallyModified;
 
   Collection copyWith({
     int? id,
@@ -83,8 +77,6 @@ class Collection extends CollectionBase {
     String? description,
     DateTime? createdDate,
     DateTime? updatedDate,
-    int? serverUID,
-    bool? locallyModified,
   }) {
     return Collection(
       id: id ?? this.id,
@@ -92,15 +84,13 @@ class Collection extends CollectionBase {
       description: description ?? this.description,
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
-      serverUID: serverUID ?? this.serverUID,
-      locallyModified: locallyModified ?? this.locallyModified,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'Collection(id: $id, label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, serverUID: $serverUID, locallyModified: $locallyModified)';
+    return 'Collection(id: $id, label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate)';
   }
 
   @override
@@ -111,9 +101,7 @@ class Collection extends CollectionBase {
         other.label == label &&
         other.description == description &&
         other.createdDate == createdDate &&
-        other.updatedDate == updatedDate &&
-        other.serverUID == serverUID &&
-        other.locallyModified == locallyModified;
+        other.updatedDate == updatedDate;
   }
 
   @override
@@ -122,9 +110,7 @@ class Collection extends CollectionBase {
         label.hashCode ^
         description.hashCode ^
         createdDate.hashCode ^
-        updatedDate.hashCode ^
-        serverUID.hashCode ^
-        locallyModified.hashCode;
+        updatedDate.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -134,8 +120,6 @@ class Collection extends CollectionBase {
       'description': description,
       'createdDate': createdDate?.millisecondsSinceEpoch,
       'updatedDate': updatedDate?.millisecondsSinceEpoch,
-      'serverUID': serverUID,
-      'locallyModified': locallyModified ? 1 : 0,
     };
   }
 
@@ -147,8 +131,6 @@ class Collection extends CollectionBase {
       description: description,
       createdDate: createdDate,
       updatedDate: updatedDate,
-      serverUID: serverUID,
-      locallyModified: locallyModified,
     );
   }
 }

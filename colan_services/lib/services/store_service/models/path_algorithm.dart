@@ -110,24 +110,25 @@ class MediaPathAlgorithm {
 
   Future<void> algo() async {
     currStorage = MediaStorage.asyncLoading();
+    // Check if original Media is available
+    final path = await getLocalmediaPath(media);
+    if (path.hasError) {
+      currStorage = MediaStorage.asyncError(
+        path.asError!.error,
+        path.asError!.stackTrace,
+      );
+    } else {
+      currStorage = MediaStorage(
+        mediaPath: path,
+        originalMediaPath: path,
+      );
 
-    if (media.serverUID == null) {
-      // Check if original Media is available
-      final path = await getLocalmediaPath(media);
-      if (path.hasError) {
-        currStorage = MediaStorage.asyncError(
-          path.asError!.error,
-          path.asError!.stackTrace,
-        );
-      } else {
-        currStorage = MediaStorage(
-          mediaPath: path,
-          originalMediaPath: path,
-        );
+      final previewPath = await getLocalpreviewPath(media);
+      currStorage = currStorage.copyWith(previewPath: previewPath);
+    }
 
-        final previewPath = await getLocalpreviewPath(media);
-        currStorage = currStorage.copyWith(previewPath: previewPath);
-      }
+    /* if (media.serverUID == null) {
+      
     } else {
       final myServer = servers.myServer;
       // check for local copy "somehow"
@@ -144,7 +145,7 @@ class MediaPathAlgorithm {
           ),
         );
       }
-    }
+    } */
   }
 
   Stream<MediaStorage> stream() async* {

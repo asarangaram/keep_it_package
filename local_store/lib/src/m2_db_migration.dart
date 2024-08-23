@@ -10,8 +10,6 @@ final migrations = SqliteMigrations()
         description TEXT,
         createdDate DATETIME,
         updatedDate DATETIME,
-        locallyModified INTEGER NOT NULL,
-        serverUID INTEGER
       )
     ''');
       await tx.execute('''
@@ -28,8 +26,6 @@ final migrations = SqliteMigrations()
         isDeleted INTEGER NOT NULL,
         isHidden INTEGER NOT NULL,
         pin TEXT ,
-        locallyModified INTEGER NOT NULL,
-        serverUID INTEGER,
         isAux INTEGER NOT NULL,
         FOREIGN KEY (collectionId) REFERENCES Collection(id)
       )

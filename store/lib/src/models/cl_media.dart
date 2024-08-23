@@ -21,8 +21,6 @@ class CLMedia extends CLMediaBase {
     super.isDeleted,
     super.isHidden,
     super.pin,
-    this.serverUID,
-    this.locallyModified = true,
     super.isAux,
   });
 
@@ -48,13 +46,9 @@ class CLMedia extends CLMediaBase {
       isHidden: (map['isHidden'] as int? ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
       isAux: (map['isAux'] as int? ?? 0) != 0,
-      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      locallyModified: (map['locallyModified'] as int? ?? 1) != 0,
     );
   }
   final int? id;
-  final int? serverUID;
-  final bool locallyModified;
 
   @override
   CLMedia copyWith({
@@ -71,8 +65,6 @@ class CLMedia extends CLMediaBase {
     bool? isHidden,
     String? pin,
     bool? isAux,
-    int? serverUID,
-    bool? locallyModified,
   }) {
     return CLMedia(
       name: name ?? this.name,
@@ -88,15 +80,13 @@ class CLMedia extends CLMediaBase {
       isHidden: isHidden ?? this.isHidden,
       pin: pin ?? this.pin,
       isAux: isAux ?? this.isAux,
-      serverUID: serverUID ?? this.serverUID,
-      locallyModified: locallyModified ?? this.locallyModified,
     );
   }
 
   @override
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'CLMedia(super: ${super.toString()}, id: $id, isAux: $isAux , serverUID: $serverUID, locallyModified: $locallyModified)';
+      'CLMedia(super: ${super.toString()}, id: $id, isAux: $isAux )';
 
   @override
   bool operator ==(covariant CLMedia other) {
@@ -114,9 +104,7 @@ class CLMedia extends CLMediaBase {
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
         other.pin == pin &&
-        other.isAux == isAux &&
-        other.serverUID == serverUID &&
-        other.locallyModified == locallyModified;
+        other.isAux == isAux;
   }
 
   @override
@@ -133,9 +121,7 @@ class CLMedia extends CLMediaBase {
         isDeleted.hashCode ^
         isHidden.hashCode ^
         pin.hashCode ^
-        isAux.hashCode ^
-        serverUID.hashCode ^
-        locallyModified.hashCode;
+        isAux.hashCode;
   }
 
   @override
@@ -154,8 +140,6 @@ class CLMedia extends CLMediaBase {
       'isHidden': (isHidden ?? false) ? 1 : 0,
       'pin': pin,
       'isAux': isAux,
-      'serverUID': serverUID,
-      'locallyModified': locallyModified ? 1 : 0,
     };
   }
 
@@ -180,9 +164,6 @@ class CLMedia extends CLMediaBase {
       isDeleted: isDeleted,
       isHidden: isHidden,
       isAux: isAux,
-      serverUID: serverUID,
-
-      /* locallyModified: true */
     );
   }
 
@@ -200,8 +181,6 @@ class CLMedia extends CLMediaBase {
       isHidden: isHidden,
       pin: pin,
       isAux: isAux,
-      serverUID: serverUID,
-      /* locallyModified: true */
     );
   }
 
@@ -220,7 +199,6 @@ class CLMedia extends CLMediaBase {
       isHidden: isHidden,
       pin: pin,
       isAux: isAux,
-      serverUID: serverUID,
       /* locallyModified: true, */
     );
   }

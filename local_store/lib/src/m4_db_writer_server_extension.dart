@@ -24,10 +24,7 @@ extension DBWRiterServerExt on DBWriter {
         updated.add(
           await upsertMedia(
             tx,
-            media.copyWith(
-              serverUID: server.id,
-              locallyModified: false,
-            ),
+            media,
           ),
         );
       } catch (e) {

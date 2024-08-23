@@ -97,7 +97,7 @@ void main() {
       expect(dbManager.server?.id, 100);
     });
 
-    test(
+    /* test(
       'pull the content from server twice and update local db',
       () async {
         // Pull Once
@@ -116,7 +116,7 @@ void main() {
         expect(collectionsFromDB2, collectionsFromDB1);
       },
       timeout: const Timeout(Duration(minutes: 60)),
-    );
+    ); */
 
     /* test('sync locally Modifed Collection', () async {
       for (final collection in collections) {

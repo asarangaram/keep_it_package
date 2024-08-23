@@ -25,7 +25,7 @@ class DBWriter {
     return (await collectionTable.upsert(
       tx,
       collection,
-      uniqueColumn: ['id', 'serverUID', 'label'],
+      uniqueColumn: ['id', 'label'],
     ))!;
   }
 
@@ -36,7 +36,7 @@ class DBWriter {
     return (await mediaTable.upsert(
       tx,
       media,
-      uniqueColumn: ['id', 'serverUID', 'md5String'],
+      uniqueColumn: ['id', 'md5String'],
     ))!;
   }
 
@@ -147,7 +147,7 @@ class DBWriter {
       await collectionTable.upsertAll(
         tx,
         collections.entries,
-        uniqueColumn: ['id', 'serverUID', 'label'],
+        uniqueColumn: ['id', 'label'],
       ),
     );
   }
@@ -160,7 +160,7 @@ class DBWriter {
       await mediaTable.upsertAll(
         tx,
         medias.entries,
-        uniqueColumn: ['id', 'serverUID', 'md5String'],
+        uniqueColumn: ['id', 'md5String'],
       ),
     );
   }
