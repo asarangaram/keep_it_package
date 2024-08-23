@@ -21,6 +21,7 @@ class CLMediaBase {
     this.isHidden,
     this.pin,
     this.collectionId,
+    this.isAux = false,
   });
 
   factory CLMediaBase.fromMap(Map<String, dynamic> map) {
@@ -59,6 +60,7 @@ class CLMediaBase {
   final bool? isHidden;
   final String? pin;
   final int? collectionId;
+  final bool isAux;
 
   Future<void> deleteFile() async {
     await File(name).deleteIfExists();

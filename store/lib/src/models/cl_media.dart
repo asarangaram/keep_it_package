@@ -23,7 +23,7 @@ class CLMedia extends CLMediaBase {
     super.pin,
     this.serverUID,
     this.locallyModified = true,
-    this.isAux = false,
+    super.isAux,
   });
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
@@ -55,7 +55,6 @@ class CLMedia extends CLMediaBase {
   final int? id;
   final int? serverUID;
   final bool locallyModified;
-  final bool isAux;
 
   @override
   CLMedia copyWith({
