@@ -78,6 +78,7 @@ class CLMediaBase {
     bool? isHidden,
     String? pin,
     int? collectionId,
+    bool? isAux,
   }) {
     return CLMediaBase(
       name: name ?? this.name,
@@ -91,13 +92,14 @@ class CLMediaBase {
       isHidden: isHidden ?? this.isHidden,
       pin: pin ?? this.pin,
       collectionId: collectionId ?? this.collectionId,
+      isAux: isAux ?? this.isAux,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLMediaBase(name: $name, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId)';
+    return 'CLMediaBase(name: $name, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux)';
   }
 
   @override
@@ -114,7 +116,8 @@ class CLMediaBase {
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
         other.pin == pin &&
-        other.collectionId == collectionId;
+        other.collectionId == collectionId &&
+        other.isAux == isAux;
   }
 
   @override
@@ -129,7 +132,8 @@ class CLMediaBase {
         isDeleted.hashCode ^
         isHidden.hashCode ^
         pin.hashCode ^
-        collectionId.hashCode;
+        collectionId.hashCode ^
+        isAux.hashCode;
   }
 
   Map<String, dynamic> toMap() {
