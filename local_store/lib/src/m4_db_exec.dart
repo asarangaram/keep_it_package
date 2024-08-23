@@ -56,7 +56,7 @@ class DBExec<T> {
       );
 
       if (!insertStatus) {
-        throw Exception("couldn't not get map for the given object");
+        throw Exception("couldn't not upsert");
       }
 
       result = await readBack?.call(tx, obj);
