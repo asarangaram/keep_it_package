@@ -7,6 +7,7 @@ import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
 import '../../online_service/models/servers.dart';
+import 'media_files_uri.dart';
 import 'media_storage.dart';
 import 'thumbnail_services.dart';
 
@@ -21,19 +22,19 @@ class MediaPathAlgorithm {
     required this.thumbnailServiceFuture,
     required this.servers,
   }) {
-    controller = StreamController<MediaStorage>();
+    controller = StreamController<MediaFilesUri>();
   }
 
   final CLMedia media;
   final Future<AppSettings> appSettingsFuture;
   final Future<ThumbnailService> thumbnailServiceFuture;
   final Servers servers;
-  late final StreamController<MediaStorage> controller;
-  MediaStorage _currStorage = MediaStorage.asyncLoading();
+  late final StreamController<MediaFilesUri> controller;
+  MediaFilesUri _currStorage = MediaFilesUri.asyncLoading();
 
-  MediaStorage get currStorage => _currStorage;
+  MediaFilesUri get currStorage => _currStorage;
 
-  set currStorage(MediaStorage value) {
+  set currStorage(MediaFilesUri value) {
     _currStorage = value;
     controller.add(_currStorage);
   }
@@ -109,16 +110,16 @@ class MediaPathAlgorithm {
   }
 
   Future<void> algo() async {
-    currStorage = MediaStorage.asyncLoading();
+    currStorage = MediaFilesUri.asyncLoading();
     // Check if original Media is available
     final path = await getLocalmediaPath(media);
     if (path.hasError) {
-      currStorage = MediaStorage.asyncError(
+      currStorage = MediaFilesUri.asyncError(
         path.asError!.error,
         path.asError!.stackTrace,
       );
     } else {
-      currStorage = MediaStorage(
+      currStorage = MediaFilesUri(
         mediaPath: path,
         originalMediaPath: path,
       );
@@ -148,8 +149,8 @@ class MediaPathAlgorithm {
     } */
   }
 
-  Stream<MediaStorage> stream() async* {
-    currStorage = MediaStorage.asyncLoading();
+  Stream<MediaFilesUri> stream() async* {
+    currStorage = MediaFilesUri.asyncLoading();
     unawaited(algo());
     yield* controller.stream;
   }

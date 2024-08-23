@@ -12,27 +12,30 @@ class MediaServerInfo {
     required this.mustDownloadOriginal,
     required this.previewDownloaded,
     required this.mediaDownloaded,
-    required this.isOriginal,
+    required this.isMediaOriginal,
     required this.locallyModified,
+    required this.fileExtension,
   });
   final int id;
   final int serverUID;
-  final int haveItOffline;
-  final int mustDownloadOriginal;
-  final int previewDownloaded;
-  final int mediaDownloaded;
-  final int isOriginal;
-  final int locallyModified;
+  final bool haveItOffline;
+  final bool mustDownloadOriginal;
+  final bool previewDownloaded;
+  final bool mediaDownloaded;
+  final bool isMediaOriginal;
+  final bool locallyModified;
+  final String fileExtension;
 
   MediaServerInfo copyWith({
     int? id,
     int? serverUID,
-    int? haveItOffline,
-    int? mustDownloadOriginal,
-    int? previewDownloaded,
-    int? mediaDownloaded,
-    int? isOriginal,
-    int? locallyModified,
+    bool? haveItOffline,
+    bool? mustDownloadOriginal,
+    bool? previewDownloaded,
+    bool? mediaDownloaded,
+    bool? isMediaOriginal,
+    bool? locallyModified,
+    String? fileExtension,
   }) {
     return MediaServerInfo(
       id: id ?? this.id,
@@ -41,8 +44,9 @@ class MediaServerInfo {
       mustDownloadOriginal: mustDownloadOriginal ?? this.mustDownloadOriginal,
       previewDownloaded: previewDownloaded ?? this.previewDownloaded,
       mediaDownloaded: mediaDownloaded ?? this.mediaDownloaded,
-      isOriginal: isOriginal ?? this.isOriginal,
+      isMediaOriginal: isMediaOriginal ?? this.isMediaOriginal,
       locallyModified: locallyModified ?? this.locallyModified,
+      fileExtension: fileExtension ?? this.fileExtension,
     );
   }
 
@@ -50,12 +54,13 @@ class MediaServerInfo {
     return <String, dynamic>{
       'id': id,
       'serverUID': serverUID,
-      'haveItOffline': haveItOffline,
-      'mustDownloadOriginal': mustDownloadOriginal,
-      'previewDownloaded': previewDownloaded,
-      'mediaDownloaded': mediaDownloaded,
-      'isOriginal': isOriginal,
-      'locallyModified': locallyModified,
+      'haveItOffline': haveItOffline ? 1 : 0,
+      'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
+      'previewDownloaded': previewDownloaded ? 1 : 0,
+      'mediaDownloaded': mediaDownloaded ? 1 : 0,
+      'isMediaOriginal': isMediaOriginal ? 1 : 0,
+      'locallyModified': locallyModified ? 1 : 0,
+      'fileExtension': fileExtension,
     };
   }
 
@@ -63,12 +68,13 @@ class MediaServerInfo {
     return MediaServerInfo(
       id: map['id'] as int,
       serverUID: map['serverUID'] as int,
-      haveItOffline: map['haveItOffline'] as int,
-      mustDownloadOriginal: map['mustDownloadOriginal'] as int,
-      previewDownloaded: map['previewDownloaded'] as int,
-      mediaDownloaded: map['mediaDownloaded'] as int,
-      isOriginal: map['isOriginal'] as int,
-      locallyModified: map['locallyModified'] as int,
+      haveItOffline: (map['haveItOffline'] as int) != 0,
+      mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
+      previewDownloaded: (map['previewDownloaded'] as int) != 0,
+      mediaDownloaded: (map['mediaDownloaded'] as int) != 0,
+      isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
+      locallyModified: (map['locallyModified'] as int) != 0,
+      fileExtension: map['fileExtension'] as String,
     );
   }
 
@@ -80,7 +86,7 @@ class MediaServerInfo {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'MediaServerInfo(id: $id, serverUID: $serverUID, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal, previewDownloaded: $previewDownloaded, mediaDownloaded: $mediaDownloaded, isOriginal: $isOriginal, locallyModified: $locallyModified)';
+    return 'MediaServerInfo(id: $id, serverUID: $serverUID, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal, previewDownloaded: $previewDownloaded, mediaDownloaded: $mediaDownloaded, isMediaOriginal: $isMediaOriginal, locallyModified: $locallyModified, fileExtension: $fileExtension)';
   }
 
   @override
@@ -93,8 +99,9 @@ class MediaServerInfo {
         other.mustDownloadOriginal == mustDownloadOriginal &&
         other.previewDownloaded == previewDownloaded &&
         other.mediaDownloaded == mediaDownloaded &&
-        other.isOriginal == isOriginal &&
-        other.locallyModified == locallyModified;
+        other.isMediaOriginal == isMediaOriginal &&
+        other.locallyModified == locallyModified &&
+        other.fileExtension == fileExtension;
   }
 
   @override
@@ -105,7 +112,17 @@ class MediaServerInfo {
         mustDownloadOriginal.hashCode ^
         previewDownloaded.hashCode ^
         mediaDownloaded.hashCode ^
-        isOriginal.hashCode ^
-        locallyModified.hashCode;
+        isMediaOriginal.hashCode ^
+        locallyModified.hashCode ^
+        fileExtension.hashCode;
   }
+
+  String get previewURL => '/media/$serverUID/download?dimension=256';
+  String get mediaURL => '/media/$serverUID/download?dimension=256';
+  String get originalURL => '/media/$serverUID/download?dimension=256';
+
+  // TODO: Find extension
+  String get previewName => '${serverUID}_tn$fileExtension';
+  String get mediaName => '$serverUID$fileExtension';
+  String get originalName => '${serverUID}_org$fileExtension';
 }

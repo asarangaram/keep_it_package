@@ -153,3 +153,24 @@ class Queries {
     }
   }
 }
+
+/*
+
+find media with serverUID:
+
+  SELECT Media.* 
+  FROM Media
+  JOIN MediaServerInfo ON Media.id = MediaServerInfo.id
+  WHERE MediaServerInfo.serverUID = ?;
+
+find if the media is from server or not.
+  SELECT COUNT(*)
+  FROM MediaServerInfo
+  WHERE id = ?;
+
+get MediaID
+  SELECT id 
+  FROM MediaServerInfo 
+  WHERE serverUID = ?;
+  
+*/
