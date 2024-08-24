@@ -18,7 +18,7 @@ final migrations = SqliteMigrations()
         name TEXT NOT NULL UNIQUE,
         md5String TEXT NOT NULL UNIQUE,
         type TEXT NOT NULL,
-        fExt TEXT CHECK(length(ext) BETWEEN 2 AND 4);
+        fExt TEXT CHECK(length(ext) BETWEEN 2 AND 4),
         ref TEXT,
         collectionId INTEGER,
         originalDate DATETIME,
