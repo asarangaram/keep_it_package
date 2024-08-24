@@ -24,12 +24,19 @@ class AppSettings {
         from: directories.persistent.path,
       );
   String mediaDirectoryPath({String identfier = 'local'}) {
-    return path_handler.join(
-      directories.media.pathString,
-      identfier,
-    );
+    return mediaDirectory(identfier: identfier).path;
   }
 
-  Directory mediaDirectory({String identfier = 'local'}) =>
-      Directory(mediaDirectoryPath(identfier: identfier));
+  Directory mediaDirectory({String identfier = 'local'}) {
+    final dir = Directory(
+      path_handler.join(
+        directories.media.pathString,
+        identfier,
+      ),
+    );
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
+    }
+    return dir;
+  }
 }
