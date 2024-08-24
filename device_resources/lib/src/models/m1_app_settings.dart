@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path_handler;
 
@@ -12,20 +14,22 @@ class AppSettings {
   final CLDirectories directories;
   final bool shouldValidate;
 
-  String validPrefix() => directories.media.pathString;
-
   String get dbName => 'keepIt.db';
+
   String get mediaBaseDirectory => directories.persistent.path;
 
-  String mediaSubDirectory({String identfier = 'local'}) {
-    final String mediaPath;
-    mediaPath = path_handler.join(
+  String mediaSubDirectoryPath({String identfier = 'local'}) =>
+      path_handler.relative(
+        mediaDirectoryPath(identfier: identfier),
+        from: directories.persistent.path,
+      );
+  String mediaDirectoryPath({String identfier = 'local'}) {
+    return path_handler.join(
       directories.media.pathString,
       identfier,
     );
-    return path_handler.relative(
-      mediaPath,
-      from: directories.persistent.path,
-    );
   }
+
+  Directory mediaDirectory({String identfier = 'local'}) =>
+      Directory(mediaDirectoryPath(identfier: identfier));
 }

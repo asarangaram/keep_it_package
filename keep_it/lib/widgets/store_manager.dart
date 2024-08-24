@@ -81,6 +81,7 @@ class MediaHandlerWidget0 extends ConsumerStatefulWidget {
 
 class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
+
   @override
   Widget build(BuildContext context) {
     final storeAction = StoreActions(
@@ -189,6 +190,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) async {
+    final appSettings = widget.appSettings;
     if (mediaMultiple.isEmpty) {
       return true;
     }
@@ -203,7 +205,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await widget.storeInstance.deleteMedia(m, permanent: true);
       await File(
         path_handler.join(
-          widget.appSettings.directories.media.pathString,
+          appSettings.mediaBaseDirectory,
+          appSettings.mediaSubDirectoryPath(),
           m.name,
         ),
       ).deleteIfExists();
@@ -331,8 +334,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile =
-        File(outFile).copyTo(widget.appSettings.directories.media.path);
+    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory());
 
     final md5String = await savedFile.checksum;
     final updatedMedia = originalMedia
@@ -357,8 +359,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile =
-        File(outFile).copyTo(widget.appSettings.directories.media.path);
+    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory());
 
     final md5String = await savedFile.checksum;
     final CLMedia updatedMedia;
@@ -471,7 +472,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
 
     final savedMediaFile =
-        File(fileName).copyTo(widget.appSettings.directories.media.path);
+        File(fileName).copyTo(widget.appSettings.mediaDirectory());
 
     final md5String = await File(fileName).checksum;
     final savedMedia = CLMedia(
@@ -543,7 +544,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
             final savedMediaFile = File(
               item.name,
-            ).copyTo(widget.appSettings.directories.media.path);
+            ).copyTo(widget.appSettings.mediaDirectory());
 
             final savedMedia = await CLMedia(
               name: path_handler.basename(savedMediaFile.path),
@@ -655,7 +656,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   String getMediaPath(CLMedia media) => path_handler.join(
-        widget.appSettings.directories.media.path.path,
+        widget.appSettings.mediaDirectoryPath(),
         media.name,
       );
   String getMediaLabel(CLMedia media) => media.name;

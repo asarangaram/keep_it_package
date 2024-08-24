@@ -41,7 +41,7 @@ class MediaUriDeterminer {
     try {
       final fPath = path_handler.join(
         appSettings.mediaBaseDirectory,
-        appSettings.mediaSubDirectory(),
+        appSettings.mediaSubDirectoryPath(),
         media.name,
       );
       if (!File(fPath).existsSync()) {
@@ -56,12 +56,12 @@ class MediaUriDeterminer {
   Future<AsyncValue<Uri>> getLocalpreviewPath(CLMedia media) async {
     final fPath = path_handler.join(
       appSettings.mediaBaseDirectory,
-      appSettings.mediaSubDirectory(),
+      appSettings.mediaSubDirectoryPath(),
       media.name,
     );
     final fpreviewPath = path_handler.join(
       appSettings.mediaBaseDirectory,
-      appSettings.mediaSubDirectory(),
+      appSettings.mediaSubDirectoryPath(),
       '${media.md5String}.tn.jpeg',
     );
     if (!File(fpreviewPath).existsSync()) {
@@ -121,7 +121,7 @@ class MediaUriDeterminer {
     } else {
       mediaServerInfo!.getMediaFilesUri(
         baseDirectory: appSettings.mediaBaseDirectory,
-        mediaSubDirectory: appSettings.mediaSubDirectory(
+        mediaSubDirectory: appSettings.mediaSubDirectoryPath(
           identfier: servers.myServer!.identifier,
         ),
         onGetURI: (endPoint) =>

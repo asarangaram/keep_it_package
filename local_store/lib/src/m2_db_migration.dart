@@ -18,7 +18,7 @@ final migrations = SqliteMigrations()
         name TEXT NOT NULL UNIQUE,
         md5String TEXT NOT NULL UNIQUE,
         type TEXT NOT NULL,
-        fExt TEXT CHECK(length(ext) BETWEEN 2 AND 4),
+        fExt TEXT CHECK(length(fExt) BETWEEN 2 AND 6),
         ref TEXT,
         collectionId INTEGER,
         originalDate DATETIME,
@@ -43,17 +43,17 @@ final migrations = SqliteMigrations()
 
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS MediaServerInfo (
-          id INTEGER PRIMARY KEY,
-          serverUID INTEGER NOT NULL UNIQUE,
-          haveItOffline INTEGER NOT NULL CHECK(haveItOffline IN (0, 1)),
-          mustDownloadOriginal INTEGER NOT NULL CHECK(mustDownloadOriginal IN (0, 1)),
-          previewDownloaded INTEGER NOT NULL CHECK(previewDownloaded IN (0, 1)),
-          mediaDownloaded INTEGER NOT NULL CHECK(mediaDownloaded IN (0, 1)),
-          isMediaOriginal INTEGER NOT NULL CHECK(isOriginal IN (0, 1)),
-          locallyModified INTEGER NOT NULL CHECK(locally_modified IN (0, 1)),
-          fileExtension TEXT CHECK(length(ext) BETWEEN 2 AND 4);
-          FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
-      );
+        id INTEGER PRIMARY KEY,
+        serverUID INTEGER NOT NULL UNIQUE,
+        haveItOffline INTEGER NOT NULL CHECK(haveItOffline IN (0, 1)),
+        mustDownloadOriginal INTEGER NOT NULL CHECK(mustDownloadOriginal IN (0, 1)),
+        previewDownloaded INTEGER NOT NULL CHECK(previewDownloaded IN (0, 1)),
+        mediaDownloaded INTEGER NOT NULL CHECK(mediaDownloaded IN (0, 1)),
+        isMediaOriginal INTEGER NOT NULL CHECK(isMediaOriginal IN (0, 1)),
+        locallyModified INTEGER NOT NULL CHECK(locallyModified IN (0, 1)),
+        fileExtension TEXT CHECK(length(fileExtension) BETWEEN 2 AND 4),
+        FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
+    );
   ''');
     }),
   );
