@@ -9,7 +9,7 @@ import 'package:store/store.dart';
 import '../models/media_files_uri.dart';
 
 extension StoreExtOnMediaServerInfo on MediaServerInfo {
-  List<DownloadTask> pendingTasks({
+  List<DownloadTask> pendingMediaDownloadTasks({
     required String mediaSubDirectory,
     required String Function(String path) onGetURI,
   }) {
