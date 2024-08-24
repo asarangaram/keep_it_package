@@ -40,16 +40,7 @@ final migrations = SqliteMigrations()
         FOREIGN KEY (itemId) REFERENCES Media(id) ON DELETE CASCADE
       )
     ''');
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Server (
-        UUID TEXT NOT NULL UNIQUE,
-        INFO TEXT 
-      )
-    ''');
-    }),
-  )
-  ..add(
-    SqliteMigration(1, (tx) async {
+
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS MediaServerInfo (
           id INTEGER PRIMARY KEY,
