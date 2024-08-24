@@ -210,6 +210,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           m.name,
         ),
       ).deleteIfExists();
+      await File(
+        path_handler.join(
+          appSettings.mediaBaseDirectory,
+          appSettings.mediaSubDirectoryPath(),
+          '${m.md5String}.tn.jpeg',
+        ),
+      ).deleteIfExists();
     }
     /* final orphanNotes = await getOrphanNotes();
     if (orphanNotes != null) {
