@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../providers/p3_db_reader.dart';
+import '../providers/db_reader.dart';
 
 class GetFromStore<T> extends ConsumerWidget {
   const GetFromStore({

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
-import 'package:store/store.dart';
+import 'package:meta/meta.dart';
+
+import 'cl_server.dart';
 
 @immutable
 class Servers {

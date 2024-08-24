@@ -14,7 +14,7 @@ export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_wizard_service/media_wizard_service.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;
-export 'services/online_service/models/servers.dart' show Servers;
+
 export 'services/online_service/providers/servers.dart' show serversProvider;
 export 'services/online_service/service.dart' show CloudOnLanService;
 export 'services/online_service/settings.dart' show CloudOnLANSettings;

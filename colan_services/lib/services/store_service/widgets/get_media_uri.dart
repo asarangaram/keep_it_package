@@ -6,46 +6,46 @@ import '../../../internal/widgets/broken_image.dart';
 import '../../../internal/widgets/shimmer.dart';
 import '../providers/media_storage.dart';
 
-enum ImageDimensionPreset { previewDimension, standardDimension, original }
+enum ImageViewFormat { preview, standard, original }
 
 class GetMediaUri extends ConsumerWidget {
   const GetMediaUri(
     this.media, {
     required this.builder,
     super.key,
-  }) : dimensionPreset = ImageDimensionPreset.standardDimension;
+  }) : dimensionPreset = ImageViewFormat.standard;
   const GetMediaUri.preview(
     this.media, {
     required this.builder,
     super.key,
-  }) : dimensionPreset = ImageDimensionPreset.previewDimension;
+  }) : dimensionPreset = ImageViewFormat.preview;
   const GetMediaUri.original(
     this.media, {
     required this.builder,
     super.key,
-  }) : dimensionPreset = ImageDimensionPreset.original;
+  }) : dimensionPreset = ImageViewFormat.original;
   final CLMedia media;
   final Widget Function(Uri uri) builder;
-  final ImageDimensionPreset dimensionPreset;
+  final ImageViewFormat dimensionPreset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaStorageAsync = ref.watch(mediaStorageProvider(media));
+    final mediaStorageAsync = ref.watch(mediaFilesUriProvider(media));
 
     return mediaStorageAsync.when(
       data: (store) {
         return switch (dimensionPreset) {
-          ImageDimensionPreset.previewDimension => store.previewPath.when(
+          ImageViewFormat.preview => store.previewPath.when(
               data: builder,
               error: BrokenImage.show,
               loading: GreyShimmer.show,
             ),
-          ImageDimensionPreset.standardDimension => store.mediaPath.when(
+          ImageViewFormat.standard => store.mediaPath.when(
               data: builder,
               error: BrokenImage.show,
               loading: GreyShimmer.show,
             ),
-          ImageDimensionPreset.original => store.originalMediaPath.when(
+          ImageViewFormat.original => store.originalMediaPath.when(
               data: builder,
               error: BrokenImage.show,
               loading: GreyShimmer.show,

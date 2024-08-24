@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const defaultAsyncUri = AsyncLoading<Uri>();
-
 @immutable
 class MediaFilesUri {
   const MediaFilesUri({
-    this.previewPath = defaultAsyncUri,
-    this.mediaPath = defaultAsyncUri,
-    this.originalMediaPath = defaultAsyncUri,
+    required this.previewPath,
+    required this.mediaPath,
+    required this.originalMediaPath,
   });
 
   factory MediaFilesUri.asyncLoading() {
-    return const MediaFilesUri();
+    return const MediaFilesUri(
+      previewPath: AsyncLoading<Uri>(),
+      mediaPath: AsyncLoading<Uri>(),
+      originalMediaPath: AsyncLoading<Uri>(),
+    );
   }
   factory MediaFilesUri.asyncError(Object e, StackTrace st) {
     return MediaFilesUri(

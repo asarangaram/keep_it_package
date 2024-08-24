@@ -5,7 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../store_service/providers/p2_db_manager.dart';
+import '../../store_service/providers/store.dart';
 
 import '../models/backup_files.dart';
 

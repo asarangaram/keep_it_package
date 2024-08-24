@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'p2_db_manager.dart';
+import 'store.dart';
 
 final dbReaderProvider =
     StreamProvider.family<List<dynamic>, StoreQuery<dynamic>>(

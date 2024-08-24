@@ -121,7 +121,6 @@ class MediaServerInfo {
   String get mediaURL => '/media/$serverUID/download?dimension=256';
   String get originalURL => '/media/$serverUID/download?dimension=256';
 
-  // TODO: Find extension
   String get previewName => '${serverUID}_tn$fileExtension';
   String get mediaName => '$serverUID$fileExtension';
   String get originalName => '${serverUID}_org$fileExtension';

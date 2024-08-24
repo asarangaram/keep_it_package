@@ -7,9 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
-import 'media_files_uri.dart';
+import '../models/media_files_uri.dart';
 
-extension ExtMediaStorageOnMediaServerInfo on MediaServerInfo {
+extension StoreExtOnMediaServerInfo on MediaServerInfo {
   List<DownloadTask> pendingTasks({
     required String mediaSubDirectory,
     required String Function(String path) onGetURI,

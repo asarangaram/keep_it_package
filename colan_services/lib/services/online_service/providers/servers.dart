@@ -7,8 +7,6 @@ import 'package:multicast_dns/multicast_dns.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/store.dart';
 
-import '../models/servers.dart';
-
 class ServersNotifier extends StateNotifier<Servers> {
   ServersNotifier({required this.serviceName, required this.checkInterval})
       : super(Servers.unknown()) {
