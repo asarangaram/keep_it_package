@@ -145,6 +145,7 @@ void main() {
       const media1 = CLMedia(
         name: 'path/to/media_unique1',
         type: CLMediaType.image,
+        fEXT: 'jpg'
         md5String: 'md5hash_unique1',
         collectionId: null,
       );
