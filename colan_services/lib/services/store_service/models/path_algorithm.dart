@@ -8,7 +8,6 @@ import 'package:store/store.dart';
 
 import '../../online_service/models/servers.dart';
 import 'media_files_uri.dart';
-import 'media_storage.dart';
 import 'thumbnail_services.dart';
 
 // TODO(anandas): This should be variable and determined

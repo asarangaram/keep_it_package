@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'media_storage.dart';
-
 const defaultAsyncUri = AsyncLoading<Uri>();
 
 @immutable
