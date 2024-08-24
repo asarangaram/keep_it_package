@@ -60,6 +60,7 @@ void main() {
         const media = CLMedia(
           name: 'path/to/media1',
           type: CLMediaType.image, // Adjust based on your enum or type
+          fExt: 'jpg',
           md5String: 'md5hash1',
           collectionId: null,
         );
@@ -95,6 +96,7 @@ void main() {
       const media = CLMedia(
         name: 'path/to/media_to_delete',
         type: CLMediaType.video,
+        fExt: 'jpg',
         md5String: 'md5hash_to_delete',
         collectionId: null,
       );
@@ -121,6 +123,7 @@ void main() {
       const media = CLMedia(
         name: 'path/to/media_for_retrieval',
         type: CLMediaType.audio,
+        fExt: 'jpg',
         md5String: 'md5hash_for_retrieval',
         collectionId: null,
       );
@@ -152,6 +155,7 @@ void main() {
       const media2 = CLMedia(
         name: 'path/to/media_unique1',
         type: CLMediaType.image,
+        fExt: 'jpg',
         md5String: 'md5hash_unique1',
         collectionId: null,
       );
@@ -167,6 +171,7 @@ void main() {
         id: 999,
         name: 'path/to/non_existing_media',
         type: CLMediaType.audio,
+        fExt: 'jpg',
         md5String: 'md5hash_non_existing',
         collectionId: null,
       );

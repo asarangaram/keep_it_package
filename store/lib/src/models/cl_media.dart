@@ -11,8 +11,8 @@ class CLMedia extends CLMediaBase {
   const CLMedia({
     required super.name,
     required super.type,
+    required super.fExt,
     required super.collectionId,
-    this.id,
     super.ref,
     super.originalDate,
     super.createdDate,
@@ -22,19 +22,18 @@ class CLMedia extends CLMediaBase {
     super.isHidden,
     super.pin,
     super.isAux,
+    this.id,
   });
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
     return CLMedia(
       name: map['name'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
+      fExt: map['fExt'] as String,
       ref: map['ref'] != null ? map['ref'] as String : null,
-      id: map['id'] != null ? map['id'] as int : null,
       originalDate: map['originalDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
           : null,
-      collectionId:
-          map['collectionId'] != null ? map['collectionId'] as int : null,
       createdDate: map['createdDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
           : null,
@@ -45,18 +44,25 @@ class CLMedia extends CLMediaBase {
       isDeleted: (map['isDeleted'] as int) != 0,
       isHidden: (map['isHidden'] as int? ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
+      collectionId:
+          map['collectionId'] != null ? map['collectionId'] as int : null,
       isAux: (map['isAux'] as int? ?? 0) != 0,
+      id: map['id'] != null ? map['id'] as int : null,
     );
   }
+
+  factory CLMedia.fromJson(String source) => CLMedia.fromMap(
+        json.decode(source) as Map<String, dynamic>,
+      );
+
   final int? id;
 
   @override
   CLMedia copyWith({
     String? name,
     CLMediaType? type,
+    String? fExt,
     String? ref,
-    int? id,
-    int? collectionId,
     DateTime? originalDate,
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -64,14 +70,15 @@ class CLMedia extends CLMediaBase {
     bool? isDeleted,
     bool? isHidden,
     String? pin,
+    int? collectionId,
     bool? isAux,
+    int? id,
   }) {
     return CLMedia(
       name: name ?? this.name,
       type: type ?? this.type,
+      fExt: fExt ?? this.fExt,
       ref: ref ?? this.ref,
-      id: id ?? this.id,
-      collectionId: collectionId ?? this.collectionId,
       originalDate: originalDate ?? this.originalDate,
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
@@ -79,14 +86,17 @@ class CLMedia extends CLMediaBase {
       isDeleted: isDeleted ?? this.isDeleted,
       isHidden: isHidden ?? this.isHidden,
       pin: pin ?? this.pin,
+      collectionId: collectionId ?? this.collectionId,
       isAux: isAux ?? this.isAux,
+      id: id ?? this.id,
     );
   }
 
   @override
-  String toString() =>
-      // ignore: lines_longer_than_80_chars
-      'CLMedia(super: ${super.toString()}, id: $id, isAux: $isAux )';
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'CLMediaBase(id: $id, name: $name, type: $type, fExt: $fExt, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux)';
+  }
 
   @override
   bool operator ==(covariant CLMedia other) {
@@ -94,9 +104,8 @@ class CLMedia extends CLMediaBase {
 
     return other.name == name &&
         other.type == type &&
+        other.fExt == fExt &&
         other.ref == ref &&
-        other.id == id &&
-        other.collectionId == collectionId &&
         other.originalDate == originalDate &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
@@ -104,16 +113,17 @@ class CLMedia extends CLMediaBase {
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
         other.pin == pin &&
-        other.isAux == isAux;
+        other.collectionId == collectionId &&
+        other.isAux == isAux &&
+        other.id == id;
   }
 
   @override
   int get hashCode {
     return name.hashCode ^
         type.hashCode ^
+        fExt.hashCode ^
         ref.hashCode ^
-        id.hashCode ^
-        collectionId.hashCode ^
         originalDate.hashCode ^
         createdDate.hashCode ^
         updatedDate.hashCode ^
@@ -121,7 +131,9 @@ class CLMedia extends CLMediaBase {
         isDeleted.hashCode ^
         isHidden.hashCode ^
         pin.hashCode ^
-        isAux.hashCode;
+        collectionId.hashCode ^
+        isAux.hashCode ^
+        id.hashCode;
   }
 
   @override
@@ -129,9 +141,8 @@ class CLMedia extends CLMediaBase {
     return <String, dynamic>{
       'name': name,
       'type': type.name,
+      'fExt': fExt,
       'ref': ref,
-      'id': id,
-      'collectionId': collectionId,
       'originalDate': originalDate?.millisecondsSinceEpoch,
       'createdDate': createdDate?.millisecondsSinceEpoch,
       'updatedDate': updatedDate?.millisecondsSinceEpoch,
@@ -139,13 +150,11 @@ class CLMedia extends CLMediaBase {
       'isDeleted': (isDeleted ?? false) ? 1 : 0,
       'isHidden': (isHidden ?? false) ? 1 : 0,
       'pin': pin,
+      'collectionId': collectionId,
       'isAux': isAux,
+      'id': id,
     };
   }
-
-  factory CLMedia.fromJson(String source) => CLMedia.fromMap(
-        json.decode(source) as Map<String, dynamic>,
-      );
 
   @override
   String toJson() => json.encode(toMap());
@@ -154,6 +163,7 @@ class CLMedia extends CLMediaBase {
     return CLMedia(
       name: name,
       type: type,
+      fExt: fExt,
       ref: ref,
       id: id,
       collectionId: collectionId,
@@ -171,6 +181,7 @@ class CLMedia extends CLMediaBase {
     return CLMedia(
       name: name,
       type: type,
+      fExt: fExt,
       ref: ref,
       collectionId: collectionId,
       originalDate: originalDate,
@@ -188,6 +199,7 @@ class CLMedia extends CLMediaBase {
     return CLMedia(
       name: name,
       type: type,
+      fExt: fExt,
       ref: ref,
       id: id,
       collectionId: newCollectionId,

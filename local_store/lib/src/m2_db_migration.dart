@@ -18,6 +18,7 @@ final migrations = SqliteMigrations()
         name TEXT NOT NULL UNIQUE,
         md5String TEXT NOT NULL UNIQUE,
         type TEXT NOT NULL,
+        fExt TEXT CHECK(length(ext) BETWEEN 2 AND 4);
         ref TEXT,
         collectionId INTEGER,
         originalDate DATETIME,
@@ -59,7 +60,7 @@ final migrations = SqliteMigrations()
           mediaDownloaded INTEGER NOT NULL CHECK(mediaDownloaded IN (0, 1)),
           isMediaOriginal INTEGER NOT NULL CHECK(isOriginal IN (0, 1)),
           locallyModified INTEGER NOT NULL CHECK(locally_modified IN (0, 1)),
-          fileExtension TEXT CHECK(length(ext) BETWEEN 3 AND 4);
+          fileExtension TEXT CHECK(length(ext) BETWEEN 2 AND 4);
           FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
       );
   ''');

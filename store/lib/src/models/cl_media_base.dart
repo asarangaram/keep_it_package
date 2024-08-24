@@ -12,6 +12,7 @@ class CLMediaBase {
   const CLMediaBase({
     required this.name,
     required this.type,
+    required this.fExt,
     this.ref,
     this.originalDate,
     this.createdDate,
@@ -28,6 +29,7 @@ class CLMediaBase {
     return CLMediaBase(
       name: map['name'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
+      fExt: map['fExt'] as String,
       ref: map['ref'] != null ? map['ref'] as String : null,
       originalDate: map['originalDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
@@ -40,17 +42,20 @@ class CLMediaBase {
           : null,
       md5String: map['md5String'] != null ? map['md5String'] as String : null,
       isDeleted: (map['isDeleted'] as int) != 0,
-      isHidden: (map['isHidden'] as int) != 0,
+      isHidden: (map['isHidden'] as int? ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
       collectionId:
           map['collectionId'] != null ? map['collectionId'] as int : null,
+      isAux: (map['isAux'] as int? ?? 0) != 0,
     );
   }
 
   factory CLMediaBase.fromJson(String source) =>
       CLMediaBase.fromMap(json.decode(source) as Map<String, dynamic>);
+
   final String name;
   final CLMediaType type;
+  final String fExt;
   final String? ref;
   final DateTime? originalDate;
   final DateTime? createdDate;
@@ -69,6 +74,7 @@ class CLMediaBase {
   CLMediaBase copyWith({
     String? name,
     CLMediaType? type,
+    String? fExt,
     String? ref,
     DateTime? originalDate,
     DateTime? createdDate,
@@ -83,6 +89,7 @@ class CLMediaBase {
     return CLMediaBase(
       name: name ?? this.name,
       type: type ?? this.type,
+      fExt: fExt ?? this.fExt,
       ref: ref ?? this.ref,
       originalDate: originalDate ?? this.originalDate,
       createdDate: createdDate ?? this.createdDate,
@@ -99,7 +106,7 @@ class CLMediaBase {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLMediaBase(name: $name, type: $type, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux)';
+    return 'CLMediaBase(name: $name, type: $type, fExt: $fExt, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux)';
   }
 
   @override
@@ -108,6 +115,7 @@ class CLMediaBase {
 
     return other.name == name &&
         other.type == type &&
+        other.fExt == fExt &&
         other.ref == ref &&
         other.originalDate == originalDate &&
         other.createdDate == createdDate &&
@@ -124,6 +132,7 @@ class CLMediaBase {
   int get hashCode {
     return name.hashCode ^
         type.hashCode ^
+        fExt.hashCode ^
         ref.hashCode ^
         originalDate.hashCode ^
         createdDate.hashCode ^
@@ -140,11 +149,17 @@ class CLMediaBase {
     return <String, dynamic>{
       'name': name,
       'type': type.name,
+      'fExt': fExt,
       'ref': ref,
       'originalDate': originalDate?.millisecondsSinceEpoch,
       'createdDate': createdDate?.millisecondsSinceEpoch,
       'updatedDate': updatedDate?.millisecondsSinceEpoch,
       'md5String': md5String,
+      'isDeleted': (isDeleted ?? false) ? 1 : 0,
+      'isHidden': (isHidden ?? false) ? 1 : 0,
+      'pin': pin,
+      'collectionId': collectionId,
+      'isAux': isAux,
     };
   }
 

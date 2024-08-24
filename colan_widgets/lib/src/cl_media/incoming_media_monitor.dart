@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
 import 'incoming_media.dart';
@@ -34,7 +35,11 @@ class IncomingMediaMonitor extends ConsumerWidget {
     if (pickedFileList.isNotEmpty) {
       final items = pickedFileList
           .map(
-            (xfile) => CLMediaBase(name: xfile.path, type: CLMediaType.file),
+            (xfile) => CLMediaBase(
+              name: xfile.path,
+              type: CLMediaType.file,
+              fExt: path_handler.extension(xfile.path),
+            ),
           )
           .toList();
       final sharedMedia = CLMediaFileGroup(

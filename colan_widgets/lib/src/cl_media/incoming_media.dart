@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as path_handler;
 import 'package:share_handler/share_handler.dart';
 import 'package:store/store.dart';
 
@@ -47,18 +48,31 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     final attachements = [
       if (media.content != null && media.content!.isNotEmpty)
         if (media.content!.isURL())
-          CLMediaBase(name: media.content!, type: CLMediaType.url)
+          CLMediaBase(
+            name: media.content!,
+            type: CLMediaType.url,
+            fExt: 'url',
+          )
         else
-          CLMediaBase(name: 'text:${media.content!}', type: CLMediaType.text),
+          CLMediaBase(
+            name: 'text:${media.content!}',
+            type: CLMediaType.text,
+            fExt: 'txt',
+          ),
       if (media.imageFilePath != null)
         CLMediaBase(
           name: media.imageFilePath!,
           type: CLMediaType.image,
+          fExt: path_handler.extension(media.imageFilePath!),
         ),
       if (media.attachments != null)
         ...media.attachments!.where((e) => e != null).map(
           (e) {
-            return CLMediaBase(name: e!.path, type: toCLMediaType(e.type));
+            return CLMediaBase(
+              name: e!.path,
+              type: toCLMediaType(e.type),
+              fExt: path_handler.extension(e.path),
+            );
           },
         ),
     ];

@@ -477,6 +477,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final savedMedia = CLMedia(
       name: path_handler.basename(savedMediaFile.path),
       type: isVideo ? CLMediaType.video : CLMediaType.image,
+      fExt: path_handler.extension(savedMediaFile.path),
       collectionId: collection0.id,
       md5String: md5String,
       isHidden: collection == null,
@@ -547,6 +548,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             final savedMedia = await CLMedia(
               name: path_handler.basename(savedMediaFile.path),
               type: item.type,
+              fExt: path_handler.extension(savedMediaFile.path),
               collectionId: tempCollection.id,
               md5String: md5String,
               isHidden: true,
@@ -595,11 +597,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final savedNotes = note?.copyWith(
           name: path_handler.basename(savedNotesFile.path),
           type: type,
+          fExt: path_handler.extension(savedNotesFile.path),
         ) ??
         CLMedia(
           createdDate: DateTime.now(),
           type: type,
           name: path_handler.basename(savedNotesFile.path),
+          fExt: path_handler.extension(savedNotesFile.path),
           collectionId: null,
         );
 
