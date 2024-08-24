@@ -1,5 +1,5 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
 class MediaFilesUri {
@@ -9,28 +9,14 @@ class MediaFilesUri {
     required this.originalMediaPath,
   });
 
-  factory MediaFilesUri.asyncLoading() {
-    return const MediaFilesUri(
-      previewPath: AsyncLoading<Uri>(),
-      mediaPath: AsyncLoading<Uri>(),
-      originalMediaPath: AsyncLoading<Uri>(),
-    );
-  }
-  factory MediaFilesUri.asyncError(Object e, StackTrace st) {
-    return MediaFilesUri(
-      previewPath: AsyncValue.error(e, st),
-      mediaPath: AsyncValue.error(e, st),
-      originalMediaPath: AsyncValue.error(e, st),
-    );
-  }
-  final AsyncValue<Uri> previewPath;
-  final AsyncValue<Uri> mediaPath;
-  final AsyncValue<Uri> originalMediaPath;
+  final Uri? previewPath;
+  final Uri? mediaPath;
+  final Uri? originalMediaPath;
 
   MediaFilesUri copyWith({
-    AsyncValue<Uri>? previewPath,
-    AsyncValue<Uri>? mediaPath,
-    AsyncValue<Uri>? originalMediaPath,
+    Uri? previewPath,
+    Uri? mediaPath,
+    Uri? originalMediaPath,
   }) {
     return MediaFilesUri(
       previewPath: previewPath ?? this.previewPath,
@@ -40,10 +26,9 @@ class MediaFilesUri {
   }
 
   @override
-  // ignore: lines_longer_than_80_chars
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'MediaStorage(previewPath: $previewPath, mediaPath: $mediaPath, originalMediaPath: $originalMediaPath)';
+      'MediaFilesUri(previewPath: $previewPath, mediaPath: $mediaPath, originalMediaPath: $originalMediaPath)';
 
   @override
   bool operator ==(covariant MediaFilesUri other) {

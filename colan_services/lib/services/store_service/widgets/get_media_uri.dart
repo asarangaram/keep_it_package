@@ -30,30 +30,18 @@ class GetMediaUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaStorageAsync = ref.watch(mediaFilesUriProvider(media));
-
-    return mediaStorageAsync.when(
-      data: (store) {
-        return switch (dimensionPreset) {
-          ImageViewFormat.preview => store.previewPath.when(
-              data: builder,
-              error: BrokenImage.show,
-              loading: GreyShimmer.show,
-            ),
-          ImageViewFormat.standard => store.mediaPath.when(
-              data: builder,
-              error: BrokenImage.show,
-              loading: GreyShimmer.show,
-            ),
-          ImageViewFormat.original => store.originalMediaPath.when(
-              data: builder,
-              error: BrokenImage.show,
-              loading: GreyShimmer.show,
-            ),
-        };
-      },
-      error: BrokenImage.show,
-      loading: GreyShimmer.show,
-    );
+    return ref.watch(mediaFilesUriProvider(media)).when(
+          data: (filesUri) {
+            final uri = switch (dimensionPreset) {
+              ImageViewFormat.preview => filesUri.previewPath,
+              ImageViewFormat.standard => filesUri.mediaPath,
+              ImageViewFormat.original => filesUri.originalMediaPath,
+            };
+            if (uri == null) return GreyShimmer.show();
+            return builder(uri);
+          },
+          error: BrokenImage.show,
+          loading: GreyShimmer.show,
+        );
   }
 }

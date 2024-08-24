@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:background_downloader/background_downloader.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
@@ -67,39 +66,17 @@ extension StoreExtOnMediaServerInfo on MediaServerInfo {
             ),
           )
         : Uri.parse(onGetURI(previewURL));
-    final Uri mediaUri;
-    final Uri originalMediaUri;
     if (haveItOffline && mediaDownloaded) {
       // If original is available, provide original
       // else provide local copy
       if (isMediaOriginal) {
-        originalMediaUri = Uri.file(
-          path_handler.join(
-            baseDirectory,
-            mediaSubDirectory,
-            originalName,
-          ),
-        );
-        mediaUri = originalMediaUri;
-      } else {
-        mediaUri = Uri.file(
-          path_handler.join(
-            baseDirectory,
-            mediaSubDirectory,
-            mediaName,
-          ),
-        );
-        originalMediaUri = Uri.parse(onGetURI(originalURL));
-      }
-    } else {
-      mediaUri = Uri.parse(onGetURI(mediaURL));
-      originalMediaUri = Uri.parse(onGetURI(originalURL));
-    }
+      } else {}
+    } else {}
 
     return MediaFilesUri(
-      previewPath: AsyncValue.data(previewUri),
-      mediaPath: AsyncValue.data(mediaUri),
-      originalMediaPath: AsyncValue.data(originalMediaUri),
+      previewPath: previewUri,
+      mediaPath: previewUri,
+      originalMediaPath: previewUri,
     );
   }
 }
