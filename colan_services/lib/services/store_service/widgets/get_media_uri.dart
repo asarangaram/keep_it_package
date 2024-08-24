@@ -4,7 +4,7 @@ import 'package:store/store.dart';
 
 import '../../../internal/widgets/broken_image.dart';
 import '../../../internal/widgets/shimmer.dart';
-import '../providers/media_storage.dart';
+import '../providers/media_files_uri.dart';
 
 enum ImageViewFormat { preview, standard, original }
 
