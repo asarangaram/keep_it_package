@@ -19,7 +19,6 @@ class DBManager extends Store {
   factory DBManager({
     required SqliteDatabase db,
     required void Function() onReload,
-    required CLServer? server,
     required AppSettings appSettings,
   }) {
     final collectionTable = DBExec<Collection>(
@@ -77,7 +76,6 @@ class DBManager extends Store {
     return DBManager._(
       db: db,
       onReload: onReload,
-      server: server,
       dbReader: dbReader,
       dbWriter: dbWriter,
       appSettings: appSettings,
@@ -86,7 +84,6 @@ class DBManager extends Store {
   DBManager._({
     required this.db,
     required this.onReload,
-    required this.server,
     required this.dbWriter,
     required this.dbReader,
     required this.appSettings,
@@ -95,7 +92,7 @@ class DBManager extends Store {
   final SqliteDatabase db;
   final DBWriter dbWriter;
   final DBReader dbReader;
-  final CLServer? server;
+
   final AppSettings appSettings;
 
   final void Function() onReload;
@@ -104,14 +101,12 @@ class DBManager extends Store {
     required String dbpath,
     required void Function() onReload,
     required AppSettings appSettings,
-    CLServer? server,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
     final dbManager = DBManager(
       db: db,
       onReload: onReload,
-      server: server,
       appSettings: appSettings,
     );
 
@@ -212,7 +207,6 @@ class DBManager extends Store {
     SqliteDatabase? db,
     DBWriter? dbWriter,
     DBReader? dbReader,
-    CLServer? server,
     AppSettings? appSettings,
     void Function()? onReload,
   }) {
@@ -220,7 +214,6 @@ class DBManager extends Store {
       db: db ?? this.db,
       dbWriter: dbWriter ?? this.dbWriter,
       dbReader: dbReader ?? this.dbReader,
-      server: server ?? this.server,
       appSettings: appSettings ?? this.appSettings,
       onReload: onReload ?? this.onReload,
     );
@@ -229,7 +222,7 @@ class DBManager extends Store {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'DBManager(db: $db, dbWriter: $dbWriter, dbReader: $dbReader, server: $server, appSettings: $appSettings, onReload: $onReload)';
+    return 'DBManager(db: $db, dbWriter: $dbWriter, dbReader: $dbReader, appSettings: $appSettings, onReload: $onReload)';
   }
 
   @override
@@ -239,7 +232,6 @@ class DBManager extends Store {
     return other.db == db &&
         other.dbWriter == dbWriter &&
         other.dbReader == dbReader &&
-        other.server == server &&
         other.appSettings == appSettings &&
         other.onReload == onReload;
   }
@@ -249,22 +241,7 @@ class DBManager extends Store {
     return db.hashCode ^
         dbWriter.hashCode ^
         dbReader.hashCode ^
-        server.hashCode ^
         appSettings.hashCode ^
         onReload.hashCode;
-  }
-
-  @override
-  Future<DBManager> attachServer(CLServer? value) async {
-    final dbManager = DBManager._(
-      db: db,
-      onReload: onReload,
-      dbWriter: dbWriter,
-      dbReader: dbReader,
-      server: value,
-      appSettings: appSettings,
-    );
-
-    return dbManager;
   }
 }

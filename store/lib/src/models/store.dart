@@ -1,5 +1,5 @@
 import 'cl_media.dart';
-import 'cl_server.dart';
+
 import 'collection.dart';
 import 'server_media_info.dart';
 
@@ -61,6 +61,4 @@ abstract class Store {
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
 
   void dispose();
-
-  Future<Store> attachServer(CLServer? value);
 }

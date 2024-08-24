@@ -6,12 +6,10 @@ Future<Store> createStoreInstance(
   String fullPath, {
   required void Function() onReload,
   required AppSettings appSettings,
-  CLServer? server,
 }) async {
   return DBManager.createInstances(
     dbpath: fullPath,
     onReload: onReload,
-    server: server,
     appSettings: appSettings,
   );
 }
