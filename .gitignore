@@ -1,7 +1,5 @@
-.DS_Store
-device_resources/.flutter-plugins
-device_resources/.flutter-plugins-dependencies
+**/.DS_Store
+**/.flutter-plugins*
 pub.dev/.venv/**
 pub.dev/package_info.json
-local_store/.flutter-plugins-dependencies
 local_store/testArtifacts/**
