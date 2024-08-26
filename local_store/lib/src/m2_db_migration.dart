@@ -42,7 +42,7 @@ final migrations = SqliteMigrations()
     ''');
 
       await tx.execute('''
-      CREATE TABLE IF NOT EXISTS MediaServerInfo (
+      CREATE TABLE IF NOT EXISTS ServerMediaMetaData (
         id INTEGER PRIMARY KEY,
         serverUID INTEGER NOT NULL UNIQUE,
         haveItOffline INTEGER NOT NULL CHECK(haveItOffline IN (0, 1)),

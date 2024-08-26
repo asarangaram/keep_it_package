@@ -119,27 +119,6 @@ class CLDirectories {
         baseDir: dir.isPersistent ? persistent : temporary,
       )..create();
 
-  CLDirectory get media =>
-      standardDirectory(CLStandardDirectories.mediaPersistent);
-  CLDirectory get notes =>
-      standardDirectory(CLStandardDirectories.notesPersistent);
-  CLDirectory get capturedMedia =>
-      standardDirectory(CLStandardDirectories.capturedMediaPreserved);
-  CLDirectory get importedMedia =>
-      standardDirectory(CLStandardDirectories.importedMediaPreserved);
-  CLDirectory get downloadedMedia =>
-      standardDirectory(CLStandardDirectories.downloadedMediaPreserved);
-  CLDirectory get thumbnail =>
-      standardDirectory(CLStandardDirectories.tempThumbnail);
-  CLDirectory get trimmer =>
-      standardDirectory(CLStandardDirectories.tempTrimmer);
-  CLDirectory get tempNotes =>
-      standardDirectory(CLStandardDirectories.tempNotes);
-  CLDirectory get database =>
-      standardDirectory(CLStandardDirectories.dbPersistent);
-  CLDirectory get backup =>
-      standardDirectory(CLStandardDirectories.backupPersistent);
-
   // Derived
   List<Directory> get store => CLStandardDirectories.values
       .where((e) => e.isStore)

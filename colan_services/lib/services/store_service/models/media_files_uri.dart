@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+/* // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 @immutable
@@ -28,7 +28,8 @@ class MediaFilesUri {
   @override
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'MediaFilesUri(previewPath: $previewPath, mediaPath: $mediaPath, originalMediaPath: $originalMediaPath)';
+      'MediaFilesUri(previewPath: $previewPath, mediaPath:
+       $mediaPath, originalMediaPath: $originalMediaPath)';
 
   @override
   bool operator ==(covariant MediaFilesUri other) {
@@ -43,3 +44,4 @@ class MediaFilesUri {
   int get hashCode =>
       previewPath.hashCode ^ mediaPath.hashCode ^ originalMediaPath.hashCode;
 }
+ */

@@ -120,7 +120,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       getMediaPath: getMediaPath,
       getMediaLabel: getMediaLabel,
       getPreviewPath: getPreviewPath,
-      getNotesPath: getNotesPath,
+      getNotesPath: getMediaPath,
       getText: getText,
 
       getMediaMultipleByIds: getMediaMultipleByIds,
@@ -190,6 +190,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) async {
+    // FIXME
+    // ignore: unused_local_variable
     final appSettings = widget.appSettings;
     if (mediaMultiple.isEmpty) {
       return true;
@@ -203,7 +205,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
     for (final m in mediaMultiple) {
       await widget.storeInstance.deleteMedia(m, permanent: true);
-      await File(
+
+      /* await File(
         path_handler.join(
           appSettings.mediaBaseDirectory,
           appSettings.mediaSubDirectoryPath(),
@@ -216,7 +219,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           appSettings.mediaSubDirectoryPath(),
           '${m.md5String}.tn.jpeg',
         ),
-      ).deleteIfExists();
+      ).deleteIfExists(); */
     }
     /* final orphanNotes = await getOrphanNotes();
     if (orphanNotes != null) {
@@ -341,7 +344,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory());
+    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory);
 
     final md5String = await savedFile.checksum;
     final updatedMedia = originalMedia
@@ -366,7 +369,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory());
+    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory);
 
     final md5String = await savedFile.checksum;
     final CLMedia updatedMedia;
@@ -479,7 +482,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
 
     final savedMediaFile =
-        File(fileName).copyTo(widget.appSettings.mediaDirectory());
+        File(fileName).copyTo(widget.appSettings.mediaDirectory);
 
     final md5String = await File(fileName).checksum;
     final savedMedia = CLMedia(
@@ -551,7 +554,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
             final savedMediaFile = File(
               item.name,
-            ).copyTo(widget.appSettings.mediaDirectory());
+            ).copyTo(widget.appSettings.mediaDirectory);
 
             final savedMedia = await CLMedia(
               name: path_handler.basename(savedMediaFile.path),
@@ -599,8 +602,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     required List<CLMedia> mediaMultiple,
     CLMedia? note,
   }) async {
-    final savedNotesFile =
-        File(path).copyTo(widget.appSettings.directories.notes.path);
+    final savedNotesFile = File(path).copyTo(widget.appSettings.mediaDirectory);
 
     final savedNotes = note?.copyWith(
           name: path_handler.basename(savedNotesFile.path),
@@ -625,7 +627,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       await File(path).deleteIfExists();
       if (note != null) {
         // delete the older notes
-        await File(getNotesPath(note)).deleteIfExists();
+        await File(getMediaPath(note)).deleteIfExists();
       }
     }
   }
@@ -634,50 +636,43 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     if (note.id == null) return;
 
     await widget.storeInstance.deleteNote(note);
-    await File(getNotesPath(note)).deleteIfExists();
+    await File(getMediaPath(note)).deleteIfExists();
   }
 
   Future<String> createTempFile({required String ext}) async {
-    final dir = widget.appSettings.directories.downloadedMedia.path;
+    final dir = widget.appSettings.downloadedMediaDirectoryPath;
     final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '${dir.path}/$fileBasename.$ext';
+    final absolutePath = '$dir/$fileBasename.$ext';
 
     return absolutePath;
   }
 
   Future<String> createBackupFile() async {
-    final dir = widget.appSettings.directories.backup.path;
+    final dir = widget.appSettings.backupDirectoryPath;
     final fileBasename =
         'keep_it_backup_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '${dir.path}/$fileBasename.tar.gz';
+    final absolutePath = '$dir/$fileBasename.tar.gz';
 
     return absolutePath;
   }
 
   String getPreviewPath(CLMedia media) {
-    final previewFileName = path_handler.join(
-      widget.appSettings.directories.thumbnail.pathString,
-      '${media.md5String}.tn.jpeg',
-    );
-    return previewFileName;
+    // TODO: Fix me
+
+    return '';
   }
 
-  String getMediaPath(CLMedia media) => path_handler.join(
-        widget.appSettings.mediaDirectoryPath(),
-        media.name,
-      );
+  // FIXME
+  String getMediaPath(CLMedia media) => '';
   String getMediaLabel(CLMedia media) => media.name;
 
-  String getNotesPath(CLMedia note) => path_handler.join(
-        widget.appSettings.directories.notes.path.path,
-        note.name,
-      );
+  // FIXME String getNotesPath(CLMedia note) => '';
 
   String getText(CLMedia? note) {
     if (note?.type == CLMediaType.text) {
       final String text;
       if (note != null) {
-        final notesPath = getNotesPath(note);
+        final notesPath = getMediaPath(note);
 
         final notesFile = File(notesPath);
         if (!notesFile.existsSync()) {
@@ -739,7 +734,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     final downloadedFile = await URLHandler.download(
       mediaFile.name,
-      appSettings.directories.downloadedMedia.path,
+      Directory(appSettings.downloadedMediaDirectoryPath),
     );
     if (downloadedFile == null) {
       return mediaFile;

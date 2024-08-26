@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 import 'dart:io';
 
 import 'package:device_resources/device_resources.dart';
@@ -8,8 +8,7 @@ import 'package:store/store.dart';
 
 import '../../online_service/providers/servers.dart';
 import '../extensions/download_settings.dart';
-import '../extensions/media_server_info.dart';
-import '../models/media_files_uri.dart';
+
 import '../models/thumbnail_services.dart';
 
 import 'store.dart';
@@ -71,9 +70,10 @@ class MFUriNotifier extends StateNotifier<AsyncValue<MediaFilesUri>> {
 
     final appSettings = await futureAppSettings;
 
-    final query =
-        store.getQuery(DBQueries.mediaServerInfoById, parameters: [media.id])
-            as StoreQuery<MediaServerInfo>;
+    final query = store.getQuery(
+      DBQueries.serverMediaMetaDataById,
+      parameters: [media.id],
+    ) as StoreQuery<ServerMediaLocalStateInfo>;
 
     final mediaServerInfo = await store.read(query);
 
@@ -205,3 +205,4 @@ void _infoLogger(String msg) {
     logger.i('$_filePrefix$msg');
   }
 }
+ */

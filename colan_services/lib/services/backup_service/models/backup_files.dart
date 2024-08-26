@@ -111,7 +111,7 @@ class BackupManager {
         final mediaMap = Map<String, dynamic>.from(e as Map<dynamic, dynamic>);
         final file = mediaMap['itemPath'] as String;
         if (file.isNotEmpty) {
-          final absPath = p.join(appSettings.mediaDirectoryPath(), file);
+          final absPath = p.join(appSettings.mediaDirectory.path, file);
           if (File(absPath).existsSync()) {
             var mediaFile = MediaFile(path: file, absPath: absPath);
 
@@ -124,7 +124,7 @@ class BackupManager {
 
                 final notePath = note['notePath'] as String;
                 final noteAbsPath = p.join(
-                  appSettings.directories.notes.pathString,
+                  appSettings.mediaDirectory.path,
                   notePath,
                 );
 

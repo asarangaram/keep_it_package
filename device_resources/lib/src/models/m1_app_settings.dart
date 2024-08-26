@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as path_handler;
 
 import 'file_system/models/cl_directories.dart';
 
@@ -16,27 +15,24 @@ class AppSettings {
 
   String get dbName => 'keepIt.db';
 
-  String get mediaBaseDirectory => directories.persistent.path;
+  Directory get mediaDirectory =>
+      directories.standardDirectory(CLStandardDirectories.mediaPersistent).path;
 
-  String mediaSubDirectoryPath({String identfier = 'local'}) =>
-      path_handler.relative(
-        mediaDirectoryPath(identfier: identfier),
-        from: directories.persistent.path,
-      );
-  String mediaDirectoryPath({String identfier = 'local'}) {
-    return mediaDirectory(identfier: identfier).path;
-  }
+  String get downloadedMediaDirectoryPath => directories
+      .standardDirectory(CLStandardDirectories.downloadedMediaPreserved)
+      .path
+      .path;
+  String get backupDirectoryPath => directories
+      .standardDirectory(CLStandardDirectories.backupPersistent)
+      .path
+      .path;
+  String get thumbnailDirectoryPath => directories
+      .standardDirectory(CLStandardDirectories.tempThumbnail)
+      .path
+      .path;
 
-  Directory mediaDirectory({String identfier = 'local'}) {
-    final dir = Directory(
-      path_handler.join(
-        directories.media.pathString,
-        identfier,
-      ),
-    );
-    if (!dir.existsSync()) {
-      dir.createSync(recursive: true);
-    }
-    return dir;
-  }
+  String get databaseDirectoryPath => directories
+      .standardDirectory(CLStandardDirectories.dbPersistent)
+      .path
+      .path;
 }

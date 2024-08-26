@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../internal/widgets/broken_image.dart';
-import '../../../internal/widgets/shimmer.dart';
-import '../providers/media_files_uri.dart';
-
 enum ImageViewFormat { preview, standard, original }
 
 class GetMediaUri extends ConsumerWidget {
@@ -30,7 +26,9 @@ class GetMediaUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(mediaFilesUriProvider(media)).when(
+    return builder(Uri.parse(''));
+    // FIXME
+    /* return ref.watch(mediaFilesUriProvider(media)).when(
           data: (filesUri) {
             final uri = switch (dimensionPreset) {
               ImageViewFormat.preview => filesUri.previewPath,
@@ -42,6 +40,6 @@ class GetMediaUri extends ConsumerWidget {
           },
           error: BrokenImage.show,
           loading: GreyShimmer.show,
-        );
+        ); */
   }
 }
