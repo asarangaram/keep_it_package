@@ -13,7 +13,7 @@ export 'src/models/cl_medias.dart' show CLMedias;
 export 'src/models/cl_server.dart' show CLServer, DBSyncStatus;
 export 'src/models/collection.dart' show Collection;
 export 'src/models/collections.dart' show Collections;
-export 'src/models/media_info.dart' show LocalMediaInfo, ServerMediaInfo;
+export 'src/models/media_info.dart' show MediaInfo, ServerMediaInfo;
 export 'src/models/notes_on_media.dart' show NotesOnMedia;
 export 'src/models/server_media_metadata.dart' show ServerMediaMetadata;
 export 'src/models/servers.dart' show Servers;

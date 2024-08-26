@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class LocalMediaInfo {
-  const LocalMediaInfo();
+abstract class MediaInfo {
+  const MediaInfo();
 
   bool get isUriOriginal;
   Uri get mediaURI;
@@ -22,7 +22,7 @@ abstract class LocalMediaInfo {
 }
 
 @immutable
-abstract class ServerMediaInfo implements LocalMediaInfo {
+abstract class ServerMediaInfo extends MediaInfo {
   const ServerMediaInfo();
 
   @override

@@ -5,7 +5,7 @@ import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
 @immutable
-class LocalMediaInfoImpl extends LocalMediaInfo {
+class LocalMediaInfoImpl extends MediaInfo {
   const LocalMediaInfoImpl(this.media, {required this.appSettings});
   final AppSettings appSettings;
   final CLMedia media;
