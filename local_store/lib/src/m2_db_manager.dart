@@ -137,7 +137,7 @@ class DBManager extends Store {
       });
 
   @override
-  Future<MediaLocalInfo> upsertServerInfo(
+  Future<MediaLocalInfo> upsertMediaLocalInfo(
     MediaLocalInfo mediaServerInfo,
   ) =>
       db.writeTransaction((tx) async {

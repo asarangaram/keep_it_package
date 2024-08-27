@@ -43,7 +43,7 @@ abstract class Store {
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);
   Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
-  Future<MediaLocalInfo> upsertServerInfo(
+  Future<MediaLocalInfo> upsertMediaLocalInfo(
     MediaLocalInfo mediaServerInfo,
   );
 

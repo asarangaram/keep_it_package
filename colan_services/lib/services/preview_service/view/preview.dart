@@ -18,7 +18,7 @@ class PreviewService extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
-    final child = GetMediaUri.preview(
+    final child = GetPreviewUri(
       media,
       builder: (uri) => FutureBuilder(
         future: AlbumManager.isPinBroken(media.pin),
