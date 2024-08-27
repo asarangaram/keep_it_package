@@ -6,13 +6,13 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:colan_services/services/store_service/extensions/cl_media.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as path_handler;
+
 import 'package:path/path.dart';
 import 'package:store/store.dart';
 
 @immutable
-class MediaLocalInfoManager {
-  const MediaLocalInfoManager({
+class MediaManager {
+  const MediaManager({
     required this.media,
     required this.appSettings,
     required this.localInfo,

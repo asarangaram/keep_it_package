@@ -1,8 +1,8 @@
-import 'package:colan_services/services/store_service/models/media_local_info_manager.dart';
+import 'package:colan_services/services/store_service/models/media_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'a2_local_media_info_manager.dart';
+import 'media_manager.dart';
 
 class PreviewUriNotifier extends StateNotifier<AsyncValue<Uri>> {
   PreviewUriNotifier(this.ref, this.media, this.asycnValueLocalInfo)
@@ -11,7 +11,7 @@ class PreviewUriNotifier extends StateNotifier<AsyncValue<Uri>> {
   }
   Ref ref;
   final CLMedia media;
-  AsyncValue<MediaLocalInfoManager> asycnValueLocalInfo;
+  AsyncValue<MediaManager> asycnValueLocalInfo;
 
   Future<void> load() async {
     asycnValueLocalInfo.whenOrNull(
@@ -36,6 +36,6 @@ class PreviewUriNotifier extends StateNotifier<AsyncValue<Uri>> {
 final previewUriProvider =
     StateNotifierProvider.family<PreviewUriNotifier, AsyncValue<Uri>, CLMedia>(
         (ref, media) {
-  final mediaInfo = ref.watch(mediaInfoProvider(media));
+  final mediaInfo = ref.watch(mediaManagerProvider(media));
   return PreviewUriNotifier(ref, media, mediaInfo);
 });

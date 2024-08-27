@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/store_service/models/media_local_info_manager.dart';
+import 'package:colan_services/services/store_service/models/media_manager.dart';
 import 'package:colan_services/services/store_service/providers/store.dart';
 
 import 'package:device_resources/device_resources.dart';
@@ -13,9 +13,8 @@ import '../models/thumbnail_services.dart';
 import 'c_download_settings.dart';
 import 'thumbnail_services.dart';
 
-class MediaLocalInfoManagerNotifier
-    extends StateNotifier<AsyncValue<MediaLocalInfoManager>> {
-  MediaLocalInfoManagerNotifier(
+class MediaManagerNotifier extends StateNotifier<AsyncValue<MediaManager>> {
+  MediaManagerNotifier(
     this.ref,
     this.media,
     this.futureAppSettings,
@@ -24,7 +23,7 @@ class MediaLocalInfoManagerNotifier
     this.asyncValueThumbnailProvider,
     this.futureStore,
   ) : super(const AsyncValue.loading()) {
-    getMediaLocalInfoManager();
+    getMediaManager();
   }
   final Ref ref;
   final CLMedia media;
@@ -35,7 +34,7 @@ class MediaLocalInfoManagerNotifier
   final AsyncValue<ThumbnailService> asyncValueThumbnailProvider;
   final Future<Store> futureStore;
 
-  Future<void> getMediaLocalInfoManager() async {
+  Future<void> getMediaManager() async {
     if (media.id == null) return;
 
     final appSettings = await futureAppSettings;
@@ -48,7 +47,7 @@ class MediaLocalInfoManagerNotifier
               state = AsyncValue.error(error, stackTrace),
           data: (downloadSettings) async {
             final localInfo = await _fetch();
-            final localInfoManager = MediaLocalInfoManager(
+            final localInfoManager = MediaManager(
               media: media,
               localInfo: localInfo,
               appSettings: appSettings,
@@ -67,7 +66,7 @@ class MediaLocalInfoManagerNotifier
     );
   }
 
-  Future<void> checkFiles(MediaLocalInfoManager localInfoManager) async {}
+  Future<void> checkFiles(MediaManager localInfoManager) async {}
 
   Future<MediaLocalInfo> _fetch() async {
     final store = await futureStore;
@@ -83,17 +82,15 @@ class MediaLocalInfoManagerNotifier
   }
 }
 
-final mediaInfoProvider = StateNotifierProvider.family<
-    MediaLocalInfoManagerNotifier,
-    AsyncValue<MediaLocalInfoManager>,
-    CLMedia>((ref, media) {
+final mediaManagerProvider = StateNotifierProvider.family<MediaManagerNotifier,
+    AsyncValue<MediaManager>, CLMedia>((ref, media) {
   final appSettings = ref.watch(appSettingsProvider.future);
 
   final servers = ref.watch(serversProvider);
   final downloadSettings = ref.watch(downloadSettingsProvider);
   final thumbnailProvider = ref.watch(thumbnailServiceProvider);
   final store = ref.watch(storeProvider.future);
-  return MediaLocalInfoManagerNotifier(
+  return MediaManagerNotifier(
     ref,
     media,
     appSettings,
