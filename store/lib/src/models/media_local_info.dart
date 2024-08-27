@@ -150,18 +150,4 @@ class DefaultMediaLocalInfo extends MediaLocalInfo {
           previewError: null,
           mediaError: null,
         );
-  const DefaultMediaLocalInfo.server({
-    required super.serverUID,
-    required super.fileExtension,
-  }) : super(
-          id: null,
-          isPreviewCached: false,
-          isMediaCached: true,
-          isMediaOriginal: true,
-          isEdited: false,
-          haveItOffline: true,
-          mustDownloadOriginal: true,
-          previewError: null,
-          mediaError: null,
-        );
 }
