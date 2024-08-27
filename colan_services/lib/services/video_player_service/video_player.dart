@@ -1,5 +1,4 @@
 import 'package:colan_services/services/video_player_service/views/get_video_controller.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -14,7 +13,7 @@ enum PlayerServices { player, controlMenu, playStateBuilder }
 
 class VideoPlayerService extends ConsumerWidget {
   const VideoPlayerService.player({
-    required this.media,
+    required this.mediaPath,
     required this.alternate,
     super.key,
     this.onSelect,
@@ -22,9 +21,10 @@ class VideoPlayerService extends ConsumerWidget {
     this.autoPlay = false,
     this.inplaceControl = false,
   })  : builder = null,
-        playerService = PlayerServices.player;
+        playerService = PlayerServices.player,
+        type = CLMediaType.video;
   const VideoPlayerService.controlMenu({
-    required this.media,
+    required this.mediaPath,
     super.key,
   })  : alternate = null,
         onSelect = null,
@@ -32,9 +32,11 @@ class VideoPlayerService extends ConsumerWidget {
         autoPlay = false,
         builder = null,
         playerService = PlayerServices.controlMenu,
-        inplaceControl = false;
+        inplaceControl = false,
+        type = CLMediaType.video;
   const VideoPlayerService.playStateBuilder({
-    required this.media,
+    required this.mediaPath,
+    required this.type,
     required Widget Function({required bool isPlaying}) builder,
     super.key,
   })  : alternate = null,
@@ -46,7 +48,8 @@ class VideoPlayerService extends ConsumerWidget {
         playerService = PlayerServices.playStateBuilder,
         inplaceControl = false;
 
-  final CLMedia media;
+  final String mediaPath;
+  final CLMediaType type;
   final void Function()? onSelect;
   final bool autoStart;
   final bool autoPlay;
@@ -62,7 +65,7 @@ class VideoPlayerService extends ConsumerWidget {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (context.mounted && autoStart) {
             await ref.read(videoPlayerStateProvider.notifier).setVideo(
-                  TheStore.of(context).getMediaPath(media),
+                  mediaPath,
                   autoPlay: autoPlay,
                 );
           }
@@ -73,7 +76,7 @@ class VideoPlayerService extends ConsumerWidget {
             VideoPlayerState state,
             VideoPlayerController controller,
           ) {
-            if (state.path == TheStore.of(context).getMediaPath(media)) {
+            if (state.path == mediaPath) {
               return VideoLayer(
                 controller: controller,
                 inplaceControl: inplaceControl,
@@ -106,7 +109,7 @@ class VideoPlayerService extends ConsumerWidget {
             VideoPlayerState state,
             VideoPlayerController controller,
           ) {
-            if (state.path == TheStore.of(context).getMediaPath(media)) {
+            if (state.path == mediaPath) {
               return VideoControls(controller: controller);
             } else {
               return Container();
@@ -120,7 +123,7 @@ class VideoPlayerService extends ConsumerWidget {
           },
         );
       case PlayerServices.playStateBuilder:
-        if (media.type != CLMediaType.video) {
+        if (type != CLMediaType.video) {
           return builder!(isPlaying: false);
         }
     }
@@ -130,7 +133,7 @@ class VideoPlayerService extends ConsumerWidget {
         VideoPlayerState state,
         VideoPlayerController controller,
       ) {
-        if (state.path == TheStore.of(context).getMediaPath(media)) {
+        if (state.path == mediaPath) {
           return PlayerStateMonitor(
             controller: controller,
             builder: builder!,

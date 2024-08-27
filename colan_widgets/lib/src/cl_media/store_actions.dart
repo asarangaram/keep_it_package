@@ -37,9 +37,6 @@ class StoreActions {
     /// fetch
     required this.getMediaMultipleByIds,
     required this.getPreviewPath,
-    required this.getMediaPath,
-    required this.getMediaLabel,
-    required this.getNotesPath,
     required this.getText,
 
     /// Notes
@@ -142,9 +139,7 @@ class StoreActions {
 
   final Future<String> Function({required String ext}) createTempFile;
   final String Function(CLMedia media) getPreviewPath;
-  final String Function(CLMedia media) getMediaPath;
-  final String Function(CLMedia media) getMediaLabel;
-  final String Function(CLMedia media) getNotesPath;
+
   final String Function(CLMedia? note) getText;
 
   // Opens New page
@@ -187,8 +182,6 @@ class StoreActions {
     return other.upsertCollection == upsertCollection &&
         other.pinMediaMultiple == pinMediaMultiple &&
         other.getPreviewPath == getPreviewPath &&
-        other.getMediaPath == getMediaPath &&
-        other.getMediaLabel == getMediaLabel &&
         other.shareMediaMultiple == shareMediaMultiple &&
         other.createBackupFile == createBackupFile &&
         other.reloadStore == reloadStore;
@@ -199,8 +192,6 @@ class StoreActions {
     return upsertCollection.hashCode ^
         pinMediaMultiple.hashCode ^
         getPreviewPath.hashCode ^
-        getMediaPath.hashCode ^
-        getMediaLabel.hashCode ^
         shareMediaMultiple.hashCode ^
         createBackupFile.hashCode ^
         reloadStore.hashCode;

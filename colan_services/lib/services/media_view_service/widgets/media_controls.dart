@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/widgets/get_media_uri.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -179,68 +180,79 @@ class ControllerMenu extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (media.type == CLMediaType.video)
-                VideoPlayerService.controlMenu(
-                  media: media,
+                GetMediaUri(
+                  media,
+                  builder: (uri) {
+                    return VideoPlayerService.controlMenu(
+                      mediaPath: uri.path,
+                    );
+                  },
                 ),
               if ([onEdit, onDelete, onMove, onShare, onPin]
                   .any((e) => e != null))
-                VideoPlayerService.playStateBuilder(
-                  media: media,
-                  builder: ({required bool isPlaying}) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (onEdit != null)
-                            CLButtonIcon.small(
-                              MdiIcons.pencil,
-                              color: Theme.of(context).colorScheme.surface,
-                              onTap: onEdit,
-                            ),
-                          if (onDelete != null)
-                            CLButtonIcon.small(
-                              Icons.delete_rounded,
-                              color: Theme.of(context).colorScheme.surface,
-                              onTap: onDelete,
-                            ),
-                          if (onMove != null)
-                            CLButtonIcon.small(
-                              MdiIcons.imageMove,
-                              color: Theme.of(context).colorScheme.surface,
-                              onTap: onMove,
-                            ),
-                          if (onShare != null)
-                            CLButtonIcon.small(
-                              MdiIcons.share,
-                              color: Theme.of(context).colorScheme.surface,
-                              onTap: onShare,
-                            ),
-                          if (onPin != null)
-                            Transform.rotate(
-                              angle: math.pi / 4,
-                              child: CLButtonIcon.small(
-                                media.pin != null
-                                    ? MdiIcons.pin
-                                    : MdiIcons.pinOutline,
-                                color: media.pin != null
-                                    ? Colors.blue
-                                    : Theme.of(context).colorScheme.surface,
-                                onTap: onPin,
-                              ),
-                            ),
-                        ]
-                            .map(
-                              (e) => Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 16,
+                GetMediaUri(
+                  media,
+                  builder: (uri) {
+                    return VideoPlayerService.playStateBuilder(
+                      mediaPath: uri.path,
+                      type: media.type,
+                      builder: ({required bool isPlaying}) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (onEdit != null)
+                                CLButtonIcon.small(
+                                  MdiIcons.pencil,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  onTap: onEdit,
                                 ),
-                                child: e,
-                              ),
-                            )
-                            .toList(),
-                      ),
+                              if (onDelete != null)
+                                CLButtonIcon.small(
+                                  Icons.delete_rounded,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  onTap: onDelete,
+                                ),
+                              if (onMove != null)
+                                CLButtonIcon.small(
+                                  MdiIcons.imageMove,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  onTap: onMove,
+                                ),
+                              if (onShare != null)
+                                CLButtonIcon.small(
+                                  MdiIcons.share,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  onTap: onShare,
+                                ),
+                              if (onPin != null)
+                                Transform.rotate(
+                                  angle: math.pi / 4,
+                                  child: CLButtonIcon.small(
+                                    media.pin != null
+                                        ? MdiIcons.pin
+                                        : MdiIcons.pinOutline,
+                                    color: media.pin != null
+                                        ? Colors.blue
+                                        : Theme.of(context).colorScheme.surface,
+                                    onTap: onPin,
+                                  ),
+                                ),
+                            ]
+                                .map(
+                                  (e) => Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: 16,
+                                    ),
+                                    child: e,
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

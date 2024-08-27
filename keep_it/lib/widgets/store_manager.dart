@@ -34,8 +34,18 @@ extension ExtMetaData on CLMedia {
   }
 }
 
-class StoreManager extends StatelessWidget {
-  const StoreManager({
+class StoreManager extends ConsumerWidget {
+  const StoreManager({required this.child, super.key});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return StoreManager1(child: child);
+  }
+}
+
+class StoreManager1 extends StatelessWidget {
+  const StoreManager1({
     required this.child,
     super.key,
   });
@@ -117,10 +127,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       createBackupFile: createBackupFile,
 
       reloadStore: reloadStore,
-      getMediaPath: getMediaPath,
-      getMediaLabel: getMediaLabel,
+
       getPreviewPath: getPreviewPath,
-      getNotesPath: getMediaPath,
+
       getText: getText,
 
       getMediaMultipleByIds: getMediaMultipleByIds,

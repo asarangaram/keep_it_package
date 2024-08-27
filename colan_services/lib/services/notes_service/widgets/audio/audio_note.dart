@@ -3,11 +3,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:colan_services/services/store_service/widgets/get_media_uri.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class AudioNote extends StatefulWidget {
+class AudioNote extends ConsumerWidget {
   const AudioNote(
     this.note, {
     required this.onDeleteNote,
@@ -22,10 +24,43 @@ class AudioNote extends StatefulWidget {
   final VoidCallback onDeleteNote;
 
   @override
-  State<AudioNote> createState() => _AudioNoteState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetMediaUri(
+      note,
+      builder: (uri) {
+        return AudioNote1(
+          note,
+          notePath: uri.path,
+          onDeleteNote: onDeleteNote,
+          editMode: editMode,
+          onEditMode: onEditMode,
+        );
+      },
+    );
+  }
 }
 
-class _AudioNoteState extends State<AudioNote> {
+class AudioNote1 extends StatefulWidget {
+  const AudioNote1(
+    this.note, {
+    required this.notePath,
+    required this.onDeleteNote,
+    super.key,
+    this.editMode = true,
+    this.onEditMode,
+  });
+
+  final CLMedia note;
+  final bool editMode;
+  final VoidCallback? onEditMode;
+  final VoidCallback onDeleteNote;
+  final String notePath;
+
+  @override
+  State<AudioNote1> createState() => _AudioNote1State();
+}
+
+class _AudioNote1State extends State<AudioNote1> {
   late PlayerController controller;
   late StreamSubscription<PlayerState>? playerStateSubscription;
   late bool validAudio;
@@ -39,7 +74,7 @@ class _AudioNoteState extends State<AudioNote> {
 
   @override
   void didChangeDependencies() {
-    notePath = TheStore.of(context).getNotesPath(widget.note);
+    notePath = widget.notePath;
     if (File(notePath).existsSync()) {
       validAudio = true;
       _preparePlayer();

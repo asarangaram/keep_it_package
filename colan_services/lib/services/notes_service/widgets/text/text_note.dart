@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:colan_services/services/store_service/widgets/get_media_uri.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
@@ -10,7 +12,7 @@ import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
 
-class TextNote extends StatefulWidget {
+class TextNote extends ConsumerWidget {
   const TextNote({
     required this.media,
     this.note,
@@ -20,10 +22,42 @@ class TextNote extends StatefulWidget {
   final CLMedia? note;
 
   @override
-  State<TextNote> createState() => _TextNoteState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (note == null) {
+      return TextNote1(
+        media: media,
+        note: note,
+      );
+    }
+    return GetMediaUri(
+      note!,
+      builder: (uri) {
+        return TextNote1(
+          media: media,
+          note: note,
+          notePath: uri.path,
+        );
+      },
+    );
+  }
 }
 
-class _TextNoteState extends State<TextNote> {
+class TextNote1 extends StatefulWidget {
+  const TextNote1({
+    required this.media,
+    this.note,
+    this.notePath,
+    super.key,
+  });
+  final CLMedia media;
+  final CLMedia? note;
+  final String? notePath;
+
+  @override
+  State<TextNote1> createState() => _TextNote1State();
+}
+
+class _TextNote1State extends State<TextNote1> {
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
   late bool isEditing;
@@ -165,7 +199,7 @@ class _TextNoteState extends State<TextNote> {
         }
         textOriginal = textEditingController.text.trim();
       } else {
-        path = TheStore.of(context).getNotesPath(widget.note!);
+        path = widget.notePath!;
         await File(path).writeAsString(textEditingController.text.trim());
         if (mounted) {
           textOriginal = TheStore.of(context).getText(widget.note);

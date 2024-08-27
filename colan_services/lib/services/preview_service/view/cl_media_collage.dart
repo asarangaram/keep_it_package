@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -76,9 +75,11 @@ class CLMediaCollage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWithPreview = mediaList.where((e) {
+    // FIXME
+    /* final mediaWithPreview = mediaList.where((e) {
       return File(TheStore.of(context).getMediaPath(e)).existsSync();
-    }).toList();
+    }).toList(); */
+    final mediaWithPreview = <CLMedia>[];
     if (mediaWithPreview.isEmpty) {
       return onBuildItem(
         context,

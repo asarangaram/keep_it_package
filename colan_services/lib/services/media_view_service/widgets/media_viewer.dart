@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/widgets/get_media_uri.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,12 +41,17 @@ class MediaViewerRaw extends ConsumerWidget {
                   media: media,
                   onLockPage: onLockPage,
                 ),
-              CLMediaType.video => VideoPlayerService.player(
-                  media: media,
-                  alternate: getPreview(media),
-                  autoStart: autoStart,
-                  autoPlay: autoPlay,
-                  inplaceControl: showControl.showNotes,
+              CLMediaType.video => GetMediaUri(
+                  media,
+                  builder: (uri) {
+                    return VideoPlayerService.player(
+                      mediaPath: uri.path,
+                      alternate: getPreview(media),
+                      autoStart: autoStart,
+                      autoPlay: autoPlay,
+                      inplaceControl: showControl.showNotes,
+                    );
+                  },
                 ),
               _ => throw UnimplementedError('Not yet implemented')
             },
