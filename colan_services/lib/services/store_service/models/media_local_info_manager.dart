@@ -40,7 +40,7 @@ class MediaLocalInfoManager {
     return returnValidPath(
       Uri.file(
         path_handler.join(
-          appSettings.thumbnailDirectoryPath,
+          appSettings.dir.thumbnail.pathString,
           previewFilename,
         ),
       ),
@@ -83,7 +83,7 @@ class MediaLocalInfoManager {
     return returnValidPath(
       Uri.file(
         path_handler.join(
-          appSettings.mediaDirectory.path,
+          appSettings.dir.media.pathString,
           mediaFilename,
         ),
       ),

@@ -12,7 +12,7 @@ final storeProvider = FutureProvider<Store>((ref) async {
 
 final dbInstanceProvider = FutureProvider<Store>((ref) async {
   final appSettings = await ref.watch(appSettingsProvider.future);
-  final fullPath = join(appSettings.databaseDirectoryPath, appSettings.dbName);
+  final fullPath = join(appSettings.dir.db.pathString, appSettings.dbName);
 
   final storeInstance = await createStoreInstance(
     fullPath,

@@ -14,5 +14,4 @@ export 'src/widgets/w1_get_app_settings.dart' show GetAppSettings;
 
 // ignore: directives_ordering
 /// Required only for testing. which should be removed
-export 'src/models/file_system/models/cl_directories.dart'
-    show CLDirectories, CLStandardDirectories;
+export 'src/models/file_system/models/cl_directories.dart' show CLDirectories;

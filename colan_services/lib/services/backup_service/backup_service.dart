@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
@@ -87,8 +85,7 @@ class _AvailableBackupState extends State<AvailableBackup> {
       errorBuilder: (object, st) => const SizedBox.shrink(),
       loadingBuilder: SizedBox.shrink,
       builder: (appSettings) {
-        final backupFile =
-            Directory(appSettings.backupDirectoryPath).listSync().firstOrNull;
+        final backupFile = appSettings.dir.backup.path.listSync().firstOrNull;
         if (backupFile == null) return const SizedBox.shrink();
         final stats = backupFile.statSync();
         final backupTime = stats.modified.toDisplayFormat();

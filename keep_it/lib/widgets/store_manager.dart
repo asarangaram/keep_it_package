@@ -351,7 +351,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory);
+    final savedFile = File(outFile).copyTo(widget.appSettings.dir.media.path);
 
     final md5String = await savedFile.checksum;
     final updatedMedia = originalMedia
@@ -376,7 +376,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile = File(outFile).copyTo(widget.appSettings.mediaDirectory);
+    final savedFile = File(outFile).copyTo(widget.appSettings.dir.media.path);
 
     final md5String = await savedFile.checksum;
     final CLMedia updatedMedia;
@@ -489,7 +489,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
 
     final savedMediaFile =
-        File(fileName).copyTo(widget.appSettings.mediaDirectory);
+        File(fileName).copyTo(widget.appSettings.dir.media.path);
 
     final md5String = await File(fileName).checksum;
     final savedMedia = CLMedia(
@@ -561,7 +561,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
             final savedMediaFile = File(
               item.name,
-            ).copyTo(widget.appSettings.mediaDirectory);
+            ).copyTo(widget.appSettings.dir.media.path);
 
             final savedMedia = await CLMedia(
               name: path_handler.basename(savedMediaFile.path),
@@ -609,7 +609,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     required List<CLMedia> mediaMultiple,
     CLMedia? note,
   }) async {
-    final savedNotesFile = File(path).copyTo(widget.appSettings.mediaDirectory);
+    final savedNotesFile = File(path).copyTo(widget.appSettings.dir.media.path);
 
     final savedNotes = note?.copyWith(
           name: path_handler.basename(savedNotesFile.path),
@@ -647,15 +647,17 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<String> createTempFile({required String ext}) async {
-    final dir = widget.appSettings.downloadedMediaDirectoryPath;
+    final dir = widget.appSettings.dir.temp.pathString;
     final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '$dir/$fileBasename.$ext';
+
+    final absolutePath =
+        path_handler.setExtension(path_handler.join(dir, fileBasename), ext);
 
     return absolutePath;
   }
 
   Future<String> createBackupFile() async {
-    final dir = widget.appSettings.backupDirectoryPath;
+    final dir = widget.appSettings.dir.backup.pathString;
     final fileBasename =
         'keep_it_backup_${DateTime.now().millisecondsSinceEpoch}';
     final absolutePath = '$dir/$fileBasename.tar.gz';
@@ -732,7 +734,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     final downloadedFile = await URLHandler.download(
       mediaFile.name,
-      Directory(appSettings.downloadedMediaDirectoryPath),
+      appSettings.dir.download.path,
     );
     if (downloadedFile == null) {
       return mediaFile;

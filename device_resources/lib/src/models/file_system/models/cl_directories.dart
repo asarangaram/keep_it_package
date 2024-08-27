@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'cl_directory.dart';
-
+/* 
 enum CLStandardDirectories {
   mediaPersistent,
   notesPersistent,
@@ -70,13 +70,14 @@ enum CLStandardDirectories {
       tempNotes => 'keep_it/temp/notes',
     };
   }
-}
+} */
 
 @immutable
 class CLDirectories {
   final Directory persistent;
   final Directory temporary;
   final Directory systemTemp;
+
   const CLDirectories({
     required this.persistent,
     required this.temporary,
@@ -113,17 +114,70 @@ class CLDirectories {
   int get hashCode =>
       persistent.hashCode ^ temporary.hashCode ^ systemTemp.hashCode;
 
-  CLDirectory standardDirectory(CLStandardDirectories dir) => CLDirectory(
-        label: dir.label,
-        name: dir.name,
-        baseDir: dir.isPersistent ? persistent : temporary,
-      )..create();
+  Map<String, CLDirectory> get directories => <String, CLDirectory>{
+        'media': CLDirectory(
+          baseDir: persistent,
+          label: 'Media Directory',
+          name: 'keep_it/store/media',
+          isStore: true,
+        ),
+        'thumbnail': CLDirectory(
+          baseDir: persistent,
+          label: 'Thumbnail Cache',
+          name: 'keep_it/store/thumbnail',
+          isStore: false,
+        ),
+        'db': CLDirectory(
+          baseDir: persistent,
+          label: 'DataBase Directory',
+          name: 'keep_it/store/database',
+          isStore: true,
+        ),
+        'backup': CLDirectory(
+          baseDir: persistent,
+          label: 'Backup Directory',
+          name: 'keep_it/backup',
+          isStore: true,
+        ),
+        'temp': CLDirectory(
+          baseDir: temporary,
+          label: 'Temporary Directory',
+          name: 'keep_it/temp',
+          isStore: false,
+        ),
+        'download': CLDirectory(
+          baseDir: temporary,
+          label: 'Download Directory',
+          name: 'keep_it/download',
+          isStore: false,
+        ),
+      };
 
-  // Derived
-  List<Directory> get store => CLStandardDirectories.values
-      .where((e) => e.isStore)
-      .map(
-        (e) => standardDirectory(e).path,
-      )
-      .toList();
+  CLDirectory get media => directories['media']!;
+  CLDirectory get thumbnail => directories['thumbnail']!;
+  CLDirectory get db => directories['db']!;
+  CLDirectory get backup => directories['db']!;
+  CLDirectory get temp => directories['temp']!;
+  CLDirectory get download => directories['download']!;
+
+  List<CLDirectory> get persistentDirs =>
+      directories.values.where((e) => e.isStore == true).toList();
+  List<CLDirectory> get cacheDirs =>
+      directories.values.where((e) => e.isStore == false).toList();
 }
+
+
+
+/**
+  mediaPersistent => ,
+      notesPersistent => 'Notes Directory',
+      dbPersistent => ,
+      backupPersistent => ,
+      capturedMediaPreserved => 'Captured Media Unclassified',
+      importedMediaPreserved => 'Imported Media Unclassified',
+      downloadedMediaPreserved => 'Downloaded Media Unclassified',
+      tempThumbnail => ,
+      tempTrimmer => 'Trimmer Cache',
+      tempNotes => 'Notes Cache',
+
+ */
