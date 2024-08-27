@@ -49,6 +49,7 @@ class MediaLocalInfoManagerNotifier
           data: (downloadSettings) async {
             final localInfo = await _fetch();
             final localInfoManager = MediaLocalInfoManager(
+              media: media,
               localInfo: localInfo,
               appSettings: appSettings,
               downloadSettings: downloadSettings,
