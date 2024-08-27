@@ -38,7 +38,7 @@ class MediaManagerNotifier extends StateNotifier<AsyncValue<MediaManager>> {
     if (media.id == null) return;
 
     final appSettings = await futureAppSettings;
-
+    final store = await futureStore;
     asyncValueThumbnailProvider.whenOrNull(
       error: (error, stackTrace) => state = AsyncValue.error(error, stackTrace),
       data: (thumbnailService) {
@@ -53,6 +53,7 @@ class MediaManagerNotifier extends StateNotifier<AsyncValue<MediaManager>> {
               appSettings: appSettings,
               downloadSettings: downloadSettings,
               server: servers.myServer,
+              store: store,
             );
 
             state = const AsyncValue.loading();

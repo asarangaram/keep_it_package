@@ -6,7 +6,7 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:colan_services/services/store_service/extensions/cl_media.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
-
+import 'package:path/path.dart' as path_handler;
 import 'package:path/path.dart';
 import 'package:store/store.dart';
 
@@ -18,12 +18,14 @@ class MediaManager {
     required this.localInfo,
     required this.downloadSettings,
     required this.server,
+    required this.store,
   });
   final CLMedia media;
   final MediaLocalInfo localInfo;
   final AppSettings appSettings;
   final DownloadSettings downloadSettings;
   final CLServer? server;
+  final Store store;
 
   Uri get previewFileURI => media.previewFileURI(appSettings);
   Uri get mediaFileURI => media.mediaFileURI(appSettings);
@@ -99,5 +101,102 @@ class MediaManager {
           metaData: jsonEncode({'media': localInfo.id}),
         ),
     ];
+  }
+
+  Future<CLMedia> replaceMedia(
+    CLMedia originalMedia,
+    String outFile,
+  ) async {
+    final savedFile = File(outFile).copyTo(appSettings.dir.media.path);
+
+    final md5String = await savedFile.checksum;
+    final updatedMedia = originalMedia
+        .copyWith(
+          name: path_handler.basename(savedFile.path),
+          md5String: md5String,
+        )
+        .removePin();
+
+    final mediaFromDB = await store.upsertMedia(
+      updatedMedia,
+    );
+    if (mediaFromDB != null) {
+      File(outFile)
+        ..copySync(mediaFromDB.mediaFileURI(appSettings).path)
+        ..deleteSync();
+    }
+
+    return mediaFromDB ?? originalMedia;
+  }
+
+  Future<CLMedia> cloneAndReplaceMedia(
+    BuildContext ctx,
+    CLMedia originalMedia,
+    String outFile,
+  ) async {
+    final md5String = await File(outFile).checksum;
+    final CLMedia updatedMedia;
+    updatedMedia = originalMedia
+        .copyWith(
+          name: path_handler.basename(outFile),
+          md5String: md5String,
+        )
+        .removePin();
+
+    final mediaFromDB = await store.upsertMedia(
+      updatedMedia.removeId(),
+    );
+    if (mediaFromDB != null) {
+      File(outFile)
+        ..copySync(mediaFromDB.mediaFileURI(appSettings).path)
+        ..deleteSync();
+    }
+
+    return originalMedia;
+  }
+
+  MediaManager copyWith({
+    CLMedia? media,
+    MediaLocalInfo? localInfo,
+    AppSettings? appSettings,
+    DownloadSettings? downloadSettings,
+    CLServer? server,
+    Store? store,
+  }) {
+    return MediaManager(
+      media: media ?? this.media,
+      localInfo: localInfo ?? this.localInfo,
+      appSettings: appSettings ?? this.appSettings,
+      downloadSettings: downloadSettings ?? this.downloadSettings,
+      server: server ?? this.server,
+      store: store ?? this.store,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'MediaManager(media: $media, localInfo: $localInfo, appSettings: $appSettings, downloadSettings: $downloadSettings, server: $server, store: $store)';
+  }
+
+  @override
+  bool operator ==(covariant MediaManager other) {
+    if (identical(this, other)) return true;
+
+    return other.media == media &&
+        other.localInfo == localInfo &&
+        other.appSettings == appSettings &&
+        other.downloadSettings == downloadSettings &&
+        other.server == server &&
+        other.store == store;
+  }
+
+  @override
+  int get hashCode {
+    return media.hashCode ^
+        localInfo.hashCode ^
+        appSettings.hashCode ^
+        downloadSettings.hashCode ^
+        server.hashCode ^
+        store.hashCode;
   }
 }
