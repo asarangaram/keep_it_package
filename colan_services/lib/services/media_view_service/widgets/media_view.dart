@@ -1,9 +1,12 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../backup_service/dialogs.dart';
+import '../../store_service/widgets/get_media_uri.dart';
+import '../../video_edit_service/video_edit_service.dart';
+import '../../video_player_service/providers/show_controls.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
 import 'media_viewer.dart';
@@ -47,85 +50,91 @@ class _MediaViewState extends ConsumerState<MediaView> {
     final media = widget.media;
     final ac = widget.actionControl;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
-      child: Stack(
-        children: [
-          const MediaBackground(),
-          Positioned.fill(
-            child: Hero(
-              tag: '${widget.parentIdentifier} /media/${media.id}',
-              child: MediaViewerRaw(
-                media: media,
-                autoStart: widget.autoStart,
-                autoPlay: widget.autoPlay,
-                onLockPage: widget.onLockPage,
-                isLocked: widget.isLocked,
-                getPreview: widget.getPreview,
-              ),
-            ),
-          ),
-          MediaControls(
-            onMove: ac.onMove(
-              () => TheStore.of(context).openWizard(
-                context,
-                [media],
-                UniversalMediaSource.move,
-              ),
-            ),
-            onDelete: ac.onDelete(() async {
-              final confirmed = await ConfirmAction.deleteMediaMultiple(
-                    context,
-                    media: [media],
-                  ) ??
-                  false;
-              if (!confirmed) return confirmed;
-              if (context.mounted) {
-                return TheStore.of(context).deleteMediaMultiple(
-                  context,
-                  [media],
-                );
-              }
-              return false;
-            }),
-            onShare: ac.onShare(
-              () => TheStore.of(context).shareMediaMultiple(context, [media]),
-            ),
-            onEdit: (media.type == CLMediaType.video &&
-                    !VideoEditServices.isSupported)
-                ? null
-                : ac.onEdit(
-                    () async {
-                      final updatedMedia =
-                          await TheStore.of(context).openEditor(
-                        context,
-                        media,
-                        canDuplicateMedia: ac.canDuplicateMedia,
-                      );
-                      if (updatedMedia != media && context.mounted) {
-                        setState(() {
-                          //media = updatedMedia;
-                        });
-                      }
-
-                      return true;
-                    },
+    return GetMediaUri(
+      media,
+      builder: (uri) {
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
+          child: Stack(
+            children: [
+              const MediaBackground(),
+              Positioned.fill(
+                child: Hero(
+                  tag: '${widget.parentIdentifier} /media/${media.id}',
+                  child: MediaViewerRaw(
+                    media: media,
+                    autoStart: widget.autoStart,
+                    autoPlay: widget.autoPlay,
+                    onLockPage: widget.onLockPage,
+                    isLocked: widget.isLocked,
+                    getPreview: widget.getPreview,
                   ),
-            onPin: ac.onPin(
-              () async {
-                final res = await TheStore.of(context)
-                    .togglePinMultiple(context, [media]);
-                if (res) {
-                  setState(() {});
-                }
-                return res;
-              },
-            ),
-            media: media,
+                ),
+              ),
+              MediaControls(
+                onMove: ac.onMove(
+                  () => TheStore.of(context).openWizard(
+                    context,
+                    [media],
+                    UniversalMediaSource.move,
+                  ),
+                ),
+                onDelete: ac.onDelete(() async {
+                  final confirmed = await ConfirmAction.deleteMediaMultiple(
+                        context,
+                        media: [media],
+                      ) ??
+                      false;
+                  if (!confirmed) return confirmed;
+                  if (context.mounted) {
+                    return TheStore.of(context).deleteMediaMultiple(
+                      context,
+                      [media],
+                    );
+                  }
+                  return false;
+                }),
+                onShare: ac.onShare(
+                  () =>
+                      TheStore.of(context).shareMediaMultiple(context, [media]),
+                ),
+                onEdit: (media.type == CLMediaType.video &&
+                        !VideoEditServices.isSupported)
+                    ? null
+                    : ac.onEdit(
+                        () async {
+                          final updatedMedia =
+                              await TheStore.of(context).openEditor(
+                            context,
+                            media,
+                            canDuplicateMedia: ac.canDuplicateMedia,
+                          );
+                          if (updatedMedia != media && context.mounted) {
+                            setState(() {
+                              //media = updatedMedia;
+                            });
+                          }
+
+                          return true;
+                        },
+                      ),
+                onPin: ac.onPin(
+                  () async {
+                    final res = await TheStore.of(context)
+                        .togglePinMultiple(context, [media]);
+                    if (res) {
+                      setState(() {});
+                    }
+                    return res;
+                  },
+                ),
+                media: media,
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

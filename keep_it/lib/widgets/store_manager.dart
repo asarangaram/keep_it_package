@@ -128,8 +128,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
 
       reloadStore: reloadStore,
 
-      getPreviewPath: getPreviewPath,
-
       getText: getText,
 
       getMediaMultipleByIds: getMediaMultipleByIds,
@@ -665,17 +663,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return absolutePath;
   }
 
-  String getPreviewPath(CLMedia media) {
-    // TODO: Fix me
-
-    return '';
-  }
-
   // FIXME
   String getMediaPath(CLMedia media) => '';
-  String getMediaLabel(CLMedia media) => media.name;
-
-  // FIXME String getNotesPath(CLMedia note) => '';
 
   String getText(CLMedia? note) {
     if (note?.type == CLMediaType.text) {

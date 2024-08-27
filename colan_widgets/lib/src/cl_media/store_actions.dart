@@ -36,7 +36,6 @@ class StoreActions {
 
     /// fetch
     required this.getMediaMultipleByIds,
-    required this.getPreviewPath,
     required this.getText,
 
     /// Notes
@@ -138,7 +137,6 @@ class StoreActions {
   }) openWizard;
 
   final Future<String> Function({required String ext}) createTempFile;
-  final String Function(CLMedia media) getPreviewPath;
 
   final String Function(CLMedia? note) getText;
 
@@ -181,7 +179,6 @@ class StoreActions {
 
     return other.upsertCollection == upsertCollection &&
         other.pinMediaMultiple == pinMediaMultiple &&
-        other.getPreviewPath == getPreviewPath &&
         other.shareMediaMultiple == shareMediaMultiple &&
         other.createBackupFile == createBackupFile &&
         other.reloadStore == reloadStore;
@@ -191,7 +188,6 @@ class StoreActions {
   int get hashCode {
     return upsertCollection.hashCode ^
         pinMediaMultiple.hashCode ^
-        getPreviewPath.hashCode ^
         shareMediaMultiple.hashCode ^
         createBackupFile.hashCode ^
         reloadStore.hashCode;
