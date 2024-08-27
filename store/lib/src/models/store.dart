@@ -1,4 +1,4 @@
-import 'package:store/src/models/server_media_metadata.dart';
+import 'package:store/src/models/media_local_info.dart';
 
 import 'cl_media.dart';
 
@@ -23,9 +23,9 @@ enum DBQueries {
   mediaByIdList,
   mediaByNoteID,
 
-  serverMediaMetaDataById,
-  serverMediaMetaDataByServerUID,
-  serverMediaMetaDataAll,
+  localInfoById,
+  localInfoByServerUID,
+  localInfoAll,
 
   notesAll,
   notesByMediaId,
@@ -43,14 +43,14 @@ abstract class Store {
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);
   Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
-  Future<ServerMediaMetadata> upsertServerInfo(
-    ServerMediaMetadata mediaServerInfo,
+  Future<MediaLocalInfo> upsertServerInfo(
+    MediaLocalInfo mediaServerInfo,
   );
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
   Future<void> deleteNote(CLMedia note);
-  Future<void> deleteServerInfo(ServerMediaMetadata mediaServerInfo);
+  Future<void> deleteServerInfo(MediaLocalInfo mediaServerInfo);
 
   Future<List<Object?>?> getDBRecords();
 

@@ -130,20 +130,20 @@ class Queries {
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.serverMediaMetaDataById => DBQuery<ServerMediaMetadata>(
-          sql: 'SELECT * FROM MediaServerInfo WHERE id = ?',
-          triggerOnTables: const {'Media', 'MediaServerInfo'},
-          fromMap: ServerMediaMetadata.fromMap,
+      DBQueries.localInfoById => DBQuery<MediaLocalInfo>(
+          sql: 'SELECT * FROM MediaLocalInfo WHERE id = ?',
+          triggerOnTables: const {'Media', 'MediaLocalInfo'},
+          fromMap: MediaLocalInfo.fromMap,
         ),
-      DBQueries.serverMediaMetaDataByServerUID => DBQuery<ServerMediaMetadata>(
-          sql: 'SELECT * FROM MediaServerInfo WHERE serverUID = ?',
-          triggerOnTables: const {'Media', 'MediaServerInfo'},
-          fromMap: ServerMediaMetadata.fromMap,
+      DBQueries.localInfoByServerUID => DBQuery<MediaLocalInfo>(
+          sql: 'SELECT * FROM MediaLocalInfo WHERE serverUID = ?',
+          triggerOnTables: const {'Media', 'MediaLocalInfo'},
+          fromMap: MediaLocalInfo.fromMap,
         ),
-      DBQueries.serverMediaMetaDataAll => DBQuery<ServerMediaMetadata>(
-          sql: 'SELECT * FROM MediaServerInfo',
-          triggerOnTables: const {'Media', 'MediaServerInfo'},
-          fromMap: ServerMediaMetadata.fromMap,
+      DBQueries.localInfoAll => DBQuery<MediaLocalInfo>(
+          sql: 'SELECT * FROM MediaLocalInfo',
+          triggerOnTables: const {'Media', 'MediaLocalInfo'},
+          fromMap: MediaLocalInfo.fromMap,
         ),
     };
     if (parameters == null) {
@@ -160,17 +160,17 @@ find media with serverUID:
 
   SELECT Media.* 
   FROM Media
-  JOIN MediaServerInfo ON Media.id = MediaServerInfo.id
-  WHERE MediaServerInfo.serverUID = ?;
+  JOIN MediaLocalInfo ON Media.id = MediaLocalInfo.id
+  WHERE MediaLocalInfo.serverUID = ?;
 
 find if the media is from server or not.
   SELECT COUNT(*)
-  FROM MediaServerInfo
+  FROM MediaLocalInfo
   WHERE id = ?;
 
 get MediaID
   SELECT id 
-  FROM MediaServerInfo 
+  FROM MediaLocalInfo 
   WHERE serverUID = ?;
   
 */

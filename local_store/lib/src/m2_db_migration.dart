@@ -42,16 +42,18 @@ final migrations = SqliteMigrations()
     ''');
 
       await tx.execute('''
-      CREATE TABLE IF NOT EXISTS ServerMediaMetaData (
+      CREATE TABLE IF NOT EXISTS MediaLocalInfo (
         id INTEGER PRIMARY KEY,
-        serverUID INTEGER NOT NULL UNIQUE,
-        haveItOffline INTEGER NOT NULL CHECK(haveItOffline IN (0, 1)),
-        mustDownloadOriginal INTEGER NOT NULL CHECK(mustDownloadOriginal IN (0, 1)),
-        previewDownloaded INTEGER NOT NULL CHECK(previewDownloaded IN (0, 1)),
-        mediaDownloaded INTEGER NOT NULL CHECK(mediaDownloaded IN (0, 1)),
-        isMediaOriginal INTEGER NOT NULL CHECK(isMediaOriginal IN (0, 1)),
-        locallyModified INTEGER NOT NULL CHECK(locallyModified IN (0, 1)),
-        fileExtension TEXT CHECK(length(fileExtension) BETWEEN 2 AND 4),
+        isPreviewCached INTEGER NOT NULL DEFAULT 0,
+        isMediaCached INTEGER NOT NULL DEFAULT 0,
+        previewError TEXT,
+        mediaError TEXT,
+        isMediaOriginal INTEGER NOT NULL DEFAULT 0,
+        ServerUID INTEGER,  -- Nullable, to store ServerUID if media is from another server
+        isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
+        haveItOffline INTEGER NOT NULL DEFAULT 1,  -- relevant only if ServerUID is present
+        mustDownloadOriginal INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
+        fileExtension STRING NOT NULL
         FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
     );
   ''');

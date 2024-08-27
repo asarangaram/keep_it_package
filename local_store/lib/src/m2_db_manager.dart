@@ -54,14 +54,14 @@ class DBManager extends Store {
       },
     );
 
-    final mediaServerInfoTable = DBExec<ServerMediaMetadata>(
+    final mediaServerInfoTable = DBExec<MediaLocalInfo>(
       table: 'MediaServerInfo',
-      toMap: (ServerMediaMetadata obj) => obj.toMap(),
-      readBack: (tx, mediaServerInfo) async {
+      toMap: (MediaLocalInfo obj) => obj.toMap(),
+      readBack: (tx, mediaLocalInfo) async {
         return (Queries.getQuery(
-          DBQueries.serverMediaMetaDataByServerUID,
-          parameters: [mediaServerInfo.serverUID],
-        ) as DBQuery<ServerMediaMetadata>)
+          DBQueries.localInfoById,
+          parameters: [mediaLocalInfo.id],
+        ) as DBQuery<MediaLocalInfo>)
             .read(tx);
       },
     );
@@ -137,11 +137,11 @@ class DBManager extends Store {
       });
 
   @override
-  Future<ServerMediaMetadata> upsertServerInfo(
-    ServerMediaMetadata mediaServerInfo,
+  Future<MediaLocalInfo> upsertServerInfo(
+    MediaLocalInfo mediaServerInfo,
   ) =>
       db.writeTransaction((tx) async {
-        return dbWriter.upsertServerInfo(tx, mediaServerInfo);
+        return dbWriter.upsertMediaLocalInfo(tx, mediaServerInfo);
       });
 
   @override
@@ -162,9 +162,9 @@ class DBManager extends Store {
         await dbWriter.deleteNote(tx, note);
       });
   @override
-  Future<void> deleteServerInfo(ServerMediaMetadata mediaServerInfo) {
+  Future<void> deleteServerInfo(MediaLocalInfo mediaServerInfo) {
     return db.writeTransaction((tx) async {
-      await dbWriter.deleteServerInfo(tx, mediaServerInfo);
+      await dbWriter.deleteMediaLocalInfo(tx, mediaServerInfo);
     });
   }
 

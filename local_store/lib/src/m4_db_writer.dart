@@ -18,7 +18,7 @@ class DBWriter {
   final DBExec<CLMedia> mediaTable;
 
   final DBExec<NotesOnMedia> notesOnMediaTable;
-  final DBExec<ServerMediaMetadata> mediaServerInfoTable;
+  final DBExec<MediaLocalInfo> mediaServerInfoTable;
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
@@ -62,9 +62,9 @@ class DBWriter {
     return updatedNote!;
   }
 
-  Future<ServerMediaMetadata> upsertServerInfo(
+  Future<MediaLocalInfo> upsertMediaLocalInfo(
     SqliteWriteContext tx,
-    ServerMediaMetadata mediaServerInfo,
+    MediaLocalInfo mediaServerInfo,
   ) async {
     return (await mediaServerInfoTable.upsert(
       tx,
@@ -127,9 +127,9 @@ class DBWriter {
     await mediaTable.delete(tx, note);
   }
 
-  Future<void> deleteServerInfo(
+  Future<void> deleteMediaLocalInfo(
     SqliteWriteContext tx,
-    ServerMediaMetadata mediaServerInfo,
+    MediaLocalInfo mediaServerInfo,
   ) async {
     await mediaServerInfoTable.delete(tx, mediaServerInfo);
   }
