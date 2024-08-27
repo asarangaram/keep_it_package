@@ -47,7 +47,7 @@ class MediaLocalInfoManagerNotifier
           error: (error, stackTrace) =>
               state = AsyncValue.error(error, stackTrace),
           data: (downloadSettings) async {
-            final localInfo = await fetch();
+            final localInfo = await _fetch();
             final localInfoManager = MediaLocalInfoManager(
               localInfo: localInfo,
               appSettings: appSettings,
@@ -68,7 +68,7 @@ class MediaLocalInfoManagerNotifier
 
   Future<void> checkFiles(MediaLocalInfoManager localInfoManager) async {}
 
-  Future<MediaLocalInfo> fetch() async {
+  Future<MediaLocalInfo> _fetch() async {
     final store = await futureStore;
     final query = store.getQuery(
       DBQueries.localInfoById,
