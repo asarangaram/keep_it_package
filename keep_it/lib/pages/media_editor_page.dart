@@ -1,13 +1,15 @@
 import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/providers/media_manager.dart';
 import 'package:colan_services/services/store_service/widgets/get_media_uri.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
-class MediaEditorPage extends StatelessWidget {
+class MediaEditorPage extends ConsumerWidget {
   const MediaEditorPage({
     required this.mediaId,
     required this.canDuplicateMedia,
@@ -17,7 +19,7 @@ class MediaEditorPage extends StatelessWidget {
   final bool canDuplicateMedia;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (mediaId == null) {
       return BasicPageService.message(message: 'No Media Provided');
     }
@@ -31,47 +33,59 @@ class MediaEditorPage extends StatelessWidget {
           );
         }
 
-        return GetMediaUri(
+        return GetMediaManager(
           media,
-          builder: (uri) {
-            return InvokeEditor(
-              media: media,
-              canDuplicateMedia: canDuplicateMedia,
-              onCreateNewFile: () async {
-                return TheStore.of(context).createTempFile(ext: 'jpg');
-              },
-              onCancel: () async => context.pop(),
-              onSave: (file, {required overwrite}) async {
-                final CLMedia resultMedia;
-                if (overwrite) {
-                  final confirmed = await ConfirmAction.replaceMedia(
-                        context,
-                        media: media,
-                      ) ??
-                      false;
-                  if (confirmed && context.mounted) {
-                    resultMedia = await TheStore.of(context)
-                        .replaceMedia(context, media, file);
-                  } else {
-                    resultMedia = media;
-                  }
-                } else {
-                  final confirmed = await ConfirmAction.cloneAndReplaceMedia(
-                        context,
-                        media: media,
-                      ) ??
-                      false;
-                  if (confirmed && context.mounted) {
-                    resultMedia = await TheStore.of(context)
-                        .cloneAndReplaceMedia(context, media, file);
-                  } else {
-                    resultMedia = media;
-                  }
-                }
+          builder: (mediaManager) {
+            return GetMediaUri(
+              mediaManager.media,
+              builder: (uri) {
+                return InvokeEditor(
+                  media: media,
+                  canDuplicateMedia: canDuplicateMedia,
+                  onCreateNewFile: () async {
+                    return TheStore.of(context).createTempFile(ext: 'jpg');
+                  },
+                  onCancel: () async => context.pop(),
+                  onSave: (file, {required overwrite}) async {
+                    final CLMedia resultMedia;
+                    if (overwrite) {
+                      final confirmed = await ConfirmAction.replaceMedia(
+                            context,
+                            media: media,
+                          ) ??
+                          false;
+                      if (confirmed && context.mounted) {
+                        resultMedia = await ref
+                            .read(
+                              mediaManagerProvider(mediaManager.media).notifier,
+                            )
+                            .replaceMedia(mediaManager, media, file);
+                      } else {
+                        resultMedia = media;
+                      }
+                    } else {
+                      final confirmed =
+                          await ConfirmAction.cloneAndReplaceMedia(
+                                context,
+                                media: media,
+                              ) ??
+                              false;
+                      if (confirmed && context.mounted) {
+                        resultMedia = await ref
+                            .read(
+                              mediaManagerProvider(mediaManager.media).notifier,
+                            )
+                            .cloneAndReplaceMedia(mediaManager, media, file);
+                      } else {
+                        resultMedia = media;
+                      }
+                    }
 
-                if (context.mounted) {
-                  context.pop(resultMedia);
-                }
+                    if (context.mounted) {
+                      context.pop(resultMedia);
+                    }
+                  },
+                );
               },
             );
           },

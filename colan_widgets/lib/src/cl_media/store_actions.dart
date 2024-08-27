@@ -25,8 +25,6 @@ class StoreActions {
 
     /// Media - needs improvement
     required this.newMedia,
-    required this.replaceMedia,
-    required this.cloneAndReplaceMedia,
     required this.deleteMediaMultiple,
     required this.permanentlyDeleteMediaMultiple,
     required this.restoreMediaMultiple,
@@ -67,20 +65,6 @@ class StoreActions {
       required List<CLMedia> mediaMultiple,
     }) onDone,
   }) newMediaMultipleStream;
-
-  // For replacing path:
-
-  final Future<CLMedia> Function(
-    BuildContext ctx,
-    CLMedia media,
-    String outFile,
-  ) replaceMedia;
-
-  final Future<CLMedia> Function(
-    BuildContext ctx,
-    CLMedia media,
-    String outFile,
-  ) cloneAndReplaceMedia;
 
   // replace collectionId
   final Stream<Progress> Function(

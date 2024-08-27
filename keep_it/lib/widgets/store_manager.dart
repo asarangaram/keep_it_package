@@ -104,8 +104,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       pinMediaMultiple: pinMediaMultiple,
       removePinMediaMultiple: removePinMediaMultiple,
       togglePinMultiple: togglePinMultiple,
-      replaceMedia: replaceMedia,
-      cloneAndReplaceMedia: cloneAndReplaceMedia,
 
       deleteCollection: deleteCollection,
       deleteNote: onDeleteNote,
@@ -344,54 +342,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     await upsertMediaMultiple(updatedMedia);
     return true;
-  }
-
-  Future<CLMedia> replaceMedia(
-    BuildContext ctx,
-    CLMedia originalMedia,
-    String outFile,
-  ) async {
-    final savedFile = File(outFile).copyTo(widget.appSettings.dir.media.path);
-
-    final md5String = await savedFile.checksum;
-    final updatedMedia = originalMedia
-        .copyWith(
-          name: path_handler.basename(savedFile.path),
-          md5String: md5String,
-        )
-        .removePin();
-
-    final mediaFromDB = await widget.storeInstance.upsertMedia(
-      updatedMedia,
-    );
-    if (mediaFromDB != null) {
-      await File(getMediaPath(originalMedia)).deleteIfExists();
-    }
-
-    return mediaFromDB ?? originalMedia;
-  }
-
-  Future<CLMedia> cloneAndReplaceMedia(
-    BuildContext ctx,
-    CLMedia originalMedia,
-    String outFile,
-  ) async {
-    final savedFile = File(outFile).copyTo(widget.appSettings.dir.media.path);
-
-    final md5String = await savedFile.checksum;
-    final CLMedia updatedMedia;
-    updatedMedia = originalMedia
-        .copyWith(
-          name: path_handler.basename(savedFile.path),
-          md5String: md5String,
-        )
-        .removePin();
-
-    final mediaFromDB = await widget.storeInstance.upsertMedia(
-      updatedMedia.removeId(),
-    );
-
-    return mediaFromDB ?? originalMedia;
   }
 
   //Can be converted to non static

@@ -81,6 +81,31 @@ class MediaManagerNotifier extends StateNotifier<AsyncValue<MediaManager>> {
           DefaultMediaLocalInfo(id: media.id!, fileExtension: media.fExt),
         );
   }
+
+  Future<CLMedia> replaceMedia(
+    MediaManager mediaManager,
+    CLMedia originalMedia,
+    String outFile,
+  ) async {
+    final resultMedia = await mediaManager.replaceMedia(originalMedia, outFile);
+    if (resultMedia != mediaManager.media) {
+      state = const AsyncValue.loading();
+      state = await AsyncValue.guard(() async {
+        return mediaManager.copyWith(media: resultMedia);
+      });
+    }
+    return resultMedia;
+  }
+
+  Future<CLMedia> cloneAndReplaceMedia(
+    MediaManager mediaManager,
+    CLMedia originalMedia,
+    String outFile,
+  ) {
+    final resultMedia =
+        mediaManager.cloneAndReplaceMedia(originalMedia, outFile);
+    return resultMedia;
+  }
 }
 
 final mediaManagerProvider = StateNotifierProvider.family<MediaManagerNotifier,

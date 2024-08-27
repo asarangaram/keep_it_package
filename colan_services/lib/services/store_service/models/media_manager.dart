@@ -130,7 +130,6 @@ class MediaManager {
   }
 
   Future<CLMedia> cloneAndReplaceMedia(
-    BuildContext ctx,
     CLMedia originalMedia,
     String outFile,
   ) async {
@@ -152,7 +151,7 @@ class MediaManager {
         ..deleteSync();
     }
 
-    return originalMedia;
+    return mediaFromDB ?? originalMedia;
   }
 
   MediaManager copyWith({
