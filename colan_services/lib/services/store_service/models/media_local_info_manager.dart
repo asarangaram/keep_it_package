@@ -23,8 +23,8 @@ class MediaLocalInfoManager {
   final DownloadSettings downloadSettings;
   final CLServer? server;
 
-  String get mediaFilename => '${localInfo.id}.${localInfo.fileExtension}';
-  String get previewFilename => '${localInfo.id}.tn.${localInfo.fileExtension}';
+  String get mediaFilename => '${localInfo.id}${localInfo.fileExtension}';
+  String get previewFilename => '${localInfo.id}.tn${localInfo.fileExtension}';
 
   Uri returnValidPath(Uri p) {
     if (p.scheme != 'file') {

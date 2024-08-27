@@ -18,11 +18,11 @@ class MediaUriNotifier extends StateNotifier<AsyncValue<Uri>> {
       error: (error, stackTrace) => state = AsyncValue.error(error, stackTrace),
       data: (mediaInfo) async {
         try {
-          final previewURI = mediaInfo.getValidMediaUri();
-          if (previewURI != null) {
+          final mediaURI = mediaInfo.getValidMediaUri();
+          if (mediaURI != null) {
             state = const AsyncValue.loading();
             state = await AsyncValue.guard(() async {
-              return mediaInfo.previewFileURI;
+              return mediaInfo.mediaFileURI;
             });
           }
         } catch (e, st) {
