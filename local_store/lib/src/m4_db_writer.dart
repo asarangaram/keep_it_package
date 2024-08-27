@@ -12,13 +12,13 @@ class DBWriter {
     required this.collectionTable,
     required this.mediaTable,
     required this.notesOnMediaTable,
-    required this.mediaServerInfoTable,
+    required this.mediaLocalInfoTable,
   });
   final DBExec<Collection> collectionTable;
   final DBExec<CLMedia> mediaTable;
 
   final DBExec<NotesOnMedia> notesOnMediaTable;
-  final DBExec<MediaLocalInfo> mediaServerInfoTable;
+  final DBExec<MediaLocalInfo> mediaLocalInfoTable;
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
@@ -64,11 +64,11 @@ class DBWriter {
 
   Future<MediaLocalInfo> upsertMediaLocalInfo(
     SqliteWriteContext tx,
-    MediaLocalInfo mediaServerInfo,
+    MediaLocalInfo mediaLocalInfo,
   ) async {
-    return (await mediaServerInfoTable.upsert(
+    return (await mediaLocalInfoTable.upsert(
       tx,
-      mediaServerInfo,
+      mediaLocalInfo,
       uniqueColumn: ['id', 'serverUID'],
     ))!;
   }
@@ -129,9 +129,9 @@ class DBWriter {
 
   Future<void> deleteMediaLocalInfo(
     SqliteWriteContext tx,
-    MediaLocalInfo mediaServerInfo,
+    MediaLocalInfo mediaLocalInfo,
   ) async {
-    await mediaServerInfoTable.delete(tx, mediaServerInfo);
+    await mediaLocalInfoTable.delete(tx, mediaLocalInfo);
   }
 
   Future<void> connectNotes(

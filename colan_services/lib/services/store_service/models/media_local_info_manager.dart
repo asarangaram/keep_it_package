@@ -51,7 +51,7 @@ class MediaLocalInfoManager {
     if (localInfo.previewError != null) {
       throw Exception(localInfo.previewError);
     }
-    if (!localInfo.isPreviewCached) {
+    if (localInfo.isPreviewCached) {
       if (!File(previewFileURI.path).existsSync()) {
         // TODO(anandas):  Log here
 
@@ -67,19 +67,19 @@ class MediaLocalInfoManager {
     if (localInfo.mediaError != null) {
       throw Exception(localInfo.mediaError);
     }
-    if (!localInfo.isMediaCached) {
-      if (!File(mediaURI.path).existsSync()) {
+    if (localInfo.isMediaCached) {
+      if (!File(mediaFileURI.path).existsSync()) {
         // TODO(anandas):  Log here
 
         throw Exception('File is missing');
       }
-      return previewFileURI;
+      return mediaFileURI;
     }
 
     return (localInfo.mustDownloadOriginal ? originalURL : mediaURL);
   }
 
-  Uri get mediaURI {
+  Uri get mediaFileURI {
     return returnValidPath(
       Uri.file(
         path_handler.join(
@@ -123,7 +123,7 @@ class MediaLocalInfoManager {
         DownloadTask(
           url: (localInfo.mustDownloadOriginal ? originalURL : mediaURL)!
               .toString(),
-          filename: basename(mediaURI.path),
+          filename: basename(mediaFileURI.path),
           requiresWiFi: true,
           retries: 5,
           metaData: jsonEncode({'media': localInfo.id}),

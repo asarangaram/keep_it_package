@@ -53,7 +53,7 @@ final migrations = SqliteMigrations()
         isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
         haveItOffline INTEGER NOT NULL DEFAULT 1,  -- relevant only if ServerUID is present
         mustDownloadOriginal INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
-        fileExtension STRING NOT NULL
+        fileExtension STRING NOT NULL,
         FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
     );
   ''');

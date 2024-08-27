@@ -145,6 +145,7 @@ class DBCommand {
     required Future<Map<String, dynamic>?> Function(String column, Object id)
         getItemByColumnValue,
     required List<String> uniqueColumn,
+    bool autoIncrementId = true,
   }) async {
     Map<String, dynamic>? existing;
     for (final uC in uniqueColumn) {
@@ -154,7 +155,11 @@ class DBCommand {
       }
     }
     if (existing == null) {
-      return DBCommand.insert(newMap, table: table).execute(tx);
+      return DBCommand.insert(
+        newMap,
+        table: table,
+        autoIncrementId: autoIncrementId,
+      ).execute(tx);
     } else {
       final changes = MapDiff.scan(existing, newMap);
       if (!changes.hasChange) {

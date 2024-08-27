@@ -44,13 +44,13 @@ abstract class Store {
   Future<CLMedia?> upsertMedia(CLMedia media);
   Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
   Future<MediaLocalInfo> upsertMediaLocalInfo(
-    MediaLocalInfo mediaServerInfo,
+    MediaLocalInfo mediaLocalInfo,
   );
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
   Future<void> deleteNote(CLMedia note);
-  Future<void> deleteServerInfo(MediaLocalInfo mediaServerInfo);
+  Future<void> deleteServerInfo(MediaLocalInfo mediaLocalInfo);
 
   Future<List<Object?>?> getDBRecords();
 

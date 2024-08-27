@@ -13,8 +13,10 @@ class DBExec<T> {
     required this.table,
     required this.toMap,
     required this.readBack,
+    this.autoIncrementId = true,
   });
   final String table;
+  final bool autoIncrementId;
   final Map<String, dynamic>? Function(T obj) toMap;
   final Future<T?> Function(SqliteWriteContext tx, T obj)? readBack;
 
@@ -34,6 +36,7 @@ class DBExec<T> {
         map,
         table: table,
         ignore: ignore,
+        autoIncrementId: autoIncrementId,
       ).execute(tx);
       result = await readBack?.call(tx, obj);
     } else {
@@ -46,6 +49,7 @@ class DBExec<T> {
       insertStatus = await DBCommand.upsert(
         tx,
         map,
+        autoIncrementId: autoIncrementId,
         table: table,
         getItemByColumnValue: (key, value) async {
           return (await tx

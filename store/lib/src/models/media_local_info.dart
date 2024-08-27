@@ -22,17 +22,17 @@ class MediaLocalInfo {
   factory MediaLocalInfo.fromMap(Map<String, dynamic> map) {
     return MediaLocalInfo(
       id: map['id'] as int,
-      isPreviewCached: map['isPreviewCached'] as bool,
-      isMediaCached: map['isMediaCached'] as bool,
+      isPreviewCached: (map['isPreviewCached'] as int) != 0,
+      isMediaCached: (map['isMediaCached'] as int) != 0,
       previewError:
           map['previewError'] != null ? map['previewError'] as String : null,
       mediaError:
           map['mediaError'] != null ? map['mediaError'] as String : null,
-      isMediaOriginal: map['isMediaOriginal'] as bool,
+      isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      isEdited: map['isEdited'] as bool,
-      haveItOffline: map['haveItOffline'] as bool,
-      mustDownloadOriginal: map['mustDownloadOriginal'] as bool,
+      isEdited: (map['isEdited'] as int) != 0,
+      haveItOffline: (map['haveItOffline'] as int) != 0,
+      mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
       fileExtension: map['fileExtension'] as String,
     );
   }
@@ -120,15 +120,15 @@ class MediaLocalInfo {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'isPreviewCached': isPreviewCached,
-      'isMediaCached': isMediaCached,
+      'isPreviewCached': isPreviewCached ? 1 : 0,
+      'isMediaCached': isMediaCached ? 1 : 0,
       'previewError': previewError,
       'mediaError': mediaError,
-      'isMediaOriginal': isMediaOriginal,
+      'isMediaOriginal': isMediaOriginal ? 1 : 0,
       'serverUID': serverUID,
-      'isEdited': isEdited,
-      'haveItOffline': haveItOffline,
-      'mustDownloadOriginal': mustDownloadOriginal,
+      'isEdited': isEdited ? 1 : 0,
+      'haveItOffline': haveItOffline ? 1 : 0,
+      'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
       'fileExtension': fileExtension,
     };
   }
