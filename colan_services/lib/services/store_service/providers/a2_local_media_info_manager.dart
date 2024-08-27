@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_services/services/store_service/models/media_local_info_manager.dart';

@@ -81,6 +81,7 @@ class MediaLocalInfo {
 
   @override
   String toString() {
+    // ignore: lines_longer_than_80_chars
     return 'MediaCache(id: $id, isPreviewCached: $isPreviewCached, isMediaCached: $isMediaCached, previewError: $previewError, mediaError: $mediaError, isMediaOriginal: $isMediaOriginal, serverUID: $serverUID, isEdited: $isEdited, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal, fileExtension: $fileExtension)';
   }
 
