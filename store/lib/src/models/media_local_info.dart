@@ -14,9 +14,9 @@ class MediaLocalInfo {
     required this.haveItOffline,
     required this.mustDownloadOriginal,
     required this.fileExtension,
-    this.previewError,
-    this.mediaError,
-    this.serverUID,
+    required this.previewError,
+    required this.mediaError,
+    required this.serverUID,
   });
 
   factory MediaLocalInfo.fromMap(Map<String, dynamic> map) {
@@ -133,4 +133,35 @@ class MediaLocalInfo {
   }
 
   String toJson() => json.encode(toMap());
+}
+
+class DefaultMediaLocalInfo extends MediaLocalInfo {
+  const DefaultMediaLocalInfo({
+    required super.id,
+    required super.fileExtension,
+    super.serverUID,
+  }) : super(
+          isPreviewCached: false,
+          isMediaCached: true,
+          isMediaOriginal: true,
+          isEdited: false,
+          haveItOffline: true,
+          mustDownloadOriginal: true,
+          previewError: null,
+          mediaError: null,
+        );
+  const DefaultMediaLocalInfo.server({
+    required super.serverUID,
+    required super.fileExtension,
+  }) : super(
+          id: null,
+          isPreviewCached: false,
+          isMediaCached: true,
+          isMediaOriginal: true,
+          isEdited: false,
+          haveItOffline: true,
+          mustDownloadOriginal: true,
+          previewError: null,
+          mediaError: null,
+        );
 }
