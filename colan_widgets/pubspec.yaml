@@ -10,6 +10,7 @@ dependencies:
   collection: ^1.18.0
   crypto: ^3.0.3
   event_bus: ^2.0.0
+  extended_image: ^8.2.1
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
