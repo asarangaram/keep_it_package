@@ -89,11 +89,7 @@ class CollectionPreviewGenerator extends StatelessWidget {
       buildOnData: (items) {
         return CLAspectRationDecorated(
           borderRadius: const BorderRadius.all(Radius.circular(16)),
-          child: Center(
-            child: CLText.veryLarge(
-              collection.label.characters.first,
-            ),
-          ) /* FIXME CLMediaCollage.byMatrixSize(
+          child: CLMediaCollage.byMatrixSize(
             items,
             hCount: 2,
             vCount: 2,
@@ -105,8 +101,7 @@ class CollectionPreviewGenerator extends StatelessWidget {
                 collection.label.characters.first,
               ),
             ),
-          ) */
-          ,
+          ),
         );
       },
     );
