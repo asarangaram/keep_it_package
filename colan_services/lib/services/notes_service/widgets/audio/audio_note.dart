@@ -5,6 +5,9 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
+
+import '../../../store_service/widgets/the_store.dart';
 
 class AudioNote extends StatefulWidget {
   const AudioNote(
@@ -15,7 +18,7 @@ class AudioNote extends StatefulWidget {
     this.onEditMode,
   });
 
-  final CLAudioNote note;
+  final CLMedia note;
   final bool editMode;
   final VoidCallback? onEditMode;
   final VoidCallback onDeleteNote;
@@ -67,7 +70,8 @@ class _AudioNoteState extends State<AudioNote> {
     final theme = CLTheme.of(context).noteTheme;
     final playerWaveStyle = theme.playerWaveStyle;
 
-    final label = widget.note.createdDate.toSQL();
+    final label =
+        widget.note.createdDate?.millisecondsSinceEpoch.toString() ?? 'No Date';
     return CLCustomChip(
       avatar: validAudio
           ? CLIcon.tiny(

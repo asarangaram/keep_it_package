@@ -4,8 +4,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:store/store.dart';
 
 import '../../../backup_service/dialogs.dart';
+import '../../../store_service/widgets/the_store.dart';
 import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
@@ -17,7 +19,7 @@ class TextNote extends StatefulWidget {
     super.key,
   });
   final CLMedia media;
-  final CLTextNote? note;
+  final CLMedia? note;
 
   @override
   State<TextNote> createState() => _TextNoteState();
@@ -158,7 +160,7 @@ class _TextNoteState extends State<TextNote> {
         if (mounted) {
           await TheStore.of(context).upsertNote(
             path,
-            CLNoteTypes.text,
+            CLMediaType.text,
             mediaMultiple: [widget.media],
             note: widget.note,
           );
