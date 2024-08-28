@@ -11,7 +11,5 @@ class AppSettings {
   final CLDirectories directories;
   final bool shouldValidate;
 
-  String validPrefix() => directories.media.pathString;
-
   String get dbName => 'keepIt.db';
 }
