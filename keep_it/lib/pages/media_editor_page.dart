@@ -43,7 +43,7 @@ class MediaEditorPage extends ConsumerWidget {
                   media: media,
                   canDuplicateMedia: canDuplicateMedia,
                   onCreateNewFile: () async {
-                    return TheStore.of(context).createTempFile(ext: 'jpg');
+                    return TheStore.of(context).createTempFile(ext: '.jpg');
                   },
                   onCancel: () async => context.pop(),
                   onSave: (file, {required overwrite}) async {
