@@ -10,12 +10,14 @@ class CLDirectory {
     required this.label,
     required this.name,
     required this.baseDir,
+    required this.isStore,
     String? description,
   }) : description0 = description;
   final String label;
   final String name;
   final Directory baseDir;
   final String? description0;
+  final bool isStore;
 
   Directory get path => Directory(p.join(baseDir.path, name));
   String get pathString => path.path;
@@ -26,19 +28,20 @@ class CLDirectory {
     String? name,
     Directory? baseDir,
     String? description0,
+    bool? isStore,
   }) {
     return CLDirectory(
       label: label ?? this.label,
       name: name ?? this.name,
       baseDir: baseDir ?? this.baseDir,
       description: description0 ?? this.description0,
+      isStore: isStore ?? this.isStore,
     );
   }
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
-    return 'CLDirectory(label: $label, name: $name, baseDir: $baseDir, description0: $description0)';
+    return 'CLDirectory(label: $label, name: $name, baseDir: $baseDir, description0: $description0, isStore: $isStore)';
   }
 
   @override
@@ -48,7 +51,8 @@ class CLDirectory {
     return other.label == label &&
         other.name == name &&
         other.baseDir == baseDir &&
-        other.description0 == description0;
+        other.description0 == description0 &&
+        other.isStore == isStore;
   }
 
   @override
@@ -56,7 +60,8 @@ class CLDirectory {
     return label.hashCode ^
         name.hashCode ^
         baseDir.hashCode ^
-        description0.hashCode;
+        description0.hashCode ^
+        isStore.hashCode;
   }
 
   void create() {

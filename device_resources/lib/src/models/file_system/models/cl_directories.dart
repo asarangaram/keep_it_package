@@ -5,78 +5,12 @@ import 'package:flutter/material.dart';
 
 import 'cl_directory.dart';
 
-enum CLStandardDirectories {
-  mediaPersistent,
-  notesPersistent,
-  dbPersistent,
-  backupPersistent,
-  capturedMediaPreserved,
-  importedMediaPreserved,
-  downloadedMediaPreserved,
-
-  tempThumbnail,
-  tempTrimmer,
-  tempNotes;
-
-  bool get isStore {
-    return switch (this) {
-      mediaPersistent => true,
-      notesPersistent => true,
-      _ => false,
-    };
-  }
-
-  bool get isPersistent {
-    return switch (this) {
-      mediaPersistent => true,
-      notesPersistent => true,
-      dbPersistent => true,
-      backupPersistent => true,
-      capturedMediaPreserved => true,
-      importedMediaPreserved => true,
-      downloadedMediaPreserved => true,
-      tempThumbnail => false,
-      tempTrimmer => false,
-      tempNotes => false,
-    };
-  }
-
-  String get label {
-    return switch (this) {
-      mediaPersistent => 'Media Directory',
-      notesPersistent => 'Notes Directory',
-      dbPersistent => 'DataBase',
-      backupPersistent => 'Backup Dir',
-      capturedMediaPreserved => 'Captured Media Unclassified',
-      importedMediaPreserved => 'Imported Media Unclassified',
-      downloadedMediaPreserved => 'Downloaded Media Unclassified',
-      tempThumbnail => 'Thumbnail Cache',
-      tempTrimmer => 'Trimmer Cache',
-      tempNotes => 'Notes Cache',
-    };
-  }
-
-  String get name {
-    return switch (this) {
-      mediaPersistent => 'keep_it/store/media',
-      notesPersistent => 'keep_it/store/notes',
-      dbPersistent => 'keep_it/store/database',
-      backupPersistent => 'keep_it/backup',
-      capturedMediaPreserved => 'keep_it/temp/captured',
-      importedMediaPreserved => 'keep_it/temp/imported',
-      downloadedMediaPreserved => 'keep_it/temp/downloaded',
-      tempThumbnail => 'keep_it/temp/thumbnail',
-      tempTrimmer => 'Trimmer',
-      tempNotes => 'keep_it/temp/notes',
-    };
-  }
-}
-
 @immutable
 class CLDirectories {
   final Directory persistent;
   final Directory temporary;
   final Directory systemTemp;
+
   const CLDirectories({
     required this.persistent,
     required this.temporary,
@@ -113,38 +47,78 @@ class CLDirectories {
   int get hashCode =>
       persistent.hashCode ^ temporary.hashCode ^ systemTemp.hashCode;
 
-  CLDirectory standardDirectory(CLStandardDirectories dir) => CLDirectory(
-        label: dir.label,
-        name: dir.name,
-        baseDir: dir.isPersistent ? persistent : temporary,
-      )..create();
+  Map<String, CLDirectory> get directories => <String, CLDirectory>{
+        'media': CLDirectory(
+          baseDir: persistent,
+          label: 'Media Directory',
+          name: 'keep_it/store/media',
+          isStore: true,
+        ),
+        'thumbnail': CLDirectory(
+          baseDir: persistent,
+          label: 'Thumbnail Cache',
+          name: 'keep_it/store/thumbnail',
+          isStore: false,
+        ),
+        'db': CLDirectory(
+          baseDir: persistent,
+          label: 'DataBase Directory',
+          name: 'keep_it/store/database',
+          isStore: true,
+        ),
+        'backup': CLDirectory(
+          baseDir: persistent,
+          label: 'Backup Directory',
+          name: 'keep_it/backup',
+          isStore: true,
+        ),
+        'temp': CLDirectory(
+          baseDir: temporary,
+          label: 'Temporary Directory',
+          name: 'keep_it/temp',
+          isStore: false,
+        ),
+        'download': CLDirectory(
+          baseDir: temporary,
+          label: 'Download Directory',
+          name: 'keep_it/download',
+          isStore: false,
+        ),
+      };
 
-  CLDirectory get media =>
-      standardDirectory(CLStandardDirectories.mediaPersistent);
-  CLDirectory get notes =>
-      standardDirectory(CLStandardDirectories.notesPersistent);
-  CLDirectory get capturedMedia =>
-      standardDirectory(CLStandardDirectories.capturedMediaPreserved);
-  CLDirectory get importedMedia =>
-      standardDirectory(CLStandardDirectories.importedMediaPreserved);
-  CLDirectory get downloadedMedia =>
-      standardDirectory(CLStandardDirectories.downloadedMediaPreserved);
-  CLDirectory get thumbnail =>
-      standardDirectory(CLStandardDirectories.tempThumbnail);
-  CLDirectory get trimmer =>
-      standardDirectory(CLStandardDirectories.tempTrimmer);
-  CLDirectory get tempNotes =>
-      standardDirectory(CLStandardDirectories.tempNotes);
-  CLDirectory get database =>
-      standardDirectory(CLStandardDirectories.dbPersistent);
-  CLDirectory get backup =>
-      standardDirectory(CLStandardDirectories.backupPersistent);
+  CLDirectory _directory(String id) {
+    final d = directories['media']!;
+    if (!d.path.existsSync()) {
+      d.path.createSync(recursive: true);
+    }
+    return d;
+  }
 
-  // Derived
-  List<Directory> get store => CLStandardDirectories.values
-      .where((e) => e.isStore)
-      .map(
-        (e) => standardDirectory(e).path,
-      )
-      .toList();
+  CLDirectory get media => _directory('media');
+  CLDirectory get thumbnail => _directory('thumbnail');
+  CLDirectory get db => _directory('db');
+  CLDirectory get backup => _directory('db');
+  CLDirectory get temp => _directory('temp');
+  CLDirectory get download => _directory('download');
+
+  List<CLDirectory> get persistentDirs =>
+      directories.values.where((e) => e.isStore == true).toList();
+  List<CLDirectory> get cacheDirs =>
+      directories.values.where((e) => e.isStore == false).toList();
 }
+
+
+
+/**
+  mediaPersistent => ,
+      notesPersistent => 'Notes Directory',
+      dbPersistent => ,
+      backupPersistent => ,
+      capturedMediaPreserved => 'Captured Media Unclassified',
+      importedMediaPreserved => 'Imported Media Unclassified',
+      downloadedMediaPreserved => 'Downloaded Media Unclassified',
+      tempThumbnail => ,
+      tempTrimmer => 'Trimmer Cache',
+      tempNotes => 'Notes Cache',
+
+ */
