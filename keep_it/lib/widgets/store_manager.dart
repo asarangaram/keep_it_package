@@ -504,8 +504,13 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
             if (mediaFromDB != null) {
               candidates.add(mediaFromDB);
               File(item.name)
-                ..copySync(mediaFromDB.mediaFileURI(widget.appSettings).path)
-                ..deleteSync();
+                  .copySync(mediaFromDB.mediaFileURI(widget.appSettings).path);
+              try {
+                File(item.name).deleteSync();
+              } catch (e) {
+                //If the file is owned by some other app, delete fails
+                // ignore
+              }
             } else {
               /* Failed to add media, handle here */
             }
@@ -571,6 +576,9 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   Future<String> createTempFile({required String ext}) async {
+    if (!ext.startsWith('.')) {
+      throw Exception("extension must strt with '.'");
+    }
     final dir = widget.appSettings.dir.temp.pathString;
     final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
 
