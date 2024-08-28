@@ -2,6 +2,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../collection_editor.dart';
 
@@ -88,7 +89,11 @@ class CollectionPreviewGenerator extends StatelessWidget {
       buildOnData: (items) {
         return CLAspectRationDecorated(
           borderRadius: const BorderRadius.all(Radius.circular(16)),
-          child: CLMediaCollage.byMatrixSize(
+          child: Center(
+            child: CLText.veryLarge(
+              collection.label.characters.first,
+            ),
+          ) /* FIXME CLMediaCollage.byMatrixSize(
             items,
             hCount: 2,
             vCount: 2,
@@ -100,7 +105,8 @@ class CollectionPreviewGenerator extends StatelessWidget {
                 collection.label.characters.first,
               ),
             ),
-          ),
+          ) */
+          ,
         );
       },
     );

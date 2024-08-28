@@ -280,7 +280,7 @@ void main() {
   );
 }
 
-void printGoRouterState(GoRouterState state) {
+/* void printGoRouterState(GoRouterState state) {
   _infoLogger(' state: ${state.extra} ${state.error} ${state.fullPath}'
       ' ${state.uri} ${state.name} ${state.pageKey} ${state.pathParameters} '
       '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
@@ -291,4 +291,4 @@ void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);
   }
-}
+} */
