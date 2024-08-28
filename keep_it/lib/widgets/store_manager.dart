@@ -348,7 +348,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final mediaFromDB = await upsertMedia(
+    final mediaFromDB = await upsertMediaFromFile(
       outFile,
       originalMedia.type,
       id: originalMedia.id,
@@ -363,7 +363,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final mediaFromDB = await upsertMedia(
+    final mediaFromDB = await upsertMediaFromFile(
       outFile,
       originalMedia.type,
       collectionId: originalMedia.collectionId,
@@ -455,7 +455,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     required bool isVideo,
     Collection? collection,
   }) async =>
-      upsertMedia(
+      upsertMediaFromFile(
         fileName,
         isVideo ? CLMediaType.video : CLMediaType.image,
       );
@@ -496,7 +496,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           if (duplicate != null) {
             candidates.add(duplicate);
           } else {
-            final mediaFromDB = await upsertMedia(item.name, item.type);
+            final mediaFromDB = await upsertMediaFromFile(item.name, item.type);
             if (mediaFromDB != null) {
               candidates.add(mediaFromDB);
             } else {
@@ -526,7 +526,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
   }
 
-  Future<CLMedia?> upsertMedia(
+  Future<CLMedia?> upsertMediaFromFile(
     String path,
     CLMediaType type, {
     int? id,
@@ -594,7 +594,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     required List<CLMedia> mediaMultiple,
     CLMedia? note,
   }) async {
-    final noteInDB = await upsertMedia(
+    final noteInDB = await upsertMediaFromFile(
       path,
       type,
       id: note?.id,
