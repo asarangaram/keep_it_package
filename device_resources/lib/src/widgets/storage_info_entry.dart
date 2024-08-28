@@ -28,7 +28,9 @@ class StorageInfoEntry extends ConsumerWidget {
     final infoReady = infoListAsync.every((element) => element != null);
     if (infoReady) {
       info = infoListAsync.reduce((a, b) => a! + b!);
-      trailing = action;
+      if (info != null && info.statistics != 'Empty') {
+        trailing = action;
+      }
     }
     return ListTile(
       title: Text(label),
