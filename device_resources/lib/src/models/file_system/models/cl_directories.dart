@@ -153,12 +153,20 @@ class CLDirectories {
         ),
       };
 
-  CLDirectory get media => directories['media']!;
-  CLDirectory get thumbnail => directories['thumbnail']!;
-  CLDirectory get db => directories['db']!;
-  CLDirectory get backup => directories['db']!;
-  CLDirectory get temp => directories['temp']!;
-  CLDirectory get download => directories['download']!;
+  CLDirectory _directory(String id) {
+    final d = directories['media']!;
+    if (!d.path.existsSync()) {
+      d.path.createSync(recursive: true);
+    }
+    return d;
+  }
+
+  CLDirectory get media => _directory('media');
+  CLDirectory get thumbnail => _directory('thumbnail');
+  CLDirectory get db => _directory('db');
+  CLDirectory get backup => _directory('db');
+  CLDirectory get temp => _directory('temp');
+  CLDirectory get download => _directory('download');
 
   List<CLDirectory> get persistentDirs =>
       directories.values.where((e) => e.isStore == true).toList();
