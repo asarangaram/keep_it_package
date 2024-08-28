@@ -107,16 +107,15 @@ class Queries {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
-      // FIXME - Look for AUX
       DBQueries.notesAll => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Notes',
-          triggerOnTables: const {'Media'},
+          sql:
+              'SELECT Media.* FROM Media WHERE id IN (SELECT noteId FROM MediaNote);',
+          triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
-      // FIXME - Look for AUX
       DBQueries.notesOrphan => DBQuery<CLMedia>(
           sql:
-              'SELECT n.* FROM Notes n LEFT JOIN MediaNote inote ON n.id = inote.noteId WHERE inote.noteId IS NULL',
+              'SELECT Media.* FROM Media WHERE isAux = 1 AND id NOT IN (SELECT noteId FROM MediaNote);',
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
