@@ -11,9 +11,9 @@ class GetStore extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ShowAsyncValue<Store>(
+    return ShowAsyncValue<StoreManager>(
       ref.watch(storeProvider),
-      builder: builder,
+      builder: (storeManager) => builder(storeManager.store),
     );
   }
 }
