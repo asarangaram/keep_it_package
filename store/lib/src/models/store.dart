@@ -1,5 +1,5 @@
 import 'cl_media.dart';
-import 'cl_note.dart';
+
 import 'collection.dart';
 
 enum DBQueries {
@@ -8,6 +8,7 @@ enum DBQueries {
   collectionsAll,
   collectionsExcludeEmpty,
   collectionsEmpty,
+  collectionByIdList,
 
   mediaById,
   mediaAll,
@@ -19,11 +20,12 @@ enum DBQueries {
   mediaDeleted,
   mediaByIdList,
   mediaByNoteID,
+
   notesAll,
-  noteById,
-  noteByPath,
   notesByMediaId,
-  notesOrphan;
+  notesOrphan,
+  collectionLocallyModified,
+  mediaLocallyModified,
 }
 
 abstract class StoreQuery<T> {
@@ -34,17 +36,17 @@ abstract class Store {
   /// upsertCollection - introduce NULL return
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);
-  Future<CLNote?> upsertNote(CLNote note, List<CLMedia> mediaList);
+  Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
-  Future<void> deleteNote(CLNote note);
+  Future<void> deleteNote(CLMedia note);
 
   Future<List<Object?>?> getDBRecords();
 
-  Future<Collection?> getCollectionByLabel(String label);
-  Future<CLMedia?> getMediaByMD5(String md5String);
-  Future<List<CLNote>?> getNotesByMediaID(int mediaId);
+  Future<T?> read<T>(StoreQuery<T> query);
+
+  Future<List<T?>> readMultiple<T>(StoreQuery<T> query);
 
   Future<void> reloadStore();
 
