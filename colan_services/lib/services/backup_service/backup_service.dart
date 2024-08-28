@@ -23,9 +23,13 @@ class BackupService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final backupStatus = ref.watch(backupNowProvider);
     return backupStatus.when(
-      loading: () => const ListTile(title: CircularProgressIndicator()),
+      loading: () => const ListTile(
+        title: Text('Backup'),
+        trailing: CircularProgressIndicator(),
+      ),
       error: (error, stackTrace) => ListTile(
-        title: Text('Error while processing backup. $error'),
+        title: const Text('Backup'),
+        trailing: Text('Error while processing backup. $error'),
       ),
       data: (progress) {
         if (progress.isDone) {
