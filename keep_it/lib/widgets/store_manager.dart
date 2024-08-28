@@ -93,7 +93,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final storeAction = StoreActions(
       upsertCollection: upsertCollection,
       upsertNote: upsertNote,
-      newMedia: newMedia,
+      newMedia: newImageOrVideo,
       newMediaMultipleStream: analyseMediaStream,
       moveToCollectionStream: moveToCollectionStream,
       restoreMediaMultiple: restoreMediaMultiple,
@@ -348,28 +348,12 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile =
-        File(outFile).copyTo(widget.appSettings.directories.media.path);
-
-    final md5String = await savedFile.checksum;
-    final updatedMedia = originalMedia
-        .copyWith(
-          name: path_handler.basename(savedFile.path),
-          md5String: md5String,
-        )
-        .removePin();
-
-    final mediaFromDB = await widget.storeInstance.upsertMedia(
-      updatedMedia,
+    final mediaFromDB = await upsertMedia(
+      outFile,
+      originalMedia.type,
+      id: originalMedia.id,
+      collectionId: originalMedia.collectionId,
     );
-    if (mediaFromDB != null) {
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          originalMedia.name,
-        ),
-      ).deleteIfExists();
-    }
 
     return mediaFromDB ?? originalMedia;
   }
@@ -379,20 +363,10 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile =
-        File(outFile).copyTo(widget.appSettings.directories.media.path);
-
-    final md5String = await savedFile.checksum;
-    final CLMedia updatedMedia;
-    updatedMedia = originalMedia
-        .copyWith(
-          name: path_handler.basename(savedFile.path),
-          md5String: md5String,
-        )
-        .removePin();
-
-    final mediaFromDB = await widget.storeInstance.upsertMedia(
-      updatedMedia.removeId(),
+    final mediaFromDB = await upsertMedia(
+      outFile,
+      originalMedia.type,
+      collectionId: originalMedia.collectionId,
     );
 
     return mediaFromDB ?? originalMedia;
@@ -476,47 +450,15 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<CLMedia?> newMedia(
+  Future<CLMedia?> newImageOrVideo(
     String fileName, {
     required bool isVideo,
     Collection? collection,
-  }) async {
-    // Get Collection if required
-    Collection collection0;
-    if (collection == null) {
-      collection0 = await getCollectionByLabel(tempCollectionName) ??
-          await widget.storeInstance.upsertCollection(
-            const Collection(label: tempCollectionName),
-          );
-    } else {
-      collection0 = collection;
-    }
-
-    final savedMediaFile =
-        File(fileName).copyTo(widget.appSettings.directories.media.path);
-
-    final md5String = await File(fileName).checksum;
-    final savedMedia = CLMedia(
-      name: path_handler.basename(savedMediaFile.path),
-      type: isVideo ? CLMediaType.video : CLMediaType.image,
-      collectionId: collection0.id,
-      md5String: md5String,
-      isHidden: collection == null,
-      fExt: path_handler.extension(savedMediaFile.path),
-    );
-    final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
-    if (mediaFromDB == null) {
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          savedMedia.name,
-        ),
-      ).deleteIfExists();
-    } else {
-      await File(fileName).deleteIfExists();
-    }
-    return mediaFromDB;
-  }
+  }) async =>
+      upsertMedia(
+        fileName,
+        isVideo ? CLMediaType.video : CLMediaType.image,
+      );
 
   static const tempCollectionName = '*** Recently Captured';
 
@@ -554,35 +496,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
           if (duplicate != null) {
             candidates.add(duplicate);
           } else {
-            final Collection tempCollection;
-            tempCollection = await getCollectionByLabel(tempCollectionName) ??
-                await widget.storeInstance.upsertCollection(
-                  const Collection(label: tempCollectionName),
-                );
-
-            /// Approach
-            /// 1. First copy the content to media directory
-            ///   1a. Adjust file name if similar item is found
-            /// 2. Try updating the data base
-            /// 3a. If failed, delete the copy created
-            /// 3b. If succeed,
-            ///     delete the original file (if it is mobile platform)
-
-            final savedMediaFile = File(
-              item.name,
-            ).copyTo(widget.appSettings.directories.media.path);
-
-            final savedMedia = await CLMedia(
-              name: path_handler.basename(savedMediaFile.path),
-              type: item.type,
-              collectionId: tempCollection.id,
-              md5String: md5String,
-              isHidden: true,
-              fExt: path_handler.extension(savedMediaFile.path),
-            ).getMetadata(location: widget.appSettings.directories.media.path);
-
-            final mediaFromDB =
-                await widget.storeInstance.upsertMedia(savedMedia);
+            final mediaFromDB = await upsertMedia(item.name, item.type);
             if (mediaFromDB != null) {
               candidates.add(mediaFromDB);
             } else {
@@ -612,40 +526,82 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
   }
 
+  Future<CLMedia?> upsertMedia(
+    String path,
+    CLMediaType type, {
+    int? id,
+    int? collectionId,
+    bool isAux = false,
+  }) async {
+    int? collectionId0;
+    final Collection collection;
+    final media = (id == null) ? null : await getMediaById(id);
+    collectionId0 = collectionId ?? media?.collectionId;
+
+    final existingCollection =
+        collectionId0 == null ? null : await getCollectionById(collectionId0);
+    collection = existingCollection ??
+        await getCollectionByLabel(tempCollectionName) ??
+        await widget.storeInstance.upsertCollection(
+          const Collection(label: tempCollectionName),
+        );
+
+    final savedMediaFile =
+        File(path).copyTo(widget.appSettings.directories.media.path);
+
+    final md5String = await File(path).checksum;
+    final savedMedia = media?.copyWith(
+          name: path_handler.basename(savedMediaFile.path),
+          fExt: path_handler.extension(savedMediaFile.path),
+          type: type,
+          collectionId: collection.id,
+          md5String: md5String,
+          isHidden: existingCollection == null,
+          isAux: isAux,
+        ) ??
+        CLMedia(
+          name: path_handler.basename(savedMediaFile.path),
+          fExt: path_handler.extension(savedMediaFile.path),
+          type: type,
+          collectionId: collection.id,
+          md5String: md5String,
+          isHidden: collectionId0 == null,
+          isAux: isAux,
+        );
+    final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
+    if (mediaFromDB == null) {
+      await File(
+        path_handler.join(
+          widget.appSettings.directories.media.pathString,
+          savedMedia.name,
+        ),
+      ).deleteIfExists();
+    } else {
+      try {
+        await File(path).deleteIfExists();
+      } catch (e) {
+        /** ignore if original path can't be deleted, it could be 
+         * readonly
+         */
+      }
+    }
+    return mediaFromDB;
+  }
+
   Future<void> upsertNote(
     String path,
     CLMediaType type, {
     required List<CLMedia> mediaMultiple,
     CLMedia? note,
   }) async {
-    final savedNotesFile =
-        File(path).copyTo(widget.appSettings.directories.media.path);
-
-    final savedNotes = note?.copyWith(
-          name: path_handler.basename(savedNotesFile.path),
-          type: type,
-        ) ??
-        CLMedia(
-          createdDate: DateTime.now(),
-          type: type,
-          name: path_handler.basename(savedNotesFile.path),
-          fExt: path_handler.extension(savedNotesFile.path),
-          isAux: true,
-          collectionId: null,
-        );
-
-    final notesInDB = await widget.storeInstance.upsertNote(
-      savedNotes,
-      mediaMultiple,
+    final noteInDB = await upsertMedia(
+      path,
+      type,
+      id: note?.id,
+      isAux: true,
     );
-    if (notesInDB == null) {
-      await savedNotesFile.delete();
-    } else {
-      await File(path).deleteIfExists();
-      if (note != null) {
-        // delete the older notes
-        await File(getNotesPath(note)).deleteIfExists();
-      }
+    if (noteInDB != null) {
+      // Connect Media here !
     }
   }
 
@@ -865,6 +821,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     );
   }
 
+  Future<CLMedia?> getMediaById(
+    int id,
+  ) {
+    final q = widget.storeInstance.getQuery(
+      DBQueries.mediaById,
+      parameters: [id],
+    ) as StoreQuery<CLMedia>;
+    return widget.storeInstance.read(q);
+  }
+
   Future<List<CLMedia?>> getMediaByCollectionId(
     int collectionId,
   ) {
@@ -891,6 +857,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     final q = widget.storeInstance.getQuery(
       DBQueries.collectionByLabel,
       parameters: [label],
+    ) as StoreQuery<Collection>;
+    return widget.storeInstance.read(q);
+  }
+
+  Future<Collection?> getCollectionById(
+    int id,
+  ) async {
+    final q = widget.storeInstance.getQuery(
+      DBQueries.collectionById,
+      parameters: [id],
     ) as StoreQuery<Collection>;
     return widget.storeInstance.read(q);
   }
