@@ -6,8 +6,8 @@ import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
 extension MediaUriOnCLMedia on CLMedia {
-  String get mediaFilename => '$id$fExt';
-  String get previewFilename => '$id.tn$fExt';
+  String get mediaFilename => '$md5String$fExt';
+  String get previewFilename => '$md5String.tn$fExt';
 
   Uri returnValidPath(Uri p) {
     if (p.scheme != 'file') {
