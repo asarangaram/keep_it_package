@@ -11,7 +11,24 @@ class CLDirectories {
   final Directory temporary;
   final Directory systemTemp;
 
-  const CLDirectories({
+  factory CLDirectories({
+    required Directory persistent,
+    required Directory temporary,
+    required Directory systemTemp,
+  }) {
+    final directories = CLDirectories._(
+      persistent: persistent,
+      temporary: temporary,
+      systemTemp: systemTemp,
+    );
+    for (final d in directories.directories.values) {
+      if (!d.path.existsSync()) {
+        d.path.createSync(recursive: true);
+      }
+    }
+    return directories;
+  }
+  const CLDirectories._({
     required this.persistent,
     required this.temporary,
     required this.systemTemp,
@@ -22,7 +39,7 @@ class CLDirectories {
     Directory? temporary,
     Directory? systemTemp,
   }) {
-    return CLDirectories(
+    return CLDirectories._(
       persistent: persistent ?? this.persistent,
       temporary: temporary ?? this.temporary,
       systemTemp: systemTemp ?? this.systemTemp,
@@ -87,7 +104,7 @@ class CLDirectories {
       };
 
   CLDirectory _directory(String id) {
-    final d = directories['media']!;
+    final d = directories[id]!;
     if (!d.path.existsSync()) {
       d.path.createSync(recursive: true);
     }
@@ -97,7 +114,7 @@ class CLDirectories {
   CLDirectory get media => _directory('media');
   CLDirectory get thumbnail => _directory('thumbnail');
   CLDirectory get db => _directory('db');
-  CLDirectory get backup => _directory('db');
+  CLDirectory get backup => _directory('backup');
   CLDirectory get temp => _directory('temp');
   CLDirectory get download => _directory('download');
 
