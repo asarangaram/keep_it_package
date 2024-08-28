@@ -107,13 +107,12 @@ class MediaManager {
     CLMedia originalMedia,
     String outFile,
   ) async {
-    final savedFile = File(outFile).copyTo(appSettings.dir.media.path);
-
-    final md5String = await savedFile.checksum;
+    final md5String = await File(outFile).checksum;
     final updatedMedia = originalMedia
         .copyWith(
-          name: path_handler.basename(savedFile.path),
+          name: path_handler.basename(outFile),
           md5String: md5String,
+          fExt: path_handler.extension(outFile),
         )
         .removePin();
 
