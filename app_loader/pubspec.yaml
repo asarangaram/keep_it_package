@@ -8,6 +8,8 @@ environment:
   sdk: ">=3.4.3 <4.0.0"
 
 dependencies:
+  colan_services:
+    path: ../colan_services
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.18.0

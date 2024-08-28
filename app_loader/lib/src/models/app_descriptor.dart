@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
