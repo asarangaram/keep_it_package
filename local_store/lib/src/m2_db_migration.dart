@@ -6,95 +6,38 @@ final migrations = SqliteMigrations()
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS Collection (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        description TEXT,
         label TEXT NOT NULL UNIQUE,
-        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
+        description TEXT,
+        createdDate DATETIME,
+        updatedDate DATETIME
       )
     ''');
       await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_collection
-        AFTER UPDATE ON Collection
-        BEGIN
-            UPDATE Collection
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-    ''');
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Item (
+      CREATE TABLE IF NOT EXISTS Media (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        path TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL UNIQUE,
+        md5String TEXT NOT NULL UNIQUE,
+        type TEXT NOT NULL,
+        fExt TEXT CHECK(length(fExt) BETWEEN 2 AND 6),
         ref TEXT,
         collectionId INTEGER,
-        type TEXT NOT NULL,
-        md5String TEXT NOT NULL,
         originalDate DATETIME,
-        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+        createdDate DATETIME,
+        updatedDate DATETIME,
+        isDeleted INTEGER NOT NULL,
+        isHidden INTEGER NOT NULL,
+        pin TEXT ,
+        isAux INTEGER NOT NULL,
         FOREIGN KEY (collectionId) REFERENCES Collection(id)
       )
     ''');
       await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_item
-        AFTER UPDATE ON Item
-        BEGIN
-            UPDATE Item
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-    ''');
-    }),
-  )
-  ..add(
-    SqliteMigration(2, (tx) async {
-      await tx.execute(
-        'ALTER TABLE Item ADD COLUMN isDeleted INTEGER DEFAULT 0',
-      );
-      await tx.execute(
-        'ALTER TABLE Item ADD COLUMN isHidden INTEGER DEFAULT 0',
-      );
-      await tx.execute(
-        'ALTER TABLE Item ADD COLUMN isPinned INTEGER DEFAULT 0',
-      );
-      await tx.execute('UPDATE Item SET isDeleted = 0');
-      await tx.execute('UPDATE Item SET isHidden = 0');
-      await tx.execute('UPDATE Item SET isPinned = 0');
-    }),
-  )
-  ..add(
-    SqliteMigration(3, (tx) async {
-      await tx.execute('ALTER TABLE Item ADD COLUMN pin TEXT DEFAULT NULL');
-      await tx.execute('UPDATE Item SET pin = NULL');
-    }),
-  )
-  ..add(
-    SqliteMigration(4, (tx) async {
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Notes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        path TEXT NOT NULL UNIQUE,
-        type TEXT NOT NULL,
-        createdDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-      ''');
-      await tx.execute('''
-      CREATE TRIGGER IF NOT EXISTS update_dates_on_notes
-        AFTER UPDATE ON Notes
-        BEGIN
-            UPDATE Notes
-            SET updatedDate = CURRENT_TIMESTAMP
-            WHERE id = NEW.id;
-        END;
-      ''');
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS ItemNote (
+      CREATE TABLE IF NOT EXISTS MediaNote (
         noteId INTEGER,
-        itemId INTEGER,
-        PRIMARY KEY (noteId, itemId),
-        FOREIGN KEY (noteId) REFERENCES Notes(id) ON DELETE CASCADE,
-        FOREIGN KEY (itemId) REFERENCES Item(id) ON DELETE CASCADE
+        mediaId INTEGER,
+        PRIMARY KEY (noteId, mediaId),
+        FOREIGN KEY (noteId) REFERENCES Media(id) ON DELETE CASCADE,
+        FOREIGN KEY (mediaId) REFERENCES Media(id) ON DELETE CASCADE
       )
     ''');
     }),

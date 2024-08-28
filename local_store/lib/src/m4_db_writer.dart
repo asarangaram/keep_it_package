@@ -1,7 +1,9 @@
-import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/foundation.dart';
-import 'package:sqlite_async/sqlite_async.dart';
+import 'dart:async';
 
+import 'package:meta/meta.dart';
+import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/store.dart';
+import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
 
 @immutable
@@ -9,170 +11,157 @@ class DBWriter {
   const DBWriter({
     required this.collectionTable,
     required this.mediaTable,
-    required this.notesTable,
     required this.notesOnMediaTable,
   });
   final DBExec<Collection> collectionTable;
   final DBExec<CLMedia> mediaTable;
-  final DBExec<CLNote> notesTable;
+
   final DBExec<NotesOnMedia> notesOnMediaTable;
 
   Future<Collection> upsertCollection(
     SqliteWriteContext tx,
     Collection collection,
   ) async {
-    _infoLogger('upsertCollection: $collection');
-    final updated = await collectionTable.upsert(
+    return (await collectionTable.upsert(
       tx,
       collection,
-    );
-    _infoLogger('upsertCollection: Done :  $updated');
-    if (updated == null) {
-      exceptionLogger(
-        '$_filePrefix: DB Failure',
-        '$_filePrefix: Failed to write / retrive Collection',
-      );
-    }
-    return updated!;
+      uniqueColumn: ['id', 'label'],
+    ))!;
   }
 
-  Future<List<CLMedia?>> upsertMediaMultiple(
+  Future<CLMedia> upsertMedia(
     SqliteWriteContext tx,
-    List<CLMedia> media,
+    CLMedia media,
   ) async {
-    _infoLogger('upsertMediaMultiple: $media');
-    final updated = await mediaTable.upsertAll(
+    return (await mediaTable.upsert(
       tx,
       media,
-    );
-    _infoLogger('upsertMediaMultiple: Done :  $updated');
-    if (updated.any((e) => e == null)) {
-      exceptionLogger(
-        '$_filePrefix: DB Failure',
-        '$_filePrefix: Failed to write / retrive Collection',
-      );
-    }
-    return updated;
+      uniqueColumn: ['id', 'md5String'],
+    ))!;
   }
 
-  Future<CLMedia> upsertMedia(SqliteWriteContext tx, CLMedia media) async {
-    _infoLogger('upsertMedia: $media');
-    final updated = await mediaTable.upsert(
+  Future<CLMedia> upsertNote(
+    SqliteWriteContext tx,
+    CLMedia note,
+    List<CLMedia> mediaList,
+  ) async {
+    final updatedNote = await mediaTable.upsert(
       tx,
-      media,
+      note,
+      uniqueColumn: ['id'],
     );
-    _infoLogger('upsertMedia: Done :  $updated');
-    if (updated == null) {
-      exceptionLogger(
-        '$_filePrefix: DB Failure',
-        '$_filePrefix: Failed to write / retrive Media',
-      );
+
+    _infoLogger('upsertNote: Done :  $updatedNote');
+
+    for (final media in mediaList) {
+      await connectNotes(tx, note: updatedNote!, media: media);
     }
-    return updated!;
+
+    return updatedNote!;
+  }
+
+  Future<void> deleteCollection(
+    SqliteWriteContext tx,
+    Collection collection,
+  ) async {
+    await collectionTable.delete(tx, collection);
   }
 
   Future<void> deleteMedia(
     SqliteWriteContext tx,
-    CLMedia media,
-  ) async {
-    await mediaTable.delete(tx, {'id': media.id.toString()});
-  }
-
-  Future<bool> togglePin(
-    SqliteWriteContext tx,
     CLMedia media, {
-    required Future<String?> Function(
-      CLMedia media, {
-      required String title,
-      String? desc,
-    }) onPin,
-    required Future<bool> Function(String id) onRemovePin,
+    required bool permanent,
   }) async {
-    if (media.id == null) return false;
-
-    if (media.pin == null || media.pin!.isEmpty) {
-      final pin = await onPin(media, title: media.label);
-      if (pin == null) return false;
-      final pinnedMedia = media.copyWith(pin: pin);
-      await upsertMedia(tx, pinnedMedia);
-      return true;
-    } else {
-      final id = media.pin!;
-      final res = await onRemovePin(id);
-      if (res) {
-        final pinnedMedia = media.removePin();
-        await upsertMedia(tx, pinnedMedia);
+    if (permanent) {
+      // PATCH ============================================================
+      // This patch is required as for some reasons, DELETE on CASCASDE
+      // didn't work.
+      if (permanent) {
+        final notes = await DBReader(tx).getNotesByMediaID(media.id!);
+        if (notes != null && notes.isNotEmpty) {
+          for (final n in notes) {
+            await disconnectNotes(tx, note: n, media: media);
+          }
+        }
       }
-      return res;
-    }
-  }
+      // PATCH ENDS ========================================================
 
-  Future<bool> removePin(
-    SqliteWriteContext tx,
-    CLMedia media, {
-    required Future<bool> Function(String id) onRemovePin,
-  }) async {
-    if (media.id == null) return false;
-
-    if (media.pin == null || media.pin!.isEmpty) {
-      return false;
+      await mediaTable.delete(tx, media);
     } else {
-      final id = media.pin!;
-      final res = await onRemovePin(id);
-      if (res) {
-        final pinnedMedia = media.removePin();
-        await upsertMedia(tx, pinnedMedia);
-      }
-      return res;
-    }
-  }
-
-  Future<CLNote> upsertNote(
-    SqliteWriteContext tx,
-    CLNote note,
-    List<CLMedia> mediaList,
-  ) async {
-    _infoLogger('upsertNote: $note');
-
-    final updated = await notesTable.upsert(
-      tx,
-      note,
-    );
-    _infoLogger('upsertNote: Done :  $updated');
-    if (updated == null) {
-      exceptionLogger(
-        '$_filePrefix: DB Failure',
-        '$_filePrefix: Failed to write / retrive Note',
+      // Soft Delete
+      await upsertMedia(
+        tx,
+        media.removePin().copyWith(isDeleted: true),
       );
-    } else {
-      for (final media in mediaList) {
-        await notesOnMediaTable.upsert(
-          tx,
-          NotesOnMedia(noteId: updated.id!, itemId: media.id!),
-          ignore: true,
-        );
-      }
     }
-    return updated!;
   }
 
   Future<void> deleteNote(
     SqliteWriteContext tx,
-    CLNote note,
+    CLMedia note,
   ) async {
-    if (note.id == null) return;
+    // PATCH ============================================================
+    // This patch is required as for some reasons, DELETE on CASCASDE
+    // didn't work.
+    final media = await DBReader(tx).getMediaByNoteID(note.id!);
+    if (media != null && media.isNotEmpty) {
+      for (final m in media) {
+        await disconnectNotes(tx, media: m, note: note);
+      }
+    }
+    // PATCH ENDS ========================================================
 
-    await notesTable.delete(tx, {'id': note.id.toString()});
+    await mediaTable.delete(tx, note);
+  }
+
+  Future<void> connectNotes(
+    SqliteWriteContext tx, {
+    required CLMedia note,
+    required CLMedia media,
+  }) async {
+    await notesOnMediaTable.upsert(
+      tx,
+      NotesOnMedia(noteId: note.id!, itemId: media.id!),
+      ignore: true,
+      uniqueColumn: [],
+    );
   }
 
   Future<void> disconnectNotes(
     SqliteWriteContext tx, {
-    required CLNote note,
+    required CLMedia note,
     required CLMedia media,
   }) async {
     await notesOnMediaTable.delete(
       tx,
-      {'noteId': note.id!.toString(), 'itemId': media.id!.toString()},
+      NotesOnMedia(noteId: note.id!, itemId: media.id!),
+      identifier: ['noteId', 'itemId'],
+    );
+  }
+
+  Future<Collections> upsertCollections(
+    SqliteWriteContext tx, {
+    required Collections collections,
+  }) async {
+    return Collections(
+      await collectionTable.upsertAll(
+        tx,
+        collections.entries,
+        uniqueColumn: ['id', 'label'],
+      ),
+    );
+  }
+
+  Future<CLMedias> upsertMedias(
+    SqliteWriteContext tx, {
+    required CLMedias medias,
+  }) async {
+    return CLMedias(
+      await mediaTable.upsertAll(
+        tx,
+        medias.entries,
+        uniqueColumn: ['id', 'md5String'],
+      ),
     );
   }
 }

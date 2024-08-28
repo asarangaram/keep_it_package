@@ -1,25 +1,25 @@
 const backupQuery = '''
 SELECT 
     json_object(
-        'itemId', Item.id,
-        'itemPath', Item.path,
-        'itemRef', Item.ref,
+        'mediaId', Media.id,
+        'mediaName', Media.name,
+        'mediaRef', Media.ref,
         'collectionLabel', Collection.label,
-        'itemType', Item.type,
-        'itemMd5String', Item.md5String,
-        'itemOriginalDate', Item.originalDate,
-        'itemCreatedDate', Item.createdDate,
-        'itemUpdatedDate', Item.updatedDate,
+        'mediaType', Media.type,
+        'mediaMd5String', Media.md5String,
+        'mediaOriginalDate', Media.originalDate,
+        'mediaCreatedDate', Media.createdDate,
+        'mediaUpdatedDate', Media.updatedDate,
          'notes',
         CASE 
             WHEN EXISTS (
                 SELECT 1 
-                FROM ItemNote 
-                WHERE ItemNote.itemId = Item.id
+                FROM MediaNote 
+                WHERE MediaNote.MediaId = Media.id
             )
             THEN  json_group_array(
                     json_object(
-                        'notePath', Notes.path,
+                        'noteName', Notes.name,
                         'noteType', Notes.type
                     ))
                 
@@ -27,13 +27,13 @@ SELECT
         END 
     ) 
 FROM 
-    Item
+    Media
 LEFT JOIN 
-    Collection ON Item.collectionId = Collection.id
+    Collection ON Media.collectionId = Collection.id
 LEFT JOIN 
-    ItemNote ON Item.id = ItemNote.itemId
+    MediaNote ON Media.id = MediaNote.MediaId
 LEFT JOIN 
-    Notes ON ItemNote.noteId = Notes.id
+    Notes ON MediaNote.noteId = Notes.id
 GROUP BY
-    Item.id;
+    Media.id;
 ''';
