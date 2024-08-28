@@ -6,27 +6,25 @@ import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'media_metadata.dart';
 
 extension ExtFileAnalysis on File {
-  Future<MediaMetaData?> getImageMetaData({bool? regenerate}) async {
+  Future<MediaMetaData?> getImageMetaData() async {
     try {
-      if (regenerate != null && regenerate == true) {
-        final fileBytes = readAsBytesSync();
-        final data = await readExifFromBytes(fileBytes);
+      final fileBytes = readAsBytesSync();
+      final data = await readExifFromBytes(fileBytes);
 
-        var dateTimeString = data['EXIF DateTimeOriginal']!.printable;
-        final dateAndTime = dateTimeString.split(' ');
-        dateTimeString =
-            [dateAndTime[0].replaceAll(':', '-'), dateAndTime[1]].join(' ');
+      var dateTimeString = data['EXIF DateTimeOriginal']!.printable;
+      final dateAndTime = dateTimeString.split(' ');
+      dateTimeString =
+          [dateAndTime[0].replaceAll(':', '-'), dateAndTime[1]].join(' ');
 
-        final originalDate = DateTime.parse(dateTimeString);
-        return MediaMetaData(originalDate: originalDate);
-      }
+      final originalDate = DateTime.parse(dateTimeString);
+      return MediaMetaData(originalDate: originalDate);
     } catch (e) {
       //ignore the error and continue without metadata
     }
     return null;
   }
 
-  Future<MediaMetaData?> getVideoMetaData({bool? regenerate}) async {
+  Future<MediaMetaData?> getVideoMetaData() async {
     final session = await FFprobeKit.getMediaInformation(path);
     final properties = session.getMediaInformation()?.getAllProperties();
     if (properties != null) {
