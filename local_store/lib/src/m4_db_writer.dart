@@ -31,33 +31,20 @@ class DBWriter {
 
   Future<CLMedia> upsertMedia(
     SqliteWriteContext tx,
-    CLMedia media,
-  ) async {
-    return (await mediaTable.upsert(
+    CLMedia media, {
+    List<CLMedia>? parents,
+  }) async {
+    final mediaInDB = (await mediaTable.upsert(
       tx,
       media,
       uniqueColumn: ['id', 'md5String'],
     ))!;
-  }
-
-  Future<CLMedia> upsertNote(
-    SqliteWriteContext tx,
-    CLMedia note,
-    List<CLMedia> mediaList,
-  ) async {
-    final updatedNote = await mediaTable.upsert(
-      tx,
-      note,
-      uniqueColumn: ['id'],
-    );
-
-    _infoLogger('upsertNote: Done :  $updatedNote');
-
-    for (final media in mediaList) {
-      await connectNotes(tx, note: updatedNote!, media: media);
+    if (parents?.isNotEmpty ?? false) {
+      for (final parent in parents!) {
+        await connectNote(tx, note: mediaInDB, media: parent);
+      }
     }
-
-    return updatedNote!;
+    return mediaInDB;
   }
 
   Future<void> deleteCollection(
@@ -76,15 +63,21 @@ class DBWriter {
       // PATCH ============================================================
       // This patch is required as for some reasons, DELETE on CASCASDE
       // didn't work.
-      if (permanent) {
-        final notes = await DBReader(tx).getNotesByMediaID(media.id!);
-        if (notes != null && notes.isNotEmpty) {
-          for (final n in notes) {
-            await disconnectNotes(tx, note: n, media: media);
-          }
+      // check if this media is used as supplement for any other media
+
+      final parents = await DBReader(tx).getMediaByNoteID(media.id!);
+      if (parents?.isNotEmpty ?? false) {
+        for (final parent in parents!) {
+          await disconnectNote(tx, note: media, media: parent);
         }
       }
-      // PATCH ENDS ========================================================
+      // check if this media has supplement media
+      final children = await DBReader(tx).getNotesByMediaID(media.id!);
+      if (children?.isNotEmpty ?? false) {
+        for (final child in children!) {
+          await disconnectNote(tx, note: child, media: media);
+        }
+      }
 
       await mediaTable.delete(tx, media);
     } else {
@@ -96,25 +89,7 @@ class DBWriter {
     }
   }
 
-  Future<void> deleteNote(
-    SqliteWriteContext tx,
-    CLMedia note,
-  ) async {
-    // PATCH ============================================================
-    // This patch is required as for some reasons, DELETE on CASCASDE
-    // didn't work.
-    final media = await DBReader(tx).getMediaByNoteID(note.id!);
-    if (media != null && media.isNotEmpty) {
-      for (final m in media) {
-        await disconnectNotes(tx, media: m, note: note);
-      }
-    }
-    // PATCH ENDS ========================================================
-
-    await mediaTable.delete(tx, note);
-  }
-
-  Future<void> connectNotes(
+  Future<void> connectNote(
     SqliteWriteContext tx, {
     required CLMedia note,
     required CLMedia media,
@@ -127,7 +102,7 @@ class DBWriter {
     );
   }
 
-  Future<void> disconnectNotes(
+  Future<void> disconnectNote(
     SqliteWriteContext tx, {
     required CLMedia note,
     required CLMedia media,

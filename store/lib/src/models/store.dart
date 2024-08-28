@@ -36,11 +36,10 @@ abstract class Store {
   /// upsertCollection - introduce NULL return
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media);
-  Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
+  //Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
-  Future<void> deleteNote(CLMedia note);
 
   Future<List<Object?>?> getDBRecords();
 

@@ -111,12 +111,6 @@ class DBManager extends Store {
       });
 
   @override
-  Future<CLMedia> upsertNote(CLMedia note, List<CLMedia> mediaList) async =>
-      db.writeTransaction((tx) async {
-        return dbWriter.upsertNote(tx, note, mediaList);
-      });
-
-  @override
   Future<void> deleteCollection(Collection collection) async =>
       db.writeTransaction((tx) async {
         await dbWriter.deleteCollection(tx, collection);
@@ -126,12 +120,6 @@ class DBManager extends Store {
   Future<void> deleteMedia(CLMedia media, {required bool permanent}) async =>
       db.writeTransaction((tx) async {
         await dbWriter.deleteMedia(tx, media, permanent: permanent);
-      });
-
-  @override
-  Future<void> deleteNote(CLMedia note) async =>
-      db.writeTransaction((tx) async {
-        await dbWriter.deleteNote(tx, note);
       });
 
   @override

@@ -126,7 +126,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       getMediaPath: getMediaPath,
       getMediaLabel: getMediaLabel,
       getPreviewPath: getPreviewPath,
-      getNotesPath: getNotesPath,
+      getNotesPath: getMediaPath,
       getText: getText,
 
       getMediaMultipleByIds: getMediaMultipleByIds,
@@ -215,15 +215,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
         ),
       ).deleteIfExists();
     }
-    final orphanNotes = await getOrphanNotes();
-    if (orphanNotes != null) {
-      for (final note in orphanNotes) {
-        if (note != null) {
-          await widget.storeInstance.deleteNote(note);
-          await File(getNotesPath(note)).deleteIfExists();
-        }
-      }
-    }
+
     return true;
   }
 
@@ -593,23 +585,43 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     CLMediaType type, {
     required List<CLMedia> mediaMultiple,
     CLMedia? note,
+  }) async =>
+      upsertMediaFromFile(
+        path,
+        type,
+        id: note?.id,
+        isAux: true,
+      );
+
+  Future<void> deleteMedia(
+    BuildContext ctx,
+    CLMedia media, {
+    bool permanent = false,
   }) async {
-    final noteInDB = await upsertMediaFromFile(
-      path,
-      type,
-      id: note?.id,
-      isAux: true,
-    );
-    if (noteInDB != null) {
-      // Connect Media here !
+    if (media.id == null) return;
+
+    await widget.storeInstance.deleteMedia(media, permanent: true);
+    if (permanent) {
+      await File(getMediaPath(media)).deleteIfExists();
+
+      final orphanNotesQuery =
+          widget.storeInstance.getQuery<CLMedia>(DBQueries.notesOrphan);
+
+      final orphanNotes =
+          await widget.storeInstance.readMultiple(orphanNotesQuery);
+      if (orphanNotes.isNotEmpty) {
+        for (final note in orphanNotes) {
+          if (note != null) {
+            await widget.storeInstance.deleteMedia(note, permanent: true);
+            await File(getMediaPath(note)).deleteIfExists();
+          }
+        }
+      }
     }
   }
 
   Future<void> onDeleteNote(BuildContext ctx, CLMedia note) async {
-    if (note.id == null) return;
-
-    await widget.storeInstance.deleteNote(note);
-    await File(getNotesPath(note)).deleteIfExists();
+    await widget.storeInstance.deleteMedia(note, permanent: true);
   }
 
   Future<String> createTempFile({required String ext}) async {
@@ -644,27 +656,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       );
   String getMediaLabel(CLMedia media) => media.name;
 
-  String getNotesPath(CLMedia note) => path_handler.join(
-        widget.appSettings.directories.media.path.path,
-        note.name,
-      );
+  String loadText(CLMedia? media) {
+    if (media?.type != CLMediaType.text) return '';
+    final path = getMediaPath(media!);
 
-  String getText(CLMedia? note) {
-    final String text;
-    if (note != null) {
-      final notesPath = getNotesPath(note);
-
-      final notesFile = File(notesPath);
-      if (!notesFile.existsSync()) {
-        text = 'Content Missing. File is deleted';
-      } else {
-        text = notesFile.readAsStringSync();
-      }
-    } else {
-      text = '';
-    }
-    return text;
+    return File(path).existsSync()
+        ? File(path).readAsStringSync()
+        : 'Content Missing. File not found';
   }
+
+  String getText(CLMedia? note) => loadText(note);
 
   Future<Collection> upsertCollection(Collection collection) async {
     final updated = await widget.storeInstance.upsertCollection(collection);
