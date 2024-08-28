@@ -7,6 +7,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:store/store.dart';
 import 'package:tar/tar.dart';
 
 import 'files.dart';
@@ -124,7 +125,7 @@ class BackupManager {
 
                 final notePath = note['notePath'] as String;
                 final noteAbsPath = p.join(
-                  appSettings.directories.notes.pathString,
+                  appSettings.directories.media.pathString,
                   notePath,
                 );
 

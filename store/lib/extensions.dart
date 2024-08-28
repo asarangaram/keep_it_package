@@ -1,4 +1,3 @@
-export 'src/extensions/ext_cl_media.dart';
 export 'src/extensions/ext_datetime.dart';
 export 'src/extensions/ext_double.dart';
 export 'src/extensions/ext_file.dart';

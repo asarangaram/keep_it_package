@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path/path.dart';
 
+import '../../internal/extensions/ext_file.dart';
+import '../store_service/widgets/the_store.dart';
 import 'widgets/video_trimmer.dart';
 
 class VideoEditServices extends StatefulWidget {

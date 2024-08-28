@@ -1,5 +1,5 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
 class ConfirmAction {
   static Future<bool?> template(
@@ -168,7 +168,7 @@ class ConfirmAction {
       );
   static Future<bool?> deleteNote(
     BuildContext context, {
-    required CLNote note,
+    required CLMedia note,
   }) async =>
       template(
         context,

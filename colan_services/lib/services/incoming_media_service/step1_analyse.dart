@@ -1,6 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
+
+import '../store_service/widgets/the_store.dart';
+import 'models/cl_shared_media.dart';
 
 class AnalysePage extends StatelessWidget {
   const AnalysePage({

@@ -1,5 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
+
+import '../../../store_service/widgets/the_store.dart';
 import 'audio_note.dart';
 import 'audio_recorder.dart';
 
@@ -10,7 +13,7 @@ class AudioNotes extends StatefulWidget {
     super.key,
   });
   final CLMedia media;
-  final List<CLAudioNote> notes;
+  final List<CLMedia> notes;
 
   @override
   State<AudioNotes> createState() => _AudioNotesState();

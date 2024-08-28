@@ -1,9 +1,10 @@
 import 'package:colan_services/services/video_player_service/views/get_video_controller.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 import 'package:video_player/video_player.dart';
 
+import '../store_service/widgets/the_store.dart';
 import 'models/video_player_state.dart';
 import 'providers/video_player_state.dart';
 import 'views/video_controls.dart';

@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
 import '../../models/input_decoration.dart';
 
@@ -13,7 +14,7 @@ class EditNotes extends StatelessWidget {
   });
   final TextEditingController controller;
   final FocusNode? focusNode;
-  final CLTextNote? note;
+  final CLMedia? note;
   final VoidCallback? onTap;
 
   @override

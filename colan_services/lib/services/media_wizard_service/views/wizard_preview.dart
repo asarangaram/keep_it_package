@@ -1,8 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../../store_service/providers/gallery_group_provider.dart';
+import '../../store_service/widgets/the_store.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {

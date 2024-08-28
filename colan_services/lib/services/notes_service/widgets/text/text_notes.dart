@@ -1,5 +1,5 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
 import 'text_note.dart';
 
@@ -9,7 +9,7 @@ class TextNotes extends StatelessWidget {
     required this.notes,
     super.key,
   });
-  final List<CLTextNote> notes;
+  final List<CLMedia> notes;
   final CLMedia media;
 
   @override

@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import 'get_store.dart';
 import 'w3_get_from_store.dart';
@@ -11,7 +12,7 @@ class GetNote extends ConsumerWidget {
     required this.id,
     super.key,
   });
-  final Widget Function(CLNote? note) buildOnData;
+  final Widget Function(CLMedia? note) buildOnData;
   final int id;
 
   @override
@@ -19,8 +20,8 @@ class GetNote extends ConsumerWidget {
     return GetStore(
       builder: (store) {
         final q = store.getQuery(DBQueries.notesByMediaId, parameters: [id])
-            as StoreQuery<CLNote>;
-        return GetFromStore<CLNote>(
+            as StoreQuery<CLMedia>;
+        return GetFromStore<CLMedia>(
           query: q,
           builder: (data) {
             final note = data.where((e) => e.id == id).firstOrNull;
@@ -39,7 +40,7 @@ class GetNotesByMediaId extends ConsumerWidget {
     super.key,
   });
   final int mediaId;
-  final Widget Function(List<CLNote> note) buildOnData;
+  final Widget Function(List<CLMedia> note) buildOnData;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,8 +48,8 @@ class GetNotesByMediaId extends ConsumerWidget {
       builder: (store) {
         final q =
             store.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
-                as StoreQuery<CLNote>;
-        return GetFromStore<CLNote>(
+                as StoreQuery<CLMedia>;
+        return GetFromStore<CLMedia>(
           query: q,
           builder: buildOnData,
         );
