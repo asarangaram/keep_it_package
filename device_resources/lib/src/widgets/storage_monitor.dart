@@ -22,14 +22,14 @@ class StorageMonitor extends ConsumerWidget {
           children: [
             StorageInfoEntry(
               label: 'Storage Used',
-              dirs: appSettings.dir.persistentDirs,
+              dirs: appSettings.directories.persistentDirs,
             ),
             StorageInfoEntry(
               label: 'Cache',
-              dirs: appSettings.dir.cacheDirs,
+              dirs: appSettings.directories.cacheDirs,
               action: ElevatedButton.icon(
                 onPressed: () async {
-                  for (final dir in appSettings.dir.cacheDirs) {
+                  for (final dir in appSettings.directories.cacheDirs) {
                     dir.path.clear();
                   }
                 },
