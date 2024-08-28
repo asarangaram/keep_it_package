@@ -78,7 +78,7 @@ class MediaManagerNotifier extends StateNotifier<AsyncValue<MediaManager>> {
 
     return await store.read<MediaLocalInfo>(query) ??
         await store.upsertMediaLocalInfo(
-          DefaultMediaLocalInfo(id: media.id!, fileExtension: media.fExt),
+          DefaultMediaLocalInfo(id: media.id!),
         );
   }
 

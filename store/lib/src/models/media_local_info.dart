@@ -13,7 +13,6 @@ class MediaLocalInfo {
     required this.isEdited,
     required this.haveItOffline,
     required this.mustDownloadOriginal,
-    required this.fileExtension,
     required this.previewError,
     required this.mediaError,
     required this.serverUID,
@@ -33,7 +32,6 @@ class MediaLocalInfo {
       isEdited: (map['isEdited'] as int) != 0,
       haveItOffline: (map['haveItOffline'] as int) != 0,
       mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
-      fileExtension: map['fileExtension'] as String,
     );
   }
 
@@ -49,7 +47,6 @@ class MediaLocalInfo {
   final bool isEdited;
   final bool haveItOffline;
   final bool mustDownloadOriginal;
-  final String fileExtension;
 
   MediaLocalInfo copyWith({
     int? id,
@@ -62,7 +59,6 @@ class MediaLocalInfo {
     bool? isEdited,
     bool? haveItOffline,
     bool? mustDownloadOriginal,
-    String? fileExtension,
   }) {
     return MediaLocalInfo(
       id: id ?? this.id,
@@ -75,14 +71,12 @@ class MediaLocalInfo {
       isEdited: isEdited ?? this.isEdited,
       haveItOffline: haveItOffline ?? this.haveItOffline,
       mustDownloadOriginal: mustDownloadOriginal ?? this.mustDownloadOriginal,
-      fileExtension: fileExtension ?? this.fileExtension,
     );
   }
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
-    return 'MediaCache(id: $id, isPreviewCached: $isPreviewCached, isMediaCached: $isMediaCached, previewError: $previewError, mediaError: $mediaError, isMediaOriginal: $isMediaOriginal, serverUID: $serverUID, isEdited: $isEdited, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal, fileExtension: $fileExtension)';
+    return 'MediaLocalInfo(id: $id, isPreviewCached: $isPreviewCached, isMediaCached: $isMediaCached, previewError: $previewError, mediaError: $mediaError, isMediaOriginal: $isMediaOriginal, serverUID: $serverUID, isEdited: $isEdited, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal)';
   }
 
   @override
@@ -98,8 +92,7 @@ class MediaLocalInfo {
         other.serverUID == serverUID &&
         other.isEdited == isEdited &&
         other.haveItOffline == haveItOffline &&
-        other.mustDownloadOriginal == mustDownloadOriginal &&
-        other.fileExtension == fileExtension;
+        other.mustDownloadOriginal == mustDownloadOriginal;
   }
 
   @override
@@ -113,8 +106,7 @@ class MediaLocalInfo {
         serverUID.hashCode ^
         isEdited.hashCode ^
         haveItOffline.hashCode ^
-        mustDownloadOriginal.hashCode ^
-        fileExtension.hashCode;
+        mustDownloadOriginal.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -129,7 +121,6 @@ class MediaLocalInfo {
       'isEdited': isEdited ? 1 : 0,
       'haveItOffline': haveItOffline ? 1 : 0,
       'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
-      'fileExtension': fileExtension,
     };
   }
 
@@ -139,7 +130,6 @@ class MediaLocalInfo {
 class DefaultMediaLocalInfo extends MediaLocalInfo {
   const DefaultMediaLocalInfo({
     required super.id,
-    required super.fileExtension,
     super.serverUID,
   }) : super(
           isPreviewCached: false,
