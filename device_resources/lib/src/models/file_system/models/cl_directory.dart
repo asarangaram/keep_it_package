@@ -41,6 +41,7 @@ class CLDirectory {
 
   @override
   String toString() {
+    // ignore: lines_longer_than_80_chars
     return 'CLDirectory(label: $label, name: $name, baseDir: $baseDir, description0: $description0, isStore: $isStore)';
   }
 

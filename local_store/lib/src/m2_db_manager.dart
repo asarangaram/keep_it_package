@@ -188,6 +188,7 @@ class DBManager extends Store {
 
   @override
   String toString() {
+    // ignore: lines_longer_than_80_chars
     return 'DBManager(db: $db, dbWriter: $dbWriter, dbReader: $dbReader, onReload: $onReload)';
   }
 
