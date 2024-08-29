@@ -1,13 +1,12 @@
 import 'dart:io';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../../../backup_service/dialogs.dart';
-import '../../../store_service/widgets/the_store.dart';
 import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
@@ -15,11 +14,13 @@ import 'view_notes.dart';
 class TextNote extends StatefulWidget {
   const TextNote({
     required this.media,
+    required this.theStore,
     this.note,
     super.key,
   });
   final CLMedia media;
   final CLMedia? note;
+  final StoreManager theStore;
 
   @override
   State<TextNote> createState() => _TextNoteState();
@@ -31,9 +32,11 @@ class _TextNoteState extends State<TextNote> {
   late bool isEditing;
   bool textModified = false;
   late String textOriginal;
+  late final StoreManager theStore;
   @override
   void initState() {
     super.initState();
+    theStore = widget.theStore;
 
     textEditingController = TextEditingController();
     isEditing = widget.note == null;
@@ -42,7 +45,7 @@ class _TextNoteState extends State<TextNote> {
 
   @override
   void didChangeDependencies() {
-    textOriginal = TheStore.of(context).getText(widget.note);
+    textOriginal = theStore.getText(widget.note);
     textEditingController.text = textOriginal;
     isEditing = widget.note == null;
     textModified = textEditingController.text.trim().isNotEmpty &&
@@ -91,7 +94,7 @@ class _TextNoteState extends State<TextNote> {
                       false;
                   if (!confirmed) return;
                   if (context.mounted) {
-                    await TheStore.of(context).deleteNote(widget.note!);
+                    await theStore.deleteMedia(widget.note!);
                     textEditingController.clear();
                   }
                 },
@@ -153,11 +156,11 @@ class _TextNoteState extends State<TextNote> {
     if (textModified) {
       final String path;
       if (widget.note == null) {
-        path = await TheStore.of(context).createTempFile(ext: 'txt');
+        path = await theStore.createTempFile(ext: 'txt');
         await File(path).writeAsString(textEditingController.text.trim());
 
         if (mounted) {
-          await TheStore.of(context).upsertNote(
+          await theStore.upsertNote(
             path,
             CLMediaType.text,
             mediaMultiple: [widget.media],
@@ -166,10 +169,10 @@ class _TextNoteState extends State<TextNote> {
         }
         textOriginal = textEditingController.text.trim();
       } else {
-        path = TheStore.of(context).getNotesPath(widget.note!);
+        path = theStore.getMediaPath(widget.note!);
         await File(path).writeAsString(textEditingController.text.trim());
         if (mounted) {
-          textOriginal = TheStore.of(context).getText(widget.note);
+          textOriginal = theStore.getText(widget.note);
         }
       }
 

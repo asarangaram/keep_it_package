@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/widgets/the_store.dart';
 import 'decorations.dart';
 import 'live_audio_view.dart';
 import 'recorded_audio_view.dart';
@@ -14,12 +14,14 @@ import 'recorded_audio_view.dart';
 class AudioRecorder extends StatefulWidget {
   const AudioRecorder({
     required this.media,
+    required this.theStore,
     this.child,
     super.key,
     this.editMode = false,
     this.onEditCancel,
   });
   final CLMedia media;
+  final StoreManager theStore;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
@@ -32,7 +34,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   late final RecorderController recorderController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
-
+  late final StoreManager theStore;
   bool isRecording = false;
   bool isRecordingCompleted = false;
 
@@ -41,6 +43,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   @override
   void initState() {
     super.initState();
+    theStore = widget.theStore;
     _initialiseControllers();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
@@ -144,7 +147,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await TheStore.of(context).upsertNote(
+      await theStore.upsertNote(
         audioMessage!,
         CLMediaType.audio,
         mediaMultiple: [widget.media],
@@ -171,7 +174,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
           setState(() {});
         }
       } else {
-        final path = await TheStore.of(context).createTempFile(ext: 'aac');
+        final path = await theStore.createTempFile(ext: 'aac');
         await recorderController.record(path: path); // Path is optional
       }
     } catch (e) {

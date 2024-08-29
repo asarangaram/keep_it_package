@@ -90,75 +90,79 @@ class TimeLineView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
 
-    return CLSimpleGalleryView(
-      key: ValueKey(label),
-      title: label,
-      backButton: ColanPlatformSupport.isMobilePlatform
-          ? null
-          : Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: CLButtonIcon.small(
-                MdiIcons.arrowLeft,
-                onTap: () => CLPopScreen.onPop(context),
+    return GetStoreManager(
+      builder: (theStore) {
+        return CLSimpleGalleryView(
+          key: ValueKey(label),
+          title: label,
+          backButton: ColanPlatformSupport.isMobilePlatform
+              ? null
+              : Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: CLButtonIcon.small(
+                    MdiIcons.arrowLeft,
+                    onTap: () => CLPopScreen.onPop(context),
+                  ),
+                ),
+          identifier: parentIdentifier,
+          columns: 4,
+          galleryMap: galleryGroups,
+          emptyState: const EmptyState(),
+          itemBuilder: (context, item, {required quickMenuScopeKey}) => Hero(
+            tag: '$parentIdentifier /item/${item.id}',
+            child: MediaAsFile(
+              media: item,
+              getPreview: (media) => PreviewService(
+                media: media,
+                keepAspectRatio: false,
               ),
+              onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
+              quickMenuScopeKey: quickMenuScopeKey,
+              actionControl: actionControl,
             ),
-      identifier: parentIdentifier,
-      columns: 4,
-      galleryMap: galleryGroups,
-      emptyState: const EmptyState(),
-      itemBuilder: (context, item, {required quickMenuScopeKey}) => Hero(
-        tag: '$parentIdentifier /item/${item.id}',
-        child: MediaAsFile(
-          media: item,
-          getPreview: (media) => PreviewService(
-            media: media,
-            keepAspectRatio: false,
           ),
-          onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
-          quickMenuScopeKey: quickMenuScopeKey,
-          actionControl: actionControl,
-        ),
-      ),
-      onPickFiles: onPickFiles,
-      onCameraCapture: onCameraCapture,
-      onRefresh: () async => TheStore.of(context).reloadStore(),
-      selectionActions: (context, items) {
-        return [
-          CLMenuItem(
-            title: 'Delete',
-            icon: Icons.delete,
-            onTap: () async {
-              final confirmed = await ConfirmAction.deleteMediaMultiple(
-                    context,
-                    media: items,
-                  ) ??
-                  false;
-              if (!confirmed) return confirmed;
-              if (context.mounted) {
-                return TheStore.of(context).deleteMediaMultiple(items);
-              }
-              return null;
-            },
-          ),
-          CLMenuItem(
-            title: 'Move',
-            icon: MdiIcons.imageMove,
-            onTap: () => TheStore.of(context)
-                .openWizard(context, items, UniversalMediaSource.move),
-          ),
-          CLMenuItem(
-            title: 'Share',
-            icon: MdiIcons.shareAll,
-            onTap: () =>
-                TheStore.of(context).shareMediaMultiple(context, items),
-          ),
-          if (ColanPlatformSupport.isMobilePlatform)
-            CLMenuItem(
-              title: 'Pin',
-              icon: MdiIcons.pin,
-              onTap: () => TheStore.of(context).togglePinMultiple(items),
-            ),
-        ];
+          onPickFiles: onPickFiles,
+          onCameraCapture: onCameraCapture,
+          onRefresh: () async => TheStore.of(context).reloadStore(),
+          selectionActions: (context, items) {
+            return [
+              CLMenuItem(
+                title: 'Delete',
+                icon: Icons.delete,
+                onTap: () async {
+                  final confirmed = await ConfirmAction.deleteMediaMultiple(
+                        context,
+                        media: items,
+                      ) ??
+                      false;
+                  if (!confirmed) return confirmed;
+                  if (context.mounted) {
+                    return theStore.deleteMediaMultiple(items);
+                  }
+                  return null;
+                },
+              ),
+              CLMenuItem(
+                title: 'Move',
+                icon: MdiIcons.imageMove,
+                onTap: () => TheStore.of(context)
+                    .openWizard(context, items, UniversalMediaSource.move),
+              ),
+              CLMenuItem(
+                title: 'Share',
+                icon: MdiIcons.shareAll,
+                onTap: () =>
+                    TheStore.of(context).shareMediaMultiple(context, items),
+              ),
+              if (ColanPlatformSupport.isMobilePlatform)
+                CLMenuItem(
+                  title: 'Pin',
+                  icon: MdiIcons.pin,
+                  onTap: () => theStore.togglePinMultiple(items),
+                ),
+            ];
+          },
+        );
       },
     );
   }

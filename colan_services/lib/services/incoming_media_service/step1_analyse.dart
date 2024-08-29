@@ -3,7 +3,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../store_service/widgets/the_store.dart';
+import '../store_service/store_service.dart';
+
 import 'models/cl_shared_media.dart';
 
 class AnalysePage extends StatelessWidget {
@@ -24,20 +25,24 @@ class AnalysePage extends StatelessWidget {
       child: WizardLayout(
         title: 'Analysing Shared Media',
         onCancel: onCancel,
-        child: StreamProgressView(
-          stream: () => TheStore.of(context).newMediaMultipleStream(
-            mediaFiles: incomingMedia.entries,
-            onDone: ({required List<CLMedia> mediaMultiple}) {
-              onDone(
-                mg: CLSharedMedia(
-                  entries: mediaMultiple,
-                  collection: incomingMedia.collection,
-                  type: incomingMedia.type,
-                ),
-              );
-            },
-          ),
-          onCancel: onCancel,
+        child: GetStoreManager(
+          builder: (theStore) {
+            return StreamProgressView(
+              stream: () => theStore.analyseMediaStream(
+                mediaFiles: incomingMedia.entries,
+                onDone: ({required List<CLMedia> mediaMultiple}) {
+                  onDone(
+                    mg: CLSharedMedia(
+                      entries: mediaMultiple,
+                      collection: incomingMedia.collection,
+                      type: incomingMedia.type,
+                    ),
+                  );
+                },
+              ),
+              onCancel: onCancel,
+            );
+          },
         ),
       ),
     );

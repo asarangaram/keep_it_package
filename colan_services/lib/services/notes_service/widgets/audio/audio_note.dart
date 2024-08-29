@@ -3,21 +3,21 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/widgets/the_store.dart';
-
 class AudioNote extends StatefulWidget {
   const AudioNote(
     this.note, {
+    required this.theStore,
     required this.onDeleteNote,
     super.key,
     this.editMode = true,
     this.onEditMode,
   });
-
+  final StoreManager theStore;
   final CLMedia note;
   final bool editMode;
   final VoidCallback? onEditMode;
@@ -32,16 +32,18 @@ class _AudioNoteState extends State<AudioNote> {
   late StreamSubscription<PlayerState>? playerStateSubscription;
   late bool validAudio;
   late String notePath;
+  late final StoreManager theStore;
 
   @override
   void initState() {
     super.initState();
+    theStore = widget.theStore;
     controller = PlayerController();
   }
 
   @override
   void didChangeDependencies() {
-    notePath = TheStore.of(context).getNotesPath(widget.note);
+    notePath = theStore.getMediaPath(widget.note);
     if (File(notePath).existsSync()) {
       validAudio = true;
       _preparePlayer();

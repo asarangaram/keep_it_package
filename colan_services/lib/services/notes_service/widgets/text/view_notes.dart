@@ -1,8 +1,8 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/widgets/the_store.dart';
 import '../../models/input_decoration.dart';
 
 class ViewNotes extends StatelessWidget {
@@ -12,29 +12,33 @@ class ViewNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InputDecorator(
-      decoration: NotesTextFieldDecoration.inputDecoration(
-        context,
-        hintText: 'Add Notes',
-        actionBuilder: null,
-      ),
-      child: SizedBox(
-        height: double.infinity,
-        child: GestureDetector(
-          onTap: onTap,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.zero,
-            child: Text(
-              TheStore.of(context).getText(note),
-              textAlign: TextAlign.start,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontSize: CLScaleType.standard.fontSize),
+    return GetStoreManager(
+      builder: (theStore) {
+        return InputDecorator(
+          decoration: NotesTextFieldDecoration.inputDecoration(
+            context,
+            hintText: 'Add Notes',
+            actionBuilder: null,
+          ),
+          child: SizedBox(
+            height: double.infinity,
+            child: GestureDetector(
+              onTap: onTap,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.zero,
+                child: Text(
+                  theStore.getText(note),
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(fontSize: CLScaleType.standard.fontSize),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

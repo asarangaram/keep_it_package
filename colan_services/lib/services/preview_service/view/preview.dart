@@ -1,15 +1,13 @@
 import 'dart:io';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:store/store.dart';
 
 import '../../../internal/widgets/broken_image.dart';
 import '../../image_view_service/image_view.dart';
-import '../../store_service/widgets/the_store.dart';
-import 'image_thumbnail.dart';
 
 class PreviewService extends StatelessWidget {
   const PreviewService({
@@ -22,40 +20,36 @@ class PreviewService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (media.type.isFile &&
-        !File(TheStore.of(context).getMediaPath(media)).existsSync()) {
-      //throw Exception('File not found ${media.path}');
-      return const BrokenImage();
-    }
     final fit = keepAspectRatio ? BoxFit.contain : BoxFit.cover;
 
-    return KeepAspectRatio(
-      keepAspectRatio: keepAspectRatio,
-      child: switch (media.type) {
-        CLMediaType.image || CLMediaType.video => ImageThumbnail(
-            media: media,
-            builder: (context, thumbnailFile) {
-              return thumbnailFile.when(
-                data: (file) => FutureBuilder(
-                  future: AlbumManager.isPinBroken(media.pin),
-                  builder: (context, snapshot) {
-                    return ImageViewerBasic(
-                      file: file,
-                      fit: fit,
-                      isPinned: media.pin != null,
-                      isPinBroken: snapshot.data ?? false,
-                      overlayIcon: (media.type == CLMediaType.video)
-                          ? Icons.play_arrow_sharp
-                          : null,
-                    );
-                  },
-                ),
-                error: (_, __) => const BrokenImage(),
-                loading: () => const GreyShadowShimmerContainer(),
-              );
-            },
-          ),
-        _ => const BrokenImage()
+    return GetStoreManager(
+      builder: (theStore) {
+        final file = File(theStore.getMediaPath(media));
+        if (media.type.isFile && !file.existsSync()) {
+          //throw Exception('File not found ${media.path}');
+          return const BrokenImage();
+        }
+
+        return KeepAspectRatio(
+          keepAspectRatio: keepAspectRatio,
+          child: switch (media.type) {
+            CLMediaType.image || CLMediaType.video => FutureBuilder(
+                future: AlbumManager.isPinBroken(media.pin),
+                builder: (context, snapshot) {
+                  return ImageViewerBasic(
+                    file: file,
+                    fit: fit,
+                    isPinned: media.pin != null,
+                    isPinBroken: snapshot.data ?? false,
+                    overlayIcon: (media.type == CLMediaType.video)
+                        ? Icons.play_arrow_sharp
+                        : null,
+                  );
+                },
+              ),
+            _ => const BrokenImage()
+          },
+        );
       },
     );
   }

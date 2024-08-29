@@ -1,10 +1,9 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../store_service/providers/gallery_group_provider.dart';
-import '../../store_service/widgets/the_store.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -52,37 +51,40 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       ) =>
           Hero(
         tag: '${type.identifier} /item/${item.id}',
-        child: GestureDetector(
-          onTap: () async {
-            await TheStore.of(context).openEditor(
-              context,
-              item,
-              canDuplicateMedia: false,
-            );
+        child: GetStoreManager(
+          builder: (theStore) {
+            return GestureDetector(
+              onTap: () async {
+                await TheStore.of(context).openEditor(
+                  context,
+                  item,
+                  canDuplicateMedia: false,
+                );
 
-            /// MEdia might have got updated, better reload and update the
-            ///  provider
-            if (context.mounted) {
-              final refreshedMedia =
-                  await TheStore.of(context).getMediaMultipleByIds(
-                media0.entries
-                    .where((e) => e.id != null)
-                    .map((e) => e.id!)
-                    .toList(),
-              );
-              ref.read(universalMediaProvider(type).notifier).mediaGroup =
-                  media0.copyWith(
-                entries: refreshedMedia
-                    .where((e) => e != null)
-                    .map((e) => e!)
-                    .toList(),
-              );
-            }
+                /// MEdia might have got updated, better reload and update the
+                ///  provider
+                if (context.mounted) {
+                  final refreshedMedia = await theStore.getMediaMultipleByIds(
+                    media0.entries
+                        .where((e) => e.id != null)
+                        .map((e) => e.id!)
+                        .toList(),
+                  );
+                  ref.read(universalMediaProvider(type).notifier).mediaGroup =
+                      media0.copyWith(
+                    entries: refreshedMedia
+                        .where((e) => e != null)
+                        .map((e) => e!)
+                        .toList(),
+                  );
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: widget.getPreview(item),
+              ),
+            );
           },
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: widget.getPreview(item),
-          ),
         ),
       ),
       columns: 4,

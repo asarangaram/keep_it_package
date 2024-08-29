@@ -20,55 +20,59 @@ class CollectionAsFolder extends ConsumerWidget {
   final Widget Function(CLMedia media) getPreview;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WrapStandardQuickMenu(
-      quickMenuScopeKey: quickMenuScopeKey,
-      onEdit: () async {
-        final updated = await CollectionEditor.popupDialog(
-          context,
-          collection: collection,
-        );
-        if (updated != null && context.mounted) {
-          await TheStore.of(context).upsertCollection(updated);
-        }
-
-        return true;
-      },
-      onDelete: () async {
-        final confirmed = await ConfirmAction.deleteCollection(
+    return GetStoreManager(
+      builder: (theStore) {
+        return WrapStandardQuickMenu(
+          quickMenuScopeKey: quickMenuScopeKey,
+          onEdit: () async {
+            final updated = await CollectionEditor.popupDialog(
               context,
               collection: collection,
-            ) ??
-            false;
-        if (!confirmed) return confirmed;
-        if (context.mounted) {
-          return TheStore.of(context).deleteCollection(collection);
-        }
-        return null;
-      },
-      onTap: () async {
-        await TheStore.of(context)
-            .openCollection(context, collectionId: collection.id);
-        return true;
-      },
-      child: Column(
-        children: [
-          Flexible(
-            child: CollectionPreviewGenerator(
-              collection: collection,
-              getPreview: getPreview,
-            ),
+            );
+            if (updated != null && context.mounted) {
+              await theStore.upsertCollection(updated);
+            }
+
+            return true;
+          },
+          onDelete: () async {
+            final confirmed = await ConfirmAction.deleteCollection(
+                  context,
+                  collection: collection,
+                ) ??
+                false;
+            if (!confirmed) return confirmed;
+            if (context.mounted) {
+              return theStore.deleteCollection(collection);
+            }
+            return null;
+          },
+          onTap: () async {
+            await TheStore.of(context)
+                .openCollection(context, collectionId: collection.id);
+            return true;
+          },
+          child: Column(
+            children: [
+              Flexible(
+                child: CollectionPreviewGenerator(
+                  collection: collection,
+                  getPreview: getPreview,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  collection.label,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              collection.label,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

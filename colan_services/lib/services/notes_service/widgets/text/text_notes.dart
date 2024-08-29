@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
@@ -14,9 +15,14 @@ class TextNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextNote(
-      media: media,
-      note: notes.firstOrNull,
+    return GetStoreManager(
+      builder: (theStore) {
+        return TextNote(
+          media: media,
+          theStore: theStore,
+          note: notes.firstOrNull,
+        );
+      },
     );
   }
 }

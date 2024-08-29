@@ -34,9 +34,13 @@ class SettingsMainPage extends ConsumerWidget {
                     title: Text('Deleted Items (${deletedMedia.length})'),
                   ),
                 const StorageMonitor(),
-                BackupService(
-                  onShareFiles: TheStore.of(context).shareFiles,
-                  onCreateBackupFile: TheStore.of(context).createBackupFile,
+                GetStoreManager(
+                  builder: (theStore) {
+                    return BackupService(
+                      onShareFiles: TheStore.of(context).shareFiles,
+                      onCreateBackupFile: theStore.createBackupFile,
+                    );
+                  },
                 ),
               ],
             );

@@ -24,27 +24,33 @@ class MediaAsFile extends ConsumerWidget {
   final ActionControl actionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WrapStandardQuickMenu(
-      quickMenuScopeKey: quickMenuScopeKey,
-      onMove: () => TheStore.of(context)
-          .openWizard(context, [media], UniversalMediaSource.move),
-      onDelete: () async {
-        return TheStore.of(context).deleteMediaMultiple([media]);
+    return GetStoreManager(
+      builder: (theStore) {
+        return WrapStandardQuickMenu(
+          quickMenuScopeKey: quickMenuScopeKey,
+          onMove: () => TheStore.of(context)
+              .openWizard(context, [media], UniversalMediaSource.move),
+          onDelete: () async {
+            return theStore.deleteMediaMultiple([media]);
+          },
+          onShare: () =>
+              TheStore.of(context).shareMediaMultiple(context, [media]),
+          onEdit: (media.type == CLMediaType.video &&
+                  !VideoEditServices.isSupported)
+              ? null
+              : () async {
+                  /* final updatedMedia =  */ await TheStore.of(context)
+                      .openEditor(
+                    context,
+                    media,
+                    canDuplicateMedia: actionControl.canDuplicateMedia,
+                  );
+                  return true;
+                },
+          onTap: onTap,
+          child: getPreview(media),
+        );
       },
-      onShare: () => TheStore.of(context).shareMediaMultiple(context, [media]),
-      onEdit: (media.type == CLMediaType.video &&
-              !VideoEditServices.isSupported)
-          ? null
-          : () async {
-              /* final updatedMedia =  */ await TheStore.of(context).openEditor(
-                context,
-                media,
-                canDuplicateMedia: actionControl.canDuplicateMedia,
-              );
-              return true;
-            },
-      onTap: onTap,
-      child: getPreview(media),
     );
   }
 }

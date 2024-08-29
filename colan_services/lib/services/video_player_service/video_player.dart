@@ -1,10 +1,10 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_services/services/video_player_service/views/get_video_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 import 'package:video_player/video_player.dart';
 
-import '../store_service/widgets/the_store.dart';
 import 'models/video_player_state.dart';
 import 'providers/video_player_state.dart';
 import 'views/video_controls.dart';
@@ -57,93 +57,97 @@ class VideoPlayerService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    switch (playerService) {
-      case PlayerServices.player:
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (context.mounted && autoStart) {
-            await ref.read(videoPlayerStateProvider.notifier).setVideo(
-                  TheStore.of(context).getMediaPath(media),
-                  autoPlay: autoPlay,
+    return GetStoreManager(
+      builder: (theStore) {
+        switch (playerService) {
+          case PlayerServices.player:
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (context.mounted && autoStart) {
+                await ref.read(videoPlayerStateProvider.notifier).setVideo(
+                      theStore.getMediaPath(media),
+                      autoPlay: autoPlay,
+                    );
+              }
+            });
+
+            return GetVideoController(
+              builder: (
+                VideoPlayerState state,
+                VideoPlayerController controller,
+              ) {
+                if (state.path == theStore.getMediaPath(media)) {
+                  return VideoLayer(
+                    controller: controller,
+                    inplaceControl: inplaceControl,
+                  );
+                } else {
+                  return GestureDetector(
+                    onTap: onSelect,
+                    child: alternate,
+                  );
+                }
+              },
+              errorBuilder: (message, e) {
+                return GestureDetector(
+                  onTap: onSelect,
+                  child: alternate,
                 );
-          }
-        });
+              },
+              loadingBuilder: () {
+                return Stack(
+                  children: [
+                    if (alternate != null) alternate!,
+                    const Center(child: CircularProgressIndicator()),
+                  ],
+                );
+              },
+            );
+          case PlayerServices.controlMenu:
+            return GetVideoController(
+              builder: (
+                VideoPlayerState state,
+                VideoPlayerController controller,
+              ) {
+                if (state.path == theStore.getMediaPath(media)) {
+                  return VideoControls(controller: controller);
+                } else {
+                  return Container();
+                }
+              },
+              errorBuilder: (message, e) {
+                return Container();
+              },
+              loadingBuilder: () {
+                return Container();
+              },
+            );
+          case PlayerServices.playStateBuilder:
+            if (media.type != CLMediaType.video) {
+              return builder!(isPlaying: false);
+            }
+        }
 
         return GetVideoController(
           builder: (
             VideoPlayerState state,
             VideoPlayerController controller,
           ) {
-            if (state.path == TheStore.of(context).getMediaPath(media)) {
-              return VideoLayer(
+            if (state.path == theStore.getMediaPath(media)) {
+              return PlayerStateMonitor(
                 controller: controller,
-                inplaceControl: inplaceControl,
+                builder: builder!,
               );
             } else {
-              return GestureDetector(
-                onTap: onSelect,
-                child: alternate,
-              );
+              return builder!(isPlaying: false);
             }
           },
           errorBuilder: (message, e) {
-            return GestureDetector(
-              onTap: onSelect,
-              child: alternate,
-            );
+            return builder!(isPlaying: false);
           },
           loadingBuilder: () {
-            return Stack(
-              children: [
-                if (alternate != null) alternate!,
-                const Center(child: CircularProgressIndicator()),
-              ],
-            );
+            return builder!(isPlaying: false);
           },
         );
-      case PlayerServices.controlMenu:
-        return GetVideoController(
-          builder: (
-            VideoPlayerState state,
-            VideoPlayerController controller,
-          ) {
-            if (state.path == TheStore.of(context).getMediaPath(media)) {
-              return VideoControls(controller: controller);
-            } else {
-              return Container();
-            }
-          },
-          errorBuilder: (message, e) {
-            return Container();
-          },
-          loadingBuilder: () {
-            return Container();
-          },
-        );
-      case PlayerServices.playStateBuilder:
-        if (media.type != CLMediaType.video) {
-          return builder!(isPlaying: false);
-        }
-    }
-
-    return GetVideoController(
-      builder: (
-        VideoPlayerState state,
-        VideoPlayerController controller,
-      ) {
-        if (state.path == TheStore.of(context).getMediaPath(media)) {
-          return PlayerStateMonitor(
-            controller: controller,
-            builder: builder!,
-          );
-        } else {
-          return builder!(isPlaying: false);
-        }
-      },
-      errorBuilder: (message, e) {
-        return builder!(isPlaying: false);
-      },
-      loadingBuilder: () {
-        return builder!(isPlaying: false);
       },
     );
   }

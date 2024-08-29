@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
-
-import '../../store_service/widgets/the_store.dart';
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({
@@ -78,73 +77,77 @@ class CLMediaCollage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaWithPreview = mediaList.where((e) {
-      return File(TheStore.of(context).getMediaPath(e)).existsSync();
-    }).toList();
-    if (mediaWithPreview.isEmpty) {
-      return onBuildItem(
-        context,
-        whenNopreview,
-      );
-    }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final int x;
-        final int? y;
+    return GetStoreManager(
+      builder: (theStore) {
+        final mediaWithPreview = mediaList.where((e) {
+          return File(theStore.getMediaPath(e)).existsSync();
+        }).toList();
+        if (mediaWithPreview.isEmpty) {
+          return onBuildItem(
+            context,
+            whenNopreview,
+          );
+        }
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final int x;
+            final int? y;
 
-        if (childSize == null) {
-          if (vCount != null) {
-            final totalCount = hCount! * vCount!;
-            if (mediaWithPreview.length < totalCount) {
-              if (mediaWithPreview.length < hCount!) {
-                x = mediaWithPreview.length;
-                y = 1;
+            if (childSize == null) {
+              if (vCount != null) {
+                final totalCount = hCount! * vCount!;
+                if (mediaWithPreview.length < totalCount) {
+                  if (mediaWithPreview.length < hCount!) {
+                    x = mediaWithPreview.length;
+                    y = 1;
+                  } else {
+                    x = hCount!;
+                    y = (mediaWithPreview.length + hCount! - 1) ~/ hCount!;
+                  }
+                } else {
+                  x = hCount!;
+                  y = vCount;
+                }
               } else {
                 x = hCount!;
-                y = (mediaWithPreview.length + hCount! - 1) ~/ hCount!;
+                y = vCount;
               }
             } else {
-              x = hCount!;
-              y = vCount;
+              final pageMatrix = computePageMatrix(
+                pageSize: Size(
+                  constraints.maxWidth,
+                  constraints.maxHeight,
+                ),
+                itemSize: childSize!,
+              );
+              x = pageMatrix.itemsInRow;
+              y = canScroll ? null : pageMatrix.itemsInColumn;
             }
-          } else {
-            x = hCount!;
-            y = vCount;
-          }
-        } else {
-          final pageMatrix = computePageMatrix(
-            pageSize: Size(
-              constraints.maxWidth,
-              constraints.maxHeight,
-            ),
-            itemSize: childSize!,
-          );
-          x = pageMatrix.itemsInRow;
-          y = canScroll ? null : pageMatrix.itemsInColumn;
-        }
-        return switch (y) {
-          null => Matrix2D.scrollable(
-              itemCount: mediaWithPreview.length,
-              hCount: x,
-              itemBuilder: (context, index) {
-                return onBuildItem(
-                  context,
-                  itemBuilder(context, index),
-                );
-              },
-            ),
-          _ => Matrix2D(
-              itemCount: mediaWithPreview.length,
-              hCount: x,
-              vCount: y,
-              itemBuilder: (context, index) {
-                return onBuildItem(
-                  context,
-                  itemBuilder(context, index),
-                );
-              },
-            )
-        };
+            return switch (y) {
+              null => Matrix2D.scrollable(
+                  itemCount: mediaWithPreview.length,
+                  hCount: x,
+                  itemBuilder: (context, index) {
+                    return onBuildItem(
+                      context,
+                      itemBuilder(context, index),
+                    );
+                  },
+                ),
+              _ => Matrix2D(
+                  itemCount: mediaWithPreview.length,
+                  hCount: x,
+                  vCount: y,
+                  itemBuilder: (context, index) {
+                    return onBuildItem(
+                      context,
+                      itemBuilder(context, index),
+                    );
+                  },
+                )
+            };
+          },
+        );
       },
     );
   }

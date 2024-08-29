@@ -89,24 +89,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   @override
   Widget build(BuildContext context) {
     final storeAction = StoreActions(
-      upsertCollection: widget.storeManager.upsertCollection,
-      upsertNote: widget.storeManager.upsertNote,
-      newMedia: widget.storeManager.newImageOrVideo,
-      newMediaMultipleStream: widget.storeManager.analyseMediaStream,
-      moveToCollectionStream: widget.storeManager.moveToCollectionStream,
-      restoreMediaMultiple: widget.storeManager.restoreMediaMultiple,
-      pinMediaMultiple: widget.storeManager.pinMediaMultiple,
-      removePinMediaMultiple: widget.storeManager.removePinMediaMultiple,
-      togglePinMultiple: widget.storeManager.togglePinMultiple,
-      replaceMedia: widget.storeManager.replaceMedia,
-      cloneAndReplaceMedia: widget.storeManager.cloneAndReplaceMedia,
-
-      deleteCollection: widget.storeManager.deleteCollection,
-      deleteNote: widget.storeManager.onDeleteNote,
-      deleteMediaMultiple: widget.storeManager.deleteMediaMultiple,
-      permanentlyDeleteMediaMultiple:
-          widget.storeManager.permanentlyDeleteMediaMultiple,
-
       /// Share modules
       shareMediaMultiple: shareMediaMultiple,
       shareFiles: ShareManager.onShareFiles,
@@ -118,17 +100,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       openMedia: openMedia,
       openCollection: openCollection,
 
-      createTempFile: widget.storeManager.createTempFile,
-      createBackupFile: widget.storeManager.createBackupFile,
-
       reloadStore: reloadStore,
-      getMediaPath: widget.storeManager.getMediaPath,
-      getMediaLabel: widget.storeManager.getMediaLabel,
-      getPreviewPath: widget.storeManager.getPreviewPath,
-      getNotesPath: widget.storeManager.getMediaPath,
-      getText: widget.storeManager.getText,
-
-      getMediaMultipleByIds: widget.storeManager.getMediaMultipleByIds,
     );
     return TheStore(
       storeAction: storeAction,

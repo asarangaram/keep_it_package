@@ -21,54 +21,57 @@ class MediaEditorPage extends StatelessWidget {
       return BasicPageService.message(message: 'No Media Provided');
     }
 
-    return GetMedia(
-      id: mediaId!,
-      buildOnData: (media) {
-        if (media == null ||
-            !File(TheStore.of(context).getMediaPath(media)).existsSync()) {
-          return BasicPageService.message(
-            message: ' Media not found',
-          );
-        }
-
-        return InvokeEditor(
-          media: media,
-          canDuplicateMedia: canDuplicateMedia,
-          onCreateNewFile: () async {
-            return TheStore.of(context).createTempFile(ext: 'jpg');
-          },
-          onCancel: () async => context.pop(),
-          onSave: (file, {required overwrite}) async {
-            final CLMedia resultMedia;
-            if (overwrite) {
-              final confirmed = await ConfirmAction.replaceMedia(
-                    context,
-                    media: media,
-                  ) ??
-                  false;
-              if (confirmed && context.mounted) {
-                resultMedia =
-                    await TheStore.of(context).replaceMedia(media, file);
-              } else {
-                resultMedia = media;
-              }
-            } else {
-              final confirmed = await ConfirmAction.cloneAndReplaceMedia(
-                    context,
-                    media: media,
-                  ) ??
-                  false;
-              if (confirmed && context.mounted) {
-                resultMedia = await TheStore.of(context)
-                    .cloneAndReplaceMedia(media, file);
-              } else {
-                resultMedia = media;
-              }
+    return GetStoreManager(
+      builder: (theStore) {
+        return GetMedia(
+          id: mediaId!,
+          buildOnData: (media) {
+            if (media == null ||
+                !File(theStore.getMediaPath(media)).existsSync()) {
+              return BasicPageService.message(
+                message: ' Media not found',
+              );
             }
 
-            if (context.mounted) {
-              context.pop(resultMedia);
-            }
+            return InvokeEditor(
+              media: media,
+              canDuplicateMedia: canDuplicateMedia,
+              onCreateNewFile: () async {
+                return theStore.createTempFile(ext: 'jpg');
+              },
+              onCancel: () async => context.pop(),
+              onSave: (file, {required overwrite}) async {
+                final CLMedia resultMedia;
+                if (overwrite) {
+                  final confirmed = await ConfirmAction.replaceMedia(
+                        context,
+                        media: media,
+                      ) ??
+                      false;
+                  if (confirmed && context.mounted) {
+                    resultMedia = await theStore.replaceMedia(media, file);
+                  } else {
+                    resultMedia = media;
+                  }
+                } else {
+                  final confirmed = await ConfirmAction.cloneAndReplaceMedia(
+                        context,
+                        media: media,
+                      ) ??
+                      false;
+                  if (confirmed && context.mounted) {
+                    resultMedia =
+                        await theStore.cloneAndReplaceMedia(media, file);
+                  } else {
+                    resultMedia = media;
+                  }
+                }
+
+                if (context.mounted) {
+                  context.pop(resultMedia);
+                }
+              },
+            );
           },
         );
       },
@@ -94,20 +97,28 @@ class InvokeEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (media.type) {
       case CLMediaType.image:
-        return ImageEditService(
-          file: File(TheStore.of(context).getMediaPath(media)),
-          onCancel: onCancel,
-          onSave: onSave,
-          onCreateNewFile: onCreateNewFile,
-          canDuplicateMedia: canDuplicateMedia,
+        return GetStoreManager(
+          builder: (theStore) {
+            return ImageEditService(
+              file: File(theStore.getMediaPath(media)),
+              onCancel: onCancel,
+              onSave: onSave,
+              onCreateNewFile: onCreateNewFile,
+              canDuplicateMedia: canDuplicateMedia,
+            );
+          },
         );
       case CLMediaType.video:
         if (VideoEditServices.isSupported) {
-          return VideoEditServices(
-            File(TheStore.of(context).getMediaPath(media)),
-            onSave: onSave,
-            onDone: onCancel,
-            canDuplicateMedia: canDuplicateMedia,
+          return GetStoreManager(
+            builder: (theStore) {
+              return VideoEditServices(
+                File(theStore.getMediaPath(media)),
+                onSave: onSave,
+                onDone: onCancel,
+                canDuplicateMedia: canDuplicateMedia,
+              );
+            },
           );
         }
         return const CLErrorView(errorMessage: 'Not supported yet');

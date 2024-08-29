@@ -10,43 +10,47 @@ class CameraPage extends ConsumerWidget {
   final int? collectionId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetCollection(
-      id: collectionId,
-      buildOnData: (Collection? collection) {
-        return CLCameraService(
-          onCancel: () => CLPopScreen.onPop(context),
-          onError: (String message, {required dynamic error}) async {
-            await ref
-                .read(
-                  notificationMessageProvider.notifier,
-                )
-                .push(
-                  '$message [$error]',
+    return GetStoreManager(
+      builder: (theStore) {
+        return GetCollection(
+          id: collectionId,
+          buildOnData: (Collection? collection) {
+            return CLCameraService(
+              onCancel: () => CLPopScreen.onPop(context),
+              onError: (String message, {required dynamic error}) async {
+                await ref
+                    .read(
+                      notificationMessageProvider.notifier,
+                    )
+                    .push(
+                      '$message [$error]',
+                    );
+              },
+              onNewMedia: (path, {required isVideo}) {
+                return theStore.newImageOrVideo(
+                  path,
+                  isVideo: isVideo,
+                  collection: collection,
                 );
-          },
-          onNewMedia: (path, {required isVideo}) {
-            return TheStore.of(context).newMedia(
-              path,
-              isVideo: isVideo,
-              collection: collection,
-            );
-          },
-          onDone: (mediaList) async {
-            await TheStore.of(context).openWizard(
-              context,
-              mediaList,
-              UniversalMediaSource.captured,
-              collection: collection,
-            );
+              },
+              onDone: (mediaList) async {
+                await TheStore.of(context).openWizard(
+                  context,
+                  mediaList,
+                  UniversalMediaSource.captured,
+                  collection: collection,
+                );
 
-            if (context.mounted) {
-              await CLPopScreen.onPop(context);
-            }
+                if (context.mounted) {
+                  await CLPopScreen.onPop(context);
+                }
+              },
+              getPreview: (media) => PreviewService(
+                media: media,
+                keepAspectRatio: false,
+              ),
+            );
           },
-          getPreview: (media) => PreviewService(
-            media: media,
-            keepAspectRatio: false,
-          ),
         );
       },
     );
