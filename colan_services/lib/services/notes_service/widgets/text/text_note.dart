@@ -91,8 +91,7 @@ class _TextNoteState extends State<TextNote> {
                       false;
                   if (!confirmed) return;
                   if (context.mounted) {
-                    await TheStore.of(context)
-                        .deleteNote(context, widget.note!);
+                    await TheStore.of(context).deleteNote(widget.note!);
                     textEditingController.clear();
                   }
                 },

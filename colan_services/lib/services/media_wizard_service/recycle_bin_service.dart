@@ -121,7 +121,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
                     final res = await TheStore.of(context)
-                        .restoreMediaMultiple(context, currMedia);
+                        .restoreMediaMultiple(currMedia);
 
                     if (res) {
                       await ref
@@ -157,7 +157,6 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                         if (context.mounted) {
                           final res = await TheStore.of(context)
                               .permanentlyDeleteMediaMultiple(
-                            context,
                             currMedia,
                           );
 

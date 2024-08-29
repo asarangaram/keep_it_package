@@ -1,4 +1,6 @@
 export 'extensions/store_delete.dart';
+export 'extensions/store_delete_multiple.dart';
+export 'extensions/store_gallery.dart';
 export 'extensions/store_reader.dart';
 export 'extensions/store_upsert.dart';
 export 'extensions/store_upsert_all.dart';

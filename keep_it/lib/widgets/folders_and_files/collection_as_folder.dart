@@ -41,7 +41,7 @@ class CollectionAsFolder extends ConsumerWidget {
             false;
         if (!confirmed) return confirmed;
         if (context.mounted) {
-          return TheStore.of(context).deleteCollection(context, collection);
+          return TheStore.of(context).deleteCollection(collection);
         }
         return null;
       },

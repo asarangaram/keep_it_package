@@ -29,7 +29,7 @@ class MediaAsFile extends ConsumerWidget {
       onMove: () => TheStore.of(context)
           .openWizard(context, [media], UniversalMediaSource.move),
       onDelete: () async {
-        return TheStore.of(context).deleteMediaMultiple(context, [media]);
+        return TheStore.of(context).deleteMediaMultiple([media]);
       },
       onShare: () => TheStore.of(context).shareMediaMultiple(context, [media]),
       onEdit: (media.type == CLMediaType.video &&

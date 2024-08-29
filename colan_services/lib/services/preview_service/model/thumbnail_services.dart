@@ -230,10 +230,10 @@ class ThumbnailService {
                 File(path).copySync(dataIn.thumbnailPath);
                 File(path).deleteSync();
               } else {
-                print(
+                /* print(
                   'thumnail support not avaialble '
                   'for ${Platform.operatingSystem}',
-                );
+                ); */
                 throw Exception(
                   'thumnail support not avaialble '
                   'for ${Platform.operatingSystem}',

@@ -197,7 +197,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                               if (context.mounted) {
                                 final res =
                                     TheStore.of(context).deleteMediaMultiple(
-                                  context,
                                   currMedia,
                                 );
 

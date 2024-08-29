@@ -11,6 +11,11 @@ import '../models/url_handler.dart';
 import 'store_reader.dart';
 
 extension UpsertExtOnStoreManager on StoreManager {
+  Future<Collection> upsertCollection(Collection collection) async {
+    final updated = await store.upsertCollection(collection);
+    return updated;
+  }
+
   Future<CLMedia?> upsertMediaFromFile(
     String path,
     CLMediaType type, {

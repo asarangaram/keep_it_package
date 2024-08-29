@@ -88,12 +88,10 @@ class StoreActions {
   }) moveToCollectionStream;
 
   // update Pin
-  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
+  final Future<bool> Function(List<CLMedia> mediaMultiple)
       removePinMediaMultiple;
-  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
-      pinMediaMultiple;
-  final Future<bool> Function(BuildContext ctx, List<CLMedia> mediaMultiple)
-      togglePinMultiple;
+  final Future<bool> Function(List<CLMedia> mediaMultiple) pinMediaMultiple;
+  final Future<bool> Function(List<CLMedia> mediaMultiple) togglePinMultiple;
 
   final Future<void> Function(
     String path, // Absolute Path, can't go to CLNote
@@ -104,26 +102,22 @@ class StoreActions {
 
   /////////////////////////////////////////////////////////////////////////////////
   final Future<bool> Function(
-    BuildContext ctx,
     Collection collection,
   ) deleteCollection;
 
   final Future<bool> Function(
-    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) deleteMediaMultiple;
 
   final Future<bool> Function(
-    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) permanentlyDeleteMediaMultiple;
 
   final Future<bool> Function(
-    BuildContext ctx,
     List<CLMedia> mediaMultiple,
   ) restoreMediaMultiple;
 
-  final Future<void> Function(BuildContext ctx, CLMedia note) deleteNote;
+  final Future<void> Function(CLMedia note) deleteNote;
 
   /////////////////////////////////////////////////////////////////////////////////
 

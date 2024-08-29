@@ -1,8 +1,21 @@
+import 'dart:io';
+
 import 'package:store/store.dart';
 
 import '../models/store_manager.dart';
 
 extension ReadExtOnStoreManager on StoreManager {
+  String loadText(CLMedia? media) {
+    if (media?.type != CLMediaType.text) return '';
+    final path = getMediaPath(media!);
+
+    return File(path).existsSync()
+        ? File(path).readAsStringSync()
+        : 'Content Missing. File not found';
+  }
+
+  String getText(CLMedia? note) => loadText(note);
+
   Future<CLMedia?> getMediaById(
     int id,
   ) {
