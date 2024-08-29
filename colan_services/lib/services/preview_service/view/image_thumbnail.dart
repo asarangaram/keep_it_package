@@ -42,10 +42,12 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
       try {
         throw Exception('file not found');
       } catch (e, st) {
-        setState(() {
-          error = e;
-          this.st = st;
-        });
+        if (mounted) {
+          setState(() {
+            error = e;
+            this.st = st;
+          });
+        }
       }
     }
     final previewPath = TheStore.of(context).getPreviewPath(widget.media);
@@ -80,10 +82,12 @@ class FetchThumbnailState extends ConsumerState<ImageThumbnail> {
               try {
                 throw Exception('errorString');
               } catch (e, st) {
-                setState(() {
-                  error = e;
-                  this.st = st;
-                });
+                if (mounted) {
+                  setState(() {
+                    error = e;
+                    this.st = st;
+                  });
+                }
               }
             },
           ),
