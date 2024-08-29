@@ -215,19 +215,30 @@ class ThumbnailService {
               if (File(dataIn.thumbnailPath).existsSync()) {
                 File(dataIn.thumbnailPath).deleteSync();
               }
-              final path = await VideoThumbnail.thumbnailFile(
-                video: dataIn.path,
-                //thumbnailPath: dataIn.thumbnailPath,
-                maxWidth: dataIn.dimension,
-                imageFormat: ImageFormat.JPEG,
-              );
-              if (path == null) {
-                throw const FileSystemException(
-                  'Unable to create video thumbnail',
+              if (Platform.isIOS || Platform.isAndroid) {
+                final path = await VideoThumbnail.thumbnailFile(
+                  video: dataIn.path,
+                  //thumbnailPath: dataIn.thumbnailPath,
+                  maxWidth: dataIn.dimension,
+                  imageFormat: ImageFormat.JPEG,
+                );
+                if (path == null) {
+                  throw const FileSystemException(
+                    'Unable to create video thumbnail',
+                  );
+                }
+                File(path).copySync(dataIn.thumbnailPath);
+                File(path).deleteSync();
+              } else {
+                print(
+                  'thumnail support not avaialble '
+                  'for ${Platform.operatingSystem}',
+                );
+                throw Exception(
+                  'thumnail support not avaialble '
+                  'for ${Platform.operatingSystem}',
                 );
               }
-              File(path).copySync(dataIn.thumbnailPath);
-              File(path).deleteSync();
             } else {
               final img.Image? inputImage;
               if (lookupMimeType(dataIn.path) == 'image/heic') {
