@@ -19,11 +19,8 @@ export 'services/media_wizard_service/media_wizard_service.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;
 export 'services/preview_service/view/cl_media_collage.dart';
 export 'services/preview_service/view/preview.dart' show PreviewService;
-export 'services/store_service/models/store_manager.dart';
-export 'services/store_service/providers/gallery_group_provider.dart';
+
 export 'services/store_service/store_service.dart';
-export 'services/store_service/widgets/store_actions.dart';
-export 'services/store_service/widgets/the_store.dart';
 export 'services/video_edit_service/video_edit_service.dart'
     show VideoEditServices;
 //This must be removed!!

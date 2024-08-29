@@ -8,12 +8,9 @@ import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
-
-import 'url_handler.dart';
 
 extension ExtMetaData on CLMedia {
   Future<CLMedia> getMetadata({
@@ -95,16 +92,16 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   Widget build(BuildContext context) {
     final storeAction = StoreActions(
       upsertCollection: upsertCollection,
-      upsertNote: upsertNote,
-      newMedia: newImageOrVideo,
-      newMediaMultipleStream: analyseMediaStream,
+      upsertNote: widget.storeManager.upsertNote,
+      newMedia: widget.storeManager.newImageOrVideo,
+      newMediaMultipleStream: widget.storeManager.analyseMediaStream,
       moveToCollectionStream: moveToCollectionStream,
       restoreMediaMultiple: restoreMediaMultiple,
       pinMediaMultiple: pinMediaMultiple,
       removePinMediaMultiple: removePinMediaMultiple,
       togglePinMultiple: togglePinMultiple,
-      replaceMedia: replaceMedia,
-      cloneAndReplaceMedia: cloneAndReplaceMedia,
+      replaceMedia: widget.storeManager.replaceMedia,
+      cloneAndReplaceMedia: widget.storeManager.cloneAndReplaceMedia,
 
       deleteCollection: deleteCollection,
       deleteNote: onDeleteNote,
@@ -132,7 +129,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       getNotesPath: getMediaPath,
       getText: getText,
 
-      getMediaMultipleByIds: getMediaMultipleByIds,
+      getMediaMultipleByIds: widget.storeManager.getMediaMultipleByIds,
     );
     return TheStore(
       storeAction: storeAction,
@@ -338,35 +335,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     return true;
   }
 
-  Future<CLMedia> replaceMedia(
-    BuildContext ctx,
-    CLMedia originalMedia,
-    String outFile,
-  ) async {
-    final mediaFromDB = await upsertMediaFromFile(
-      outFile,
-      originalMedia.type,
-      id: originalMedia.id,
-      collectionId: originalMedia.collectionId,
-    );
-
-    return mediaFromDB ?? originalMedia;
-  }
-
-  Future<CLMedia> cloneAndReplaceMedia(
-    BuildContext ctx,
-    CLMedia originalMedia,
-    String outFile,
-  ) async {
-    final mediaFromDB = await upsertMediaFromFile(
-      outFile,
-      originalMedia.type,
-      collectionId: originalMedia.collectionId,
-    );
-
-    return mediaFromDB ?? originalMedia;
-  }
-
   //Can be converted to non static
   Stream<Progress> moveToCollectionStream(
     List<CLMedia> mediaMultiple, {
@@ -444,157 +412,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     }
     return true;
   }
-
-  Future<CLMedia?> newImageOrVideo(
-    String fileName, {
-    required bool isVideo,
-    Collection? collection,
-  }) async =>
-      upsertMediaFromFile(
-        fileName,
-        isVideo ? CLMediaType.video : CLMediaType.image,
-      );
-
-  static const tempCollectionName = '*** Recently Captured';
-
-  Stream<Progress> analyseMediaStream({
-    required List<CLMediaBase> mediaFiles,
-    required void Function({
-      required List<CLMedia> mediaMultiple,
-    }) onDone,
-  }) async* {
-    final candidates = <CLMedia>[];
-    //await Future<void>.delayed(const Duration(seconds: 3));
-    yield Progress(
-      currentItem: path_handler.basename(mediaFiles[0].name),
-      fractCompleted: 0,
-    );
-    for (final (i, item0) in mediaFiles.indexed) {
-      final item1 = await tryDownloadMedia(
-        item0,
-        appSettings: widget.appSettings,
-      );
-      final item = await identifyMediaType(
-        item1,
-        appSettings: widget.appSettings,
-      );
-      if (!item.type.isFile) {
-        // Skip for now
-      }
-      if (item.type.isFile) {
-        final file = File(
-          item.name,
-        );
-        if (file.existsSync()) {
-          final md5String = await file.checksum;
-          final duplicate = await getMediaByMD5(md5String);
-          if (duplicate != null) {
-            candidates.add(duplicate);
-          } else {
-            final mediaFromDB = await upsertMediaFromFile(item.name, item.type);
-            if (mediaFromDB != null) {
-              candidates.add(mediaFromDB);
-            } else {
-              /* Failed to add media, handle here */
-            }
-          }
-        } else {
-          /* Missing file? ignoring */
-        }
-      }
-
-      await Future<void>.delayed(const Duration(milliseconds: 1));
-
-      yield Progress(
-        currentItem: (i + 1 == mediaFiles.length)
-            ? ''
-            : path_handler.basename(
-                mediaFiles[i + 1].name,
-              ),
-        fractCompleted: (i + 1) / mediaFiles.length,
-      );
-    }
-
-    await Future<void>.delayed(const Duration(milliseconds: 1));
-    onDone(
-      mediaMultiple: candidates,
-    );
-  }
-
-  Future<CLMedia?> upsertMediaFromFile(
-    String path,
-    CLMediaType type, {
-    int? id,
-    int? collectionId,
-    bool isAux = false,
-  }) async {
-    int? collectionId0;
-    final Collection collection;
-    final media = (id == null) ? null : await getMediaById(id);
-    collectionId0 = collectionId ?? media?.collectionId;
-
-    final existingCollection =
-        collectionId0 == null ? null : await getCollectionById(collectionId0);
-    collection = existingCollection ??
-        await getCollectionByLabel(tempCollectionName) ??
-        await widget.storeInstance.upsertCollection(
-          const Collection(label: tempCollectionName),
-        );
-
-    final savedMediaFile =
-        File(path).copyTo(widget.appSettings.directories.media.path);
-
-    final md5String = await File(path).checksum;
-    final savedMedia = media?.copyWith(
-          name: path_handler.basename(savedMediaFile.path),
-          fExt: path_handler.extension(savedMediaFile.path),
-          type: type,
-          collectionId: collection.id,
-          md5String: md5String,
-          isHidden: existingCollection == null,
-          isAux: isAux,
-        ) ??
-        CLMedia(
-          name: path_handler.basename(savedMediaFile.path),
-          fExt: path_handler.extension(savedMediaFile.path),
-          type: type,
-          collectionId: collection.id,
-          md5String: md5String,
-          isHidden: collectionId0 == null,
-          isAux: isAux,
-        );
-    final mediaFromDB = await widget.storeInstance.upsertMedia(savedMedia);
-    if (mediaFromDB == null) {
-      await File(
-        path_handler.join(
-          widget.appSettings.directories.media.pathString,
-          savedMedia.name,
-        ),
-      ).deleteIfExists();
-    } else {
-      try {
-        await File(path).deleteIfExists();
-      } catch (e) {
-        /** ignore if original path can't be deleted, it could be 
-         * readonly
-         */
-      }
-    }
-    return mediaFromDB;
-  }
-
-  Future<void> upsertNote(
-    String path,
-    CLMediaType type, {
-    required List<CLMedia> mediaMultiple,
-    CLMedia? note,
-  }) async =>
-      upsertMediaFromFile(
-        path,
-        type,
-        id: note?.id,
-        isAux: true,
-      );
 
   Future<void> deleteMedia(
     BuildContext ctx,
@@ -682,7 +499,8 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   ) async {
     if (collection.id == null) return true;
 
-    final mediaMultiple = await getMediaByCollectionId(collection.id!);
+    final mediaMultiple =
+        await widget.storeManager.getMediaByCollectionId(collection.id!);
 
     /// Delete all media ignoring those already in Recycle
     /// Don't delete CollectionDir / Collection from Media, required for restore
@@ -697,53 +515,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
   }
 
   static const uuidGenerator = Uuid();
-
-  static Future<CLMediaBase> tryDownloadMedia(
-    CLMediaBase mediaFile, {
-    required AppSettings appSettings,
-  }) async {
-    if (mediaFile.type != CLMediaType.url) {
-      return mediaFile;
-    }
-    final mimeType = await URLHandler.getMimeType(
-      mediaFile.name,
-    );
-    if (![
-      CLMediaType.image,
-      CLMediaType.video,
-      CLMediaType.audio,
-      CLMediaType.file,
-    ].contains(mimeType)) {
-      return mediaFile;
-    }
-    final downloadedFile = await URLHandler.download(
-      mediaFile.name,
-      appSettings.directories.download.path,
-    );
-    if (downloadedFile == null) {
-      return mediaFile;
-    }
-    return mediaFile.copyWith(name: downloadedFile, type: mimeType);
-  }
-
-  static Future<CLMediaBase> identifyMediaType(
-    CLMediaBase mediaFile, {
-    required AppSettings appSettings,
-  }) async {
-    if (mediaFile.type != CLMediaType.file) {
-      return mediaFile;
-    }
-
-    final mimeType = switch (lookupMimeType(mediaFile.name)) {
-      (final String mime) when mime.startsWith('image') => CLMediaType.image,
-      (final String mime) when mime.startsWith('video') => CLMediaType.video,
-      _ => CLMediaType.file
-    };
-    if (mimeType == CLMediaType.file) {
-      return mediaFile;
-    }
-    return mediaFile.copyWith(type: mimeType);
-  }
 
   Future<bool> removeMediaFromGallery(
     BuildContext ctx,
@@ -823,72 +594,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await context.push(
       '/items_by_collection/$collectionId',
     );
-  }
-
-  Future<CLMedia?> getMediaById(
-    int id,
-  ) {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.mediaById,
-      parameters: [id],
-    ) as StoreQuery<CLMedia>;
-    return widget.storeInstance.read(q);
-  }
-
-  Future<List<CLMedia?>> getMediaByCollectionId(
-    int collectionId,
-  ) {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.mediaByCollectionId,
-      parameters: [collectionId],
-    ) as StoreQuery<CLMedia>;
-    return widget.storeInstance.readMultiple(q);
-  }
-
-  Future<List<CLMedia?>> getMediaMultipleByIds(
-    List<int> idList,
-  ) {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.mediaByIdList,
-      parameters: ['(${idList.join(', ')})'],
-    ) as StoreQuery<CLMedia>;
-    return widget.storeInstance.readMultiple(q);
-  }
-
-  Future<Collection?> getCollectionByLabel(
-    String label,
-  ) async {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.collectionByLabel,
-      parameters: [label],
-    ) as StoreQuery<Collection>;
-    return widget.storeInstance.read(q);
-  }
-
-  Future<Collection?> getCollectionById(
-    int id,
-  ) async {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.collectionById,
-      parameters: [id],
-    ) as StoreQuery<Collection>;
-    return widget.storeInstance.read(q);
-  }
-
-  Future<CLMedia?> getMediaByMD5(
-    String md5String,
-  ) async {
-    final q = widget.storeInstance.getQuery(
-      DBQueries.mediaByMD5,
-      parameters: [md5String],
-    ) as StoreQuery<CLMedia>;
-    return widget.storeInstance.read(q);
-  }
-
-  Future<List<CLMedia?>?> getOrphanNotes() {
-    final q = widget.storeInstance.getQuery(DBQueries.notesOrphan)
-        as StoreQuery<CLMedia>;
-    return widget.storeInstance.readMultiple(q);
   }
 
   Future<void> reloadStore() async {

@@ -71,13 +71,11 @@ class StoreActions {
   // For replacing path:
 
   final Future<CLMedia> Function(
-    BuildContext ctx,
     CLMedia media,
     String outFile,
   ) replaceMedia;
 
   final Future<CLMedia> Function(
-    BuildContext ctx,
     CLMedia media,
     String outFile,
   ) cloneAndReplaceMedia;
