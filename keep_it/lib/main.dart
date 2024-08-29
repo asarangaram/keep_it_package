@@ -34,21 +34,21 @@ class KeepItApp implements AppDescriptor {
         CLShellRouteDescriptor(
           name: '',
           builder: (context, GoRouterState state) =>
-              const StoreManager(child: CollectionsPage()),
+              const StoreManagerView(child: CollectionsPage()),
           iconData: MdiIcons.home,
           label: 'main',
         ),
         CLShellRouteDescriptor(
           name: 'Pinned',
           builder: (context, state) =>
-              const StoreManager(child: PinnedMediaPage()),
+              const StoreManagerView(child: PinnedMediaPage()),
           iconData: MdiIcons.pin,
           label: 'Pinned',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
           builder: (context, state) =>
-              const StoreManager(child: SettingsMainPage()),
+              const StoreManagerView(child: SettingsMainPage()),
           iconData: MdiIcons.cog,
           label: 'Settings',
         ),
@@ -68,7 +68,7 @@ class KeepItApp implements AppDescriptor {
             }
             return FullscreenLayout(
               useSafeArea: false,
-              child: StoreManager(
+              child: StoreManagerView(
                 child: CameraPage(collectionId: collectionId),
               ),
             );
@@ -94,7 +94,7 @@ class KeepItApp implements AppDescriptor {
             return FullscreenLayout(
               hasBackground: false,
               backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-              child: StoreManager(
+              child: StoreManagerView(
                 child: MediaEditorPage(
                   mediaId: mediaId,
                   canDuplicateMedia: canDuplicateMedia,
@@ -132,7 +132,7 @@ class KeepItApp implements AppDescriptor {
 
             return FullscreenLayout(
               useSafeArea: false,
-              child: StoreManager(
+              child: StoreManagerView(
                 child: MediaPageViewPage(
                   collectionId: collectionId,
                   id: int.parse(state.pathParameters['item_id']!),
@@ -156,7 +156,7 @@ class KeepItApp implements AppDescriptor {
               type = UniversalMediaSource.unclassified;
             }
             return FullscreenLayout(
-              child: StoreManager(child: MediaWizardPage(type: type)),
+              child: StoreManagerView(child: MediaWizardPage(type: type)),
             );
           },
         ),
@@ -181,11 +181,11 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'collections',
           builder: (context, GoRouterState state) =>
-              const StoreManager(child: CollectionsPage()),
+              const StoreManagerView(child: CollectionsPage()),
         ),
         CLRouteDescriptor(
           name: 'items_by_collection/:collectionId',
-          builder: (context, GoRouterState state) => StoreManager(
+          builder: (context, GoRouterState state) => StoreManagerView(
             child: CollectionTimeLinePage(
               collectionId: int.parse(state.pathParameters['collectionId']!),
               actionControl: ActionControl.full(),
@@ -201,7 +201,7 @@ class KeepItApp implements AppDescriptor {
         required void Function({required bool result}) onDiscard,
       }) =>
           FullscreenLayout(
-            child: StoreManager(
+            child: StoreManagerView(
               child: IncomingMediaService(
                 incomingMedia: incomingMedia,
                 onDiscard: onDiscard,
