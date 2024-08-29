@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../models/store_manager.dart';
 import '../providers/p2_db_manager.dart';
 
 class GetStore extends ConsumerWidget {
@@ -14,6 +15,19 @@ class GetStore extends ConsumerWidget {
     return ShowAsyncValue<StoreManager>(
       ref.watch(storeProvider),
       builder: (storeManager) => builder(storeManager.store),
+    );
+  }
+}
+
+class GetStoreManager extends ConsumerWidget {
+  const GetStoreManager({required this.builder, super.key});
+  final Widget Function(StoreManager storeManager) builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ShowAsyncValue<StoreManager>(
+      ref.watch(storeProvider),
+      builder: builder,
     );
   }
 }

@@ -12,7 +12,7 @@ final dbReaderProvider =
   StreamSubscription<List<dynamic>>? subscription;
 
   ref.watch(storeProvider).when(
-    data: (StoreManager storeManager) {
+    data: (storeManager) {
       subscription?.cancel(); // Cancel earlier subscription if any.
       subscription =
           storeManager.store.storeReaderStream<dynamic>(dbQuery).listen(
