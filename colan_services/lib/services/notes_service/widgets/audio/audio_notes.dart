@@ -40,9 +40,9 @@ class _AudioNotesState extends State<AudioNotes> {
                   spacing: 2,
                   children: widget.notes
                       .map(
-                        (note) => AudioNote(
-                          note,
-                          theStore: theStore,
+                        (note) => AudioChip(
+                          theStore.getValidMediaPath(note),
+                          label: note.name,
                           editMode: editMode && widget.notes.isNotEmpty,
                           onEditMode: () {
                             setState(() {

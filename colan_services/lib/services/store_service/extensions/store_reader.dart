@@ -7,7 +7,7 @@ import '../models/store_manager.dart';
 extension ReadExtOnStoreManager on StoreManager {
   String loadText(CLMedia? media) {
     if (media?.type != CLMediaType.text) return '';
-    final path = getMediaPath(media!);
+    final path = getValidMediaPath(media!);
 
     return File(path).existsSync()
         ? File(path).readAsStringSync()

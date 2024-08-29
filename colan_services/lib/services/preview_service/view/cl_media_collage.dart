@@ -80,7 +80,7 @@ class CLMediaCollage extends StatelessWidget {
     return GetStoreManager(
       builder: (theStore) {
         final mediaWithPreview = mediaList.where((e) {
-          return File(theStore.getMediaPath(e)).existsSync();
+          return File(theStore.getValidMediaPath(e)).existsSync();
         }).toList();
         if (mediaWithPreview.isEmpty) {
           return onBuildItem(

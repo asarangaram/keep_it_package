@@ -24,7 +24,7 @@ class PreviewService extends StatelessWidget {
 
     return GetStoreManager(
       builder: (theStore) {
-        final file = File(theStore.getMediaPath(media));
+        final file = File(theStore.getValidMediaPath(media));
         if (media.type.isFile && !file.existsSync()) {
           //throw Exception('File not found ${media.path}');
           return const BrokenImage();

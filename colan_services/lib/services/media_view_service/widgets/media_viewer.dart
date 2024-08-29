@@ -40,17 +40,22 @@ class MediaViewerRaw extends ConsumerWidget {
               CLMediaType.image => GetStoreManager(
                   builder: (theStore) {
                     return ImageViewService(
-                      file: File(theStore.getMediaPath(media)),
+                      file: File(theStore.getValidMediaPath(media)),
                       onLockPage: onLockPage,
                     );
                   },
                 ),
-              CLMediaType.video => VideoPlayerService.player(
-                  media: media,
-                  alternate: getPreview(media),
-                  autoStart: autoStart,
-                  autoPlay: autoPlay,
-                  inplaceControl: showControl.showNotes,
+              CLMediaType.video => GetStoreManager(
+                  builder: (theStore) {
+                    return VideoPlayerService.player(
+                      mediaPath: theStore.getValidMediaPath(media),
+                      isVideo: media.type == CLMediaType.video,
+                      alternate: getPreview(media),
+                      autoStart: autoStart,
+                      autoPlay: autoPlay,
+                      inplaceControl: showControl.showNotes,
+                    );
+                  },
                 ),
               _ => throw UnimplementedError('Not yet implemented')
             },

@@ -6,7 +6,6 @@ import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:path/path.dart';
 import 'package:store/extensions.dart';
 
 import 'widgets/video_trimmer.dart';
@@ -16,6 +15,7 @@ class VideoEditServices extends StatefulWidget {
     this.file, {
     required this.onSave,
     required this.onDone,
+    required this.onCreateNewFile,
     required this.canDuplicateMedia,
     super.key,
   });
@@ -23,6 +23,7 @@ class VideoEditServices extends StatefulWidget {
   final Future<void> Function(String outFile, {required bool overwrite}) onSave;
   final Future<void> Function() onDone;
   final bool canDuplicateMedia;
+  final Future<String> Function() onCreateNewFile;
 
   static bool get isSupported => ColanPlatformSupport.isMobilePlatform;
 
@@ -53,6 +54,7 @@ class _VideoEditServicesState extends State<VideoEditServices> {
       },
       audioMuter: AudioMuter(
         widget.file.path,
+        onCreateNewFile: widget.onCreateNewFile,
         onDone: (file) {
           setState(() {
             audioRemovedFile = file;
@@ -70,9 +72,11 @@ class AudioMuter extends StatefulWidget {
     this.inFile, {
     required this.onDone,
     required this.isMuted,
+    required this.onCreateNewFile,
     super.key,
   });
   final void Function(String? filePath) onDone;
+  final Future<String> Function() onCreateNewFile;
   final bool isMuted;
   final String inFile;
   @override
@@ -101,9 +105,7 @@ class _AudioMuterState extends State<AudioMuter> {
                     });
 
                     if (outFile == null) {
-                      final videoWithoutAudio = await theStore.createTempFile(
-                        ext: extension(widget.inFile),
-                      );
+                      final videoWithoutAudio = await widget.onCreateNewFile();
                       await File(videoWithoutAudio).deleteIfExists();
                       final session = await FFmpegKit.execute(
                         '-i ${widget.inFile} '

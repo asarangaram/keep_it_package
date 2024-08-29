@@ -4,6 +4,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart';
 import 'package:store/store.dart';
 
 class MediaEditorPage extends StatelessWidget {
@@ -27,17 +28,19 @@ class MediaEditorPage extends StatelessWidget {
           id: mediaId!,
           buildOnData: (media) {
             if (media == null ||
-                !File(theStore.getMediaPath(media)).existsSync()) {
+                !File(theStore.getMediaFileName(media)).existsSync()) {
               return BasicPageService.message(
                 message: ' Media not found',
               );
             }
+            final mediaPath = theStore.getMediaFileName(media);
 
             return InvokeEditor(
-              media: media,
+              mediaPath: mediaPath,
+              mediaType: media.type,
               canDuplicateMedia: canDuplicateMedia,
               onCreateNewFile: () async {
-                return theStore.createTempFile(ext: 'jpg');
+                return theStore.createTempFile(ext: extension(mediaPath));
               },
               onCancel: () async => context.pop(),
               onSave: (file, {required overwrite}) async {
@@ -81,26 +84,28 @@ class MediaEditorPage extends StatelessWidget {
 
 class InvokeEditor extends StatelessWidget {
   const InvokeEditor({
-    required this.media,
+    required this.mediaPath,
+    required this.mediaType,
     required this.onCreateNewFile,
     required this.onSave,
     required this.onCancel,
     required this.canDuplicateMedia,
     super.key,
   });
-  final CLMedia media;
+  final String mediaPath;
+  final CLMediaType mediaType;
   final Future<String> Function() onCreateNewFile;
   final Future<void> Function(String, {required bool overwrite}) onSave;
   final Future<void> Function() onCancel;
   final bool canDuplicateMedia;
   @override
   Widget build(BuildContext context) {
-    switch (media.type) {
+    switch (mediaType) {
       case CLMediaType.image:
         return GetStoreManager(
           builder: (theStore) {
             return ImageEditService(
-              file: File(theStore.getMediaPath(media)),
+              file: File(mediaPath),
               onCancel: onCancel,
               onSave: onSave,
               onCreateNewFile: onCreateNewFile,
@@ -113,9 +118,10 @@ class InvokeEditor extends StatelessWidget {
           return GetStoreManager(
             builder: (theStore) {
               return VideoEditServices(
-                File(theStore.getMediaPath(media)),
+                File(mediaPath),
                 onSave: onSave,
                 onDone: onCancel,
+                onCreateNewFile: onCreateNewFile,
                 canDuplicateMedia: canDuplicateMedia,
               );
             },

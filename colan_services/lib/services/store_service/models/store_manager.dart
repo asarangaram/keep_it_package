@@ -26,7 +26,16 @@ class StoreManager {
     return previewFileName;
   }
 
-  String getMediaPath(CLMedia media) => path_handler.join(
+  String getValidMediaPath(CLMedia media) => path_handler.join(
+        appSettings.directories.media.path.path,
+        media.name,
+      );
+  String getMediaFileName(CLMedia media) => path_handler.join(
+        appSettings.directories.media.path.path,
+        media.name,
+      );
+
+  String getMediaPath2(CLMedia media) => path_handler.join(
         appSettings.directories.media.path.path,
         media.name,
       );

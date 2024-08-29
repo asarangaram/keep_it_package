@@ -3,47 +3,76 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:colan_services/colan_services.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:store/store.dart';
 
-class AudioNote extends StatefulWidget {
-  const AudioNote(
-    this.note, {
-    required this.theStore,
+class AudioChip extends StatelessWidget {
+  const AudioChip(
+    this.audioFilePath, {
+    required this.label,
     required this.onDeleteNote,
     super.key,
     this.editMode = true,
     this.onEditMode,
   });
-  final StoreManager theStore;
-  final CLMedia note;
+
+  final String label;
+  final String audioFilePath;
   final bool editMode;
   final VoidCallback? onEditMode;
   final VoidCallback onDeleteNote;
 
   @override
-  State<AudioNote> createState() => _AudioNoteState();
+  Widget build(BuildContext context) {
+    if (editMode) {
+      return AudioFileChip(
+        audioFilePath,
+        label: label,
+        onDeleteNote: onDeleteNote,
+      );
+    }
+    return AudioPlayerChip(
+      audioFilePath,
+      label: label,
+      onLongPress: onEditMode,
+    );
+  }
 }
 
-class _AudioNoteState extends State<AudioNote> {
+class AudioPlayerChip extends StatefulWidget {
+  const AudioPlayerChip(
+    this.audioFilePath, {
+    required this.label,
+    super.key,
+    this.onLongPress,
+  });
+
+  final String label;
+  final String audioFilePath;
+
+  final VoidCallback? onLongPress;
+
+  @override
+  State<AudioPlayerChip> createState() => _AudioPlayerChipState();
+}
+
+class _AudioPlayerChipState extends State<AudioPlayerChip> {
   late PlayerController controller;
   late StreamSubscription<PlayerState>? playerStateSubscription;
   late bool validAudio;
   late String notePath;
-  late final StoreManager theStore;
 
   @override
   void initState() {
     super.initState();
-    theStore = widget.theStore;
+
     controller = PlayerController();
   }
 
   @override
   void didChangeDependencies() {
-    notePath = theStore.getMediaPath(widget.note);
+    notePath = widget.audioFilePath;
     if (File(notePath).existsSync()) {
       validAudio = true;
       _preparePlayer();
@@ -72,17 +101,12 @@ class _AudioNoteState extends State<AudioNote> {
     final theme = CLTheme.of(context).noteTheme;
     final playerWaveStyle = theme.playerWaveStyle;
 
-    final label =
-        widget.note.createdDate?.millisecondsSinceEpoch.toString() ?? 'No Date';
+    final label = widget.label;
     return CLCustomChip(
       avatar: validAudio
           ? CLIcon.tiny(
-              widget.editMode
-                  ? Icons.delete
-                  : controller.playerState.isPlaying
-                      ? Icons.stop
-                      : Icons.play_arrow,
-              color: widget.editMode ? Colors.red : theme.foregroundColor,
+              controller.playerState.isPlaying ? Icons.stop : Icons.play_arrow,
+              color: theme.foregroundColor,
             )
           : null,
       label: controller.playerState.isPlaying
@@ -103,9 +127,7 @@ class _AudioNoteState extends State<AudioNote> {
               ),
             ),
       onTap: () async {
-        if (widget.editMode) {
-          widget.onDeleteNote();
-        } else if (validAudio) {
+        if (validAudio) {
           controller.playerState.isPlaying
               ? await controller.pausePlayer()
               : await controller.startPlayer(
@@ -113,7 +135,45 @@ class _AudioNoteState extends State<AudioNote> {
                 );
         }
       },
-      onLongPress: widget.onEditMode,
+      onLongPress: widget.onLongPress,
+    );
+  }
+}
+
+class AudioFileChip extends StatelessWidget {
+  const AudioFileChip(
+    this.audioFilePath, {
+    required this.label,
+    required this.onDeleteNote,
+    super.key,
+    this.editMode = true,
+    this.onEditMode,
+  });
+
+  final String label;
+  final String audioFilePath;
+  final bool editMode;
+  final VoidCallback? onEditMode;
+  final VoidCallback onDeleteNote;
+
+  @override
+  Widget build(BuildContext context) {
+    return CLCustomChip(
+      avatar: const CLIcon.tiny(
+        Icons.delete,
+        color: Colors.red,
+      ),
+      label: SizedBox.fromSize(
+        size: const Size(100, 20),
+        child: FittedBox(
+          child: CLText.standard(
+            label,
+            textAlign: TextAlign.start,
+          ),
+        ),
+      ),
+      onTap: onDeleteNote,
+      onLongPress: null,
     );
   }
 }

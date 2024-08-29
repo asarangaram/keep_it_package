@@ -169,7 +169,7 @@ class _TextNoteState extends State<TextNote> {
         }
         textOriginal = textEditingController.text.trim();
       } else {
-        path = theStore.getMediaPath(widget.note!);
+        path = theStore.getMediaFileName(widget.note!);
         await File(path).writeAsString(textEditingController.text.trim());
         if (mounted) {
           textOriginal = theStore.getText(widget.note);
