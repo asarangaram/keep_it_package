@@ -4,6 +4,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
 
 import '../wrap_standard_quick_menu.dart';
@@ -35,8 +36,7 @@ class MediaAsFile extends ConsumerWidget {
           },
           onShare: () =>
               TheStore.of(context).shareMediaMultiple(context, [media]),
-          onEdit: (media.type == CLMediaType.video &&
-                  !VideoEditServices.isSupported)
+          onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
               ? null
               : () async {
                   /* final updatedMedia =  */ await TheStore.of(context)

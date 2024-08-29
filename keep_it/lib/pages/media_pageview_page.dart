@@ -1,6 +1,8 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:media_editors/media_editors.dart';
+import 'package:store/store.dart';
 
 class MediaPageViewPage extends StatelessWidget {
   const MediaPageViewPage({
@@ -30,7 +32,10 @@ class MediaPageViewPage extends StatelessWidget {
               media: media,
               getPreview: (media) => PreviewService(media: media),
               parentIdentifier: parentIdentifier,
-              actionControl: actionControl,
+              actionControl:
+                  (media.type == CLMediaType.video && !VideoEditor.isSupported)
+                      ? actionControl
+                      : actionControl.copyWith(allowEdit: false),
             ),
           );
         },

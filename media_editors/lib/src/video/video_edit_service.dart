@@ -1,17 +1,16 @@
 import 'dart:io';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:store/extensions.dart';
 
+import '../extensions/ext_file.dart';
 import 'widgets/video_trimmer.dart';
 
-class VideoEditServices extends StatefulWidget {
-  const VideoEditServices(
+class VideoEditor extends StatefulWidget {
+  const VideoEditor(
     this.file, {
     required this.onSave,
     required this.onDone,
@@ -28,10 +27,10 @@ class VideoEditServices extends StatefulWidget {
   static bool get isSupported => ColanPlatformSupport.isMobilePlatform;
 
   @override
-  State<VideoEditServices> createState() => _VideoEditServicesState();
+  State<VideoEditor> createState() => _VideoEditorState();
 }
 
-class _VideoEditServicesState extends State<VideoEditServices> {
+class _VideoEditorState extends State<VideoEditor> {
   String? audioRemovedFile;
   GlobalKey key = GlobalKey();
 
@@ -90,33 +89,31 @@ class _AudioMuterState extends State<AudioMuter> {
   @override
   Widget build(BuildContext context) {
     if (isMuting) {}
-    return GetStoreManager(
-      builder: (theStore) {
-        return TextButton(
-          onPressed: isMuting
-              ? null
-              : () async {
-                  if (widget.isMuted) {
-                    // Unmute by sending null
-                    widget.onDone(null);
-                  } else {
-                    setState(() {
-                      isMuting = true;
-                    });
+    return TextButton(
+      onPressed: isMuting
+          ? null
+          : () async {
+              if (widget.isMuted) {
+                // Unmute by sending null
+                widget.onDone(null);
+              } else {
+                setState(() {
+                  isMuting = true;
+                });
 
-                    if (outFile == null) {
-                      final videoWithoutAudio = await widget.onCreateNewFile();
-                      await File(videoWithoutAudio).deleteIfExists();
-                      final session = await FFmpegKit.execute(
-                        '-i ${widget.inFile} '
-                        '-vcodec copy -an '
-                        '-f mp4 $videoWithoutAudio',
-                      );
-                      final returnCode = await session.getReturnCode();
-                      if (ReturnCode.isSuccess(returnCode)) {
-                        widget.onDone(videoWithoutAudio);
-                      }
-                      /* {
+                if (outFile == null) {
+                  final videoWithoutAudio = await widget.onCreateNewFile();
+                  await File(videoWithoutAudio).deleteIfExists();
+                  final session = await FFmpegKit.execute(
+                    '-i ${widget.inFile} '
+                    '-vcodec copy -an '
+                    '-f mp4 $videoWithoutAudio',
+                  );
+                  final returnCode = await session.getReturnCode();
+                  if (ReturnCode.isSuccess(returnCode)) {
+                    widget.onDone(videoWithoutAudio);
+                  }
+                  /* {
                         final output = await session.getOutput();
                         print(output);
                         final logs = await session.getLogs();
@@ -126,30 +123,28 @@ class _AudioMuterState extends State<AudioMuter> {
         
                         
                       } */
-                    }
+                }
 
-                    if (mounted) {
-                      setState(() {
-                        isMuting = false;
-                      });
-                    }
-                  }
-                },
-          child: isMuting
-              ? const CircularProgressIndicator()
-              : widget.isMuted
-                  ? Icon(
-                      MdiIcons.volumeOff,
-                      size: 60,
-                      color: Colors.white,
-                    )
-                  : Icon(
-                      MdiIcons.volumeHigh,
-                      size: 60,
-                      color: Colors.white,
-                    ),
-        );
-      },
+                if (mounted) {
+                  setState(() {
+                    isMuting = false;
+                  });
+                }
+              }
+            },
+      child: isMuting
+          ? const CircularProgressIndicator()
+          : widget.isMuted
+              ? Icon(
+                  MdiIcons.volumeOff,
+                  size: 60,
+                  color: Colors.white,
+                )
+              : Icon(
+                  MdiIcons.volumeHigh,
+                  size: 60,
+                  color: Colors.white,
+                ),
     );
   }
 }

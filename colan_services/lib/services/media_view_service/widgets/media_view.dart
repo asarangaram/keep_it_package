@@ -94,26 +94,22 @@ class _MediaViewState extends ConsumerState<MediaView> {
                   () =>
                       TheStore.of(context).shareMediaMultiple(context, [media]),
                 ),
-                onEdit: (media.type == CLMediaType.video &&
-                        !VideoEditServices.isSupported)
-                    ? null
-                    : ac.onEdit(
-                        () async {
-                          final updatedMedia =
-                              await TheStore.of(context).openEditor(
-                            context,
-                            media,
-                            canDuplicateMedia: ac.canDuplicateMedia,
-                          );
-                          if (updatedMedia != media && context.mounted) {
-                            setState(() {
-                              //media = updatedMedia;
-                            });
-                          }
+                onEdit: ac.onEdit(
+                  () async {
+                    final updatedMedia = await TheStore.of(context).openEditor(
+                      context,
+                      media,
+                      canDuplicateMedia: ac.canDuplicateMedia,
+                    );
+                    if (updatedMedia != media && context.mounted) {
+                      setState(() {
+                        //media = updatedMedia;
+                      });
+                    }
 
-                          return true;
-                        },
-                      ),
+                    return true;
+                  },
+                ),
                 onPin: ac.onPin(
                   () async {
                     final res = await theStore.togglePinMultiple([media]);

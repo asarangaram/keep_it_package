@@ -4,6 +4,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:media_editors/media_editors.dart';
 import 'package:path/path.dart';
 import 'package:store/store.dart';
 
@@ -104,7 +105,7 @@ class InvokeEditor extends StatelessWidget {
       case CLMediaType.image:
         return GetStoreManager(
           builder: (theStore) {
-            return ImageEditService(
+            return ImageEditor(
               file: File(mediaPath),
               onCancel: onCancel,
               onSave: onSave,
@@ -114,10 +115,10 @@ class InvokeEditor extends StatelessWidget {
           },
         );
       case CLMediaType.video:
-        if (VideoEditServices.isSupported) {
+        if (VideoEditor.isSupported) {
           return GetStoreManager(
             builder: (theStore) {
-              return VideoEditServices(
+              return VideoEditor(
                 File(mediaPath),
                 onSave: onSave,
                 onDone: onCancel,

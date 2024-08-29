@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
-import '../../../internal/widgets/editor_finalizer.dart';
+import '../../editor_finalizer.dart';
 
 class VideoTrimmerView extends StatefulWidget {
   const VideoTrimmerView(

@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../../internal/widgets/editor_finalizer.dart';
-import '../models/aspect_ratio.dart' as aratio;
-import '../models/image_processing.dart';
-import 'crop_control.dart';
+import '../editor_finalizer.dart';
+import 'models/aspect_ratio.dart' as aratio;
+import 'models/image_processing.dart';
+import 'views/crop_control.dart';
 
-class ImageEditService extends StatefulWidget {
-  const ImageEditService({
+class ImageEditor extends StatefulWidget {
+  const ImageEditor({
     required this.file,
     required this.onCancel,
     required this.onCreateNewFile,
@@ -28,10 +28,10 @@ class ImageEditService extends StatefulWidget {
   final Future<String> Function() onCreateNewFile;
   final Future<void> Function(String, {required bool overwrite}) onSave;
   @override
-  State<ImageEditService> createState() => _ImageEditServiceState();
+  State<ImageEditor> createState() => _ImageEditorState();
 }
 
-class _ImageEditServiceState extends State<ImageEditService> {
+class _ImageEditorState extends State<ImageEditor> {
   GlobalKey<ExtendedImageEditorState> controller =
       GlobalKey<ExtendedImageEditorState>();
 
