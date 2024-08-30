@@ -8,8 +8,10 @@ import '../providers/captured_media.dart';
 class PreviewCapturedMedia extends ConsumerWidget {
   const PreviewCapturedMedia({
     required this.sendMedia,
+    required this.parentIdentifier,
     super.key,
   });
+  final String parentIdentifier;
   final Future<void> Function(List<CLMedia>) sendMedia;
 
   @override
@@ -24,7 +26,10 @@ class PreviewCapturedMedia extends ConsumerWidget {
               sendMedia(capturedMediaCopy);
             },
             child: CapturedMediaDecorator(
-              child: MediaViewService.preview(capturedMedia.last),
+              child: MediaViewService.preview(
+                capturedMedia.last,
+                parentIdentifier: parentIdentifier,
+              ),
             ),
           );
   }

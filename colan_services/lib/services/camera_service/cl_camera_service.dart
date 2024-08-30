@@ -13,13 +13,14 @@ import 'widgets/preview.dart';
 
 class CLCameraService extends ConsumerWidget {
   const CLCameraService({
+    required this.parentIdentifier,
     required this.onDone,
     required this.onNewMedia,
     this.onCancel,
     super.key,
     this.onError,
   });
-
+  final String parentIdentifier;
   final VoidCallback? onCancel;
   final Future<void> Function(List<CLMedia> mediaList) onDone;
   final Future<CLMedia?> Function(String, {required bool isVideo}) onNewMedia;
@@ -68,6 +69,7 @@ class CLCameraService extends ConsumerWidget {
           },
           previewWidget: PreviewCapturedMedia(
             sendMedia: onDone,
+            parentIdentifier: parentIdentifier,
           ),
           themeData: DefaultCLCameraIcons(),
           onError: onError,

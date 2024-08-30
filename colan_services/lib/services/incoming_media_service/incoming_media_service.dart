@@ -11,16 +11,19 @@ import 'step2_duplicates.dart';
 class IncomingMediaService extends StatelessWidget {
   const IncomingMediaService({
     required this.incomingMedia,
+    required this.parentIdentifier,
     required this.onDiscard,
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
+  final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
 
   @override
   Widget build(BuildContext context) {
     return IncomingMediaHandler0(
       incomingMedia: incomingMedia,
+      parentIdentifier: parentIdentifier,
       onDiscard: onDiscard,
       onSave: TheStore.of(context).openWizard,
     );
@@ -29,12 +32,14 @@ class IncomingMediaService extends StatelessWidget {
 
 class IncomingMediaHandler0 extends ConsumerStatefulWidget {
   const IncomingMediaHandler0({
+    required this.parentIdentifier,
     required this.incomingMedia,
     required this.onDiscard,
     required this.onSave,
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
+  final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
   final Future<void> Function(
     BuildContext context,
@@ -73,6 +78,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
                 )
               : DuplicatePage(
                   incomingMedia: candidate!,
+                  parentIdentifier: widget.parentIdentifier,
                   onDone: onSave,
                   onCancel: () => onDiscard(result: false),
                 );

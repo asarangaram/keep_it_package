@@ -7,11 +7,13 @@ import 'package:store/store.dart';
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
     required this.incomingMedia,
+    required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
     super.key,
   });
   final CLSharedMedia incomingMedia;
+  final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
@@ -19,6 +21,7 @@ class DuplicatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DuplicatePageStateful(
       incomingMedia: incomingMedia,
+      parentIdentifier: parentIdentifier,
       onDone: onDone,
       onCancel: onCancel,
     );
@@ -28,11 +31,13 @@ class DuplicatePage extends StatelessWidget {
 class DuplicatePageStateful extends ConsumerStatefulWidget {
   const DuplicatePageStateful({
     required this.incomingMedia,
+    required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
     super.key,
   });
   final CLSharedMedia incomingMedia;
+  final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
@@ -112,6 +117,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                 Flexible(
                   child: ExistInDifferentCollection(
                     collections: collections,
+                    parentIdentifier: widget.parentIdentifier,
                     media: currentMedia,
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
@@ -137,12 +143,14 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
 class ExistInDifferentCollection extends StatelessWidget {
   const ExistInDifferentCollection({
     required this.media,
+    required this.parentIdentifier,
     required this.collections,
     required this.onRemove,
     super.key,
   });
 
   final CLSharedMedia media;
+  final String parentIdentifier;
   final List<Collection> collections;
   final void Function(CLMedia media) onRemove;
 
@@ -206,7 +214,10 @@ class ExistInDifferentCollection extends StatelessWidget {
                           aspectRatio: 1,
                           child: Padding(
                             padding: const EdgeInsets.all(2),
-                            child: MediaViewService.preview(m),
+                            child: MediaViewService.preview(
+                              m,
+                              parentIdentifier: parentIdentifier,
+                            ),
                           ),
                         ),
                         Expanded(

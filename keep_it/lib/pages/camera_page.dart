@@ -16,6 +16,7 @@ class CameraPage extends ConsumerWidget {
           id: collectionId,
           buildOnData: (Collection? collection) {
             return CLCameraService(
+              parentIdentifier: 'CLCameraService',
               onCancel: () => CLPopScreen.onPop(context),
               onError: (String message, {required dynamic error}) async {
                 await ref

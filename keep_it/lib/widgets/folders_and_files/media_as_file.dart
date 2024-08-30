@@ -12,12 +12,14 @@ import '../wrap_standard_quick_menu.dart';
 class MediaAsFile extends ConsumerWidget {
   const MediaAsFile({
     required this.media,
+    required this.parentIdentifier,
     required this.quickMenuScopeKey,
     required this.onTap,
     required this.actionControl,
     super.key,
   });
   final CLMedia media;
+  final String parentIdentifier;
   final Future<bool?> Function()? onTap;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
 
@@ -47,7 +49,10 @@ class MediaAsFile extends ConsumerWidget {
                   return true;
                 },
           onTap: onTap,
-          child: MediaViewService.preview(media),
+          child: MediaViewService.preview(
+            media,
+            parentIdentifier: parentIdentifier,
+          ),
         );
       },
     );

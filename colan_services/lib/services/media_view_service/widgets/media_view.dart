@@ -41,7 +41,7 @@ class MediaView extends StatelessWidget {
   }
   factory MediaView.preview(
     CLMedia media, {
-    String parentIdentifier = 'unknown',
+    required String parentIdentifier,
   }) {
     return MediaView._(
       isPreview: true,
@@ -82,51 +82,56 @@ class MediaView extends StatelessWidget {
         builder: (theStore) {
           final previewUri = theStore.getPreviewPath(media);
 
-          return ImageViewer.basic(
-            uri: previewUri,
-            autoStart: autoStart,
-            autoPlay: autoPlay,
-            onLockPage: onLockPage,
-            isLocked: isLocked,
-            errorBuilder: BrokenImage.show,
-            loadingBuilder: GreyShimmer.show,
-            overlays: [
-              if (media.pin != null)
-                OverlayWidgets(
-                  alignment: Alignment.bottomRight,
-                  child: FutureBuilder(
-                    future: AlbumManager.isPinBroken(media.pin),
-                    builder: (context, snapshot) {
-                      return Transform.rotate(
-                        angle: math.pi / 4,
-                        child: CLIcon.veryLarge(
-                          snapshot.data ?? false
-                              ? MdiIcons.pinOffOutline
-                              : MdiIcons.pin,
-                          color:
-                              snapshot.data ?? false ? Colors.red : Colors.blue,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              if (media.type == CLMediaType.video)
-                OverlayWidgets(
-                  alignment: Alignment.center,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.onSurface.withAlpha(
-                            192,
-                          ), // Color for the circular container
-                    ),
-                    child: CLIcon.veryLarge(
-                      Icons.play_arrow_sharp,
-                      color: CLTheme.of(context).colors.iconColorTransparent,
+          return Hero(
+            tag: '$parentIdentifier /item/${media.id}',
+            child: ImageViewer.basic(
+              uri: previewUri,
+              autoStart: autoStart,
+              autoPlay: autoPlay,
+              onLockPage: onLockPage,
+              isLocked: isLocked,
+              errorBuilder: BrokenImage.show,
+              loadingBuilder: GreyShimmer.show,
+              overlays: [
+                if (media.pin != null)
+                  OverlayWidgets(
+                    alignment: Alignment.bottomRight,
+                    child: FutureBuilder(
+                      future: AlbumManager.isPinBroken(media.pin),
+                      builder: (context, snapshot) {
+                        return Transform.rotate(
+                          angle: math.pi / 4,
+                          child: CLIcon.veryLarge(
+                            snapshot.data ?? false
+                                ? MdiIcons.pinOffOutline
+                                : MdiIcons.pin,
+                            color: snapshot.data ?? false
+                                ? Colors.red
+                                : Colors.blue,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
-            ],
+                if (media.type == CLMediaType.video)
+                  OverlayWidgets(
+                    alignment: Alignment.center,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            Theme.of(context).colorScheme.onSurface.withAlpha(
+                                  192,
+                                ), // Color for the circular container
+                      ),
+                      child: CLIcon.veryLarge(
+                        Icons.play_arrow_sharp,
+                        color: CLTheme.of(context).colors.iconColorTransparent,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           );
         },
       );

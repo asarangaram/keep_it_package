@@ -24,21 +24,25 @@ class PinnedMediaPage extends ConsumerWidget {
                     key: const ValueKey(label),
                     title: 'Pinned Media',
                     backButton: null,
-                    itemBuilder:
-                        (context, item, {required quickMenuScopeKey}) => Hero(
-                      tag: '$parentIdentifier /item/${item.id}',
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: GestureDetector(
-                          onTap: () async {
-                            await TheStore.of(context).openMedia(
-                              item.id!,
-                              parentIdentifier: parentIdentifier,
-                              actionControl: ActionControl.full(),
-                            );
-                          },
-                          onLongPress: () => theStore.togglePinMultiple([item]),
-                          child: MediaViewService.preview(item),
+                    itemBuilder: (
+                      context,
+                      item, {
+                      required quickMenuScopeKey,
+                    }) =>
+                        Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: GestureDetector(
+                        onTap: () async {
+                          await TheStore.of(context).openMedia(
+                            item.id!,
+                            parentIdentifier: parentIdentifier,
+                            actionControl: ActionControl.full(),
+                          );
+                        },
+                        onLongPress: () => theStore.togglePinMultiple([item]),
+                        child: MediaViewService.preview(
+                          item,
+                          parentIdentifier: parentIdentifier,
                         ),
                       ),
                     ),

@@ -28,7 +28,7 @@ class MediaViewService extends StatelessWidget {
   }
   factory MediaViewService.preview(
     CLMedia media, {
-    String parentIdentifier = 'unknown',
+    required String parentIdentifier,
     Key? key,
   }) {
     return MediaViewService._(

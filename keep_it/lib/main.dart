@@ -203,6 +203,7 @@ class KeepItApp implements AppDescriptor {
           FullscreenLayout(
             child: StoreManagerView(
               child: IncomingMediaService(
+                parentIdentifier: 'IncomingMediaService',
                 incomingMedia: incomingMedia,
                 onDiscard: onDiscard,
               ),

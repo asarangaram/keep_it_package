@@ -47,43 +47,43 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         context,
         item,
       ) =>
-          Hero(
-        tag: '${type.identifier} /item/${item.id}',
-        child: GetStoreManager(
-          builder: (theStore) {
-            return GestureDetector(
-              onTap: () async {
-                await TheStore.of(context).openEditor(
-                  context,
-                  item,
-                  canDuplicateMedia: false,
-                );
+          GetStoreManager(
+        builder: (theStore) {
+          return GestureDetector(
+            onTap: () async {
+              await TheStore.of(context).openEditor(
+                context,
+                item,
+                canDuplicateMedia: false,
+              );
 
-                /// MEdia might have got updated, better reload and update the
-                ///  provider
-                if (context.mounted) {
-                  final refreshedMedia = await theStore.getMediaMultipleByIds(
-                    media0.entries
-                        .where((e) => e.id != null)
-                        .map((e) => e.id!)
-                        .toList(),
-                  );
-                  ref.read(universalMediaProvider(type).notifier).mediaGroup =
-                      media0.copyWith(
-                    entries: refreshedMedia
-                        .where((e) => e != null)
-                        .map((e) => e!)
-                        .toList(),
-                  );
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: MediaViewService.preview(item),
+              /// MEdia might have got updated, better reload and update the
+              ///  provider
+              if (context.mounted) {
+                final refreshedMedia = await theStore.getMediaMultipleByIds(
+                  media0.entries
+                      .where((e) => e.id != null)
+                      .map((e) => e.id!)
+                      .toList(),
+                );
+                ref.read(universalMediaProvider(type).notifier).mediaGroup =
+                    media0.copyWith(
+                  entries: refreshedMedia
+                      .where((e) => e != null)
+                      .map((e) => e!)
+                      .toList(),
+                );
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: MediaViewService.preview(
+                item,
+                parentIdentifier: type.identifier,
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
       columns: 4,
       onSelectionChanged: onSelectionChanged,

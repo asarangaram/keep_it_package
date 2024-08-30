@@ -108,14 +108,13 @@ class TimeLineView extends ConsumerWidget {
           columns: 4,
           galleryMap: galleryGroups,
           emptyState: const EmptyState(),
-          itemBuilder: (context, item, {required quickMenuScopeKey}) => Hero(
-            tag: '$parentIdentifier /item/${item.id}',
-            child: MediaAsFile(
-              media: item,
-              onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
-              quickMenuScopeKey: quickMenuScopeKey,
-              actionControl: actionControl,
-            ),
+          itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+              MediaAsFile(
+            media: item,
+            parentIdentifier: parentIdentifier,
+            onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
+            quickMenuScopeKey: quickMenuScopeKey,
+            actionControl: actionControl,
           ),
           onPickFiles: onPickFiles,
           onCameraCapture: onCameraCapture,
