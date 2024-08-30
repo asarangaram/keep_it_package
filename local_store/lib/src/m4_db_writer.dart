@@ -96,7 +96,7 @@ class DBWriter {
   }) async {
     await notesOnMediaTable.upsert(
       tx,
-      NotesOnMedia(noteId: note.id!, itemId: media.id!),
+      NotesOnMedia(noteId: note.id!, mediaId: media.id!),
       ignore: true,
       uniqueColumn: [],
     );
@@ -109,8 +109,8 @@ class DBWriter {
   }) async {
     await notesOnMediaTable.delete(
       tx,
-      NotesOnMedia(noteId: note.id!, itemId: media.id!),
-      identifier: ['noteId', 'itemId'],
+      NotesOnMedia(noteId: note.id!, mediaId: media.id!),
+      identifier: ['noteId', 'mediaId'],
     );
   }
 

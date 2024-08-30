@@ -35,7 +35,7 @@ abstract class StoreQuery<T> {
 abstract class Store {
   /// upsertCollection - introduce NULL return
   Future<Collection> upsertCollection(Collection collection);
-  Future<CLMedia?> upsertMedia(CLMedia media);
+  Future<CLMedia?> upsertMedia(CLMedia media, {List<CLMedia>? parents});
   //Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
 
   Future<void> deleteCollection(Collection collection);

@@ -45,10 +45,10 @@ class DBManager extends Store {
     );
 
     final notesOnMediaTable = DBExec<NotesOnMedia>(
-      table: 'ItemNote',
+      table: 'MediaNote',
       toMap: (NotesOnMedia obj) => obj.toMap(),
       readBack: (tx, item) async {
-        // TODO(anandas): :readBack for ItemNote Can this be done?
+        // TODO(anandas): :readBack for MediaNote Can this be done?
         return item;
       },
     );
@@ -105,9 +105,12 @@ class DBManager extends Store {
       });
 
   @override
-  Future<CLMedia> upsertMedia(CLMedia media) async =>
+  Future<CLMedia> upsertMedia(
+    CLMedia media, {
+    List<CLMedia>? parents,
+  }) async =>
       db.writeTransaction((tx) async {
-        return dbWriter.upsertMedia(tx, media);
+        return dbWriter.upsertMedia(tx, media, parents: parents);
       });
 
   @override

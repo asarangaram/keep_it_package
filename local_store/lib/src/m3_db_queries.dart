@@ -54,13 +54,14 @@ class Queries {
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaAll => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Media WHERE isHidden IS 0 AND isDeleted IS 0',
+          sql:
+              'SELECT * FROM Media WHERE WHERE isAux IS 0 AND isHidden IS 0 AND isDeleted IS 0',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaByCollectionId => DBQuery<CLMedia>(
           sql:
-              'SELECT * FROM Media WHERE collectionId = ? AND isHidden IS 0 AND isDeleted IS 0',
+              'SELECT * FROM Media WHERE isAux IS 0 AND collectionId = ? AND isHidden IS 0 AND isDeleted IS 0',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
@@ -76,12 +77,13 @@ class Queries {
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaStaled => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Media WHERE isHidden IS NOT 0 AND isDeleted IS 0',
+          sql:
+              'SELECT * FROM Media WHERE isAux IS 0 AND  isHidden IS NOT 0 AND isDeleted IS 0',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaDeleted => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Media WHERE isDeleted IS NOT 0 ',
+          sql: 'SELECT * FROM Media WHERE isAux IS 0 AND  isDeleted IS NOT 0 ',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),

@@ -155,29 +155,23 @@ class _TextNoteState extends State<TextNote> {
   Future<void> onEditDone() async {
     if (textModified) {
       final String path;
-      if (widget.note == null) {
-        path = await theStore.createTempFile(ext: 'txt');
-        await File(path).writeAsString(textEditingController.text.trim());
+      path = await theStore.createTempFile(ext: 'txt');
+      await File(path).writeAsString(textEditingController.text.trim());
+      await theStore.upsertNote(
+        path,
+        CLMediaType.text,
+        mediaMultiple: [widget.media],
+        note: widget.note,
+      );
 
-        if (mounted) {
-          await theStore.upsertNote(
-            path,
-            CLMediaType.text,
-            mediaMultiple: [widget.media],
-            note: widget.note,
-          );
-        }
-        textOriginal = textEditingController.text.trim();
-      } else {
-        path = theStore.getMediaFileName(widget.note!);
-        await File(path).writeAsString(textEditingController.text.trim());
-        if (mounted) {
-          textOriginal = theStore.getText(widget.note);
-        }
+      if (mounted) {
+        textOriginal = theStore.getText(widget.note);
       }
 
       isEditing = false;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     } else if (widget.note != null) {
       isEditing = false;
       setState(() {});

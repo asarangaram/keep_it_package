@@ -23,6 +23,7 @@ extension UpsertExtOnStoreManager on StoreManager {
     int? id,
     int? collectionId,
     bool isAux = false,
+    List<CLMedia>? parents,
   }) async {
     int? collectionId0;
     final Collection collection;
@@ -60,7 +61,7 @@ extension UpsertExtOnStoreManager on StoreManager {
           isHidden: collectionId0 == null,
           isAux: isAux,
         );
-    final mediaFromDB = await store.upsertMedia(savedMedia);
+    final mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
     if (mediaFromDB == null) {
       await File(
         path_handler.join(
@@ -176,6 +177,7 @@ extension UpsertExtOnStoreManager on StoreManager {
         type,
         id: note?.id,
         isAux: true,
+        parents: mediaMultiple,
       );
   Stream<Progress> analyseMediaStream({
     required List<CLMediaBase> mediaFiles,

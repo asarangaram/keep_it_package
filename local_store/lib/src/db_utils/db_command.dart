@@ -56,8 +56,14 @@ class DBCommand {
     required String table,
     List<String>? identifiers,
   }) {
-    if (!map.hasID) {
-      throw Exception(DBErrorCode.deleteWithoutIdException);
+    if (identifiers == null) {
+      if (!map.hasID) {
+        throw Exception(DBErrorCode.deleteWithoutIdException);
+      }
+    } else {
+      if (!identifiers.every((e) => map.containsKey(e))) {
+        throw Exception(DBErrorCode.deleteWithoutIdException);
+      }
     }
 
     final String sql;
