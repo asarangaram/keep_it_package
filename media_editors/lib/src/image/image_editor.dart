@@ -14,14 +14,14 @@ import 'views/crop_control.dart';
 
 class ImageEditor extends StatefulWidget {
   const ImageEditor({
-    required this.file,
+    required this.uri,
     required this.onCancel,
     required this.onCreateNewFile,
     required this.onSave,
     required this.canDuplicateMedia,
     super.key,
   });
-  final File file;
+  final Uri uri;
   final bool canDuplicateMedia;
   final Future<void> Function() onCancel;
 
@@ -62,7 +62,7 @@ class _ImageEditorState extends State<ImageEditor> {
                 Positioned.fill(
                   child: EditableImageView(
                     key: ValueKey(aspectRatio),
-                    widget.file,
+                    File(widget.uri.path),
                     controller: controller,
                     rotateAngle: rotateAngle,
                     aspectRatio: aspectRatio?.aspectRatio,

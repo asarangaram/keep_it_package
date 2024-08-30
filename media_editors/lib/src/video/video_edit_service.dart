@@ -10,15 +10,15 @@ import '../extensions/ext_file.dart';
 import 'widgets/video_trimmer.dart';
 
 class VideoEditor extends StatefulWidget {
-  const VideoEditor(
-    this.file, {
+  const VideoEditor({
+    required this.uri,
     required this.onSave,
     required this.onDone,
     required this.onCreateNewFile,
     required this.canDuplicateMedia,
     super.key,
   });
-  final File file;
+  final Uri uri;
   final Future<void> Function(String outFile, {required bool overwrite}) onSave;
   final Future<void> Function() onDone;
   final bool canDuplicateMedia;
@@ -36,7 +36,7 @@ class _VideoEditorState extends State<VideoEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final currFile = audioRemovedFile ?? widget.file.path;
+    final currFile = audioRemovedFile ?? widget.uri.path;
 
     return VideoTrimmerView(
       File(currFile),
@@ -52,7 +52,7 @@ class _VideoEditorState extends State<VideoEditor> {
         });
       },
       audioMuter: AudioMuter(
-        widget.file.path,
+        widget.uri.path,
         onCreateNewFile: widget.onCreateNewFile,
         onDone: (file) {
           setState(() {

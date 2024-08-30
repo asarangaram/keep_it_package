@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -31,14 +29,14 @@ class MediaEditorPage extends StatelessWidget {
             if (media == null) {
               return BasicPageService.message(message: ' Media not found');
             }
-            final mediaPath = theStore.getValidMediaPath(media);
+            final mediaUri = theStore.getValidMediaPath(media);
 
             return InvokeEditor(
-              mediaUri: mediaPath,
+              mediaUri: mediaUri,
               mediaType: media.type,
               canDuplicateMedia: canDuplicateMedia,
               onCreateNewFile: () async {
-                return theStore.createTempFile(ext: extension(mediaPath));
+                return theStore.createTempFile(ext: extension(media.fExt));
               },
               onCancel: () async => context.pop(),
               onSave: (file, {required overwrite}) async {
@@ -90,7 +88,7 @@ class InvokeEditor extends StatelessWidget {
     required this.canDuplicateMedia,
     super.key,
   });
-  final String mediaUri;
+  final Uri mediaUri;
   final CLMediaType mediaType;
   final Future<String> Function() onCreateNewFile;
   final Future<void> Function(String, {required bool overwrite}) onSave;
@@ -103,7 +101,7 @@ class InvokeEditor extends StatelessWidget {
         return GetStoreManager(
           builder: (theStore) {
             return ImageEditor(
-              file: File(mediaUri),
+              uri: mediaUri,
               onCancel: onCancel,
               onSave: onSave,
               onCreateNewFile: onCreateNewFile,
@@ -116,7 +114,7 @@ class InvokeEditor extends StatelessWidget {
           return GetStoreManager(
             builder: (theStore) {
               return VideoEditor(
-                File(mediaUri),
+                uri: mediaUri,
                 onSave: onSave,
                 onDone: onCancel,
                 onCreateNewFile: onCreateNewFile,

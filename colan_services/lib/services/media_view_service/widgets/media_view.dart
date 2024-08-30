@@ -80,7 +80,7 @@ class MediaView extends StatelessWidget {
     if (isPreview) {
       return GetStoreManager(
         builder: (theStore) {
-          final previewUri = Uri.file(theStore.getPreviewPath2(media));
+          final previewUri = theStore.getPreviewPath(media);
 
           return ImageViewer.basic(
             uri: previewUri,
@@ -181,9 +181,8 @@ class _MediaView0State extends ConsumerState<MediaView0> {
     final showControl = ref.watch(showControlsProvider);
     return GetStoreManager(
       builder: (theStore) {
-        final mediaPath = theStore.getValidMediaPath(media);
-        final mediaUri = Uri.file(mediaPath);
-        final previewUri = Uri.file(theStore.getPreviewPath2(media));
+        final mediaUri = theStore.getValidMediaPath(media);
+        final previewUri = theStore.getPreviewPath(media);
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),

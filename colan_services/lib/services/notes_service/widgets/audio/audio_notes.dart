@@ -41,7 +41,7 @@ class _AudioNotesState extends State<AudioNotes> {
                   children: widget.notes
                       .map(
                         (note) => AudioChip(
-                          theStore.getValidMediaPath(note),
+                          theStore.getValidMediaPath(note).path,
                           label: note.name,
                           editMode: editMode && widget.notes.isNotEmpty,
                           onEditMode: () {

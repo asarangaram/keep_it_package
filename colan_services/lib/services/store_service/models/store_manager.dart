@@ -19,31 +19,29 @@ class StoreManager {
 
   static const uuidGenerator = Uuid();
 
-  String getPreviewPath2(CLMedia media) {
+  Uri getPreviewPath(CLMedia media) {
     final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, media.name);
     final previewFileName = path_handler.join(
       appSettings.directories.thumbnail.pathString,
       '$uuid.tn.jpeg',
     );
-    return previewFileName;
+    return Uri.file(previewFileName);
   }
 
-  String getValidMediaPath(CLMedia media) => path_handler.join(
-        appSettings.directories.media.path.path,
-        media.name,
+  Uri getValidMediaPath(CLMedia media) => Uri.file(
+        path_handler.join(
+          appSettings.directories.media.path.path,
+          media.name,
+        ),
       );
   bool doesLocalMediaExist(CLMedia media) =>
-      File(getValidMediaPath(media)).existsSync();
+      File(getValidMediaPath(media).path).existsSync();
 
   String getMediaFileName(CLMedia media) => path_handler.join(
         appSettings.directories.media.path.path,
         media.name,
       );
 
-  String getMediaPath2(CLMedia media) => path_handler.join(
-        appSettings.directories.media.path.path,
-        media.name,
-      );
   String getMediaLabel(CLMedia media) => media.name;
 
   Future<String> createTempFile({required String ext}) async {

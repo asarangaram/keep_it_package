@@ -181,7 +181,7 @@ class ControllerMenu extends StatelessWidget {
                   builder: (theStore) {
                     if (media.type == CLMediaType.video) {
                       return VideoDefaultControls(
-                        uri: Uri.file(theStore.getValidMediaPath(media)),
+                        uri: theStore.getValidMediaPath(media),
                         errorBuilder: (_, __) => Container(),
                         loadingBuilder: Container.new,
                       );
