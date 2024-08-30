@@ -23,7 +23,7 @@ class MediaViewService extends StatelessWidget {
       parentIdentifier: parentIdentifier,
       actionControl: actionControl ?? ActionControl.full(),
       key: key,
-      isPreview: true,
+      isPreview: false,
     );
   }
   factory MediaViewService.preview(
@@ -37,7 +37,7 @@ class MediaViewService extends StatelessWidget {
       parentIdentifier: parentIdentifier,
       actionControl: ActionControl.none(),
       key: key,
-      isPreview: false,
+      isPreview: true,
     );
   }
   factory MediaViewService.pageView({
