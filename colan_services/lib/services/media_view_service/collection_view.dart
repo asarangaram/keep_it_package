@@ -9,9 +9,13 @@ class CollectionView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: CLText.veryLarge(
-        collection.label.characters.first,
+    return CLAspectRationDecorated(
+      hasBorder: true,
+      borderRadius: const BorderRadius.all(Radius.circular(16)),
+      child: Center(
+        child: CLText.veryLarge(
+          collection.label.characters.first,
+        ),
       ),
     );
   }
