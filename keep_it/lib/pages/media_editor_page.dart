@@ -36,7 +36,7 @@ class MediaEditorPage extends StatelessWidget {
               mediaType: media.type,
               canDuplicateMedia: canDuplicateMedia,
               onCreateNewFile: () async {
-                return theStore.createTempFile(ext: extension(media.fExt));
+                return theStore.createTempFile(ext: media.fExt);
               },
               onCancel: () async => context.pop(),
               onSave: (file, {required overwrite}) async {
