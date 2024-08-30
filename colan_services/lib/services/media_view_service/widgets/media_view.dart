@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -12,6 +11,7 @@ import 'package:store/store.dart';
 
 import '../../../internal/widgets/shimmer.dart';
 
+import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../providers/show_controls.dart';
 import 'media_background.dart';
 import 'media_controls.dart';

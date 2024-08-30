@@ -1,9 +1,9 @@
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
 import 'package:path/path.dart';
 import 'package:store/store.dart';
 
+import '../../settings_service/providers/p1_app_settings.dart';
 import '../models/store_manager.dart';
 
 /* final storeProvider = FutureProvider<Store>((ref) async {

@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
-import 'package:device_resources/device_resources.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
@@ -166,7 +165,6 @@ class DBManager extends Store {
     SqliteDatabase? db,
     DBWriter? dbWriter,
     DBReader? dbReader,
-    AppSettings? appSettings,
     void Function()? onReload,
   }) {
     return DBManager._(

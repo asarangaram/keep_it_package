@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:device_resources/device_resources.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../gallery_service/models/m5_gallery_pin.dart';
+import '../../settings_service/models/m1_app_settings.dart';
 
 @immutable
 class StoreManager {

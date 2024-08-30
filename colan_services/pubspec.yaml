@@ -16,9 +16,9 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets 
   collection: ^1.18.0
-  device_resources:
-    path: ../device_resources
+  
   event_bus: ^2.0.0
+  exif: ^3.3.0
   extended_image: ^8.2.1
   ffmpeg_kit_flutter: ^6.0.3
   flutter:
@@ -41,7 +41,10 @@ dependencies:
   mime: ^1.0.5
   path: ^1.9.0
   
+  path_provider: ^2.1.4
+  photo_manager: ^3.2.3
   share_handler: ^0.0.21
+  share_plus: ^10.0.0
   shared_preferences: ^2.2.3
   shimmer: ^3.0.0
   store:
@@ -52,6 +55,7 @@ dependencies:
   video_player: ^2.8.7
   video_thumbnail: ^0.5.3
   video_trimmer: ^3.0.1
+  watcher: ^1.1.0
 
 dev_dependencies:
   flutter_lints: ^4.0.0

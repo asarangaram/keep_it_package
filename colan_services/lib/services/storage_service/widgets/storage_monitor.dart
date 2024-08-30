@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../extensions/ext_directory.dart';
-
-import 'storage_info_entry.dart';
 import '../../settings_service/widgets/w1_get_app_settings.dart';
+import '../extensions/ext_directory.dart';
+import 'storage_info_entry.dart';
 
 class StorageMonitor extends ConsumerWidget {
   const StorageMonitor({super.key});

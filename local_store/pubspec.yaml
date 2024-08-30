@@ -10,8 +10,6 @@ environment:
 dependencies:
   background_downloader: ^8.5.3
   collection: ^1.18.0
-  device_resources:
-    path: ../device_resources
   http: ^1.2.2
   meta: ^1.12.0
   mockito: ^5.4.4
