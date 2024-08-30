@@ -30,7 +30,6 @@ class MediaPageViewPage extends StatelessWidget {
           return CLPopScreen.onSwipe(
             child: MediaViewService(
               media: media,
-              getPreview: (media) => PreviewService(media: media),
               parentIdentifier: parentIdentifier,
               actionControl:
                   (media.type == CLMediaType.video && !VideoEditor.isSupported)
@@ -56,7 +55,6 @@ class MediaPageViewPage extends StatelessWidget {
 
         return MediaViewService.pageView(
           media: items,
-          getPreview: (media) => PreviewService(media: media),
           parentIdentifier: parentIdentifier,
           initialMediaIndex: initialMediaIndex,
         );

@@ -11,7 +11,6 @@ export 'src/basics/cl_icon.dart';
 export 'src/basics/cl_matrix.dart';
 export 'src/basics/cl_pop_screen.dart';
 export 'src/basics/cl_text.dart';
-export 'src/basics/image_viewer.dart';
 export 'src/basics/progress_bar.dart';
 export 'src/extensions/ext_cl_menu_item.dart';
 export 'src/extensions/ext_color.dart';

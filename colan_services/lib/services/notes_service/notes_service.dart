@@ -1,8 +1,8 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../media_view_service/providers/show_controls.dart';
 import 'widgets/notes_view.dart';
 
 class NotesService extends ConsumerWidget {

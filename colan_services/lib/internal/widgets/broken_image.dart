@@ -5,11 +5,11 @@ class BrokenImage extends StatelessWidget {
   const BrokenImage({
     super.key,
   });
-  static Widget? placeHolder;
+  static Widget? cachedWidget;
 
   @override
   Widget build(BuildContext context) {
-    return placeHolder ??= AspectRatio(
+    return cachedWidget ??= AspectRatio(
       aspectRatio: 1,
       child: FittedBox(
         fit: BoxFit.fill,
@@ -31,4 +31,6 @@ class BrokenImage extends StatelessWidget {
       ),
     );
   }
+
+  static Widget show(Object e, StackTrace st) => const BrokenImage();
 }

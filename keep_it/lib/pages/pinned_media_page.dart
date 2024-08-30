@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,10 +38,7 @@ class PinnedMediaPage extends ConsumerWidget {
                             );
                           },
                           onLongPress: () => theStore.togglePinMultiple([item]),
-                          child: PreviewService(
-                            media: item,
-                            keepAspectRatio: false,
-                          ),
+                          child: MediaViewService.preview(item),
                         ),
                       ),
                     ),

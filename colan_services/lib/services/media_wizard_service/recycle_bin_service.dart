@@ -10,11 +10,9 @@ import 'views/wizard_preview.dart';
 class RecycleBinService extends ConsumerWidget {
   const RecycleBinService({
     required this.type,
-    required this.getPreview,
     super.key,
   });
   final UniversalMediaSource type;
-  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +29,6 @@ class RecycleBinService extends ConsumerWidget {
         media: media,
         type: type,
         galleryMap: galleryMap,
-        getPreview: getPreview,
       ),
     );
   }
@@ -42,12 +39,10 @@ class SelectAndRestoreMedia extends ConsumerStatefulWidget {
     required this.media,
     required this.type,
     required this.galleryMap,
-    required this.getPreview,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
-  final Widget Function(CLMedia media) getPreview;
 
   final List<GalleryGroup<CLMedia>> galleryMap;
 
@@ -186,7 +181,6 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
         },
       ),
       child: WizardPreview(
-        getPreview: widget.getPreview,
         type: widget.type,
         onSelectionChanged: isSelectionMode
             ? (List<CLMedia> items) {

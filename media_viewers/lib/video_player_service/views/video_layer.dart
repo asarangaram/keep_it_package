@@ -1,52 +1,29 @@
-import 'package:colan_services/services/video_player_service/builders/timestamp_builder.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 import '../builders/audio_control_builder.dart';
-import '../providers/show_controls.dart';
+import '../builders/timestamp_builder.dart';
 
 class VideoLayer extends ConsumerWidget {
   const VideoLayer({
     required this.controller,
     this.inplaceControl = false,
+    this.onDoubleTap,
+    this.onTap,
     super.key,
   });
   final VideoPlayerController controller;
   final bool inplaceControl;
+  final VoidCallback? onTap;
+  final VoidCallback? onDoubleTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onDoubleTap: () {
-        if (controller.value.isPlaying) {
-          ref
-              .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 5));
-          controller.pause();
-        } else {
-          ref
-              .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 5));
-          controller.play();
-        }
-      },
-      onTap: () {
-        if (controller.value.isPlaying) {
-          ref
-              .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 5));
-          if (inplaceControl) {
-            controller.pause();
-          }
-        } else {
-          ref
-              .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 5));
-          controller.play();
-        }
-      },
+      onDoubleTap: onDoubleTap,
+      onTap: onTap,
       child: Center(
         child: AspectRatio(
           aspectRatio: controller.value.aspectRatio,

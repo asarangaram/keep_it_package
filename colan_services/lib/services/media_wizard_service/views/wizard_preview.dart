@@ -11,13 +11,11 @@ class WizardPreview extends ConsumerStatefulWidget {
     required this.type,
     required this.onSelectionChanged,
     required this.freezeView,
-    required this.getPreview,
     super.key,
   });
   final UniversalMediaSource type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
-  final Widget Function(CLMedia media) getPreview;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -81,7 +79,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               },
               child: Padding(
                 padding: const EdgeInsets.all(4),
-                child: widget.getPreview(item),
+                child: MediaViewService.preview(item),
               ),
             );
           },

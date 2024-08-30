@@ -7,22 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import '../builders/audio_control_builder.dart';
-import '../providers/show_controls.dart';
+import '../../../video_player_service/builders/audio_control_builder.dart';
 
-class VideoControls extends ConsumerStatefulWidget {
-  const VideoControls({
+class VideoControlsView extends ConsumerStatefulWidget {
+  const VideoControlsView({
     required this.controller,
+    this.onHover,
     super.key,
   });
 
   final VideoPlayerController controller;
+  final VoidCallback? onHover;
 
   @override
   VideoControlsState createState() => VideoControlsState();
 }
 
-class VideoControlsState extends ConsumerState<VideoControls> {
+class VideoControlsState extends ConsumerState<VideoControlsView> {
   VideoPlayerValue get video => widget.controller.value;
   double? seekValue;
 
@@ -66,16 +67,8 @@ class VideoControlsState extends ConsumerState<VideoControls> {
     return IconTheme(
       data: const IconThemeData(color: Colors.white),
       child: Listener(
-        onPointerDown: (_) {
-          ref
-              .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 5));
-        },
-        onPointerHover: (_) {
-          ref
-              .read(showControlsProvider.notifier)
-              .briefHover(timeout: const Duration(seconds: 5));
-        },
+        onPointerDown: (_) => widget.onHover?.call(),
+        onPointerHover: (_) => widget.onHover?.call(),
         child: ColoredBox(
           color: const Color.fromRGBO(0, 0, 0, 0.5),
           child: Column(

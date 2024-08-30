@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:device_resources/device_resources.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path_handler;
@@ -17,7 +19,7 @@ class StoreManager {
 
   static const uuidGenerator = Uuid();
 
-  String getPreviewPath(CLMedia media) {
+  String getPreviewPath2(CLMedia media) {
     final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, media.name);
     final previewFileName = path_handler.join(
       appSettings.directories.thumbnail.pathString,
@@ -30,6 +32,9 @@ class StoreManager {
         appSettings.directories.media.path.path,
         media.name,
       );
+  bool doesLocalMediaExist(CLMedia media) =>
+      File(getValidMediaPath(media)).existsSync();
+
   String getMediaFileName(CLMedia media) => path_handler.join(
         appSettings.directories.media.path.path,
         media.name,

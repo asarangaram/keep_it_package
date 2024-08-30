@@ -15,7 +15,6 @@ class CLCameraService extends ConsumerWidget {
   const CLCameraService({
     required this.onDone,
     required this.onNewMedia,
-    required this.getPreview,
     this.onCancel,
     super.key,
     this.onError,
@@ -24,7 +23,7 @@ class CLCameraService extends ConsumerWidget {
   final VoidCallback? onCancel;
   final Future<void> Function(List<CLMedia> mediaList) onDone;
   final Future<CLMedia?> Function(String, {required bool isVideo}) onNewMedia;
-  final Widget Function(CLMedia media) getPreview;
+
   final void Function(String message, {required dynamic error})? onError;
   static Future<bool> invokeWithSufficientPermission(
     BuildContext context,
@@ -69,7 +68,6 @@ class CLCameraService extends ConsumerWidget {
           },
           previewWidget: PreviewCapturedMedia(
             sendMedia: onDone,
-            getPreview: getPreview,
           ),
           themeData: DefaultCLCameraIcons(),
           onError: onError,

@@ -28,16 +28,13 @@ class MediaEditorPage extends StatelessWidget {
         return GetMedia(
           id: mediaId!,
           buildOnData: (media) {
-            if (media == null ||
-                !File(theStore.getMediaFileName(media)).existsSync()) {
-              return BasicPageService.message(
-                message: ' Media not found',
-              );
+            if (media == null) {
+              return BasicPageService.message(message: ' Media not found');
             }
-            final mediaPath = theStore.getMediaFileName(media);
+            final mediaPath = theStore.getValidMediaPath(media);
 
             return InvokeEditor(
-              mediaPath: mediaPath,
+              mediaUri: mediaPath,
               mediaType: media.type,
               canDuplicateMedia: canDuplicateMedia,
               onCreateNewFile: () async {
@@ -85,7 +82,7 @@ class MediaEditorPage extends StatelessWidget {
 
 class InvokeEditor extends StatelessWidget {
   const InvokeEditor({
-    required this.mediaPath,
+    required this.mediaUri,
     required this.mediaType,
     required this.onCreateNewFile,
     required this.onSave,
@@ -93,7 +90,7 @@ class InvokeEditor extends StatelessWidget {
     required this.canDuplicateMedia,
     super.key,
   });
-  final String mediaPath;
+  final String mediaUri;
   final CLMediaType mediaType;
   final Future<String> Function() onCreateNewFile;
   final Future<void> Function(String, {required bool overwrite}) onSave;
@@ -106,7 +103,7 @@ class InvokeEditor extends StatelessWidget {
         return GetStoreManager(
           builder: (theStore) {
             return ImageEditor(
-              file: File(mediaPath),
+              file: File(mediaUri),
               onCancel: onCancel,
               onSave: onSave,
               onCreateNewFile: onCreateNewFile,
@@ -119,7 +116,7 @@ class InvokeEditor extends StatelessWidget {
           return GetStoreManager(
             builder: (theStore) {
               return VideoEditor(
-                File(mediaPath),
+                File(mediaUri),
                 onSave: onSave,
                 onDone: onCancel,
                 onCreateNewFile: onCreateNewFile,

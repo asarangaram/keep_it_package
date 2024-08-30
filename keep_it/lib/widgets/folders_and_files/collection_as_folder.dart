@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -12,12 +11,11 @@ class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({
     required this.collection,
     required this.quickMenuScopeKey,
-    required this.getPreview,
     super.key,
   });
   final Collection collection;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
-  final Widget Function(CLMedia media) getPreview;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStoreManager(
@@ -55,10 +53,7 @@ class CollectionAsFolder extends ConsumerWidget {
           child: Column(
             children: [
               Flexible(
-                child: CollectionPreviewGenerator(
-                  collection: collection,
-                  getPreview: getPreview,
-                ),
+                child: CollectionView.preview(collection),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -70,41 +65,6 @@ class CollectionAsFolder extends ConsumerWidget {
                 ),
               ),
             ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class CollectionPreviewGenerator extends StatelessWidget {
-  const CollectionPreviewGenerator({
-    required this.collection,
-    required this.getPreview,
-    super.key,
-  });
-  final Collection collection;
-  final Widget Function(CLMedia media) getPreview;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMediaByCollectionId(
-      collectionId: collection.id,
-      buildOnData: (items) {
-        return CLAspectRationDecorated(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-          child: CLMediaCollage.byMatrixSize(
-            items,
-            hCount: 2,
-            vCount: 2,
-            itemBuilder: (context, index) => getPreview(
-              items[index],
-            ),
-            whenNopreview: Center(
-              child: CLText.veryLarge(
-                collection.label.characters.first,
-              ),
-            ),
           ),
         );
       },

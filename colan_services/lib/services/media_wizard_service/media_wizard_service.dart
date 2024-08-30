@@ -13,11 +13,9 @@ import 'views/wizard_preview.dart';
 class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({
     required this.type,
-    required this.getPreview,
     super.key,
   });
   final UniversalMediaSource type;
-  final Widget Function(CLMedia media) getPreview;
 
   static Future<void> addMedia(
     BuildContext context,
@@ -38,7 +36,6 @@ class MediaWizardService extends ConsumerWidget {
     if (type == UniversalMediaSource.deleted) {
       return RecycleBinService(
         type: type,
-        getPreview: getPreview,
       );
     }
     final media = ref.watch(universalMediaProvider(type));
@@ -54,7 +51,6 @@ class MediaWizardService extends ConsumerWidget {
         media: media,
         type: type,
         galleryMap: galleryMap,
-        getPreview: getPreview,
       ),
     );
   }
@@ -65,12 +61,10 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     required this.media,
     required this.type,
     required this.galleryMap,
-    required this.getPreview,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
-  final Widget Function(CLMedia media) getPreview;
 
   final List<GalleryGroup<CLMedia>> galleryMap;
 
@@ -221,7 +215,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       : null,
                 ),
           child: WizardPreview(
-            getPreview: widget.getPreview,
             type: widget.type,
             onSelectionChanged: isSelectionMode
                 ? (List<CLMedia> items) {

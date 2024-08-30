@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../providers/show_controls.dart';
 import 'media_view.dart';
 
 class MediaPageView extends ConsumerStatefulWidget {
@@ -13,7 +14,6 @@ class MediaPageView extends ConsumerStatefulWidget {
     required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.getPreview,
     required this.canDuplicateMedia,
     this.onLockPage,
     super.key,
@@ -27,7 +27,6 @@ class MediaPageView extends ConsumerStatefulWidget {
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
 
-  final Widget Function(CLMedia media) getPreview;
   final bool canDuplicateMedia;
   @override
   ConsumerState<MediaPageView> createState() => MediaPageViewState();
@@ -80,7 +79,6 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
                 autoPlay: currIndex == index,
                 onLockPage: widget.onLockPage,
                 isLocked: widget.isLocked,
-                getPreview: widget.getPreview,
               ),
             ),
             if (showControl.showNotes && !widget.isLocked)

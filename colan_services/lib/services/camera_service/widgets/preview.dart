@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -7,11 +8,9 @@ import '../providers/captured_media.dart';
 class PreviewCapturedMedia extends ConsumerWidget {
   const PreviewCapturedMedia({
     required this.sendMedia,
-    required this.getPreview,
     super.key,
   });
   final Future<void> Function(List<CLMedia>) sendMedia;
-  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +24,7 @@ class PreviewCapturedMedia extends ConsumerWidget {
               sendMedia(capturedMediaCopy);
             },
             child: CapturedMediaDecorator(
-              child: getPreview(capturedMedia.last),
+              child: MediaViewService.preview(capturedMedia.last),
             ),
           );
   }

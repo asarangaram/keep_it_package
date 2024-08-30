@@ -112,10 +112,6 @@ class TimeLineView extends ConsumerWidget {
             tag: '$parentIdentifier /item/${item.id}',
             child: MediaAsFile(
               media: item,
-              getPreview: (media) => PreviewService(
-                media: media,
-                keepAspectRatio: false,
-              ),
               onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
               quickMenuScopeKey: quickMenuScopeKey,
               actionControl: actionControl,
