@@ -12,11 +12,13 @@ import '../models/store_manager.dart';
 
 extension UtilsOnStoreManager on StoreManager {
   Future<bool> generatePreview(
-    String inputFile,
-    String outputFile,
-    CLMediaType type, {
+    CLMedia media, {
     int dimension = 256,
   }) async {
+    final inputFile = getMediaFileName(media);
+    final outputFile = getPreviewFileName(media);
+    final type = media.type;
+
     switch (type) {
       case CLMediaType.image:
         {
@@ -56,23 +58,22 @@ extension UtilsOnStoreManager on StoreManager {
           File(outputFile).writeAsBytesSync(
             Uint8List.fromList(img.encodeJpg(thumbnail)),
           );
+          return true;
         }
 
       case CLMediaType.video:
         final session = await FFmpegKit.execute(
           '-i $inputFile '
-          '-vf '
-          '"select=\'eq(pict_type,I)\',max,showinfo"'
-          ' scale=$dimension:-1" '
+          '-ss 00:00:01.000 '
           '-vframes 1 '
+          '-vf "scale=$dimension:-1" '
           '$outputFile',
         );
         /* final log = await session.getAllLogsAsString();
       print(log); */
         final returnCode = await session.getReturnCode();
-        if (ReturnCode.isSuccess(returnCode)) {
-          return true;
-        }
+
+        return ReturnCode.isSuccess(returnCode);
 
       case CLMediaType.text:
       case CLMediaType.url:

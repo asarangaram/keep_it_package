@@ -6,6 +6,7 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
+import '../extensions/store_utils.dart';
 import '../models/store_manager.dart';
 import '../models/url_handler.dart';
 import 'store_reader.dart';
@@ -48,6 +49,7 @@ extension UpsertExtOnStoreManager on StoreManager {
           md5String: md5String,
           isHidden: existingCollection == null,
           isAux: isAux,
+          isDeleted: false,
         ) ??
         CLMedia(
           name: path_handler.basename(savedMediaFile.path),
@@ -67,6 +69,7 @@ extension UpsertExtOnStoreManager on StoreManager {
         ),
       ).deleteIfExists();
     } else {
+      await generatePreview(mediaFromDB);
       try {
         await File(path).deleteIfExists();
       } catch (e) {
