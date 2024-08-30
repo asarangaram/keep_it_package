@@ -92,6 +92,7 @@ class MediaView extends StatelessWidget {
               isLocked: isLocked,
               errorBuilder: BrokenImage.show,
               loadingBuilder: GreyShimmer.show,
+              fit: BoxFit.cover,
               overlays: [
                 if (media.pin != null)
                   OverlayWidgets(
