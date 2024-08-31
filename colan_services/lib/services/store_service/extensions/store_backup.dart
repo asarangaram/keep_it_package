@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:colan_services/services/store_service/models/store_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 import 'package:tar/tar.dart';
 

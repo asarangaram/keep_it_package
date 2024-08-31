@@ -1,13 +1,11 @@
 import 'dart:io';
 
 import 'package:colan_services/services/settings_service/models/m1_app_settings.dart';
-import 'package:colan_services/services/store_service/models/store_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/extensions.dart';
 
-import '../../settings_service/widgets/w1_get_app_settings.dart';
 import '../../storage_service/extensions/ext_directory.dart';
 import '../../storage_service/extensions/human_readable.dart';
 import '../providers/backup_stream.dart';
