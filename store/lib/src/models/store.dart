@@ -12,6 +12,7 @@ enum DBQueries {
 
   mediaById,
   mediaAll,
+  mediaAllIncludingAux,
   mediaByCollectionId,
   mediaByPath,
   mediaByMD5,
@@ -40,8 +41,6 @@ abstract class Store {
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
-
-  Future<List<Object?>?> getDBRecords();
 
   Future<T?> read<T>(StoreQuery<T> query);
 

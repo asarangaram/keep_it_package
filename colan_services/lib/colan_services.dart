@@ -1,7 +1,6 @@
-export 'services/backup_service/backup_service.dart';
-export 'services/backup_service/dialogs.dart';
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
+export 'services/basic_page_service/dialogs.dart';
 export 'services/basic_page_service/empty_state.dart';
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart';
@@ -26,3 +25,4 @@ export 'services/storage_service/extensions/ext_file.dart' show ExtFileAnalysis;
 export 'services/storage_service/widgets/storage_monitor.dart'
     show StorageMonitor;
 export 'services/store_service/store_service.dart';
+export 'services/store_service/widgets/backup_service.dart';

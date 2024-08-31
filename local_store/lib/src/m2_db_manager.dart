@@ -148,9 +148,6 @@ class DBManager extends Store {
   }
 
   @override
-  Future<List<Object?>?> getDBRecords() => dbReader.getDBRecords();
-
-  @override
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
       dbReader.getQuery(query, parameters: parameters);
 

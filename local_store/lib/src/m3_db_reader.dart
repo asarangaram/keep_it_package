@@ -3,7 +3,6 @@
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
-import 'backup_query.dart';
 import 'm3_db_queries.dart';
 import 'm3_db_query.dart';
 
@@ -17,13 +16,6 @@ class DBReader {
 
   Future<List<T>> readMultiple<T>(StoreQuery<T> query) {
     return (query as DBQuery<T>).readMultiple(tx);
-  }
-
-  Future<List<Object?>?> getDBRecords() async {
-    final dbArchive =
-        (await tx.getAll(backupQuery, [])).rows.map((e) => e[0]).toList();
-
-    return dbArchive;
   }
 
   Future<Collection?> getCollectionByID(

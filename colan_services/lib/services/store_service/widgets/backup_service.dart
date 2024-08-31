@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/extensions.dart';
 
-import 'providers/backup_stream.dart';
+import '../providers/backup_stream.dart';
 
 class BackupService extends ConsumerWidget {
   const BackupService({super.key});
