@@ -38,13 +38,10 @@ extension UpsertExtOnStoreManager on StoreManager {
           Collection(label: tempCollectionName),
         );
 
-    final savedMediaFile =
-        File(path).copyTo(appSettings.directories.media.path);
-
     final md5String = await File(path).checksum;
     final savedMedia = media?.copyWith(
-          name: path_handler.basename(savedMediaFile.path),
-          fExt: path_handler.extension(savedMediaFile.path),
+          name: path_handler.basename(path),
+          fExt: path_handler.extension(path),
           type: type,
           collectionId: collection.id,
           md5String: md5String,
@@ -53,8 +50,8 @@ extension UpsertExtOnStoreManager on StoreManager {
           isDeleted: false,
         ) ??
         CLMedia(
-          name: path_handler.basename(savedMediaFile.path),
-          fExt: path_handler.extension(savedMediaFile.path),
+          name: path_handler.basename(path),
+          fExt: path_handler.extension(path),
           type: type,
           collectionId: collection.id,
           md5String: md5String,
@@ -70,7 +67,14 @@ extension UpsertExtOnStoreManager on StoreManager {
         ),
       ).deleteIfExists();
     } else {
+      // Copy file and generate preview
+      File(path).copySync(getMediaFileName(mediaFromDB));
       await generatePreview(mediaFromDB);
+      if (media != null) {
+        if (getMediaFileName(mediaFromDB) != getMediaFileName(media)) {
+          await File(getMediaFileName(media)).deleteIfExists();
+        }
+      }
       try {
         await File(path).deleteIfExists();
       } catch (e) {
