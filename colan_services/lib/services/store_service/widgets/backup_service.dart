@@ -1,12 +1,16 @@
-import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/storage_service/extensions/human_readable.dart';
-import 'package:colan_widgets/colan_widgets.dart';
+import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/extensions.dart';
 
+import '../../settings_service/widgets/w1_get_app_settings.dart';
+import '../../storage_service/extensions/ext_directory.dart';
+import '../../storage_service/extensions/human_readable.dart';
 import '../providers/backup_stream.dart';
+import 'get_store.dart';
+import 'the_store.dart';
 
 class BackupService extends ConsumerWidget {
   const BackupService({super.key});
@@ -64,22 +68,24 @@ class BackupService extends ConsumerWidget {
   }
 }
 
-class AvailableBackup extends StatefulWidget {
+class AvailableBackup extends ConsumerWidget {
   const AvailableBackup({super.key});
 
   @override
-  State<AvailableBackup> createState() => _AvailableBackupState();
-}
-
-class _AvailableBackupState extends State<AvailableBackup> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GetAppSettings(
       errorBuilder: (object, st) => const SizedBox.shrink(),
       loadingBuilder: SizedBox.shrink,
       builder: (appSettings) {
-        final backupFile =
-            appSettings.directories.backup.path.listSync().firstOrNull;
+        final currBackupFile = ref.watch(backupFileProvider);
+        final FileSystemEntity? backupFile;
+        if (currBackupFile != null) {
+          backupFile = File(currBackupFile);
+        } else {
+          backupFile =
+              appSettings.directories.backup.path.listSync().firstOrNull;
+        }
+
         if (backupFile == null) return const SizedBox.shrink();
         final stats = backupFile.statSync();
         final backupTime = stats.modified.toDisplayFormat();
@@ -103,8 +109,9 @@ class _AvailableBackupState extends State<AvailableBackup> {
                             alignment: PlaceholderAlignment.middle,
                             child: TextButton(
                               onPressed: () async {
-                                await backupFile.delete();
-                                setState(() {});
+                                appSettings.directories.backup.path.clear();
+                                ref.read(backupFileProvider.notifier).state =
+                                    null;
                               },
                               child: CLText.small(
                                 'Remove',
@@ -128,7 +135,7 @@ class _AvailableBackupState extends State<AvailableBackup> {
                   final box = context.findRenderObject() as RenderBox?;
                   await TheStore.of(context).shareFiles(
                     context,
-                    [backupFile.path],
+                    [backupFile!.path],
                     sharePositionOrigin:
                         box!.localToGlobal(Offset.zero) & box.size,
                   );
