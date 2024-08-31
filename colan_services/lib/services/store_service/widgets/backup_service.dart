@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:colan_services/services/settings_service/models/m1_app_settings.dart';
+import 'package:colan_services/services/store_service/models/store_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +40,7 @@ class BackupService extends ConsumerWidget {
                     title: const Text('Backup'),
                     trailing: ElevatedButton(
                       onPressed: () async {
+                        theStore.appSettings.directories.backup.path.clear();
                         ref.read(backupFileProvider.notifier).state =
                             await theStore.createBackupFile();
                       },
@@ -48,7 +51,7 @@ class BackupService extends ConsumerWidget {
                       'and create a new backup.',
                     ),
                   ),
-                  const AvailableBackup(),
+                  AvailableBackup(appSettings: theStore.appSettings),
                 ],
               );
             }
@@ -69,83 +72,74 @@ class BackupService extends ConsumerWidget {
 }
 
 class AvailableBackup extends ConsumerWidget {
-  const AvailableBackup({super.key});
+  const AvailableBackup({required this.appSettings, super.key});
+  final AppSettings appSettings;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetAppSettings(
-      errorBuilder: (object, st) => const SizedBox.shrink(),
-      loadingBuilder: SizedBox.shrink,
-      builder: (appSettings) {
-        final currBackupFile = ref.watch(backupFileProvider);
-        final FileSystemEntity? backupFile;
-        if (currBackupFile != null) {
-          backupFile = File(currBackupFile);
-        } else {
-          backupFile =
-              appSettings.directories.backup.path.listSync().firstOrNull;
-        }
+    final currBackupFile = ref.watch(backupFileProvider);
+    final FileSystemEntity? backupFile;
+    if (currBackupFile != null) {
+      backupFile = File(currBackupFile);
+    } else {
+      backupFile = appSettings.directories.backup.path.listSync().firstOrNull;
+    }
 
-        if (backupFile == null) return const SizedBox.shrink();
-        final stats = backupFile.statSync();
-        final backupTime = stats.modified.toDisplayFormat();
-        final fileSize = '(${stats.size.toHumanReadableFileSize()})';
-        return ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          const TextSpan(
-                            text: 'Last Backup:',
-                          ),
-                          WidgetSpan(
-                            alignment: PlaceholderAlignment.middle,
-                            child: TextButton(
-                              onPressed: () async {
-                                appSettings.directories.backup.path.clear();
-                                ref.read(backupFileProvider.notifier).state =
-                                    null;
-                              },
-                              child: CLText.small(
-                                'Remove',
-                                color: CLTheme.of(context)
-                                    .colors
-                                    .errorTextForeground,
-                              ),
-                            ),
-                          ),
-                        ],
+    if (backupFile == null) return const SizedBox.shrink();
+    final stats = backupFile.statSync();
+    final backupTime = stats.modified.toDisplayFormat();
+    final fileSize = '(${stats.size.toHumanReadableFileSize()})';
+    return ListTile(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'Last Backup:',
                       ),
-                    ),
-                    CLText.small(
-                      '$backupTime $fileSize',
-                    ),
-                  ],
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: TextButton(
+                          onPressed: () async {
+                            appSettings.directories.backup.path.clear();
+                            ref.read(backupFileProvider.notifier).state = null;
+                          },
+                          child: CLText.small(
+                            'Remove',
+                            color:
+                                CLTheme.of(context).colors.errorTextForeground,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final box = context.findRenderObject() as RenderBox?;
-                  await TheStore.of(context).shareFiles(
-                    context,
-                    [backupFile!.path],
-                    sharePositionOrigin:
-                        box!.localToGlobal(Offset.zero) & box.size,
-                  );
-                },
-                child: const Text('download'),
-              ),
-            ],
+                CLText.small(
+                  '$backupTime $fileSize',
+                ),
+              ],
+            ),
           ),
-        );
-      },
+          ElevatedButton(
+            onPressed: () async {
+              final box = context.findRenderObject() as RenderBox?;
+              await TheStore.of(context).shareFiles(
+                context,
+                [backupFile!.path],
+                sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+              );
+            },
+            child: const Text('download'),
+          ),
+        ],
+      ),
     );
   }
 }
