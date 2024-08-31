@@ -80,8 +80,8 @@ class MediaView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isPreview) {
       return CLAspectRationDecorated(
-        hasBorder: true,
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        //hasBorder: true,
+        //borderRadius: const BorderRadius.all(Radius.circular(16)),
         child: GetStoreManager(
           builder: (theStore) {
             final previewUri = theStore.getValidPreviewUri(media);

@@ -130,6 +130,7 @@ class ComputeSizeAndBuildState extends State<ComputeSizeAndBuild> {
       if (computedSize != widgetSize) {
         setState(() {
           computedSize = widgetSize;
+          print('Size computed : $computedSize');
         });
       }
     }
@@ -137,6 +138,7 @@ class ComputeSizeAndBuildState extends State<ComputeSizeAndBuild> {
 
   @override
   Widget build(BuildContext context) {
+    MediaQuery.of(context);
     return Container(
       key: _containerKey,
       child: (computedSize == null)
