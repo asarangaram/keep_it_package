@@ -114,7 +114,7 @@ extension BackupExtOnStoreManager on StoreManager {
       final entry = MapEntry(p.basename(mediaFile), File(mediaFile));
       onData(entry);
       yield entry2tarEntry(entry);
-      await Future<void>.delayed(const Duration(milliseconds: 1000));
+      await Future<void>.delayed(const Duration(milliseconds: 1));
     }
     print('done');
     onDone?.call();
