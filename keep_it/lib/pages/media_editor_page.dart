@@ -122,12 +122,18 @@ class InvokeEditor extends StatelessWidget {
             },
           );
         }
-        return const CLErrorView(errorMessage: 'Not supported yet');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          CLPopScreen.onPop(context);
+        });
+        return Container();
       case CLMediaType.text:
       case CLMediaType.url:
       case CLMediaType.audio:
       case CLMediaType.file:
-        return const CLErrorView(errorMessage: 'Not supported yet');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          CLPopScreen.onPop(context);
+        });
+        return Container();
     }
   }
 }

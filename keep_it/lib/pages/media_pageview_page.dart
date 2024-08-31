@@ -33,8 +33,8 @@ class MediaPageViewPage extends StatelessWidget {
               parentIdentifier: parentIdentifier,
               actionControl:
                   (media.type == CLMediaType.video && !VideoEditor.isSupported)
-                      ? actionControl
-                      : actionControl.copyWith(allowEdit: false),
+                      ? actionControl.copyWith(allowEdit: false)
+                      : actionControl,
             ),
           );
         },
