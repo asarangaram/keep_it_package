@@ -32,6 +32,23 @@ class StorageInfoEntry extends ConsumerWidget {
         trailing = action;
       }
     }
+    if (dirs.length > 1) {
+      return ExpansionTile(
+        title: Text(label),
+        subtitle: Text(info?.statistics ?? ''),
+        trailing: trailing,
+        children: [
+          for (final directory in dirs)
+            Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: StorageInfoEntry(
+                label: directory.label,
+                dirs: [directory],
+              ),
+            ),
+        ],
+      );
+    }
     return ListTile(
       title: Text(label),
       subtitle: Text(info?.statistics ?? ''),
