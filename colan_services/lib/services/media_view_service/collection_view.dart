@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../media_view_service/widgets/media_view.dart';
 import '../store_service/widgets/get_store.dart';
 import '../store_service/widgets/w3_get_media.dart';
-import 'media_view_service.dart';
 import 'widgets/cl_media_collage.dart';
 
 extension RandomExt<T> on List<T> {
@@ -43,6 +43,7 @@ class CollectionView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    MediaQuery.of(context);
     return CLAspectRationDecorated(
       hasBorder: true,
       borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -73,7 +74,7 @@ class CollectionView extends ConsumerWidget {
                   availableList.length,
                   hCount: 2,
                   vCount: 2,
-                  itemBuilder: (context, index) => MediaViewService.preview(
+                  itemBuilder: (context, index) => MediaView.preview(
                     availableList[index],
                     parentIdentifier: 'TODO HERE',
                   ),

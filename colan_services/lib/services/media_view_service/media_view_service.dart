@@ -74,9 +74,13 @@ class MediaViewService extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isPreview) {
-      return MediaView.preview(
-        media[0],
-        parentIdentifier: parentIdentifier,
+      return CLAspectRationDecorated(
+        hasBorder: true,
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        child: MediaView.preview(
+          media[0],
+          parentIdentifier: parentIdentifier,
+        ),
       );
     }
     if (media.length == 1) {
