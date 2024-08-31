@@ -21,17 +21,17 @@ class StoreManager {
 
   static const uuidGenerator = Uuid();
 
-  Uri getValidPreviewPath(CLMedia media) {
-    return Uri.file(getPreviewFileName(media));
+  Uri getValidPreviewUri(CLMedia media) {
+    return Uri.file(getPreviewAbsolutePath(media));
   }
 
-  Uri getValidMediaPath(CLMedia media) => Uri.file(
-        getMediaFileName(media),
+  Uri getValidMediaUri(CLMedia media) => Uri.file(
+        getMediaAbsolutePath(media),
       );
   bool doesLocalMediaExist(CLMedia media) =>
-      File(getValidMediaPath(media).path).existsSync();
+      File(getValidMediaUri(media).path).existsSync();
 
-  String getPreviewFileName(CLMedia media) {
+  String getPreviewAbsolutePath(CLMedia media) {
     final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, media.name);
     return path_handler.join(
       appSettings.directories.thumbnail.pathString,
@@ -39,10 +39,18 @@ class StoreManager {
     );
   }
 
-  String getMediaFileName(CLMedia media) => path_handler.join(
+  String getMediaAbsolutePath(CLMedia media) => path_handler.join(
         appSettings.directories.media.path.path,
         media.name,
       );
+  String getMediaRelativePath(CLMedia media) => path_handler.join(
+        appSettings.directories.media.relativePath,
+        media.name,
+      );
+  /* String getMediaFileName(CLMedia media) => path_handler.join(
+        appSettings.directories.media.path.path,
+        media.name,
+      ); */
 
   String getMediaLabel(CLMedia media) => media.name;
 

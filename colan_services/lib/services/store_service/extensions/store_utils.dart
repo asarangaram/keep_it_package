@@ -15,8 +15,8 @@ extension UtilsOnStoreManager on StoreManager {
     CLMedia media, {
     int dimension = 256,
   }) async {
-    final inputFile = getMediaFileName(media);
-    final outputFile = getPreviewFileName(media);
+    final inputFile = getMediaAbsolutePath(media);
+    final outputFile = getPreviewAbsolutePath(media);
     final type = media.type;
 
     switch (type) {

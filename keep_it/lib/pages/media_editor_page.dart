@@ -28,7 +28,7 @@ class MediaEditorPage extends StatelessWidget {
             if (media == null) {
               return BasicPageService.message(message: ' Media not found');
             }
-            final mediaUri = theStore.getValidMediaPath(media);
+            final mediaUri = theStore.getValidMediaUri(media);
 
             return InvokeEditor(
               mediaUri: mediaUri,

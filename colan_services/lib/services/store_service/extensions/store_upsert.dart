@@ -32,12 +32,19 @@ extension UpsertExtOnStoreManager on StoreManager {
 
     final existingCollection =
         collectionId0 == null ? null : await getCollectionById(collectionId0);
-    collection = existingCollection ??
-        await getCollectionByLabel(tempCollectionName) ??
-        await store.upsertCollection(
-          Collection(label: tempCollectionName),
-        );
 
+    if (isAux) {
+      collection = await getCollectionByLabel('*** Notes') ??
+          await store.upsertCollection(
+            const Collection(label: '*** Notes'),
+          );
+    } else {
+      collection = existingCollection ??
+          await getCollectionByLabel(tempCollectionName) ??
+          await store.upsertCollection(
+            Collection(label: tempCollectionName),
+          );
+    }
     final md5String = await File(path).checksum;
     final savedMedia = media?.copyWith(
           name: path_handler.basename(path),
@@ -68,11 +75,11 @@ extension UpsertExtOnStoreManager on StoreManager {
       ).deleteIfExists();
     } else {
       // Copy file and generate preview
-      File(path).copySync(getMediaFileName(mediaFromDB));
+      File(path).copySync(getMediaAbsolutePath(mediaFromDB));
       await generatePreview(mediaFromDB);
       if (media != null) {
-        if (getMediaFileName(mediaFromDB) != getMediaFileName(media)) {
-          await File(getMediaFileName(media)).deleteIfExists();
+        if (getMediaAbsolutePath(mediaFromDB) != getMediaAbsolutePath(media)) {
+          await File(getMediaAbsolutePath(media)).deleteIfExists();
         }
       }
       try {

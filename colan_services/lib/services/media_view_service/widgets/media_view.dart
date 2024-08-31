@@ -84,7 +84,7 @@ class MediaView extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(16)),
         child: GetStoreManager(
           builder: (theStore) {
-            final previewUri = theStore.getValidPreviewPath(media);
+            final previewUri = theStore.getValidPreviewUri(media);
 
             return Hero(
               tag: '$parentIdentifier /item/${media.id}',
@@ -196,8 +196,8 @@ class _MediaView0State extends ConsumerState<MediaView0> {
     final showControl = ref.watch(showControlsProvider);
     return GetStoreManager(
       builder: (theStore) {
-        final mediaUri = theStore.getValidMediaPath(media);
-        final previewUri = theStore.getValidPreviewPath(media);
+        final mediaUri = theStore.getValidMediaUri(media);
+        final previewUri = theStore.getValidPreviewUri(media);
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),

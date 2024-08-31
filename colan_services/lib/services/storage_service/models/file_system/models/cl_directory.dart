@@ -23,6 +23,8 @@ class CLDirectory {
   String get pathString => path.path;
   String get description => description0 ?? label;
 
+  String get relativePath => name;
+
   CLDirectory copyWith({
     String? label,
     String? name,

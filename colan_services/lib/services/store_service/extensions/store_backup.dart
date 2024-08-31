@@ -24,10 +24,10 @@ extension BackupExtOnStoreManager on StoreManager {
     if (mediaList.isEmpty) return '';
 
     final archive = <Map<String, dynamic>>[];
-    final files = <String>[];
+    final files = <String, File>{};
 
     for (final media in mediaList) {
-      final localPath = getMediaFileName(media);
+      final localPath = getMediaAbsolutePath(media);
       // Archive only if files are present locally.
       // We may also exclude items that are already present in server.
 
@@ -41,11 +41,15 @@ extension BackupExtOnStoreManager on StoreManager {
           DBQueries.collectionById,
           parameters: [media.collectionId],
         );
-        map['notes'] = await store.readMultiple(notesQuery);
+        map['notes'] = (await store.readMultiple(notesQuery))
+            .where((e) => e != null)
+            .map((e) => e!.id!)
+            .toList();
         map['collectionLabel'] = (await store.read(collectionQuery))?.label;
         map.remove('collectionId');
-        map['path'] = localPath;
-        files.add(localPath);
+        map['path'] = getMediaRelativePath(media);
+        map.removeWhere((key, value) => value == null);
+        files[getMediaRelativePath(media)] = File(localPath);
 
         archive.add(map);
       }
@@ -98,7 +102,7 @@ extension BackupExtOnStoreManager on StoreManager {
 
   Stream<TarEntry> streamTagEntries(
     String indexData,
-    List<String> mediaFiles, {
+    Map<String, File> mediaFiles, {
     required void Function(MapEntry<String, File> entry) onData,
     VoidCallback? onDone,
   }) async* {
@@ -110,13 +114,12 @@ extension BackupExtOnStoreManager on StoreManager {
       utf8.encode(indexData),
     );
 
-    for (final mediaFile in mediaFiles) {
-      final entry = MapEntry(p.basename(mediaFile), File(mediaFile));
+    for (final entry in mediaFiles.entries) {
       onData(entry);
       yield entry2tarEntry(entry);
       await Future<void>.delayed(const Duration(milliseconds: 1));
     }
-    print('done');
+
     onDone?.call();
   }
 }
