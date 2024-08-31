@@ -1,19 +1,20 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final backupNowProvider = StreamProvider<Progress>((ref) async* {
+import '../../settings_service/providers/p1_app_settings.dart';
+import '../../store_service/models/store_manager.dart';
+import '../models/backup_files.dart';
+
+final backupNowProvider =
+    StreamProvider.family<Progress, StoreManager>((ref, storeManager) async* {
   final controller = StreamController<Progress>();
 
-  /// Breaking backup !!!
-  /// we need to get this done wiht Store manager
-  ///
-
-  /*
   final appSettings = await ref.watch(appSettingsProvider.future);
-  final storeInstance = await ref.watch(storeProvider.future);
-  
+  final storeInstance = storeManager.store;
+
   ref.listen(backupFileProvider, (prev, backupFileName) async {
     if (prev != backupFileName && backupFileName != null) {
       final backupManager = BackupManager(
@@ -42,7 +43,7 @@ final backupNowProvider = StreamProvider<Progress>((ref) async* {
       currentItem: 'Completed',
       isDone: true,
     ),
-  ); */
+  );
 
   yield* controller.stream;
 });

@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_services/services/storage_service/extensions/human_readable.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 
@@ -5,67 +6,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/extensions.dart';
 
-import '../settings_service/widgets/w1_get_app_settings.dart';
 import 'providers/backup_stream.dart';
 
 class BackupService extends ConsumerWidget {
-  const BackupService({
-    required this.onShareFiles,
-    required this.onCreateBackupFile,
-    super.key,
-  });
-  final Future<void> Function(
-    BuildContext context,
-    List<String> files, {
-    Rect? sharePositionOrigin,
-  }) onShareFiles;
-  final Future<String> Function() onCreateBackupFile;
+  const BackupService({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final backupStatus = ref.watch(backupNowProvider);
-    return backupStatus.when(
-      loading: () => const ListTile(
-        title: Text('Backup'),
-        trailing: CircularProgressIndicator(),
-      ),
-      error: (error, stackTrace) => ListTile(
-        title: const Text('Backup'),
-        trailing: Text('Error while processing backup. $error'),
-      ),
-      data: (progress) {
-        if (progress.isDone) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text('Backup'),
-                trailing: ElevatedButton(
-                  onPressed: () async {
-                    ref.read(backupFileProvider.notifier).state =
-                        await onCreateBackupFile();
-                  },
-                  child: const Text('Backup Now'),
+    return GetStoreManager(
+      builder: (theStore) {
+        final backupStatus = ref.watch(backupNowProvider(theStore));
+        return backupStatus.when(
+          loading: () => const ListTile(
+            title: Text('Backup'),
+            trailing: CircularProgressIndicator(),
+          ),
+          error: (error, stackTrace) => ListTile(
+            title: const Text('Backup'),
+            trailing: Text('Error while processing backup. $error'),
+          ),
+          data: (progress) {
+            if (progress.isDone) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    title: const Text('Backup'),
+                    trailing: ElevatedButton(
+                      onPressed: () async {
+                        ref.read(backupFileProvider.notifier).state =
+                            await theStore.createBackupFile();
+                      },
+                      child: const Text('Backup Now'),
+                    ),
+                    subtitle: const Text(
+                      'This will remove earlier backup '
+                      'and create a new backup.',
+                    ),
+                  ),
+                  const AvailableBackup(),
+                ],
+              );
+            }
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Backing up ... '),
+                ProgressBar(
+                  progress: progress.fractCompleted,
                 ),
-                subtitle: const Text(
-                  'This will remove earlier backup '
-                  'and create a new backup.',
-                ),
-              ),
-              AvailableBackup(
-                onShareFiles: onShareFiles,
-              ),
-            ],
-          );
-        }
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Backing up ... '),
-            ProgressBar(
-              progress: progress.fractCompleted,
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
@@ -73,12 +65,7 @@ class BackupService extends ConsumerWidget {
 }
 
 class AvailableBackup extends StatefulWidget {
-  const AvailableBackup({required this.onShareFiles, super.key});
-  final Future<void> Function(
-    BuildContext context,
-    List<String> files, {
-    Rect? sharePositionOrigin,
-  }) onShareFiles;
+  const AvailableBackup({super.key});
 
   @override
   State<AvailableBackup> createState() => _AvailableBackupState();
@@ -139,7 +126,7 @@ class _AvailableBackupState extends State<AvailableBackup> {
               ElevatedButton(
                 onPressed: () async {
                   final box = context.findRenderObject() as RenderBox?;
-                  await widget.onShareFiles(
+                  await TheStore.of(context).shareFiles(
                     context,
                     [backupFile.path],
                     sharePositionOrigin:
