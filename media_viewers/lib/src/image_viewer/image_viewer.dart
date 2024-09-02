@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
+import 'views/broken_image.dart';
+
 class OverlayWidgets extends StatelessWidget {
   factory OverlayWidgets({
     required Widget child,
@@ -130,6 +132,9 @@ class ImageViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!File(uri.path).existsSync()) {
+      return const BrokenImage();
+    }
     final mode =
         hasGesture ? ExtendedImageMode.gesture : ExtendedImageMode.none;
     final image = switch (uri.scheme) {
