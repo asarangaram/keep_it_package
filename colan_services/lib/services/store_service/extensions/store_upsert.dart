@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:crypto/crypto.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
@@ -192,19 +191,6 @@ extension UpsertExtOnStoreManager on StoreManager {
         isAux: true,
         parents: mediaMultiple,
       );
-
-  static Future<String?> getChecksum(String fname) async {
-    try {
-      final stream = File(fname).openRead();
-      final hash = await md5.bind(stream).first;
-
-      // NOTE: You might not need to convert it to base64
-      return hash.toString();
-    } catch (exception) {
-      //throw Exception('unable to determine md5');
-      return null;
-    }
-  }
 
   Stream<Progress> analyseMediaStream({
     required List<CLMediaBase> mediaFiles,
