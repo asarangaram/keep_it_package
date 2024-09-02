@@ -1,6 +1,8 @@
 PODS:
   - audio_waveforms (0.0.1):
     - Flutter
+  - background_downloader (0.0.1):
+    - Flutter
   - camera_avfoundation (0.0.1):
     - Flutter
   - ffmpeg-kit-ios-https (6.0)
@@ -75,6 +77,7 @@ PODS:
 
 DEPENDENCIES:
   - audio_waveforms (from `.symlinks/plugins/audio_waveforms/ios`)
+  - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - ffmpeg_kit_flutter (from `.symlinks/plugins/ffmpeg_kit_flutter/ios`)
   - Flutter (from `Flutter`)
@@ -100,6 +103,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   audio_waveforms:
     :path: ".symlinks/plugins/audio_waveforms/ios"
+  background_downloader:
+    :path: ".symlinks/plugins/background_downloader/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   ffmpeg_kit_flutter:
@@ -133,6 +138,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   audio_waveforms: cd736909ebc6b6a164eb74701d8c705ce3241e1c
+  background_downloader: 9f788ffc5de45acf87d6380e91ca0841066c18cf
   camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
   ffmpeg-kit-ios-https: f9c838aa5400a6c5ba12324c6b798f52197ba354
   ffmpeg_kit_flutter: b4ca70cac3fc1d8ac14cdc660754b60870358732
