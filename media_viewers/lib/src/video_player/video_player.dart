@@ -36,7 +36,7 @@ class VideoPlayer extends ConsumerWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (context.mounted && autoStart) {
         await ref.read(videoPlayerStateProvider.notifier).setVideo(
-              uri.path,
+              uri.toFilePath(),
               autoPlay: autoPlay,
             );
       }
@@ -47,7 +47,7 @@ class VideoPlayer extends ConsumerWidget {
         VideoPlayerState state,
         VideoPlayerController controller,
       ) {
-        if (state.path == uri.path) {
+        if (state.path == uri.toFilePath()) {
           return VideoLayer(
             controller: controller,
           );

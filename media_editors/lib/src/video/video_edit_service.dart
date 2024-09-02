@@ -36,7 +36,7 @@ class _VideoEditorState extends State<VideoEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final currFile = audioRemovedFile ?? widget.uri.path;
+    final currFile = audioRemovedFile ?? widget.uri.toFilePath();
 
     return VideoTrimmerView(
       File(currFile),
@@ -52,7 +52,7 @@ class _VideoEditorState extends State<VideoEditor> {
         });
       },
       audioMuter: AudioMuter(
-        widget.uri.path,
+        widget.uri.toFilePath(),
         onCreateNewFile: widget.onCreateNewFile,
         onDone: (file) {
           setState(() {

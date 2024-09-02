@@ -62,7 +62,7 @@ class _ImageEditorState extends State<ImageEditor> {
                 Positioned.fill(
                   child: EditableImageView(
                     key: ValueKey(aspectRatio),
-                    File(widget.uri.path),
+                    File(widget.uri.toFilePath()),
                     controller: controller,
                     rotateAngle: rotateAngle,
                     aspectRatio: aspectRatio?.aspectRatio,

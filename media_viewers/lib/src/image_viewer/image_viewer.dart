@@ -132,14 +132,14 @@ class ImageViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!File(uri.path).existsSync()) {
+    if (!File(uri.toFilePath()).existsSync()) {
       return const BrokenImage();
     }
     final mode =
         hasGesture ? ExtendedImageMode.gesture : ExtendedImageMode.none;
     final image = switch (uri.scheme) {
       'file' => ExtendedImage.file(
-          File(uri.path),
+          File(uri.toFilePath()),
           fit: fit ?? BoxFit.contain,
           mode: mode,
           initGestureConfigHandler:
