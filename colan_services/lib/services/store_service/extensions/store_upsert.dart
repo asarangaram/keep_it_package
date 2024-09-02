@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:crypto/crypto.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
@@ -24,6 +25,7 @@ extension UpsertExtOnStoreManager on StoreManager {
     int? collectionId,
     bool isAux = false,
     List<CLMedia>? parents,
+    String? md5String,
   }) async {
     int? collectionId0;
     final Collection collection;
@@ -45,13 +47,13 @@ extension UpsertExtOnStoreManager on StoreManager {
             Collection(label: tempCollectionName),
           );
     }
-    final md5String = await File(path).checksum;
+    final md5String0 = md5String ?? await File(path).checksum;
     final savedMedia = media?.copyWith(
           name: path_handler.basename(path),
           fExt: path_handler.extension(path),
           type: type,
           collectionId: collection.id,
-          md5String: md5String,
+          md5String: md5String0,
           isHidden: existingCollection == null,
           isAux: isAux,
           isDeleted: false,
@@ -61,7 +63,7 @@ extension UpsertExtOnStoreManager on StoreManager {
           fExt: path_handler.extension(path),
           type: type,
           collectionId: collection.id,
-          md5String: md5String,
+          md5String: md5String0,
           isHidden: collectionId0 == null,
           isAux: isAux,
         );
@@ -190,6 +192,20 @@ extension UpsertExtOnStoreManager on StoreManager {
         isAux: true,
         parents: mediaMultiple,
       );
+
+  static Future<String?> getChecksum(String fname) async {
+    try {
+      final stream = File(fname).openRead();
+      final hash = await md5.bind(stream).first;
+
+      // NOTE: You might not need to convert it to base64
+      return hash.toString();
+    } catch (exception) {
+      //throw Exception('unable to determine md5');
+      return null;
+    }
+  }
+
   Stream<Progress> analyseMediaStream({
     required List<CLMediaBase> mediaFiles,
     required void Function({
@@ -222,9 +238,18 @@ extension UpsertExtOnStoreManager on StoreManager {
           final md5String = await file.checksum;
           final duplicate = await getMediaByMD5(md5String);
           if (duplicate != null) {
-            candidates.add(duplicate);
+            // multiple duplicate may be imported together
+            if (candidates.firstWhereOrNull((e) => e.id == duplicate.id!) ==
+                null) {
+              candidates.add(duplicate);
+            }
           } else {
-            final mediaFromDB = await upsertMediaFromFile(item.name, item.type);
+            // avoid recomputing md5
+            final mediaFromDB = await upsertMediaFromFile(
+              item.name,
+              item.type,
+              md5String: md5String,
+            );
             if (mediaFromDB != null) {
               candidates.add(mediaFromDB);
             } else {
