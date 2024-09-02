@@ -130,7 +130,6 @@ class ComputeSizeAndBuildState extends State<ComputeSizeAndBuild> {
       if (computedSize != widgetSize) {
         setState(() {
           computedSize = widgetSize;
-          print('Size computed : $computedSize');
         });
       }
     }
