@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../settings_service/models/m1_app_settings.dart';
@@ -32,20 +31,28 @@ class StoreManager {
       File(getValidMediaUri(media).path).existsSync();
 
   String getPreviewAbsolutePath(CLMedia media) {
-    final uuid = uuidGenerator.v5(Uuid.NAMESPACE_URL, media.name);
-    return path_handler.join(
-      appSettings.directories.thumbnail.pathString,
-      '$uuid.tn.jpeg',
+    return path_handler.setExtension(
+      path_handler.join(
+        appSettings.directories.media.pathString,
+        '${media.md5String}_tn',
+      ),
+      '.jpeg',
     );
   }
 
-  String getMediaAbsolutePath(CLMedia media) => path_handler.join(
-        appSettings.directories.media.path.path,
-        media.name,
+  String getMediaAbsolutePath(CLMedia media) => path_handler.setExtension(
+        path_handler.join(
+          appSettings.directories.media.path.path,
+          media.md5String,
+        ),
+        media.fExt,
       );
-  String getMediaRelativePath(CLMedia media) => path_handler.join(
-        appSettings.directories.media.relativePath,
-        media.name,
+  String getMediaRelativePath(CLMedia media) => path_handler.setExtension(
+        path_handler.join(
+          appSettings.directories.media.relativePath,
+          media.md5String,
+        ),
+        media.fExt,
       );
   /* String getMediaFileName(CLMedia media) => path_handler.join(
         appSettings.directories.media.path.path,
