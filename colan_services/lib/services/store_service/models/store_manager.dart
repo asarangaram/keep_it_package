@@ -18,8 +18,6 @@ class StoreManager {
   final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
   final String tempCollectionName = '*** Recently Captured';
 
-  static const uuidGenerator = Uuid();
-
   Uri getValidPreviewUri(CLMedia media) {
     return Uri.file(getPreviewAbsolutePath(media));
   }
