@@ -8,10 +8,9 @@ import '../models/m1_app_settings.dart';
 
 final appSettingsProvider = FutureProvider<AppSettings>((ref) async {
   final directories = CLDirectories(
-    persistent: await getApplicationDocumentsDirectory(),
+    persistent: await getApplicationSupportDirectory(),
     temporary: await getApplicationCacheDirectory(),
     systemTemp: Directory.systemTemp,
   );
-
   return AppSettings(directories);
 });
