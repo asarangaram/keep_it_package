@@ -32,6 +32,7 @@ extension DeleteExtOnStoreManager on StoreManager {
     await store.deleteMedia(media, permanent: true);
     if (permanent) {
       await File(getMediaAbsolutePath(media)).deleteIfExists();
+      await File(getPreviewAbsolutePath(media)).deleteIfExists();
 
       final orphanNotesQuery = store.getQuery<CLMedia>(DBQueries.notesOrphan);
 
@@ -41,6 +42,7 @@ extension DeleteExtOnStoreManager on StoreManager {
           if (note != null) {
             await store.deleteMedia(note, permanent: true);
             await File(getMediaAbsolutePath(note)).deleteIfExists();
+            await File(getPreviewAbsolutePath(media)).deleteIfExists();
           }
         }
       }
