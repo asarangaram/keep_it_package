@@ -11,19 +11,23 @@ final groupedItemsProvider =
     if (entry.value.length > 20) {
       final groups = entry.value.convertTo2D(20);
 
-      galleryGroups
-        ..add(
+      for (final (index, group) in groups.indexed) {
+        galleryGroups.add(
           GalleryGroup(
-            groups[0],
-            label: entry.key,
+            group,
+            label: (index == 0) ? entry.key : null,
+            groupIdentifier: entry.key,
+            chunkIdentifier: '${entry.key} $index',
           ),
-        )
-        ..addAll(groups.sublist(1).map(GalleryGroup.new));
+        );
+      }
     } else {
       galleryGroups.add(
         GalleryGroup(
           entry.value,
           label: entry.key,
+          groupIdentifier: entry.key,
+          chunkIdentifier: entry.key,
         ),
       );
     }
@@ -36,6 +40,13 @@ final singleGroupItemProvider =
         (ref, items) {
   final galleryGroups = <GalleryGroup<CLMedia>>[];
   if (items.isEmpty) return galleryGroups;
-  galleryGroups.add(GalleryGroup(items));
+  galleryGroups.add(
+    GalleryGroup(
+      items,
+      groupIdentifier: 'Single Group',
+      chunkIdentifier: 'Single Group',
+      label: null,
+    ),
+  );
   return galleryGroups;
 });

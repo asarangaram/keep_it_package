@@ -91,7 +91,11 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
     return originalList.map((galleryGroup) {
       // Map the items list to a list of booleans (initialized to false)
       final booleanItems = galleryGroup.items.map((item) => false).toList();
-      return GalleryGroupMutable<bool>(booleanItems, label: galleryGroup.label);
+      return GalleryGroupMutable<bool>(
+        booleanItems,
+        groupIdentifier: galleryGroup.groupIdentifier,
+        chunkIdentifier: galleryGroup.chunkIdentifier,
+      );
     }).toList();
   }
 
@@ -104,10 +108,16 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
 
   void selectGroup(int groupIndex, {required bool select}) {
     if (widget.keepSelected) return;
-    final group = selectionMap[groupIndex];
+    //final group = selectionMap[groupIndex];
+    final groupIdentifier = selectionMap[groupIndex].groupIdentifier;
+    final group = selectionMap.where(
+      (e) => e.groupIdentifier == groupIdentifier,
+    );
 
-    for (var i = 0; i < group.items.length; i++) {
-      group.items[i] = select;
+    for (final chunk in group) {
+      for (var i = 0; i < chunk.items.length; i++) {
+        chunk.items[i] = select;
+      }
     }
     widget.onSelectionChanged.call(selectionMap.filterItems(widget.items));
   }

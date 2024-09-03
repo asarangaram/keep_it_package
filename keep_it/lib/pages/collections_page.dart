@@ -30,7 +30,14 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                         ' excludeEmpty: $excludeEmpty';
                     final galleryGroups = <GalleryGroup<Collection>>[];
                     for (final rows in collections.convertTo2D(3)) {
-                      galleryGroups.add(GalleryGroup(rows));
+                      galleryGroups.add(
+                        GalleryGroup(
+                          rows,
+                          label: null,
+                          groupIdentifier: 'Collections',
+                          chunkIdentifier: 'Collections',
+                        ),
+                      );
                     }
                     return CLSimpleGalleryView(
                       key: ValueKey(identifier),

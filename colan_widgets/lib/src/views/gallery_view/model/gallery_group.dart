@@ -1,15 +1,28 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 
 @immutable
 class GalleryGroup<T> {
-  const GalleryGroup(this.items, {this.label});
+  const GalleryGroup(
+    this.items, {
+    required this.chunkIdentifier,
+    required this.groupIdentifier,
+    required this.label,
+  });
+  final String chunkIdentifier;
+  final String groupIdentifier;
   final String? label;
   final List<T> items;
 }
 
 class GalleryGroupMutable<T> {
-  const GalleryGroupMutable(this.items, {this.label});
-  final String? label;
+  const GalleryGroupMutable(
+    this.items, {
+    required this.chunkIdentifier,
+    required this.groupIdentifier,
+  });
+  final String chunkIdentifier;
+  final String groupIdentifier;
   final List<T> items;
 }
 
@@ -54,7 +67,7 @@ extension ExtListGalleryGroupMutableBool<bool>
     final items = <T>[];
     for (final group in originalList) {
       final boolGroup = firstWhereOrNull(
-        (mutableGroup) => mutableGroup.label == group.label,
+        (mutableGroup) => mutableGroup.chunkIdentifier == group.chunkIdentifier,
       );
       boolGroup?.items.forEachIndexed((index, flag) {
         if (flag == true) {
