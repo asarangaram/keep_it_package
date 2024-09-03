@@ -160,9 +160,9 @@ class DBManager extends Store {
       });
 
   @override
-  Future<void> deleteMedia(CLMedia media, {required bool permanent}) async =>
+  Future<void> deleteMedia(CLMedia media) async =>
       db.writeTransaction((tx) async {
-        await dbWriter.deleteMedia(tx, media, permanent: permanent);
+        await dbWriter.deleteMedia(tx, media);
       });
 
   @override
