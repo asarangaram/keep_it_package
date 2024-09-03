@@ -82,39 +82,27 @@ class DBWriter {
     await collectionTable.delete(tx, collection);
   }
 
-  Future<void> deleteMedia(
-    SqliteWriteContext tx,
-    CLMedia media, {
-    required bool permanent,
-  }) async {
-    if (permanent) {
-      // PATCH ============================================================
-      // This patch is required as for some reasons, DELETE on CASCASDE
-      // didn't work.
-      // check if this media is used as supplement for any other media
+  Future<void> deleteMedia(SqliteWriteContext tx, CLMedia media) async {
+    // PATCH ============================================================
+    // This patch is required as for some reasons, DELETE on CASCASDE
+    // didn't work.
+    // check if this media is used as supplement for any other media
 
-      final parents = await DBReader(tx).getMediaByNoteID(media.id!);
-      if (parents?.isNotEmpty ?? false) {
-        for (final parent in parents!) {
-          await disconnectNote(tx, note: media, media: parent);
-        }
+    final parents = await DBReader(tx).getMediaByNoteID(media.id!);
+    if (parents?.isNotEmpty ?? false) {
+      for (final parent in parents!) {
+        await disconnectNote(tx, note: media, media: parent);
       }
-      // check if this media has supplement media
-      final children = await DBReader(tx).getNotesByMediaID(media.id!);
-      if (children?.isNotEmpty ?? false) {
-        for (final child in children!) {
-          await disconnectNote(tx, note: child, media: media);
-        }
-      }
-
-      await mediaTable.delete(tx, media);
-    } else {
-      // Soft Delete
-      await upsertMedia(
-        tx,
-        media.removePin().copyWith(isDeleted: true),
-      );
     }
+    // check if this media has supplement media
+    final children = await DBReader(tx).getNotesByMediaID(media.id!);
+    if (children?.isNotEmpty ?? false) {
+      for (final child in children!) {
+        await disconnectNote(tx, note: child, media: media);
+      }
+    }
+
+    await mediaTable.delete(tx, media);
   }
 
   Future<void> deleteMediaPreference(

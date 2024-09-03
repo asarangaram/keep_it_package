@@ -21,7 +21,7 @@ extension DeleteMultipleExtOnStoreManager on StoreManager {
     );
 
     for (final m in mediaMultiple) {
-      await store.deleteMedia(m, permanent: true);
+      await store.deleteMedia(m);
       await File(
         path_handler.join(
           appSettings.directories.media.pathString,
@@ -42,13 +42,13 @@ extension DeleteMultipleExtOnStoreManager on StoreManager {
     // Remove Pins first..
     final pinnedMedia =
         mediaMultiple.where((e) => e.pin != null).map((e) => e.pin!).toList();
-    // Remove Pins first..
+
     await removeMultipleMediaFromGallery(
       pinnedMedia,
     );
 
     for (final m in mediaMultiple) {
-      await store.deleteMedia(m, permanent: false);
+      await store.upsertMedia(m.removePin().copyWith(isDeleted: true));
     }
     return true;
   }

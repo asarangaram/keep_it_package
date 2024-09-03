@@ -21,33 +21,25 @@ extension DeleteExtOnStoreManager on StoreManager {
     return true;
   }
 
-  Future<void> deleteMedia(
-    CLMedia media, {
-    bool permanent = false,
-  }) async {
+  Future<void> deleteMedia(CLMedia media) async {
     if (media.id == null) return;
 
-    await store.deleteMedia(media, permanent: true);
-    if (permanent) {
-      await File(getMediaAbsolutePath(media)).deleteIfExists();
-      await File(getPreviewAbsolutePath(media)).deleteIfExists();
+    await store.deleteMedia(media);
 
-      final orphanNotesQuery = store.getQuery<CLMedia>(DBQueries.notesOrphan);
+    await File(getMediaAbsolutePath(media)).deleteIfExists();
+    await File(getPreviewAbsolutePath(media)).deleteIfExists();
 
-      final orphanNotes = await store.readMultiple(orphanNotesQuery);
-      if (orphanNotes.isNotEmpty) {
-        for (final note in orphanNotes) {
-          if (note != null) {
-            await store.deleteMedia(note, permanent: true);
-            await File(getMediaAbsolutePath(note)).deleteIfExists();
-            await File(getPreviewAbsolutePath(media)).deleteIfExists();
-          }
+    final orphanNotesQuery = store.getQuery<CLMedia>(DBQueries.notesOrphan);
+
+    final orphanNotes = await store.readMultiple(orphanNotesQuery);
+    if (orphanNotes.isNotEmpty) {
+      for (final note in orphanNotes) {
+        if (note != null) {
+          await store.deleteMedia(note);
+          await File(getMediaAbsolutePath(note)).deleteIfExists();
+          await File(getPreviewAbsolutePath(media)).deleteIfExists();
         }
       }
     }
-  }
-
-  Future<void> onDeleteNote(CLMedia note) async {
-    await store.deleteMedia(note, permanent: true);
   }
 }

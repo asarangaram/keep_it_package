@@ -46,7 +46,7 @@ abstract class Store {
   Future<void> upsertMediaStatus(MediaStatus status);
 
   Future<void> deleteCollection(Collection collection);
-  Future<void> deleteMedia(CLMedia media, {required bool permanent});
+  Future<void> deleteMedia(CLMedia media);
   Future<void> deleteMediaPreference(MediaPreference pref);
   Future<void> deleteMediaStatus(MediaStatus status);
 
