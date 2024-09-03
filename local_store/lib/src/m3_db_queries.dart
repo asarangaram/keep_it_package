@@ -126,16 +126,6 @@ class Queries {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.collectionLocallyModified => DBQuery<Collection>(
-          sql: 'SELECT * FROM Collection',
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.mediaLocallyModified => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Media',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
     };
     if (parameters == null) {
       return rawQuery as StoreQuery<T>;

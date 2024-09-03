@@ -111,20 +111,4 @@ class DBReader {
 
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
       Queries.getQuery(query, parameters: parameters);
-
-  Future<List<Collection>> locallyModifiedCollections() {
-    return readMultiple<Collection>(
-      getQuery(
-        DBQueries.collectionLocallyModified,
-      ) as DBQuery<Collection>,
-    );
-  }
-
-  Future<List<CLMedia>> locallyModifiedMedias() {
-    return readMultiple<CLMedia>(
-      getQuery(
-        DBQueries.mediaLocallyModified,
-      ) as DBQuery<CLMedia>,
-    );
-  }
 }

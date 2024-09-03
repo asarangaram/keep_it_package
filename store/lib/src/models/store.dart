@@ -25,8 +25,6 @@ enum DBQueries {
   notesAll,
   notesByMediaId,
   notesOrphan,
-  collectionLocallyModified,
-  mediaLocallyModified,
 }
 
 abstract class StoreQuery<T> {
