@@ -118,7 +118,7 @@ class TimeLineView extends ConsumerWidget {
           ),
           onPickFiles: onPickFiles,
           onCameraCapture: onCameraCapture,
-          onRefresh: () async => TheStore.of(context).reloadStore(),
+          onRefresh: () async => theStore.store.reloadStore(),
           selectionActions: (context, items) {
             return [
               CLMenuItem(

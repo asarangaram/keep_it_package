@@ -48,7 +48,7 @@ extension GalleryExtOnStoreManager on StoreManager {
       if (media.id != null) {
         final pin = await albumManager.addMedia(
           path_handler.join(
-            appSettings.directories.media.pathString,
+            deviceDirectories.media.pathString,
             media.name,
           ),
           title: media.name,

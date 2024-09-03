@@ -15,7 +15,6 @@ class StoreActions {
     required this.openCollection,
     required this.shareMediaMultiple,
     required this.shareFiles,
-    required this.reloadStore,
   });
   //////////////////////////////////////////////////////////////////////////////
 
@@ -56,18 +55,15 @@ class StoreActions {
     Rect? sharePositionOrigin,
   }) shareFiles;
 
-  final Future<void> Function() reloadStore;
-
   @override
   bool operator ==(covariant StoreActions other) {
     if (identical(this, other)) return true;
 
-    return other.shareMediaMultiple == shareMediaMultiple &&
-        other.reloadStore == reloadStore;
+    return other.shareMediaMultiple == shareMediaMultiple;
   }
 
   @override
   int get hashCode {
-    return shareMediaMultiple.hashCode ^ reloadStore.hashCode;
+    return shareMediaMultiple.hashCode;
   }
 }

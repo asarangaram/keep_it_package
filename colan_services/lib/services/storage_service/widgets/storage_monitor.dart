@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../settings_service/widgets/w1_get_app_settings.dart';
 import '../extensions/ext_directory.dart';
+import 'get_device_directories.dart';
 import 'storage_info_entry.dart';
 
 class StorageMonitor extends ConsumerWidget {
@@ -10,25 +10,25 @@ class StorageMonitor extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetAppSettings(
+    return GetDeviceDirectories(
       loadingBuilder: () => const SizedBox.shrink(),
       errorBuilder: (object, st) {
         return const SizedBox.shrink();
       },
-      builder: (appSettings) {
+      builder: (deviceDirectories) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             StorageInfoEntry(
               label: 'Storage Used',
-              dirs: appSettings.directories.persistentDirs,
+              dirs: deviceDirectories.persistentDirs,
             ),
             StorageInfoEntry(
               label: 'Cache',
-              dirs: appSettings.directories.cacheDirs,
+              dirs: deviceDirectories.cacheDirs,
               action: ElevatedButton.icon(
                 onPressed: () async {
-                  for (final dir in appSettings.directories.cacheDirs) {
+                  for (final dir in deviceDirectories.cacheDirs) {
                     dir.path.clear();
                   }
                 },

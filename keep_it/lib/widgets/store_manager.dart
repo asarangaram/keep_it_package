@@ -47,19 +47,11 @@ class StoreManagerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetAppSettings(
-      errorBuilder: (object, st) => const SizedBox.shrink(),
-      loadingBuilder: () => const SizedBox.shrink(),
-      builder: (appSettings) {
-        return GetStoreManager(
-          builder: (storeManger) {
-            return MediaHandlerWidget0(
-              storeManager: storeManger,
-              storeInstance: storeManger.store,
-              appSettings: appSettings,
-              child: child,
-            );
-          },
+    return GetStoreManager(
+      builder: (storeManger) {
+        return MediaHandlerWidget0(
+          storeManager: storeManger,
+          child: child,
         );
       },
     );
@@ -69,14 +61,10 @@ class StoreManagerView extends StatelessWidget {
 class MediaHandlerWidget0 extends ConsumerStatefulWidget {
   const MediaHandlerWidget0({
     required this.child,
-    required this.storeInstance,
-    required this.appSettings,
     required this.storeManager,
     super.key,
   });
 
-  final Store storeInstance;
-  final AppSettings appSettings;
   final Widget child;
   final StoreManager storeManager;
 
@@ -99,8 +87,6 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       openCamera: openCamera,
       openMedia: openMedia,
       openCollection: openCollection,
-
-      reloadStore: reloadStore,
     );
     return TheStore(
       storeAction: storeAction,
@@ -175,10 +161,7 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
       ctx,
       mediaMultiple
           .map(
-            (e) => path_handler.join(
-              widget.appSettings.directories.media.pathString,
-              e.name,
-            ),
+            (e) => widget.storeManager.getMediaAbsolutePath(e),
           )
           .toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
@@ -242,9 +225,5 @@ class _MediaHandlerWidgetState extends ConsumerState<MediaHandlerWidget0> {
     await context.push(
       '/items_by_collection/$collectionId',
     );
-  }
-
-  Future<void> reloadStore() async {
-    await widget.storeInstance.reloadStore();
   }
 }

@@ -18,7 +18,7 @@ extension PathExtOnStoreManager on StoreManager {
   String getPreviewAbsolutePath(CLMedia media) {
     return path_handler.setExtension(
       path_handler.join(
-        appSettings.directories.media.pathString,
+        deviceDirectories.media.pathString,
         '${media.md5String}_tn',
       ),
       '.jpeg',
@@ -27,27 +27,27 @@ extension PathExtOnStoreManager on StoreManager {
 
   String getMediaAbsolutePath(CLMedia media) => path_handler.setExtension(
         path_handler.join(
-          appSettings.directories.media.path.path,
+          deviceDirectories.media.path.path,
           media.md5String,
         ),
         media.fExt,
       );
   String getMediaRelativePath(CLMedia media) => path_handler.setExtension(
         path_handler.join(
-          appSettings.directories.media.relativePath,
+          deviceDirectories.media.relativePath,
           media.md5String,
         ),
         media.fExt,
       );
   /* String getMediaFileName(CLMedia media) => path_handler.join(
-        appSettings.directories.media.path.path,
+        DeviceDirectories.media.path.path,
         media.name,
       ); */
 
   String getMediaLabel(CLMedia media) => media.name;
 
   Future<String> createTempFile({required String ext}) async {
-    final dir = appSettings.directories.download.path;
+    final dir = deviceDirectories.download.path;
     final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
     final absolutePath = '${dir.path}/$fileBasename.$ext';
 
@@ -55,7 +55,7 @@ extension PathExtOnStoreManager on StoreManager {
   }
 
   Future<String> createBackupFile() async {
-    final dir = appSettings.directories.backup.path;
+    final dir = deviceDirectories.backup.path;
     final fileBasename =
         'keep_it_backup_${DateTime.now().millisecondsSinceEpoch}';
     final absolutePath = '${dir.path}/$fileBasename.tar.gz';

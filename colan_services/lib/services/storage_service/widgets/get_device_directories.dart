@@ -1,22 +1,23 @@
+import 'package:colan_services/services/storage_service/models/file_system/models/cl_directories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/m1_app_settings.dart';
-import '../providers/p1_app_settings.dart';
 
-class GetAppSettings extends ConsumerWidget {
-  const GetAppSettings({
+import '../providers/directories.dart';
+
+class GetDeviceDirectories extends ConsumerWidget {
+  const GetDeviceDirectories({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(AppSettings settings) builder;
+  final Widget Function(CLDirectories settings) builder;
   final Widget Function(Object object, StackTrace st) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(appSettingsProvider).when(
+    return ref.watch(deviceDirectoriesProvider).when(
           loading: loadingBuilder,
           error: errorBuilder,
           data: (data) {

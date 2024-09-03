@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:colan_services/services/settings_service/models/m1_app_settings.dart';
+import 'package:colan_services/services/storage_service/models/file_system/models/cl_directories.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +37,7 @@ class BackupService extends ConsumerWidget {
                     title: const Text('Backup'),
                     trailing: ElevatedButton(
                       onPressed: () async {
-                        theStore.appSettings.directories.backup.path.clear();
+                        theStore.deviceDirectories.backup.path.clear();
                         ref.read(backupFileProvider.notifier).state =
                             await theStore.createBackupFile();
                       },
@@ -48,7 +48,9 @@ class BackupService extends ConsumerWidget {
                       'and create a new backup.',
                     ),
                   ),
-                  AvailableBackup(appSettings: theStore.appSettings),
+                  AvailableBackup(
+                    deviceDirectories: theStore.deviceDirectories,
+                  ),
                 ],
               );
             }
@@ -69,8 +71,8 @@ class BackupService extends ConsumerWidget {
 }
 
 class AvailableBackup extends ConsumerWidget {
-  const AvailableBackup({required this.appSettings, super.key});
-  final AppSettings appSettings;
+  const AvailableBackup({required this.deviceDirectories, super.key});
+  final CLDirectories deviceDirectories;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,7 +81,7 @@ class AvailableBackup extends ConsumerWidget {
     if (currBackupFile != null) {
       backupFile = File(currBackupFile);
     } else {
-      backupFile = appSettings.directories.backup.path.listSync().firstOrNull;
+      backupFile = deviceDirectories.backup.path.listSync().firstOrNull;
     }
 
     if (backupFile == null) return const SizedBox.shrink();
@@ -105,7 +107,7 @@ class AvailableBackup extends ConsumerWidget {
                         alignment: PlaceholderAlignment.middle,
                         child: TextButton(
                           onPressed: () async {
-                            appSettings.directories.backup.path.clear();
+                            deviceDirectories.backup.path.clear();
                             ref.read(backupFileProvider.notifier).state = null;
                           },
                           child: CLText.small(

@@ -3,13 +3,13 @@ import 'package:local_store/local_store.dart';
 import 'package:path/path.dart';
 import 'package:store/store.dart';
 
-import '../../settings_service/providers/p1_app_settings.dart';
+import '../../storage_service/providers/directories.dart';
 import '../models/store_manager.dart';
 
 /* final storeProvider = FutureProvider<Store>((ref) async {
-  final appSettings = await ref.watch(appSettingsProvider.future);
-  final db = appSettings.directories.db;
-  final fullPath = join(db.pathString, appSettings.dbName);
+  final DeviceDirectories = await ref.watch(DeviceDirectoriesProvider.future);
+  final db = DeviceDirectories.directories.db;
+  final fullPath = join(db.pathString, DeviceDirectories.dbName);
 
   final storeInstance = await createStoreInstance(
     fullPath,
@@ -25,12 +25,13 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreManager>> {
   }
   final Ref ref;
   late final Store? storeInstance;
+  String get dbName => 'keepIt.db';
 
   Future<void> create() async {
-    final appSettings = await ref.watch(appSettingsProvider.future);
+    final deviceDirectories = await ref.watch(deviceDirectoriesProvider.future);
 
-    final db = appSettings.directories.db;
-    final fullPath = join(db.pathString, appSettings.dbName);
+    final db = deviceDirectories.db;
+    final fullPath = join(db.pathString, dbName);
 
     storeInstance = await createStoreInstance(
       fullPath,
@@ -39,7 +40,10 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreManager>> {
     if (storeInstance != null) {
       state = const AsyncValue.loading();
       state = await AsyncValue.guard(() async {
-        return StoreManager(store: storeInstance!, appSettings: appSettings);
+        return StoreManager(
+          store: storeInstance!,
+          deviceDirectories: deviceDirectories,
+        );
       });
     }
   }

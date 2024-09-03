@@ -1,11 +1,11 @@
 import 'dart:io';
 
+import 'package:colan_services/services/storage_service/models/file_system/models/cl_directories.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
-import '../../settings_service/models/m1_app_settings.dart';
 import '../../store_service/store_service.dart';
 
 import '../models/url_handler.dart';
@@ -66,22 +66,25 @@ extension UpsertExtOnStoreManager on StoreManager {
           isAux: isAux,
         );
     final mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
-    if (mediaFromDB == null) {
-      await File(
-        path_handler.join(
-          appSettings.directories.media.pathString,
-          savedMedia.name,
-        ),
-      ).deleteIfExists();
-    } else {
+
+    if (mediaFromDB != null) {
+      final pref = await getMediaPreferenceById(mediaFromDB.id!);
+      final status = await getMediaStatusById(mediaFromDB.id!) ??
+          DefaultMediaStatus(id: mediaFromDB.id!);
+
       // Copy file and generate preview
       File(path).copySync(getMediaAbsolutePath(mediaFromDB));
-      await generatePreview(mediaFromDB);
+      await UtilsOnStoreManager.generatePreview(
+        inputFile: getMediaAbsolutePath(mediaFromDB),
+        outputFile: getPreviewAbsolutePath(mediaFromDB),
+        type: mediaFromDB.type,
+      );
       if (media != null) {
         if (getMediaAbsolutePath(mediaFromDB) != getMediaAbsolutePath(media)) {
           await File(getMediaAbsolutePath(media)).deleteIfExists();
         }
       }
+
       try {
         await File(path).deleteIfExists();
       } catch (e) {
@@ -132,7 +135,7 @@ extension UpsertExtOnStoreManager on StoreManager {
 
   Future<CLMediaBase> tryDownloadMedia(
     CLMediaBase mediaFile, {
-    required AppSettings appSettings,
+    required CLDirectories deviceDirectories,
   }) async {
     if (mediaFile.type != CLMediaType.url) {
       return mediaFile;
@@ -150,7 +153,7 @@ extension UpsertExtOnStoreManager on StoreManager {
     }
     final downloadedFile = await URLHandler.download(
       mediaFile.name,
-      appSettings.directories.download.path,
+      deviceDirectories.download.path,
     );
     if (downloadedFile == null) {
       return mediaFile;
@@ -160,7 +163,7 @@ extension UpsertExtOnStoreManager on StoreManager {
 
   Future<CLMediaBase> identifyMediaType(
     CLMediaBase mediaFile, {
-    required AppSettings appSettings,
+    required CLDirectories deviceDirectories,
   }) async {
     if (mediaFile.type != CLMediaType.file) {
       return mediaFile;
@@ -206,11 +209,11 @@ extension UpsertExtOnStoreManager on StoreManager {
     for (final (i, item0) in mediaFiles.indexed) {
       final item1 = await tryDownloadMedia(
         item0,
-        appSettings: appSettings,
+        deviceDirectories: deviceDirectories,
       );
       final item = await identifyMediaType(
         item1,
-        appSettings: appSettings,
+        deviceDirectories: deviceDirectories,
       );
       if (!item.type.isFile) {
         // Skip for now
