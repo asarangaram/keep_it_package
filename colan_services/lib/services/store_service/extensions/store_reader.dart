@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:store/store.dart';
 
-import '../models/store_manager.dart';
+import '../../store_service/store_service.dart';
 
 extension ReadExtOnStoreManager on StoreManager {
   String loadText(CLMedia? media) {

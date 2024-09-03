@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:store/store.dart';
 
-import '../models/store_manager.dart';
-import 'store_delete_multiple.dart';
-import 'store_reader.dart';
+import '../../store_service/store_service.dart';
 
 extension DeleteExtOnStoreManager on StoreManager {
   Future<bool> deleteCollection(

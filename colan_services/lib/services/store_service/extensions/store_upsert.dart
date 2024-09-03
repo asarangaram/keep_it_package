@@ -6,10 +6,9 @@ import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
 import '../../settings_service/models/m1_app_settings.dart';
-import '../extensions/store_utils.dart';
-import '../models/store_manager.dart';
+import '../../store_service/store_service.dart';
+
 import '../models/url_handler.dart';
-import 'store_reader.dart';
 
 extension UpsertExtOnStoreManager on StoreManager {
   Future<Collection> upsertCollection(Collection collection) async {

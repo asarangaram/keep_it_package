@@ -3,11 +3,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:colan_services/services/store_service/models/store_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 import 'package:tar/tar.dart';
+
+import '../../store_service/store_service.dart';
 
 extension BackupExtOnStoreManager on StoreManager {
   Future<String> backup({
@@ -18,7 +19,7 @@ extension BackupExtOnStoreManager on StoreManager {
     final query = store.getQuery<CLMedia>(DBQueries.mediaAllIncludingAux);
     final mediaList = (await store.readMultiple(query))
         .where((e) => e != null)
-        .map((e) => e!)
+        .map((e) => e)
         .toList();
     if (mediaList.isEmpty) return '';
 
@@ -26,7 +27,7 @@ extension BackupExtOnStoreManager on StoreManager {
     final files = <String, File>{};
 
     for (final media in mediaList) {
-      final localPath = getMediaAbsolutePath(media);
+      final localPath = getMediaAbsolutePath(media!);
       // Archive only if files are present locally.
       // We may also exclude items that are already present in server.
 
@@ -42,7 +43,7 @@ extension BackupExtOnStoreManager on StoreManager {
         );
         map['notes'] = (await store.readMultiple(notesQuery))
             .where((e) => e != null)
-            .map((e) => e!.id!)
+            .map((e) => e!.id)
             .toList();
         map['collectionLabel'] = (await store.read(collectionQuery))?.label;
         map.remove('collectionId');

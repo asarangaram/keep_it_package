@@ -8,9 +8,8 @@ import 'package:store/extensions.dart';
 
 import '../../storage_service/extensions/ext_directory.dart';
 import '../../storage_service/extensions/human_readable.dart';
+import '../../store_service/store_service.dart';
 import '../providers/backup_stream.dart';
-import 'get_store.dart';
-import 'the_store.dart';
 
 class BackupService extends ConsumerWidget {
   const BackupService({super.key});

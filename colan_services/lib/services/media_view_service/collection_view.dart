@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../media_view_service/widgets/media_view.dart';
-import '../store_service/widgets/get_store.dart';
-import '../store_service/widgets/w3_get_media.dart';
+import '../store_service/store_service.dart';
+
 import 'widgets/cl_media_collage.dart';
 
 extension RandomExt<T> on List<T> {

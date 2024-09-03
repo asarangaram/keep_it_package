@@ -8,7 +8,7 @@ import 'package:image/image.dart' as img;
 import 'package:mime/mime.dart';
 import 'package:store/store.dart';
 
-import '../models/store_manager.dart';
+import '../../store_service/store_service.dart';
 
 extension UtilsOnStoreManager on StoreManager {
   Future<bool> generatePreview(
