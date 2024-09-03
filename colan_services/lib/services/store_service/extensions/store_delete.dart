@@ -41,5 +41,14 @@ extension DeleteExtOnStoreManager on StoreManager {
         }
       }
     }
+    // if foreign key properly works, the following not required
+    final pref = await getMediaPreferenceById(media.id!);
+    final status = await getMediaStatusById(media.id!);
+    if (pref != null) {
+      await store.deleteMediaPreference(pref);
+    }
+    if (status != null) {
+      await store.deleteMediaStatus(status);
+    }
   }
 }

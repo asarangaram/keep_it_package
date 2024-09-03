@@ -80,4 +80,20 @@ extension ReadExtOnStoreManager on StoreManager {
     final q = store.getQuery(DBQueries.notesOrphan) as StoreQuery<CLMedia>;
     return store.readMultiple(q);
   }
+
+  Future<MediaPreference?> getMediaPreferenceById(int id) {
+    final q = store.getQuery(
+      DBQueries.mediaPreferenceById,
+      parameters: [id],
+    ) as StoreQuery<MediaPreference>;
+    return store.read(q);
+  }
+
+  Future<MediaStatus?> getMediaStatusById(int id) {
+    final q = store.getQuery(
+      DBQueries.mediaStatusById,
+      parameters: [id],
+    ) as StoreQuery<MediaStatus>;
+    return store.read(q);
+  }
 }

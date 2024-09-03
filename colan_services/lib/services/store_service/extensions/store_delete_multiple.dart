@@ -1,10 +1,6 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
-import '../models/store_manager.dart';
-import 'store_gallery.dart';
+import '../../store_service/store_service.dart';
 
 extension DeleteMultipleExtOnStoreManager on StoreManager {
   Future<bool> permanentlyDeleteMediaMultiple(
@@ -21,13 +17,7 @@ extension DeleteMultipleExtOnStoreManager on StoreManager {
     );
 
     for (final m in mediaMultiple) {
-      await store.deleteMedia(m);
-      await File(
-        path_handler.join(
-          appSettings.directories.media.pathString,
-          m.name,
-        ),
-      ).deleteIfExists();
+      await deleteMedia(m);
     }
 
     return true;

@@ -11,55 +11,51 @@ import 'package:store/store.dart';
 import '../../store_service/store_service.dart';
 
 extension UtilsOnStoreManager on StoreManager {
-  Future<bool> generatePreview(
-    CLMedia media, {
+  static Future<bool> generatePreview({
+    required String inputFile,
+    required String outputFile,
+    required CLMediaType type,
     int dimension = 256,
   }) async {
-    final inputFile = getMediaAbsolutePath(media);
-    final outputFile = getPreviewAbsolutePath(media);
-    final type = media.type;
-
     switch (type) {
       case CLMediaType.image:
-        {
-          final img.Image? inputImage;
-          if (lookupMimeType(inputFile) == 'image/heic') {
-            final jpegPath = await HeifConverter.convert(
-              inputFile,
-              output: '$inputFile.jpeg',
-            );
-            if (jpegPath == null) {
-              throw Exception(' Failed to convert HEIC file to JPEG');
-            }
-            inputImage = img.decodeImage(File(jpegPath).readAsBytesSync());
-          } else {
-            inputImage = img.decodeImage(File(inputFile).readAsBytesSync());
-          }
-          if (inputImage == null) {
-            return false;
-          }
-
-          final int thumbnailHeight;
-          final int thumbnailWidth;
-          if (inputImage.height > inputImage.width) {
-            thumbnailHeight = dimension;
-            thumbnailWidth =
-                (thumbnailHeight * inputImage.width) ~/ inputImage.height;
-          } else {
-            thumbnailWidth = dimension;
-            thumbnailHeight =
-                (thumbnailWidth * inputImage.height) ~/ inputImage.width;
-          }
-          final thumbnail = img.copyResize(
-            inputImage,
-            width: thumbnailWidth,
-            height: thumbnailHeight,
+        final img.Image? inputImage;
+        if (lookupMimeType(inputFile) == 'image/heic') {
+          final jpegPath = await HeifConverter.convert(
+            inputFile,
+            output: '$inputFile.jpeg',
           );
-          File(outputFile).writeAsBytesSync(
-            Uint8List.fromList(img.encodeJpg(thumbnail)),
-          );
-          return true;
+          if (jpegPath == null) {
+            throw Exception(' Failed to convert HEIC file to JPEG');
+          }
+          inputImage = img.decodeImage(File(jpegPath).readAsBytesSync());
+        } else {
+          inputImage = img.decodeImage(File(inputFile).readAsBytesSync());
         }
+        if (inputImage == null) {
+          throw Exception('Failed to decode Image');
+        }
+
+        final int thumbnailHeight;
+        final int thumbnailWidth;
+        if (inputImage.height > inputImage.width) {
+          thumbnailHeight = dimension;
+          thumbnailWidth =
+              (thumbnailHeight * inputImage.width) ~/ inputImage.height;
+        } else {
+          thumbnailWidth = dimension;
+          thumbnailHeight =
+              (thumbnailWidth * inputImage.height) ~/ inputImage.width;
+        }
+        final thumbnail = img.copyResize(
+          inputImage,
+          width: thumbnailWidth,
+          height: thumbnailHeight,
+        );
+        File(outputFile).writeAsBytesSync(
+          Uint8List.fromList(img.encodeJpg(thumbnail)),
+        );
+        return true;
 
       case CLMediaType.video:
         await File(outputFile).deleteIfExists();
@@ -70,9 +66,14 @@ extension UtilsOnStoreManager on StoreManager {
           '-vf "scale=$dimension:-1" '
           '$outputFile',
         );
-        /* final log = await session.getAllLogsAsString();
+        /* 
       print(log); */
         final returnCode = await session.getReturnCode();
+        if (!ReturnCode.isSuccess(returnCode)) {
+          await File(outputFile).deleteIfExists();
+          final log = await session.getAllLogsAsString();
+          throw Exception(log);
+        }
 
         return ReturnCode.isSuccess(returnCode);
 
@@ -80,8 +81,7 @@ extension UtilsOnStoreManager on StoreManager {
       case CLMediaType.url:
       case CLMediaType.audio:
       case CLMediaType.file:
-        break;
+        throw Exception("Unsupported Media Type. Preview can't be generated");
     }
-    return false;
   }
 }

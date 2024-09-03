@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:colan_services/services/storage_service/models/file_system/models/cl_directories.dart';
@@ -6,6 +7,7 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
+import '../../settings_service/extensions/pref.dart';
 import '../../store_service/store_service.dart';
 
 import '../models/url_handler.dart';
@@ -68,23 +70,47 @@ extension UpsertExtOnStoreManager on StoreManager {
     final mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
 
     if (mediaFromDB != null) {
-      final pref = await getMediaPreferenceById(mediaFromDB.id!);
-      final status = await getMediaStatusById(mediaFromDB.id!) ??
+      final globalPref = await StoreExtOnDownloadMediaGlobalPreference.load();
+      final pref = await getMediaPreferenceById(mediaFromDB.id!) ??
+          MediaPreference(
+            id: mediaFromDB.id!,
+            haveItOffline: globalPref.haveItOffline,
+            mustDownloadOriginal: globalPref.mustDownloadOriginal,
+          );
+      var status = await getMediaStatusById(mediaFromDB.id!) ??
           DefaultMediaStatus(id: mediaFromDB.id!);
 
       // Copy file and generate preview
       File(path).copySync(getMediaAbsolutePath(mediaFromDB));
-      await UtilsOnStoreManager.generatePreview(
-        inputFile: getMediaAbsolutePath(mediaFromDB),
-        outputFile: getPreviewAbsolutePath(mediaFromDB),
-        type: mediaFromDB.type,
-      );
+      if (File(getMediaAbsolutePath(mediaFromDB)).existsSync()) {
+        status = status.copyWith(isMediaCached: true);
+      }
+
+      try {
+        await UtilsOnStoreManager.generatePreview(
+          inputFile: getMediaAbsolutePath(mediaFromDB),
+          outputFile: getPreviewAbsolutePath(mediaFromDB),
+          type: mediaFromDB.type,
+          dimension: globalPref.previewDimension,
+        );
+      } catch (e) {
+        status = status.copyWith(
+          previewError: jsonEncode({'errorlog': e.toString()}),
+        );
+      }
+      if (File(getPreviewAbsolutePath(mediaFromDB)).existsSync()) {
+        status = status.copyWith(isPreviewCached: true);
+      }
+
+      await store.upsertMediaPreference(pref);
+      await store.upsertMediaStatus(status);
+
+      // cleanup
       if (media != null) {
         if (getMediaAbsolutePath(mediaFromDB) != getMediaAbsolutePath(media)) {
           await File(getMediaAbsolutePath(media)).deleteIfExists();
         }
       }
-
       try {
         await File(path).deleteIfExists();
       } catch (e) {
