@@ -41,4 +41,29 @@ final migrations = SqliteMigrations()
       )
     ''');
     }),
+  )
+  ..add(
+    SqliteMigration(2, (tx) async {
+      await tx.execute('''
+      CREATE TABLE IF NOT EXISTS MediaSpecificPreference (
+        id INTEGER PRIMARY KEY,
+        haveItOffline INTEGER NOT NULL DEFAULT 1,  -- relevant only if ServerUID is present
+        mustDownloadOriginal INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
+        FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
+        )
+      ''');
+      await tx.execute('''
+      CREATE TABLE IF NOT EXISTS MediaStatus (
+        id INTEGER PRIMARY KEY,
+        isPreviewCached INTEGER NOT NULL DEFAULT 0,
+        isMediaCached INTEGER NOT NULL DEFAULT 0,
+        previewLog TEXT, -- Info stored as json
+        mediaLog TEXT, -- Info stored as json
+        isMediaOriginal INTEGER NOT NULL DEFAULT 0,
+        ServerUID INTEGER,  -- Nullable, to store ServerUID if media is from another server
+        isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
+        FOREIGN KEY (id) REFERENCES Media(id) ON DELETE CASCADE
+      )
+    ''');
+    }),
   );
