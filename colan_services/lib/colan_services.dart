@@ -17,11 +17,10 @@ export 'services/notification_services/notification_service.dart'
     show NotificationService;
 export 'services/notification_services/provider/notify.dart'
     show notificationMessageProvider;
-
-export 'services/storage_service/widgets/get_device_directories.dart'
-    show GetDeviceDirectories;
 export 'services/sharing_service/models/share_files.dart' show ShareManager;
 export 'services/storage_service/extensions/ext_file.dart' show ExtFileAnalysis;
+export 'services/storage_service/widgets/get_device_directories.dart'
+    show GetDeviceDirectories;
 export 'services/storage_service/widgets/storage_monitor.dart'
     show StorageMonitor;
 export 'services/store_service/store_service.dart';
