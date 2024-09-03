@@ -52,10 +52,35 @@ class DBManager extends Store {
       },
     );
 
+    final mediaPreferenceTable = DBExec<MediaPreference>(
+      table: 'MediaSpecificPreference',
+      toMap: (MediaPreference obj) => obj.toMap(),
+      readBack: (tx, mediaPreference) {
+        return (Queries.getQuery(
+          DBQueries.mediaPreferenceById,
+          parameters: [mediaPreference.id],
+        ) as DBQuery<MediaPreference>)
+            .read(tx);
+      },
+    );
+    final mediaStatusTable = DBExec<MediaStatus>(
+      table: 'MediaStatus',
+      toMap: (MediaStatus obj) => obj.toMap(),
+      readBack: (tx, mediaStatus) {
+        return (Queries.getQuery(
+          DBQueries.mediaStatusById,
+          parameters: [mediaStatus.id],
+        ) as DBQuery<MediaStatus>)
+            .read(tx);
+      },
+    );
+
     final dbWriter = DBWriter(
       collectionTable: collectionTable,
       mediaTable: mediaTable,
       notesOnMediaTable: notesOnMediaTable,
+      mediaPreferenceTable: mediaPreferenceTable,
+      mediaStatusTable: mediaStatusTable,
     );
     final dbReader = DBReader(db);
     return DBManager._(
@@ -113,6 +138,22 @@ class DBManager extends Store {
       });
 
   @override
+  Future<void> upsertMediaPreference(
+    MediaPreference pref,
+  ) async =>
+      db.writeTransaction((tx) async {
+        await dbWriter.upsertMediaPreference(tx, pref);
+      });
+
+  @override
+  Future<void> upsertMediaStatus(
+    MediaStatus status,
+  ) async =>
+      db.writeTransaction((tx) async {
+        await dbWriter.upsertMediaStatus(tx, status);
+      });
+
+  @override
   Future<void> deleteCollection(Collection collection) async =>
       db.writeTransaction((tx) async {
         await dbWriter.deleteCollection(tx, collection);
@@ -122,6 +163,22 @@ class DBManager extends Store {
   Future<void> deleteMedia(CLMedia media, {required bool permanent}) async =>
       db.writeTransaction((tx) async {
         await dbWriter.deleteMedia(tx, media, permanent: permanent);
+      });
+
+  @override
+  Future<void> deleteMediaPreference(
+    MediaPreference pref,
+  ) async =>
+      db.writeTransaction((tx) async {
+        await dbWriter.deleteMediaPreference(tx, pref);
+      });
+
+  @override
+  Future<void> deleteMediaStatus(
+    MediaStatus status,
+  ) async =>
+      db.writeTransaction((tx) async {
+        await dbWriter.deleteMediaStatus(tx, status);
       });
 
   @override

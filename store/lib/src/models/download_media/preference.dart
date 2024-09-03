@@ -4,19 +4,23 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 
 @immutable
-class DownloadMediaPreference {
-  const DownloadMediaPreference({
+class MediaPreference {
+  const MediaPreference({
+    required this.id,
     required this.haveItOffline,
     required this.mustDownloadOriginal,
   });
+  final int id;
   final bool haveItOffline;
   final bool mustDownloadOriginal;
 
-  DownloadMediaPreference copyWith({
+  MediaPreference copyWith({
+    int? id,
     bool? haveItOffline,
     bool? mustDownloadOriginal,
   }) {
-    return DownloadMediaPreference(
+    return MediaPreference(
+      id: id ?? this.id,
       haveItOffline: haveItOffline ?? this.haveItOffline,
       mustDownloadOriginal: mustDownloadOriginal ?? this.mustDownloadOriginal,
     );
@@ -25,28 +29,32 @@ class DownloadMediaPreference {
   @override
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'DownloadMediaPreference(haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal)';
+      'MediaPreference(id: $id, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal)';
 
   @override
-  bool operator ==(covariant DownloadMediaPreference other) {
+  bool operator ==(covariant MediaPreference other) {
     if (identical(this, other)) return true;
 
-    return other.haveItOffline == haveItOffline &&
+    return other.id == id &&
+        other.haveItOffline == haveItOffline &&
         other.mustDownloadOriginal == mustDownloadOriginal;
   }
 
   @override
-  int get hashCode => haveItOffline.hashCode ^ mustDownloadOriginal.hashCode;
+  int get hashCode =>
+      id.hashCode ^ haveItOffline.hashCode ^ mustDownloadOriginal.hashCode;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'haveItOffline': haveItOffline ? 1 : 0,
       'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
     };
   }
 
-  factory DownloadMediaPreference.fromMap(Map<String, dynamic> map) {
-    return DownloadMediaPreference(
+  factory MediaPreference.fromMap(Map<String, dynamic> map) {
+    return MediaPreference(
+      id: map['id'] as int,
       haveItOffline: (map['haveItOffline'] as int) != 0,
       mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
     );
@@ -54,8 +62,7 @@ class DownloadMediaPreference {
 
   String toJson() => json.encode(toMap());
 
-  factory DownloadMediaPreference.fromJson(String source) =>
-      DownloadMediaPreference.fromMap(
+  factory MediaPreference.fromJson(String source) => MediaPreference.fromMap(
         json.decode(source) as Map<String, dynamic>,
       );
 }

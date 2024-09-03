@@ -126,6 +126,16 @@ class Queries {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
+      DBQueries.mediaPreferenceById => DBQuery<MediaPreference>(
+          sql: 'SELECT * FROM MediaSpecificPreference WHERE id is ?',
+          triggerOnTables: const {'MediaSpecificPreference'},
+          fromMap: MediaPreference.fromMap,
+        ),
+      DBQueries.mediaStatusById => DBQuery<MediaPreference>(
+          sql: 'SELECT * FROM MediaStatus WHERE id is ?',
+          triggerOnTables: const {'MediaStatus'},
+          fromMap: MediaPreference.fromMap,
+        ),
     };
     if (parameters == null) {
       return rawQuery as StoreQuery<T>;

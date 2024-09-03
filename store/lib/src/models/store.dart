@@ -2,6 +2,9 @@ import 'cl_media.dart';
 
 import 'collection.dart';
 
+import 'download_media/media_status.dart';
+import 'download_media/preference.dart';
+
 enum DBQueries {
   collectionById,
   collectionByLabel,
@@ -25,6 +28,9 @@ enum DBQueries {
   notesAll,
   notesByMediaId,
   notesOrphan,
+
+  mediaPreferenceById,
+  mediaStatusById
 }
 
 abstract class StoreQuery<T> {
@@ -36,9 +42,13 @@ abstract class Store {
   Future<Collection> upsertCollection(Collection collection);
   Future<CLMedia?> upsertMedia(CLMedia media, {List<CLMedia>? parents});
   //Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
+  Future<void> upsertMediaPreference(MediaPreference pref);
+  Future<void> upsertMediaStatus(MediaStatus status);
 
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media, {required bool permanent});
+  Future<void> deleteMediaPreference(MediaPreference pref);
+  Future<void> deleteMediaStatus(MediaStatus status);
 
   Future<T?> read<T>(StoreQuery<T> query);
 

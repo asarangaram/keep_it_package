@@ -12,9 +12,13 @@ class DBWriter {
     required this.collectionTable,
     required this.mediaTable,
     required this.notesOnMediaTable,
+    required this.mediaPreferenceTable,
+    required this.mediaStatusTable,
   });
   final DBExec<Collection> collectionTable;
   final DBExec<CLMedia> mediaTable;
+  final DBExec<MediaPreference> mediaPreferenceTable;
+  final DBExec<MediaStatus> mediaStatusTable;
 
   final DBExec<NotesOnMedia> notesOnMediaTable;
 
@@ -45,6 +49,30 @@ class DBWriter {
       }
     }
     return mediaInDB;
+  }
+
+  Future<MediaPreference> upsertMediaPreference(
+    SqliteWriteContext tx,
+    MediaPreference pref,
+  ) async {
+    final prefInDB = (await mediaPreferenceTable.upsert(
+      tx,
+      pref,
+      uniqueColumn: ['id'],
+    ))!;
+    return prefInDB;
+  }
+
+  Future<MediaStatus> upsertMediaStatus(
+    SqliteWriteContext tx,
+    MediaStatus status,
+  ) async {
+    final prefInDB = (await mediaStatusTable.upsert(
+      tx,
+      status,
+      uniqueColumn: ['id'],
+    ))!;
+    return prefInDB;
   }
 
   Future<void> deleteCollection(
@@ -87,6 +115,20 @@ class DBWriter {
         media.removePin().copyWith(isDeleted: true),
       );
     }
+  }
+
+  Future<void> deleteMediaPreference(
+    SqliteWriteContext tx,
+    MediaPreference pref,
+  ) async {
+    await mediaPreferenceTable.delete(tx, pref);
+  }
+
+  Future<void> deleteMediaStatus(
+    SqliteWriteContext tx,
+    MediaStatus status,
+  ) async {
+    await mediaStatusTable.delete(tx, status);
   }
 
   Future<void> connectNote(
