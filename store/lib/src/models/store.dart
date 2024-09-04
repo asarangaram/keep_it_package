@@ -30,7 +30,9 @@ enum DBQueries {
   notesOrphan,
 
   mediaPreferenceById,
-  mediaStatusById
+  mediaPreferenceAll,
+  mediaStatusById,
+  mediaStatusAll,
 }
 
 abstract class StoreQuery<T> {

@@ -131,8 +131,18 @@ class Queries {
           triggerOnTables: const {'MediaSpecificPreference'},
           fromMap: MediaPreference.fromMap,
         ),
+      DBQueries.mediaPreferenceAll => DBQuery<MediaPreference>(
+          sql: 'SELECT * FROM MediaSpecificPreference',
+          triggerOnTables: const {'MediaSpecificPreference'},
+          fromMap: MediaPreference.fromMap,
+        ),
       DBQueries.mediaStatusById => DBQuery<MediaPreference>(
           sql: 'SELECT * FROM MediaStatus WHERE id is ?',
+          triggerOnTables: const {'MediaStatus'},
+          fromMap: MediaPreference.fromMap,
+        ),
+      DBQueries.mediaStatusAll => DBQuery<MediaPreference>(
+          sql: 'SELECT * FROM MediaStatus',
           triggerOnTables: const {'MediaStatus'},
           fromMap: MediaPreference.fromMap,
         ),

@@ -96,4 +96,44 @@ extension ReadExtOnStoreManager on StoreManager {
     ) as StoreQuery<MediaStatus>;
     return store.read(q);
   }
+
+  Future<List<Collection>> getCollections() async {
+    final q = store.getQuery(
+      DBQueries.collectionsAll,
+    ) as StoreQuery<Collection>;
+    return (await store.readMultiple(q))
+        .where((e) => e != null)
+        .map((e) => e!)
+        .toList();
+  }
+
+  Future<List<CLMedia>> getMedias() async {
+    final q = store.getQuery(
+      DBQueries.mediaAllIncludingAux,
+    ) as StoreQuery<CLMedia>;
+    return (await store.readMultiple(q))
+        .where((e) => e != null)
+        .map((e) => e!)
+        .toList();
+  }
+
+  Future<List<MediaPreference>> getMediaPrefernces() async {
+    final q = store.getQuery(
+      DBQueries.mediaPreferenceAll,
+    ) as StoreQuery<MediaPreference>;
+    return (await store.readMultiple(q))
+        .where((e) => e != null)
+        .map((e) => e!)
+        .toList();
+  }
+
+  Future<List<MediaStatus>> getMediaStatus() async {
+    final q = store.getQuery(
+      DBQueries.mediaStatusAll,
+    ) as StoreQuery<MediaStatus>;
+    return (await store.readMultiple(q))
+        .where((e) => e != null)
+        .map((e) => e!)
+        .toList();
+  }
 }
