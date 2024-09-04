@@ -10,23 +10,13 @@ final dbReaderProvider =
         (ref, dbQuery) async* {
   final controller = StreamController<List<dynamic>>();
   StreamSubscription<List<dynamic>>? subscription;
+  final storeManager = await ref.watch(storeProvider.future);
 
-  ref.watch(storeProvider).when(
-    data: (storeManager) {
-      subscription?.cancel(); // Cancel earlier subscription if any.
-      subscription =
-          storeManager.store.storeReaderStream<dynamic>(dbQuery).listen(
-                controller.add,
-                onDone: () => subscription?.cancel(),
-              );
-    },
-    error: (e, st) {
-      subscription?.cancel();
-    },
-    loading: () {
-      // subscription?.cancel(); // can we continue
-    },
-  );
+  subscription = storeManager.store.storeReaderStream<dynamic>(dbQuery).listen(
+        controller.add,
+        onDone: () => subscription?.cancel(),
+      );
+
   ref.onDispose(() {
     subscription?.cancel();
     controller.close();
