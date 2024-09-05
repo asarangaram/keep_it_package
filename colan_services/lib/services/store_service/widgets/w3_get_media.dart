@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'get_store.dart';
-import 'w3_get_from_store.dart';
+import '../providers/media_provider.dart';
 
 class GetMedia extends ConsumerWidget {
   const GetMedia({
@@ -15,23 +14,8 @@ class GetMedia extends ConsumerWidget {
   final int id;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GetStore(
-      builder: (store) {
-        final q = store.getQuery(DBQueries.mediaById, parameters: [id])
-            as StoreQuery<CLMedia>;
-
-        return GetFromStore<CLMedia>(
-          query: q,
-          builder: (data) {
-            final media = data.where((e) => e.id == id).firstOrNull;
-
-            return buildOnData(media);
-          },
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      buildOnData(ref.watch(mediaProvider).getMedia(id));
 }
 
 class GetMediaByCollectionId extends ConsumerWidget {
@@ -44,35 +28,9 @@ class GetMediaByCollectionId extends ConsumerWidget {
   final int? collectionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final qid = (collectionId == null)
-        ? DBQueries.mediaAll
-        : DBQueries.mediaByCollectionId;
-
-    return GetStore(
-      builder: (store) {
-        final q = store.getQuery(
-          qid,
-          parameters: (collectionId == null) ? [] : [collectionId],
-        ) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
-          query: q,
-          builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
-            });
-            return buildOnData(media);
-          },
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) => buildOnData(
+        ref.watch(mediaProvider).getMediaByCollectionId(collectionId),
+      );
 }
 
 class GetMediaMultiple extends ConsumerWidget {
@@ -85,32 +43,8 @@ class GetMediaMultiple extends ConsumerWidget {
   final List<int> idList;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaByIdList;
-
-    return GetStore(
-      builder: (store) {
-        final q = store.getQuery(qid, parameters: ['(${idList.join(', ')})'])
-            as StoreQuery<CLMedia>;
-
-        return GetFromStore<CLMedia>(
-          query: q,
-          builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
-            });
-            return buildOnData(media);
-          },
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      buildOnData(ref.watch(mediaProvider).getMediaMultiple(idList));
 }
 
 class GetPinnedMedia extends ConsumerWidget {
@@ -121,30 +55,8 @@ class GetPinnedMedia extends ConsumerWidget {
   final Widget Function(List<CLMedia> items) buildOnData;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaPinned;
-
-    return GetStore(
-      builder: (store) {
-        final q = store.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
-          query: q,
-          builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
-            });
-            return buildOnData(media);
-          },
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      buildOnData(ref.watch(mediaProvider).getPinnedMedia());
 }
 
 class GetStaleMedia extends ConsumerWidget {
@@ -155,30 +67,8 @@ class GetStaleMedia extends ConsumerWidget {
   final Widget Function(List<CLMedia> items) buildOnData;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaStaled;
-
-    return GetStore(
-      builder: (store) {
-        final q = store.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
-          query: q,
-          builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
-            });
-            return buildOnData(media);
-          },
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      buildOnData(ref.watch(mediaProvider).getStaleMedia());
 }
 
 class GetDeletedMedia extends ConsumerWidget {
@@ -189,28 +79,6 @@ class GetDeletedMedia extends ConsumerWidget {
   final Widget Function(List<CLMedia> items) buildOnData;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaDeleted;
-
-    return GetStore(
-      builder: (store) {
-        final q = store.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
-          query: q,
-          builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
-            });
-            return buildOnData(media);
-          },
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      buildOnData(ref.watch(mediaProvider).getDeletedMedia());
 }

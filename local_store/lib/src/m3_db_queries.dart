@@ -141,10 +141,10 @@ class Queries {
           triggerOnTables: const {'MediaStatus'},
           fromMap: MediaPreference.fromMap,
         ),
-      DBQueries.mediaStatusAll => DBQuery<MediaPreference>(
+      DBQueries.mediaStatusAll => DBQuery<MediaStatus>(
           sql: 'SELECT * FROM MediaStatus',
           triggerOnTables: const {'MediaStatus'},
-          fromMap: MediaPreference.fromMap,
+          fromMap: MediaStatus.fromMap,
         ),
     };
     if (parameters == null) {

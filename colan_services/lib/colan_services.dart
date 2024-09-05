@@ -23,5 +23,9 @@ export 'services/storage_service/widgets/get_device_directories.dart'
     show GetDeviceDirectories;
 export 'services/storage_service/widgets/storage_monitor.dart'
     show StorageMonitor;
+export 'services/store_service/models/media_with_details.dart'
+    show MediaWithDetails, MediaWithDetailsList;
+export 'services/store_service/providers/media_provider.dart'
+    show MediaNotifier, UtilOnMediaNotifier, mediaProvider;
 export 'services/store_service/store_service.dart';
 export 'services/store_service/widgets/backup_service.dart';

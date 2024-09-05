@@ -122,43 +122,6 @@ extension UpsertExtOnStoreManager on StoreManager {
     return mediaFromDB;
   }
 
-  Future<CLMedia?> newImageOrVideo(
-    String fileName, {
-    required bool isVideo,
-    Collection? collection,
-  }) async =>
-      upsertMediaFromFile(
-        fileName,
-        isVideo ? CLMediaType.video : CLMediaType.image,
-      );
-
-  Future<CLMedia> replaceMedia(
-    CLMedia originalMedia,
-    String outFile,
-  ) async {
-    final mediaFromDB = await upsertMediaFromFile(
-      outFile,
-      originalMedia.type,
-      id: originalMedia.id,
-      collectionId: originalMedia.collectionId,
-    );
-
-    return mediaFromDB ?? originalMedia;
-  }
-
-  Future<CLMedia> cloneAndReplaceMedia(
-    CLMedia originalMedia,
-    String outFile,
-  ) async {
-    final mediaFromDB = await upsertMediaFromFile(
-      outFile,
-      originalMedia.type,
-      collectionId: originalMedia.collectionId,
-    );
-
-    return mediaFromDB ?? originalMedia;
-  }
-
   Future<CLMediaBase> tryDownloadMedia(
     CLMediaBase mediaFile, {
     required CLDirectories deviceDirectories,
@@ -205,20 +168,6 @@ extension UpsertExtOnStoreManager on StoreManager {
     }
     return mediaFile.copyWith(type: mimeType);
   }
-
-  Future<void> upsertNote(
-    String path,
-    CLMediaType type, {
-    required List<CLMedia> mediaMultiple,
-    CLMedia? note,
-  }) async =>
-      upsertMediaFromFile(
-        path,
-        type,
-        id: note?.id,
-        isAux: true,
-        parents: mediaMultiple,
-      );
 
   Stream<Progress> analyseMediaStream({
     required List<CLMediaBase> mediaFiles,

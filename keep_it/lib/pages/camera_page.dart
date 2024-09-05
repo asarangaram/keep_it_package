@@ -26,12 +26,13 @@ class CameraPage extends ConsumerWidget {
                       '$message [$error]',
                     );
               },
-              onNewMedia: (path, {required isVideo}) {
-                return theStore.newImageOrVideo(
-                  path,
-                  isVideo: isVideo,
-                  collection: collection,
-                );
+              onNewMedia: (path, {required isVideo}) async {
+                await ref.read(mediaProvider.notifier).newImageOrVideo(
+                      path,
+                      isVideo: isVideo,
+                      collection: collection,
+                    );
+                return null;
               },
               onDone: (mediaList) async {
                 await TheStore.of(context).openWizard(

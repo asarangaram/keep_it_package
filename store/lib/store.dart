@@ -5,7 +5,7 @@ library store;
 
 export 'app_logger.dart';
 export 'extensions.dart';
-export 'src/download_media_settings.dart' show DownloadSettings;
+
 export 'src/models/cl_media.dart' show CLMedia;
 export 'src/models/cl_media_base.dart' show CLMediaBase;
 export 'src/models/cl_media_type.dart' show CLMediaType;

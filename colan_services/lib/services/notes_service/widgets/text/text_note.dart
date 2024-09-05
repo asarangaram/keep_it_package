@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
@@ -11,7 +12,7 @@ import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
 
-class TextNote extends StatefulWidget {
+class TextNote extends ConsumerStatefulWidget {
   const TextNote({
     required this.media,
     required this.theStore,
@@ -23,10 +24,10 @@ class TextNote extends StatefulWidget {
   final StoreManager theStore;
 
   @override
-  State<TextNote> createState() => _TextNoteState();
+  ConsumerState<TextNote> createState() => _TextNoteState();
 }
 
-class _TextNoteState extends State<TextNote> {
+class _TextNoteState extends ConsumerState<TextNote> {
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
   late bool isEditing;
@@ -157,12 +158,12 @@ class _TextNoteState extends State<TextNote> {
       final String path;
       path = await theStore.createTempFile(ext: 'txt');
       await File(path).writeAsString(textEditingController.text.trim());
-      await theStore.upsertNote(
-        path,
-        CLMediaType.text,
-        mediaMultiple: [widget.media],
-        note: widget.note,
-      );
+      await ref.read(mediaProvider.notifier).upsertNote(
+            path,
+            CLMediaType.text,
+            mediaMultiple: [widget.media],
+            note: widget.note,
+          );
 
       if (mounted) {
         textOriginal = theStore.getText(widget.note);

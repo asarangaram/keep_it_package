@@ -1,11 +1,13 @@
 import 'package:colan_services/colan_services.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
 
-class MediaEditorPage extends StatelessWidget {
+class MediaEditorPage extends ConsumerWidget {
   const MediaEditorPage({
     required this.mediaId,
     required this.canDuplicateMedia,
@@ -15,7 +17,7 @@ class MediaEditorPage extends StatelessWidget {
   final bool canDuplicateMedia;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (mediaId == null) {
       return BasicPageService.message(message: 'No Media Provided');
     }
@@ -47,7 +49,9 @@ class MediaEditorPage extends StatelessWidget {
                       ) ??
                       false;
                   if (confirmed && context.mounted) {
-                    resultMedia = await theStore.replaceMedia(media, file);
+                    resultMedia = await ref
+                        .read(mediaProvider.notifier)
+                        .replaceMedia(media, file);
                   } else {
                     resultMedia = media;
                   }
@@ -58,8 +62,9 @@ class MediaEditorPage extends StatelessWidget {
                       ) ??
                       false;
                   if (confirmed && context.mounted) {
-                    resultMedia =
-                        await theStore.cloneAndReplaceMedia(media, file);
+                    resultMedia = await ref
+                        .read(mediaProvider.notifier)
+                        .cloneAndReplaceMedia(media, file);
                   } else {
                     resultMedia = media;
                   }
