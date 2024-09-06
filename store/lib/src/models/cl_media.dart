@@ -13,6 +13,15 @@ class CLMedia extends CLMediaBase {
     required super.type,
     required super.fExt,
     required super.collectionId,
+    required this.isPreviewCached,
+    required this.isMediaCached,
+    required this.isMediaOriginal,
+    required this.isEdited,
+    required this.previewLog,
+    required this.mediaLog,
+    required this.serverUID,
+    required this.haveItOffline,
+    required this.mustDownloadOriginal,
     super.ref,
     super.originalDate,
     super.createdDate,
@@ -48,6 +57,16 @@ class CLMedia extends CLMediaBase {
           map['collectionId'] != null ? map['collectionId'] as int : null,
       isAux: (map['isAux'] as int? ?? 0) != 0,
       id: map['id'] != null ? map['id'] as int : null,
+      isPreviewCached: (map['isPreviewCached'] as int) != 0,
+      isMediaCached: (map['isMediaCached'] as int) != 0,
+      previewLog:
+          map['previewLog'] != null ? map['previewLog'] as String : null,
+      mediaLog: map['mediaLog'] != null ? map['mediaLog'] as String : null,
+      isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
+      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
+      isEdited: (map['isEdited'] as int) != 0,
+      haveItOffline: (map['haveItOffline'] as int) != 0,
+      mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
     );
   }
 
@@ -56,6 +75,15 @@ class CLMedia extends CLMediaBase {
       );
 
   final int? id;
+  final bool isPreviewCached;
+  final bool isMediaCached;
+  final String? previewLog;
+  final String? mediaLog;
+  final bool isMediaOriginal;
+  final int? serverUID;
+  final bool isEdited;
+  final bool haveItOffline;
+  final bool mustDownloadOriginal;
 
   @override
   CLMedia copyWith({
@@ -73,6 +101,15 @@ class CLMedia extends CLMediaBase {
     int? collectionId,
     bool? isAux,
     int? id,
+    bool? isPreviewCached,
+    bool? isMediaCached,
+    String? previewLog,
+    String? mediaLog,
+    bool? isMediaOriginal,
+    int? serverUID,
+    bool? isEdited,
+    bool? haveItOffline,
+    bool? mustDownloadOriginal,
   }) {
     return CLMedia(
       name: name ?? this.name,
@@ -89,13 +126,22 @@ class CLMedia extends CLMediaBase {
       collectionId: collectionId ?? this.collectionId,
       isAux: isAux ?? this.isAux,
       id: id ?? this.id,
+      isPreviewCached: isPreviewCached ?? this.isPreviewCached,
+      isMediaCached: isMediaCached ?? this.isMediaCached,
+      previewLog: previewLog ?? this.previewLog,
+      mediaLog: mediaLog ?? this.mediaLog,
+      isMediaOriginal: isMediaOriginal ?? this.isMediaOriginal,
+      serverUID: serverUID ?? this.serverUID,
+      isEdited: isEdited ?? this.isEdited,
+      haveItOffline: haveItOffline ?? this.haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal ?? this.mustDownloadOriginal,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLMediaBase(id: $id, name: $name, type: $type, fExt: $fExt, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux)';
+    return 'CLMediaBase(id: $id, name: $name, type: $type, fExt: $fExt, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux, isPreviewCached: $isPreviewCached, isMediaCached: $isMediaCached, previewLog: $previewLog, mediaLog: $mediaLog, isMediaOriginal: $isMediaOriginal, serverUID: $serverUID, isEdited: $isEdited, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal)';
   }
 
   @override
@@ -115,7 +161,16 @@ class CLMedia extends CLMediaBase {
         other.pin == pin &&
         other.collectionId == collectionId &&
         other.isAux == isAux &&
-        other.id == id;
+        other.id == id &&
+        other.isPreviewCached == isPreviewCached &&
+        other.isMediaCached == isMediaCached &&
+        other.previewLog == previewLog &&
+        other.mediaLog == mediaLog &&
+        other.isMediaOriginal == isMediaOriginal &&
+        other.serverUID == serverUID &&
+        other.isEdited == isEdited &&
+        other.haveItOffline == haveItOffline &&
+        other.mustDownloadOriginal == mustDownloadOriginal;
   }
 
   @override
@@ -133,7 +188,16 @@ class CLMedia extends CLMediaBase {
         pin.hashCode ^
         collectionId.hashCode ^
         isAux.hashCode ^
-        id.hashCode;
+        id.hashCode ^
+        isPreviewCached.hashCode ^
+        isMediaCached.hashCode ^
+        previewLog.hashCode ^
+        mediaLog.hashCode ^
+        isMediaOriginal.hashCode ^
+        serverUID.hashCode ^
+        isEdited.hashCode ^
+        haveItOffline.hashCode ^
+        mustDownloadOriginal.hashCode;
   }
 
   @override
@@ -153,6 +217,15 @@ class CLMedia extends CLMediaBase {
       'collectionId': collectionId,
       'isAux': isAux,
       'id': id,
+      'isPreviewCached': isPreviewCached ? 1 : 0,
+      'isMediaCached': isMediaCached ? 1 : 0,
+      'previewLog': previewLog,
+      'mediaLog': mediaLog,
+      'isMediaOriginal': isMediaOriginal ? 1 : 0,
+      'serverUID': serverUID,
+      'isEdited': isEdited ? 1 : 0,
+      'haveItOffline': haveItOffline ? 1 : 0,
+      'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
     };
   }
 
@@ -174,6 +247,15 @@ class CLMedia extends CLMediaBase {
       isDeleted: isDeleted,
       isHidden: isHidden,
       isAux: isAux,
+      isPreviewCached: isPreviewCached,
+      isMediaCached: isMediaCached,
+      isMediaOriginal: isMediaOriginal,
+      isEdited: isEdited,
+      previewLog: previewLog,
+      mediaLog: mediaLog,
+      serverUID: serverUID,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
     );
   }
 
@@ -192,6 +274,15 @@ class CLMedia extends CLMediaBase {
       isHidden: isHidden,
       pin: pin,
       isAux: isAux,
+      isPreviewCached: isPreviewCached,
+      isMediaCached: isMediaCached,
+      isMediaOriginal: isMediaOriginal,
+      isEdited: isEdited,
+      previewLog: previewLog,
+      mediaLog: mediaLog,
+      serverUID: serverUID,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
     );
   }
 
@@ -211,7 +302,15 @@ class CLMedia extends CLMediaBase {
       isHidden: isHidden,
       pin: pin,
       isAux: isAux,
-      /* locallyModified: true, */
+      isPreviewCached: isPreviewCached,
+      isMediaCached: isMediaCached,
+      isMediaOriginal: isMediaOriginal,
+      isEdited: isEdited,
+      previewLog: previewLog,
+      mediaLog: mediaLog,
+      serverUID: serverUID,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
     );
   }
 }
