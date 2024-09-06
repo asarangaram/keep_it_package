@@ -157,8 +157,8 @@ class MediaWithDetailsList {
     int id, {
     bool? isPreviewCached,
     bool? isMediaCached,
-    String? previewError,
-    String? mediaError,
+    String? previewLog,
+    String? mediaLog,
     bool? isMediaOriginal,
     int? serverUID,
     bool? isEdited,
@@ -170,8 +170,8 @@ class MediaWithDetailsList {
     final status = m.status.copyWith(
       isPreviewCached: isPreviewCached,
       isMediaCached: isMediaCached,
-      previewError: previewError,
-      mediaError: mediaError,
+      previewLog: previewLog,
+      mediaLog: mediaLog,
       isMediaOriginal: isMediaOriginal,
       serverUID: serverUID,
       isEdited: isEdited,

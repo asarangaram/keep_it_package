@@ -25,7 +25,7 @@ class PreviewGenerator {
   Future<void> addAllToQueue(List<MediaWithDetails> media) async {
     final filtered = media
         .where(
-          (e) => !e.status.isPreviewCached && (e.status.previewError == null),
+          (e) => !e.status.isPreviewCached && (e.status.previewLog == null),
         )
         .toList();
     logger.i('Adding ${filtered.length} media into preview generation queue.');
@@ -43,7 +43,7 @@ class PreviewGenerator {
   }
 
   Future<void> generatePreview(MediaWithDetails media) async {
-    if (!media.status.isPreviewCached && (media.status.previewError == null)) {
+    if (!media.status.isPreviewCached && (media.status.previewLog == null)) {
       logger.i('Adding a media into preview generation queue.');
       await _mutex.protect(() async {
         _jobQueue.add(media);

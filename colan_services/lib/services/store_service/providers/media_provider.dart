@@ -136,8 +136,8 @@ class MediaNotifier extends StateNotifier<MediaWithDetailsList> {
     int id, {
     bool? isPreviewCached,
     bool? isMediaCached,
-    String? previewError,
-    String? mediaError,
+    String? previewLog,
+    String? mediaLog,
     bool? isMediaOriginal,
     int? serverUID,
     bool? isEdited,
@@ -148,8 +148,8 @@ class MediaNotifier extends StateNotifier<MediaWithDetailsList> {
       id,
       isPreviewCached: isPreviewCached,
       isMediaCached: isMediaCached,
-      previewError: previewError,
-      mediaError: mediaError,
+      previewLog: previewLog,
+      mediaLog: mediaLog,
       isMediaOriginal: isMediaOriginal,
       serverUID: serverUID,
       isEdited: isEdited,
@@ -166,7 +166,7 @@ class MediaNotifier extends StateNotifier<MediaWithDetailsList> {
   }
 
   Future<void> setPreviewError(int id, String errorString) async {
-    await updateMediaStatus(id, previewError: errorString);
+    await updateMediaStatus(id, previewLog: errorString);
   }
 }
 

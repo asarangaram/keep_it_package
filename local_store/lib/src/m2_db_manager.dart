@@ -54,6 +54,7 @@ class DBManager extends Store {
 
     final mediaPreferenceTable = DBExec<MediaPreference>(
       table: 'MediaSpecificPreference',
+      autoIncrementId: false,
       toMap: (MediaPreference obj) => obj.toMap(),
       readBack: (tx, mediaPreference) {
         return (Queries.getQuery(
@@ -65,6 +66,7 @@ class DBManager extends Store {
     );
     final mediaStatusTable = DBExec<MediaStatus>(
       table: 'MediaStatus',
+      autoIncrementId: false,
       toMap: (MediaStatus obj) => obj.toMap(),
       readBack: (tx, mediaStatus) {
         return (Queries.getQuery(

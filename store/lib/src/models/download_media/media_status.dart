@@ -11,8 +11,8 @@ class MediaStatus {
     required this.isMediaCached,
     required this.isMediaOriginal,
     required this.isEdited,
-    required this.previewError,
-    required this.mediaError,
+    required this.previewLog,
+    required this.mediaLog,
     required this.serverUID,
   });
 
@@ -21,10 +21,9 @@ class MediaStatus {
       id: map['id'] as int,
       isPreviewCached: (map['isPreviewCached'] as int) != 0,
       isMediaCached: (map['isMediaCached'] as int) != 0,
-      previewError:
-          map['previewError'] != null ? map['previewError'] as String : null,
-      mediaError:
-          map['mediaError'] != null ? map['mediaError'] as String : null,
+      previewLog:
+          map['previewLog'] != null ? map['previewLog'] as String : null,
+      mediaLog: map['mediaLog'] != null ? map['mediaLog'] as String : null,
       isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isEdited: (map['isEdited'] as int) != 0,
@@ -36,8 +35,8 @@ class MediaStatus {
   final int id;
   final bool isPreviewCached;
   final bool isMediaCached;
-  final String? previewError;
-  final String? mediaError;
+  final String? previewLog;
+  final String? mediaLog;
   final bool isMediaOriginal;
   final int? serverUID;
   final bool isEdited;
@@ -46,8 +45,8 @@ class MediaStatus {
     int? id,
     bool? isPreviewCached,
     bool? isMediaCached,
-    String? previewError,
-    String? mediaError,
+    String? previewLog,
+    String? mediaLog,
     bool? isMediaOriginal,
     int? serverUID,
     bool? isEdited,
@@ -58,8 +57,8 @@ class MediaStatus {
       id: id ?? this.id,
       isPreviewCached: isPreviewCached ?? this.isPreviewCached,
       isMediaCached: isMediaCached ?? this.isMediaCached,
-      previewError: previewError ?? this.previewError,
-      mediaError: mediaError ?? this.mediaError,
+      previewLog: previewLog ?? this.previewLog,
+      mediaLog: mediaLog ?? this.mediaLog,
       isMediaOriginal: isMediaOriginal ?? this.isMediaOriginal,
       serverUID: serverUID ?? this.serverUID,
       isEdited: isEdited ?? this.isEdited,
@@ -69,7 +68,7 @@ class MediaStatus {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'MediaLocalInfo(id: $id, isPreviewCached: $isPreviewCached, isMediaCached: $isMediaCached, previewError: $previewError, mediaError: $mediaError, isMediaOriginal: $isMediaOriginal, serverUID: $serverUID, isEdited: $isEdited)';
+    return 'MediaLocalInfo(id: $id, isPreviewCached: $isPreviewCached, isMediaCached: $isMediaCached, previewLog: $previewLog, mediaLog: $mediaLog, isMediaOriginal: $isMediaOriginal, serverUID: $serverUID, isEdited: $isEdited)';
   }
 
   @override
@@ -79,8 +78,8 @@ class MediaStatus {
     return other.id == id &&
         other.isPreviewCached == isPreviewCached &&
         other.isMediaCached == isMediaCached &&
-        other.previewError == previewError &&
-        other.mediaError == mediaError &&
+        other.previewLog == previewLog &&
+        other.mediaLog == mediaLog &&
         other.isMediaOriginal == isMediaOriginal &&
         other.serverUID == serverUID &&
         other.isEdited == isEdited;
@@ -91,8 +90,8 @@ class MediaStatus {
     return id.hashCode ^
         isPreviewCached.hashCode ^
         isMediaCached.hashCode ^
-        previewError.hashCode ^
-        mediaError.hashCode ^
+        previewLog.hashCode ^
+        mediaLog.hashCode ^
         isMediaOriginal.hashCode ^
         serverUID.hashCode ^
         isEdited.hashCode;
@@ -103,8 +102,8 @@ class MediaStatus {
       'id': id,
       'isPreviewCached': isPreviewCached ? 1 : 0,
       'isMediaCached': isMediaCached ? 1 : 0,
-      'previewError': previewError,
-      'mediaError': mediaError,
+      'previewLog': previewLog,
+      'mediaLog': mediaLog,
       'isMediaOriginal': isMediaOriginal ? 1 : 0,
       'serverUID': serverUID,
       'isEdited': isEdited ? 1 : 0,
@@ -118,8 +117,8 @@ class MediaStatus {
       id: id,
       isPreviewCached: false,
       isMediaCached: isMediaCached,
-      previewError: null,
-      mediaError: mediaError,
+      previewLog: null,
+      mediaLog: mediaLog,
       isMediaOriginal: isMediaOriginal,
       serverUID: serverUID,
       isEdited: isEdited,
@@ -136,7 +135,7 @@ class DefaultMediaStatus extends MediaStatus {
           isMediaCached: true,
           isMediaOriginal: true,
           isEdited: false,
-          previewError: null,
-          mediaError: null,
+          previewLog: null,
+          mediaLog: null,
         );
 }
