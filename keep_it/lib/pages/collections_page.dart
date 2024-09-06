@@ -20,10 +20,14 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
 
   @override
   Widget build(BuildContext context) => GetStore(
+        loadingBuilder: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
         builder: (theStore) {
           final collections =
               theStore.getCollections(excludeEmpty: excludeEmpty);
-          final stateMedia = theStore.getStaleMedia();
+
+          final staleMedia = theStore.getStaleMedia();
           final identifier = 'FolderView Collections'
               ' excludeEmpty: $excludeEmpty';
           final galleryGroups = <GalleryGroup<Collection>>[];
@@ -39,35 +43,37 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
           }
           return Column(
             children: [
-              CLSimpleGalleryView(
-                key: ValueKey(identifier),
-                title: 'Collections',
-                backButton: null,
-                columns: 3,
-                galleryMap: galleryGroups,
-                emptyState: const EmptyState(),
-                itemBuilder: (
-                  context,
-                  item, {
-                  required quickMenuScopeKey,
-                }) =>
-                    CollectionAsFolder(
-                  collection: item,
-                  quickMenuScopeKey: quickMenuScopeKey,
+              Expanded(
+                child: CLSimpleGalleryView(
+                  key: ValueKey(identifier),
+                  title: 'Collections',
+                  backButton: null,
+                  columns: 3,
+                  galleryMap: galleryGroups,
+                  emptyState: const EmptyState(),
+                  itemBuilder: (
+                    context,
+                    item, {
+                    required quickMenuScopeKey,
+                  }) =>
+                      CollectionAsFolder(
+                    collection: item,
+                    quickMenuScopeKey: quickMenuScopeKey,
+                  ),
+                  identifier: identifier,
+                  onPickFiles: (BuildContext c) async =>
+                      IncomingMediaMonitor.onPickFiles(
+                    c,
+                    ref,
+                  ),
+                  onCameraCapture: ColanPlatformSupport.cameraUnsupported
+                      ? null
+                      : Navigators.openCamera,
+                  onRefresh: () async =>
+                      ref.read(storeProvider.notifier).onRefresh(),
                 ),
-                identifier: identifier,
-                onPickFiles: (BuildContext c) async =>
-                    IncomingMediaMonitor.onPickFiles(
-                  c,
-                  ref,
-                ),
-                onCameraCapture: ColanPlatformSupport.cameraUnsupported
-                    ? null
-                    : Navigators.openCamera,
-                onRefresh: () async =>
-                    ref.read(storeProvider.notifier).onRefresh(),
               ),
-              if (stateMedia.isEmpty)
+              if (staleMedia.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
@@ -77,14 +83,14 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: CLText.standard(
                             'You have unclassified media. '
-                            '(${stateMedia.length})',
+                            '(${staleMedia.length})',
                           ),
                         ),
                       ),
                       ElevatedButton(
                         onPressed: () => Navigators.openWizard(
                           context,
-                          stateMedia,
+                          staleMedia,
                           UniversalMediaSource.unclassified,
                         ),
                         child: const CLText.small('Show Now'),
