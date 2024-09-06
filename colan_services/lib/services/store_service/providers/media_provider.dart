@@ -1,3 +1,4 @@
+import 'package:colan_services/services/store_service/providers/thumbnail_generator.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,10 +13,11 @@ import '../models/store_manager.dart';
 import '../providers/p2_db_manager.dart';
 
 class MediaNotifier extends StateNotifier<MediaWithDetailsList> {
-  MediaNotifier(this.storeManagerFuture)
+  MediaNotifier(this.ref, this.storeManagerFuture)
       : super(const MediaWithDetailsList([])) {
     _initialize();
   }
+  final Ref ref;
   final Future<StoreManager> storeManagerFuture;
   Future<void> _initialize() async => load();
 
@@ -83,8 +85,14 @@ class MediaNotifier extends StateNotifier<MediaWithDetailsList> {
       md5String: md5String,
     );
     if (media?.id != null) {
-      final mediaStatus = await storeManager.getMediaStatusById(media!.id!) ??
+      /// Being a new media, let's
+      /// *  clear the preview Cache status
+      ///
+      final mediaStatus = (await storeManager.getMediaStatusById(media!.id!))
+              ?.clearPreviewCache() ??
           DefaultMediaStatus(id: media.id!);
+      await storeManager.store.upsertMediaStatus(mediaStatus);
+
       final mediaPreference =
           await storeManager.getMediaPreferenceById(media.id!) ??
               MediaPreference(
@@ -93,14 +101,17 @@ class MediaNotifier extends StateNotifier<MediaWithDetailsList> {
                 mustDownloadOriginal: globalPreferences.mustDownloadOriginal,
               );
       final notes = await storeManager.getNotesByID(media.id!);
-      state = await state.upsert(
-        MediaWithDetails(
-          media: media,
-          preference: mediaPreference,
-          status: mediaStatus,
-          notes: notes,
-        ),
+      final updated = MediaWithDetails(
+        media: media,
+        preference: mediaPreference,
+        status: mediaStatus,
+        notes: notes,
       );
+      await ref
+          .read(previewCacheManagerProvider(storeManager))
+          .generatePreview(updated);
+
+      state = await state.upsert(updated);
     }
     return media;
   }
@@ -119,6 +130,43 @@ class MediaNotifier extends StateNotifier<MediaWithDetailsList> {
         onDone(mediaMultiple: mediaMultiple);
       },
     );
+  }
+
+  Future<void> updateMediaStatus(
+    int id, {
+    bool? isPreviewCached,
+    bool? isMediaCached,
+    String? previewError,
+    String? mediaError,
+    bool? isMediaOriginal,
+    int? serverUID,
+    bool? isEdited,
+    bool? haveItOffline,
+    bool? mustDownloadOriginal,
+  }) async {
+    final updated = await state.updateMediaStatus(
+      id,
+      isPreviewCached: isPreviewCached,
+      isMediaCached: isMediaCached,
+      previewError: previewError,
+      mediaError: mediaError,
+      isMediaOriginal: isMediaOriginal,
+      serverUID: serverUID,
+      isEdited: isEdited,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+    );
+    final storeManager = await storeManagerFuture;
+    await storeManager.store.upsertMediaStatus(updated.items[id].status);
+    state = updated;
+  }
+
+  Future<void> markPreviewCached(int id) async {
+    await updateMediaStatus(id, isPreviewCached: true);
+  }
+
+  Future<void> setPreviewError(int id, String errorString) async {
+    await updateMediaStatus(id, previewError: errorString);
   }
 }
 
@@ -168,5 +216,5 @@ extension UtilOnMediaNotifier on MediaNotifier {
 
 final mediaProvider =
     StateNotifierProvider<MediaNotifier, MediaWithDetailsList>((ref) {
-  return MediaNotifier(ref.watch(storeProvider.future));
+  return MediaNotifier(ref, ref.watch(storeProvider.future));
 });

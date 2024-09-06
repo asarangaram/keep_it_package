@@ -112,6 +112,19 @@ class MediaStatus {
   }
 
   String toJson() => json.encode(toMap());
+
+  MediaStatus clearPreviewCache() {
+    return MediaStatus(
+      id: id,
+      isPreviewCached: false,
+      isMediaCached: isMediaCached,
+      previewError: null,
+      mediaError: mediaError,
+      isMediaOriginal: isMediaOriginal,
+      serverUID: serverUID,
+      isEdited: isEdited,
+    );
+  }
 }
 
 class DefaultMediaStatus extends MediaStatus {

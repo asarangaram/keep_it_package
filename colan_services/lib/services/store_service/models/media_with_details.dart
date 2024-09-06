@@ -110,6 +110,11 @@ class MediaWithDetailsList {
     return items.where((e) => e.media.id == id).firstOrNull?.media;
   }
 
+  MediaStatus getMediaStatus(int id) {
+    return items.where((e) => e.status.id == id).firstOrNull?.status ??
+        DefaultMediaStatus(id: id);
+  }
+
   List<CLMedia> getMediaByCollectionId(int? collectionId) {
     return items.where((e) {
       return collectionId == null ||
@@ -146,5 +151,37 @@ class MediaWithDetailsList {
 
   List<CLMedia> getNotesByMediaId(int id) {
     return items.where((e) => e.media.id == id).firstOrNull?.notes ?? [];
+  }
+
+  Future<MediaWithDetailsList> updateMediaStatus(
+    int id, {
+    bool? isPreviewCached,
+    bool? isMediaCached,
+    String? previewError,
+    String? mediaError,
+    bool? isMediaOriginal,
+    int? serverUID,
+    bool? isEdited,
+    bool? haveItOffline,
+    bool? mustDownloadOriginal,
+  }) async {
+    final index = items.indexWhere((e) => e.media.id == id);
+    final m = items[index];
+    final status = m.status.copyWith(
+      isPreviewCached: isPreviewCached,
+      isMediaCached: isMediaCached,
+      previewError: previewError,
+      mediaError: mediaError,
+      isMediaOriginal: isMediaOriginal,
+      serverUID: serverUID,
+      isEdited: isEdited,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+    );
+
+    final updated = m.copyWith(
+      status: status,
+    );
+    return copyWith(items: items.replaceNthEntry(index, updated));
   }
 }
