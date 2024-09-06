@@ -19,10 +19,10 @@ class MediaPageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (collectionId == null) {
-      return GetMedia(
-        id: id,
-        buildOnData: (media) {
+    return GetStore(
+      builder: (theStore) {
+        if (collectionId == null) {
+          final media = theStore.getMediaById(id);
           if (media == null) {
             return const EmptyState();
           }
@@ -37,27 +37,24 @@ class MediaPageViewPage extends StatelessWidget {
                       : actionControl,
             ),
           );
-        },
-      );
-    }
-    return GetMediaByCollectionId(
-      collectionId: collectionId,
-      buildOnData: (items) {
-        if (items.isEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            CLPopScreen.onPop(context);
-          });
-          return const EmptyState(message: 'No Media');
-        }
-        final initialMedia = items.where((e) => e.id == id).firstOrNull;
-        final initialMediaIndex =
-            initialMedia == null ? 0 : items.indexOf(initialMedia);
+        } else {
+          final items = theStore.getMediaByCollectionId(collectionId);
+          if (items.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CLPopScreen.onPop(context);
+            });
+            return const EmptyState(message: 'No Media');
+          }
+          final initialMedia = items.where((e) => e.id == id).firstOrNull;
+          final initialMediaIndex =
+              initialMedia == null ? 0 : items.indexOf(initialMedia);
 
-        return MediaViewService.pageView(
-          media: items,
-          parentIdentifier: parentIdentifier,
-          initialMediaIndex: initialMediaIndex,
-        );
+          return MediaViewService.pageView(
+            media: items,
+            parentIdentifier: parentIdentifier,
+            initialMediaIndex: initialMediaIndex,
+          );
+        }
       },
     );
   }

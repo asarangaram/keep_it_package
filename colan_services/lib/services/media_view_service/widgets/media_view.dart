@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,11 @@ import 'package:store/store.dart';
 
 import '../../../internal/widgets/shimmer.dart';
 
+import '../../basic_page_service/dialogs.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
+import '../../store_service/models/navigators.dart';
+import '../../store_service/providers/store.dart';
+import '../../store_service/widgets/builders.dart';
 import '../providers/show_controls.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
@@ -79,7 +82,7 @@ class MediaView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isPreview) {
-      return GetStoreManager(
+      return GetStore(
         builder: (theStore) {
           final previewUri = theStore.getValidPreviewUri(media);
 
@@ -189,7 +192,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
     final media = widget.media;
     final ac = widget.actionControl;
     final showControl = ref.watch(showControlsProvider);
-    return GetStoreManager(
+    return GetStore(
       builder: (theStore) {
         final mediaUri = theStore.getValidMediaUri(media);
         final previewUri = theStore.getValidPreviewUri(media);
@@ -245,7 +248,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
               ),
               MediaControls(
                 onMove: ac.onMove(
-                  () => TheStore.of(context).openWizard(
+                  () => Navigators.openWizard(
                     context,
                     [media],
                     UniversalMediaSource.move,
@@ -259,19 +262,16 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                       false;
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
-                    return theStore.deleteMediaMultiple(
-                      [media],
-                    );
+                    return ref.read(storeProvider.notifier).deleteMedia(media);
                   }
                   return false;
                 }),
                 onShare: ac.onShare(
-                  () =>
-                      TheStore.of(context).shareMediaMultiple(context, [media]),
+                  () => Navigators.shareMediaMultiple(context, [media]),
                 ),
                 onEdit: ac.onEdit(
                   () async {
-                    final updatedMedia = await TheStore.of(context).openEditor(
+                    final updatedMedia = await Navigators.openEditor(
                       context,
                       media,
                       canDuplicateMedia: ac.canDuplicateMedia,
@@ -287,7 +287,8 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                 ),
                 onPin: ac.onPin(
                   () async {
-                    final res = await theStore.togglePinMultiple([media]);
+                    final res =
+                        await ref.read(storeProvider.notifier).togglePin(media);
                     if (res) {
                       setState(() {});
                     }

@@ -1,8 +1,8 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
+import '../../store_service/widgets/builders.dart';
 import 'audio/audio_notes.dart';
 import 'text/text_notes.dart';
 

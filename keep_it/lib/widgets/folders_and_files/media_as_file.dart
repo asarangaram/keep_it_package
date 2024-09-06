@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,35 +27,32 @@ class MediaAsFile extends ConsumerWidget {
   final ActionControl actionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStoreManager(
-      builder: (theStore) {
-        return WrapStandardQuickMenu(
-          quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () => TheStore.of(context)
-              .openWizard(context, [media], UniversalMediaSource.move),
-          onDelete: () async {
-            return theStore.deleteMediaMultiple([media]);
-          },
-          onShare: () =>
-              TheStore.of(context).shareMediaMultiple(context, [media]),
-          onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
-              ? null
-              : () async {
-                  /* final updatedMedia =  */ await TheStore.of(context)
-                      .openEditor(
-                    context,
-                    media,
-                    canDuplicateMedia: actionControl.canDuplicateMedia,
-                  );
-                  return true;
-                },
-          onTap: onTap,
-          child: MediaViewService.preview(
-            media,
-            parentIdentifier: parentIdentifier,
-          ),
-        );
+    return WrapStandardQuickMenu(
+      quickMenuScopeKey: quickMenuScopeKey,
+      onMove: () => Navigators.openWizard(
+        context,
+        [media],
+        UniversalMediaSource.move,
+      ),
+      onDelete: () async {
+        return ref.read(storeProvider.notifier).deleteMediaMultiple([media]);
       },
+      onShare: () => Navigators.shareMediaMultiple(context, [media]),
+      onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
+          ? null
+          : () async {
+              /* final updatedMedia =  */ await Navigators.openEditor(
+                context,
+                media,
+                canDuplicateMedia: actionControl.canDuplicateMedia,
+              );
+              return true;
+            },
+      onTap: onTap,
+      child: MediaViewService.preview(
+        media,
+        parentIdentifier: parentIdentifier,
+      ),
     );
   }
 }

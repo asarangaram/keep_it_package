@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../store_service/widgets/the_store.dart';
+import '../store_service/models/navigators.dart';
 import 'models/cl_shared_media.dart';
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';
@@ -25,7 +25,7 @@ class IncomingMediaService extends StatelessWidget {
       incomingMedia: incomingMedia,
       parentIdentifier: parentIdentifier,
       onDiscard: onDiscard,
-      onSave: TheStore.of(context).openWizard,
+      onSave: Navigators.openWizard,
     );
   }
 }

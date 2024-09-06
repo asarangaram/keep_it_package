@@ -13,8 +13,9 @@ class SettingsMainPage extends ConsumerWidget {
       title: 'Settings',
       backButton: null,
       pageBuilder: (context, quickMenuScopeKey) {
-        return GetDeletedMedia(
-          buildOnData: (deletedMedia) {
+        return GetStore(
+          builder: (theStore) {
+            final deletedMedia = theStore.getDeletedMedia();
             return ListView(
               children: [
                 if (deletedMedia.isNotEmpty)
@@ -23,7 +24,7 @@ class SettingsMainPage extends ConsumerWidget {
                     trailing: IconButton(
                       icon: Icon(MdiIcons.arrowRight),
                       onPressed: () async {
-                        await TheStore.of(context).openWizard(
+                        await Navigators.openWizard(
                           context,
                           deletedMedia,
                           UniversalMediaSource.deleted,
@@ -33,7 +34,6 @@ class SettingsMainPage extends ConsumerWidget {
                     title: Text('Deleted Items (${deletedMedia.length})'),
                   ),
                 const StorageMonitor(),
-                const BackupService(),
               ],
             );
           },

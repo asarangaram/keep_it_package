@@ -4,7 +4,7 @@ import 'package:form_factory/form_factory.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
-import '../../store_service/widgets/w3_get_collection.dart';
+import '../../store_service/widgets/builders.dart';
 
 class PickCollection extends StatelessWidget {
   const PickCollection({
@@ -17,8 +17,9 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetCollectionMultiple(
-      buildOnData: (collections) {
+    return GetStore(
+      builder: (theStore) {
+        final collections = theStore.getCollections();
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
             icon: MdiIcons.arrowRight,

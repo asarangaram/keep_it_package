@@ -1,6 +1,7 @@
 // ignore_for_file: unused_element
 
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,11 +21,11 @@ class CollectionTimeLinePage extends ConsumerWidget {
   final ActionControl actionControl;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => GetCollection(
-        id: collectionId,
-        buildOnData: (collection) => GetMediaByCollectionId(
-          collectionId: collectionId,
-          buildOnData: (items) => TimeLineView(
+  Widget build(BuildContext context, WidgetRef ref) => GetStore(
+        builder: (theStore) {
+          final collection = theStore.getCollectionById(collectionId);
+          final items = theStore.getMediaByCollectionId(collectionId);
+          return TimeLineView(
             label: collection?.label ?? 'All Media',
             items: items,
             actionControl: actionControl,
@@ -34,7 +35,8 @@ class CollectionTimeLinePage extends ConsumerWidget {
               CLMedia media, {
               required String parentIdentifier,
             }) async {
-              await TheStore.of(context).openMedia(
+              await Navigators.openMedia(
+                context,
                 media.id!,
                 collectionId: collectionId,
                 parentIdentifier: parentIdentifier,
@@ -54,10 +56,10 @@ class CollectionTimeLinePage extends ConsumerWidget {
             },
             onCameraCapture: ColanPlatformSupport.cameraUnsupported
                 ? null
-                : (ctx) => TheStore.of(ctx)
-                    .openCamera(ctx, collectionId: collection?.id),
-          ),
-        ),
+                : (ctx) =>
+                    Navigators.openCamera(ctx, collectionId: collection?.id),
+          );
+        },
       );
 }
 
@@ -90,74 +92,74 @@ class TimeLineView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
 
-    return GetStoreManager(
-      builder: (theStore) {
-        return CLSimpleGalleryView(
-          key: ValueKey(label),
-          title: label,
-          backButton: ColanPlatformSupport.isMobilePlatform
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: CLButtonIcon.small(
-                    MdiIcons.arrowLeft,
-                    onTap: () => CLPopScreen.onPop(context),
-                  ),
-                ),
-          identifier: parentIdentifier,
-          columns: 4,
-          galleryMap: galleryGroups,
-          emptyState: const EmptyState(),
-          itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-              MediaAsFile(
-            media: item,
-            parentIdentifier: parentIdentifier,
-            onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
-            quickMenuScopeKey: quickMenuScopeKey,
-            actionControl: actionControl,
+    return CLSimpleGalleryView(
+      key: ValueKey(label),
+      title: label,
+      backButton: ColanPlatformSupport.isMobilePlatform
+          ? null
+          : Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: CLButtonIcon.small(
+                MdiIcons.arrowLeft,
+                onTap: () => CLPopScreen.onPop(context),
+              ),
+            ),
+      identifier: parentIdentifier,
+      columns: 4,
+      galleryMap: galleryGroups,
+      emptyState: const EmptyState(),
+      itemBuilder: (context, item, {required quickMenuScopeKey}) => MediaAsFile(
+        media: item,
+        parentIdentifier: parentIdentifier,
+        onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
+        quickMenuScopeKey: quickMenuScopeKey,
+        actionControl: actionControl,
+      ),
+      onPickFiles: onPickFiles,
+      onCameraCapture: onCameraCapture,
+      onRefresh: () async => ref.read(storeProvider.notifier).onRefresh(),
+      selectionActions: (context, items) {
+        return [
+          CLMenuItem(
+            title: 'Delete',
+            icon: Icons.delete,
+            onTap: () async {
+              final confirmed = await ConfirmAction.deleteMediaMultiple(
+                    context,
+                    media: items,
+                  ) ??
+                  false;
+              if (!confirmed) return confirmed;
+              if (context.mounted) {
+                return ref
+                    .read(storeProvider.notifier)
+                    .deleteMediaMultiple(items);
+              }
+              return null;
+            },
           ),
-          onPickFiles: onPickFiles,
-          onCameraCapture: onCameraCapture,
-          onRefresh: () async => theStore.store.reloadStore(),
-          selectionActions: (context, items) {
-            return [
-              CLMenuItem(
-                title: 'Delete',
-                icon: Icons.delete,
-                onTap: () async {
-                  final confirmed = await ConfirmAction.deleteMediaMultiple(
-                        context,
-                        media: items,
-                      ) ??
-                      false;
-                  if (!confirmed) return confirmed;
-                  if (context.mounted) {
-                    return theStore.deleteMediaMultiple(items);
-                  }
-                  return null;
-                },
-              ),
-              CLMenuItem(
-                title: 'Move',
-                icon: MdiIcons.imageMove,
-                onTap: () => TheStore.of(context)
-                    .openWizard(context, items, UniversalMediaSource.move),
-              ),
-              CLMenuItem(
-                title: 'Share',
-                icon: MdiIcons.shareAll,
-                onTap: () =>
-                    TheStore.of(context).shareMediaMultiple(context, items),
-              ),
-              if (ColanPlatformSupport.isMobilePlatform)
-                CLMenuItem(
-                  title: 'Pin',
-                  icon: MdiIcons.pin,
-                  onTap: () => theStore.togglePinMultiple(items),
-                ),
-            ];
-          },
-        );
+          CLMenuItem(
+            title: 'Move',
+            icon: MdiIcons.imageMove,
+            onTap: () => Navigators.openWizard(
+              context,
+              items,
+              UniversalMediaSource.move,
+            ),
+          ),
+          CLMenuItem(
+            title: 'Share',
+            icon: MdiIcons.shareAll,
+            onTap: () => Navigators.shareMediaMultiple(context, items),
+          ),
+          if (ColanPlatformSupport.isMobilePlatform)
+            CLMenuItem(
+              title: 'Pin',
+              icon: MdiIcons.pin,
+              onTap: () =>
+                  ref.read(storeProvider.notifier).togglePinMultiple(items),
+            ),
+        ];
       },
     );
   }

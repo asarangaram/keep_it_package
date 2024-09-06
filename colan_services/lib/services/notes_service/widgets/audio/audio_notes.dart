@@ -1,12 +1,15 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../../store_service/providers/store.dart';
+import '../../../store_service/widgets/builders.dart';
 import 'audio_note.dart';
 import 'audio_recorder.dart';
 
-class AudioNotes extends StatefulWidget {
+class AudioNotes extends ConsumerStatefulWidget {
   const AudioNotes({
     required this.media,
     required this.notes,
@@ -16,10 +19,10 @@ class AudioNotes extends StatefulWidget {
   final List<CLMedia> notes;
 
   @override
-  State<AudioNotes> createState() => _AudioNotesState();
+  ConsumerState<AudioNotes> createState() => _AudioNotesState();
 }
 
-class _AudioNotesState extends State<AudioNotes> {
+class _AudioNotesState extends ConsumerState<AudioNotes> {
   late bool editMode;
 
   @override
@@ -30,11 +33,11 @@ class _AudioNotesState extends State<AudioNotes> {
 
   @override
   Widget build(BuildContext context) {
-    final audioNotes = widget.notes.isEmpty
-        ? const SizedBox.shrink()
-        : GetStoreManager(
-            builder: (theStore) {
-              return SingleChildScrollView(
+    return GetStore(
+      builder: (theStore) {
+        final audioNotes = widget.notes.isEmpty
+            ? const SizedBox.shrink()
+            : SingleChildScrollView(
                 child: Wrap(
                   runSpacing: 2,
                   spacing: 2,
@@ -55,20 +58,17 @@ class _AudioNotesState extends State<AudioNotes> {
                             if (widget.notes.length == 1) {
                               editMode = false;
                             }
-                            theStore.deleteMedia(note);
+                            ref.read(storeProvider.notifier).deleteMedia(note);
                           },
                         ),
                       )
                       .toList(),
                 ),
               );
-            },
-          );
-    if (!ColanPlatformSupport.isMobilePlatform) {
-      return audioNotes;
-    }
-    return GetStoreManager(
-      builder: (theStore) {
+        if (!ColanPlatformSupport.isMobilePlatform) {
+          return audioNotes;
+        }
+
         return AudioRecorder(
           media: widget.media,
           theStore: theStore,

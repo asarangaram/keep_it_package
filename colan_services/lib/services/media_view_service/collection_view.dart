@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -7,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../media_view_service/widgets/media_view.dart';
-import '../store_service/store_service.dart';
 
+import '../store_service/widgets/builders.dart';
 import 'widgets/cl_media_collage.dart';
 
 extension RandomExt<T> on List<T> {
@@ -47,46 +46,40 @@ class CollectionView extends ConsumerWidget {
     return CLAspectRationDecorated(
       hasBorder: true,
       borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: GetStoreManager(
+      child: GetStore(
         builder: (theStore) {
-          return GetMediaByCollectionId(
-            collectionId: collection.id,
-            buildOnData: (mediaList) {
-              if (mediaList.isEmpty) {
-                return CLAspectRationDecorated(
-                  hasBorder: true,
-                  borderRadius: const BorderRadius.all(Radius.circular(16)),
-                  child: Center(
-                    child: CLText.veryLarge(
-                      collection.label.characters.first,
-                    ),
-                  ),
-                );
-              } else {
-                final availableList = mediaList
-                    .where(
-                      (e) =>
-                          File(theStore.getPreviewAbsolutePath(e)).existsSync(),
-                    )
-                    .toList()
-                    .pickRandomItems(4);
-                return CLMediaCollage.byMatrixSize(
-                  availableList.length,
-                  hCount: 2,
-                  vCount: 2,
-                  itemBuilder: (context, index) => MediaView.preview(
-                    availableList[index],
-                    parentIdentifier: 'TODO HERE',
-                  ),
-                  whenNopreview: Center(
-                    child: CLText.veryLarge(
-                      collection.label.characters.first,
-                    ),
-                  ),
-                );
-              }
-            },
+          final mediaList = theStore.getMediaByCollectionId(
+            collection.id,
+            maxCount: 4,
+            isRandom: true,
           );
+
+          if (mediaList.isEmpty) {
+            return CLAspectRationDecorated(
+              hasBorder: true,
+              borderRadius: const BorderRadius.all(Radius.circular(16)),
+              child: Center(
+                child: CLText.veryLarge(
+                  collection.label.characters.first,
+                ),
+              ),
+            );
+          } else {
+            return CLMediaCollage.byMatrixSize(
+              mediaList.length,
+              hCount: 2,
+              vCount: 2,
+              itemBuilder: (context, index) => MediaView.preview(
+                mediaList[index],
+                parentIdentifier: 'TODO HERE',
+              ),
+              whenNopreview: Center(
+                child: CLText.veryLarge(
+                  collection.label.characters.first,
+                ),
+              ),
+            );
+          }
         },
       ),
     );

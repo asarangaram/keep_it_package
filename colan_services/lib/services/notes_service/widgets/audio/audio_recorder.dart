@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/models/store_model.dart';
+import 'package:colan_services/services/store_service/providers/store.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class AudioRecorder extends ConsumerStatefulWidget {
     this.onEditCancel,
   });
   final CLMedia media;
-  final StoreManager theStore;
+  final StoreModel theStore;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
@@ -36,7 +38,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
   late final RecorderController recorderController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
-  late final StoreManager theStore;
+  late final StoreModel theStore;
   bool isRecording = false;
   bool isRecordingCompleted = false;
 
@@ -149,7 +151,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await ref.read(mediaProvider.notifier).upsertNote(
+      await ref.read(storeProvider.notifier).upsertMedia(
         audioMessage!,
         CLMediaType.audio,
         mediaMultiple: [widget.media],

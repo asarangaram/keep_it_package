@@ -1,13 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../store_service/store_service.dart';
-
+import '../store_service/providers/store.dart';
 import 'models/cl_shared_media.dart';
 
-class AnalysePage extends StatelessWidget {
+class AnalysePage extends ConsumerWidget {
   const AnalysePage({
     required this.incomingMedia,
     required this.onDone,
@@ -19,18 +19,16 @@ class AnalysePage extends StatelessWidget {
   final void Function() onCancel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: WizardLayout(
         title: 'Analysing Shared Media',
         onCancel: onCancel,
-        child: GetStoreManager(
-          builder: (theStore) {
-            return StreamProgressView(
-              stream: () => theStore.analyseMediaStream(
+        child: StreamProgressView(
+          stream: () => ref.read(storeProvider.notifier).analyseMediaStream(
                 mediaFiles: incomingMedia.entries,
-                onDone: ({required List<CLMedia> mediaMultiple}) {
+                onDone: ({required List<CLMedia> mediaMultiple}) async {
                   onDone(
                     mg: CLSharedMedia(
                       entries: mediaMultiple,
@@ -40,9 +38,7 @@ class AnalysePage extends StatelessWidget {
                   );
                 },
               ),
-              onCancel: onCancel,
-            );
-          },
+          onCancel: onCancel,
         ),
       ),
     );

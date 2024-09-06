@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:keep_it/widgets/store_manager.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:window_size/window_size.dart';
 
@@ -33,22 +32,19 @@ class KeepItApp implements AppDescriptor {
   List<CLShellRouteDescriptor> get shellRoutes => [
         CLShellRouteDescriptor(
           name: '',
-          builder: (context, GoRouterState state) =>
-              const StoreManagerView(child: CollectionsPage()),
+          builder: (context, GoRouterState state) => const CollectionsPage(),
           iconData: MdiIcons.home,
           label: 'main',
         ),
         CLShellRouteDescriptor(
           name: 'Pinned',
-          builder: (context, state) =>
-              const StoreManagerView(child: PinnedMediaPage()),
+          builder: (context, state) => const PinnedMediaPage(),
           iconData: MdiIcons.pin,
           label: 'Pinned',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
-          builder: (context, state) =>
-              const StoreManagerView(child: SettingsMainPage()),
+          builder: (context, state) => const SettingsMainPage(),
           iconData: MdiIcons.cog,
           label: 'Settings',
         ),
@@ -68,9 +64,7 @@ class KeepItApp implements AppDescriptor {
             }
             return FullscreenLayout(
               useSafeArea: false,
-              child: StoreManagerView(
-                child: CameraPage(collectionId: collectionId),
-              ),
+              child: CameraPage(collectionId: collectionId),
             );
           },
         ),
@@ -94,11 +88,9 @@ class KeepItApp implements AppDescriptor {
             return FullscreenLayout(
               hasBackground: false,
               backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-              child: StoreManagerView(
-                child: MediaEditorPage(
-                  mediaId: mediaId,
-                  canDuplicateMedia: canDuplicateMedia,
-                ),
+              child: MediaEditorPage(
+                mediaId: mediaId,
+                canDuplicateMedia: canDuplicateMedia,
               ),
             );
           },
@@ -132,13 +124,11 @@ class KeepItApp implements AppDescriptor {
 
             return FullscreenLayout(
               useSafeArea: false,
-              child: StoreManagerView(
-                child: MediaPageViewPage(
-                  collectionId: collectionId,
-                  id: int.parse(state.pathParameters['item_id']!),
-                  parentIdentifier: parentIdentifier,
-                  actionControl: actionControl,
-                ),
+              child: MediaPageViewPage(
+                collectionId: collectionId,
+                id: int.parse(state.pathParameters['item_id']!),
+                parentIdentifier: parentIdentifier,
+                actionControl: actionControl,
               ),
             );
           },
@@ -156,7 +146,7 @@ class KeepItApp implements AppDescriptor {
               type = UniversalMediaSource.unclassified;
             }
             return FullscreenLayout(
-              child: StoreManagerView(child: MediaWizardPage(type: type)),
+              child: MediaWizardPage(type: type),
             );
           },
         ),
@@ -180,16 +170,13 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
           name: 'collections',
-          builder: (context, GoRouterState state) =>
-              const StoreManagerView(child: CollectionsPage()),
+          builder: (context, GoRouterState state) => const CollectionsPage(),
         ),
         CLRouteDescriptor(
           name: 'items_by_collection/:collectionId',
-          builder: (context, GoRouterState state) => StoreManagerView(
-            child: CollectionTimeLinePage(
-              collectionId: int.parse(state.pathParameters['collectionId']!),
-              actionControl: ActionControl.full(),
-            ),
+          builder: (context, GoRouterState state) => CollectionTimeLinePage(
+            collectionId: int.parse(state.pathParameters['collectionId']!),
+            actionControl: ActionControl.full(),
           ),
         ),
       ];
@@ -201,12 +188,10 @@ class KeepItApp implements AppDescriptor {
         required void Function({required bool result}) onDiscard,
       }) =>
           FullscreenLayout(
-            child: StoreManagerView(
-              child: IncomingMediaService(
-                parentIdentifier: 'IncomingMediaService',
-                incomingMedia: incomingMedia,
-                onDiscard: onDiscard,
-              ),
+            child: IncomingMediaService(
+              parentIdentifier: 'IncomingMediaService',
+              incomingMedia: incomingMedia,
+              onDiscard: onDiscard,
             ),
           );
 

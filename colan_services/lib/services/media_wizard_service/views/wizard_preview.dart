@@ -1,9 +1,12 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../media_view_service/media_view_service.dart';
+import '../../store_service/models/navigators.dart';
+import '../../store_service/providers/group_view.dart';
+import '../../store_service/widgets/builders.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -47,11 +50,11 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         context,
         item,
       ) =>
-          GetStoreManager(
+          GetStore(
         builder: (theStore) {
           return GestureDetector(
             onTap: () async {
-              await TheStore.of(context).openEditor(
+              await Navigators.openEditor(
                 context,
                 item,
                 canDuplicateMedia: false,
@@ -60,7 +63,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               /// MEdia might have got updated, better reload and update the
               ///  provider
               if (context.mounted) {
-                final refreshedMedia = await theStore.getMediaMultipleByIds(
+                final refreshedMedia = theStore.getMediaMultipleByIds(
                   media0.entries
                       .where((e) => e.id != null)
                       .map((e) => e.id!)
@@ -68,10 +71,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                 );
                 ref.read(universalMediaProvider(type).notifier).mediaGroup =
                     media0.copyWith(
-                  entries: refreshedMedia
-                      .where((e) => e != null)
-                      .map((e) => e!)
-                      .toList(),
+                  entries: refreshedMedia,
                 );
               }
             },

@@ -51,10 +51,12 @@ class CollectionEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: GetCollectionMultiple(
-        buildOnData: (List<Collection> collections) {
-          final collection =
-              collections.where((e) => e.id == collectionId).first;
+      child: GetStore(
+        builder: (theStore) {
+          final collections = theStore.getCollections();
+          final collection = theStore.getCollectionById(collectionId);
+          if (collection == null) return Container(); // FIXME
+
           return CLForm(
             explicitScrollDownOption: !isDialog,
             descriptors: {

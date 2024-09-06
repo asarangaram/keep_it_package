@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/providers/store.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -22,59 +23,56 @@ class MediaEditorPage extends ConsumerWidget {
       return BasicPageService.message(message: 'No Media Provided');
     }
 
-    return GetStoreManager(
+    return GetStore(
       builder: (theStore) {
-        return GetMedia(
-          id: mediaId!,
-          buildOnData: (media) {
-            if (media == null) {
-              return BasicPageService.message(message: ' Media not found');
+        final media = theStore.getMediaById(mediaId);
+
+        if (media == null) {
+          return BasicPageService.message(message: ' Media not found');
+        }
+        final mediaUri = theStore.getValidMediaUri(media);
+
+        return InvokeEditor(
+          mediaUri: mediaUri,
+          mediaType: media.type,
+          canDuplicateMedia: canDuplicateMedia,
+          onCreateNewFile: () async {
+            return theStore.createTempFile(ext: media.fExt);
+          },
+          onCancel: () async => context.pop(),
+          onSave: (file, {required overwrite}) async {
+            final CLMedia resultMedia;
+            if (overwrite) {
+              final confirmed = await ConfirmAction.replaceMedia(
+                    context,
+                    media: media,
+                  ) ??
+                  false;
+              if (confirmed && context.mounted) {
+                resultMedia = await ref
+                    .read(storeProvider.notifier)
+                    .replaceMedia(file, media: media);
+              } else {
+                resultMedia = media;
+              }
+            } else {
+              final confirmed = await ConfirmAction.cloneAndReplaceMedia(
+                    context,
+                    media: media,
+                  ) ??
+                  false;
+              if (confirmed && context.mounted) {
+                resultMedia = await ref
+                    .read(storeProvider.notifier)
+                    .cloneAndReplaceMedia(file, media: media);
+              } else {
+                resultMedia = media;
+              }
             }
-            final mediaUri = theStore.getValidMediaUri(media);
 
-            return InvokeEditor(
-              mediaUri: mediaUri,
-              mediaType: media.type,
-              canDuplicateMedia: canDuplicateMedia,
-              onCreateNewFile: () async {
-                return theStore.createTempFile(ext: media.fExt);
-              },
-              onCancel: () async => context.pop(),
-              onSave: (file, {required overwrite}) async {
-                final CLMedia resultMedia;
-                if (overwrite) {
-                  final confirmed = await ConfirmAction.replaceMedia(
-                        context,
-                        media: media,
-                      ) ??
-                      false;
-                  if (confirmed && context.mounted) {
-                    resultMedia = await ref
-                        .read(mediaProvider.notifier)
-                        .replaceMedia(media, file);
-                  } else {
-                    resultMedia = media;
-                  }
-                } else {
-                  final confirmed = await ConfirmAction.cloneAndReplaceMedia(
-                        context,
-                        media: media,
-                      ) ??
-                      false;
-                  if (confirmed && context.mounted) {
-                    resultMedia = await ref
-                        .read(mediaProvider.notifier)
-                        .cloneAndReplaceMedia(media, file);
-                  } else {
-                    resultMedia = media;
-                  }
-                }
-
-                if (context.mounted) {
-                  context.pop(resultMedia);
-                }
-              },
-            );
+            if (context.mounted) {
+              context.pop(resultMedia);
+            }
           },
         );
       },
@@ -102,29 +100,21 @@ class InvokeEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (mediaType) {
       case CLMediaType.image:
-        return GetStoreManager(
-          builder: (theStore) {
-            return ImageEditor(
-              uri: mediaUri,
-              onCancel: onCancel,
-              onSave: onSave,
-              onCreateNewFile: onCreateNewFile,
-              canDuplicateMedia: canDuplicateMedia,
-            );
-          },
+        return ImageEditor(
+          uri: mediaUri,
+          onCancel: onCancel,
+          onSave: onSave,
+          onCreateNewFile: onCreateNewFile,
+          canDuplicateMedia: canDuplicateMedia,
         );
       case CLMediaType.video:
         if (VideoEditor.isSupported) {
-          return GetStoreManager(
-            builder: (theStore) {
-              return VideoEditor(
-                uri: mediaUri,
-                onSave: onSave,
-                onDone: onCancel,
-                onCreateNewFile: onCreateNewFile,
-                canDuplicateMedia: canDuplicateMedia,
-              );
-            },
+          return VideoEditor(
+            uri: mediaUri,
+            onSave: onSave,
+            onDone: onCancel,
+            onCreateNewFile: onCreateNewFile,
+            canDuplicateMedia: canDuplicateMedia,
           );
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {

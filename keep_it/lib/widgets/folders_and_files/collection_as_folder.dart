@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -18,56 +19,54 @@ class CollectionAsFolder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStoreManager(
-      builder: (theStore) {
-        return WrapStandardQuickMenu(
-          quickMenuScopeKey: quickMenuScopeKey,
-          onEdit: () async {
-            final updated = await CollectionEditor.popupDialog(
+    return WrapStandardQuickMenu(
+      quickMenuScopeKey: quickMenuScopeKey,
+      onEdit: () async {
+        final updated = await CollectionEditor.popupDialog(
+          context,
+          collection: collection,
+        );
+        if (updated != null && context.mounted) {
+          await ref.read(storeProvider.notifier).upsertCollection(updated);
+        }
+
+        return true;
+      },
+      onDelete: () async {
+        final confirmed = await ConfirmAction.deleteCollection(
               context,
               collection: collection,
-            );
-            if (updated != null && context.mounted) {
-              await theStore.upsertCollection(updated);
-            }
-
-            return true;
-          },
-          onDelete: () async {
-            final confirmed = await ConfirmAction.deleteCollection(
-                  context,
-                  collection: collection,
-                ) ??
-                false;
-            if (!confirmed) return confirmed;
-            if (context.mounted) {
-              return theStore.deleteCollection(collection);
-            }
-            return null;
-          },
-          onTap: () async {
-            await TheStore.of(context)
-                .openCollection(context, collectionId: collection.id);
-            return true;
-          },
-          child: Column(
-            children: [
-              Flexible(
-                child: CollectionView.preview(collection),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  collection.label,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        );
+            ) ??
+            false;
+        if (!confirmed) return confirmed;
+        if (context.mounted) {
+          return ref.read(storeProvider.notifier).deleteCollection(collection);
+        }
+        return null;
       },
+      onTap: () async {
+        if (collection.id != null) {
+          await Navigators.openCollection(context, collection.id!);
+          return true;
+        }
+        return false;
+      },
+      child: Column(
+        children: [
+          Flexible(
+            child: CollectionView.preview(collection),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              collection.label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

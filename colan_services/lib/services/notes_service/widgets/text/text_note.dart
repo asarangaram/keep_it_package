@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../../../basic_page_service/dialogs.dart';
+import '../../../store_service/models/store_model.dart';
+import '../../../store_service/providers/store.dart';
 import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
@@ -21,7 +23,7 @@ class TextNote extends ConsumerStatefulWidget {
   });
   final CLMedia media;
   final CLMedia? note;
-  final StoreManager theStore;
+  final StoreModel theStore;
 
   @override
   ConsumerState<TextNote> createState() => _TextNoteState();
@@ -33,7 +35,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
   late bool isEditing;
   bool textModified = false;
   late String textOriginal;
-  late final StoreManager theStore;
+  late final StoreModel theStore;
   @override
   void initState() {
     super.initState();
@@ -95,7 +97,9 @@ class _TextNoteState extends ConsumerState<TextNote> {
                       false;
                   if (!confirmed) return;
                   if (context.mounted) {
-                    await theStore.deleteMedia(widget.note!);
+                    await ref
+                        .read(storeProvider.notifier)
+                        .deleteMedia(widget.note!);
                     textEditingController.clear();
                   }
                 },
@@ -158,11 +162,11 @@ class _TextNoteState extends ConsumerState<TextNote> {
       final String path;
       path = await theStore.createTempFile(ext: 'txt');
       await File(path).writeAsString(textEditingController.text.trim());
-      await ref.read(mediaProvider.notifier).upsertNote(
+      await ref.read(storeProvider.notifier).upsertMedia(
             path,
             CLMediaType.text,
             mediaMultiple: [widget.media],
-            note: widget.note,
+            media: widget.note,
           );
 
       if (mounted) {
