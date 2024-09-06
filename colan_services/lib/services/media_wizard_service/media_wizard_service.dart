@@ -196,8 +196,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                 final res = ref
                                     .read(storeProvider.notifier)
                                     .deleteMediaMultiple(
-                                      currMedia,
-                                    );
+                                  {...currMedia.map((e) => e.id!)},
+                                );
 
                                 await ref
                                     .read(

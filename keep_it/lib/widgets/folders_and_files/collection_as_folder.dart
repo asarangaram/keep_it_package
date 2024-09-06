@@ -40,7 +40,9 @@ class CollectionAsFolder extends ConsumerWidget {
             false;
         if (!confirmed) return confirmed;
         if (context.mounted) {
-          return ref.read(storeProvider.notifier).deleteCollection(collection);
+          return ref
+              .read(storeProvider.notifier)
+              .deleteCollectionById(collection.id!);
         }
         return null;
       },

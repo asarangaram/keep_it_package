@@ -6,6 +6,10 @@ import 'download_media/media_status.dart';
 import 'download_media/preference.dart';
 
 enum DBQueries {
+  // Fetch the complete table!
+  collections,
+  medias,
+
   collectionById,
   collectionByLabel,
   collectionsAll,

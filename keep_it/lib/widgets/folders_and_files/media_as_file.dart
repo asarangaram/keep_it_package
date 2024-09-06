@@ -35,7 +35,7 @@ class MediaAsFile extends ConsumerWidget {
         UniversalMediaSource.move,
       ),
       onDelete: () async {
-        return ref.read(storeProvider.notifier).deleteMediaMultiple([media]);
+        return ref.read(storeProvider.notifier).deleteMediaById(media.id!);
       },
       onShare: () => Navigators.shareMediaMultiple(context, [media]),
       onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)

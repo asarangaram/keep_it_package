@@ -262,7 +262,9 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                       false;
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
-                    return ref.read(storeProvider.notifier).deleteMedia(media);
+                    return ref
+                        .read(storeProvider.notifier)
+                        .deleteMediaById(media.id!);
                   }
                   return false;
                 }),

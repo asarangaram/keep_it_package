@@ -133,7 +133,7 @@ class TimeLineView extends ConsumerWidget {
               if (context.mounted) {
                 return ref
                     .read(storeProvider.notifier)
-                    .deleteMediaMultiple(items);
+                    .deleteMediaMultiple({...items.map((e) => e.id!)});
               }
               return null;
             },

@@ -10,6 +10,16 @@ class Queries {
     List<Object?>? parameters,
   }) {
     final rawQuery = switch (query) {
+      DBQueries.collections => DBQuery<Collection>(
+          sql: 'SELECT * FROM Collection ',
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.medias => DBQuery<CLMedia>(
+          sql: 'SELECT * FROM Media ',
+          triggerOnTables: const {'Media'},
+          fromMap: CLMedia.fromMap,
+        ),
       DBQueries.collectionById => DBQuery<Collection>(
           sql: 'SELECT * FROM Collection WHERE id = ? ',
           triggerOnTables: const {'Collection'},
