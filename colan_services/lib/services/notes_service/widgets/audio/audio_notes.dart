@@ -1,4 +1,3 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,24 +42,29 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                   spacing: 2,
                   children: widget.notes
                       .map(
-                        (note) => AudioChip(
-                          theStore.getValidMediaUri(note).path,
-                          label: note.name,
-                          editMode: editMode && widget.notes.isNotEmpty,
-                          onEditMode: () {
-                            setState(() {
-                              if (widget.notes.isNotEmpty) {
-                                editMode = true;
-                              }
-                            });
-                          },
-                          onDeleteNote: () {
-                            if (widget.notes.length == 1) {
-                              editMode = false;
-                            }
-                            ref
-                                .read(storeProvider.notifier)
-                                .deleteMediaById(note.id!);
+                        (note) => GetMediaUri(
+                          id: note.id!,
+                          builder: (uri) {
+                            return AudioChip(
+                              uri.path, // FIXME won't work for http(s)
+                              label: note.name,
+                              editMode: editMode && widget.notes.isNotEmpty,
+                              onEditMode: () {
+                                setState(() {
+                                  if (widget.notes.isNotEmpty) {
+                                    editMode = true;
+                                  }
+                                });
+                              },
+                              onDeleteNote: () {
+                                if (widget.notes.length == 1) {
+                                  editMode = false;
+                                }
+                                ref
+                                    .read(storeProvider.notifier)
+                                    .deleteMediaById(note.id!);
+                              },
+                            );
                           },
                         ),
                       )

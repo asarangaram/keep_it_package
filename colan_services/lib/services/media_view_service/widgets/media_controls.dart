@@ -177,17 +177,14 @@ class ControllerMenu extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (media.type == CLMediaType.video)
-                GetStore(
-                  builder: (theStore) {
-                    if (media.type == CLMediaType.video) {
-                      return VideoDefaultControls(
-                        uri: theStore.getValidMediaUri(media),
-                        errorBuilder: (_, __) => Container(),
-                        loadingBuilder: Container.new,
-                      );
-                    } else {
-                      return Container();
-                    }
+                GetMediaUri(
+                  id: media.id!,
+                  builder: (uri) {
+                    return VideoDefaultControls(
+                      uri: uri,
+                      errorBuilder: (_, __) => Container(),
+                      loadingBuilder: Container.new,
+                    );
                   },
                 ),
               if ([onEdit, onDelete, onMove, onShare, onPin]

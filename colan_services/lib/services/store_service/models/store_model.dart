@@ -1,9 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:colan_services/services/storage_service/models/file_system/models/cl_directories.dart';
 import 'package:colan_services/services/store_service/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 @immutable
@@ -17,19 +20,23 @@ class StoreModel {
   final List<CLMedia> mediaList;
   final CLDirectories directories;
 
+  Iterable<Collection> get validCollection =>
+      collectionList.where((e) => !e.label.startsWith('***'));
+
   List<Collection> getCollections({bool excludeEmpty = true}) {
     if (excludeEmpty) {
-      return collectionList
+      return validCollection
           .where(
             (c) => mediaList.any((e) => e.collectionId == c.id),
           )
           .toList();
     }
-    return collectionList;
+    return validCollection.toList();
   }
 
   Collection? getCollectionById(int? id) {
-    return null;
+    if (id == null) return null;
+    return collectionList.where((e) => e.id == id).firstOrNull;
   }
 
   List<CLMedia> getStaleMedia() {
@@ -74,19 +81,50 @@ class StoreModel {
   }
 
   String getText(CLMedia? media) {
-    return '';
+    if (media?.type != CLMediaType.text) return '';
+    final uri = getMediaUri(media!);
+    if (uri.scheme == 'file') {
+      final path = uri.path;
+
+      return File(path).existsSync()
+          ? File(path).readAsStringSync()
+          : 'Content Missing. File not found';
+    }
+    throw UnimplementedError('Implement for Server');
   }
 
-  Uri getValidMediaUri(CLMedia? media) {
-    return Uri.file('');
+  Uri getPreviewUri(CLMedia media) {
+    return Uri.file(getPreviewAbsolutePath(media));
   }
 
-  Uri getValidPreviewUri(CLMedia? media) {
-    return Uri.file('');
+  Uri getMediaUri(CLMedia media) {
+    return Uri.file(getMediaAbsolutePath(media));
   }
+
+  String getPreviewAbsolutePath(CLMedia media) {
+    return p.setExtension(
+      p.join(
+        directories.media.pathString, // FIX ME preview directory
+        '${media.md5String}_tn',
+      ),
+      '.jpeg',
+    );
+  }
+
+  String getMediaAbsolutePath(CLMedia media) => p.setExtension(
+        p.join(
+          directories.media.path.path,
+          media.md5String,
+        ),
+        media.fExt,
+      );
 
   Future<String> createTempFile({required String ext}) async {
-    return '';
+    final dir = directories.download.path; // FIXME temp Directory
+    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
+    final absolutePath = '${dir.path}/$fileBasename.$ext';
+
+    return absolutePath;
   }
 
   StoreModel copyWith({

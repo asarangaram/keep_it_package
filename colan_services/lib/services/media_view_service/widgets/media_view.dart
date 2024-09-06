@@ -84,59 +84,65 @@ class MediaView extends StatelessWidget {
     if (isPreview) {
       return GetStore(
         builder: (theStore) {
-          final previewUri = theStore.getValidPreviewUri(media);
-
-          return Hero(
-            tag: '$parentIdentifier /item/${media.id}',
-            child: ImageViewer.basic(
-              uri: previewUri,
-              autoStart: autoStart,
-              autoPlay: autoPlay,
-              onLockPage: onLockPage,
-              isLocked: isLocked,
-              errorBuilder: BrokenImage.show,
-              loadingBuilder: GreyShimmer.show,
-              fit: BoxFit.cover,
-              overlays: [
-                if (media.pin != null)
-                  OverlayWidgets(
-                    alignment: Alignment.bottomRight,
-                    child: FutureBuilder(
-                      future: AlbumManager.isPinBroken(media.pin),
-                      builder: (context, snapshot) {
-                        return Transform.rotate(
-                          angle: math.pi / 4,
-                          child: CLIcon.veryLarge(
-                            snapshot.data ?? false
-                                ? MdiIcons.pinOffOutline
-                                : MdiIcons.pin,
-                            color: snapshot.data ?? false
-                                ? Colors.red
-                                : Colors.blue,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                if (media.type == CLMediaType.video)
-                  OverlayWidgets(
-                    alignment: Alignment.center,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color:
-                            Theme.of(context).colorScheme.onSurface.withAlpha(
+          return GetPreviewUri(
+            id: media.id!,
+            builder: (previewUri) {
+              return Hero(
+                tag: '$parentIdentifier /item/${media.id}',
+                child: ImageViewer.basic(
+                  uri: previewUri,
+                  autoStart: autoStart,
+                  autoPlay: autoPlay,
+                  onLockPage: onLockPage,
+                  isLocked: isLocked,
+                  errorBuilder: BrokenImage.show,
+                  loadingBuilder: GreyShimmer.show,
+                  fit: BoxFit.cover,
+                  overlays: [
+                    if (media.pin != null)
+                      OverlayWidgets(
+                        alignment: Alignment.bottomRight,
+                        child: FutureBuilder(
+                          future: AlbumManager.isPinBroken(media.pin),
+                          builder: (context, snapshot) {
+                            return Transform.rotate(
+                              angle: math.pi / 4,
+                              child: CLIcon.veryLarge(
+                                snapshot.data ?? false
+                                    ? MdiIcons.pinOffOutline
+                                    : MdiIcons.pin,
+                                color: snapshot.data ?? false
+                                    ? Colors.red
+                                    : Colors.blue,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    if (media.type == CLMediaType.video)
+                      OverlayWidgets(
+                        alignment: Alignment.center,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withAlpha(
                                   192,
                                 ), // Color for the circular container
+                          ),
+                          child: CLIcon.veryLarge(
+                            Icons.play_arrow_sharp,
+                            color:
+                                CLTheme.of(context).colors.iconColorTransparent,
+                          ),
+                        ),
                       ),
-                      child: CLIcon.veryLarge(
-                        Icons.play_arrow_sharp,
-                        color: CLTheme.of(context).colors.iconColorTransparent,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+                  ],
+                ),
+              );
+            },
           );
         },
       );
@@ -192,10 +198,9 @@ class _MediaView0State extends ConsumerState<MediaView0> {
     final media = widget.media;
     final ac = widget.actionControl;
     final showControl = ref.watch(showControlsProvider);
-    return GetStore(
-      builder: (theStore) {
-        final mediaUri = theStore.getValidMediaUri(media);
-        final previewUri = theStore.getValidPreviewUri(media);
+    return GetMediaUri(
+      id: media.id!,
+      builder: (mediaUri) {
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
@@ -226,14 +231,19 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                           autoPlay: widget.autoPlay,
                           onLockPage: widget.onLockPage,
                           isLocked: widget.isLocked,
-                          placeHolder: ImageViewer.basic(
-                            uri: previewUri,
-                            autoStart: widget.autoStart,
-                            autoPlay: widget.autoPlay,
-                            onLockPage: widget.onLockPage,
-                            isLocked: widget.isLocked,
-                            errorBuilder: BrokenImage.show,
-                            loadingBuilder: GreyShimmer.show,
+                          placeHolder: GetPreviewUri(
+                            id: media.id!,
+                            builder: (previewUri) {
+                              return ImageViewer.basic(
+                                uri: previewUri,
+                                autoStart: widget.autoStart,
+                                autoPlay: widget.autoPlay,
+                                onLockPage: widget.onLockPage,
+                                isLocked: widget.isLocked,
+                                errorBuilder: BrokenImage.show,
+                                loadingBuilder: GreyShimmer.show,
+                              );
+                            },
                           ),
                           errorBuilder: BrokenImage.show,
                           loadingBuilder: GreyShimmer.show,

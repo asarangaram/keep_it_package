@@ -5,6 +5,7 @@ import 'package:local_store/local_store.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../models/store_model.dart';
@@ -18,6 +19,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   Future<CLDirectories> directoriesFuture;
   late final Store store;
   StoreModel? _currentState;
+  final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
+  final String tempCollectionName = '*** Recently Captured';
 
   StoreModel? get currentState => _currentState;
 
