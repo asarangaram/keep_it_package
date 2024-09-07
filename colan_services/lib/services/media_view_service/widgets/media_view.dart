@@ -293,6 +293,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                       () async {
                         final updatedMedia = await Navigators.openEditor(
                           context,
+                          ref,
                           media,
                           canDuplicateMedia: ac.canDuplicateMedia,
                         );

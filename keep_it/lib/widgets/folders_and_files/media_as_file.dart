@@ -48,6 +48,7 @@ class MediaAsFile extends ConsumerWidget {
               : () async {
                   /* final updatedMedia =  */ await Navigators.openEditor(
                     context,
+                    ref,
                     media,
                     canDuplicateMedia: actionControl.canDuplicateMedia,
                   );

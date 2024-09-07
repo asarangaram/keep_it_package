@@ -56,6 +56,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             onTap: () async {
               await Navigators.openEditor(
                 context,
+                ref,
                 item,
                 canDuplicateMedia: false,
               );
