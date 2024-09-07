@@ -80,6 +80,8 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
                           ...mg?.entries ?? [],
                           ...newCandidates ?? [],
                         ],
+                        collection: widget.incomingMedia.collection,
+                        type: widget.incomingMedia.type,
                       ),
                     );
                   },
@@ -112,6 +114,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
         type: widget.incomingMedia.type,
       );
       newCandidates = newItems;
+      setState(() {});
     } else {
       await onSave(
         mg: CLSharedMedia(
@@ -143,7 +146,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 }
 
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i('Incoming Media Handler: $msg');

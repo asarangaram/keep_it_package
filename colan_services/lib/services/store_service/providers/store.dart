@@ -150,13 +150,13 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     return false;
   }
 
-  Future<Collection?> upsertCollection(Collection collection) async {
+  Future<Collection> upsertCollection(Collection collection) async {
     if (currentState == null) {
       throw Exception('store is not ready');
     }
     final c = currentState!.getCollectionById(collection.id);
 
-    if (collection == c) return c;
+    if (collection == c) return collection;
 
     final updated = await store.upsertCollection(collection);
 
@@ -198,15 +198,15 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
 
     if (isAux) {
       collection = currentState!.getCollectionByLabel('*** Notes') ??
-          await store.upsertCollection(
+          (await upsertCollection(
             const Collection(label: '*** Notes'),
-          );
+          ));
     } else {
       collection = existingCollection ??
           currentState!.getCollectionByLabel(tempCollectionName) ??
-          await store.upsertCollection(
+          (await upsertCollection(
             Collection(label: tempCollectionName),
-          );
+          ));
     }
     final md5String0 = md5String ?? await File(path).checksum;
     final savedMedia = media?.copyWith(
@@ -462,7 +462,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
         fractCompleted: 0,
         currentItem: 'Creating new collection',
       );
-      updatedCollection = await store.upsertCollection(collection);
+      updatedCollection = await upsertCollection(collection);
     } else {
       updatedCollection = collection;
     }
@@ -482,7 +482,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
               .toList(),
           onProgress: (progress) async {
             streamController.add(progress);
-            await Future<void>.delayed(const Duration(microseconds: 1));
+            await Future<void>.delayed(const Duration(microseconds: 10));
           },
         ).then((updatedMedia) async {
           streamController.add(
@@ -491,7 +491,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
               currentItem: 'Successfully Imported',
             ),
           );
-          await Future<void>.delayed(const Duration(microseconds: 1));
+          await Future<void>.delayed(const Duration(microseconds: 10));
           await streamController.close();
           await onDone?.call(mediaMultiple: updatedMedia);
         }),
