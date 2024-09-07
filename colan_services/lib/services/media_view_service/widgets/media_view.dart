@@ -200,122 +200,128 @@ class _MediaView0State extends ConsumerState<MediaView0> {
     final media = widget.media;
     final ac = widget.actionControl;
     final showControl = ref.watch(showControlsProvider);
-    return GetMediaUri(
-      id: media.id!,
-      builder: (mediaUri) {
-        return GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
-          child: Stack(
-            children: [
-              const MediaBackground(),
-              Positioned.fill(
-                child: Hero(
-                  tag: '${widget.parentIdentifier} /item/${media.id}',
-                  child: SafeArea(
-                    top: showControl.showNotes,
-                    bottom: showControl.showNotes,
-                    left: showControl.showNotes,
-                    right: showControl.showNotes,
-                    child: switch (media.type) {
-                      CLMediaType.image => ImageViewer.guesture(
-                          uri: mediaUri,
-                          autoStart: widget.autoStart,
-                          autoPlay: widget.autoPlay,
-                          onLockPage: widget.onLockPage,
-                          isLocked: widget.isLocked,
-                          errorBuilder: BrokenImage.show,
-                          loadingBuilder: GreyShimmer.show,
-                        ),
-                      CLMediaType.video => VideoPlayer(
-                          uri: mediaUri,
-                          autoStart: widget.autoStart,
-                          autoPlay: widget.autoPlay,
-                          onLockPage: widget.onLockPage,
-                          isLocked: widget.isLocked,
-                          placeHolder: GetPreviewUri(
-                            id: media.id!,
-                            builder: (previewUri) {
-                              return ImageViewer.basic(
-                                uri: previewUri,
-                                autoStart: widget.autoStart,
-                                autoPlay: widget.autoPlay,
-                                onLockPage: widget.onLockPage,
-                                isLocked: widget.isLocked,
-                                errorBuilder: BrokenImage.show,
-                                loadingBuilder: GreyShimmer.show,
-                              );
-                            },
-                          ),
-                          errorBuilder: BrokenImage.show,
-                          loadingBuilder: GreyShimmer.show,
-                        ),
-                      CLMediaType.text => const BrokenImage(),
-                      CLMediaType.url => const BrokenImage(),
-                      CLMediaType.audio => const BrokenImage(),
-                      CLMediaType.file => const BrokenImage(),
-                    },
-                  ),
-                ),
-              ),
-              MediaControls(
-                onMove: ac.onMove(
-                  () => MediaWizardService.openWizard(
-                    context,
-                    ref,
-                    CLSharedMedia(
-                      entries: [media],
-                      type: UniversalMediaSource.move,
+    return GetStore(
+      builder: (theStore) {
+        return GetMediaUri(
+          id: media.id!,
+          builder: (mediaUri) {
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () =>
+                  ref.read(showControlsProvider.notifier).toggleControls(),
+              child: Stack(
+                children: [
+                  const MediaBackground(),
+                  Positioned.fill(
+                    child: Hero(
+                      tag: '${widget.parentIdentifier} /item/${media.id}',
+                      child: SafeArea(
+                        top: showControl.showNotes,
+                        bottom: showControl.showNotes,
+                        left: showControl.showNotes,
+                        right: showControl.showNotes,
+                        child: switch (media.type) {
+                          CLMediaType.image => ImageViewer.guesture(
+                              uri: mediaUri,
+                              autoStart: widget.autoStart,
+                              autoPlay: widget.autoPlay,
+                              onLockPage: widget.onLockPage,
+                              isLocked: widget.isLocked,
+                              errorBuilder: BrokenImage.show,
+                              loadingBuilder: GreyShimmer.show,
+                            ),
+                          CLMediaType.video => VideoPlayer(
+                              uri: mediaUri,
+                              autoStart: widget.autoStart,
+                              autoPlay: widget.autoPlay,
+                              onLockPage: widget.onLockPage,
+                              isLocked: widget.isLocked,
+                              placeHolder: GetPreviewUri(
+                                id: media.id!,
+                                builder: (previewUri) {
+                                  return ImageViewer.basic(
+                                    uri: previewUri,
+                                    autoStart: widget.autoStart,
+                                    autoPlay: widget.autoPlay,
+                                    onLockPage: widget.onLockPage,
+                                    isLocked: widget.isLocked,
+                                    errorBuilder: BrokenImage.show,
+                                    loadingBuilder: GreyShimmer.show,
+                                  );
+                                },
+                              ),
+                              errorBuilder: BrokenImage.show,
+                              loadingBuilder: GreyShimmer.show,
+                            ),
+                          CLMediaType.text => const BrokenImage(),
+                          CLMediaType.url => const BrokenImage(),
+                          CLMediaType.audio => const BrokenImage(),
+                          CLMediaType.file => const BrokenImage(),
+                        },
+                      ),
                     ),
                   ),
-                ),
-                onDelete: ac.onDelete(() async {
-                  final confirmed = await ConfirmAction.deleteMediaMultiple(
+                  MediaControls(
+                    onMove: ac.onMove(
+                      () => MediaWizardService.openWizard(
                         context,
-                        media: [media],
-                      ) ??
-                      false;
-                  if (!confirmed) return confirmed;
-                  if (context.mounted) {
-                    return ref
-                        .read(storeProvider.notifier)
-                        .deleteMediaById(media.id!);
-                  }
-                  return false;
-                }),
-                onShare: ac.onShare(
-                  () => Navigators.shareMediaMultiple(context, [media]),
-                ),
-                onEdit: ac.onEdit(
-                  () async {
-                    final updatedMedia = await Navigators.openEditor(
-                      context,
-                      media,
-                      canDuplicateMedia: ac.canDuplicateMedia,
-                    );
-                    if (updatedMedia != media && context.mounted) {
-                      setState(() {
-                        //media = updatedMedia;
-                      });
-                    }
+                        ref,
+                        CLSharedMedia(
+                          entries: [media],
+                          type: UniversalMediaSource.move,
+                        ),
+                      ),
+                    ),
+                    onDelete: ac.onDelete(() async {
+                      final confirmed = await ConfirmAction.deleteMediaMultiple(
+                            context,
+                            media: [media],
+                          ) ??
+                          false;
+                      if (!confirmed) return confirmed;
+                      if (context.mounted) {
+                        return ref
+                            .read(storeProvider.notifier)
+                            .deleteMediaById(media.id!);
+                      }
+                      return false;
+                    }),
+                    onShare: ac.onShare(
+                      () => theStore.shareMedia(context, [media]),
+                    ),
+                    onEdit: ac.onEdit(
+                      () async {
+                        final updatedMedia = await Navigators.openEditor(
+                          context,
+                          media,
+                          canDuplicateMedia: ac.canDuplicateMedia,
+                        );
+                        if (updatedMedia != media && context.mounted) {
+                          setState(() {
+                            //media = updatedMedia;
+                          });
+                        }
 
-                    return true;
-                  },
-                ),
-                onPin: ac.onPin(
-                  () async {
-                    final res =
-                        await ref.read(storeProvider.notifier).togglePin(media);
-                    if (res) {
-                      setState(() {});
-                    }
-                    return res;
-                  },
-                ),
-                media: media,
+                        return true;
+                      },
+                    ),
+                    onPin: ac.onPin(
+                      () async {
+                        final res = await ref
+                            .read(storeProvider.notifier)
+                            .togglePin(media);
+                        if (res) {
+                          setState(() {});
+                        }
+                        return res;
+                      },
+                    ),
+                    media: media,
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../sharing_service/models/share_files.dart';
+
 @immutable
 class StoreModel {
   const StoreModel({
@@ -138,6 +140,21 @@ class StoreModel {
     final absolutePath = '${dir.path}/$fileBasename.$ext';
 
     return absolutePath;
+  }
+
+  Future<bool?> shareMedia(
+    BuildContext context,
+    List<CLMedia> media,
+  ) async {
+    if (media.isEmpty) {
+      return true;
+    }
+    final box = context.findRenderObject() as RenderBox?;
+    return ShareManager.onShareFiles(
+      context,
+      media.map((e) => getMediaUri(e).path).toList(),
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
   }
 
   StoreModel copyWith({

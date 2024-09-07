@@ -3,13 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 class Navigators {
-  static Future<bool?> shareMediaMultiple(
-    BuildContext context,
-    List<CLMedia> media,
-  ) async {
-    return null;
-  }
-
   static Future<bool?> openCamera(
     BuildContext context, {
     int? collectionId,

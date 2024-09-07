@@ -92,77 +92,82 @@ class TimeLineView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryGroups = ref.watch(groupedItemsProvider(items));
 
-    return CLSimpleGalleryView(
-      key: ValueKey(label),
-      title: label,
-      backButton: ColanPlatformSupport.isMobilePlatform
-          ? null
-          : Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: CLButtonIcon.small(
-                MdiIcons.arrowLeft,
-                onTap: () => CLPopScreen.onPop(context),
+    return GetStore(
+      builder: (theStore) {
+        return CLSimpleGalleryView(
+          key: ValueKey(label),
+          title: label,
+          backButton: ColanPlatformSupport.isMobilePlatform
+              ? null
+              : Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: CLButtonIcon.small(
+                    MdiIcons.arrowLeft,
+                    onTap: () => CLPopScreen.onPop(context),
+                  ),
+                ),
+          identifier: parentIdentifier,
+          columns: 4,
+          galleryMap: galleryGroups,
+          emptyState: const EmptyState(),
+          itemBuilder: (context, item, {required quickMenuScopeKey}) =>
+              MediaAsFile(
+            media: item,
+            parentIdentifier: parentIdentifier,
+            onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
+            quickMenuScopeKey: quickMenuScopeKey,
+            actionControl: actionControl,
+          ),
+          onPickFiles: onPickFiles,
+          onCameraCapture: onCameraCapture,
+          onRefresh: () async => ref.read(storeProvider.notifier).onRefresh(),
+          selectionActions: (context, items) {
+            return [
+              CLMenuItem(
+                title: 'Delete',
+                icon: Icons.delete,
+                onTap: () async {
+                  final confirmed = await ConfirmAction.deleteMediaMultiple(
+                        context,
+                        media: items,
+                      ) ??
+                      false;
+                  if (!confirmed) return confirmed;
+                  if (context.mounted) {
+                    return ref
+                        .read(storeProvider.notifier)
+                        .deleteMediaMultiple({...items.map((e) => e.id!)});
+                  }
+                  return null;
+                },
               ),
-            ),
-      identifier: parentIdentifier,
-      columns: 4,
-      galleryMap: galleryGroups,
-      emptyState: const EmptyState(),
-      itemBuilder: (context, item, {required quickMenuScopeKey}) => MediaAsFile(
-        media: item,
-        parentIdentifier: parentIdentifier,
-        onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
-        quickMenuScopeKey: quickMenuScopeKey,
-        actionControl: actionControl,
-      ),
-      onPickFiles: onPickFiles,
-      onCameraCapture: onCameraCapture,
-      onRefresh: () async => ref.read(storeProvider.notifier).onRefresh(),
-      selectionActions: (context, items) {
-        return [
-          CLMenuItem(
-            title: 'Delete',
-            icon: Icons.delete,
-            onTap: () async {
-              final confirmed = await ConfirmAction.deleteMediaMultiple(
-                    context,
-                    media: items,
-                  ) ??
-                  false;
-              if (!confirmed) return confirmed;
-              if (context.mounted) {
-                return ref
-                    .read(storeProvider.notifier)
-                    .deleteMediaMultiple({...items.map((e) => e.id!)});
-              }
-              return null;
-            },
-          ),
-          CLMenuItem(
-            title: 'Move',
-            icon: MdiIcons.imageMove,
-            onTap: () => MediaWizardService.openWizard(
-              context,
-              ref,
-              CLSharedMedia(
-                entries: items,
-                type: UniversalMediaSource.move,
+              CLMenuItem(
+                title: 'Move',
+                icon: MdiIcons.imageMove,
+                onTap: () => MediaWizardService.openWizard(
+                  context,
+                  ref,
+                  CLSharedMedia(
+                    entries: items,
+                    type: UniversalMediaSource.move,
+                  ),
+                ),
               ),
-            ),
-          ),
-          CLMenuItem(
-            title: 'Share',
-            icon: MdiIcons.shareAll,
-            onTap: () => Navigators.shareMediaMultiple(context, items),
-          ),
-          if (ColanPlatformSupport.isMobilePlatform)
-            CLMenuItem(
-              title: 'Pin',
-              icon: MdiIcons.pin,
-              onTap: () =>
-                  ref.read(storeProvider.notifier).togglePinMultiple(items),
-            ),
-        ];
+              CLMenuItem(
+                title: 'Share',
+                icon: MdiIcons.shareAll,
+                onTap: () => theStore.shareMedia(context, items),
+              ),
+              if (ColanPlatformSupport.isMobilePlatform)
+                CLMenuItem(
+                  title: 'Pin',
+                  icon: MdiIcons.pin,
+                  onTap: () =>
+                      ref.read(storeProvider.notifier).togglePinMultiple(items),
+                ),
+            ];
+          },
+        );
       },
     );
   }

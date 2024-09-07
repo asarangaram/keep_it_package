@@ -27,35 +27,39 @@ class MediaAsFile extends ConsumerWidget {
   final ActionControl actionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WrapStandardQuickMenu(
-      quickMenuScopeKey: quickMenuScopeKey,
-      onMove: () => MediaWizardService.openWizard(
-        context,
-        ref,
-        CLSharedMedia(
-          entries: [media],
-          type: UniversalMediaSource.move,
-        ),
-      ),
-      onDelete: () async {
-        return ref.read(storeProvider.notifier).deleteMediaById(media.id!);
+    return GetStore(
+      builder: (theStore) {
+        return WrapStandardQuickMenu(
+          quickMenuScopeKey: quickMenuScopeKey,
+          onMove: () => MediaWizardService.openWizard(
+            context,
+            ref,
+            CLSharedMedia(
+              entries: [media],
+              type: UniversalMediaSource.move,
+            ),
+          ),
+          onDelete: () async {
+            return ref.read(storeProvider.notifier).deleteMediaById(media.id!);
+          },
+          onShare: () => theStore.shareMedia(context, [media]),
+          onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
+              ? null
+              : () async {
+                  /* final updatedMedia =  */ await Navigators.openEditor(
+                    context,
+                    media,
+                    canDuplicateMedia: actionControl.canDuplicateMedia,
+                  );
+                  return true;
+                },
+          onTap: onTap,
+          child: MediaViewService.preview(
+            media,
+            parentIdentifier: parentIdentifier,
+          ),
+        );
       },
-      onShare: () => Navigators.shareMediaMultiple(context, [media]),
-      onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
-          ? null
-          : () async {
-              /* final updatedMedia =  */ await Navigators.openEditor(
-                context,
-                media,
-                canDuplicateMedia: actionControl.canDuplicateMedia,
-              );
-              return true;
-            },
-      onTap: onTap,
-      child: MediaViewService.preview(
-        media,
-        parentIdentifier: parentIdentifier,
-      ),
     );
   }
 }
