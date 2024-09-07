@@ -15,7 +15,10 @@ class AnalysePage extends ConsumerWidget {
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
-  final void Function({required CLSharedMedia? mg}) onDone;
+  final void Function({
+    required List<CLMedia> existingItems,
+    required List<CLMedia> newItems,
+  }) onDone;
   final void Function() onCancel;
 
   @override
@@ -28,15 +31,7 @@ class AnalysePage extends ConsumerWidget {
         child: StreamProgressView(
           stream: () => ref.read(storeProvider.notifier).analyseMediaStream(
                 mediaFiles: incomingMedia.entries,
-                onDone: ({required List<CLMedia> mediaMultiple}) async {
-                  onDone(
-                    mg: CLSharedMedia(
-                      entries: mediaMultiple,
-                      collection: incomingMedia.collection,
-                      type: incomingMedia.type,
-                    ),
-                  );
-                },
+                onDone: onDone,
               ),
           onCancel: onCancel,
         ),

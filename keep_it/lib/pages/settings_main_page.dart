@@ -24,10 +24,13 @@ class SettingsMainPage extends ConsumerWidget {
                     trailing: IconButton(
                       icon: Icon(MdiIcons.arrowRight),
                       onPressed: () async {
-                        await Navigators.openWizard(
+                        await MediaWizardService.openWizard(
                           context,
-                          deletedMedia,
-                          UniversalMediaSource.deleted,
+                          ref,
+                          CLSharedMedia(
+                            entries: deletedMedia,
+                            type: UniversalMediaSource.deleted,
+                          ),
                         );
                       },
                     ),

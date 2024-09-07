@@ -29,10 +29,13 @@ class MediaAsFile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return WrapStandardQuickMenu(
       quickMenuScopeKey: quickMenuScopeKey,
-      onMove: () => Navigators.openWizard(
+      onMove: () => MediaWizardService.openWizard(
         context,
-        [media],
-        UniversalMediaSource.move,
+        ref,
+        CLSharedMedia(
+          entries: [media],
+          type: UniversalMediaSource.move,
+        ),
       ),
       onDelete: () async {
         return ref.read(storeProvider.notifier).deleteMediaById(media.id!);

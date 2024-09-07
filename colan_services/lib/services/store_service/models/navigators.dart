@@ -3,15 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 class Navigators {
-  static Future<bool?> openWizard(
-    BuildContext context,
-    List<CLMedia> media,
-    UniversalMediaSource source, {
-    Collection? collection,
-  }) async {
-    return null;
-  }
-
   static Future<bool?> shareMediaMultiple(
     BuildContext context,
     List<CLMedia> media,

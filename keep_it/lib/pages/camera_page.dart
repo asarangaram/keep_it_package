@@ -33,11 +33,14 @@ class CameraPage extends ConsumerWidget {
             return null;
           },
           onDone: (mediaList) async {
-            await Navigators.openWizard(
+            await MediaWizardService.openWizard(
               context,
-              mediaList,
-              UniversalMediaSource.captured,
-              collection: collection,
+              ref,
+              CLSharedMedia(
+                entries: mediaList,
+                type: UniversalMediaSource.captured,
+                collection: collection,
+              ),
             );
 
             if (context.mounted) {

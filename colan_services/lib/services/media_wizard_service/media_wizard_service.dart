@@ -1,10 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/store.dart';
 
 import '../basic_page_service/dialogs.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
+import '../notification_services/provider/notify.dart';
 import '../store_service/providers/group_view.dart';
 import '../store_service/providers/store.dart';
 import 'providers/universal_media.dart';
@@ -19,6 +21,36 @@ class MediaWizardService extends ConsumerWidget {
     super.key,
   });
   final UniversalMediaSource type;
+
+  static Future<bool?> openWizard(
+    BuildContext context,
+    WidgetRef ref,
+    CLSharedMedia sharedMedia,
+  ) async {
+    if (sharedMedia.type == null) {
+      return false;
+    }
+    if (sharedMedia.entries.isEmpty) {
+      await ref
+          .read(notificationMessageProvider.notifier)
+          .push('Nothing to do.');
+      return true;
+    }
+
+    await addMedia(
+      context,
+      ref,
+      media: sharedMedia,
+    );
+    if (context.mounted) {
+      await context.push(
+        '/media_wizard?type='
+        '${sharedMedia.type!.name}',
+      );
+    }
+
+    return true;
+  }
 
   static Future<void> addMedia(
     BuildContext context,

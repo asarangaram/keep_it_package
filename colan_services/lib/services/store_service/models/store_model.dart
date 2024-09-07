@@ -39,6 +39,10 @@ class StoreModel {
     return collectionList.where((e) => e.id == id).firstOrNull;
   }
 
+  Collection? getCollectionByLabel(String label) {
+    return collectionList.where((e) => e.label == label).firstOrNull;
+  }
+
   List<CLMedia> getStaleMedia() {
     return mediaList.where((e) => e.isHidden ?? false).toList();
   }
@@ -54,6 +58,10 @@ class StoreModel {
   CLMedia? getMediaById(int? id) {
     if (id == null) return null;
     return mediaList.where((e) => e.id == id).firstOrNull;
+  }
+
+  CLMedia? getMediaByMD5(String md5String) {
+    return mediaList.where((e) => e.md5String == md5String).firstOrNull;
   }
 
   List<CLMedia> getMediaMultipleByIds(List<int> idList) {

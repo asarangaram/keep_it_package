@@ -13,6 +13,8 @@ import '../../../internal/widgets/shimmer.dart';
 
 import '../../basic_page_service/dialogs.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
+import '../../incoming_media_service/models/cl_shared_media.dart';
+import '../../media_wizard_service/media_wizard_service.dart';
 import '../../store_service/models/navigators.dart';
 import '../../store_service/providers/store.dart';
 import '../../store_service/widgets/builders.dart';
@@ -258,10 +260,13 @@ class _MediaView0State extends ConsumerState<MediaView0> {
               ),
               MediaControls(
                 onMove: ac.onMove(
-                  () => Navigators.openWizard(
+                  () => MediaWizardService.openWizard(
                     context,
-                    [media],
-                    UniversalMediaSource.move,
+                    ref,
+                    CLSharedMedia(
+                      entries: [media],
+                      type: UniversalMediaSource.move,
+                    ),
                   ),
                 ),
                 onDelete: ac.onDelete(() async {

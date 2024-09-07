@@ -165,8 +165,9 @@ class _TextNoteState extends ConsumerState<TextNote> {
       await ref.read(storeProvider.notifier).upsertMedia(
             path,
             CLMediaType.text,
-            mediaMultiple: [widget.media],
-            media: widget.note,
+            parents: [widget.media],
+            id: widget.note?.id,
+            isAux: true,
           );
 
       if (mounted) {

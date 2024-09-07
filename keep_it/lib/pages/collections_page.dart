@@ -88,10 +88,13 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () => Navigators.openWizard(
+                        onPressed: () => MediaWizardService.openWizard(
                           context,
-                          staleMedia,
-                          UniversalMediaSource.unclassified,
+                          ref,
+                          CLSharedMedia(
+                            entries: staleMedia,
+                            type: UniversalMediaSource.unclassified,
+                          ),
                         ),
                         child: const CLText.small('Show Now'),
                       ),

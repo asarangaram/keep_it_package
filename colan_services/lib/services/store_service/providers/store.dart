@@ -1,7 +1,15 @@
+import 'dart:io';
+
 import 'package:colan_services/services/store_service/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heif_converter/heif_converter.dart';
+import 'package:image/image.dart' as img;
 import 'package:local_store/local_store.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
@@ -9,6 +17,7 @@ import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../models/store_model.dart';
+import '../models/url_handler.dart';
 
 class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   StoreNotifier(this.ref, this.directoriesFuture)
@@ -147,11 +156,93 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   Future<CLMedia?> upsertMedia(
     String path,
     CLMediaType type, {
-    List<CLMedia>? mediaMultiple,
-    CLMedia? media,
-    Collection? collection,
+    int? id,
+    int? collectionId,
+    bool isAux = false,
+    List<CLMedia>? parents,
+    String? md5String,
   }) async {
-    return null;
+    if (currentState == null) {
+      throw Exception('store is not ready');
+    }
+    int? collectionId0;
+    final Collection collection;
+    final media = (id == null) ? null : currentState!.getMediaById(id);
+    collectionId0 = collectionId ?? media?.collectionId;
+
+    final existingCollection = collectionId0 == null
+        ? null
+        : currentState!.getCollectionById(collectionId0);
+
+    if (isAux) {
+      collection = currentState!.getCollectionByLabel('*** Notes') ??
+          await store.upsertCollection(
+            const Collection(label: '*** Notes'),
+          );
+    } else {
+      collection = existingCollection ??
+          currentState!.getCollectionByLabel(tempCollectionName) ??
+          await store.upsertCollection(
+            Collection(label: tempCollectionName),
+          );
+    }
+    final md5String0 = md5String ?? await File(path).checksum;
+    final savedMedia = media?.copyWith(
+          name: p.basename(path),
+          fExt: p.extension(path),
+          type: type,
+          collectionId: collection.id,
+          md5String: md5String0,
+          isHidden: existingCollection == null,
+          isAux: isAux,
+          isDeleted: false,
+        ) ??
+        CLMedia(
+          name: p.basename(path),
+          fExt: p.extension(path),
+          type: type,
+          collectionId: collection.id,
+          md5String: md5String0,
+          isHidden: collectionId0 == null,
+          isAux: isAux,
+          isPreviewCached: false,
+          isMediaCached: false,
+          isMediaOriginal: true,
+          isEdited: false,
+          previewLog: null,
+          mediaLog: null,
+          serverUID: null,
+          haveItOffline: true,
+          mustDownloadOriginal: true,
+        );
+    final mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
+
+    if (mediaFromDB != null) {
+      final currentMediaPath = currentState!.getMediaAbsolutePath(mediaFromDB);
+      final currentPreviewPath =
+          currentState!.getPreviewAbsolutePath(mediaFromDB);
+      File(path).copySync(currentMediaPath);
+
+      await generatePreview(
+        inputFile: currentMediaPath,
+        outputFile: currentPreviewPath,
+        type: mediaFromDB.type,
+      );
+
+      if (media != null) {
+        final previousMediaPath = currentState!.getMediaAbsolutePath(media);
+        final previousPreviewPath = currentState!.getPreviewAbsolutePath(media);
+        if (currentMediaPath != previousMediaPath) {
+          await File(previousMediaPath).deleteIfExists();
+        }
+        if (currentPreviewPath != previousPreviewPath) {
+          await File(previousPreviewPath).deleteIfExists();
+        }
+      }
+
+      // FIXME: Should we delete the temp file referred by path?
+    }
+    return mediaFromDB;
   }
 
   Future<CLMedia> replaceMedia(
@@ -176,15 +267,125 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     return upsertMedia(
       path,
       isVideo ? CLMediaType.video : CLMediaType.image,
-      collection: collection,
+      collectionId: collection?.id,
     );
+  }
+
+  Future<CLMediaBase> tryDownloadMedia(
+    CLMediaBase mediaFile, {
+    required CLDirectories deviceDirectories,
+  }) async {
+    if (mediaFile.type != CLMediaType.url) {
+      return mediaFile;
+    }
+    final mimeType = await URLHandler.getMimeType(
+      mediaFile.name,
+    );
+    if (![
+      CLMediaType.image,
+      CLMediaType.video,
+      CLMediaType.audio,
+      CLMediaType.file,
+    ].contains(mimeType)) {
+      return mediaFile;
+    }
+    final downloadedFile = await URLHandler.download(
+      mediaFile.name,
+      deviceDirectories.download.path,
+    );
+    if (downloadedFile == null) {
+      return mediaFile;
+    }
+    return mediaFile.copyWith(name: downloadedFile, type: mimeType);
+  }
+
+  Future<CLMediaBase> identifyMediaType(
+    CLMediaBase mediaFile, {
+    required CLDirectories deviceDirectories,
+  }) async {
+    if (mediaFile.type != CLMediaType.file) {
+      return mediaFile;
+    }
+
+    final mimeType = switch (lookupMimeType(mediaFile.name)) {
+      (final String mime) when mime.startsWith('image') => CLMediaType.image,
+      (final String mime) when mime.startsWith('video') => CLMediaType.video,
+      _ => CLMediaType.file
+    };
+    if (mimeType == CLMediaType.file) {
+      return mediaFile;
+    }
+    return mediaFile.copyWith(type: mimeType);
   }
 
   Stream<Progress> analyseMediaStream({
     required List<CLMediaBase> mediaFiles,
-    Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
+    required void Function({
+      required List<CLMedia> existingItems,
+      required List<CLMedia> newItems,
+    }) onDone,
   }) async* {
-    yield const Progress(fractCompleted: 0, currentItem: '');
+    if (currentState == null) {
+      throw Exception('Store is not ready');
+    }
+    final deviceDirectories = await directoriesFuture;
+    final existingItems = <CLMedia>[];
+    final newItems = <CLMedia>[];
+    //await Future<void>.delayed(const Duration(seconds: 3));
+    yield Progress(
+      currentItem: p.basename(mediaFiles[0].name),
+      fractCompleted: 0,
+    );
+    for (final (i, item0) in mediaFiles.indexed) {
+      final item1 = await tryDownloadMedia(
+        item0,
+        deviceDirectories: deviceDirectories,
+      );
+      final item = await identifyMediaType(
+        item1,
+        deviceDirectories: deviceDirectories,
+      );
+      if (!item.type.isFile) {
+        // Skip for now
+      }
+      if (item.type.isFile) {
+        final file = File(item.name);
+        if (file.existsSync()) {
+          final md5String = await file.checksum;
+          final duplicate = currentState!.getMediaByMD5(md5String);
+          if (duplicate != null) {
+            // multiple duplicate may be imported together
+            if (existingItems.where((e) => e.id == duplicate.id!).firstOrNull ==
+                null) {
+              existingItems.add(duplicate);
+            }
+          } else {
+            // avoid recomputing md5
+            final newItem =
+                await upsertMedia(item.name, item.type, md5String: md5String);
+            if (newItem != null) {
+              newItems.add(newItem);
+            }
+          }
+        } else {
+          /* Missing file? ignoring */
+        }
+      }
+
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+
+      yield Progress(
+        currentItem: (i + 1 == mediaFiles.length)
+            ? ''
+            : p.basename(
+                mediaFiles[i + 1].name,
+              ),
+        fractCompleted: (i + 1) / mediaFiles.length,
+      );
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    onDone(existingItems: existingItems, newItems: newItems);
   }
 
   Stream<Progress> moveToCollectionStream({
@@ -212,6 +413,80 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   }
 
   Future<void> onRefresh() async {}
+
+  static Future<bool> generatePreview({
+    required String inputFile,
+    required String outputFile,
+    required CLMediaType type,
+    int dimension = 256,
+  }) async {
+    switch (type) {
+      case CLMediaType.image:
+        final img.Image? inputImage;
+        if (lookupMimeType(inputFile) == 'image/heic') {
+          final jpegPath = await HeifConverter.convert(
+            inputFile,
+            output: '$inputFile.jpeg',
+          );
+          if (jpegPath == null) {
+            throw Exception(' Failed to convert HEIC file to JPEG');
+          }
+          inputImage = img.decodeImage(File(jpegPath).readAsBytesSync());
+        } else {
+          inputImage = img.decodeImage(File(inputFile).readAsBytesSync());
+        }
+        if (inputImage == null) {
+          throw Exception('Failed to decode Image');
+        }
+
+        final int thumbnailHeight;
+        final int thumbnailWidth;
+        if (inputImage.height > inputImage.width) {
+          thumbnailHeight = dimension;
+          thumbnailWidth =
+              (thumbnailHeight * inputImage.width) ~/ inputImage.height;
+        } else {
+          thumbnailWidth = dimension;
+          thumbnailHeight =
+              (thumbnailWidth * inputImage.height) ~/ inputImage.width;
+        }
+        final thumbnail = img.copyResize(
+          inputImage,
+          width: thumbnailWidth,
+          height: thumbnailHeight,
+        );
+        File(outputFile).writeAsBytesSync(
+          Uint8List.fromList(img.encodeJpg(thumbnail)),
+        );
+        return true;
+
+      case CLMediaType.video:
+        await File(outputFile).deleteIfExists();
+        final session = await FFmpegKit.execute(
+          '-i $inputFile '
+          '-ss 00:00:01.000 '
+          '-vframes 1 '
+          '-vf "scale=$dimension:-1" '
+          '$outputFile',
+        );
+        /* 
+      print(log); */
+        final returnCode = await session.getReturnCode();
+        if (!ReturnCode.isSuccess(returnCode)) {
+          await File(outputFile).deleteIfExists();
+          final log = await session.getAllLogsAsString();
+          throw Exception(log);
+        }
+
+        return ReturnCode.isSuccess(returnCode);
+
+      case CLMediaType.text:
+      case CLMediaType.url:
+      case CLMediaType.audio:
+      case CLMediaType.file:
+        throw Exception("Unsupported Media Type. Preview can't be generated");
+    }
+  }
 }
 
 final storeProvider =

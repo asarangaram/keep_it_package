@@ -141,10 +141,13 @@ class TimeLineView extends ConsumerWidget {
           CLMenuItem(
             title: 'Move',
             icon: MdiIcons.imageMove,
-            onTap: () => Navigators.openWizard(
+            onTap: () => MediaWizardService.openWizard(
               context,
-              items,
-              UniversalMediaSource.move,
+              ref,
+              CLSharedMedia(
+                entries: items,
+                type: UniversalMediaSource.move,
+              ),
             ),
           ),
           CLMenuItem(
