@@ -462,7 +462,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
         fractCompleted: 0,
         currentItem: 'Creating new collection',
       );
-      updatedCollection = await upsertCollection(collection);
+      final withId = currentState!.getCollectionByLabel(collection.label);
+      updatedCollection = await upsertCollection(withId ?? collection);
     } else {
       updatedCollection = collection;
     }
