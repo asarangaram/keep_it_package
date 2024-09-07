@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:colan_services/services/store_service/extensions/list.dart';
@@ -150,7 +151,28 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   }
 
   Future<Collection?> upsertCollection(Collection collection) async {
-    return null;
+    if (currentState == null) {
+      throw Exception('store is not ready');
+    }
+    final c = currentState!.getCollectionById(collection.id);
+
+    if (collection == c) return c;
+
+    final updated = await store.upsertCollection(collection);
+
+    if (c != null) {
+      final index = currentState!.collectionList.indexOf(c);
+      currentState = currentState!.copyWith(
+        collectionList:
+            currentState!.collectionList.replaceNthEntry(index, updated),
+      );
+    } else {
+      currentState = currentState!.copyWith(
+        collectionList: [...currentState!.collectionList, updated],
+      );
+    }
+
+    return updated;
   }
 
   Future<CLMedia?> upsertMedia(
@@ -230,6 +252,11 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
       );
 
       if (media != null) {
+        final mediaIndex = currentState!.getMediaIndexById(id);
+        currentState = currentState!.copyWith(
+          mediaList:
+              currentState!.mediaList.replaceNthEntry(mediaIndex!, mediaFromDB),
+        );
         final previousMediaPath = currentState!.getMediaAbsolutePath(media);
         final previousPreviewPath = currentState!.getPreviewAbsolutePath(media);
         if (currentMediaPath != previousMediaPath) {
@@ -238,6 +265,9 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
         if (currentPreviewPath != previousPreviewPath) {
           await File(previousPreviewPath).deleteIfExists();
         }
+      } else {
+        currentState = currentState!
+            .copyWith(mediaList: [...currentState!.mediaList, mediaFromDB]);
       }
 
       // FIXME: Should we delete the temp file referred by path?
@@ -388,12 +418,86 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     onDone(existingItems: existingItems, newItems: newItems);
   }
 
+  Future<List<CLMedia>> upsertMediaMultiple(
+    List<CLMedia> mediaMultiple, {
+    void Function(Progress progress)? onProgress,
+  }) async {
+    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+
+    final updatedList = <CLMedia>[];
+    for (final (i, m) in mediaMultiple.indexed) {
+      if (m.id != null) {
+        final updated = await store.upsertMedia(m);
+        if (updated != null) {
+          final existing = currentState!.getMediaById(updated.id);
+          updatedList.add(updated);
+          if (existing != null) {
+            mediaList =
+                mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
+          } else {
+            mediaList = [...mediaList, updated];
+          }
+        }
+      }
+
+      onProgress?.call(
+        Progress(
+          fractCompleted: i / mediaMultiple.length,
+          currentItem: m.name,
+        ),
+      );
+    }
+    currentState = currentState!.copyWith(mediaList: mediaList);
+    return updatedList;
+  }
+
   Stream<Progress> moveToCollectionStream({
     required List<CLMedia> media,
     required Collection collection,
     Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
   }) async* {
-    yield const Progress(fractCompleted: 0, currentItem: '');
+    final Collection updatedCollection;
+    if (collection.id == null) {
+      yield const Progress(
+        fractCompleted: 0,
+        currentItem: 'Creating new collection',
+      );
+      updatedCollection = await store.upsertCollection(collection);
+    } else {
+      updatedCollection = collection;
+    }
+
+    if (media.isNotEmpty) {
+      final streamController = StreamController<Progress>();
+
+      unawaited(
+        upsertMediaMultiple(
+          media
+              .map(
+                (e) => e.copyWith(
+                  isHidden: false,
+                  collectionId: updatedCollection.id,
+                ),
+              )
+              .toList(),
+          onProgress: (progress) async {
+            streamController.add(progress);
+            await Future<void>.delayed(const Duration(microseconds: 1));
+          },
+        ).then((updatedMedia) async {
+          streamController.add(
+            const Progress(
+              fractCompleted: 1,
+              currentItem: 'Successfully Imported',
+            ),
+          );
+          await Future<void>.delayed(const Duration(microseconds: 1));
+          await streamController.close();
+          await onDone?.call(mediaMultiple: updatedMedia);
+        }),
+      );
+      yield* streamController.stream;
+    }
   }
 
   Future<bool> togglePin(CLMedia media) async {
@@ -401,18 +505,20 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   }
 
   Future<bool> togglePinMultiple(List<CLMedia> media) async {
-    return false;
+    throw UnimplementedError('Implement');
   }
 
   Future<bool> restoreMediaMultiple(List<CLMedia> media) async {
-    return false;
+    throw UnimplementedError('Implement');
   }
 
   Future<bool> permanentlyDeleteMediaMultiple(List<CLMedia> media) async {
-    return false;
+    throw UnimplementedError('Implement');
   }
 
-  Future<void> onRefresh() async {}
+  Future<void> onRefresh() async {
+    throw UnimplementedError('Implement');
+  }
 
   static Future<bool> generatePreview({
     required String inputFile,

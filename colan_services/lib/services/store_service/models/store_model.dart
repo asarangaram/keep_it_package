@@ -60,6 +60,11 @@ class StoreModel {
     return mediaList.where((e) => e.id == id).firstOrNull;
   }
 
+  int? getMediaIndexById(int? id) {
+    if (id == null) return null;
+    return mediaList.indexWhere((e) => e.id == id);
+  }
+
   CLMedia? getMediaByMD5(String md5String) {
     return mediaList.where((e) => e.md5String == md5String).firstOrNull;
   }
