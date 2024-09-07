@@ -25,11 +25,14 @@ class StoreModel {
   Iterable<Collection> get validCollection =>
       collectionList.where((e) => !e.label.startsWith('***'));
 
+  Iterable<CLMedia> get validMedia =>
+      mediaList.where((e) => !(e.isDeleted ?? false));
+
   List<Collection> getCollections({bool excludeEmpty = true}) {
     if (excludeEmpty) {
       return validCollection
           .where(
-            (c) => mediaList.any((e) => e.collectionId == c.id),
+            (c) => validMedia.any((e) => e.collectionId == c.id),
           )
           .toList();
     }
@@ -83,7 +86,7 @@ class StoreModel {
     if (collectionId == null) return [];
 
     final media =
-        mediaList.where((e) => e.collectionId == collectionId).toList();
+        validMedia.where((e) => e.collectionId == collectionId).toList();
 
     if (maxCount > 0) {
       if (isRandom) {
@@ -99,7 +102,7 @@ class StoreModel {
     if (media?.type != CLMediaType.text) return '';
     final uri = getMediaUri(media!);
     if (uri.scheme == 'file') {
-      final path = uri.path;
+      final path = uri.toFilePath();
 
       return File(path).existsSync()
           ? File(path).readAsStringSync()
@@ -152,7 +155,7 @@ class StoreModel {
     final box = context.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
       context,
-      media.map((e) => getMediaUri(e).path).toList(),
+      media.map((e) => getMediaUri(e).toFilePath()).toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }

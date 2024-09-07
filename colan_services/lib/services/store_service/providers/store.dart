@@ -86,70 +86,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     return (await store.readMultiple(q)).nonNullableList;
   }
 
-  Future<bool> deleteCollectionById(int id) async {
-    if (currentState == null) {
-      return false;
-    }
-    final collections = List<Collection?>.from(currentState!.collectionList);
-    final c = collections.firstWhere(
-      (collection) => collection?.id == id,
-      orElse: () => null,
-    );
-    if (c != null) {
-      if (collections.remove(c)) {
-        await store.deleteCollection(c);
-        currentState =
-            currentState!.copyWith(collectionList: collections.nonNullableList);
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  Future<bool> deleteMediaById(int id) async {
-    if (currentState == null) {
-      return false;
-    }
-    final medias = List<CLMedia?>.from(currentState!.mediaList);
-    final c = medias.firstWhere(
-      (collection) => collection?.id == id,
-      orElse: () => null,
-    );
-    if (c != null) {
-      if (medias.remove(c)) {
-        await store.deleteMedia(c);
-        currentState =
-            currentState!.copyWith(mediaList: medias.nonNullableList);
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  Future<bool> deleteMediaMultiple(Set<int> idsToRemove) async {
-    if (currentState == null) {
-      return false;
-    }
-    final medias = List<CLMedia?>.from(currentState!.mediaList);
-
-    final medias2Remove =
-        medias.where((e) => idsToRemove.contains(e?.id)).toList();
-    if (medias2Remove.isNotEmpty) {
-      medias.removeWhere((e) => idsToRemove.contains(e!.id));
-      for (final m in medias2Remove) {
-        if (m != null) {
-          await store.deleteMedia(m);
-        }
-      }
-      currentState = currentState!.copyWith(mediaList: medias.nonNullableList);
-      return true;
-    }
-
-    return false;
-  }
-
   Future<Collection> upsertCollection(Collection collection) async {
     if (currentState == null) {
       throw Exception('store is not ready');
@@ -418,7 +354,28 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     onDone(existingItems: existingItems, newItems: newItems);
   }
 
-  Future<List<CLMedia>> upsertMediaMultiple(
+  Future<List<CLMedia>> updateMedia(CLMedia media) async {
+    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+    final updatedList = <CLMedia>[];
+    if (media.id != null) {
+      final updated = await store.upsertMedia(media);
+      if (updated != null) {
+        final existing = currentState!.getMediaById(updated.id);
+        updatedList.add(updated);
+        if (existing != null) {
+          mediaList =
+              mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
+        } else {
+          mediaList = [...mediaList, updated];
+        }
+      }
+    }
+
+    currentState = currentState!.copyWith(mediaList: mediaList);
+    return updatedList;
+  }
+
+  Future<List<CLMedia>> updateMediaMultiple(
     List<CLMedia> mediaMultiple, {
     void Function(Progress progress)? onProgress,
   }) async {
@@ -472,7 +429,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
       final streamController = StreamController<Progress>();
 
       unawaited(
-        upsertMediaMultiple(
+        updateMediaMultiple(
           media
               .map(
                 (e) => e.copyWith(
@@ -501,24 +458,85 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     }
   }
 
-  Future<bool> togglePin(CLMedia media) async {
-    return togglePinMultiple([media]);
+  /// Delete all media ignoring those already in Recycle
+  /// Don't delete CollectionDir / Collection from Media, required for restore
+  Future<bool> deleteCollectionById(int collectionId) async {
+    final mediaMultiple = currentState!.getMediaByCollectionId(collectionId);
+
+    await updateMediaMultiple(
+      mediaMultiple.map((e) => e.copyWith(isDeleted: true)).toList(),
+    );
+
+    return true;
   }
 
-  Future<bool> togglePinMultiple(List<CLMedia> media) async {
-    throw UnimplementedError('Implement');
+  Future<bool> deleteMediaById(int id) async {
+    if (currentState == null) {
+      return false;
+    }
+    final media = currentState!.getMediaById(id);
+    if (media != null) {
+      await updateMedia(media.copyWith(isDeleted: true));
+    }
+
+    return true;
   }
 
-  Future<bool> restoreMediaMultiple(List<CLMedia> media) async {
-    throw UnimplementedError('Implement');
+  Future<bool> deleteMediaMultiple(Set<int> ids2Delete) async {
+    if (currentState == null) {
+      return false;
+    }
+
+    final mediaMultiple =
+        currentState!.getMediaMultipleByIds(ids2Delete.toList());
+
+    await updateMediaMultiple(
+      mediaMultiple.map((e) => e.copyWith(isDeleted: true)).toList(),
+    );
+
+    return true;
   }
 
-  Future<bool> permanentlyDeleteMediaMultiple(List<CLMedia> media) async {
-    throw UnimplementedError('Implement');
+  Future<bool> restoreMediaMultiple(Set<int> ids2Delete) async {
+    if (currentState == null) {
+      return false;
+    }
+
+    final mediaMultiple =
+        currentState!.getMediaMultipleByIds(ids2Delete.toList());
+
+    await updateMediaMultiple(
+      mediaMultiple.map((e) => e.copyWith(isDeleted: false)).toList(),
+    );
+
+    return true;
+  }
+
+  Future<bool> permanentlyDeleteMediaMultiple(Set<int> ids2Delete) async {
+    if (currentState == null) {
+      return false;
+    }
+    final medias = List<CLMedia?>.from(currentState!.mediaList);
+
+    final medias2Remove =
+        medias.where((e) => ids2Delete.contains(e?.id)).toList();
+    if (medias2Remove.isNotEmpty) {
+      medias.removeWhere((e) => ids2Delete.contains(e!.id));
+      for (final m in medias2Remove) {
+        if (m != null) {
+          await store.deleteMedia(m);
+        }
+      }
+      currentState = currentState!.copyWith(mediaList: medias.nonNullableList);
+      return true;
+    }
+
+    return false;
   }
 
   Future<void> onRefresh() async {
-    throw UnimplementedError('Implement');
+    await loadLocalDB();
+    await syncServer();
   }
 
   static Future<bool> generatePreview({
@@ -593,6 +611,70 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
       case CLMediaType.file:
         throw Exception("Unsupported Media Type. Preview can't be generated");
     }
+  }
+
+  Future<bool> togglePin(CLMedia media) async {
+    return togglePinMultiple([media]);
+  }
+
+  Future<bool> togglePinMultiple(
+    List<CLMedia> media,
+  ) async {
+    if (media.any((e) => e.pin == null)) {
+      return pinMediaMultiple(media);
+    } else {
+      return removePinMediaMultiple(media);
+    }
+  }
+
+  Future<bool> removePinMediaMultiple(
+    List<CLMedia> mediaMultiple,
+  ) async {
+    final pinnedMedia = mediaMultiple.where((e) => e.pin != null).toList();
+    final res = await albumManager.removeMultipleMedia(
+      pinnedMedia.map((e) => e.pin!).toList(),
+    );
+    if (res) {
+      await updateMediaMultiple(pinnedMedia.map((e) => e.removePin()).toList());
+    }
+    return res;
+  }
+
+  Future<bool> pinMediaMultiple(
+    List<CLMedia> mediaMultiple,
+  ) async {
+    final deviceDirectories = await directoriesFuture;
+    if (mediaMultiple.isEmpty) {
+      return true;
+    }
+    final updatedMedia = <CLMedia>[];
+    for (final media in mediaMultiple) {
+      if (media.id != null) {
+        final pin = await albumManager.addMedia(
+          p.join(
+            deviceDirectories.media.pathString,
+            media.name,
+          ),
+          title: media.name,
+          isImage: media.type == CLMediaType.image,
+          isVideo: media.type == CLMediaType.video,
+          desc: 'KeepIT',
+        );
+        if (pin != null) {
+          updatedMedia.add(media.copyWith(pin: pin));
+        }
+      }
+    }
+    await updateMediaMultiple(updatedMedia);
+    return true;
+  }
+
+  Future<bool> removeMediaFromGallery(
+    String ids,
+  ) async {
+    final res = await albumManager.removeMedia(ids);
+
+    return res;
   }
 }
 

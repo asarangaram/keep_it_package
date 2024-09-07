@@ -117,7 +117,9 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                   if (context.mounted) {
                     final res = await ref
                         .read(storeProvider.notifier)
-                        .restoreMediaMultiple(currMedia);
+                        .restoreMediaMultiple(
+                          currMedia.map((e) => e.id!).toSet(),
+                        );
 
                     if (res) {
                       await ref
@@ -154,7 +156,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                           final res = await ref
                               .read(storeProvider.notifier)
                               .permanentlyDeleteMediaMultiple(
-                                currMedia,
+                                currMedia.map((e) => e.id!).toSet(),
                               );
 
                           if (res) {
