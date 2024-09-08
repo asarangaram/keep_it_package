@@ -114,65 +114,75 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   Future<CLMedia?> upsertMedia(
     String path,
     CLMediaType type, {
-    int? id,
-    int? collectionId,
-    bool isAux = false,
-    List<CLMedia>? parents,
+    bool? isAux,
+    String? ref,
+    DateTime? originalDate,
+    DateTime? createdDate,
+    DateTime? updatedDate,
     String? md5String,
+    bool? isDeleted,
+    bool? isHidden,
+    String? pin,
+    int? collectionId,
+    int? id,
+    bool? isPreviewCached,
+    bool? isMediaCached,
+    String? previewLog,
+    String? mediaLog,
+    bool? isMediaOriginal,
+    int? serverUID,
+    bool? isEdited,
+    bool? haveItOffline,
+    bool? mustDownloadOriginal,
+    List<CLMedia>? parents,
   }) async {
     if (currentState == null) {
       throw Exception('store is not ready');
     }
-    int? collectionId0;
-    final Collection collection;
+
     final media = (id == null) ? null : currentState!.getMediaById(id);
-    collectionId0 = collectionId ?? media?.collectionId;
 
-    final existingCollection = collectionId0 == null
-        ? null
-        : currentState!.getCollectionById(collectionId0);
+    final notesCollection = currentState!.getCollectionByLabel('*** Notes') ??
+        (await upsertCollection(
+          const Collection(label: '*** Notes'),
+        ));
+    final defaultCollection =
+        currentState!.getCollectionByLabel(tempCollectionName) ??
+            (await upsertCollection(
+              Collection(label: tempCollectionName),
+            ));
 
-    if (isAux) {
-      collection = currentState!.getCollectionByLabel('*** Notes') ??
-          (await upsertCollection(
-            const Collection(label: '*** Notes'),
-          ));
-    } else {
-      collection = existingCollection ??
-          currentState!.getCollectionByLabel(tempCollectionName) ??
-          (await upsertCollection(
-            Collection(label: tempCollectionName),
-          ));
-    }
     final md5String0 = md5String ?? await File(path).checksum;
-    final savedMedia = media?.copyWith(
-          name: p.basename(path),
-          fExt: p.extension(path),
-          type: type,
-          collectionId: collection.id,
-          md5String: md5String0,
-          isHidden: existingCollection == null,
-          isAux: isAux,
-          isDeleted: false,
-        ) ??
-        CLMedia(
-          name: p.basename(path),
-          fExt: p.extension(path),
-          type: type,
-          collectionId: collection.id,
-          md5String: md5String0,
-          isHidden: collectionId0 == null,
-          isAux: isAux,
-          isPreviewCached: false,
-          isMediaCached: false,
-          isMediaOriginal: true,
-          isEdited: false,
-          previewLog: null,
-          mediaLog: null,
-          serverUID: null,
-          haveItOffline: true,
-          mustDownloadOriginal: true,
-        );
+    final isAux0 = isAux ?? media?.isAux ?? false;
+    final collectionId0 = collectionId ??
+        media?.collectionId ??
+        (isAux0 ? notesCollection : defaultCollection).id!;
+    final savedMedia = CLMedia(
+      /// These parameter are reset when a new content is provided
+      id: id ?? media?.id,
+      name: p.basename(path),
+      fExt: p.extension(path),
+      type: type,
+      md5String: md5String0,
+      isPreviewCached: false,
+      isMediaCached: false,
+      previewLog: null,
+      mediaLog: null,
+      isMediaOriginal: true,
+
+      /// Unless overridden, these parameters will be taken from media, if not,
+      /// a default value is provided
+      collectionId: collectionId0,
+      isHidden: collectionId0 == defaultCollection.id!,
+      isDeleted: isDeleted ?? media?.isDeleted ?? false,
+      isAux: isAux0,
+
+      isEdited: isEdited ?? media?.isEdited ?? false,
+      serverUID: serverUID ?? media?.serverUID,
+      haveItOffline: haveItOffline ?? media?.haveItOffline ?? true,
+      mustDownloadOriginal:
+          mustDownloadOriginal ?? media?.mustDownloadOriginal ?? false,
+    );
     final mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
 
     if (mediaFromDB != null) {
@@ -215,14 +225,30 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     String path, {
     required CLMedia media,
   }) async {
-    return media;
+    // As we are providing media id, all values are fetched from it.
+    return (await upsertMedia(
+      path,
+      media.type,
+      id: media.id,
+      isEdited: true,
+    ))!;
   }
 
   Future<CLMedia> cloneAndReplaceMedia(
     String path, {
     required CLMedia media,
   }) async {
-    return media;
+    return (await upsertMedia(
+      path,
+      media.type,
+      isEdited: false,
+      collectionId: media.collectionId,
+      isHidden: media.isHidden,
+      isDeleted: media.isDeleted,
+      isAux: media.isAux,
+      haveItOffline: media.haveItOffline,
+      mustDownloadOriginal: media.mustDownloadOriginal,
+    ))!;
   }
 
   Future<CLMedia?> newImageOrVideo(
