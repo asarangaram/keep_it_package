@@ -546,13 +546,29 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
 
     final medias2Remove =
         medias.where((e) => ids2Delete.contains(e?.id)).toList();
+
+    // Gather Notes
+    final notes = <CLMedia>{};
+    for (final m in medias2Remove) {
+      notes.addAll(await getNotes(m!.id!));
+    }
+
     if (medias2Remove.isNotEmpty) {
       medias.removeWhere((e) => ids2Delete.contains(e!.id));
       for (final m in medias2Remove) {
         if (m != null) {
+          final notes = await getNotes(m.id!);
           await store.deleteMedia(m);
+          await File(_currentState!.getMediaAbsolutePath(m)).deleteIfExists();
+          await File(_currentState!.getPreviewAbsolutePath(m)).deleteIfExists();
+          for (final n in notes) {
+            await File(_currentState!.getMediaAbsolutePath(n)).deleteIfExists();
+            await File(_currentState!.getPreviewAbsolutePath(n))
+                .deleteIfExists();
+          }
         }
       }
+
       currentState = currentState!.copyWith(mediaList: medias.nonNullableList);
       return true;
     }
@@ -810,6 +826,16 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     final res = await albumManager.removeMedia(ids);
 
     return res;
+  }
+
+  Future<List<CLMedia>> getNotes(int mediaId) async {
+    // FIXME better to have a raw query to directly read indices
+    if (_currentState == null) return [];
+    final q = store.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
+        as StoreQuery<CLMedia>;
+    final noteIds = (await store.readMultiple(q)).map((e) => e!.id!).toList();
+
+    return _currentState!.getMediaMultipleByIds(noteIds);
   }
 }
 

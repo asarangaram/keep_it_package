@@ -99,8 +99,9 @@ class _TextNoteState extends ConsumerState<TextNote> {
                   if (context.mounted) {
                     await ref
                         .read(storeProvider.notifier)
-                        .deleteMediaById(widget.note!.id!);
+                        .permanentlyDeleteMediaMultiple({widget.note!.id!});
                     textEditingController.clear();
+                    textOriginal = '';
                   }
                 },
               ),
