@@ -17,6 +17,7 @@ import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
 import 'pages/media_wizard_page.dart';
 import 'pages/pinned_media_page.dart';
+import 'pages/server_page.dart';
 import 'pages/settings_main_page.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -148,6 +149,12 @@ class KeepItApp implements AppDescriptor {
             return FullscreenLayout(
               child: MediaWizardPage(type: type),
             );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'servers',
+          builder: (context, GoRouterState state) {
+            return const FullscreenLayout(child: ServersPage());
           },
         ),
 
