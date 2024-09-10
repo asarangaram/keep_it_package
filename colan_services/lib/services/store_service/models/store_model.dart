@@ -26,7 +26,7 @@ class StoreModel {
       collectionList.where((e) => !e.label.startsWith('***'));
 
   Iterable<CLMedia> get validMedia =>
-      mediaList.where((e) => !(e.isDeleted ?? false));
+      mediaList.where((e) => !(e.isDeleted ?? false) && e.mediaLog == null);
 
   List<Collection> getCollections({bool excludeEmpty = true}) {
     if (excludeEmpty) {
@@ -49,16 +49,18 @@ class StoreModel {
   }
 
   List<CLMedia> getStaleMedia() {
-    return mediaList
-        .where((e) => (e.isHidden ?? false) && !(e.isDeleted ?? false))
-        .toList();
+    return validMedia.where((e) => e.isHidden ?? false).toList();
   }
 
   List<CLMedia> getPinnedMedia() {
-    return mediaList.where((e) => e.pin != null).toList();
+    return validMedia.where((e) => e.pin != null).toList();
   }
 
   List<CLMedia> getDeletedMedia() {
+    return mediaList.where((e) => e.isDeleted ?? false).toList();
+  }
+
+  List<CLMedia> getCorrupetedMedia() {
     return mediaList.where((e) => e.isDeleted ?? false).toList();
   }
 

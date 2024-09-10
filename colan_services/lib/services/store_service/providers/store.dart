@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:colan_services/services/store_service/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -183,20 +185,15 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
       mustDownloadOriginal:
           mustDownloadOriginal ?? media?.mustDownloadOriginal ?? false,
     );
-    final mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
+    var mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
 
     if (mediaFromDB != null) {
       final currentMediaPath = currentState!.getMediaAbsolutePath(mediaFromDB);
+      File(path).copySync(currentMediaPath);
+      mediaFromDB = await generateMediaPreview(media: mediaFromDB);
+
       final currentPreviewPath =
           currentState!.getPreviewAbsolutePath(mediaFromDB);
-      File(path).copySync(currentMediaPath);
-
-      await generatePreview(
-        inputFile: currentMediaPath,
-        outputFile: currentPreviewPath,
-        type: mediaFromDB.type,
-      );
-
       if (media != null) {
         final mediaIndex = currentState!.getMediaIndexById(id);
         currentState = currentState!.copyWith(
@@ -377,7 +374,10 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 1));
-    onDone(existingItems: existingItems, newItems: newItems);
+    onDone(
+      existingItems: existingItems.where((e) => e.mediaLog == null).toList(),
+      newItems: newItems.where((e) => e.mediaLog == null).toList(),
+    );
   }
 
   Future<List<CLMedia>> updateMedia(CLMedia media) async {
@@ -565,10 +565,52 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     await syncServer();
   }
 
+  Future<CLMedia> generateMediaPreview({
+    required CLMedia media,
+    int dimension = 256,
+  }) async {
+    if (currentState == null) return media;
+    var updateMedia = media;
+    try {
+      final currentMediaPath = currentState!.getMediaAbsolutePath(media);
+      final currentPreviewPath = currentState!.getPreviewAbsolutePath(media);
+      final error = <String, String>{};
+
+      final res = await generatePreview(
+        inputFile: currentMediaPath,
+        outputFile: currentPreviewPath,
+        type: media.type,
+        dimension: dimension,
+        onError: (p0) {
+          error[p0.key] = p0.value;
+        },
+      );
+      if (res) {
+        updateMedia = updateMedia.copyWith(
+          isPreviewCached: true,
+          isMediaCached: true,
+        );
+      } else {
+        if (error.isNotEmpty) {
+          updateMedia = updateMedia.copyWith(
+            mediaLog: jsonEncode(error),
+          );
+        }
+      }
+    } catch (e) {
+      updateMedia = updateMedia.copyWith(
+        mediaLog:
+            jsonEncode({'decodeError': 'Exception while generating preview'}),
+      );
+    }
+    return updateMedia;
+  }
+
   static Future<bool> generatePreview({
     required String inputFile,
     required String outputFile,
     required CLMediaType type,
+    required void Function(MapEntry<String, String> entry) onError,
     int dimension = 256,
   }) async {
     switch (type) {
@@ -580,15 +622,31 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
             output: '$inputFile.jpeg',
           );
           if (jpegPath == null) {
-            throw Exception(' Failed to convert HEIC file to JPEG');
+            onError(
+              const MapEntry(
+                'decodeError',
+                'HeifConverter  Failed to convert HEIC file to JPEG',
+              ),
+            );
+            inputImage = null;
+          } else {
+            inputImage = img.decodeJpg(File(jpegPath).readAsBytesSync());
+            if (inputImage == null) {
+              onError(
+                const MapEntry(
+                  'decodeError',
+                  'Failed to decode jpeg image (converted from heic)',
+                ),
+              );
+            }
           }
-          inputImage = img.decodeImage(File(jpegPath).readAsBytesSync());
         } else {
           inputImage = img.decodeImage(File(inputFile).readAsBytesSync());
+          if (inputImage == null) {
+            onError(const MapEntry('decodeError', 'Failed to decode Image'));
+          }
         }
-        if (inputImage == null) {
-          throw Exception('Failed to decode Image');
-        }
+        if (inputImage == null) return false;
 
         final int thumbnailHeight;
         final int thumbnailWidth;
@@ -613,29 +671,80 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
 
       case CLMediaType.video:
         await File(outputFile).deleteIfExists();
-        final session = await FFmpegKit.execute(
-          '-i $inputFile '
-          '-ss 00:00:01.000 '
-          '-vframes 1 '
-          '-vf "scale=$dimension:-1" '
-          '$outputFile',
-        );
-        /* 
-      print(log); */
-        final returnCode = await session.getReturnCode();
-        if (!ReturnCode.isSuccess(returnCode)) {
-          await File(outputFile).deleteIfExists();
-          final log = await session.getAllLogsAsString();
-          throw Exception(log);
-        }
+        try {
+          final double frameCount;
+          final probleSession =
+              await FFprobeKit.execute('-v error -select_streams v:0 '
+                  '-show_entries stream=r_frame_rate,duration '
+                  '-of default=nokey=1:noprint_wrappers=1 "$inputFile"');
+          final probeReturnCode = await probleSession.getReturnCode();
+          final output = await probleSession.getOutput();
+          if ((probeReturnCode?.isValueSuccess() ?? false) && output != null) {
+            final result = LineSplitter.split(output).toList();
+            final frameRateFraction = result[0];
+            final duration = double.parse(result[1]);
 
-        return ReturnCode.isSuccess(returnCode);
+            final fpsSplit = frameRateFraction.split('/');
+            final fps = double.parse(fpsSplit[0]) / double.parse(fpsSplit[1]);
+
+            frameCount = fps * duration;
+          } else {
+            final log = await probleSession.getAllLogsAsString();
+
+            onError(
+              MapEntry(
+                  'decodeError',
+                  'FFprobeKit return code: $probeReturnCode. '
+                      'Details: $log}'),
+            );
+
+            return false;
+          }
+          final tileSize = computeTileSize(frameCount);
+          final frameFreq = (frameCount / (tileSize * tileSize)).floor();
+
+          final session = await FFmpegKit.execute(
+            '-loglevel panic -y '
+            '-i "$inputFile" '
+            '-frames 1 -q:v 1 '
+            '-vf "select=not(mod(n\\,$frameFreq)),scale=-1:$dimension,tile=${tileSize}x$tileSize" '
+            '"$outputFile"',
+          );
+          final returnCode = await session.getReturnCode();
+          if (!ReturnCode.isSuccess(returnCode)) {
+            await File(outputFile).deleteIfExists();
+            final log = await session.getAllLogsAsString();
+            onError(MapEntry('previewError', 'FFmpegKit:$log'));
+          }
+
+          return ReturnCode.isSuccess(returnCode);
+        } catch (e) {
+          await File(outputFile).deleteIfExists();
+          onError(MapEntry('previewError', 'FFmpegKit crashed $e'));
+          return false;
+        }
 
       case CLMediaType.text:
       case CLMediaType.url:
       case CLMediaType.audio:
       case CLMediaType.file:
-        throw Exception("Unsupported Media Type. Preview can't be generated");
+        onError(
+          const MapEntry(
+            'decodeError',
+            "Unsupported Media Type. Preview can't be generated",
+          ),
+        );
+        return false;
+    }
+  }
+
+  static int computeTileSize(double frameCount) {
+    if (frameCount >= 16) {
+      return 4;
+    } else if (frameCount >= 9) {
+      return 3;
+    } else {
+      return 2;
     }
   }
 
