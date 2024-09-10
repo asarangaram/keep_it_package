@@ -17,6 +17,7 @@ dependencies:
     path: ../colan_widgets 
   collection: ^1.18.0
   
+  connectivity_plus: ^6.0.5
   event_bus: ^2.0.0
   exif: ^3.3.0
   extended_image: ^8.2.1
@@ -41,7 +42,9 @@ dependencies:
     path: ../media_editors
   media_viewers:
     path: ../media_viewers
+  meta: ^1.12.0
   mime: ^1.0.5
+  multicast_dns: ^0.3.2+7
   mutex: ^3.1.0
   path: ^1.9.0
   

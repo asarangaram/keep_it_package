@@ -37,6 +37,7 @@ class SettingsMainPage extends ConsumerWidget {
                     title: Text('Deleted Items (${deletedMedia.length})'),
                   ),
                 const StorageMonitor(),
+                const CloudOnLANSettings(),
               ],
             );
           },
