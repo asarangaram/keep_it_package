@@ -49,7 +49,9 @@ class StoreModel {
   }
 
   List<CLMedia> getStaleMedia() {
-    return mediaList.where((e) => e.isHidden ?? false).toList();
+    return mediaList
+        .where((e) => (e.isHidden ?? false) && !(e.isDeleted ?? false))
+        .toList();
   }
 
   List<CLMedia> getPinnedMedia() {
