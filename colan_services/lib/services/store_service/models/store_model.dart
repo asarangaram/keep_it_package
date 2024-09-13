@@ -32,7 +32,9 @@ class StoreModel {
     if (excludeEmpty) {
       return validCollection
           .where(
-            (c) => validMedia.any((e) => e.collectionId == c.id),
+            (c) => validMedia
+                .where((e) => !(e.isHidden ?? false))
+                .any((e) => e.collectionId == c.id),
           )
           .toList();
     }
@@ -78,6 +80,10 @@ class StoreModel {
     return mediaList.where((e) => e.md5String == md5String).firstOrNull;
   }
 
+  CLMedia? getMediaByServerUID(int serverUID) {
+    return mediaList.where((e) => e.serverUID == serverUID).firstOrNull;
+  }
+
   List<CLMedia> getMediaMultipleByIds(List<int> idList) {
     return mediaList.where((e) => idList.contains(e.id)).toList();
   }
@@ -89,8 +95,9 @@ class StoreModel {
   }) {
     if (collectionId == null) return [];
 
-    final media =
-        validMedia.where((e) => e.collectionId == collectionId).toList();
+    final media = validMedia
+        .where((e) => e.collectionId == collectionId && !(e.isHidden ?? false))
+        .toList();
 
     if (maxCount > 0) {
       if (isRandom) {
@@ -126,7 +133,7 @@ class StoreModel {
   String getPreviewAbsolutePath(CLMedia media) {
     return p.setExtension(
       p.join(
-        directories.media.pathString, // FIX ME preview directory
+        directories.thumbnail.pathString, // FIX ME preview directory
         '${media.md5String}_tn',
       ),
       '.jpeg',
