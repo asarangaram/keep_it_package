@@ -37,7 +37,7 @@ class DBWriter {
     final mediaInDB = (await mediaTable.upsert(
       tx,
       media,
-      uniqueColumn: ['id', 'md5String'],
+      uniqueColumn: ['id', 'md5String', 'serverUID'],
     ))!;
     if (parents?.isNotEmpty ?? false) {
       for (final parent in parents!) {

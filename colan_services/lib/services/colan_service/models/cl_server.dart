@@ -24,4 +24,10 @@ abstract class CLServer {
   String get identifier;
   Future<String> getEndpoint(String endPoint, {http.Client? client});
   Uri getEndpointURI(String endPoint);
+
+  Future<String?> download(
+    String endPoint,
+    String targetFilePath, {
+    http.Client? client,
+  });
 }

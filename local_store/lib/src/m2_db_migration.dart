@@ -39,7 +39,7 @@ final migrations = SqliteMigrations()
         previewLog TEXT, -- Info stored as json
         mediaLog TEXT, -- Info stored as json
         isMediaOriginal INTEGER NOT NULL DEFAULT 0,
-        ServerUID INTEGER,  -- Nullable, to store ServerUID if media is from another server
+        serverUID INTEGER,  -- Nullable, to store serverUID if media is from another server
         isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
 
         FOREIGN KEY (collectionId) REFERENCES Collection(id)

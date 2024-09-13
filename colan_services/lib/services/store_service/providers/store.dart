@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:colan_services/services/colan_service/providers/servers.dart';
 import 'package:colan_services/services/store_service/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
@@ -10,12 +11,15 @@ import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heif_converter/heif_converter.dart';
+import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:local_store/local_store.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../colan_service/models/cl_server.dart';
+import '../../colan_service/models/servers.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
@@ -35,8 +39,10 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
   final String tempCollectionName = '*** Recently Captured';
 
   StoreModel? get currentState => _currentState;
+  ProviderSubscription<Servers>? watchServer;
 
   set currentState(StoreModel? value) => updateState(value);
+  CLServer? myServer;
 
   Future<void> updateState(StoreModel? value) async {
     _currentState = value;
@@ -59,7 +65,18 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
 
     await loadLocalDB();
 
-    await syncServer();
+    ref.listen(serversProvider, (prev, curr) {
+      myServer = curr.myServer;
+
+      if (prev?.myServerOnline != curr.myServerOnline) {
+        // Transition has happened.
+        if (curr.myServerOnline) {
+          syncServer();
+        } else {
+          // server got disconnected,
+        }
+      }
+    });
   }
 
   Future<void> loadLocalDB() async {
@@ -72,7 +89,127 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     );
   }
 
-  Future<void> syncServer() async {}
+  Future<void> syncServer() async {
+    if (myServer != null) {
+      await pullImages(myServer!);
+    }
+  }
+
+  Future<DBSyncStatus> pullImages(CLServer srv, {http.Client? client}) async {
+    if (!await srv.hasConnection(client: client)) {
+      return DBSyncStatus.serverNotReachable;
+    }
+
+    final mediaMap = [
+      for (final mediaType in ['video'])
+        ...jsonDecode(
+          await srv.getEndpoint('/media?type=$mediaType', client: client),
+        ) as List<dynamic>,
+    ];
+    final updatesFromServer = <CLMedia>[];
+    for (final m in mediaMap) {
+      final map = m as Map<String, dynamic>;
+
+      // Translations here
+      if (!map.containsKey('fExt') && map.containsKey('content_type')) {
+        final extension = extensionFromMime(map['content_type'] as String);
+        map['fExt'] = '.$extension';
+      }
+      if (map.containsKey('collectionLabel')) {
+        final collectionLabel = map['collectionLabel'] as String;
+        final collection = _currentState!.getCollectionByLabel(collectionLabel);
+        map['collectionId'] = collection?.id;
+      }
+
+      final mediaInDB =
+          _currentState!.getMediaByServerUID(map['serverUID'] as int);
+
+      if (mediaInDB?.md5String == map['md5String']) {
+        // Content not changed
+        map['isPreviewCached'] = mediaInDB?.isPreviewCached ?? false; // md5
+        map['isMediaCached'] = mediaInDB?.isMediaCached ?? false;
+        map['previewLog'] = mediaInDB?.previewLog;
+        map['mediaLog'] = mediaInDB?.mediaLog;
+      } else {
+        map['isPreviewCached'] = false; // md5
+        map['isMediaCached'] = false;
+        map['previewLog'] = null;
+        map['mediaLog'] = null;
+      }
+
+      map['isDeleted'] = (mediaInDB?.isDeleted ?? false) ? 1 : 0;
+      map['isHidden'] = (mediaInDB?.isHidden ?? false) ? 1 : 0;
+      map['pin'] = mediaInDB?.pin;
+
+      map['isPreviewCached'] =
+          (mediaInDB?.isPreviewCached ?? false) ? 1 : 0; // md5
+      map['isMediaCached'] = (mediaInDB?.isMediaCached ?? false) ? 1 : 0;
+      map['previewLog'] = null;
+      map['mediaLog'] = null;
+      map['isEdited'] = 0;
+      map['haveItOffline'] = (mediaInDB?.haveItOffline ?? true) ? 1 : 0;
+      map['mustDownloadOriginal'] =
+          (mediaInDB?.mustDownloadOriginal ?? false) ? 1 : 0;
+
+      // Insert into DB so that we get id
+      CLMedia? updatedMedia = CLMedia.fromMap(map);
+      if (updatedMedia != mediaInDB) {
+        updatedMedia = await store.upsertMedia(updatedMedia);
+        if (updatedMedia != null) {
+          updatedMedia = await downloadMedia(srv, updatedMedia);
+          updatedMedia = await store.upsertMedia(updatedMedia);
+          if (updatedMedia != null) {
+            updatesFromServer.add(updatedMedia);
+          }
+        }
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+    }
+    /* print(
+      updatesFromServer
+          .where((e) => e.mediaLog != null || e.previewLog != null)
+          .toList(),
+    ); */
+    await refreshMediaMultiple(updatesFromServer);
+
+    return DBSyncStatus.success;
+  }
+
+  Future<CLMedia> downloadMedia(CLServer srv, CLMedia media) async {
+    // FIXME: Avoid downloading if the content already present locally
+    var updatedMedia = media;
+    if (!updatedMedia.isPreviewCached && updatedMedia.previewLog == null) {
+      final previewLog = await srv.download(
+        '/media/${updatedMedia.serverUID}/preview',
+        _currentState!.getPreviewAbsolutePath(updatedMedia),
+      );
+      if (previewLog != null) {
+        updatedMedia = updatedMedia.copyWith(
+          previewLog: previewLog,
+          isPreviewCached: false,
+        );
+      } else {
+        updatedMedia = updatedMedia.copyWith(isPreviewCached: true);
+      }
+    }
+    if (!updatedMedia.isMediaCached && updatedMedia.mediaLog == null) {
+      if (updatedMedia.haveItOffline) {
+        final mediaLog = await srv.download(
+          '/media/${updatedMedia.serverUID}/download',
+          _currentState!.getMediaAbsolutePath(updatedMedia),
+        );
+        if (mediaLog != null) {
+          updatedMedia =
+              updatedMedia.copyWith(mediaLog: mediaLog, isMediaCached: false);
+        } else {
+          updatedMedia = updatedMedia.copyWith(isMediaCached: true);
+        }
+
+        // FIXME mediaInDB.mustDownloadOriginal
+      }
+    }
+    return updatedMedia;
+  }
 
   Future<List<Collection>> loadCollections() async {
     final q = store.getQuery(
@@ -380,14 +517,51 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
     );
   }
 
-  Future<List<CLMedia>> updateMedia(CLMedia media) async {
+  Future<CLMedia?> updateMedia(CLMedia media) async {
     var mediaList = List<CLMedia>.from(currentState!.mediaList);
-    final updatedList = <CLMedia>[];
-    if (media.id != null) {
-      final updated = await store.upsertMedia(media);
-      if (updated != null) {
+
+    final updated = await store.upsertMedia(media);
+    if (updated != null) {
+      final existing = currentState!.getMediaById(updated.id);
+
+      if (existing != null) {
+        mediaList =
+            mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
+      } else {
+        mediaList = [...mediaList, updated];
+      }
+    }
+
+    currentState = currentState!.copyWith(mediaList: mediaList);
+    return updated;
+  }
+
+  Future<CLMedia?> refreshMedia(CLMedia media) async {
+    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+
+    final existing = currentState!.getMediaById(media.id);
+
+    if (existing != null) {
+      mediaList = mediaList.replaceNthEntry(mediaList.indexOf(existing), media);
+    } else {
+      mediaList = [...mediaList, media];
+    }
+
+    currentState = currentState!.copyWith(mediaList: mediaList);
+    return media;
+  }
+
+  Future<void> refreshMediaMultiple(
+    List<CLMedia> mediaMultiple, {
+    void Function(Progress progress)? onProgress,
+  }) async {
+    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+
+    for (final (i, m) in mediaMultiple.indexed) {
+      if (m.id != null) {
+        final updated = m;
         final existing = currentState!.getMediaById(updated.id);
-        updatedList.add(updated);
+
         if (existing != null) {
           mediaList =
               mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
@@ -395,10 +569,16 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
           mediaList = [...mediaList, updated];
         }
       }
-    }
 
+      onProgress?.call(
+        Progress(
+          fractCompleted: i / mediaMultiple.length,
+          currentItem: m.name,
+        ),
+      );
+    }
     currentState = currentState!.copyWith(mediaList: mediaList);
-    return updatedList;
+    return;
   }
 
   Future<List<CLMedia>> updateMediaMultiple(
@@ -842,5 +1022,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreModel>> {
 final storeProvider =
     StateNotifierProvider<StoreNotifier, AsyncValue<StoreModel>>((ref) {
   final deviceDirectories = ref.watch(deviceDirectoriesProvider.future);
-  return StoreNotifier(ref, deviceDirectories);
+  final notifier = StoreNotifier(ref, deviceDirectories);
+
+  return notifier;
 });

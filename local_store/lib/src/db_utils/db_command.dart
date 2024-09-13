@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/store.dart';
 
-import '../map_operations.dart';
 import 'db_exception.dart';
 import 'db_extension_on_map.dart';
 

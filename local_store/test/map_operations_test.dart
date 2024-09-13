@@ -1,4 +1,4 @@
-import 'package:local_store/src/map_operations.dart';
+import 'package:store/store.dart';
 import 'package:test/test.dart';
 
 void main() {
