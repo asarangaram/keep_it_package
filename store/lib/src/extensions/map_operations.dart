@@ -30,7 +30,7 @@ class MapDiff {
         added[key] = newValue;
       } else if (!newMap.containsKey(key)) {
         // If key is only in old, it's a deletion
-        deleted[key] = null;
+        deleted[key] = oldValue;
       } else if (!deepCompare(oldValue, newValue)) {
         // If the key exists in both but values differ, it's modified
         changed[key] = newValue;
@@ -51,4 +51,21 @@ class MapDiff {
   Map<String, dynamic> get diffMapFull => {...added, ...changed, ...deleted};
 
   bool get hasChange => diffMapFull.isNotEmpty;
+
+  @override
+  String toString() =>
+      'MapDiff(added: $added, deleted: $deleted, changed: $changed)';
+
+  @override
+  bool operator ==(covariant MapDiff other) {
+    if (identical(this, other)) return true;
+    final mapEquals = const DeepCollectionEquality().equals;
+
+    return mapEquals(other.added, added) &&
+        mapEquals(other.deleted, deleted) &&
+        mapEquals(other.changed, changed);
+  }
+
+  @override
+  int get hashCode => added.hashCode ^ deleted.hashCode ^ changed.hashCode;
 }
