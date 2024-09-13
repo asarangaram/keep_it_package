@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert' show jsonDecode;
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -45,6 +46,7 @@ class RestApi {
     String endPoint, {
     String? auth,
     String bodyJSON = '',
+    String? fileName,
     Uint8List? imageData,
     String? langStr,
     Map<String, String>? extraHeaders,
@@ -71,6 +73,22 @@ class RestApi {
         response = await myClient.get(uri, headers: headers);
       case 'delete':
         response = await myClient.delete(uri, headers: headers);
+      case 'download':
+        try {
+          if (fileName == null) {
+            throw Exception('target filename must be provided for download');
+          }
+          response = await http.get(uri, headers: headers);
+          if (response.statusCode == 200) {
+            final file = File(fileName);
+            await file.writeAsBytes(response.bodyBytes);
+            return null;
+          } else {
+            return response.toString();
+          }
+        } on Exception catch (e) {
+          return e.toString();
+        }
 
       /* case 'img_upload':
         if (imageData == null) {
@@ -153,6 +171,19 @@ class RestApi {
   Future<String> delete(String endPoint, {String? auth}) async {
     return (await call('delete', endPoint, auth: auth)) as String;
   }
+
+  Future<String?> download(
+    String endPoint,
+    String fileName, {
+    String? auth,
+    String bodyJSON = '',
+  }) async =>
+      await call(
+        'download',
+        endPoint,
+        auth: auth,
+        fileName: fileName,
+      ) as String?;
 
   Future<Uint8List> audio(
     String endPoint, {
