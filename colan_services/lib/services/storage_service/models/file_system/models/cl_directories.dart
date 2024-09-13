@@ -75,7 +75,7 @@ class CLDirectories {
           baseDir: persistent,
           label: 'Thumbnail Cache',
           name: 'keep_it/store/thumbnail',
-          isStore: false,
+          isStore: true,
         ),
         'db': CLDirectory(
           baseDir: persistent,
