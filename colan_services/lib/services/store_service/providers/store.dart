@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:background_downloader/background_downloader.dart';
 import 'package:colan_services/services/colan_service/providers/servers.dart';
 import 'package:colan_services/services/store_service/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -25,21 +26,38 @@ import '../../storage_service/providers/directories.dart';
 import '../models/store_model.dart';
 import '../models/url_handler.dart';
 
+extension FilenameExtOnCLMedia on CLMedia {
+  String get previewFileName => '${md5String}_tn.jpeg';
+  String get mediaFileName => '$md5String$fExt';
+}
+
 mixin ServerMixin {
   Future<CLMedia> downloadMediaFiles(
     StoreCache storeModel,
+    CLDirectories directories,
     CLServer srv,
     CLMedia media,
   ) async {
     var updatedMedia = media;
     if (updatedMedia.isPreviewWaitingForDownload) {
-      final previewLog = await srv.download(
-        '/media/${updatedMedia.serverUID}/preview',
-        storeModel.getPreviewAbsolutePath(updatedMedia),
+      final task = DownloadTask(
+        url: srv
+            .getEndpointURI('/media/${updatedMedia.serverUID}/preview')
+            .toString(),
+        baseDirectory: BaseDirectory.applicationSupport,
+        directory: directories.thumbnail.name,
+        filename: updatedMedia.previewFileName,
       );
+      final result = await FileDownloader().download(
+        task,
+        onProgress: (progress) => print('Progress: ${progress * 100}%'),
+        onStatus: (status) => print('Status: $status'),
+      );
+
       updatedMedia = updatedMedia.copyWith(
-        previewLog: previewLog,
-        isPreviewCached: previewLog == null,
+        previewLog:
+            result.status == TaskStatus.complete ? null : result.responseBody,
+        isPreviewCached: result.status == TaskStatus.complete,
       );
     }
 
@@ -52,10 +70,25 @@ mixin ServerMixin {
       if (!mediaFile.existsSync() ||
           (await mediaFile.checksum != updatedMedia.md5String)) {
         await mediaFile.deleteIfExists();
-        mediaLog = await srv.download(
-          '/media/${updatedMedia.serverUID}/download?isOriginal=${updatedMedia.mustDownloadOriginal}',
-          mediaFile.path,
+
+        final task = DownloadTask(
+          url: srv
+              .getEndpointURI(
+                '/media/${updatedMedia.serverUID}/download?isOriginal=${updatedMedia.mustDownloadOriginal}',
+              )
+              .toString(),
+          baseDirectory: BaseDirectory.applicationSupport,
+          directory: directories.media.name,
+          filename: updatedMedia.mediaFileName,
         );
+        final result = await FileDownloader().download(
+          task,
+          onProgress: (progress) => print('Progress: ${progress * 100}%'),
+          onStatus: (status) => print('Status: $status'),
+        );
+
+        mediaLog =
+            result.status == TaskStatus.complete ? null : result.responseBody;
       } else {
         mediaLog = null;
       }
@@ -142,8 +175,12 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>>
       stopwatch.start();
       final downloadedMedia = <CLMedia>[];
       for (final (i, media) in updatesFromServer.indexed) {
-        final downloaded =
-            await downloadMediaFiles(_currentState!, myServer!, media);
+        final downloaded = await downloadMediaFiles(
+          _currentState!,
+          await directoriesFuture,
+          myServer!,
+          media,
+        );
         await store.upsertMedia(downloaded);
         downloadedMedia.add(downloaded);
         print(
