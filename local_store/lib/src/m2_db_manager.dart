@@ -158,6 +158,36 @@ class DBManager extends Store {
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query) =>
       dbReader.readMultiple(query);
 
+  @override
+  Future<Collection?> getCollectionByLabel(String label) async {
+    final q = dbReader.getQuery(
+      DBQueries.collectionByLabel,
+      parameters: [label],
+    ) as StoreQuery<Collection>;
+
+    return dbReader.read(q);
+  }
+
+  @override
+  Future<CLMedia?> getMediaByServerUID(int serverUID) async {
+    final q = dbReader.getQuery(
+      DBQueries.mediaByServerUID,
+      parameters: [serverUID],
+    ) as StoreQuery<CLMedia>;
+
+    return dbReader.read(q);
+  }
+
+  @override
+  Future<CLMedia?> getMediaByMD5String(String md5String) {
+    final q = dbReader.getQuery(
+      DBQueries.mediaByMD5,
+      parameters: [md5String],
+    ) as StoreQuery<CLMedia>;
+
+    return dbReader.read(q);
+  }
+
   DBManager copyWith({
     SqliteDatabase? db,
     DBWriter? dbWriter,

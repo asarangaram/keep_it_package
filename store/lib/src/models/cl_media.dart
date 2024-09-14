@@ -313,4 +313,10 @@ class CLMedia extends CLMediaBase {
       mustDownloadOriginal: mustDownloadOriginal,
     );
   }
+
+  bool get isMediaWaitingForDownload =>
+      !isMediaCached && mediaLog == null && haveItOffline;
+
+  bool get isPreviewWaitingForDownload =>
+      !isPreviewCached && previewLog == null;
 }

@@ -25,7 +25,7 @@ class AudioRecorder extends ConsumerStatefulWidget {
     this.onEditCancel,
   });
   final CLMedia media;
-  final StoreModel theStore;
+  final StoreCache theStore;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
@@ -38,7 +38,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
   late final RecorderController recorderController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
-  late final StoreModel theStore;
+  late final StoreCache theStore;
   bool isRecording = false;
   bool isRecordingCompleted = false;
 

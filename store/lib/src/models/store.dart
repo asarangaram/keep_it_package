@@ -15,6 +15,7 @@ enum DBQueries {
   collectionByIdList,
 
   mediaById,
+  mediaByServerUID,
   mediaAll,
   mediaAllIncludingAux,
   mediaByCollectionId,
@@ -54,4 +55,8 @@ abstract class Store {
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
 
   void dispose();
+
+  Future<Collection?> getCollectionByLabel(String label);
+  Future<CLMedia?> getMediaByServerUID(int serverUID);
+  Future<CLMedia?> getMediaByMD5String(String md5String);
 }

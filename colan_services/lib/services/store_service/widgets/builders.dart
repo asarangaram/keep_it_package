@@ -37,7 +37,7 @@ class GetStore extends ConsumerWidget {
     this.errorBuilder,
     this.loadingBuilder,
   });
-  final Widget Function(StoreModel store) builder;
+  final Widget Function(StoreCache store) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
   final Widget Function()? loadingBuilder;
 

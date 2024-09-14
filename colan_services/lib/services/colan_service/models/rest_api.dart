@@ -84,7 +84,7 @@ class RestApi {
             await file.writeAsBytes(response.bodyBytes);
             return null;
           } else {
-            return response.toString();
+            return response.body;
           }
         } on Exception catch (e) {
           return e.toString();

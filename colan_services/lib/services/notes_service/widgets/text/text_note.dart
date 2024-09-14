@@ -23,7 +23,7 @@ class TextNote extends ConsumerStatefulWidget {
   });
   final CLMedia media;
   final CLMedia? note;
-  final StoreModel theStore;
+  final StoreCache theStore;
 
   @override
   ConsumerState<TextNote> createState() => _TextNoteState();
@@ -35,7 +35,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
   late bool isEditing;
   bool textModified = false;
   late String textOriginal;
-  late final StoreModel theStore;
+  late final StoreCache theStore;
   @override
   void initState() {
     super.initState();

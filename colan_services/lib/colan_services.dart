@@ -26,7 +26,7 @@ export 'services/storage_service/widgets/get_device_directories.dart'
 export 'services/storage_service/widgets/storage_monitor.dart'
     show StorageMonitor;
 export 'services/store_service/models/navigators.dart' show Navigators;
-export 'services/store_service/models/store_model.dart' show StoreModel;
+export 'services/store_service/models/store_model.dart' show StoreCache;
 export 'services/store_service/providers/group_view.dart'
     show groupedItemsProvider, singleGroupItemProvider;
 export 'services/store_service/providers/store.dart' show StoreNotifier;

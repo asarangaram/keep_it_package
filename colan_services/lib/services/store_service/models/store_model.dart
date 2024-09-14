@@ -12,8 +12,8 @@ import 'package:store/store.dart';
 import '../../sharing_service/models/share_files.dart';
 
 @immutable
-class StoreModel {
-  const StoreModel({
+class StoreCache {
+  const StoreCache({
     required this.collectionList,
     required this.mediaList,
     required this.directories,
@@ -171,12 +171,12 @@ class StoreModel {
     );
   }
 
-  StoreModel copyWith({
+  StoreCache copyWith({
     List<Collection>? collectionList,
     List<CLMedia>? mediaList,
     CLDirectories? directories,
   }) {
-    return StoreModel(
+    return StoreCache(
       collectionList: collectionList ?? this.collectionList,
       mediaList: mediaList ?? this.mediaList,
       directories: directories ?? this.directories,
@@ -189,7 +189,7 @@ class StoreModel {
       'StoreModel(collectionList: $collectionList, mediaList: $mediaList, directories: $directories)';
 
   @override
-  bool operator ==(covariant StoreModel other) {
+  bool operator ==(covariant StoreCache other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 

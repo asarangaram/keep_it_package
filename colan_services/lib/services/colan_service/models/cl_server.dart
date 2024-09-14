@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 
 import 'package:meta/meta.dart';
+import 'package:store/store.dart';
 
 enum DBSyncStatus {
   success,
@@ -30,4 +31,6 @@ abstract class CLServer {
     String targetFilePath, {
     http.Client? client,
   });
+
+  Future<List<CLMedia>> toStoreSync(Store store, {http.Client? client});
 }
