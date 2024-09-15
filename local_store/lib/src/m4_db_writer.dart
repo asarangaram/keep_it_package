@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
+import 'db_utils/db_command.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
 
@@ -45,6 +46,13 @@ class DBWriter {
       }
     }
     return mediaInDB;
+  }
+
+  Future<bool> updateMediaFromMap(
+    SqliteWriteContext tx,
+    Map<String, dynamic> map,
+  ) async {
+    return DBCommand.update(map, table: mediaTable.table).execute(tx);
   }
 
   Future<void> deleteCollection(

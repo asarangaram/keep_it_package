@@ -44,6 +44,10 @@ abstract class Store {
   Future<CLMedia?> upsertMedia(CLMedia media, {List<CLMedia>? parents});
   //Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
 
+  Future<CLMedia?> updateMediaFromMap(
+    Map<String, dynamic> map,
+  );
+
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media);
 

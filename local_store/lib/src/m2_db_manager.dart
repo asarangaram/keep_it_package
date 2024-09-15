@@ -113,6 +113,15 @@ class DBManager extends Store {
       });
 
   @override
+  Future<CLMedia?> updateMediaFromMap(Map<String, dynamic> map) async =>
+      db.writeTransaction((tx) async {
+        if (await dbWriter.updateMediaFromMap(tx, map)) {
+          return getMediaById(map['id'] as int);
+        }
+        return null;
+      });
+
+  @override
   Future<void> deleteCollection(Collection collection) async =>
       db.writeTransaction((tx) async {
         await dbWriter.deleteCollection(tx, collection);
@@ -173,6 +182,15 @@ class DBManager extends Store {
     final q = dbReader.getQuery(
       DBQueries.mediaByServerUID,
       parameters: [serverUID],
+    ) as StoreQuery<CLMedia>;
+
+    return dbReader.read(q);
+  }
+
+  Future<CLMedia?> getMediaById(int id) async {
+    final q = dbReader.getQuery(
+      DBQueries.mediaById,
+      parameters: [id],
     ) as StoreQuery<CLMedia>;
 
     return dbReader.read(q);

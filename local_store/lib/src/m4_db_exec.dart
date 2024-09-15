@@ -20,6 +20,13 @@ class DBExec<T> {
   final Map<String, dynamic>? Function(T obj) toMap;
   final Future<T?> Function(SqliteWriteContext tx, T obj)? readBack;
 
+  Future<bool> updateFromMap(
+    SqliteWriteContext tx,
+    Map<String, dynamic> map,
+  ) async {
+    return DBCommand.update(map, table: table).execute(tx);
+  }
+
   Future<T?> upsert(
     SqliteWriteContext tx,
     T obj, {
