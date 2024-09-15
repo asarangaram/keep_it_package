@@ -19,18 +19,19 @@ class Downloader {
               handler?.call(errorLog: update.responseBody ?? 'Unknown Error');
             case TaskStatus.canceled:
               handler?.call(errorLog: 'Download cancelled, try again');
-            case TaskStatus.enqueued:
             case TaskStatus.running:
               fileDownloader.database.allRecords().then((records) {
                 runningTasksStreamController.add(
                   records.where((e) => e.status == TaskStatus.running).toList(),
                 );
               });
+            case TaskStatus.enqueued:
             case TaskStatus.notFound:
             case TaskStatus.paused:
             case TaskStatus.waitingToRetry:
               break;
           }
+
         case TaskProgressUpdate():
           break;
       }
@@ -60,7 +61,7 @@ class Downloader {
 
     downloads[task.taskId] = onDone;
 
-    return FileDownloader().enqueue(task);
+    return fileDownloader.enqueue(task);
   }
 
   Future<void> removeCompleted() async {
@@ -71,9 +72,17 @@ class Downloader {
           TaskStatus.complete;
     });
   }
+
+  void dispose() {
+    runningTasksStreamController.close();
+  }
 }
 
-final downloaderProvider = Provider<Downloader>((ref) => Downloader());
+final downloaderProvider = Provider<Downloader>((ref) {
+  final downloader = Downloader();
+  ref.onDispose(downloader.dispose);
+  return downloader;
+});
 
 final runningTasksProvider = StreamProvider<List<TaskRecord>>(
   (ref) async* {
