@@ -69,19 +69,31 @@ class Queries {
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaAllIncludingAux => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Media WHERE isHidden IS 0 AND isDeleted IS 0',
+          sql: 'SELECT * FROM Media WHERE isHidden = 0 AND isDeleted = 0',
+          triggerOnTables: const {'Media'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.mediaDownloadPending => DBQuery<CLMedia>(
+          sql:
+              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isPreviewCached = 0 AND previewLog IS NULL',
+          triggerOnTables: const {'Media'},
+          fromMap: CLMedia.fromMap,
+        ),
+      DBQueries.previewDownloadPending => DBQuery<CLMedia>(
+          sql:
+              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isMediaCached = 0 AND mediaLog IS NULL',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaAll => DBQuery<CLMedia>(
           sql:
-              'SELECT * FROM Media WHERE isAux IS 0 AND isHidden IS 0 AND isDeleted IS 0',
+              'SELECT * FROM Media WHERE isAux = 0 AND isHidden = 0 AND isDeleted = 0',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaByCollectionId => DBQuery<CLMedia>(
           sql:
-              'SELECT * FROM Media WHERE isAux IS 0 AND collectionId = ? AND isHidden IS 0 AND isDeleted IS 0',
+              'SELECT * FROM Media WHERE isAux = 0 AND collectionId = ? AND isHidden = 0 AND isDeleted = 0',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
@@ -92,18 +104,18 @@ class Queries {
         ),
       DBQueries.mediaPinned => DBQuery<CLMedia>(
           sql:
-              "SELECT * FROM Media WHERE NULLIF(pin, 'null') IS NOT NULL AND isHidden IS 0 AND isDeleted IS 0",
+              "SELECT * FROM Media WHERE NULLIF(pin, 'null') IS NOT NULL AND isHidden = 0 AND isDeleted = 0",
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaStaled => DBQuery<CLMedia>(
           sql:
-              'SELECT * FROM Media WHERE isAux IS 0 AND  isHidden IS NOT 0 AND isDeleted IS 0',
+              'SELECT * FROM Media WHERE isAux = 0 AND  isHidden <> 0 AND isDeleted = 0',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaDeleted => DBQuery<CLMedia>(
-          sql: 'SELECT * FROM Media WHERE isAux IS 0 AND  isDeleted IS NOT 0 ',
+          sql: 'SELECT * FROM Media WHERE isAux = 0 AND  isDeleted <> 0 ',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),

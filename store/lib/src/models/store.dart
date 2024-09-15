@@ -26,6 +26,8 @@ enum DBQueries {
   mediaDeleted,
   mediaByIdList,
   mediaByNoteID,
+  mediaDownloadPending,
+  previewDownloadPending,
 
   notesAll,
   notesByMediaId,
