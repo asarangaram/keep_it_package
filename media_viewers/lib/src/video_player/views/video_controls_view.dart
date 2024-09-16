@@ -107,14 +107,17 @@ class VideoControlsState extends ConsumerState<VideoControlsView> {
                 children: [
                   IconButton(
                     icon: Icon(
-                      video.isPlaying ? Icons.pause : Icons.play_arrow,
+                      video.isPlaying
+                          ? clIcons.playerPause
+                          : clIcons.playerPlay,
                     ),
                     onPressed: onPlayPause,
                   ),
                   AudioControlBuilder(
                     controller: widget.controller,
-                    builder: (volume) =>
-                        Icon(volume == 0 ? Icons.volume_off : Icons.volume_up),
+                    builder: (volume) => Icon(
+                      volume == 0 ? clIcons.audioMuted : clIcons.audioUnmuted,
+                    ),
                   ),
                   const Spacer(),
                   Flexible(

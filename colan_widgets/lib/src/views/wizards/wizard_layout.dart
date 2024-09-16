@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../basics/cl_circled_icon.dart';
+import '../../theme/models/cl_icons.dart';
 import '../../theme/state/cl_theme.dart';
 import '../appearance/cl_fullscreen_box.dart';
 import '../appearance/keep_it_main_view.dart';
@@ -47,7 +48,7 @@ class WizardLayout extends StatelessWidget {
                 ...actions!.map((e) => (context, quickMenuScopeKey) => e),
               if (onCancel != null)
                 (context, quickMenuScopeKey) => CircledIcon(
-                      Icons.close,
+                      clIcons.closeFullscreen,
                       onTap: onCancel,
                     ),
             ],

@@ -138,7 +138,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
                   setState(() {});
                 },
               ),
-              CLButtonIcon.small(clIcons.saveChangeNote, onTap: onEditDone),
+              CLButtonIcon.small(clIcons.save, onTap: onEditDone),
             ] else if (widget.note != null) ...[
               Container(),
               CLButtonIcon.small(clIcons.discardChangeNote, onTap: onEditDone),

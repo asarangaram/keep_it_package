@@ -35,7 +35,6 @@ class CLIcons {
   final openNotes = MdiIcons.notebookEdit;
   final closeNotes = MdiIcons.notebookCheck;
   final closeFullscreen = MdiIcons.close;
-
   final imageEdit = MdiIcons.pencil;
   final imageMove = MdiIcons.imageMove;
   final imageMoveAll = MdiIcons.imageMove;
@@ -52,7 +51,7 @@ class CLIcons {
   final next = MdiIcons.arrowRight;
   final deleteNote = MdiIcons.delete;
   final undoNote = MdiIcons.undoVariant;
-  final saveChangeNote = MdiIcons.contentSave;
+  final save = MdiIcons.contentSave;
   final discardChangeNote = MdiIcons.close;
   final hideKeyboard = MdiIcons.keyboardClose;
   final navigatePinPage = MdiIcons.pin;
@@ -64,8 +63,25 @@ class CLIcons {
   final imageEditRotateLeft = MdiIcons.rotateLeft;
   final imageEditFlipHirizontal = MdiIcons.flipHorizontal;
   final imageEditFlipVertical = MdiIcons.flipVertical;
+  final imageDelete = Icons.delete_rounded;
   final audioMuted = MdiIcons.volumeOff;
   final audioUnmuted = MdiIcons.volumeHigh;
+  final itemSelected = Icons.check;
+  final itemPartiallySelected = Icons.indeterminate_check_box_outlined;
+  final itemNotSelected = Icons.check_box_outline_blank;
+  final error = Icons.warning;
+  final insertItem = Icons.add;
+  final deleteItem = Icons.delete;
+  final down = Icons.arrow_circle_down;
+  final up = Icons.arrow_circle_up;
+  final brokenImage = Icons.broken_image_outlined;
+  final playerPause = Icons.pause;
+  final playerPlay = Icons.play_arrow;
+  final playerStop = Icons.stop;
+  final device = Icons.image;
+  final inSync = Icons.check;
+  final extraMenu = Icons.more_vert;
+  final cameraSettings = Icons.settings;
 }
 
 CLIcons clIcons = CLIcons();

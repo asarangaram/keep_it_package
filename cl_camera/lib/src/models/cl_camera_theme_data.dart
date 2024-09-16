@@ -29,6 +29,7 @@ class CLCameraThemeData {
   final IconData popMenuAnchor;
   final IconData popMenuSelectedItem;
   final IconData pagePop;
+  final IconData cameraSettings;
 
   final TextStyle displayTextStyle;
   final double displayIconSize;
@@ -58,6 +59,7 @@ class CLCameraThemeData {
     required this.displayTextStyle,
     required this.displayIconSize,
     required this.textStyle,
+    required this.cameraSettings,
   });
 
   CLCameraThemeData copyWith({
@@ -81,6 +83,7 @@ class CLCameraThemeData {
     IconData? popMenuAnchor,
     IconData? popMenuSelectedItem,
     IconData? pagePop,
+    IconData? cameraSettings,
     TextStyle? displayTextStyle,
     double? displayIconSize,
     TextStyle? textStyle,
@@ -106,6 +109,7 @@ class CLCameraThemeData {
       popMenuAnchor: popMenuAnchor ?? this.popMenuAnchor,
       popMenuSelectedItem: popMenuSelectedItem ?? this.popMenuSelectedItem,
       pagePop: pagePop ?? this.pagePop,
+      cameraSettings: cameraSettings ?? this.cameraSettings,
       displayTextStyle: displayTextStyle ?? this.displayTextStyle,
       displayIconSize: displayIconSize ?? this.displayIconSize,
       textStyle: textStyle ?? this.textStyle,
@@ -115,7 +119,7 @@ class CLCameraThemeData {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLCameraThemeData(iconCamera: $iconCamera, iconMicrophone: $iconMicrophone, iconLocation: $iconLocation, imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, displayTextStyle: $displayTextStyle, displayIconSize: $displayIconSize, textStyle: $textStyle)';
+    return 'CLCameraThemeData(iconCamera: $iconCamera, iconMicrophone: $iconMicrophone, iconLocation: $iconLocation, imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, cameraSettings: $cameraSettings, displayTextStyle: $displayTextStyle, displayIconSize: $displayIconSize, textStyle: $textStyle)';
   }
 
   @override
@@ -142,6 +146,7 @@ class CLCameraThemeData {
         other.popMenuAnchor == popMenuAnchor &&
         other.popMenuSelectedItem == popMenuSelectedItem &&
         other.pagePop == pagePop &&
+        other.cameraSettings == cameraSettings &&
         other.displayTextStyle == displayTextStyle &&
         other.displayIconSize == displayIconSize &&
         other.textStyle == textStyle;
@@ -169,6 +174,7 @@ class CLCameraThemeData {
         popMenuAnchor.hashCode ^
         popMenuSelectedItem.hashCode ^
         pagePop.hashCode ^
+        cameraSettings.hashCode ^
         displayTextStyle.hashCode ^
         displayIconSize.hashCode ^
         textStyle.hashCode;

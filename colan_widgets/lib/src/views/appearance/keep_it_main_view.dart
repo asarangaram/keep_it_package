@@ -53,12 +53,12 @@ class KeepItMainViewState extends ConsumerState<KeepItMainView> {
                 [
                   CLMenuItem(
                     title: 'Paste',
-                    icon: Icons.content_paste_go_outlined,
+                    icon: clIcons.content_paste_go_outlined,
                   ),
                   CLMenuItem(
                     title: 'Settings',
-                    icon: Icons.settings,
-                    /*Icons.settings_applications_sharp,*/
+                    icon: clIcons.settings,
+                    /*clIcons.settings_applications_sharp,*/
                   ),
                 ],
               ], */

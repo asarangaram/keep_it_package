@@ -65,7 +65,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                   actionMenu: [
                     CLMenuItem(
                       title: 'Select File',
-                      icon: Icons.add,
+                      icon: clIcons.insertItem,
                       onTap: () async {
                         await IncomingMediaMonitor.onPickFiles(
                           context,

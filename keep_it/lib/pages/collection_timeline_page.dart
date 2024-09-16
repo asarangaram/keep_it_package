@@ -106,7 +106,7 @@ class TimeLineView extends ConsumerWidget {
           actionMenu: [
             CLMenuItem(
               title: 'Select File',
-              icon: Icons.add,
+              icon: clIcons.insertItem,
               onTap: () async {
                 await IncomingMediaMonitor.onPickFiles(
                   context,
@@ -134,7 +134,7 @@ class TimeLineView extends ConsumerWidget {
             return [
               CLMenuItem(
                 title: 'Delete',
-                icon: Icons.delete,
+                icon: clIcons.deleteItem,
                 onTap: () async {
                   final confirmed = await ConfirmAction.deleteMediaMultiple(
                         context,

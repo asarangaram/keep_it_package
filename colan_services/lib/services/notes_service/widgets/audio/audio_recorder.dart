@@ -75,7 +75,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
       return SizedBox(
         width: kMinInteractiveDimension,
         child: CLButtonIcon.small(
-          Icons.save,
+          clIcons.save,
           onTap: _sendAudio,
         ),
       );
@@ -84,8 +84,8 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
     if (widget.editMode) {
       return IconButton(
         onPressed: widget.onEditCancel,
-        icon: const Icon(
-          Icons.check,
+        icon: Icon(
+          clIcons.doneEditMedia,
         ),
         color: Colors.white,
         iconSize: 28,
@@ -94,7 +94,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
     return SizedBox(
       width: kMinInteractiveDimension,
       child: CLButtonIcon.small(
-        isRecording ? Icons.stop : Icons.mic,
+        isRecording ? clIcons.playerStop : clIcons.microphone,
         onTap: _startOrStopRecording,
       ),
     );

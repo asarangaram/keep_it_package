@@ -203,7 +203,7 @@ class ControllerMenu extends StatelessWidget {
                         ),
                       if (onDelete != null)
                         CLButtonIcon.small(
-                          Icons.delete_rounded,
+                          clIcons.imageDelete,
                           color: Theme.of(context).colorScheme.surface,
                           onTap: onDelete,
                         ),

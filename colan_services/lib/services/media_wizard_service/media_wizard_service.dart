@@ -201,7 +201,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
           : WizardDialog(
               option1: CLMenuItem(
                 title: keepActionLabel,
-                icon: Icons.save,
+                icon: clIcons.save,
                 onTap: hasCandidate
                     ? () async {
                         keepSelected = true;
@@ -214,7 +214,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               option2: (widget.type.canDelete)
                   ? CLMenuItem(
                       title: deleteActionLabel,
-                      icon: Icons.delete,
+                      icon: clIcons.deleteItem,
                       onTap: hasCandidate
                           ? () async {
                               final confirmed =

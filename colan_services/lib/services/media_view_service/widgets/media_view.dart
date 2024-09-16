@@ -135,7 +135,7 @@ class MediaView extends StatelessWidget {
                                 ), // Color for the circular container
                           ),
                           child: CLIcon.veryLarge(
-                            Icons.play_arrow_sharp,
+                            clIcons.playerPlay,
                             color:
                                 CLTheme.of(context).colors.iconColorTransparent,
                           ),
@@ -152,10 +152,11 @@ class MediaView extends StatelessWidget {
                               'assets/icon/cloud_on_lan_128px_color.png',
                               colorBlendMode: BlendMode.dstOut,
                             ),
-                            const Center(
+                            Center(
                               child: CLIcon.veryLarge(
-                                Icons.check,
-                                color: Color.fromARGB(0xFF, 0x00, 0xFF, 0xEC),
+                                clIcons.inSync,
+                                color: const Color.fromARGB(
+                                    0xFF, 0x00, 0xFF, 0xEC),
                               ),
                             ),
                           ],

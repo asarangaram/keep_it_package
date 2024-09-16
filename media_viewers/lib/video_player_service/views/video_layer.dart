@@ -54,8 +54,8 @@ class VideoLayer extends ConsumerWidget {
                             builder: (volume) {
                               return CLIcon.standard(
                                 volume == 0
-                                    ? Icons.volume_off
-                                    : Icons.volume_up,
+                                    ? clIcons.audioMuted
+                                    : clIcons.audioUnmuted,
                                 color: Colors.white,
                               );
                             },

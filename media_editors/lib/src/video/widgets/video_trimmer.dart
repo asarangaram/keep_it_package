@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
@@ -157,13 +158,13 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
               Expanded(
                 child: TextButton(
                   child: _isPlaying
-                      ? const Icon(
-                          Icons.pause,
+                      ? Icon(
+                          clIcons.playerPause,
                           size: 80,
                           color: Colors.white,
                         )
-                      : const Icon(
-                          Icons.play_arrow,
+                      : Icon(
+                          clIcons.playerPlay,
                           size: 80,
                           color: Colors.white,
                         ),
@@ -192,7 +193,9 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                     }
                   },
                   child: Icon(
-                    hasEditAction ? Icons.check : Icons.close,
+                    hasEditAction
+                        ? clIcons.doneEditMedia
+                        : clIcons.closeFullscreen,
                     size: 60,
                     color: hasEditAction ? Colors.red : Colors.white,
                   ),

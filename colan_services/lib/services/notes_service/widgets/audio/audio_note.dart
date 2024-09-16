@@ -105,7 +105,9 @@ class _AudioPlayerChipState extends State<AudioPlayerChip> {
     return CLCustomChip(
       avatar: validAudio
           ? CLIcon.tiny(
-              controller.playerState.isPlaying ? Icons.stop : Icons.play_arrow,
+              controller.playerState.isPlaying
+                  ? clIcons.playerPause
+                  : clIcons.playerPlay,
               color: theme.foregroundColor,
             )
           : null,
@@ -159,8 +161,8 @@ class AudioFileChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CLCustomChip(
-      avatar: const CLIcon.tiny(
-        Icons.delete,
+      avatar: CLIcon.tiny(
+        clIcons.deleteNote,
         color: Colors.red,
       ),
       label: SizedBox.fromSize(

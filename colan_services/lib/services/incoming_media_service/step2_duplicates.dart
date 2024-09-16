@@ -84,7 +84,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                 content: Text('Do you want all the above media to be moved '
                     'to $collectionLablel or skipped?'),
                 option1: CLMenuItem(
-                  icon: Icons.abc,
+                  icon: clIcons.placeHolder,
                   title: 'Move',
                   onTap: () async {
                     widget.onDone(
@@ -94,7 +94,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                   },
                 ),
                 option2: CLMenuItem(
-                  icon: Icons.abc,
+                  icon: clIcons.placeHolder,
                   title: 'Skip',
                   onTap: () async {
                     widget.onDone(

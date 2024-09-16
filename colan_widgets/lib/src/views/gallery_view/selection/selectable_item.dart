@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../basics/cl_icon.dart';
+import '../../../theme/models/cl_icons.dart';
 import '../../../theme/state/cl_theme.dart';
 
 class SelectableItem extends StatelessWidget {
@@ -34,7 +35,7 @@ class SelectableItem extends StatelessWidget {
               child: Container(
                 decoration: decoration,
                 child: isSelected
-                    ? const Center(child: OverlayIcon(Icons.check))
+                    ? Center(child: OverlayIcon(clIcons.itemSelected))
                     : null,
               ),
             ),

@@ -24,6 +24,7 @@ class DefaultCLCameraIcons extends CLCameraThemeData {
           invokeCamera: clIcons.invokeCamera,
           popMenuAnchor: clIcons.popMenuAnchor,
           popMenuSelectedItem: clIcons.popMenuSelectedItem,
+          cameraSettings: clIcons.cameraSettings,
           pagePop: clIcons.pagePop,
           displayTextStyle: const TextStyle(fontSize: 20),
           displayIconSize: 35,
