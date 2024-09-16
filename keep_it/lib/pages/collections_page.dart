@@ -3,6 +3,7 @@ import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import '../widgets/folders_and_files/collection_as_folder.dart';
@@ -61,14 +62,28 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     quickMenuScopeKey: quickMenuScopeKey,
                   ),
                   identifier: identifier,
-                  onPickFiles: (BuildContext c) async =>
-                      IncomingMediaMonitor.onPickFiles(
-                    c,
-                    ref,
-                  ),
-                  onCameraCapture: ColanPlatformSupport.cameraUnsupported
-                      ? null
-                      : Navigators.openCamera,
+                  actionMenu: [
+                    CLMenuItem(
+                      title: 'Select File',
+                      icon: Icons.add,
+                      onTap: () async {
+                        await IncomingMediaMonitor.onPickFiles(
+                          context,
+                          ref,
+                        );
+                        return true;
+                      },
+                    ),
+                    if (ColanPlatformSupport.cameraSupported)
+                      CLMenuItem(
+                        title: 'Open Camera',
+                        icon: MdiIcons.camera,
+                        onTap: () async {
+                          await Navigators.openCamera(context);
+                          return true;
+                        },
+                      ),
+                  ],
                   onRefresh: () async =>
                       ref.read(storeProvider.notifier).onRefresh(),
                 ),

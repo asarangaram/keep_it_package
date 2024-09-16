@@ -60,6 +60,7 @@ class PinnedMediaPage extends ConsumerWidget {
                 columns: 2,
                 onRefresh: () async =>
                     ref.read(storeProvider.notifier).onRefresh(),
+                actionMenu: const [],
                 selectionActions: (context, items) {
                   return [
                     CLMenuItem(

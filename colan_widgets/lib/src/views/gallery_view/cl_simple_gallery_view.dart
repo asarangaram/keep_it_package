@@ -24,8 +24,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.columns,
     required this.backButton,
-    this.onPickFiles,
-    this.onCameraCapture,
+    required this.actionMenu,
     super.key,
     this.onRefresh,
     this.selectionActions,
@@ -37,8 +36,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
 
   final Widget emptyState;
   final String identifier;
-  final void Function(BuildContext context)? onPickFiles;
-  final void Function(BuildContext context)? onCameraCapture;
+  final List<CLMenuItem> actionMenu;
 
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
@@ -64,18 +62,14 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
           MdiIcons.arrowLeft,
           onTap: () => CLPopScreen.onPop(context),
         ),
-        actionsBuilder: [
-          if (widget.onCameraCapture != null)
-            (context, quickMenuScopeKey) => CLButtonIcon.small(
-                  MdiIcons.camera,
-                  onTap: () => widget.onCameraCapture?.call(context),
-                ),
-          if (widget.onPickFiles != null)
-            (context, quickMenuScopeKey) => CLButtonIcon.standard(
-                  Icons.add,
-                  onTap: () => widget.onPickFiles?.call(context),
-                ),
-        ],
+        actionsBuilder: widget.actionMenu
+            .map(
+              (e) => (_, __) => CLButtonIcon.small(
+                    e.icon,
+                    onTap: e.onTap,
+                  ),
+            )
+            .toList(),
         pageBuilder: (context, quickMenuScopeKey) => widget.emptyState,
       );
     } else {
@@ -99,18 +93,14 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                   ),
             if (!isSelectionMode)
               (context, quickMenuScopeKey) => Row(
-                    children: [
-                      if (widget.onPickFiles != null)
-                        CLButtonIcon.standard(
-                          Icons.add,
-                          onTap: () => widget.onPickFiles?.call(context),
-                        ),
-                      if (widget.onCameraCapture != null)
-                        CLButtonIcon.small(
-                          MdiIcons.camera,
-                          onTap: () => widget.onCameraCapture?.call(context),
-                        ),
-                    ],
+                    children: widget.actionMenu
+                        .map(
+                          (e) => CLButtonIcon.small(
+                            e.icon,
+                            onTap: e.onTap,
+                          ),
+                        )
+                        .toList(),
                   ),
           ],
           pageBuilder: (context, quickMenuScopeKey) {

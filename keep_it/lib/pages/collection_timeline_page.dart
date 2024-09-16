@@ -28,6 +28,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
           return TimeLineView(
             label: collection?.label ?? 'All Media',
             items: items,
+            collection: collection,
             actionControl: actionControl,
             parentIdentifier:
                 'Gallery View Media CollectionId: ${collection?.id}',
@@ -45,19 +46,6 @@ class CollectionTimeLinePage extends ConsumerWidget {
 
               return true;
             },
-            onPickFiles: (BuildContext c) async {
-              if (c.mounted) {
-                await IncomingMediaMonitor.onPickFiles(
-                  c,
-                  ref,
-                  collection: collection,
-                );
-              }
-            },
-            onCameraCapture: ColanPlatformSupport.cameraUnsupported
-                ? null
-                : (ctx) =>
-                    Navigators.openCamera(ctx, collectionId: collection?.id),
           );
         },
       );
@@ -70,8 +58,7 @@ class TimeLineView extends ConsumerWidget {
     required this.items,
     required this.onTapMedia,
     required this.actionControl,
-    this.onPickFiles,
-    this.onCameraCapture,
+    required this.collection,
     super.key,
   });
 
@@ -82,11 +69,9 @@ class TimeLineView extends ConsumerWidget {
     CLMedia media, {
     required String parentIdentifier,
   }) onTapMedia;
-  final void Function(BuildContext context)? onPickFiles;
-  final void Function(
-    BuildContext context,
-  )? onCameraCapture;
+
   final ActionControl actionControl;
+  final Collection? collection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -118,8 +103,32 @@ class TimeLineView extends ConsumerWidget {
             quickMenuScopeKey: quickMenuScopeKey,
             actionControl: actionControl,
           ),
-          onPickFiles: onPickFiles,
-          onCameraCapture: onCameraCapture,
+          actionMenu: [
+            CLMenuItem(
+              title: 'Select File',
+              icon: Icons.add,
+              onTap: () async {
+                await IncomingMediaMonitor.onPickFiles(
+                  context,
+                  ref,
+                  collection: collection,
+                );
+                return true;
+              },
+            ),
+            if (ColanPlatformSupport.cameraSupported)
+              CLMenuItem(
+                title: 'Open Camera',
+                icon: MdiIcons.camera,
+                onTap: () async {
+                  await Navigators.openCamera(
+                    context,
+                    collectionId: collection?.id,
+                  );
+                  return true;
+                },
+              ),
+          ],
           onRefresh: () async => ref.read(storeProvider.notifier).onRefresh(),
           selectionActions: (context, items) {
             return [
