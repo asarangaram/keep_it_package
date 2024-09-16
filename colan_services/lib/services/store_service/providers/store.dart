@@ -97,54 +97,73 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<void> syncServer() async {
     if (myServer != null) {
-      final stopwatch = Stopwatch()..start();
-      final updatesFromServer = await myServer!.toStoreSync(store);
+      final updatesFromServer = <CLMedia>[];
 
-      for (final media in updatesFromServer) {
-        await store.upsertMedia(media);
+      for (final media in await myServer!.toStoreSync(store)) {
+        final CLMedia? mediaInDB;
+        final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
+        final previewFile = File(_currentState!.getPreviewAbsolutePath(media));
+        if (!mediaFile.existsSync() ||
+            (await mediaFile.checksum != media.md5String)) {
+          await mediaFile.deleteIfExists();
+          await previewFile.deleteIfExists();
+          mediaInDB = await store.upsertMedia(
+            media.copyWith(isPreviewCached: false, isMediaCached: false),
+          );
+        } else {
+          mediaInDB = await store.upsertMedia(media);
+        }
+        if (mediaInDB != null) {
+          updatesFromServer.add(mediaInDB);
+        }
       }
-      stopwatch.stop();
-      print('took ${stopwatch.elapsed} to download DB');
 
       await refreshMediaMultiple(updatesFromServer);
 
-      stopwatch.start();
-
       final group = DateTime.now().millisecondsSinceEpoch.toString();
-      for (final media in updatesFromServer) {
-        final mediaInDB = await store.upsertMedia(media);
+      {
+        final q = store.getQuery(
+          DBQueries.previewDownloadPending,
+        ) as StoreQuery<CLMedia>;
+        final items = await store.readMultiple(q);
 
-        if (mediaInDB != null) {
-          /// Delete the files if there is a mismatch
-          final mediaFile =
-              File(_currentState!.getMediaAbsolutePath(mediaInDB));
-          final previewFile =
-              File(_currentState!.getPreviewAbsolutePath(mediaInDB));
-          if (!mediaFile.existsSync() ||
-              (await mediaFile.checksum != media.md5String)) {
-            await mediaFile.deleteIfExists();
-            await previewFile.deleteIfExists();
+        for (final media in items) {
+          if (media != null) {
+            final previewFile =
+                File(_currentState!.getPreviewAbsolutePath(media));
+
+            await triggerDownload(
+              media,
+              previewFile,
+              markPreviewAsDownloaded,
+              startPreviewDownload,
+              condition: true,
+              group: group,
+            );
           }
-          await triggerDownload(
-            mediaInDB,
-            previewFile,
-            markPreviewAsDownloaded,
-            startPreviewDownload,
-            condition: mediaInDB.isPreviewWaitingForDownload,
-            group: group,
-          );
-          await triggerDownload(
-            mediaInDB,
-            mediaFile,
-            markMediaAsDownloaded,
-            startMediaDownload,
-            condition: mediaInDB.isMediaWaitingForDownload,
-            group: group,
-          );
         }
       }
-      stopwatch.stop();
-      print('took ${stopwatch.elapsed} to start all downloads');
+      {
+        final q = store.getQuery(
+          DBQueries.mediaDownloadPending,
+        ) as StoreQuery<CLMedia>;
+        final items = await store.readMultiple(q);
+
+        for (final media in items) {
+          if (media != null) {
+            final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
+
+            await triggerDownload(
+              media,
+              mediaFile,
+              markMediaAsDownloaded,
+              startMediaDownload,
+              condition: media.isMediaWaitingForDownload,
+              group: group,
+            );
+          }
+        }
+      }
     }
   }
 

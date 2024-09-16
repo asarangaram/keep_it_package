@@ -63,12 +63,37 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
             ),
             child: NotificationService(
               child: CLPopScreen.onSwipe(
-                child: widget.child,
+                child: ChildWithDownloadProgress(
+                  child: widget.child,
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class ChildWithDownloadProgress extends ConsumerWidget {
+  const ChildWithDownloadProgress({required this.child, super.key});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final runningTasks = ref.watch(runningTasksProvider).whenOrNull(
+          data: (runningTasks) => runningTasks.isEmpty ? null : runningTasks,
+        );
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(child: child),
+        if (runningTasks != null) ...[
+          Text('Running ${runningTasks.length}'),
+          const LinearProgressIndicator(backgroundColor: Colors.red),
+        ],
+      ],
     );
   }
 }

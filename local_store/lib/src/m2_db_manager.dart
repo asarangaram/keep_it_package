@@ -116,7 +116,12 @@ class DBManager extends Store {
   Future<CLMedia?> updateMediaFromMap(Map<String, dynamic> map) async =>
       db.writeTransaction((tx) async {
         if (await dbWriter.updateMediaFromMap(tx, map)) {
-          return getMediaById(map['id'] as int);
+          final q = dbReader.getQuery(
+            DBQueries.mediaById,
+            parameters: [map['id'] as int],
+          ) as StoreQuery<CLMedia>;
+
+          return DBReader(tx).read(q);
         }
         return null;
       });

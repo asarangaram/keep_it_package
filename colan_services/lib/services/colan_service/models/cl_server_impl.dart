@@ -162,8 +162,7 @@ class CLServerImpl extends CLServer {
     ];
     final updatesFromServer = <CLMedia>[];
     final allFromServer = <CLMedia>[];
-    for (final (index, m) in mediaMap.indexed) {
-      print('Processing $index / ${mediaMap.length}');
+    for (final m in mediaMap) {
       final map = m as Map<String, dynamic>;
 
       /// IF fExt is not present, try updating from content_type
@@ -194,10 +193,10 @@ class CLServerImpl extends CLServer {
               await store.getMediaByMD5String(map['md5String'] as String);
       final updatedMedia = mediaFromServerMap(mediaInDB, map);
       if (updatedMedia != mediaInDB) {
-        if (mediaInDB != null) {
+        /* if (mediaInDB != null) {
           final diff = MapDiff.log(mediaInDB.toMap(), updatedMedia.toMap());
-          print(diff);
-        }
+          
+        } */
         updatesFromServer
             .add((await store.upsertMedia(updatedMedia)) ?? updatedMedia);
       }

@@ -75,13 +75,13 @@ class Queries {
         ),
       DBQueries.mediaDownloadPending => DBQuery<CLMedia>(
           sql:
-              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isPreviewCached = 0 AND previewLog IS NULL',
+              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isMediaCached = 0 AND mediaLog  IS NULL',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.previewDownloadPending => DBQuery<CLMedia>(
           sql:
-              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isMediaCached = 0 AND mediaLog IS NULL',
+              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isPreviewCached  = 0 AND previewLog IS NULL',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),

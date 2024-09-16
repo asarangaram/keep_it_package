@@ -8,6 +8,12 @@ class Downloader {
   Downloader({this.maxConcurrentTasks = 2}) {
     fileDownloader = FileDownloader()..trackTasks();
     FileDownloader().updates.listen((update) {
+      fileDownloader.database.allRecords().then((records) {
+        runningTasksStreamController.add(
+          records.where((e) => e.status == TaskStatus.running).toList(),
+        );
+      });
+
       final handler = downloads[update.task.taskId];
 
       switch (update) {
@@ -20,11 +26,6 @@ class Downloader {
             case TaskStatus.canceled:
               handler?.call(errorLog: 'Download cancelled, try again');
             case TaskStatus.running:
-              fileDownloader.database.allRecords().then((records) {
-                runningTasksStreamController.add(
-                  records.where((e) => e.status == TaskStatus.running).toList(),
-                );
-              });
             case TaskStatus.enqueued:
             case TaskStatus.notFound:
             case TaskStatus.paused:
