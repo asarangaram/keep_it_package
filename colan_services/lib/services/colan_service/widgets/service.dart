@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../models/cl_server.dart';
 import '../models/servers.dart';
@@ -17,7 +16,7 @@ class CloudOnLanService extends ConsumerWidget {
 
     return Column(
       children: [
-        CLIconLabelled.large(MdiIcons.accessPointNetwork, 'Servers'),
+        CLIconLabelled.large(clIcons.serversList, 'Servers'),
         Expanded(
           child: switch (servers) {
             (final Servers s) when !s.lanStatus => const NoConnection(),
@@ -51,7 +50,7 @@ class NoConnection extends ConsumerWidget {
         children: [
           Expanded(
             child: CLIconLabelled.large(
-              MdiIcons.accessPointNetworkOff,
+              clIcons.noNetwork,
               'No Network',
             ),
           ),
@@ -97,7 +96,7 @@ class ServerSelection extends ConsumerWidget {
                       ),
                       trailing: FittedBox(
                         child: CLIconLabelled.large(
-                          MdiIcons.accessPointNetwork,
+                          clIcons.connectToServer,
                           'Connect',
                         ),
                       ),
@@ -150,7 +149,7 @@ class ServerPageNavigationControls extends ConsumerWidget {
           if (CLPopScreen.canPop(context))
             CLPopScreen.onTap(
               child: CLButtonIcon.large(
-                MdiIcons.arrowLeft,
+                clIcons.pagePop,
               ),
             )
           else
@@ -158,7 +157,7 @@ class ServerPageNavigationControls extends ConsumerWidget {
           Container(),
           if (servers.lanStatus)
             CLButtonIcon.large(
-              MdiIcons.rotate3DVariant,
+              clIcons.searchForServers,
               onTap: () {
                 ref.read(serversProvider.notifier).search();
               },

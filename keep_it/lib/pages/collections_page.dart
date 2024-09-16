@@ -3,7 +3,7 @@ import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:store/store.dart';
 
 import '../widgets/folders_and_files/collection_as_folder.dart';
@@ -77,7 +77,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                     if (ColanPlatformSupport.cameraSupported)
                       CLMenuItem(
                         title: 'Open Camera',
-                        icon: MdiIcons.camera,
+                        icon: clIcons.invokeCamera,
                         onTap: () async {
                           await Navigators.openCamera(context);
                           return true;

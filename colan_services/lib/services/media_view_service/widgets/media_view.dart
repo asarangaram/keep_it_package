@@ -4,7 +4,7 @@ import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:media_editors/media_editors.dart';
 import 'package:media_viewers/media_viewers.dart';
 import 'package:store/store.dart';
@@ -111,8 +111,8 @@ class MediaView extends StatelessWidget {
                               angle: math.pi / 4,
                               child: CLIcon.veryLarge(
                                 snapshot.data ?? false
-                                    ? MdiIcons.pinOffOutline
-                                    : MdiIcons.pin,
+                                    ? clIcons.brokenPin
+                                    : clIcons.pinned,
                                 color: snapshot.data ?? false
                                     ? Colors.red
                                     : Colors.blue,

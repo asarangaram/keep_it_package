@@ -5,7 +5,7 @@ import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:store/store.dart';
 
 import '../widgets/folders_and_files/media_as_file.dart';
@@ -87,7 +87,7 @@ class TimeLineView extends ConsumerWidget {
               : Padding(
                   padding: const EdgeInsets.only(right: 16),
                   child: CLButtonIcon.small(
-                    MdiIcons.arrowLeft,
+                    clIcons.pagePop,
                     onTap: () => CLPopScreen.onPop(context),
                   ),
                 ),
@@ -119,7 +119,7 @@ class TimeLineView extends ConsumerWidget {
             if (ColanPlatformSupport.cameraSupported)
               CLMenuItem(
                 title: 'Open Camera',
-                icon: MdiIcons.camera,
+                icon: clIcons.invokeCamera,
                 onTap: () async {
                   await Navigators.openCamera(
                     context,
@@ -152,7 +152,7 @@ class TimeLineView extends ConsumerWidget {
               ),
               CLMenuItem(
                 title: 'Move',
-                icon: MdiIcons.imageMove,
+                icon: clIcons.imageMoveAll,
                 onTap: () => MediaWizardService.openWizard(
                   context,
                   ref,
@@ -164,13 +164,13 @@ class TimeLineView extends ConsumerWidget {
               ),
               CLMenuItem(
                 title: 'Share',
-                icon: MdiIcons.shareAll,
+                icon: clIcons.imageShareAll,
                 onTap: () => theStore.shareMedia(context, items),
               ),
               if (ColanPlatformSupport.isMobilePlatform)
                 CLMenuItem(
                   title: 'Pin',
-                  icon: MdiIcons.pin,
+                  icon: clIcons.pinAll,
                   onTap: () =>
                       ref.read(storeProvider.notifier).togglePinMultiple(items),
                 ),

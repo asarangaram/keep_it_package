@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class WrapStandardQuickMenu extends StatelessWidget {
   const WrapStandardQuickMenu({
@@ -63,13 +62,13 @@ class WrapStandardQuickMenu extends StatelessWidget {
               if (onMove != null)
                 CLMenuItem(
                   title: 'Move',
-                  icon: MdiIcons.imageMove,
+                  icon: clIcons.imageMove,
                   onTap: onMove,
                 ),
               if (onShare != null)
                 CLMenuItem(
                   title: 'Share',
-                  icon: MdiIcons.share,
+                  icon: clIcons.imageShare,
                   onTap: () async {
                     return onShare!();
                   },

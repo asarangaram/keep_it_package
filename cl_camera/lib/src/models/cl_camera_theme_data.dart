@@ -179,7 +179,7 @@ class CLCameraThemeData {
       Permission.camera => iconCamera,
       Permission.microphone => iconMicrophone,
       Permission.location => iconLocation,
-      _ => Icons.device_unknown_outlined // Should not occur
+      _ => throw Exception('No such permission required')
     };
   }
 }

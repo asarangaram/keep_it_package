@@ -19,7 +19,6 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.5.1
   image: ^4.2.0
-  material_design_icons_flutter: ^7.0.7296
   shared_preferences: ^2.3.2
   video_trimmer: ^3.0.1
 

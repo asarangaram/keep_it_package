@@ -50,6 +50,7 @@ class DownloaderStatus {
 
   @override
   String toString() {
+    // ignore: lines_longer_than_80_chars
     return 'DownloaderStatus(running: $running, waiting: $waiting, completed: $completed, unknown: $unknown)';
   }
 }

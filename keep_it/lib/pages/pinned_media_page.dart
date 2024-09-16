@@ -4,7 +4,7 @@ import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:store/store.dart';
 
 class PinnedMediaPage extends ConsumerWidget {
@@ -65,7 +65,7 @@ class PinnedMediaPage extends ConsumerWidget {
                   return [
                     CLMenuItem(
                       title: 'Remove Selected Pins',
-                      icon: MdiIcons.pinOffOutline,
+                      icon: clIcons.unPinAll,
                       onTap: () async {
                         await ref
                             .read(storeProvider.notifier)

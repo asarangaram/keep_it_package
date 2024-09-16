@@ -23,6 +23,7 @@ export 'src/models/cl_scale_type.dart';
 export 'src/models/progress.dart';
 export 'src/models/universal_media_source.dart';
 export 'src/theme/models/cl_colors.dart';
+export 'src/theme/models/cl_icons.dart';
 export 'src/theme/models/note_theme.dart';
 export 'src/theme/state/cl_theme.dart';
 export 'src/utils/platform_support.dart';

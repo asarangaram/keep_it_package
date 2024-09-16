@@ -2,7 +2,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SettingsMainPage extends ConsumerWidget {
   const SettingsMainPage({super.key});
@@ -20,9 +19,9 @@ class SettingsMainPage extends ConsumerWidget {
               children: [
                 if (deletedMedia.isNotEmpty)
                   ListTile(
-                    leading: Icon(MdiIcons.delete),
+                    leading: Icon(clIcons.recycleBin),
                     trailing: IconButton(
-                      icon: Icon(MdiIcons.arrowRight),
+                      icon: Icon(clIcons.gotoPage),
                       onPressed: () async {
                         await MediaWizardService.openWizard(
                           context,

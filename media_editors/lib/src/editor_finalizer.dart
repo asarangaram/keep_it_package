@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 enum EditorFinalActions {
   save,
@@ -39,7 +38,7 @@ class EditorFinalizer extends StatelessWidget {
         },
         child: child ??
             CLIcon.small(
-              MdiIcons.close,
+              clIcons.closeFullscreen,
               color: CLTheme.of(context).colors.iconColor,
             ),
       );
@@ -47,7 +46,7 @@ class EditorFinalizer extends StatelessWidget {
     return PopupMenuButton<EditorFinalActions>(
       child: child ??
           CLIcon.small(
-            MdiIcons.check,
+            clIcons.doneEditMedia,
             color: Colors.red, //CLTheme.of(context).colors.iconColor,
           ),
       onSelected: (EditorFinalActions value) async {

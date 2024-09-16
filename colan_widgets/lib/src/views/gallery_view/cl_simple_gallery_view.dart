@@ -1,13 +1,13 @@
 import 'package:colan_widgets/src/extensions/ext_cl_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../basics/cl_button.dart';
 import '../../basics/cl_pop_screen.dart';
 import '../../basics/cl_refresh_indicator.dart';
 import '../../models/cl_menu_item.dart';
 import '../../models/typedefs.dart';
+import '../../theme/models/cl_icons.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
 import '../draggable/menu.dart';
@@ -59,7 +59,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
         backButton: CLButtonIcon.small(
-          MdiIcons.arrowLeft,
+          clIcons.pagePop,
           onTap: () => CLPopScreen.onPop(context),
         ),
         actionsBuilder: widget.actionMenu

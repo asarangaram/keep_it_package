@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';
@@ -34,19 +34,19 @@ class KeepItApp implements AppDescriptor {
         CLShellRouteDescriptor(
           name: '',
           builder: (context, GoRouterState state) => const CollectionsPage(),
-          iconData: MdiIcons.home,
+          iconData: clIcons.navigateHome,
           label: 'main',
         ),
         CLShellRouteDescriptor(
           name: 'Pinned',
           builder: (context, state) => const PinnedMediaPage(),
-          iconData: MdiIcons.pin,
+          iconData: clIcons.navigatePinPage,
           label: 'Pinned',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
           builder: (context, state) => const SettingsMainPage(),
-          iconData: MdiIcons.cog,
+          iconData: clIcons.navigateSettings,
           label: 'Settings',
         ),
       ];

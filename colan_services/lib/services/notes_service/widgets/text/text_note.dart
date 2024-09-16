@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
 import '../../../basic_page_service/dialogs.dart';
@@ -88,7 +87,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
             controls: [
               Container(),
               CLButtonIcon.small(
-                MdiIcons.delete,
+                clIcons.deleteNote,
                 onTap: () async {
                   final confirmed = await ConfirmAction.deleteNote(
                         context,
@@ -128,7 +127,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
           controls: [
             if (textModified) ...[
               CLButtonIcon.small(
-                MdiIcons.undoVariant,
+                clIcons.undoNote,
                 onTap: () {
                   if (widget.note != null) {
                     textEditingController.text = textOriginal;
@@ -139,14 +138,14 @@ class _TextNoteState extends ConsumerState<TextNote> {
                   setState(() {});
                 },
               ),
-              CLButtonIcon.small(MdiIcons.contentSave, onTap: onEditDone),
+              CLButtonIcon.small(clIcons.saveChangeNote, onTap: onEditDone),
             ] else if (widget.note != null) ...[
               Container(),
-              CLButtonIcon.small(MdiIcons.close, onTap: onEditDone),
+              CLButtonIcon.small(clIcons.discardChangeNote, onTap: onEditDone),
             ] else if (focusNode.hasFocus) ...[
               Container(),
               CLButtonIcon.small(
-                MdiIcons.keyboardClose,
+                clIcons.hideKeyboard,
                 onTap: () {
                   focusNode.unfocus();
                 },

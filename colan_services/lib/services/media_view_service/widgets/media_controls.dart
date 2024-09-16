@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:media_viewers/media_viewers.dart';
 import 'package:store/store.dart';
 
@@ -44,8 +44,8 @@ class MediaControls extends ConsumerWidget {
                 padding: const EdgeInsets.only(left: 8, top: 8),
                 child: CircledIcon(
                   showControl.showNotes
-                      ? MdiIcons.notebookCheck
-                      : MdiIcons.notebookEdit,
+                      ? clIcons.closeNotes
+                      : clIcons.openNotes,
                   onTap: () {
                     showControl.showNotes
                         ? ref.read(showControlsProvider.notifier).hideNotes()
@@ -63,7 +63,7 @@ class MediaControls extends ConsumerWidget {
                 padding: const EdgeInsets.only(right: 8, top: 8),
                 child: CLPopScreen.onTap(
                   child: CircledIcon(
-                    MdiIcons.close,
+                    clIcons.closeFullscreen,
                   ),
                 ),
               ),
@@ -197,7 +197,7 @@ class ControllerMenu extends StatelessWidget {
                     children: [
                       if (onEdit != null)
                         CLButtonIcon.small(
-                          MdiIcons.pencil,
+                          clIcons.imageEdit,
                           color: Theme.of(context).colorScheme.surface,
                           onTap: onEdit,
                         ),
@@ -209,13 +209,13 @@ class ControllerMenu extends StatelessWidget {
                         ),
                       if (onMove != null)
                         CLButtonIcon.small(
-                          MdiIcons.imageMove,
+                          clIcons.imageMove,
                           color: Theme.of(context).colorScheme.surface,
                           onTap: onMove,
                         ),
                       if (onShare != null)
                         CLButtonIcon.small(
-                          MdiIcons.share,
+                          clIcons.imageShare,
                           color: Theme.of(context).colorScheme.surface,
                           onTap: onShare,
                         ),
@@ -224,8 +224,8 @@ class ControllerMenu extends StatelessWidget {
                           angle: math.pi / 4,
                           child: CLButtonIcon.small(
                             media.pin != null
-                                ? MdiIcons.pin
-                                : MdiIcons.pinOutline,
+                                ? clIcons.pinned
+                                : clIcons.notPinned,
                             color: media.pin != null
                                 ? Colors.blue
                                 : Theme.of(context).colorScheme.surface,

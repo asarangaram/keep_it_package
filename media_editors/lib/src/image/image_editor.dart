@@ -5,7 +5,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../editor_finalizer.dart';
 import 'models/aspect_ratio.dart' as aratio;
@@ -96,19 +95,19 @@ class _ImageEditorState extends State<ImageEditor> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CLButtonIcon.small(
-                          MdiIcons.rotateRight,
+                          clIcons.imageEditRotateRight,
                           onTap: () {
                             controller.currentState?.rotate();
                           },
                         ),
                         CLButtonIcon.small(
-                          MdiIcons.flipHorizontal,
+                          clIcons.imageEditFlipHirizontal,
                           onTap: () {
                             controller.currentState?.flip();
                           },
                         ),
                         CLButtonIcon.small(
-                          MdiIcons.rotateLeft,
+                          clIcons.imageEditRotateLeft,
                           onTap: () {
                             controller.currentState?.rotate(right: false);
                           },

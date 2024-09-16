@@ -4,7 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../extensions/ext_file.dart';
 import 'widgets/video_trimmer.dart';
@@ -136,12 +135,12 @@ class _AudioMuterState extends State<AudioMuter> {
           ? const CircularProgressIndicator()
           : widget.isMuted
               ? Icon(
-                  MdiIcons.volumeOff,
+                  clIcons.audioMuted,
                   size: 60,
                   color: Colors.white,
                 )
               : Icon(
-                  MdiIcons.volumeHigh,
+                  clIcons.audioUnmuted,
                   size: 60,
                   color: Colors.white,
                 ),
