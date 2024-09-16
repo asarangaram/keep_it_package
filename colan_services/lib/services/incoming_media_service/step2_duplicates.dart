@@ -108,17 +108,6 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                /* if (alreadyInSameCollection.isNotEmpty)
-                  SizedBox(
-                    height: 100,
-                    width: double.infinity,
-                    child: ExistsInCollection(
-                      media: CLSharedMedia(
-                        list: alreadyInSameCollection,
-                        collectionId: widget.duplicates.collectionId,
-                      ),
-                    ),
-                  ), */
                 Flexible(
                   child: ExistInDifferentCollection(
                     collections: collections,
@@ -163,7 +152,7 @@ class ExistInDifferentCollection extends StatelessWidget {
   Widget build(BuildContext context) {
     final duplicates = media.targetMismatch;
     if (duplicates.isEmpty) {
-      const Center(
+      return const Center(
         child: CLText.large('Nothing to show here'),
       );
     }

@@ -107,12 +107,13 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
     required List<CLMedia> existingItems,
     required List<CLMedia> newItems,
   }) async {
-    if (existingItems.isNotEmpty) {
-      duplicateCandidates = CLSharedMedia(
-        entries: existingItems,
-        collection: widget.incomingMedia.collection,
-        type: widget.incomingMedia.type,
-      );
+    final duplicateCandidates0 = CLSharedMedia(
+      entries: existingItems,
+      collection: widget.incomingMedia.collection,
+      type: widget.incomingMedia.type,
+    );
+    if (duplicateCandidates0.targetMismatch.isNotEmpty) {
+      duplicateCandidates = duplicateCandidates0;
       newCandidates = newItems;
       setState(() {});
     } else {
