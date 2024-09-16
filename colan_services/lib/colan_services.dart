@@ -33,3 +33,6 @@ export 'services/store_service/providers/group_view.dart'
     show groupedItemsProvider, singleGroupItemProvider;
 export 'services/store_service/providers/store.dart' show StoreNotifier;
 export 'services/store_service/widgets/builders.dart' show GetStore;
+
+export 'services/store_service/widgets/filters.dart'
+    show FilterMenuButton, MediaFilter;

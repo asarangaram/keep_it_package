@@ -232,51 +232,56 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<void> startPreviewDownload(CLMedia media, String group) async {
     final directories = await directoriesFuture;
-    await ref.read(downloaderProvider).enqueue(
-          url: myServer!
-              .getEndpointURI('/media/${media.serverUID}/preview')
-              .toString(),
-          baseDirectory: BaseDirectory.applicationSupport,
-          directory: directories.thumbnail.name,
-          filename: media.previewFileName,
-          group: group,
-          onDone: ({errorLog}) async {
-            final mediaInDB = await store.updateMediaFromMap({
-              'id': media.id,
-              'previewLog': errorLog,
-              'isPreviewCached': errorLog == null,
-            });
-            if (mediaInDB != null) {
-              await refreshMedia(mediaInDB);
-            }
-          },
-        );
+    if (myServer != null) {
+      await ref.read(downloaderProvider).enqueue(
+            url: myServer!
+                .getEndpointURI('/media/${media.serverUID}/preview')
+                .toString(),
+            baseDirectory: BaseDirectory.applicationSupport,
+            directory: directories.thumbnail.name,
+            filename: media.previewFileName,
+            group: group,
+            onDone: ({errorLog}) async {
+              final mediaInDB = await store.updateMediaFromMap({
+                'id': media.id,
+                'previewLog': errorLog,
+                'isPreviewCached': errorLog == null,
+              });
+              if (mediaInDB != null) {
+                await refreshMedia(mediaInDB);
+              }
+            },
+          );
+    }
   }
 
   Future<void> startMediaDownload(CLMedia media, String group) async {
     final directories = await directoriesFuture;
-    await ref.read(downloaderProvider).enqueue(
-          url: myServer!
-              .getEndpointURI(
-                '/media/${media.serverUID}/download?isOriginal=${media.mustDownloadOriginal}',
-              )
-              .toString(),
-          baseDirectory: BaseDirectory.applicationSupport,
-          directory: directories.media.name,
-          filename: media.mediaFileName,
-          group: group,
-          onDone: ({errorLog}) async {
-            final mediaInDB = await store.updateMediaFromMap({
-              'id': media.id,
-              'mediaLog': errorLog,
-              'isMediaCached': errorLog == null,
-              'isMediaOriginal': errorLog == null && media.mustDownloadOriginal,
-            });
-            if (mediaInDB != null) {
-              await refreshMedia(mediaInDB);
-            }
-          },
-        );
+    if (myServer != null) {
+      await ref.read(downloaderProvider).enqueue(
+            url: myServer!
+                .getEndpointURI(
+                  '/media/${media.serverUID}/download?isOriginal=${media.mustDownloadOriginal}',
+                )
+                .toString(),
+            baseDirectory: BaseDirectory.applicationSupport,
+            directory: directories.media.name,
+            filename: media.mediaFileName,
+            group: group,
+            onDone: ({errorLog}) async {
+              final mediaInDB = await store.updateMediaFromMap({
+                'id': media.id,
+                'mediaLog': errorLog,
+                'isMediaCached': errorLog == null,
+                'isMediaOriginal':
+                    errorLog == null && media.mustDownloadOriginal,
+              });
+              if (mediaInDB != null) {
+                await refreshMedia(mediaInDB);
+              }
+            },
+          );
+    }
   }
 
   Future<List<Collection>> loadCollections() async {
