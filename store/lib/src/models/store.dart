@@ -65,4 +65,5 @@ abstract class Store {
   Future<Collection?> getCollectionByLabel(String label);
   Future<CLMedia?> getMediaByServerUID(int serverUID);
   Future<CLMedia?> getMediaByMD5String(String md5String);
+  Future<CLMedia?> getMediaById(int id);
 }

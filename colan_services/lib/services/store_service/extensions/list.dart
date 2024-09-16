@@ -20,6 +20,12 @@ extension IndexExtonNullableList<T> on List<T?> {
   }
 }
 
+extension IndexExtonNullableIterable<T> on Iterable<T?> {
+  List<T> get nonNullableList {
+    return where((e) => e != null).map((e) => e!).toList();
+  }
+}
+
 extension RandomExt<T> on List<T> {
   List<T> pickRandomItems(int count) {
     final copyList = List<T>.from(this); // Create a copy of the original list

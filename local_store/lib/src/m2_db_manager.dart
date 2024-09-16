@@ -192,6 +192,7 @@ class DBManager extends Store {
     return dbReader.read(q);
   }
 
+  @override
   Future<CLMedia?> getMediaById(int id) async {
     final q = dbReader.getQuery(
       DBQueries.mediaById,

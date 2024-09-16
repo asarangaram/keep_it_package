@@ -26,6 +26,7 @@ abstract class CLServer {
   Future<String> getEndpoint(String endPoint, {http.Client? client});
   Uri getEndpointURI(String endPoint);
 
+  @Deprecated('use background downloader')
   Future<String?> download(
     String endPoint,
     String targetFilePath, {

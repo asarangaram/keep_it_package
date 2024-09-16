@@ -49,6 +49,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   set currentState(StoreCache? value) => updateState(value);
   CLServer? myServer;
+  bool syncInPorgress = false;
 
   Future<void> updateState(StoreCache? value) async {
     _currentState = value;
@@ -95,73 +96,95 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     );
   }
 
+  Future<void> deleteMedia(CLMedia media) async {
+    final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
+    final previewFile = File(_currentState!.getPreviewAbsolutePath(media));
+    await mediaFile.deleteIfExists();
+    await previewFile.deleteIfExists();
+  }
+
   Future<void> syncServer() async {
+    if (syncInPorgress) return;
+    syncInPorgress = true;
     if (myServer != null) {
-      final updatesFromServer = <CLMedia>[];
+      await myServer!.toStoreSync(store).then(processServerUpdates);
+    }
+    syncInPorgress = false;
+  }
 
-      for (final media in await myServer!.toStoreSync(store)) {
-        final CLMedia? mediaInDB;
-        final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
-        final previewFile = File(_currentState!.getPreviewAbsolutePath(media));
-        if (!mediaFile.existsSync() ||
-            (await mediaFile.checksum != media.md5String)) {
-          await mediaFile.deleteIfExists();
-          await previewFile.deleteIfExists();
-          mediaInDB = await store.upsertMedia(
-            media.copyWith(isPreviewCached: false, isMediaCached: false),
+  Future<void> processServerUpdates(List<CLMedia> mediaUpdates) async {
+    final updatesFromServer = <CLMedia>[];
+    for (final m in mediaUpdates) {
+      final bool mediaFileChanged;
+      final CLMedia? currMedia;
+      if (m.id != null) {
+        currMedia = await store.getMediaById(m.id!);
+        mediaFileChanged = (currMedia?.md5String != m.md5String);
+      } else {
+        mediaFileChanged = false;
+        currMedia = null;
+      }
+      final CLMedia? mediaInDB;
+      if (mediaFileChanged) {
+        mediaInDB = await store.upsertMedia(
+          m.copyWith(isPreviewCached: false, isMediaCached: false),
+        );
+        await deleteMedia(currMedia!);
+      } else {
+        mediaInDB = await store.upsertMedia(m);
+      }
+
+      if (mediaInDB != null) {
+        updatesFromServer.add(mediaInDB);
+      }
+    }
+
+    await refreshMediaMultiple(updatesFromServer);
+    await triggerDownloadsIfNeeded();
+  }
+
+  Future<void> triggerDownloadsIfNeeded() async {
+    final group = DateTime.now().millisecondsSinceEpoch.toString();
+    {
+      final q = store.getQuery(
+        DBQueries.previewDownloadPending,
+      ) as StoreQuery<CLMedia>;
+      final items = await store.readMultiple(q);
+
+      for (final media in items) {
+        if (media != null) {
+          final previewFile =
+              File(_currentState!.getPreviewAbsolutePath(media));
+
+          await triggerDownload(
+            media,
+            previewFile,
+            markPreviewAsDownloaded,
+            startPreviewDownload,
+            condition: true,
+            group: group,
           );
-        } else {
-          mediaInDB = await store.upsertMedia(media);
-        }
-        if (mediaInDB != null) {
-          updatesFromServer.add(mediaInDB);
         }
       }
+    }
+    {
+      final q = store.getQuery(
+        DBQueries.mediaDownloadPending,
+      ) as StoreQuery<CLMedia>;
+      final items = await store.readMultiple(q);
 
-      await refreshMediaMultiple(updatesFromServer);
+      for (final media in items) {
+        if (media != null) {
+          final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
 
-      final group = DateTime.now().millisecondsSinceEpoch.toString();
-      {
-        final q = store.getQuery(
-          DBQueries.previewDownloadPending,
-        ) as StoreQuery<CLMedia>;
-        final items = await store.readMultiple(q);
-
-        for (final media in items) {
-          if (media != null) {
-            final previewFile =
-                File(_currentState!.getPreviewAbsolutePath(media));
-
-            await triggerDownload(
-              media,
-              previewFile,
-              markPreviewAsDownloaded,
-              startPreviewDownload,
-              condition: true,
-              group: group,
-            );
-          }
-        }
-      }
-      {
-        final q = store.getQuery(
-          DBQueries.mediaDownloadPending,
-        ) as StoreQuery<CLMedia>;
-        final items = await store.readMultiple(q);
-
-        for (final media in items) {
-          if (media != null) {
-            final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
-
-            await triggerDownload(
-              media,
-              mediaFile,
-              markMediaAsDownloaded,
-              startMediaDownload,
-              condition: media.isMediaWaitingForDownload,
-              group: group,
-            );
-          }
+          await triggerDownload(
+            media,
+            mediaFile,
+            markMediaAsDownloaded,
+            startMediaDownload,
+            condition: media.isMediaWaitingForDownload,
+            group: group,
+          );
         }
       }
     }
@@ -1058,7 +1081,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     if (_currentState == null) return [];
     final q = store.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
         as StoreQuery<CLMedia>;
-    final noteIds = (await store.readMultiple(q)).map((e) => e!.id!).toList();
+    final noteIds =
+        (await store.readMultiple(q)).map((e) => e!.id!).nonNullableList;
 
     return _currentState!.getMediaMultipleByIds(noteIds);
   }

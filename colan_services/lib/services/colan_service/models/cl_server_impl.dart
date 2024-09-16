@@ -44,8 +44,7 @@ class CLServerImpl extends CLServer {
   @override
   Future<CLServerImpl?> withId({http.Client? client}) async {
     try {
-      final id =
-          await RestApi('http://$name:$port', client: client).getURLStatus();
+      final id = await RestApi(baseURL, client: client).getURLStatus();
       if (id == null) {
         throw Exception('Missing id');
       }
@@ -58,8 +57,7 @@ class CLServerImpl extends CLServer {
   @override
   Future<bool> hasConnection({http.Client? client}) async {
     try {
-      final id =
-          await RestApi('http://$name:$port', client: client).getURLStatus();
+      final id = await RestApi(baseURL, client: client).getURLStatus();
       return this.id != null && this.id == id;
     } catch (e) {
       return false;
@@ -108,7 +106,7 @@ class CLServerImpl extends CLServer {
 
   @override
   Uri getEndpointURI(String endPoint) {
-    return Uri.parse('http://$name:$port$endPoint');
+    return Uri.parse('$baseURL$endPoint');
   }
 
   @override
@@ -116,7 +114,7 @@ class CLServerImpl extends CLServer {
     String endPoint, {
     http.Client? client,
   }) async =>
-      RestApi('http://$name:$port', client: client).get(endPoint);
+      RestApi(baseURL, client: client).get(endPoint);
 
   Future<Collections> downloadCollections({
     http.Client? client,
@@ -141,8 +139,7 @@ class CLServerImpl extends CLServer {
     String targetFilePath, {
     http.Client? client,
   }) async {
-    return RestApi('http://$name:$port', client: client)
-        .download(endPoint, targetFilePath);
+    return RestApi(baseURL, client: client).download(endPoint, targetFilePath);
   }
 
   @override
@@ -197,14 +194,15 @@ class CLServerImpl extends CLServer {
           final diff = MapDiff.log(mediaInDB.toMap(), updatedMedia.toMap());
           
         } */
-        updatesFromServer
-            .add((await store.upsertMedia(updatedMedia)) ?? updatedMedia);
+        updatesFromServer.add(updatedMedia);
       }
       allFromServer.add(updatedMedia);
       await Future<void>.delayed(const Duration(milliseconds: 1));
     }
     return updatesFromServer;
   }
+
+  String get baseURL => 'http://$name:$port';
 
   CLMedia mediaFromServerMap(
     CLMedia? mediaInDB,

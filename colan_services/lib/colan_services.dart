@@ -4,8 +4,8 @@ export 'services/basic_page_service/dialogs.dart';
 export 'services/basic_page_service/empty_state.dart';
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart';
-export 'services/colan_service/providers/downloader.dart'
-    show runningTasksProvider;
+export 'services/colan_service/widgets/downloader_progressbar.dart'
+    show DownloaderProgressbar;
 export 'services/colan_service/widgets/service.dart' show CloudOnLanService;
 export 'services/colan_service/widgets/settings.dart' show CloudOnLANSettings;
 export 'services/incoming_media_service/incoming_media_monitor.dart'
