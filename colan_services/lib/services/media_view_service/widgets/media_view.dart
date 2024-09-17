@@ -145,22 +145,7 @@ class MediaView extends StatelessWidget {
                       OverlayWidgets(
                         alignment: Alignment.bottomRight,
                         sizeFactor: 0.15,
-                        child: Stack(
-                          alignment: AlignmentDirectional.center,
-                          children: [
-                            Image.asset(
-                              'assets/icon/cloud_on_lan_128px_color.png',
-                              colorBlendMode: BlendMode.dstOut,
-                            ),
-                            Center(
-                              child: CLIcon.veryLarge(
-                                clIcons.inSync,
-                                color: const Color.fromARGB(
-                                    0xFF, 0x00, 0xFF, 0xEC),
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: clIcons.syncIcons.inSync,
                       ),
                   ],
                 ),

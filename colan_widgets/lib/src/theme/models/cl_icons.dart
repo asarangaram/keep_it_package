@@ -3,8 +3,74 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../models/cl_scale_type.dart';
+
+extension IconOnIconData on IconData {
+  Widget iconFormatted({
+    double? size,
+    double? fill,
+    double? weight,
+    double? grade,
+    double? opticalSize,
+    Color? color,
+    List<Shadow>? shadows,
+    String? semanticLabel,
+    TextDirection? textDirection,
+    bool? applyTextScaling,
+  }) {
+    return Icon(
+      this,
+      size: size,
+      fill: fill,
+      weight: weight,
+      grade: grade,
+      opticalSize: opticalSize,
+      color: color,
+      shadows: shadows,
+      semanticLabel: semanticLabel,
+      textDirection: textDirection,
+    );
+  }
+}
+
+class CameraIcons {}
+
+class MediaEditorIcons {}
+
+class MediaViewerIcons {}
+
+class PageNavigateIcons {}
+
+class NodeNavigateIcons {}
+
+class SyncIcons {
+  Widget inSync = Stack(
+    alignment: AlignmentDirectional.center,
+    children: [
+      Image.asset(
+        'assets/icon/cloud_on_lan_128px_color.png',
+        colorBlendMode: BlendMode.dstOut,
+      ),
+      Center(
+        child: Symbols.cloud_done_sharp.iconFormatted(
+          size: CLScaleType.veryLarge.iconSize,
+          weight: 700,
+          grade: 100,
+          color: const Color.fromARGB(
+            0xFF,
+            0x00,
+            0xFF,
+            0xEC,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 @immutable
 class CLIcons {
+  final SyncIcons syncIcons = SyncIcons();
   final placeHolder = Icons.device_unknown_outlined;
   final filter = Symbols.filter;
   final camera = MdiIcons.camera;
@@ -78,8 +144,8 @@ class CLIcons {
   final playerPause = Icons.pause;
   final playerPlay = Icons.play_arrow;
   final playerStop = Icons.stop;
-  final device = Icons.image;
-  final inSync = Icons.check;
+  final mediaOrientation = Icons.image;
+
   final extraMenu = Icons.more_vert;
   final cameraSettings = Icons.settings;
 }
