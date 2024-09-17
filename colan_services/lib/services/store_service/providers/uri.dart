@@ -34,7 +34,7 @@ final previewUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
         if (media == null) {
           throw Exception('media not found!');
         }
-        return AsyncValue.data(theStore.getPreviewUri(media));
+        return theStore.getPreviewUriAsync(media);
       } catch (error, stackTrace) {
         return AsyncValue.error(error, stackTrace);
       }

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
@@ -147,6 +148,22 @@ class StoreCache {
 
   Uri getPreviewUri(CLMedia media) {
     return Uri.file(getPreviewAbsolutePath(media));
+  }
+
+  AsyncValue<Uri> getPreviewUriAsync(CLMedia media) {
+    return AsyncValue.data(Uri.file(getPreviewAbsolutePath(media)));
+
+    /* /// Algorithm:
+    ///
+    if (media.serverUID == null) {
+      return AsyncValue.data(Uri.file(getPreviewAbsolutePath(media)));
+    } else if (media.isPreviewWaitingForDownload) {
+      return const AsyncValue<Uri>.loading();
+    } else if (server != null) {
+      return server!
+          .getEndpointURI('/media/${media.serverUID}/preview')
+          .toString();
+    } */
   }
 
   Uri getMediaUri(CLMedia media) {
