@@ -318,5 +318,9 @@ class CLMedia extends CLMediaBase {
       !isMediaCached && mediaLog == null && haveItOffline;
 
   bool get isPreviewWaitingForDownload =>
-      !isPreviewCached && previewLog == null;
+      serverUID != null && !isPreviewCached && previewLog == null;
+
+  bool get isPreviewDownloadFailed => serverUID != null && previewLog != null;
+
+  bool get isPreviewLocallyAvailable => serverUID == null || isPreviewCached;
 }

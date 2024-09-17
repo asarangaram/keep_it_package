@@ -2,6 +2,7 @@
 import 'dart:developer' as dev;
 import 'dart:io';
 
+import 'package:colan_services/services/colan_service/models/cl_server.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +20,14 @@ class StoreCache {
     required this.collectionList,
     required this.mediaList,
     required this.directories,
+    required this.server,
+    this.allowOnlineViewIfNotDownloaded = false,
   });
   final List<Collection> collectionList;
   final List<CLMedia> mediaList;
   final CLDirectories directories;
+  final CLServer? server;
+  final bool allowOnlineViewIfNotDownloaded;
 
   void log(
     String message, {
@@ -45,9 +50,9 @@ class StoreCache {
   Iterable<CLMedia> get validMedia {
     final iterable =
         mediaList.where((e) => !(e.isDeleted ?? false) && e.mediaLog == null);
-    log('Total Media In DB: ${mediaList.length}');
-    log('Valid media Count : ${iterable.length}');
-    return iterable;
+
+    return iterable
+        .where((e) => e.isPreviewWaitingForDownload && server != null);
   }
 
   List<Collection> getCollections({bool excludeEmpty = true}) {
@@ -61,7 +66,7 @@ class StoreCache {
     } else {
       iterable = validCollection;
     }
-    log('Valid collections Count : ${iterable.length}');
+
     return iterable.toList();
   }
 
@@ -151,19 +156,28 @@ class StoreCache {
   }
 
   AsyncValue<Uri> getPreviewUriAsync(CLMedia media) {
-    return AsyncValue.data(Uri.file(getPreviewAbsolutePath(media)));
+    final flag = allowOnlineViewIfNotDownloaded;
 
-    /* /// Algorithm:
-    ///
-    if (media.serverUID == null) {
-      return AsyncValue.data(Uri.file(getPreviewAbsolutePath(media)));
-    } else if (media.isPreviewWaitingForDownload) {
-      return const AsyncValue<Uri>.loading();
-    } else if (server != null) {
-      return server!
-          .getEndpointURI('/media/${media.serverUID}/preview')
-          .toString();
-    } */
+    try {
+      return switch (media) {
+        (final CLMedia m) when media.isPreviewLocallyAvailable =>
+          AsyncValue.data(Uri.file(getPreviewAbsolutePath(m))),
+        (final CLMedia m) when media.isPreviewDownloadFailed =>
+          throw Exception(m.previewLog),
+        (final CLMedia m) when media.isPreviewWaitingForDownload => flag
+            ? AsyncValue.data(
+                Uri.parse(
+                  server!
+                      .getEndpointURI('/media/${m.serverUID}/preview')
+                      .toString(),
+                ),
+              )
+            : const AsyncValue<Uri>.loading(),
+        _ => throw UnimplementedError()
+      };
+    } catch (error, stackTrace) {
+      return AsyncError(error, stackTrace);
+    }
   }
 
   Uri getMediaUri(CLMedia media) {
@@ -215,18 +229,29 @@ class StoreCache {
     List<Collection>? collectionList,
     List<CLMedia>? mediaList,
     CLDirectories? directories,
+    CLServer? server,
   }) {
     return StoreCache(
       collectionList: collectionList ?? this.collectionList,
       mediaList: mediaList ?? this.mediaList,
       directories: directories ?? this.directories,
+      server: server ?? this.server,
+    );
+  }
+
+  StoreCache clearServer() {
+    return StoreCache(
+      collectionList: collectionList,
+      mediaList: mediaList,
+      directories: directories,
+      server: null,
     );
   }
 
   @override
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'StoreModel(collectionList: $collectionList, mediaList: $mediaList, directories: $directories)';
+      'StoreModel(collectionList count: ${collectionList.length}, mediaList: ${mediaList.length}, directories: ${directories.directories.keys.join(',')}, server: $server)';
 
   @override
   bool operator ==(covariant StoreCache other) {
@@ -235,10 +260,14 @@ class StoreCache {
 
     return listEquals(other.collectionList, collectionList) &&
         listEquals(other.mediaList, mediaList) &&
-        other.directories == directories;
+        other.directories == directories &&
+        other.server == server;
   }
 
   @override
   int get hashCode =>
-      collectionList.hashCode ^ mediaList.hashCode ^ directories.hashCode;
+      collectionList.hashCode ^
+      mediaList.hashCode ^
+      directories.hashCode ^
+      server.hashCode;
 }

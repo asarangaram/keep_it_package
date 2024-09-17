@@ -20,7 +20,6 @@ import 'package:store/store.dart';
 import '../../../internal/extensions/ext_store.dart';
 import '../../../internal/extensions/list.dart';
 import '../../colan_service/models/cl_server.dart';
-import '../../colan_service/models/servers.dart';
 import '../../colan_service/providers/downloader.dart';
 import '../../colan_service/providers/servers.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
@@ -42,27 +41,32 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   final Ref ref;
   Future<CLDirectories> directoriesFuture;
   late final Store store;
-  StoreCache? _currentState;
+  late StoreCache _currentState;
   final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
   final String tempCollectionName = '*** Recently Captured';
 
-  StoreCache? get currentState => _currentState;
-  ProviderSubscription<Servers>? watchServer;
+  StoreCache get currentState => _currentState;
 
-  set currentState(StoreCache? value) => updateState(value);
+  set currentState(StoreCache value) => updateState(value);
   CLServer? myServer;
   bool syncInPorgress = false;
 
-  Future<void> updateState(StoreCache? value) async {
+  Future<void> updateState(StoreCache value) async {
     _currentState = value;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return currentState!;
+      return currentState;
     });
-    log('state updated: ', name: 'Store Notifier');
+    log('state updated: $state ', name: 'Store Notifier');
   }
 
   Future<void> _initialize() async {
+    _currentState = StoreCache(
+      collectionList: const [],
+      mediaList: const [],
+      directories: await directoriesFuture,
+      server: null,
+    );
     final deviceDirectories = await directoriesFuture;
     final db = deviceDirectories.db;
     const dbName = 'keepIt.db';
@@ -77,12 +81,18 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
     ref.listen(serversProvider, (prev, curr) {
       myServer = curr.myServer;
-
+      log('listener: \n\tCurrent:${curr.myServer} is '
+          '${curr.myServerOnline}\n\t Previous: ${prev?.myServer} '
+          'is ${prev?.myServerOnline}');
       if (prev?.myServerOnline != curr.myServerOnline) {
         // Transition has happened.
         if (curr.myServerOnline) {
+          log('attach server into state');
+          currentState = currentState.copyWith(server: myServer);
           syncServer();
         } else {
+          log('Clear server from state');
+          currentState = currentState.clearServer();
           // server got disconnected,
         }
       }
@@ -92,16 +102,15 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   Future<void> loadLocalDB() async {
     final collections = await loadCollections();
     final medias = await loadMedia();
-    currentState = StoreCache(
+    currentState = currentState.copyWith(
       collectionList: collections,
       mediaList: medias,
-      directories: await directoriesFuture,
     );
   }
 
   Future<void> deleteMedia(CLMedia media) async {
-    final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
-    final previewFile = File(_currentState!.getPreviewAbsolutePath(media));
+    final mediaFile = File(_currentState.getMediaAbsolutePath(media));
+    final previewFile = File(_currentState.getPreviewAbsolutePath(media));
     await mediaFile.deleteIfExists();
     await previewFile.deleteIfExists();
   }
@@ -131,8 +140,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
       for (final media in items) {
         if (media != null) {
-          final previewFile =
-              File(_currentState!.getPreviewAbsolutePath(media));
+          final previewFile = File(_currentState.getPreviewAbsolutePath(media));
 
           await triggerDownload(
             media,
@@ -153,7 +161,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
       for (final media in items) {
         if (media != null) {
-          final mediaFile = File(_currentState!.getMediaAbsolutePath(media));
+          final mediaFile = File(_currentState.getMediaAbsolutePath(media));
 
           await triggerDownload(
             media,
@@ -277,24 +285,21 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
-    if (currentState == null) {
-      throw Exception('store is not ready');
-    }
-    final c = currentState!.getCollectionById(collection.id);
+    final c = currentState.getCollectionById(collection.id);
 
     if (collection == c) return collection;
 
     final updated = await store.upsertCollection(collection);
 
     if (c != null) {
-      final index = currentState!.collectionList.indexOf(c);
-      currentState = currentState!.copyWith(
+      final index = currentState.collectionList.indexOf(c);
+      currentState = currentState.copyWith(
         collectionList:
-            currentState!.collectionList.replaceNthEntry(index, updated),
+            currentState.collectionList.replaceNthEntry(index, updated),
       );
     } else {
-      currentState = currentState!.copyWith(
-        collectionList: [...currentState!.collectionList, updated],
+      currentState = currentState.copyWith(
+        collectionList: [...currentState.collectionList, updated],
       );
     }
 
@@ -326,18 +331,14 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     bool? mustDownloadOriginal,
     List<CLMedia>? parents,
   }) async {
-    if (currentState == null) {
-      throw Exception('store is not ready');
-    }
+    final media = (id == null) ? null : currentState.getMediaById(id);
 
-    final media = (id == null) ? null : currentState!.getMediaById(id);
-
-    final notesCollection = currentState!.getCollectionByLabel('*** Notes') ??
+    final notesCollection = currentState.getCollectionByLabel('*** Notes') ??
         (await upsertCollection(
           const Collection(label: '*** Notes'),
         ));
     final defaultCollection =
-        currentState!.getCollectionByLabel(tempCollectionName) ??
+        currentState.getCollectionByLabel(tempCollectionName) ??
             (await upsertCollection(
               Collection(label: tempCollectionName),
             ));
@@ -376,20 +377,20 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     var mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
 
     if (mediaFromDB != null) {
-      final currentMediaPath = currentState!.getMediaAbsolutePath(mediaFromDB);
+      final currentMediaPath = currentState.getMediaAbsolutePath(mediaFromDB);
       File(path).copySync(currentMediaPath);
       mediaFromDB = await generateMediaPreview(media: mediaFromDB);
 
       final currentPreviewPath =
-          currentState!.getPreviewAbsolutePath(mediaFromDB);
+          currentState.getPreviewAbsolutePath(mediaFromDB);
       if (media != null) {
-        final mediaIndex = currentState!.getMediaIndexById(id);
-        currentState = currentState!.copyWith(
+        final mediaIndex = currentState.getMediaIndexById(id);
+        currentState = currentState.copyWith(
           mediaList:
-              currentState!.mediaList.replaceNthEntry(mediaIndex!, mediaFromDB),
+              currentState.mediaList.replaceNthEntry(mediaIndex!, mediaFromDB),
         );
-        final previousMediaPath = currentState!.getMediaAbsolutePath(media);
-        final previousPreviewPath = currentState!.getPreviewAbsolutePath(media);
+        final previousMediaPath = currentState.getMediaAbsolutePath(media);
+        final previousPreviewPath = currentState.getPreviewAbsolutePath(media);
         if (currentMediaPath != previousMediaPath) {
           await File(previousMediaPath).deleteIfExists();
         }
@@ -397,8 +398,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
           await File(previousPreviewPath).deleteIfExists();
         }
       } else {
-        currentState = currentState!
-            .copyWith(mediaList: [...currentState!.mediaList, mediaFromDB]);
+        currentState = currentState
+            .copyWith(mediaList: [...currentState.mediaList, mediaFromDB]);
       }
 
       // FIXME: Should we delete the temp file referred by path?
@@ -502,9 +503,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       required List<CLMedia> newItems,
     }) onDone,
   }) async* {
-    if (currentState == null) {
-      throw Exception('Store is not ready');
-    }
     final deviceDirectories = await directoriesFuture;
     final existingItems = <CLMedia>[];
     final newItems = <CLMedia>[];
@@ -529,7 +527,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         final file = File(item.name);
         if (file.existsSync()) {
           final md5String = await file.checksum;
-          final duplicate = currentState!.getMediaByMD5(md5String);
+          final duplicate = currentState.getMediaByMD5(md5String);
           if (duplicate != null) {
             // multiple duplicate may be imported together
             if (existingItems.where((e) => e.id == duplicate.id!).firstOrNull ==
@@ -569,11 +567,11 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<CLMedia?> updateMedia(CLMedia media) async {
-    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+    var mediaList = List<CLMedia>.from(currentState.mediaList);
 
     final updated = await store.upsertMedia(media);
     if (updated != null) {
-      final existing = currentState!.getMediaById(updated.id);
+      final existing = currentState.getMediaById(updated.id);
 
       if (existing != null) {
         mediaList =
@@ -583,14 +581,14 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       }
     }
 
-    currentState = currentState!.copyWith(mediaList: mediaList);
+    currentState = currentState.copyWith(mediaList: mediaList);
     return updated;
   }
 
   Future<CLMedia?> refreshMedia(CLMedia media) async {
-    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+    var mediaList = List<CLMedia>.from(currentState.mediaList);
 
-    final existing = currentState!.getMediaById(media.id);
+    final existing = currentState.getMediaById(media.id);
 
     if (existing != null) {
       mediaList = mediaList.replaceNthEntry(mediaList.indexOf(existing), media);
@@ -598,7 +596,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       mediaList = [...mediaList, media];
     }
 
-    currentState = currentState!.copyWith(mediaList: mediaList);
+    currentState = currentState.copyWith(mediaList: mediaList);
     return media;
   }
 
@@ -606,12 +604,12 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     List<CLMedia> mediaMultiple, {
     void Function(Progress progress)? onProgress,
   }) async {
-    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+    var mediaList = List<CLMedia>.from(currentState.mediaList);
 
     for (final (i, m) in mediaMultiple.indexed) {
       if (m.id != null) {
         final updated = m;
-        final existing = currentState!.getMediaById(updated.id);
+        final existing = currentState.getMediaById(updated.id);
 
         if (existing != null) {
           mediaList =
@@ -628,7 +626,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         ),
       );
     }
-    currentState = currentState!.copyWith(mediaList: mediaList);
+    currentState = currentState.copyWith(mediaList: mediaList);
 
     return;
   }
@@ -637,14 +635,14 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     List<CLMedia> mediaMultiple, {
     void Function(Progress progress)? onProgress,
   }) async {
-    var mediaList = List<CLMedia>.from(currentState!.mediaList);
+    var mediaList = List<CLMedia>.from(currentState.mediaList);
 
     final updatedList = <CLMedia>[];
     for (final (i, m) in mediaMultiple.indexed) {
       if (m.id != null) {
         final updated = await store.upsertMedia(m);
         if (updated != null) {
-          final existing = currentState!.getMediaById(updated.id);
+          final existing = currentState.getMediaById(updated.id);
           updatedList.add(updated);
           if (existing != null) {
             mediaList =
@@ -662,7 +660,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         ),
       );
     }
-    currentState = currentState!.copyWith(mediaList: mediaList);
+    currentState = currentState.copyWith(mediaList: mediaList);
     return updatedList;
   }
 
@@ -677,7 +675,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         fractCompleted: 0,
         currentItem: 'Creating new collection',
       );
-      final withId = currentState!.getCollectionByLabel(collection.label);
+      final withId = currentState.getCollectionByLabel(collection.label);
       updatedCollection = await upsertCollection(withId ?? collection);
     } else {
       updatedCollection = collection;
@@ -719,7 +717,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   /// Delete all media ignoring those already in Recycle
   /// Don't delete CollectionDir / Collection from Media, required for restore
   Future<bool> deleteCollectionById(int collectionId) async {
-    final mediaMultiple = currentState!.getMediaByCollectionId(collectionId);
+    final mediaMultiple = currentState.getMediaByCollectionId(collectionId);
 
     await updateMediaMultiple(
       mediaMultiple.map((e) => e.copyWith(isDeleted: true)).toList(),
@@ -729,10 +727,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<bool> deleteMediaById(int id) async {
-    if (currentState == null) {
-      return false;
-    }
-    final media = currentState!.getMediaById(id);
+    final media = currentState.getMediaById(id);
     if (media != null) {
       await updateMedia(media.copyWith(isDeleted: true));
     }
@@ -741,12 +736,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<bool> deleteMediaMultiple(Set<int> ids2Delete) async {
-    if (currentState == null) {
-      return false;
-    }
-
     final mediaMultiple =
-        currentState!.getMediaMultipleByIds(ids2Delete.toList());
+        currentState.getMediaMultipleByIds(ids2Delete.toList());
 
     await updateMediaMultiple(
       mediaMultiple.map((e) => e.copyWith(isDeleted: true)).toList(),
@@ -756,12 +747,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<bool> restoreMediaMultiple(Set<int> ids2Delete) async {
-    if (currentState == null) {
-      return false;
-    }
-
     final mediaMultiple =
-        currentState!.getMediaMultipleByIds(ids2Delete.toList());
+        currentState.getMediaMultipleByIds(ids2Delete.toList());
 
     await updateMediaMultiple(
       mediaMultiple.map((e) => e.copyWith(isDeleted: false)).toList(),
@@ -771,10 +758,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<bool> permanentlyDeleteMediaMultiple(Set<int> ids2Delete) async {
-    if (currentState == null) {
-      return false;
-    }
-    final medias = List<CLMedia?>.from(currentState!.mediaList);
+    final medias = List<CLMedia?>.from(currentState.mediaList);
 
     final medias2Remove =
         medias.where((e) => ids2Delete.contains(e?.id)).toList();
@@ -791,17 +775,17 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         if (m != null) {
           final notes = await getNotes(m.id!);
           await store.deleteMedia(m);
-          await File(_currentState!.getMediaAbsolutePath(m)).deleteIfExists();
-          await File(_currentState!.getPreviewAbsolutePath(m)).deleteIfExists();
+          await File(_currentState.getMediaAbsolutePath(m)).deleteIfExists();
+          await File(_currentState.getPreviewAbsolutePath(m)).deleteIfExists();
           for (final n in notes) {
-            await File(_currentState!.getMediaAbsolutePath(n)).deleteIfExists();
-            await File(_currentState!.getPreviewAbsolutePath(n))
+            await File(_currentState.getMediaAbsolutePath(n)).deleteIfExists();
+            await File(_currentState.getPreviewAbsolutePath(n))
                 .deleteIfExists();
           }
         }
       }
 
-      currentState = currentState!.copyWith(mediaList: medias.nonNullableList);
+      currentState = currentState.copyWith(mediaList: medias.nonNullableList);
       return true;
     }
 
@@ -817,11 +801,10 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     required CLMedia media,
     int dimension = 256,
   }) async {
-    if (currentState == null) return media;
     var updateMedia = media;
     try {
-      final currentMediaPath = currentState!.getMediaAbsolutePath(media);
-      final currentPreviewPath = currentState!.getPreviewAbsolutePath(media);
+      final currentMediaPath = currentState.getMediaAbsolutePath(media);
+      final currentPreviewPath = currentState.getPreviewAbsolutePath(media);
       final error = <String, String>{};
 
       final res = await generatePreview(
@@ -1062,13 +1045,12 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<List<CLMedia>> getNotes(int mediaId) async {
     // FIXME better to have a raw query to directly read indices
-    if (_currentState == null) return [];
     final q = store.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
         as StoreQuery<CLMedia>;
     final noteIds =
         (await store.readMultiple(q)).map((e) => e!.id!).nonNullableList;
 
-    return _currentState!.getMediaMultipleByIds(noteIds);
+    return _currentState.getMediaMultipleByIds(noteIds);
   }
 }
 

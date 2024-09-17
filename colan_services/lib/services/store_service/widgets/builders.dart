@@ -1,8 +1,10 @@
+import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../../internal/widgets/shimmer.dart';
 import '../models/store_model.dart';
 import '../providers/uri.dart';
 
@@ -98,8 +100,8 @@ class GetPreviewUri extends ConsumerWidget {
     final storeAsync = ref.watch(previewUriProvider(id));
     return storeAsync.when(
       data: builder,
-      error: errorBuilder ?? (_, __) => Container(),
-      loading: loadingBuilder ?? () => const CircularProgressIndicator(),
+      error: errorBuilder ?? BrokenImage.show,
+      loading: loadingBuilder ?? GreyShimmer.show,
     );
   }
 }
