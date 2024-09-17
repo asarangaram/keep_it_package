@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nsd/nsd.dart';
 
-import 'package:multicast_dns/multicast_dns.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/store.dart';
 
@@ -11,22 +11,28 @@ import '../models/cl_server.dart';
 import '../models/cl_server_impl.dart';
 import '../models/servers.dart';
 
+extension ServiceExtDiscovery on Discovery {
+  Future<void> stop() async => stopDiscovery(this);
+}
+
 class ServersNotifier extends StateNotifier<Servers> {
   ServersNotifier({required this.serviceName, required this.checkInterval})
       : super(Servers.unknown()) {
-    client = MDnsClient();
     load();
   }
-  late final MDnsClient client;
+
   final String serviceName;
   final Duration checkInterval;
+  Discovery? discovery;
   StreamSubscription<List<ConnectivityResult>>? subscription;
+
+  bool isUpdating = false;
 
   Future<void> get checkConnection async {
     state = state.clearServers();
     await ((state.myServer != null)
         ? checkServerConnection()
-        : updateServers());
+        : searchForServers());
   }
 
   Future<void> load() async {
@@ -60,7 +66,8 @@ class ServersNotifier extends StateNotifier<Servers> {
   @override
   void dispose() {
     subscription?.cancel();
-
+    discovery?.removeListener(listener);
+    discovery?.stop();
     super.dispose();
   }
 
@@ -72,9 +79,17 @@ class ServersNotifier extends StateNotifier<Servers> {
     }
   }
 
-  Future<void> updateServers() async {
-    final detectedServers = await searchForServers();
-    final servers = {...detectedServers};
+  Future<void> listener() async {
+    if (isUpdating) return;
+    isUpdating = true;
+    final servers = <CLServer>{};
+    for (final e in discovery?.services ?? <Service>[]) {
+      if (e.name != null && e.name!.endsWith('cloudonlapapps')) {
+        print('${e.name} ${e.type} ${e.host} ${e.port}');
+        final server = CLServerImpl(name: e.host!, port: e.port ?? 5000);
+        servers.add(server);
+      }
+    }
     final availableServers = <CLServer>{};
     for (final server in servers) {
       final availableServer = await server.withId();
@@ -85,25 +100,22 @@ class ServersNotifier extends StateNotifier<Servers> {
     }
     state = state.copyWith(servers: availableServers);
     _infoLogger('updateServers: $state');
+    isUpdating = false;
   }
 
-  Future<Set<CLServer>> searchForServers() async {
-    final servers = <CLServer>{};
-    await client.start();
-
-    await for (final PtrResourceRecord ptr in client.lookup<PtrResourceRecord>(
-      ResourceRecordQuery.serverPointer(serviceName),
-    )) {
-      await for (final SrvResourceRecord srv
-          in client.lookup<SrvResourceRecord>(
-        ResourceRecordQuery.service(ptr.domainName),
-      )) {
-        final server = CLServerImpl(name: srv.target, port: srv.port);
-        servers.add(server);
-      }
+  Future<void> searchForServers() async {
+    if (discovery != null) {
+      discovery!.removeListener(listener);
+      await discovery!.stop();
+      discovery = null;
     }
-    client.stop();
-    return servers;
+    discovery = await startDiscovery(serviceName);
+
+    if (discovery != null) {
+      discovery!.addListener(listener);
+    }
+
+    return;
   }
 
   CLServer? get myServer => state.myServer;
@@ -128,7 +140,7 @@ class ServersNotifier extends StateNotifier<Servers> {
 
 final serversProvider = StateNotifierProvider<ServersNotifier, Servers>((ref) {
   final notifier = ServersNotifier(
-    serviceName: '_image_repo_api._tcp',
+    serviceName: '_http._tcp',
     checkInterval: const Duration(seconds: 5),
   );
   ref.onDispose(notifier.dispose);

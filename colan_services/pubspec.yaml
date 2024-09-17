@@ -48,6 +48,7 @@ dependencies:
   mime: ^1.0.5
   multicast_dns: ^0.3.2+7
   mutex: ^3.1.0
+  nsd: ^3.0.0
   path: ^1.9.0
   
   path_provider: ^2.1.4
