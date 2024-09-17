@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
@@ -16,6 +17,7 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../../internal/extensions/ext_store.dart';
 import '../../../internal/extensions/list.dart';
 import '../../colan_service/models/cl_server.dart';
 import '../../colan_service/models/servers.dart';
@@ -57,6 +59,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     state = await AsyncValue.guard(() async {
       return currentState!;
     });
+    log('state updated: ', name: 'Store Notifier');
   }
 
   Future<void> _initialize() async {
@@ -107,40 +110,15 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     if (syncInPorgress) return;
     syncInPorgress = true;
     if (myServer != null) {
-      await myServer!.toStoreSync(store).then(processServerUpdates);
+      final mediaMap = await myServer!.downloadMediaInfo();
+      if (mediaMap != null) {
+        await store.updateStoreFromMediaMapList(mediaMap);
+        await Future<void>.delayed(const Duration(seconds: 1));
+        await loadLocalDB();
+        // await triggerDownloadsIfNeeded();
+      }
     }
     syncInPorgress = false;
-  }
-
-  Future<void> processServerUpdates(List<CLMedia> mediaUpdates) async {
-    final updatesFromServer = <CLMedia>[];
-    for (final m in mediaUpdates) {
-      final bool mediaFileChanged;
-      final CLMedia? currMedia;
-      if (m.id != null) {
-        currMedia = await store.getMediaById(m.id!);
-        mediaFileChanged = (currMedia?.md5String != m.md5String);
-      } else {
-        mediaFileChanged = false;
-        currMedia = null;
-      }
-      final CLMedia? mediaInDB;
-      if (mediaFileChanged) {
-        mediaInDB = await store.upsertMedia(
-          m.copyWith(isPreviewCached: false, isMediaCached: false),
-        );
-        await deleteMedia(currMedia!);
-      } else {
-        mediaInDB = await store.upsertMedia(m);
-      }
-
-      if (mediaInDB != null) {
-        updatesFromServer.add(mediaInDB);
-      }
-    }
-
-    await refreshMediaMultiple(updatesFromServer);
-    await triggerDownloadsIfNeeded();
   }
 
   Future<void> triggerDownloadsIfNeeded() async {
@@ -651,6 +629,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       );
     }
     currentState = currentState!.copyWith(mediaList: mediaList);
+
     return;
   }
 

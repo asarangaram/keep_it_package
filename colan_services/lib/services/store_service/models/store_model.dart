@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -22,23 +23,45 @@ class StoreCache {
   final List<CLMedia> mediaList;
   final CLDirectories directories;
 
+  void log(
+    String message, {
+    int level = 0,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    dev.log(
+      message,
+      level: level,
+      error: error,
+      stackTrace: stackTrace,
+      name: 'Store Cache',
+    );
+  }
+
   Iterable<Collection> get validCollection =>
       collectionList.where((e) => !e.label.startsWith('***'));
 
-  Iterable<CLMedia> get validMedia =>
-      mediaList.where((e) => !(e.isDeleted ?? false) && e.mediaLog == null);
+  Iterable<CLMedia> get validMedia {
+    final iterable =
+        mediaList.where((e) => !(e.isDeleted ?? false) && e.mediaLog == null);
+    log('Total Media In DB: ${mediaList.length}');
+    log('Valid media Count : ${iterable.length}');
+    return iterable;
+  }
 
   List<Collection> getCollections({bool excludeEmpty = true}) {
+    final Iterable<Collection> iterable;
     if (excludeEmpty) {
-      return validCollection
-          .where(
-            (c) => validMedia
-                .where((e) => !(e.isHidden ?? false))
-                .any((e) => e.collectionId == c.id),
-          )
-          .toList();
+      iterable = validCollection.where(
+        (c) => validMedia
+            .where((e) => !(e.isHidden ?? false))
+            .any((e) => e.collectionId == c.id),
+      );
+    } else {
+      iterable = validCollection;
     }
-    return validCollection.toList();
+    log('Valid collections Count : ${iterable.length}');
+    return iterable.toList();
   }
 
   Collection? getCollectionById(int? id) {
