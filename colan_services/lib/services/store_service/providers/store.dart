@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
-import 'package:colan_services/services/colan_service/providers/servers.dart';
-import 'package:colan_services/services/store_service/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
@@ -18,9 +16,11 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../../internal/extensions/list.dart';
 import '../../colan_service/models/cl_server.dart';
 import '../../colan_service/models/servers.dart';
 import '../../colan_service/providers/downloader.dart';
+import '../../colan_service/providers/servers.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';

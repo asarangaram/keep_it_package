@@ -1,14 +1,14 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/store.dart';
 
+import '../../../internal/extensions/list.dart';
 import '../models/cl_server.dart';
-import '../models/cl_server_impl.dart';
 import '../models/servers.dart';
 
 extension ServiceExtDiscovery on Discovery {
@@ -16,58 +16,99 @@ extension ServiceExtDiscovery on Discovery {
 }
 
 class ServersNotifier extends StateNotifier<Servers> {
-  ServersNotifier({required this.serviceName, required this.checkInterval})
-      : super(Servers.unknown()) {
-    load();
+  ServersNotifier({required this.serviceName}) : super(Servers.unknown()) {
+    log('Instance created ');
+    _initialize();
+  }
+
+  void log(
+    String message, {
+    int level = 0,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    dev.log(
+      message,
+      level: level,
+      error: error,
+      stackTrace: stackTrace,
+      name: 'Online Service: Server Finder',
+    );
   }
 
   final String serviceName;
-  final Duration checkInterval;
+
   Discovery? discovery;
   StreamSubscription<List<ConnectivityResult>>? subscription;
 
   bool isUpdating = false;
 
   Future<void> get checkConnection async {
-    state = state.clearServers();
     await ((state.myServer != null)
         ? checkServerConnection()
         : searchForServers());
   }
 
-  Future<void> load() async {
+  Future<void> _initialize() async {
     final prefs = await SharedPreferences.getInstance();
     final myServerJSON = prefs.getString('myServer');
 
     if (myServerJSON != null) {
-      state = state.copyWith(myServer: CLServerImpl.fromJson(myServerJSON));
+      final myServer = CLServer.fromJson(myServerJSON);
+      log('Server found from history. $myServer');
+      state = state.copyWith(myServer: myServer);
     }
+
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> result) {
-      // Received changes in available connectivity types!
-      state = state.copyWith(
-        lanStatus: result.contains(ConnectivityResult.wifi) ||
-            result.contains(ConnectivityResult.ethernet),
-      );
-      _infoLogger(state.toString());
-      if (state.lanStatus) {
-        checkConnection;
+      final updatedLanStatus = result.contains(ConnectivityResult.wifi) ||
+          result.contains(ConnectivityResult.ethernet);
+
+      if (updatedLanStatus != state.lanStatus) {
+        log('Network Connectivity: '
+            '${updatedLanStatus ? "available" : 'not available'} ');
+        state = state.copyWith(lanStatus: updatedLanStatus);
+
+        if (state.lanStatus) {
+          checkConnection;
+        } else {
+          if (state.myServer != null) {
+            state = state.copyWith(myServerOnline: false, servers: {});
+          }
+        }
       }
     });
+    if (subscription != null) {
+      log('Network Connectivity: subscribed');
+    }
   }
 
   Future<void> search() async {
     if (state.lanStatus) {
+      log('Rescan Request:  ');
       await checkConnection;
+    } else {
+      // ignore: lines_longer_than_80_chars
+      log('Rescan Request:  ignored, as the device not connected to any network');
     }
   }
 
   @override
   void dispose() {
-    subscription?.cancel();
-    discovery?.removeListener(listener);
-    discovery?.stop();
+    if (subscription != null) {
+      log('Network Connectivity: unsubscribed');
+      subscription!.cancel();
+      subscription = null;
+    }
+    if (discovery != null) {
+      discovery!.removeListener(listener);
+      log('NSD: unsusbscribed');
+
+      discovery!.stop();
+      log('NSD: Start searching for '
+          '"Cloud on LAN" services in the local area network');
+    }
     super.dispose();
   }
 
@@ -75,21 +116,22 @@ class ServersNotifier extends StateNotifier<Servers> {
     if (state.myServer != null) {
       state =
           state.copyWith(myServerOnline: await state.myServer!.hasConnection());
-      _infoLogger('checkServerConnection: $state');
+      log('Server ${state.myServer} is '
+          '${state.myServerOnline ? "online" : "offline"}');
+    } else {
+      log('This function should not be called without a server registered');
     }
   }
 
   Future<void> listener() async {
-    if (isUpdating) return;
-    isUpdating = true;
     final servers = <CLServer>{};
     for (final e in discovery?.services ?? <Service>[]) {
       if (e.name != null && e.name!.endsWith('cloudonlapapps')) {
-        print('${e.name} ${e.type} ${e.host} ${e.port}');
-        final server = CLServerImpl(name: e.host!, port: e.port ?? 5000);
+        final server = CLServer(name: e.host!, port: e.port ?? 5000);
         servers.add(server);
       }
     }
+
     final availableServers = <CLServer>{};
     for (final server in servers) {
       final availableServer = await server.withId();
@@ -98,12 +140,20 @@ class ServersNotifier extends StateNotifier<Servers> {
         availableServers.add(availableServer);
       }
     }
-    state = state.copyWith(servers: availableServers);
-    _infoLogger('updateServers: $state');
-    isUpdating = false;
+
+    if (availableServers.isNotEmpty) {
+      if (state.servers?.isDifferent(availableServers) ?? true) {
+        log('NSD: Found ${availableServers.length} server(s) in the network. ');
+        state = state.copyWith(servers: availableServers);
+      }
+    } else {
+      state = state.copyWith(servers: {});
+    }
   }
 
   Future<void> searchForServers() async {
+    log('NSD: Start searching for "Cloud on LAN" '
+        'services in the local area network');
     if (discovery != null) {
       discovery!.removeListener(listener);
       await discovery!.stop();
@@ -126,23 +176,31 @@ class ServersNotifier extends StateNotifier<Servers> {
 
   Future<void> attatch(CLServer? value) async {
     final prefs = await SharedPreferences.getInstance();
-    if (value != null) {
-      await prefs.setString('myServer', (value as CLServerImpl).toJson());
-      state = state.copyWith(myServer: value, myServerOnline: true);
-    } else {
-      await prefs.remove('myServer');
-      state = await state.clearMyServer();
+    if (value != null && state.myServer != null) {
+      if (state.myServer != value) {
+        log("can't register ($value) as "
+            'another server( ${state.myServer}) is registered');
+      }
+      return;
+    }
+    if (state.myServer != value) {
+      if (value != null) {
+        await prefs.setString('myServer', value.toJson());
+        state = state.copyWith(myServer: value, myServerOnline: true);
+        log('server registered $myServer');
+        return;
+      } else {
+        await prefs.remove('myServer');
+        state = await state.clearMyServer();
+        log('server unregistered ');
+        return;
+      }
     }
   }
-
-  Future<void> get detach async => myServer = null;
 }
 
 final serversProvider = StateNotifierProvider<ServersNotifier, Servers>((ref) {
-  final notifier = ServersNotifier(
-    serviceName: '_http._tcp',
-    checkInterval: const Duration(seconds: 5),
-  );
+  final notifier = ServersNotifier(serviceName: '_http._tcp');
   ref.onDispose(notifier.dispose);
 
   return notifier;

@@ -13,7 +13,7 @@ class CloudOnLANSettings extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final servers = ref.watch(serversProvider);
-    final serv = servers.myServer;
+    final myServer = servers.myServer;
     return ListTile(
       title: Text.rich(
         TextSpan(
@@ -21,22 +21,23 @@ class CloudOnLANSettings extends ConsumerWidget {
             const TextSpan(
               text: 'Server',
             ),
-            WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: TextButton(
-                onPressed: () async {
-                  await ref.read(serversProvider.notifier).detach;
-                },
-                child: CLText.small(
-                  'detach',
-                  color: CLTheme.of(context).colors.errorTextForeground,
+            if (myServer != null)
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: TextButton(
+                  onPressed: () async {
+                    ref.read(serversProvider.notifier).myServer = null;
+                  },
+                  child: CLText.small(
+                    'detach',
+                    color: CLTheme.of(context).colors.errorTextForeground,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
-      subtitle: serv == null
+      subtitle: myServer == null
           ? const Text('You are not connected to any Server')
           : Column(
               mainAxisSize: MainAxisSize.min,
@@ -47,7 +48,9 @@ class CloudOnLANSettings extends ConsumerWidget {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '${serv.identifier}@${serv.name}:${serv.port} '
+                          text:
+                              // ignore: lines_longer_than_80_chars
+                              '${myServer.identifier}@${myServer.name}:${myServer.port} '
                               'is ',
                         ),
                         TextSpan(
@@ -76,7 +79,7 @@ class CloudOnLANSettings extends ConsumerWidget {
                 ),
               ],
             ),
-      trailing: serv == null
+      trailing: myServer == null
           ? ElevatedButton(
               onPressed: () async {
                 unawaited(ref.read(serversProvider.notifier).checkConnection);

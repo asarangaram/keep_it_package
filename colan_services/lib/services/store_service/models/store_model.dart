@@ -1,15 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
-import 'package:colan_services/services/storage_service/models/file_system/models/cl_directories.dart';
-import 'package:colan_services/services/store_service/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../../internal/extensions/list.dart';
 import '../../sharing_service/models/share_files.dart';
+import '../../storage_service/models/file_system/models/cl_directories.dart';
 
 @immutable
 class StoreCache {
