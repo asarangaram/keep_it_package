@@ -19,12 +19,12 @@ class TaskCompleter {
   final Completer<void> completer;
 }
 
-class MediaDownloader extends Downloader {
-  MediaDownloader(
-    super.onStatusUpdate, {
+class MediaDownloader {
+  MediaDownloader({
     required this.store,
     required this.server,
     required this.directories,
+    required this.downloader,
     this.onDone,
   });
 
@@ -32,6 +32,7 @@ class MediaDownloader extends Downloader {
   final CLDirectories directories;
   final CLServer server;
   final Future<void> Function(CLMedia media)? onDone;
+  late final Downloader downloader;
 
   void log(
     String message, {
@@ -107,7 +108,7 @@ class MediaDownloader extends Downloader {
     String group,
   ) async {
     final completer = Completer<Task>();
-    final task = await enqueue(
+    final task = await downloader.enqueue(
       url: server.getEndpointURI(media.previewEndPoint!).toString(),
       baseDirectory: _previewBaseDirectory,
       directory: directories.thumbnail.name,
@@ -133,7 +134,7 @@ class MediaDownloader extends Downloader {
     String group,
   ) async {
     final completer = Completer<Task>();
-    final task = await enqueue(
+    final task = await downloader.enqueue(
       url: server.getEndpointURI(media.mediaEndPoint!).toString(),
       baseDirectory: _mediaBaseDirectory,
       directory: directories.media.name,

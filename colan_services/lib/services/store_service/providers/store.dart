@@ -19,6 +19,7 @@ import 'package:store/store.dart';
 import '../../../internal/extensions/ext_store.dart';
 import '../../../internal/extensions/list.dart';
 import '../../colan_service/models/cl_server.dart';
+import '../../colan_service/providers/server.dart';
 import '../../colan_service/providers/servers.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
@@ -65,22 +66,15 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
     await loadLocalDB();
 
-    ref.listen(serversProvider, (prev, curr) {
-      myServer = curr.myServer;
-      log('listener: \n\tCurrent:${curr.myServer} is '
-          '${curr.myServerOnline}\n\t Previous: ${prev?.myServer} '
-          'is ${prev?.myServerOnline}');
-      if (prev?.myServerOnline != curr.myServerOnline) {
-        // Transition has happened.
-        if (curr.myServerOnline) {
-          log('attach server into state');
-          currentState = currentState.copyWith(server: myServer);
-          syncServer();
-        } else {
-          log('Clear server from state');
-          currentState = currentState.clearServer();
-          // server got disconnected,
-        }
+    ref.listen(clServerProvider, (prev, curr) {
+      myServer = curr;
+      if (curr != null) {
+        log('attach server into state');
+        currentState = currentState.copyWith(server: myServer);
+        syncServer();
+      } else {
+        log('Clear server from state');
+        currentState = currentState.clearServer();
       }
     });
   }
@@ -114,6 +108,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       }
     }
     syncInPorgress = false;
+    ref.read(clServerProvider.notifier).sync();
   }
 
   Future<List<Collection>> loadCollections() async {

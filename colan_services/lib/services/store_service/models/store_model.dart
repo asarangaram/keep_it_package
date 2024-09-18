@@ -52,8 +52,9 @@ class StoreCache {
     final iterable =
         mediaList.where((e) => !(e.isDeleted ?? false) && e.mediaLog == null);
 
-    return iterable
-        .where((e) => e.isPreviewWaitingForDownload && server != null);
+    return iterable.where((e) =>
+        e.isPreviewLocallyAvailable ||
+        (e.isPreviewWaitingForDownload && server != null));
   }
 
   List<Collection> getCollections({bool excludeEmpty = true}) {

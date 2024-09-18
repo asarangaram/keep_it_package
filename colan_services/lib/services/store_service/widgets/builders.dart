@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:flutter/material.dart';
@@ -73,12 +75,18 @@ class GetMediaUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final storeAsync = ref.watch(mediaUriProvider(id));
+    final storeAsync = ref.watch(mediaUriProvider(id))
+      ..whenOrNull(data: printUri);
+
     return storeAsync.when(
       data: builder,
       error: errorBuilder ?? BrokenImage.show,
       loading: loadingBuilder ?? GreyShimmer.show,
     );
+  }
+
+  void printUri(Uri uri) {
+    log(uri.toString(), name: 'GetMediaUri');
   }
 }
 
@@ -97,11 +105,16 @@ class GetPreviewUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final storeAsync = ref.watch(previewUriProvider(id));
+    final storeAsync = ref.watch(previewUriProvider(id))
+      ..whenOrNull(data: printUri);
     return storeAsync.when(
       data: builder,
       error: errorBuilder ?? BrokenImage.show,
       loading: loadingBuilder ?? GreyShimmer.show,
     );
+  }
+
+  void printUri(Uri uri) {
+    log(uri.toString(), name: 'GetPreviewUri');
   }
 }

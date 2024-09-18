@@ -11,6 +11,7 @@ import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../../store_service/providers/store.dart';
 import '../models/cl_server.dart';
+import '../models/downloader.dart';
 import '../models/downloader_status.dart';
 
 class CLServerNotifier extends StateNotifier<CLServer?> {
@@ -18,14 +19,17 @@ class CLServerNotifier extends StateNotifier<CLServer?> {
     required this.ref,
     required this.directoriesFuture,
     required this.storeFuture,
+    required this.downloader,
     CLServer? server,
   }) : super(server) {
     _initialize();
   }
-  Ref ref;
-  Future<CLDirectories> directoriesFuture;
-  Future<Store> storeFuture;
-  MediaDownloader? downloader;
+  final Ref ref;
+  final Future<CLDirectories> directoriesFuture;
+  final Future<Store> storeFuture;
+  final Downloader downloader;
+
+  MediaDownloader? mediaDownloader;
 
   void log(
     String message, {
@@ -46,15 +50,13 @@ class CLServerNotifier extends StateNotifier<CLServer?> {
 
   Future<void> _initialize() async {
     if (state != null) {
-      downloader = MediaDownloader(
-        (status) {
-          ref.read(downloaderStatusProvider.notifier).state = status;
-        },
+      mediaDownloader = MediaDownloader(
+        downloader: downloader,
         server: state!,
         store: await storeFuture,
         directories: await directoriesFuture,
       );
-      unawaited(downloadFiles(downloader!));
+      sync();
     }
   }
 
@@ -83,6 +85,12 @@ class CLServerNotifier extends StateNotifier<CLServer?> {
       }
     }
     return currentTasks;
+  }
+
+  void sync() {
+    if (mediaDownloader != null) {
+      downloadFiles(mediaDownloader!);
+    }
   }
 
   Future<void> downloadFiles(MediaDownloader downloader) async {
@@ -115,7 +123,7 @@ class CLServerNotifier extends StateNotifier<CLServer?> {
     isDownloading = false;
   }
 
-  Future<void> abortDownloads(MediaDownloader downloader) async {
+  Future<void> abortDownloads(MediaDownloader mediaDownloader) async {
     if (runningTasks.isNotEmpty) {
       log('Cancelling ${runningTasks.length} pending downloads');
       for (final t in runningTasks) {
@@ -147,29 +155,36 @@ class CLServerNotifier extends StateNotifier<CLServer?> {
 
   @override
   void dispose() {
-    if (downloader != null) {
-      abortDownloads(downloader!);
+    if (mediaDownloader != null) {
+      abortDownloads(mediaDownloader!);
     }
     super.dispose();
   }
 }
 
-final clServerNotifierProvider =
+final clServerProvider =
     StateNotifierProvider<CLServerNotifier, CLServer?>((ref) {
   final store = ref.watch(rawStoreProvider.future);
   final directories = ref.watch(deviceDirectoriesProvider.future);
   final servers = ref.watch(serversProvider);
-
+  final downloader = ref.watch(downloaderProvider);
   final notifier = CLServerNotifier(
     ref: ref,
-    server: servers.myServer,
+    server: servers.myServerOnline ? servers.myServer : null,
     storeFuture: store,
     directoriesFuture: directories,
+    downloader: downloader,
   );
-  ref.onDispose(notifier.dispose);
+
   return notifier;
 });
 
 final downloaderStatusProvider = StateProvider<DownloaderStatus>((ref) {
   return const DownloaderStatus();
+});
+
+final downloaderProvider = StateProvider<Downloader>((ref) {
+  return Downloader(
+    (status) => ref.read(downloaderStatusProvider.notifier).state = status,
+  );
 });
