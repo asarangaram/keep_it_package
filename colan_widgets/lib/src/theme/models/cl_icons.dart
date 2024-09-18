@@ -43,8 +43,15 @@ class PageNavigateIcons {}
 
 class NodeNavigateIcons {}
 
+@immutable
 class SyncIcons {
-  Widget inSync = Stack(
+  final disconnectIconData = MdiIcons.lanDisconnect;
+  final connectIconData = MdiIcons.lanDisconnect;
+  final syncIconData = MdiIcons.syncCircle;
+  final attachIconData = MdiIcons.plusCircle;
+  final detachIconData = MdiIcons.minusCircle;
+
+  final Widget inSync = Stack(
     alignment: AlignmentDirectional.center,
     children: [
       Image.asset(

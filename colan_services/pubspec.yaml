@@ -27,6 +27,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
+  flutter_speed_dial: ^7.0.0
   form_factory:
     path: ../form_factory
   go_router: ^14.2.0
@@ -53,6 +54,7 @@ dependencies:
   
   path_provider: ^2.1.4
   photo_manager: ^3.2.3
+  pie_chart: ^5.4.0
   share_handler: ^0.0.21
   share_plus: ^10.0.0
   shared_preferences: ^2.2.3

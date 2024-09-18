@@ -69,7 +69,7 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Expanded(child: widget.child),
-                        const DownloaderProgressbar(),
+                        const ServerControl(),
                       ],
                     ),
                     const MediaFilter(),
