@@ -85,3 +85,14 @@ extension StoreExtCLMediaList on List<CLMedia> {
     return filterredMedia;
   }
 }
+
+extension FilenameExtOnCLMedia on CLMedia {
+  String get previewFileName => '${md5String}_tn.jpeg';
+  String get mediaFileName => '$md5String$fExt';
+
+  String? get mediaEndPoint => serverUID == null
+      ? null
+      : '/media/$serverUID/download?isOriginal=$mustDownloadOriginal';
+  String? get previewEndPoint =>
+      serverUID == null ? null : '/media/$serverUID/preview';
+}

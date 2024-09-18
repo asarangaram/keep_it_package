@@ -20,18 +20,14 @@ import 'package:store/store.dart';
 import '../../../internal/extensions/ext_store.dart';
 import '../../../internal/extensions/list.dart';
 import '../../colan_service/models/cl_server.dart';
-import '../../colan_service/providers/downloader.dart';
+
 import '../../colan_service/providers/servers.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
+import '../models/store_downloader.dart';
 import '../models/store_model.dart';
 import '../models/url_handler.dart';
-
-extension FilenameExtOnCLMedia on CLMedia {
-  String get previewFileName => '${md5String}_tn.jpeg';
-  String get mediaFileName => '$md5String$fExt';
-}
 
 class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   StoreNotifier(this.ref, this.directoriesFuture)
@@ -45,6 +41,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
   final String tempCollectionName = '*** Recently Captured';
 
+  MediaDownloader? mediaDownloader;
+
   StoreCache get currentState => _currentState;
 
   set currentState(StoreCache value) => updateState(value);
@@ -53,10 +51,19 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<void> updateState(StoreCache value) async {
     _currentState = value;
+    mediaDownloader = _currentState.server == null
+        ? null
+        : MediaDownloader(
+            store: store,
+            server: _currentState.server!,
+            directories: await directoriesFuture,
+            onDone: refreshMedia,
+          );
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       return currentState;
     });
+
     log('state updated: $state ', name: 'Store Notifier');
   }
 
@@ -124,150 +131,11 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         await store.updateStoreFromMediaMapList(mediaMap);
         await Future<void>.delayed(const Duration(seconds: 1));
         await loadLocalDB();
-        // await triggerDownloadsIfNeeded();
+        // Let the media downloader to run
+        unawaited(mediaDownloader?.downloadFiles());
       }
     }
     syncInPorgress = false;
-  }
-
-  Future<void> triggerDownloadsIfNeeded() async {
-    final group = DateTime.now().millisecondsSinceEpoch.toString();
-    {
-      final q = store.getQuery(
-        DBQueries.previewDownloadPending,
-      ) as StoreQuery<CLMedia>;
-      final items = await store.readMultiple(q);
-
-      for (final media in items) {
-        if (media != null) {
-          final previewFile = File(_currentState.getPreviewAbsolutePath(media));
-
-          await triggerDownload(
-            media,
-            previewFile,
-            markPreviewAsDownloaded,
-            startPreviewDownload,
-            condition: true,
-            group: group,
-          );
-        }
-      }
-    }
-    {
-      final q = store.getQuery(
-        DBQueries.mediaDownloadPending,
-      ) as StoreQuery<CLMedia>;
-      final items = await store.readMultiple(q);
-
-      for (final media in items) {
-        if (media != null) {
-          final mediaFile = File(_currentState.getMediaAbsolutePath(media));
-
-          await triggerDownload(
-            media,
-            mediaFile,
-            markMediaAsDownloaded,
-            startMediaDownload,
-            condition: media.isMediaWaitingForDownload,
-            group: group,
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> triggerDownload(
-    CLMedia media,
-    File file,
-    Future<void> Function(CLMedia media) onDownloaded,
-    Future<void> Function(CLMedia media, String group) onStartDownload, {
-    required bool condition,
-    required String group,
-  }) async {
-    if (condition) {
-      if (file.existsSync()) {
-        await onDownloaded(media);
-      } else {
-        await onStartDownload(media, group);
-      }
-    }
-  }
-
-  Future<void> markPreviewAsDownloaded(CLMedia media) async {
-    final mediaInDB = await store.updateMediaFromMap({
-      'id': media.id,
-      'previewLog': null,
-      'isPreviewCached': true,
-    });
-    if (mediaInDB != null) {
-      await refreshMedia(mediaInDB);
-    }
-  }
-
-  Future<void> markMediaAsDownloaded(CLMedia media) async {
-    final mediaInDB = await store.updateMediaFromMap({
-      'id': media.id,
-      'mediaLog': null,
-      'isMediaCached': true,
-      'isMediaOriginal': true,
-    });
-    if (mediaInDB != null) {
-      await refreshMedia(mediaInDB);
-    }
-  }
-
-  Future<void> startPreviewDownload(CLMedia media, String group) async {
-    final directories = await directoriesFuture;
-    if (myServer != null) {
-      await ref.read(downloaderProvider).enqueue(
-            url: myServer!
-                .getEndpointURI('/media/${media.serverUID}/preview')
-                .toString(),
-            baseDirectory: BaseDirectory.applicationSupport,
-            directory: directories.thumbnail.name,
-            filename: media.previewFileName,
-            group: group,
-            onDone: ({errorLog}) async {
-              final mediaInDB = await store.updateMediaFromMap({
-                'id': media.id,
-                'previewLog': errorLog,
-                'isPreviewCached': errorLog == null,
-              });
-              if (mediaInDB != null) {
-                await refreshMedia(mediaInDB);
-              }
-            },
-          );
-    }
-  }
-
-  Future<void> startMediaDownload(CLMedia media, String group) async {
-    final directories = await directoriesFuture;
-    if (myServer != null) {
-      await ref.read(downloaderProvider).enqueue(
-            url: myServer!
-                .getEndpointURI(
-                  '/media/${media.serverUID}/download?isOriginal=${media.mustDownloadOriginal}',
-                )
-                .toString(),
-            baseDirectory: BaseDirectory.applicationSupport,
-            directory: directories.media.name,
-            filename: media.mediaFileName,
-            group: group,
-            onDone: ({errorLog}) async {
-              final mediaInDB = await store.updateMediaFromMap({
-                'id': media.id,
-                'mediaLog': errorLog,
-                'isMediaCached': errorLog == null,
-                'isMediaOriginal':
-                    errorLog == null && media.mustDownloadOriginal,
-              });
-              if (mediaInDB != null) {
-                await refreshMedia(mediaInDB);
-              }
-            },
-          );
-    }
   }
 
   Future<List<Collection>> loadCollections() async {

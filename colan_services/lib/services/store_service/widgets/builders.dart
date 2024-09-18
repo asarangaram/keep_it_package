@@ -76,8 +76,8 @@ class GetMediaUri extends ConsumerWidget {
     final storeAsync = ref.watch(mediaUriProvider(id));
     return storeAsync.when(
       data: builder,
-      error: errorBuilder ?? (_, __) => Container(),
-      loading: loadingBuilder ?? () => const CircularProgressIndicator(),
+      error: errorBuilder ?? BrokenImage.show,
+      loading: loadingBuilder ?? GreyShimmer.show,
     );
   }
 }

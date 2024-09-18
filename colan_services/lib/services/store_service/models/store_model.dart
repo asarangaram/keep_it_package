@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../../internal/extensions/ext_cl_media.dart';
 import '../../../internal/extensions/list.dart';
 import '../../sharing_service/models/share_files.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
@@ -210,22 +211,14 @@ class StoreCache {
     return Uri.file(getMediaAbsolutePath(media));
   }
 
-  String getPreviewAbsolutePath(CLMedia media) {
-    return p.setExtension(
-      p.join(
-        directories.thumbnail.pathString, // FIX ME preview directory
-        '${media.md5String}_tn',
-      ),
-      '.jpeg',
-    );
-  }
+  String getPreviewAbsolutePath(CLMedia media) => p.join(
+        directories.thumbnail.pathString,
+        media.previewFileName,
+      );
 
-  String getMediaAbsolutePath(CLMedia media) => p.setExtension(
-        p.join(
-          directories.media.path.path,
-          media.md5String,
-        ),
-        media.fExt,
+  String getMediaAbsolutePath(CLMedia media) => p.join(
+        directories.media.path.path,
+        media.mediaFileName,
       );
 
   Future<String> createTempFile({required String ext}) async {
