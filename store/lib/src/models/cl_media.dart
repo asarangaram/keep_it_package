@@ -317,6 +317,11 @@ class CLMedia extends CLMediaBase {
   bool get isMediaWaitingForDownload =>
       !isMediaCached && mediaLog == null && haveItOffline;
 
+  bool get isMediaDownloadFailed =>
+      serverUID != null && !isMediaCached && mediaLog != null;
+
+  bool get isMediaLocallyAvailable => serverUID == null || isMediaCached;
+
   bool get isPreviewWaitingForDownload =>
       serverUID != null && !isPreviewCached && previewLog == null;
 

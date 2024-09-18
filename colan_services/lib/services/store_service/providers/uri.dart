@@ -14,7 +14,7 @@ final mediaUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
         if (media == null) {
           throw Exception('media not found!');
         }
-        return AsyncValue.data(theStore.getMediaUri(media));
+        return theStore.getMediaUriAsync(media);
       } catch (error, stackTrace) {
         return AsyncValue.error(error, stackTrace);
       }

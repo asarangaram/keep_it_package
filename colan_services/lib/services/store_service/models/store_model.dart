@@ -180,6 +180,32 @@ class StoreCache {
     }
   }
 
+  AsyncValue<Uri> getMediaUriAsync(CLMedia media) {
+    try {
+      return switch (media) {
+        (final CLMedia m) when media.isMediaLocallyAvailable =>
+          AsyncValue.data(Uri.file(getMediaAbsolutePath(m))),
+        (final CLMedia m) when media.isMediaDownloadFailed =>
+          throw Exception(m.mediaLog),
+        (final CLMedia m) when !media.haveItOffline => server != null
+            ? AsyncValue.data(
+                Uri.parse(
+                  server!
+                      .getEndpointURI('/media/${m.serverUID}/'
+                          'download?isOriginal=${m.mustDownloadOriginal}')
+                      .toString(),
+                ),
+              )
+            : throw Exception('Server Not connected'),
+        (final CLMedia _) when media.isMediaWaitingForDownload =>
+          const AsyncValue<Uri>.loading(),
+        _ => throw UnimplementedError()
+      };
+    } catch (error, stackTrace) {
+      return AsyncError(error, stackTrace);
+    }
+  }
+
   Uri getMediaUri(CLMedia media) {
     return Uri.file(getMediaAbsolutePath(media));
   }

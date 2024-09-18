@@ -32,5 +32,5 @@ class BrokenImage extends StatelessWidget {
     );
   }
 
-  static Widget show(Object e, StackTrace st) => const BrokenImage();
+  static Widget show([Object? e, StackTrace? st]) => const BrokenImage();
 }
