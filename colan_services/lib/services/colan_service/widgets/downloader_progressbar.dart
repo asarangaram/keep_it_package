@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pie_chart/pie_chart.dart';
@@ -46,14 +47,19 @@ class DownloaderProgressPie extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final downloaderStatus = ref.watch(downloaderStatusProvider);
     final total = downloaderStatus.total.toDouble();
+
     if (total < 1) {
       return const SizedBox.shrink();
     }
-    final dataMap = <String, double>{
-      'completed': downloaderStatus.completed.toDouble(),
-      'running': downloaderStatus.running.toDouble(),
-      'waiting': downloaderStatus.waiting.toDouble(),
-    };
+
+    final dataMap =
+        downloaderStatus.toMap().map((k, v) => MapEntry(k, v as double));
+
+    final colorList = downloaderStatus
+        .toMap()
+        .keys
+        .map((k) => downloaderStatus.colorMap[k] ?? Colors.red)
+        .toList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -66,7 +72,7 @@ class DownloaderProgressPie extends ConsumerWidget {
               dataMap: dataMap,
               animationDuration: const Duration(milliseconds: 800),
               chartRadius: 12,
-              colorList: const [Colors.green, Colors.blue, Colors.grey],
+              colorList: colorList,
               initialAngleInDegree: 0,
               chartType: ChartType.ring,
               //ringStrokeWidth: 4,
@@ -76,6 +82,30 @@ class DownloaderProgressPie extends ConsumerWidget {
                 showChartValueBackground: false,
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ActiveDownloadIndicator extends ConsumerWidget {
+  const ActiveDownloadIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final downloaderStatus = ref.watch(downloaderStatusProvider);
+    if (downloaderStatus.running == 0) {
+      return Container();
+    }
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4),
+      child: Center(
+        child: SizedBox.square(
+          dimension: 20,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: CLIcon.standard(Icons.download),
           ),
         ),
       ),

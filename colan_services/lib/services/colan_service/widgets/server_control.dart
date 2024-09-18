@@ -48,8 +48,19 @@ class ServerControl extends StatelessWidget {
               dimension: 30,
               child: DownloaderProgressPie(),
             ),
+            const SizedBox.square(
+              dimension: 30,
+              child: ActiveDownloadIndicator(),
+            ),
             const Spacer(),
-          ],
+          ]
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: e,
+                ),
+              )
+              .toList(),
         ),
       ),
     );

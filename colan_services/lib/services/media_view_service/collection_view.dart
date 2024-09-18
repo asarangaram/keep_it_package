@@ -26,7 +26,7 @@ class CollectionView extends ConsumerWidget {
             isRandom: true,
           );
 
-          if (mediaList.isEmpty) {
+          if (mediaList.isEmpty || true) {
             return CLAspectRationDecorated(
               hasBorder: true,
               borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -36,6 +36,7 @@ class CollectionView extends ConsumerWidget {
                 ),
               ),
             );
+            // ignore: dead_code
           } else {
             return CLMediaCollage.byMatrixSize(
               mediaList.length,
