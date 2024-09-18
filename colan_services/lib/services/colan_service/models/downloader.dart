@@ -2,9 +2,8 @@
 import 'dart:async';
 
 import 'package:background_downloader/background_downloader.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/downloader_status.dart';
+import 'downloader_status.dart';
 
 extension StatisticsExtOnTaskStatus on TaskStatus {
   bool get isWaiting => [
@@ -22,7 +21,8 @@ extension StatisticsExtOnTaskStatus on TaskStatus {
 }
 
 class Downloader {
-  Downloader() {
+  final void Function(DownloaderStatus status) onStatusUpdate;
+  Downloader(this.onStatusUpdate) {
     fileDownloader = FileDownloader();
     FileDownloader().updates.listen((update) {
       switch (update) {
@@ -44,16 +44,24 @@ class Downloader {
               completed: statusMap.values.where((e) => e.isCompleted).length,
             );
           }
+          onStatusUpdate(status);
+
           downloaderStatusStreamController.add(status);
           final handler = downloads[update.task.taskId];
 
           switch (update.status) {
             case TaskStatus.complete:
-              handler?.call();
+              handler?.call(update.task);
             case TaskStatus.failed:
-              handler?.call(errorLog: update.responseBody ?? 'Unknown Error');
+              handler?.call(
+                update.task,
+                errorLog: update.responseBody ?? 'Unknown Error',
+              );
             case TaskStatus.canceled:
-              handler?.call(errorLog: 'Download cancelled, try again');
+              handler?.call(
+                update.task,
+                errorLog: 'Download cancelled, try again',
+              );
             case TaskStatus.running:
             case TaskStatus.enqueued:
             case TaskStatus.notFound:
@@ -69,16 +77,17 @@ class Downloader {
   }
 
   late final FileDownloader fileDownloader;
-  final downloads = <String, Future<void> Function({String? errorLog})?>{};
+  final downloads =
+      <String, Future<void> Function(Task task, {String? errorLog})?>{};
   final statusMap = <String, TaskStatus>{};
   final downloaderStatusStreamController = StreamController<DownloaderStatus>();
 
-  Future<bool> enqueue({
+  Future<DownloadTask> enqueue({
     required String url,
     required BaseDirectory baseDirectory,
     required String directory,
     required String filename,
-    Future<void> Function({String? errorLog})? onDone,
+    Future<void> Function(Task task, {String? errorLog})? onDone,
     String group = 'Unclassified',
   }) async {
     final task = DownloadTask(
@@ -91,7 +100,12 @@ class Downloader {
 
     downloads[task.taskId] = onDone;
 
-    return fileDownloader.enqueue(task);
+    await fileDownloader.enqueue(task);
+    return task;
+  }
+
+  Future<bool> cancel(String taskId) async {
+    return fileDownloader.cancelTaskWithId(taskId);
   }
 
   Future<void> removeCompleted() async {
@@ -107,18 +121,3 @@ class Downloader {
     downloaderStatusStreamController.close();
   }
 }
-
-final downloaderProvider = Provider<Downloader>((ref) {
-  final downloader = Downloader();
-  ref.onDispose(downloader.dispose);
-  return downloader;
-});
-
-final downloaderStatusProvider = StreamProvider<DownloaderStatus>(
-  (ref) async* {
-    yield* ref
-        .watch(downloaderProvider)
-        .downloaderStatusStreamController
-        .stream;
-  },
-);

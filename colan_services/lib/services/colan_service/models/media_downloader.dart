@@ -3,17 +3,25 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
-import 'package:colan_services/internal/extensions/list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import '../../../internal/extensions/ext_cl_media.dart';
 import '../../colan_service/models/cl_server.dart';
-import '../../colan_service/providers/downloader.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
+import 'downloader.dart';
+
+@immutable
+class TaskCompleter {
+  const TaskCompleter(this.task, this.completer);
+  final Task task;
+  final Completer<void> completer;
+}
 
 class MediaDownloader extends Downloader {
-  MediaDownloader({
+  MediaDownloader(
+    super.onStatusUpdate, {
     required this.store,
     required this.server,
     required this.directories,
@@ -24,7 +32,6 @@ class MediaDownloader extends Downloader {
   final CLDirectories directories;
   final CLServer server;
   final Future<void> Function(CLMedia media)? onDone;
-  bool isDownloading = false;
 
   void log(
     String message, {
@@ -41,45 +48,22 @@ class MediaDownloader extends Downloader {
     );
   }
 
-  Future<void> downloadFiles() async {
-    // Don't trigger multiple
-    if (isDownloading) {
-      log('ignore multiple requests');
-      return;
+  Future<TaskCompleter?> downloadPreview(CLMedia media) async {
+    if (File(_getPreviewAbsolutePath(media)).existsSync()) {
+      await _markPreviewAsDownloaded(media);
+      return null;
+    } else {
+      return _startPreviewDownload(media, 'PreviewFile');
     }
-    isDownloading = true;
-    log('Starting');
-    {
-      var previewsPending = await _checkDBForPreviewDownloadPending;
-      var mediaPending = await _checkDBForMediaDownloadPending;
+  }
 
-      while (previewsPending.isNotEmpty && mediaPending.isNotEmpty) {
-        final pendingTasks = <Completer<void>>[];
-        log('trigger download for ${previewsPending.length} previews');
-        for (final media in previewsPending) {
-          if (File(_getPreviewAbsolutePath(media)).existsSync()) {
-            await _markPreviewAsDownloaded(media);
-          } else {
-            pendingTasks.add(_startPreviewDownload(media, 'PreviewFile'));
-          }
-        }
-        log('trigger download for ${mediaPending.length} medias');
-        for (final media in mediaPending) {
-          if (File(_getMediaAbsolutePath(media)).existsSync()) {
-            await _markMediaAsDownloaded(media);
-          } else {
-            pendingTasks.add(_startMediaDownload(media, 'MediaFiles'));
-          }
-        }
-        log('waiting for the downloads to complete');
-        await Future.wait(pendingTasks.map((e) => e.future));
-        previewsPending = await _checkDBForPreviewDownloadPending;
-        mediaPending = await _checkDBForMediaDownloadPending;
-        log('Recheck DB for now items');
-      }
+  Future<TaskCompleter?> downloadMedia(CLMedia media) async {
+    if (File(_getMediaAbsolutePath(media)).existsSync()) {
+      await _markMediaAsDownloaded(media);
+      return null;
+    } else {
+      return _startMediaDownload(media, 'MediaFiles');
     }
-    log('nothing to download, Exit.');
-    isDownloading = false;
   }
 
   String _getPreviewAbsolutePath(CLMedia media) => p.join(
@@ -94,20 +78,6 @@ class MediaDownloader extends Downloader {
 
   BaseDirectory get _previewBaseDirectory => BaseDirectory.applicationSupport;
   BaseDirectory get _mediaBaseDirectory => BaseDirectory.applicationSupport;
-
-  Future<List<CLMedia>> get _checkDBForPreviewDownloadPending async {
-    final q = store.getQuery(
-      DBQueries.previewDownloadPending,
-    ) as StoreQuery<CLMedia>;
-    return (await store.readMultiple(q)).nonNullableList;
-  }
-
-  Future<List<CLMedia>> get _checkDBForMediaDownloadPending async {
-    final q = store.getQuery(
-      DBQueries.mediaDownloadPending,
-    ) as StoreQuery<CLMedia>;
-    return (await store.readMultiple(q)).nonNullableList;
-  }
 
   Future<void> _markPreviewAsDownloaded(CLMedia media) async {
     final mediaInDB = await store.updateMediaFromMap({
@@ -132,18 +102,18 @@ class MediaDownloader extends Downloader {
     }
   }
 
-  Completer<void> _startPreviewDownload(
+  Future<TaskCompleter> _startPreviewDownload(
     CLMedia media,
     String group,
-  ) {
-    final completer = Completer<void>();
-    enqueue(
+  ) async {
+    final completer = Completer<Task>();
+    final task = await enqueue(
       url: server.getEndpointURI(media.previewEndPoint!).toString(),
       baseDirectory: _previewBaseDirectory,
       directory: directories.thumbnail.name,
       filename: media.previewFileName,
       group: group,
-      onDone: ({errorLog}) async {
+      onDone: (task, {errorLog}) async {
         final mediaInDB = await store.updateMediaFromMap({
           'id': media.id,
           'previewLog': errorLog,
@@ -152,24 +122,24 @@ class MediaDownloader extends Downloader {
         if (mediaInDB != null) {
           await onDone?.call(mediaInDB);
         }
-        completer.complete();
+        completer.complete(task);
       },
     );
-    return completer;
+    return TaskCompleter(task, completer);
   }
 
-  Completer<void> _startMediaDownload(
+  Future<TaskCompleter> _startMediaDownload(
     CLMedia media,
     String group,
-  ) {
-    final completer = Completer<void>();
-    enqueue(
+  ) async {
+    final completer = Completer<Task>();
+    final task = await enqueue(
       url: server.getEndpointURI(media.mediaEndPoint!).toString(),
       baseDirectory: _mediaBaseDirectory,
       directory: directories.media.name,
       filename: media.mediaFileName,
       group: group,
-      onDone: ({errorLog}) async {
+      onDone: (task, {errorLog}) async {
         final mediaInDB = await store.updateMediaFromMap({
           'id': media.id,
           'mediaLog': errorLog,
@@ -179,9 +149,9 @@ class MediaDownloader extends Downloader {
         if (mediaInDB != null) {
           await onDone?.call(mediaInDB);
         }
-        completer.complete();
+        completer.complete(task);
       },
     );
-    return completer;
+    return TaskCompleter(task, completer);
   }
 }

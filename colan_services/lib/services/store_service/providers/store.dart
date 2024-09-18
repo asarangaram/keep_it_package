@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:background_downloader/background_downloader.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
@@ -20,28 +19,24 @@ import 'package:store/store.dart';
 import '../../../internal/extensions/ext_store.dart';
 import '../../../internal/extensions/list.dart';
 import '../../colan_service/models/cl_server.dart';
-
 import '../../colan_service/providers/servers.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
-import '../models/store_downloader.dart';
 import '../models/store_model.dart';
 import '../models/url_handler.dart';
 
 class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
-  StoreNotifier(this.ref, this.directoriesFuture)
+  StoreNotifier(this.ref, this.directoriesFuture, this.storeFuture)
       : super(const AsyncValue.loading()) {
     _initialize();
   }
   final Ref ref;
   Future<CLDirectories> directoriesFuture;
-  late final Store store;
+  final Future<Store> storeFuture;
   late StoreCache _currentState;
   final AlbumManager albumManager = AlbumManager(albumName: 'KeepIt');
   final String tempCollectionName = '*** Recently Captured';
-
-  MediaDownloader? mediaDownloader;
 
   StoreCache get currentState => _currentState;
 
@@ -51,14 +46,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<void> updateState(StoreCache value) async {
     _currentState = value;
-    mediaDownloader = _currentState.server == null
-        ? null
-        : MediaDownloader(
-            store: store,
-            server: _currentState.server!,
-            directories: await directoriesFuture,
-            onDone: refreshMedia,
-          );
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       return currentState;
@@ -73,15 +61,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       mediaList: const [],
       directories: await directoriesFuture,
       server: null,
-    );
-    final deviceDirectories = await directoriesFuture;
-    final db = deviceDirectories.db;
-    const dbName = 'keepIt.db';
-    final fullPath = p.join(db.pathString, dbName);
-
-    store = await createStoreInstance(
-      fullPath,
-      onReload: () {},
     );
 
     await loadLocalDB();
@@ -123,6 +102,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<void> syncServer() async {
+    final store = await storeFuture;
     if (syncInPorgress) return;
     syncInPorgress = true;
     if (myServer != null) {
@@ -131,14 +111,13 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         await store.updateStoreFromMediaMapList(mediaMap);
         await Future<void>.delayed(const Duration(seconds: 1));
         await loadLocalDB();
-        // Let the media downloader to run
-        unawaited(mediaDownloader?.downloadFiles());
       }
     }
     syncInPorgress = false;
   }
 
   Future<List<Collection>> loadCollections() async {
+    final store = await storeFuture;
     final q = store.getQuery(
       DBQueries.collections,
     ) as StoreQuery<Collection>;
@@ -146,6 +125,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<List<CLMedia>> loadMedia() async {
+    final store = await storeFuture;
     final q = store.getQuery(
       DBQueries.medias,
     ) as StoreQuery<CLMedia>;
@@ -153,6 +133,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
+    final store = await storeFuture;
     final c = currentState.getCollectionById(collection.id);
 
     if (collection == c) return collection;
@@ -242,6 +223,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       mustDownloadOriginal:
           mustDownloadOriginal ?? media?.mustDownloadOriginal ?? false,
     );
+    final store = await storeFuture;
     var mediaFromDB = await store.upsertMedia(savedMedia, parents: parents);
 
     if (mediaFromDB != null) {
@@ -435,6 +417,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<CLMedia?> updateMedia(CLMedia media) async {
+    final store = await storeFuture;
     var mediaList = List<CLMedia>.from(currentState.mediaList);
 
     final updated = await store.upsertMedia(media);
@@ -503,6 +486,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     List<CLMedia> mediaMultiple, {
     void Function(Progress progress)? onProgress,
   }) async {
+    final store = await storeFuture;
     var mediaList = List<CLMedia>.from(currentState.mediaList);
 
     final updatedList = <CLMedia>[];
@@ -626,6 +610,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<bool> permanentlyDeleteMediaMultiple(Set<int> ids2Delete) async {
+    final store = await storeFuture;
     final medias = List<CLMedia?>.from(currentState.mediaList);
 
     final medias2Remove =
@@ -912,11 +897,12 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<List<CLMedia>> getNotes(int mediaId) async {
+    final store = await storeFuture;
     // FIXME better to have a raw query to directly read indices
     final q = store.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
         as StoreQuery<CLMedia>;
     final noteIds =
-        (await store.readMultiple(q)).map((e) => e!.id!).nonNullableList;
+        (await store.readMultiple(q)).map((e) => e!.id).nonNullableList;
 
     return _currentState.getMediaMultipleByIds(noteIds);
   }
@@ -925,7 +911,20 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 final storeProvider =
     StateNotifierProvider<StoreNotifier, AsyncValue<StoreCache>>((ref) {
   final deviceDirectories = ref.watch(deviceDirectoriesProvider.future);
-  final notifier = StoreNotifier(ref, deviceDirectories);
+  final storeFuture = ref.watch(rawStoreProvider.future);
+  final notifier = StoreNotifier(ref, deviceDirectories, storeFuture);
 
   return notifier;
+});
+
+final rawStoreProvider = FutureProvider<Store>((ref) async {
+  final deviceDirectories = await ref.watch(deviceDirectoriesProvider.future);
+  final db = deviceDirectories.db;
+  const dbName = 'keepIt.db';
+  final fullPath = p.join(db.pathString, dbName);
+
+  return createStoreInstance(
+    fullPath,
+    onReload: () {},
+  );
 });
