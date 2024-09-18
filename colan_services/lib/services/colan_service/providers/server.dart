@@ -55,6 +55,9 @@ class CLServerNotifier extends StateNotifier<CLServer?> {
         server: state!,
         store: await storeFuture,
         directories: await directoriesFuture,
+        onDone: (media) async {
+          await ref.read(storeProvider.notifier).refreshMedia(media);
+        },
       );
       sync();
     }

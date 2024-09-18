@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,9 +18,10 @@ class DownloaderProgressbar extends ConsumerWidget {
     ];
     const height = 10.0;
 
-    if (downloaderStatus.total == 0) {
+    /*  if (downloaderStatus.total == 0) {
       return const SizedBox.shrink();
-    }
+    } */
+    print(downloaderStatus);
     return SizedBox(
       height: height,
       child: Row(
