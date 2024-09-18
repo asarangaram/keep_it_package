@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'cl_blink.dart';
+import '../basics/cl_blink.dart';
 
 class CLHighlighted extends StatefulWidget {
   const CLHighlighted({
