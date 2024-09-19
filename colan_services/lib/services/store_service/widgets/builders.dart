@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_services/services/store_service/providers/store.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -81,7 +82,22 @@ class GetMediaUri extends ConsumerWidget {
     return storeAsync.when(
       data: builder,
       error: errorBuilder ?? BrokenImage.show,
-      loading: loadingBuilder ?? GreyShimmer.show,
+      loading: loadingBuilder ??
+          () => Column(
+                children: [
+                  if (CLPopScreen.canPop(context))
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: CLPopScreen.onTap(
+                        child: CLButtonIcon.large(
+                          clIcons.pagePop,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  Center(child: GreyShimmer.show()),
+                ],
+              ),
     );
   }
 
