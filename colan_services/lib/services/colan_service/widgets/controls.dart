@@ -7,7 +7,7 @@ import '../providers/working_offline.dart';
 import 'labeled_icon_horiz.dart';
 
 class WorkOffline extends ConsumerWidget {
-  const WorkOffline({required this.onTap, super.key});
+  const WorkOffline({this.onTap, super.key});
   final Future<bool?> Function()? onTap;
 
   @override
@@ -23,7 +23,7 @@ class WorkOffline extends ConsumerWidget {
 }
 
 class DisconnectServer extends ConsumerWidget {
-  const DisconnectServer({required this.onTap, super.key});
+  const DisconnectServer({this.onTap, super.key});
   final Future<bool?> Function()? onTap;
 
   @override
@@ -39,7 +39,23 @@ class DisconnectServer extends ConsumerWidget {
 }
 
 class ConnectServer extends ConsumerWidget {
-  const ConnectServer({required this.onTap, super.key});
+  const ConnectServer({this.onTap, super.key});
+  final Future<bool?> Function()? onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return LabeledIconHorizontal(
+      CLMenuItem(
+        icon: clIcons.syncIcons.connectIconData,
+        title: 'Connect',
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+class GoOnline extends ConsumerWidget {
+  const GoOnline({this.onTap, super.key});
   final Future<bool?> Function()? onTap;
 
   @override
@@ -55,7 +71,7 @@ class ConnectServer extends ConsumerWidget {
 }
 
 class DeregisterServer extends ConsumerWidget {
-  const DeregisterServer({required this.onTap, super.key});
+  const DeregisterServer({this.onTap, super.key});
   final Future<bool?> Function()? onTap;
 
   @override
@@ -71,7 +87,7 @@ class DeregisterServer extends ConsumerWidget {
 }
 
 class SyncServer extends ConsumerWidget {
-  const SyncServer({required this.onTap, super.key});
+  const SyncServer({this.onTap, super.key});
   final Future<bool?> Function()? onTap;
 
   @override
@@ -93,7 +109,6 @@ class OfflinePreference extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final workingOffline = ref.watch(workingOfflineProvider);
     final isOnline = ref.watch(serverOnlineStatusProvider);
-    print('workingOffline : $workingOffline');
     if (!isOnline) {
       return const SizedBox.shrink();
     }

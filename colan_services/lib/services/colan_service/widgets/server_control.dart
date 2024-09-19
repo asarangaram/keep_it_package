@@ -36,23 +36,29 @@ class ServerControl extends ConsumerWidget {
               elevation: 0,
               buttonSize: const Size(30, 30),
               children: [
-                if (!workingOffline)
-                  SpeedDialChild(
-                    labelWidget: SpeedDialChildWrapper(
-                      child: WorkOffline(
-                        onTap: () async {
-                          ref.read(workingOfflineProvider.notifier).state =
-                              true;
-                          return true;
-                        },
+                if (isOnline)
+                  if (!workingOffline)
+                    SpeedDialChild(
+                      onTap: () {
+                        ref.read(workingOfflineProvider.notifier).state = true;
+                      },
+                      labelWidget: const SpeedDialChildWrapper(
+                        child: WorkOffline(),
+                      ),
+                    )
+                  else
+                    SpeedDialChild(
+                      onTap: () {
+                        ref.read(workingOfflineProvider.notifier).state = false;
+                      },
+                      labelWidget: const SpeedDialChildWrapper(
+                        child: GoOnline(),
                       ),
                     ),
-                  ),
                 if (isOnline && !workingOffline)
                   SpeedDialChild(
-                    labelWidget: SyncServer(
-                      onTap: ref.read(storeProvider.notifier).syncServer,
-                    ),
+                    onTap: ref.read(storeProvider.notifier).syncServer,
+                    labelWidget: const SyncServer(),
                   ),
               ],
               switchLabelPosition: true,

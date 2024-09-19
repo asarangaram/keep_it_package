@@ -1,5 +1,6 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
+
+import '../../colan_services.dart';
 
 class MessageWidget extends StatelessWidget {
   const MessageWidget({super.key, this.message = 'Empty'});

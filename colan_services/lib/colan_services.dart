@@ -5,7 +5,6 @@ export 'services/basic_page_service/empty_state.dart';
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart';
 export 'services/colan_service/widgets/server_control.dart' show ServerControl;
-export 'services/colan_service/widgets/service.dart' show CloudOnLanService;
 export 'services/colan_service/widgets/settings.dart' show CloudOnLANSettings;
 export 'services/incoming_media_service/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
