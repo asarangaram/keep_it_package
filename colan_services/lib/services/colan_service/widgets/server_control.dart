@@ -1,14 +1,18 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
+import '../providers/server.dart';
 import 'downloader_progressbar.dart';
 
-class ServerControl extends StatelessWidget {
+class ServerControl extends ConsumerWidget {
   const ServerControl({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // ignore: unused_local_variable
+    final downloaderStatus = ref.watch(downloaderStatusProvider);
     return Card(
       shape: BeveledRectangleBorder(
         borderRadius: BorderRadius.circular(4),
@@ -44,15 +48,17 @@ class ServerControl extends StatelessWidget {
                 'assets/icon/cloud_on_lan_128px_color.png',
               ),
             ),
-            const SizedBox.square(
-              dimension: 30,
-              child: DownloaderProgressPie(),
-            ),
-            const SizedBox.square(
-              dimension: 30,
-              child: ActiveDownloadIndicator(),
-            ),
-            const Spacer(),
+            if (downloaderStatus.total > 0)
+              const SizedBox.square(
+                dimension: 30,
+                child: DownloaderProgressPie(),
+              ),
+            if (downloaderStatus.running > 0)
+              const SizedBox.square(
+                dimension: 30,
+                child: ActiveDownloadIndicator(),
+              ),
+            //const Spacer(),
           ]
               .map(
                 (e) => Padding(
