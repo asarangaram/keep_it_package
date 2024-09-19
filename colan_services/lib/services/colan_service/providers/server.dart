@@ -1,21 +1,22 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 
-import 'package:colan_services/internal/extensions/list.dart';
-import 'package:colan_services/services/colan_service/models/media_downloader.dart';
-import 'package:colan_services/services/colan_service/providers/servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../../internal/extensions/list.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../../store_service/providers/store.dart';
 import '../models/cl_server.dart';
 import '../models/downloader.dart';
 import '../models/downloader_status.dart';
+import '../models/media_downloader.dart';
+import 'online_status.dart';
+import 'registerred_server.dart';
 
-class CLServerNotifier extends StateNotifier<CLServer?> {
-  CLServerNotifier({
+class VisibleServerNotifier extends StateNotifier<CLServer?> {
+  VisibleServerNotifier({
     required this.ref,
     required this.directoriesFuture,
     required this.storeFuture,
@@ -165,18 +166,21 @@ class CLServerNotifier extends StateNotifier<CLServer?> {
   }
 }
 
-final clServerProvider =
-    StateNotifierProvider<CLServerNotifier, CLServer?>((ref) {
+final visibleServerProvider =
+    StateNotifierProvider<VisibleServerNotifier, CLServer?>((ref) {
   final store = ref.watch(rawStoreProvider.future);
   final directories = ref.watch(deviceDirectoriesProvider.future);
-  final servers = ref.watch(serversProvider);
+
   final downloader = ref.watch(downloaderProvider);
-  final notifier = CLServerNotifier(
+  final registerredServer = ref.watch(registeredServerProvider);
+  final workOffline = ref.watch(workOfflineProvider);
+  final onlineStatus = ref.watch(serverOnlineStatusProvider);
+  final notifier = VisibleServerNotifier(
     ref: ref,
-    server: servers.myServerOnline ? servers.myServer : null,
     storeFuture: store,
     directoriesFuture: directories,
     downloader: downloader,
+    server: workOffline || (!onlineStatus) ? null : registerredServer,
   );
 
   return notifier;
@@ -190,4 +194,8 @@ final downloaderProvider = StateProvider<Downloader>((ref) {
   return Downloader(
     (status) => ref.read(downloaderStatusProvider.notifier).state = status,
   );
+});
+
+final workOfflineProvider = StateProvider<bool>((ref) {
+  return false;
 });

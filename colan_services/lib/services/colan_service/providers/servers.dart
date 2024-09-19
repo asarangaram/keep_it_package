@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -18,7 +18,7 @@ extension ServiceExtDiscovery on Discovery {
 class ServersNotifier extends StateNotifier<Servers> {
   ServersNotifier({required this.serviceName}) : super(Servers.unknown()) {
     log('Instance created ');
-    _initialize();
+    //  _initialize();
   }
 
   void log(
@@ -214,3 +214,4 @@ void _infoLogger(String msg) {
     logger.i('$_filePrefix$msg');
   }
 }
+ */

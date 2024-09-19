@@ -1,98 +1,229 @@
-import 'dart:async';
+import 'dart:developer';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../providers/servers.dart';
+import '../providers/network_scanner.dart';
+import '../providers/online_status.dart';
+import '../providers/registerred_server.dart';
 
 class CloudOnLANSettings extends ConsumerWidget {
   const CloudOnLANSettings({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final servers = ref.watch(serversProvider);
-    final myServer = servers.myServer;
-    return ListTile(
-      title: Text.rich(
-        TextSpan(
-          children: [
-            const TextSpan(
-              text: 'Server',
+    final scanner = ref.watch(networkScannerProvider);
+    final registeredServer = ref.watch(registeredServerProvider);
+    log('Registerred Server is $registeredServer', name: 'CloudOnLANSettings');
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ExpansionTile(
+        title: const Text('Server Settings'),
+        childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+        initiallyExpanded: true,
+        tilePadding: EdgeInsets.zero,
+        subtitle: registeredServer == null ? null : const ServerStatus(),
+        children: [
+          /* Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                SpeedDialIcon(
+                  clIcons.syncIcons.syncOptionsIconData,
+                  'Sync Settings',
+                ),
+                SpeedDialIcon(
+                  clIcons.syncIcons.disconnectIconData,
+                  'Disconnect',
+                ),
+                SpeedDialIcon(
+                  clIcons.syncIcons.connectIconData,
+                  'Connect',
+                ),
+                SpeedDialIcon(
+                  clIcons.syncIcons.detachIconData,
+                  'Deregister',
+                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                  foregroudColor: Theme.of(context).colorScheme.error,
+                ),
+              ],
             ),
-            if (myServer != null)
-              WidgetSpan(
-                alignment: PlaceholderAlignment.middle,
-                child: TextButton(
-                  onPressed: () async {
-                    ref.read(serversProvider.notifier).myServer = null;
-                  },
-                  child: CLText.small(
-                    'detach',
-                    color: CLTheme.of(context).colors.errorTextForeground,
+          ), */
+          if (!scanner.lanStatus)
+            CLIconLabelled.large(clIcons.noNetwork, 'No Network')
+          else if (scanner.servers == null)
+            const CircularProgressIndicator.adaptive()
+          else ...[
+            if (scanner.servers!.isEmpty)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'No Server found \u00A0\u00A0\u00A0\u00A0',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: '\u21BA Refresh',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: CLScaleType.small.fontSize,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            ref.read(networkScannerProvider.notifier).search();
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else ...[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'Available Servers \u00A0\u00A0\u00A0\u00A0',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: '\u21BA Refresh',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: CLScaleType.small.fontSize,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            ref.read(networkScannerProvider.notifier).search();
+                          },
+                      ),
+                    ],
                   ),
                 ),
               ),
-          ],
-        ),
-      ),
-      subtitle: myServer == null
-          ? const Text('You are not connected to any Server')
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text:
-                              // ignore: lines_longer_than_80_chars
-                              '${myServer.identifier}@${myServer.name}:${myServer.port} '
-                              'is ',
-                        ),
-                        TextSpan(
-                          text: servers.myServerOnline ? 'online' : 'offline',
-                          style: TextStyle(
-                            color: servers.myServerOnline
-                                ? Colors.green
-                                : Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: CLScaleType.small.fontSize,
+
+              //CLIconLabelled.large(clIcons.serversList, 'Servers'),
+              for (final server in scanner.servers!)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${server.identifier} '
+                                '[${server.name}:${server.port}]'
+                                ' \u00A0\u00A0\u00A0\u00A0',
                           ),
-                        ),
-                      ],
+                          if (server != registeredServer)
+                            TextSpan(
+                              text: '\u2295Register',
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  ref
+                                      .read(registeredServerProvider.notifier)
+                                      .register(server);
+                                },
+                            )
+                          else
+                            TextSpan(
+                              text: 'Registered',
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                                fontSize: CLScaleType.small.fontSize,
+                              ),
+                            ),
+                        ],
+                      ),
+                      textAlign: TextAlign.start,
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: CLText.tiny(
-                    'Server may be '
-                    '${servers.myServerOnline ? 'offline' : 'online'}, '
-                    'Check status manually.\n'
-                    'Connection keepAlive is not supported in this version',
-                    textAlign: TextAlign.start,
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class ServerStatus extends ConsumerWidget {
+  const ServerStatus({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final server = ref.watch(registeredServerProvider);
+
+    final isOnline = ref.watch(serverOnlineStatusProvider);
+    if (server == null) return const SizedBox.shrink();
+
+    final map = <String, Widget>{
+      'Server': Text(server.identifier),
+      'Location': Text('${server.name}:${server.port}'),
+      'Status': Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text:
+                  '${isOnline ? 'Online' : 'Offline'} \u00A0\u00A0\u00A0\u00A0',
+              style: TextStyle(
+                color: isOnline ? Colors.green : Colors.red,
+              ),
+            ),
+            TextSpan(
+              text: '\u21BA Check Status',
+              style: const TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap =
+                    ref.read(serverOnlineStatusProvider.notifier).checkStatus,
+            ),
+          ],
+        ),
+      ),
+    };
+
+    return AnimatedOpacity(
+      opacity: 1,
+      duration: const Duration(seconds: 1),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...map.keys.map(
+                  (e) => Text(
+                    '$e : ',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
-      trailing: myServer == null
-          ? ElevatedButton(
-              onPressed: () async {
-                unawaited(ref.read(serversProvider.notifier).checkConnection);
-                await context.push('/servers');
-              },
-              child: const Text('Connect'),
-            )
-          : ElevatedButton(
-              onPressed: () async {
-                await ref.read(serversProvider.notifier).checkConnection;
-              },
-              child: const Text('Check Connection'),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: map.values.toList(),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

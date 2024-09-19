@@ -65,7 +65,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
     await loadLocalDB();
 
-    ref.listen(clServerProvider, (prev, curr) {
+    ref.listen(visibleServerProvider, (prev, curr) {
       myServer = curr;
       if (curr != null) {
         log('attach server into state');
@@ -107,7 +107,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       }
     }
     syncInPorgress = false;
-    ref.read(clServerProvider.notifier).sync();
+    ref.read(visibleServerProvider.notifier).sync();
   }
 
   Future<List<Collection>> loadCollections() async {
