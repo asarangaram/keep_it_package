@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../models/cl_scale_type.dart';
@@ -50,6 +49,7 @@ class SyncIcons {
   final syncIconData = MdiIcons.syncCircle;
   final attachIconData = MdiIcons.plusCircle;
   final detachIconData = MdiIcons.minusCircle;
+  final syncOptionsIconData = Symbols.format_list_bulleted_add;
 
   final Widget inSync = Stack(
     alignment: AlignmentDirectional.center,
