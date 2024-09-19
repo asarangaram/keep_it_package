@@ -55,17 +55,17 @@ class RegisteredServerNotifier extends StateNotifier<CLServer?> {
     return;
   }
 
-  Future<void> unregister() async {
+  Future<bool> deregister() async {
     // Not registers, and request is for unregistered
     if (state == null) {
-      return;
+      return true;
     }
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('myServer');
     state = null;
     log('server unregistered ');
-    return;
+    return true;
   }
 }
 

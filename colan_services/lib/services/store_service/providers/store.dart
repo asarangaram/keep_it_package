@@ -19,7 +19,7 @@ import 'package:store/store.dart';
 import '../../../internal/extensions/ext_store.dart';
 import '../../../internal/extensions/list.dart';
 import '../../colan_service/models/cl_server.dart';
-import '../../colan_service/providers/server.dart';
+import '../../colan_service/providers/active_server.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
@@ -65,12 +65,12 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
     await loadLocalDB();
 
-    ref.listen(visibleServerProvider, (prev, curr) {
+    ref.listen(activeServerProvider, (prev, curr) {
       myServer = curr;
       if (curr != null) {
         log('attach server into state');
         currentState = currentState.copyWith(server: myServer);
-        syncServer();
+        _syncServer();
       } else {
         log('Clear server from state');
         currentState = currentState.clearServer();
@@ -94,7 +94,13 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     await previewFile.deleteIfExists();
   }
 
-  Future<void> syncServer() async {
+  Future<bool> syncServer() async {
+    if (!state.hasValue) return false;
+    unawaited(_syncServer());
+    return true;
+  }
+
+  Future<void> _syncServer() async {
     final store = await storeFuture;
     if (syncInPorgress) return;
     syncInPorgress = true;
@@ -107,7 +113,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       }
     }
     syncInPorgress = false;
-    ref.read(visibleServerProvider.notifier).sync();
+    ref.read(activeServerProvider.notifier).sync();
   }
 
   Future<List<Collection>> loadCollections() async {
@@ -641,7 +647,7 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<void> onRefresh() async {
     await loadLocalDB();
-    await syncServer();
+    await _syncServer();
   }
 
   Future<CLMedia> generateMediaPreview({

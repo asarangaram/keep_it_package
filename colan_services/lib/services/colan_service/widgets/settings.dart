@@ -1,13 +1,15 @@
-import 'dart:developer';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../store_service/providers/store.dart';
 import '../providers/network_scanner.dart';
 import '../providers/online_status.dart';
 import '../providers/registerred_server.dart';
+import '../providers/working_offline.dart';
+import 'controls.dart';
+import 'registered_server.dart';
 
 class CloudOnLANSettings extends ConsumerWidget {
   const CloudOnLANSettings({super.key});
@@ -16,7 +18,8 @@ class CloudOnLANSettings extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scanner = ref.watch(networkScannerProvider);
     final registeredServer = ref.watch(registeredServerProvider);
-    log('Registerred Server is $registeredServer', name: 'CloudOnLANSettings');
+    final isOnline = ref.watch(serverOnlineStatusProvider);
+    final workingOffline = ref.watch(workingOfflineProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ExpansionTile(
@@ -24,34 +27,37 @@ class CloudOnLANSettings extends ConsumerWidget {
         childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
         initiallyExpanded: true,
         tilePadding: EdgeInsets.zero,
-        subtitle: registeredServer == null ? null : const ServerStatus(),
+        subtitle:
+            registeredServer == null ? null : const RegisterredServerView(),
         children: [
-          /* Padding(
+          Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                SpeedDialIcon(
-                  clIcons.syncIcons.syncOptionsIconData,
-                  'Sync Settings',
-                ),
-                SpeedDialIcon(
-                  clIcons.syncIcons.disconnectIconData,
-                  'Disconnect',
-                ),
-                SpeedDialIcon(
-                  clIcons.syncIcons.connectIconData,
-                  'Connect',
-                ),
-                SpeedDialIcon(
-                  clIcons.syncIcons.detachIconData,
-                  'Deregister',
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  foregroudColor: Theme.of(context).colorScheme.error,
-                ),
-              ],
+                const OfflinePreference(),
+                if (isOnline && !workingOffline)
+                  SyncServer(
+                    onTap: ref.read(storeProvider.notifier).syncServer,
+                  )
+                else
+                  Container(),
+                if (registeredServer != null)
+                  DeregisterServer(
+                    onTap:
+                        ref.read(registeredServerProvider.notifier).deregister,
+                  )
+                else
+                  Container(),
+              ]
+                  .map(
+                    (e) => Expanded(
+                      child: Center(child: e),
+                    ),
+                  )
+                  .toList(),
             ),
-          ), */
+          ),
           if (!scanner.lanStatus)
             CLIconLabelled.large(clIcons.noNetwork, 'No Network')
           else if (scanner.servers == null)
@@ -156,73 +162,6 @@ class CloudOnLANSettings extends ConsumerWidget {
             ],
           ],
         ],
-      ),
-    );
-  }
-}
-
-class ServerStatus extends ConsumerWidget {
-  const ServerStatus({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final server = ref.watch(registeredServerProvider);
-
-    final isOnline = ref.watch(serverOnlineStatusProvider);
-    if (server == null) return const SizedBox.shrink();
-
-    final map = <String, Widget>{
-      'Server': Text(server.identifier),
-      'Location': Text('${server.name}:${server.port}'),
-      'Status': Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text:
-                  '${isOnline ? 'Online' : 'Offline'} \u00A0\u00A0\u00A0\u00A0',
-              style: TextStyle(
-                color: isOnline ? Colors.green : Colors.red,
-              ),
-            ),
-            TextSpan(
-              text: '\u21BA Check Status',
-              style: const TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap =
-                    ref.read(serverOnlineStatusProvider.notifier).checkStatus,
-            ),
-          ],
-        ),
-      ),
-    };
-
-    return AnimatedOpacity(
-      opacity: 1,
-      duration: const Duration(seconds: 1),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8),
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ...map.keys.map(
-                  (e) => Text(
-                    '$e : ',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: map.values.toList(),
-            ),
-          ],
-        ),
       ),
     );
   }

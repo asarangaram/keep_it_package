@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import '../providers/server.dart';
+import '../../store_service/providers/store.dart';
+import '../providers/downloader_status.dart';
+import '../providers/online_status.dart';
+import '../providers/working_offline.dart';
+import 'controls.dart';
 import 'downloader_progressbar.dart';
 
 class ServerControl extends ConsumerWidget {
@@ -11,6 +15,9 @@ class ServerControl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isOnline = ref.watch(serverOnlineStatusProvider);
+    final workingOffline = ref.watch(workingOfflineProvider);
+
     // ignore: unused_local_variable
     final downloaderStatus = ref.watch(downloaderStatusProvider);
     return Card(
@@ -29,18 +36,24 @@ class ServerControl extends ConsumerWidget {
               elevation: 0,
               buttonSize: const Size(30, 30),
               children: [
-                SpeedDialChild(
-                  labelWidget: SpeedDialIcon(
-                    clIcons.syncIcons.syncIconData,
-                    'Sync With Server',
+                if (!workingOffline)
+                  SpeedDialChild(
+                    labelWidget: SpeedDialChildWrapper(
+                      child: WorkOffline(
+                        onTap: () async {
+                          ref.read(workingOfflineProvider.notifier).state =
+                              true;
+                          return true;
+                        },
+                      ),
+                    ),
                   ),
-                ),
-                SpeedDialChild(
-                  labelWidget: SpeedDialIcon(
-                    clIcons.syncIcons.disconnectIconData,
-                    'Work Offline',
+                if (isOnline && !workingOffline)
+                  SpeedDialChild(
+                    labelWidget: SyncServer(
+                      onTap: ref.read(storeProvider.notifier).syncServer,
+                    ),
                   ),
-                ),
               ],
               switchLabelPosition: true,
               activeIcon: clIcons.closeFullscreen,
@@ -73,89 +86,26 @@ class ServerControl extends ConsumerWidget {
   }
 }
 
-class SpeedDialIcon extends StatelessWidget {
-  const SpeedDialIcon(
-    this.iconData,
-    this.label, {
+class SpeedDialChildWrapper extends StatelessWidget {
+  const SpeedDialChildWrapper({
+    required this.child,
     super.key,
-    this.backgroundColor,
-    this.foregroudColor,
   });
-  final IconData iconData;
-  final String label;
-  final Color? backgroundColor;
-  final Color? foregroudColor;
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return child;
+    /* return Container(
       padding: const EdgeInsets.only(left: 32),
       alignment: Alignment.centerLeft,
       width: 200,
       height: 40,
       child: FittedBox(
         fit: BoxFit.fitHeight,
-        child: LabeledIconHorizontal(
-          iconData,
-          label,
-          backgroundColor: backgroundColor,
-          foregroudColor: foregroudColor,
-        ),
+        child: child,
       ),
-    );
-  }
-}
-
-class LabeledIconHorizontal extends StatelessWidget {
-  const LabeledIconHorizontal(
-    this.iconData,
-    this.label, {
-    this.backgroundColor,
-    this.foregroudColor,
-    super.key,
-  });
-
-  final Color? backgroundColor;
-  final IconData iconData;
-  final String label;
-  final Color? foregroudColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: backgroundColor ??
-            Theme.of(context)
-                .colorScheme
-                .primary, // ElevatedButton background color
-        borderRadius:
-            BorderRadius.circular(8), // Rounded corners like ElevatedButton
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black
-                .withOpacity(0.2), // Slight shadow to simulate elevation
-            blurRadius: 4,
-            offset: const Offset(2, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          mainAxisSize:
-              MainAxisSize.min, // Shrinks the container to the content size
-          children: [
-            Icon(iconData, color: Colors.white), // Icon with white color
-            const SizedBox(width: 8), // Space between icon and text
-            Text(
-              label,
-              style: TextStyle(
-                color: foregroudColor ?? Colors.white,
-              ), // White text to match the button style
-            ),
-          ],
-        ),
-      ),
-    );
+    ); */
   }
 }

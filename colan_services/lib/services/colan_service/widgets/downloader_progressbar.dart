@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pie_chart/pie_chart.dart';
 
-import '../providers/server.dart';
+import '../providers/downloader_status.dart';
 
 class DownloaderProgressbar extends ConsumerWidget {
   const DownloaderProgressbar({super.key});

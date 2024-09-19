@@ -10,13 +10,14 @@ import '../../storage_service/providers/directories.dart';
 import '../../store_service/providers/store.dart';
 import '../models/cl_server.dart';
 import '../models/downloader.dart';
-import '../models/downloader_status.dart';
 import '../models/media_downloader.dart';
+import 'downloader_provider.dart';
 import 'online_status.dart';
 import 'registerred_server.dart';
+import 'working_offline.dart';
 
-class VisibleServerNotifier extends StateNotifier<CLServer?> {
-  VisibleServerNotifier({
+class ActiveServerNotifier extends StateNotifier<CLServer?> {
+  ActiveServerNotifier({
     required this.ref,
     required this.directoriesFuture,
     required this.storeFuture,
@@ -43,7 +44,7 @@ class VisibleServerNotifier extends StateNotifier<CLServer?> {
       level: level,
       error: error,
       stackTrace: stackTrace,
-      name: 'Online Service: Media Downloader',
+      name: 'Online Service: Active Server',
     );
   }
 
@@ -60,6 +61,7 @@ class VisibleServerNotifier extends StateNotifier<CLServer?> {
           await ref.read(storeProvider.notifier).refreshMedia(media);
         },
       );
+      log('Media Downloader initialized for server $state');
       sync();
     }
   }
@@ -94,6 +96,8 @@ class VisibleServerNotifier extends StateNotifier<CLServer?> {
   void sync() {
     if (mediaDownloader != null) {
       downloadFiles(mediaDownloader!);
+    } else {
+      log('Sync ignored as downloader not available');
     }
   }
 
@@ -166,16 +170,15 @@ class VisibleServerNotifier extends StateNotifier<CLServer?> {
   }
 }
 
-final visibleServerProvider =
-    StateNotifierProvider<VisibleServerNotifier, CLServer?>((ref) {
+final activeServerProvider =
+    StateNotifierProvider<ActiveServerNotifier, CLServer?>((ref) {
   final store = ref.watch(rawStoreProvider.future);
   final directories = ref.watch(deviceDirectoriesProvider.future);
-
   final downloader = ref.watch(downloaderProvider);
   final registerredServer = ref.watch(registeredServerProvider);
-  final workOffline = ref.watch(workOfflineProvider);
+  final workOffline = ref.watch(workingOfflineProvider);
   final onlineStatus = ref.watch(serverOnlineStatusProvider);
-  final notifier = VisibleServerNotifier(
+  final notifier = ActiveServerNotifier(
     ref: ref,
     storeFuture: store,
     directoriesFuture: directories,
@@ -184,18 +187,4 @@ final visibleServerProvider =
   );
 
   return notifier;
-});
-
-final downloaderStatusProvider = StateProvider<DownloaderStatus>((ref) {
-  return const DownloaderStatus();
-});
-
-final downloaderProvider = StateProvider<Downloader>((ref) {
-  return Downloader(
-    (status) => ref.read(downloaderStatusProvider.notifier).state = status,
-  );
-});
-
-final workOfflineProvider = StateProvider<bool>((ref) {
-  return false;
 });
