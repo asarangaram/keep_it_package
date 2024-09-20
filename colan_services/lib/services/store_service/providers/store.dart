@@ -25,6 +25,7 @@ import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../models/store_model.dart';
 import '../models/url_handler.dart';
+import 'sync_in_progress.dart';
 
 class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   StoreNotifier(this.ref, this.directoriesFuture, this.storeFuture)
@@ -42,7 +43,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   set currentState(StoreCache value) => updateState(value);
   CLServer? myServer;
-  bool syncInPorgress = false;
 
   Future<void> updateState(StoreCache value) async {
     _currentState = value;
@@ -102,8 +102,9 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<void> _syncServer() async {
     final store = await storeFuture;
+    final syncInPorgress = ref.read(syncStatusProvider);
     if (syncInPorgress) return;
-    syncInPorgress = true;
+    ref.read(syncStatusProvider.notifier).state = true;
     if (myServer != null) {
       final mediaMap = await myServer!.downloadMediaInfo();
       if (mediaMap != null) {
@@ -112,7 +113,8 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         await loadLocalDB();
       }
     }
-    syncInPorgress = false;
+    await Future<void>.delayed(const Duration(seconds: 5));
+    ref.read(syncStatusProvider.notifier).state = false;
     ref.read(activeServerProvider.notifier).sync();
   }
 
