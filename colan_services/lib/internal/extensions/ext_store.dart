@@ -23,13 +23,19 @@ extension StoreExt on Store {
       }
       final CLMedia? mediaInDB;
       if (currMedia != m) {
-        if (mediaFileChanged) {
-          mediaInDB = await upsertMedia(
-            m.copyWith(isPreviewCached: false, isMediaCached: false),
-          );
-          await deleteMedia(currMedia!);
+        if ((currMedia?.isEdited ?? false) || (currMedia?.isDeleted ?? false)) {
+          // Editted and deleted media will be dealt by uploader or conflict
+          // resolver. Downloader skips
+          mediaInDB = null;
         } else {
-          mediaInDB = await upsertMedia(m);
+          if (mediaFileChanged) {
+            mediaInDB = await upsertMedia(
+              m.copyWith(isPreviewCached: false, isMediaCached: false),
+            );
+            await deleteMedia(currMedia!);
+          } else {
+            mediaInDB = await upsertMedia(m);
+          }
         }
       } else {
         mediaInDB = currMedia;
