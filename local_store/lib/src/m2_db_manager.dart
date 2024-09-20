@@ -146,16 +146,22 @@ class DBManager extends Store {
     final dbQuery = storeQuery as DBQuery<T>;
     final sub = db
         .watchRows(
-          dbQuery.sql,
-          triggerOnTables: dbQuery.triggerOnTables,
-          parameters: dbQuery.parameters ?? [],
-        )
+      dbQuery.sql,
+      triggerOnTables: dbQuery.triggerOnTables,
+      parameters: dbQuery.parameters ?? [],
+    )
         .map(
-          (rows) => rows
-              .map((e) => dbQuery.fromMap(DBQuery.fixedMap(e)))
+      (rows) {
+        if (dbQuery.fromMap != null) {
+          return rows
+              .map((e) => dbQuery.fromMap!.call(DBQuery.fixedMap(e)))
               .where((e) => e != null)
-              .toList(),
-        );
+              .toList();
+        } else {
+          return rows.map((e) => e as T).toList();
+        }
+      },
+    );
     await for (final res in sub) {
       yield res;
     }
