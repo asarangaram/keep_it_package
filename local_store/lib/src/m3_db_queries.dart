@@ -153,6 +153,11 @@ class Queries {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
+      DBQueries.serverMediaAll => DBQuery<int>.map(
+          sql: 'SELECT serverUID  FROM Media  WHERE serverUID IS NOT NULL;',
+          triggerOnTables: const {'Media', 'MediaNote'},
+          fromMap: (map) => map['serverUID'] as int,
+        ),
     };
     if (parameters == null) {
       return rawQuery as StoreQuery<T>;

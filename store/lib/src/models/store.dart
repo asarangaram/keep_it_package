@@ -32,6 +32,9 @@ enum DBQueries {
   notesAll,
   notesByMediaId,
   notesOrphan,
+
+  // Raw values
+  serverMediaAll
 }
 
 abstract class StoreQuery<T> {
