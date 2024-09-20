@@ -23,8 +23,8 @@ import '../models/store_model.dart';
 import '../models/url_handler.dart';
 import 'store.dart';
 
-class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
-  StoreNotifier(this.ref, this.directoriesFuture, this.storeFuture)
+class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
+  StoreCacheNotifier(this.ref, this.directoriesFuture, this.storeFuture)
       : super(const AsyncValue.loading()) {
     _initialize();
   }
@@ -869,10 +869,10 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 }
 
 final storeCacheProvider =
-    StateNotifierProvider<StoreNotifier, AsyncValue<StoreCache>>((ref) {
+    StateNotifierProvider<StoreCacheNotifier, AsyncValue<StoreCache>>((ref) {
   final deviceDirectories = ref.watch(deviceDirectoriesProvider.future);
   final storeFuture = ref.watch(storeProvider.future);
-  final notifier = StoreNotifier(ref, deviceDirectories, storeFuture);
+  final notifier = StoreCacheNotifier(ref, deviceDirectories, storeFuture);
 
   return notifier;
 });
