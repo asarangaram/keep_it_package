@@ -1,3 +1,4 @@
+import 'package:colan_services/services/colan_service/providers/active_server.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,7 +59,7 @@ class ServerControl extends ConsumerWidget {
                     ),
                 if (isOnline && !workingOffline)
                   SpeedDialChild(
-                    onTap: ref.read(storeProvider.notifier).syncServer,
+                    onTap: ref.read(activeServerProvider.notifier).sync,
                     labelWidget: const SyncServer(),
                   ),
               ],

@@ -1,3 +1,4 @@
+import 'package:colan_services/services/colan_service/providers/active_server.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class CloudOnLANSettings extends ConsumerWidget {
                 const OfflinePreference(),
                 if (isOnline && !workingOffline)
                   SyncServer1(
-                    onTap: ref.read(storeProvider.notifier).syncServer,
+                    onTap: ref.read(activeServerProvider.notifier).sync,
                   )
                 else
                   Container(),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 
+import 'package:colan_services/internal/extensions/ext_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
@@ -8,6 +9,7 @@ import '../../../internal/extensions/list.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../../store_service/providers/store.dart';
+import '../../store_service/providers/sync_in_progress.dart';
 import '../models/cl_server.dart';
 import '../models/downloader.dart';
 import '../models/media_downloader.dart';
@@ -62,6 +64,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         },
       );
       log('Media Downloader initialized for server $state');
+
       sync();
     }
   }
@@ -93,12 +96,19 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     return currentTasks;
   }
 
-  void sync() {
-    if (mediaDownloader != null) {
-      downloadFiles(mediaDownloader!);
-    } else {
-      log('Sync ignored as downloader not available');
-    }
+  Future<bool?> sync() async {
+    // Upload logic here
+    unawaited(
+      downloadMetadata().then((result) {
+        if (result && mediaDownloader != null) {
+          downloadFiles(mediaDownloader!);
+        } else {
+          log('Sync ignored; either its not required or '
+              ' downloader not available');
+        }
+      }),
+    );
+    return true;
   }
 
   Future<void> downloadFiles(MediaDownloader downloader) async {
@@ -159,6 +169,25 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
       DBQueries.mediaDownloadPending,
     ) as StoreQuery<CLMedia>;
     return (await store.readMultiple(q)).nonNullableList;
+  }
+
+  Future<bool> downloadMetadata() async {
+    if (state != null) {
+      final store = await storeFuture;
+      final syncInPorgress = ref.read(syncStatusProvider);
+      if (!syncInPorgress) {
+        ref.read(syncStatusProvider.notifier).state = true;
+        {
+          final mediaMap = await state!.downloadMediaInfo();
+          if (mediaMap != null) {
+            await store.updateStoreFromMediaMapList(mediaMap);
+          }
+        }
+        ref.read(syncStatusProvider.notifier).state = false;
+        return true;
+      }
+    }
+    return false;
   }
 
   @override

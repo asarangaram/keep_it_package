@@ -42,7 +42,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   StoreCache get currentState => _currentState;
 
   set currentState(StoreCache value) => updateState(value);
-  CLServer? myServer;
 
   Future<void> updateState(StoreCache value) async {
     _currentState = value;
@@ -64,18 +63,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     );
 
     await loadLocalDB();
-
-    ref.listen(activeServerProvider, (prev, curr) {
-      myServer = curr;
-      if (curr != null) {
-        log('attach server into state');
-        currentState = currentState.copyWith(server: myServer);
-        _syncServer();
-      } else {
-        log('Clear server from state');
-        currentState = currentState.clearServer();
-      }
-    });
   }
 
   Future<void> loadLocalDB() async {
@@ -92,30 +79,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     final previewFile = File(_currentState.getPreviewAbsolutePath(media));
     await mediaFile.deleteIfExists();
     await previewFile.deleteIfExists();
-  }
-
-  Future<bool> syncServer() async {
-    if (!state.hasValue) return false;
-    unawaited(_syncServer());
-    return true;
-  }
-
-  Future<void> _syncServer() async {
-    final store = await storeFuture;
-    final syncInPorgress = ref.read(syncStatusProvider);
-    if (syncInPorgress) return;
-    ref.read(syncStatusProvider.notifier).state = true;
-    if (myServer != null) {
-      final mediaMap = await myServer!.downloadMediaInfo();
-      if (mediaMap != null) {
-        await store.updateStoreFromMediaMapList(mediaMap);
-        await Future<void>.delayed(const Duration(seconds: 1));
-        await loadLocalDB();
-      }
-    }
-    await Future<void>.delayed(const Duration(seconds: 5));
-    ref.read(syncStatusProvider.notifier).state = false;
-    ref.read(activeServerProvider.notifier).sync();
   }
 
   Future<List<Collection>> loadCollections() async {
@@ -649,7 +612,6 @@ class StoreNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<void> onRefresh() async {
     await loadLocalDB();
-    await _syncServer();
   }
 
   Future<CLMedia> generateMediaPreview({
