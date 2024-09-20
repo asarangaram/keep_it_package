@@ -2,8 +2,10 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 
+import 'package:colan_services/internal/extensions/ext_store.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:store/store.dart';
 
 import 'rest_api.dart';
 
@@ -157,23 +159,26 @@ class CLServer {
     return RestApi(baseURL, client: client).download(endPoint, targetFilePath);
   }
 
-  Future<List<dynamic>?> downloadMediaInfo({
+  Future<bool> downloadMediaInfo(
+    Store store, {
     http.Client? client,
     List<String>? types,
   }) async {
     if (await hasConnection(client: client)) {
       try {
-        return [
+        final mediaMapList = [
           for (final mediaType in types ?? ['image', 'video'])
             ...jsonDecode(
               await getEndpoint('/media?type=$mediaType', client: client),
             ) as List<dynamic>,
         ];
+        await store.updateStoreFromMediaMapList(mediaMapList);
+        return true;
       } catch (e) {
         /** */
       }
     }
-    return null;
+    return false;
   }
 
   String get baseURL => 'http://$name:$port';

@@ -1,3 +1,4 @@
+import 'package:colan_services/internal/extensions/list.dart';
 import 'package:store/store.dart';
 
 import 'ext_cl_medias.dart';
@@ -65,5 +66,19 @@ extension StoreExt on Store {
   Future<Collection> createCollectionIfMissing(String label) async {
     return (await getCollectionByLabel(label)) ??
         await upsertCollection(Collection(label: label));
+  }
+
+  Future<List<CLMedia>> get checkDBForPreviewDownloadPending async {
+    final q = getQuery(
+      DBQueries.previewDownloadPending,
+    ) as StoreQuery<CLMedia>;
+    return (await readMultiple(q)).nonNullableList;
+  }
+
+  Future<List<CLMedia>> get checkDBForMediaDownloadPending async {
+    final q = getQuery(
+      DBQueries.mediaDownloadPending,
+    ) as StoreQuery<CLMedia>;
+    return (await readMultiple(q)).nonNullableList;
   }
 }

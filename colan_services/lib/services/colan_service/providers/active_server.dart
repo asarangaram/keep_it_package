@@ -5,7 +5,6 @@ import 'package:colan_services/internal/extensions/ext_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../internal/extensions/list.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../../store_service/providers/store.dart';
@@ -33,8 +32,8 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   final Future<CLDirectories> directoriesFuture;
   final Future<Store> storeFuture;
   final Downloader downloader;
-
   MediaDownloader? mediaDownloader;
+  final runningTasks = <TaskCompleter>[];
 
   void log(
     String message, {
@@ -50,8 +49,6 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
       name: 'Online Service: Active Server',
     );
   }
-
-  bool isDownloading = false;
 
   Future<void> _initialize() async {
     if (state != null) {
@@ -70,7 +67,72 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     }
   }
 
-  final runningTasks = <TaskCompleter>[];
+  Future<bool?> sync() async {
+    if (state == null) return false;
+    final syncInPorgress = ref.read(syncStatusProvider);
+    if (!syncInPorgress) {
+      ref.read(syncStatusProvider.notifier).state = true;
+      {
+        final store = await storeFuture;
+        // Upload logic here
+        unawaited(
+          state!.downloadMediaInfo(store).then((result) {
+            ref.read(storeCacheProvider.notifier).onRefresh();
+            if (result && mediaDownloader != null) {
+              downloadFiles(mediaDownloader!).then(
+                (_) => ref.read(syncStatusProvider.notifier).state = false,
+              );
+            } else {
+              log('Sync ignored; either its not required or '
+                  ' downloader not available');
+              ref.read(syncStatusProvider.notifier).state = false;
+            }
+          }),
+        );
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<void> downloadFiles(MediaDownloader downloader) async {
+    final store = await storeFuture;
+
+    log('Starting file download');
+    {
+      var previewsPending = await store.checkDBForPreviewDownloadPending;
+      var mediaPending = await store.checkDBForMediaDownloadPending;
+
+      while (previewsPending.isNotEmpty && mediaPending.isNotEmpty) {
+        final currTasks = await triggerBatchDownload(
+          downloader,
+          previewsPending,
+          mediaPending,
+        );
+        log('waiting for the downloads to complete');
+        await Future.wait(currTasks.map((e) => e.completer.future));
+        runningTasks.removeWhere((e) => e.completer.isCompleted);
+        previewsPending = await store.checkDBForPreviewDownloadPending;
+        mediaPending = await store.checkDBForMediaDownloadPending;
+        log('Recheck DB for now items');
+      }
+    }
+    log('nothing to download, Exit.');
+  }
+
+  Future<void> abortDownloads(MediaDownloader mediaDownloader) async {
+    if (runningTasks.isNotEmpty) {
+      log('Cancelling ${runningTasks.length} pending downloads');
+      for (final t in runningTasks) {
+        await downloader.cancel(t.task.taskId);
+      }
+      await Future.wait(runningTasks.map((e) => e.completer.future));
+      runningTasks.clear();
+      log('Cancelled all tasks');
+      return;
+    }
+    log('no download is in progress to cancel');
+  }
 
   Future<List<TaskCompleter>> triggerBatchDownload(
     MediaDownloader downloader,
@@ -95,100 +157,6 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
       }
     }
     return currentTasks;
-  }
-
-  Future<bool?> sync() async {
-    // Upload logic here
-    unawaited(
-      downloadMetadata().then((result) {
-        if (result && mediaDownloader != null) {
-          downloadFiles(mediaDownloader!);
-        } else {
-          log('Sync ignored; either its not required or '
-              ' downloader not available');
-        }
-      }),
-    );
-    return true;
-  }
-
-  Future<void> downloadFiles(MediaDownloader downloader) async {
-    // Don't trigger multiple
-    if (isDownloading) {
-      log('ignore multiple requests');
-      return;
-    }
-    isDownloading = true;
-    log('Starting');
-    {
-      var previewsPending = await _checkDBForPreviewDownloadPending;
-      var mediaPending = await _checkDBForMediaDownloadPending;
-
-      while (previewsPending.isNotEmpty && mediaPending.isNotEmpty) {
-        final currTasks = await triggerBatchDownload(
-          downloader,
-          previewsPending,
-          mediaPending,
-        );
-        log('waiting for the downloads to complete');
-        await Future.wait(currTasks.map((e) => e.completer.future));
-        runningTasks.removeWhere((e) => e.completer.isCompleted);
-        previewsPending = await _checkDBForPreviewDownloadPending;
-        mediaPending = await _checkDBForMediaDownloadPending;
-        log('Recheck DB for now items');
-      }
-    }
-    log('nothing to download, Exit.');
-    isDownloading = false;
-  }
-
-  Future<void> abortDownloads(MediaDownloader mediaDownloader) async {
-    if (runningTasks.isNotEmpty) {
-      log('Cancelling ${runningTasks.length} pending downloads');
-      for (final t in runningTasks) {
-        await downloader.cancel(t.task.taskId);
-      }
-      await Future.wait(runningTasks.map((e) => e.completer.future));
-      runningTasks.clear();
-      log('Cancelled all tasks');
-      return;
-    }
-    log('no download is in progress to cancel');
-  }
-
-  Future<List<CLMedia>> get _checkDBForPreviewDownloadPending async {
-    final store = await storeFuture;
-    final q = store.getQuery(
-      DBQueries.previewDownloadPending,
-    ) as StoreQuery<CLMedia>;
-    return (await store.readMultiple(q)).nonNullableList;
-  }
-
-  Future<List<CLMedia>> get _checkDBForMediaDownloadPending async {
-    final store = await storeFuture;
-    final q = store.getQuery(
-      DBQueries.mediaDownloadPending,
-    ) as StoreQuery<CLMedia>;
-    return (await store.readMultiple(q)).nonNullableList;
-  }
-
-  Future<bool> downloadMetadata() async {
-    if (state != null) {
-      final store = await storeFuture;
-      final syncInPorgress = ref.read(syncStatusProvider);
-      if (!syncInPorgress) {
-        ref.read(syncStatusProvider.notifier).state = true;
-        {
-          final mediaMap = await state!.downloadMediaInfo();
-          if (mediaMap != null) {
-            await store.updateStoreFromMediaMapList(mediaMap);
-          }
-        }
-        ref.read(syncStatusProvider.notifier).state = false;
-        return true;
-      }
-    }
-    return false;
   }
 
   @override
