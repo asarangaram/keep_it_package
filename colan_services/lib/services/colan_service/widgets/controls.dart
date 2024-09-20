@@ -22,38 +22,6 @@ class WorkOffline extends ConsumerWidget {
   }
 }
 
-class DisconnectServer extends ConsumerWidget {
-  const DisconnectServer({this.onTap, super.key});
-  final Future<bool?> Function()? onTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return LabeledIconHorizontal(
-      CLMenuItem(
-        icon: clIcons.syncIcons.disconnectIconData,
-        title: 'Disconnect',
-        onTap: onTap,
-      ),
-    );
-  }
-}
-
-class ConnectServer extends ConsumerWidget {
-  const ConnectServer({this.onTap, super.key});
-  final Future<bool?> Function()? onTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return LabeledIconHorizontal(
-      CLMenuItem(
-        icon: clIcons.syncIcons.connectIconData,
-        title: 'Connect',
-        onTap: onTap,
-      ),
-    );
-  }
-}
-
 class GoOnline extends ConsumerWidget {
   const GoOnline({this.onTap, super.key});
   final Future<bool?> Function()? onTap;
@@ -70,18 +38,45 @@ class GoOnline extends ConsumerWidget {
   }
 }
 
+class DisconnectServer extends ConsumerWidget {
+  const DisconnectServer({this.onTap, super.key});
+  final Future<bool?> Function()? onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CLButtonIconLabelled.small(
+      clIcons.syncIcons.disconnectIconData,
+      'Disconnect',
+      onTap: onTap,
+    );
+  }
+}
+
+class ConnectServer extends ConsumerWidget {
+  const ConnectServer({this.onTap, super.key});
+  final Future<bool?> Function()? onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CLButtonIconLabelled.small(
+      clIcons.syncIcons.connectIconData,
+      'Connect',
+      onTap: onTap,
+    );
+  }
+}
+
 class DeregisterServer extends ConsumerWidget {
   const DeregisterServer({this.onTap, super.key});
   final Future<bool?> Function()? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LabeledIconHorizontal.dangerous(
-      CLMenuItem(
-        icon: clIcons.syncIcons.detachIconData,
-        title: 'DeRegister',
-        onTap: onTap,
-      ),
+    return CLButtonIconLabelled.small(
+      clIcons.syncIcons.detachIconData,
+      'DeRegister',
+      onTap: onTap,
+      color: Theme.of(context).colorScheme.error,
     );
   }
 }
@@ -98,6 +93,20 @@ class SyncServer extends ConsumerWidget {
         title: 'Sync Now',
         onTap: onTap,
       ),
+    );
+  }
+}
+
+class SyncServer1 extends ConsumerWidget {
+  const SyncServer1({this.onTap, super.key});
+  final Future<bool?> Function()? onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CLButtonIconLabelled.small(
+      clIcons.syncIcons.syncIconData,
+      'Sync Now',
+      onTap: onTap,
     );
   }
 }

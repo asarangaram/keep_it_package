@@ -37,7 +37,7 @@ class CloudOnLANSettings extends ConsumerWidget {
               children: [
                 const OfflinePreference(),
                 if (isOnline && !workingOffline)
-                  SyncServer(
+                  SyncServer1(
                     onTap: ref.read(storeProvider.notifier).syncServer,
                   )
                 else
@@ -52,7 +52,12 @@ class CloudOnLANSettings extends ConsumerWidget {
               ]
                   .map(
                     (e) => Expanded(
-                      child: Center(child: e),
+                      child: Center(
+                        child: FractionallySizedBox(
+                          widthFactor: 0.8,
+                          child: e,
+                        ),
+                      ),
                     ),
                   )
                   .toList(),
