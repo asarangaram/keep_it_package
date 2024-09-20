@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/store_service/providers/store.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +41,7 @@ class PinnedMediaPage extends ConsumerWidget {
                       );
                     },
                     onLongPress: () => ref
-                        .read(storeProvider.notifier)
+                        .read(storeCacheProvider.notifier)
                         .togglePinMultiple([item]),
                     child: MediaViewService.preview(
                       item,
@@ -59,7 +58,7 @@ class PinnedMediaPage extends ConsumerWidget {
                 identifier: 'Pinned Media',
                 columns: 2,
                 onRefresh: () async =>
-                    ref.read(storeProvider.notifier).onRefresh(),
+                    ref.read(storeCacheProvider.notifier).onRefresh(),
                 actionMenu: const [],
                 selectionActions: (context, items) {
                   return [
@@ -68,7 +67,7 @@ class PinnedMediaPage extends ConsumerWidget {
                       icon: clIcons.unPinAll,
                       onTap: () async {
                         await ref
-                            .read(storeProvider.notifier)
+                            .read(storeCacheProvider.notifier)
                             .togglePinMultiple(media);
 
                         return true;

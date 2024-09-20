@@ -8,7 +8,7 @@ import 'package:store/store.dart';
 
 import '../../../basic_page_service/dialogs.dart';
 import '../../../store_service/models/store_model.dart';
-import '../../../store_service/providers/store.dart';
+import '../../../store_service/providers/store_cache.dart';
 import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
@@ -97,7 +97,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
                   if (!confirmed) return;
                   if (context.mounted) {
                     await ref
-                        .read(storeProvider.notifier)
+                        .read(storeCacheProvider.notifier)
                         .permanentlyDeleteMediaMultiple({widget.note!.id!});
                     textEditingController.clear();
                     textOriginal = '';
@@ -162,7 +162,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
       final String path;
       path = await theStore.createTempFile(ext: 'txt');
       await File(path).writeAsString(textEditingController.text.trim());
-      await ref.read(storeProvider.notifier).upsertMedia(
+      await ref.read(storeCacheProvider.notifier).upsertMedia(
             path,
             CLMediaType.text,
             parents: [widget.media],

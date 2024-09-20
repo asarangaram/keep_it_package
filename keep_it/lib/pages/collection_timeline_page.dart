@@ -1,7 +1,6 @@
 // ignore_for_file: unused_element
 
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,7 +128,8 @@ class TimeLineView extends ConsumerWidget {
                 },
               ),
           ],
-          onRefresh: () async => ref.read(storeProvider.notifier).onRefresh(),
+          onRefresh: () async =>
+              ref.read(storeCacheProvider.notifier).onRefresh(),
           selectionActions: (context, items) {
             return [
               CLMenuItem(
@@ -144,7 +144,7 @@ class TimeLineView extends ConsumerWidget {
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
                     return ref
-                        .read(storeProvider.notifier)
+                        .read(storeCacheProvider.notifier)
                         .deleteMediaMultiple({...items.map((e) => e.id!)});
                   }
                   return null;
@@ -171,8 +171,9 @@ class TimeLineView extends ConsumerWidget {
                 CLMenuItem(
                   title: 'Pin',
                   icon: clIcons.pinAll,
-                  onTap: () =>
-                      ref.read(storeProvider.notifier).togglePinMultiple(items),
+                  onTap: () => ref
+                      .read(storeCacheProvider.notifier)
+                      .togglePinMultiple(items),
                 ),
             ];
           },

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import '../../store_service/providers/store.dart';
 import '../../store_service/providers/sync_in_progress.dart';
 import '../providers/downloader_status.dart';
 import '../providers/online_status.dart';

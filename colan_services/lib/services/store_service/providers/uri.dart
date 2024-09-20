@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'store.dart';
+import 'store_cache.dart';
 
 final mediaUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
-  final storeAsync = ref.watch(storeProvider);
+  final storeAsync = ref.watch(storeCacheProvider);
 
   return storeAsync.when<AsyncValue<Uri>>(
     loading: AsyncValue<Uri>.loading,
@@ -23,7 +23,7 @@ final mediaUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
 });
 
 final previewUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
-  final storeAsync = ref.watch(storeProvider);
+  final storeAsync = ref.watch(storeCacheProvider);
 
   return storeAsync.when<AsyncValue<Uri>>(
     loading: AsyncValue<Uri>.loading,

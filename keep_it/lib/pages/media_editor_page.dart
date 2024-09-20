@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_services/services/store_service/widgets/builders.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -53,7 +52,7 @@ class MediaEditorPage extends ConsumerWidget {
                       false;
                   if (confirmed && context.mounted) {
                     resultMedia = await ref
-                        .read(storeProvider.notifier)
+                        .read(storeCacheProvider.notifier)
                         .replaceMedia(file, media: media);
                   } else {
                     resultMedia = media;
@@ -66,7 +65,7 @@ class MediaEditorPage extends ConsumerWidget {
                       false;
                   if (confirmed && context.mounted) {
                     resultMedia = await ref
-                        .read(storeProvider.notifier)
+                        .read(storeCacheProvider.notifier)
                         .cloneAndReplaceMedia(file, media: media);
                   } else {
                     resultMedia = media;

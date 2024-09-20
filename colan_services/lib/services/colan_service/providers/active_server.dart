@@ -9,6 +9,7 @@ import '../../../internal/extensions/list.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
 import '../../store_service/providers/store.dart';
+import '../../store_service/providers/store_cache.dart';
 import '../../store_service/providers/sync_in_progress.dart';
 import '../models/cl_server.dart';
 import '../models/downloader.dart';
@@ -60,12 +61,12 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         store: await storeFuture,
         directories: await directoriesFuture,
         onDone: (media) async {
-          await ref.read(storeProvider.notifier).refreshMedia(media);
+          await ref.read(storeCacheProvider.notifier).refreshMedia(media);
         },
       );
       log('Media Downloader initialized for server $state');
 
-      sync();
+      unawaited(sync());
     }
   }
 
@@ -201,7 +202,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
 
 final activeServerProvider =
     StateNotifierProvider<ActiveServerNotifier, CLServer?>((ref) {
-  final store = ref.watch(rawStoreProvider.future);
+  final store = ref.watch(storeProvider.future);
   final directories = ref.watch(deviceDirectoriesProvider.future);
   final downloader = ref.watch(downloaderProvider);
   final registerredServer = ref.watch(registeredServerProvider);

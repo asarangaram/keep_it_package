@@ -6,7 +6,7 @@ import 'package:store/store.dart';
 import '../basic_page_service/dialogs.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
 import '../store_service/providers/group_view.dart';
-import '../store_service/providers/store.dart';
+import '../store_service/providers/store_cache.dart';
 import 'providers/universal_media.dart';
 import 'views/wizard_preview.dart';
 
@@ -116,7 +116,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
                     final res = await ref
-                        .read(storeProvider.notifier)
+                        .read(storeCacheProvider.notifier)
                         .restoreMediaMultiple(
                           currMedia.map((e) => e.id!).toSet(),
                         );
@@ -154,7 +154,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                         if (!confirmed) return confirmed;
                         if (context.mounted) {
                           final res = await ref
-                              .read(storeProvider.notifier)
+                              .read(storeCacheProvider.notifier)
                               .permanentlyDeleteMediaMultiple(
                                 currMedia.map((e) => e.id!).toSet(),
                               );

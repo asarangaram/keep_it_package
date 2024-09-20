@@ -16,7 +16,7 @@ import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../incoming_media_service/models/cl_shared_media.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 import '../../store_service/models/navigators.dart';
-import '../../store_service/providers/store.dart';
+import '../../store_service/providers/store_cache.dart';
 import '../../store_service/widgets/builders.dart';
 import '../providers/show_controls.dart';
 import 'media_background.dart';
@@ -287,7 +287,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                       if (!confirmed) return confirmed;
                       if (context.mounted) {
                         return ref
-                            .read(storeProvider.notifier)
+                            .read(storeCacheProvider.notifier)
                             .deleteMediaById(media.id!);
                       }
                       return false;
@@ -315,7 +315,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                     onPin: ac.onPin(
                       () async {
                         final res = await ref
-                            .read(storeProvider.notifier)
+                            .read(storeCacheProvider.notifier)
                             .togglePin(media);
                         if (res) {
                           setState(() {});

@@ -4,7 +4,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../store_service/providers/store.dart';
 import '../providers/network_scanner.dart';
 import '../providers/online_status.dart';
 import '../providers/registerred_server.dart';

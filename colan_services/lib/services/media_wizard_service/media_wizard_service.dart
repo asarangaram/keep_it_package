@@ -8,7 +8,7 @@ import '../basic_page_service/dialogs.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
 import '../notification_services/provider/notify.dart';
 import '../store_service/providers/group_view.dart';
-import '../store_service/providers/store.dart';
+import '../store_service/providers/store_cache.dart';
 import 'providers/universal_media.dart';
 import 'recycle_bin_service.dart';
 import 'views/create_collection_wizard.dart';
@@ -174,7 +174,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               /// We only need to update the collectionId
               : StreamBuilder<Progress>(
                   stream: ref
-                      .read(storeProvider.notifier)
+                      .read(storeCacheProvider.notifier)
                       .moveToCollectionStream(
                         media: currMedia,
                         collection: targetCollection!,
@@ -226,7 +226,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                               if (!confirmed) return confirmed;
                               if (context.mounted) {
                                 final res = ref
-                                    .read(storeProvider.notifier)
+                                    .read(storeCacheProvider.notifier)
                                     .deleteMediaMultiple(
                                   {...currMedia.map((e) => e.id!)},
                                 );

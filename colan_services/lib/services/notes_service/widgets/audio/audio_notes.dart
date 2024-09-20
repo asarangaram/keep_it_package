@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/providers/store.dart';
+import '../../../store_service/providers/store_cache.dart';
 import '../../../store_service/widgets/builders.dart';
 import 'audio_note.dart';
 import 'audio_recorder.dart';
@@ -61,7 +61,7 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                                   editMode = false;
                                 }
                                 ref
-                                    .read(storeProvider.notifier)
+                                    .read(storeCacheProvider.notifier)
                                     .deleteMediaById(note.id!);
                               },
                             );

@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +24,7 @@ class CameraPage extends ConsumerWidget {
                 );
           },
           onNewMedia: (path, {required isVideo}) async {
-            await ref.read(storeProvider.notifier).newImageOrVideo(
+            await ref.read(storeCacheProvider.notifier).newImageOrVideo(
                   path,
                   isVideo: isVideo,
                   collection: collection,

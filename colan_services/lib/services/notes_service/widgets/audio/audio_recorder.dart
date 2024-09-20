@@ -2,15 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/store_service/models/store_model.dart';
-import 'package:colan_services/services/store_service/providers/store.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../../store_service/models/store_model.dart';
+import '../../../store_service/providers/store_cache.dart';
 import 'decorations.dart';
 import 'live_audio_view.dart';
 import 'recorded_audio_view.dart';
@@ -151,7 +150,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await ref.read(storeProvider.notifier).upsertMedia(
+      await ref.read(storeCacheProvider.notifier).upsertMedia(
             audioMessage!,
             CLMediaType.audio,
             parents: [widget.media],

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../store_service/providers/store.dart';
+import '../store_service/providers/store_cache.dart';
 import 'models/cl_shared_media.dart';
 
 class AnalysePage extends ConsumerWidget {
@@ -29,10 +29,11 @@ class AnalysePage extends ConsumerWidget {
         title: 'Analysing Shared Media',
         onCancel: onCancel,
         child: StreamProgressView(
-          stream: () => ref.read(storeProvider.notifier).analyseMediaStream(
-                mediaFiles: incomingMedia.entries,
-                onDone: onDone,
-              ),
+          stream: () =>
+              ref.read(storeCacheProvider.notifier).analyseMediaStream(
+                    mediaFiles: incomingMedia.entries,
+                    onDone: onDone,
+                  ),
           onCancel: onCancel,
         ),
       ),

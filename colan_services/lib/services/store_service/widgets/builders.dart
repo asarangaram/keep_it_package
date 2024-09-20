@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:colan_services/internal/widgets/broken_image.dart';
-import 'package:colan_services/services/store_service/providers/store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +8,7 @@ import 'package:store/store.dart';
 
 import '../../../internal/widgets/shimmer.dart';
 import '../models/store_model.dart';
+import '../providers/store_cache.dart';
 import '../providers/uri.dart';
 
 class GetNotesByMediaId extends ConsumerWidget {
@@ -24,7 +24,7 @@ class GetNotesByMediaId extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder(
-      future: ref.watch(storeProvider.notifier).getNotes(mediaId),
+      future: ref.watch(storeCacheProvider.notifier).getNotes(mediaId),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           return buildOnData(snapshot.data!);
@@ -48,7 +48,7 @@ class GetStore extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final storeAsync = ref.watch(storeProvider);
+    final storeAsync = ref.watch(storeCacheProvider);
 
     return storeAsync.when(
       loading: loadingBuilder ??
