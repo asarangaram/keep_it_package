@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:colan_services/internal/extensions/ext_store.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
@@ -858,13 +859,9 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<List<CLMedia>> getNotes(int mediaId) async {
     final store = await storeFuture;
-    // FIXME better to have a raw query to directly read indices
-    final q = store.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
-        as StoreQuery<CLMedia>;
-    final noteIds =
-        (await store.readMultiple(q)).map((e) => e!.id).nonNullableList;
-
-    return _currentState.getMediaMultipleByIds(noteIds);
+    final noteIds = await store.notesByMediaId(mediaId);
+    return _currentState
+        .getMediaMultipleByIds(noteIds.map((e) => e.id!).toList());
   }
 }
 

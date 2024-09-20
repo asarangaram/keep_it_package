@@ -159,7 +159,7 @@ class CLServer {
     return RestApi(baseURL, client: client).download(endPoint, targetFilePath);
   }
 
-  Future<bool> downloadMediaInfo(
+  Future<List<dynamic>> downloadMediaInfo(
     Store store, {
     http.Client? client,
     List<String>? types,
@@ -172,13 +172,12 @@ class CLServer {
               await getEndpoint('/media?type=$mediaType', client: client),
             ) as List<dynamic>,
         ];
-        await store.updateStoreFromMediaMapList(mediaMapList);
-        return true;
+        return mediaMapList;
       } catch (e) {
         /** */
       }
     }
-    return false;
+    return [];
   }
 
   String get baseURL => 'http://$name:$port';

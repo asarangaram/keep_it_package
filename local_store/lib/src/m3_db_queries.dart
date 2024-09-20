@@ -153,10 +153,15 @@ class Queries {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.serverMediaAll => DBQuery<int>.map(
+      DBQueries.serverUIDAll => DBQuery<int>.map(
           sql: 'SELECT serverUID  FROM Media  WHERE serverUID IS NOT NULL;',
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: (map) => map['serverUID'] as int,
+        ),
+      DBQueries.localMediaAll => DBQuery<CLMedia>.map(
+          sql: 'SELECT * FROM Media WHERE serverUID IS NULL AND isDeleted = 0',
+          triggerOnTables: const {'Media'},
+          fromMap: CLMedia.fromMap,
         ),
     };
     if (parameters == null) {

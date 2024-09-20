@@ -76,11 +76,15 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         final store = await storeFuture;
         // Upload logic here
         unawaited(
-          state!.downloadMediaInfo(store).then((result) {
-            ref.read(storeCacheProvider.notifier).onRefresh();
+          state!.downloadMediaInfo(store).then((mapList) async {
+            final updates = await store.analyseChanges(mapList);
+            final result = await updateChanges(updates);
+
             if (result && mediaDownloader != null) {
-              downloadFiles(mediaDownloader!).then(
-                (_) => ref.read(syncStatusProvider.notifier).state = false,
+              unawaited(
+                downloadFiles(mediaDownloader!).then(
+                  (_) => ref.read(syncStatusProvider.notifier).state = false,
+                ),
               );
             } else {
               log('Sync ignored; either its not required or '
@@ -93,6 +97,70 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
       }
     }
     return false;
+  }
+
+  Future<bool> deleteMediaByIdOnLocal(Set<int> serverUIDs2Delete) async {
+    final store = await storeFuture;
+    final idList = <int>{};
+    for (final serverUID in serverUIDs2Delete) {
+      final m = await store.getMediaByServerUID(serverUID);
+      if (m != null) {
+        idList.add(m.id!);
+      }
+    }
+
+    return ref
+        .read(storeCacheProvider.notifier)
+        .permanentlyDeleteMediaMultiple(idList);
+  }
+
+  Future<bool> insertMediaOnLocal(Set<CLMedia> mediaSet) async {
+    final store = await storeFuture;
+    for (final m in mediaSet) {
+      await store.upsertMedia(m);
+    }
+    await ref.read(storeCacheProvider.notifier).onRefresh();
+    return true;
+  }
+
+  Future<bool> updateMediaOnLocal(Set<TrackedMedia> mediaSet) async {
+    final store = await storeFuture;
+    for (final m in mediaSet) {
+      if (m.current.md5String != m.update.md5String) {
+        await store.upsertMedia(
+          m.update.copyWith(isPreviewCached: false, isMediaCached: false),
+        );
+        // TODO: delete files from m.current
+      } else {
+        await store.upsertMedia(m.update);
+      }
+    }
+    await ref.read(storeCacheProvider.notifier).onRefresh();
+    return false;
+  }
+
+  Future<bool> insertMediaOnServer(Set<CLMedia> mediaSet) async {
+    return false;
+  }
+
+  Future<bool> updateMediaOnServer(Set<TrackedMedia> mediaSet) async {
+    return false;
+  }
+
+  Future<bool> deleteMediaByIdOnServer(Set<int> serverUIDs) async {
+    return false;
+  }
+
+  Future<bool> updateChanges(MediaUpdatesFromServer updates) async {
+    var result = await deleteMediaByIdOnLocal({...updates.deletedOnServer});
+    result |= await insertMediaOnLocal({...updates.newOnServer});
+    result |= await updateMediaOnLocal({...updates.updatedOnServer});
+
+    result |= await insertMediaOnServer({...updates.newOnLocal});
+    result |= await updateMediaOnServer({...updates.updatedOnLocal});
+    result |= await deleteMediaByIdOnServer({...updates.deletedOnServer});
+
+    return result;
   }
 
   Future<void> downloadFiles(MediaDownloader downloader) async {
