@@ -47,7 +47,6 @@ class DBManager extends Store {
       table: 'MediaNote',
       toMap: (NotesOnMedia obj) => obj.toMap(),
       readBack: (tx, item) async {
-        // TODO(anandas): :readBack for MediaNote Can this be done?
         return item;
       },
     );
@@ -59,22 +58,21 @@ class DBManager extends Store {
     );
     final dbReader = DBReader(db);
     return DBManager._(
+      dbReader,
       db: db,
       onReload: onReload,
-      dbReader: dbReader,
       dbWriter: dbWriter,
     );
   }
-  DBManager._({
+  const DBManager._(
+    super.reader, {
     required this.db,
     required this.onReload,
     required this.dbWriter,
-    required this.dbReader,
   });
 
   final SqliteDatabase db;
   final DBWriter dbWriter;
-  final DBReader dbReader;
 
   final void Function() onReload;
 
@@ -116,7 +114,7 @@ class DBManager extends Store {
   Future<CLMedia?> updateMediaFromMap(Map<String, dynamic> map) async =>
       db.writeTransaction((tx) async {
         if (await dbWriter.updateMediaFromMap(tx, map)) {
-          final q = dbReader.getQuery(
+          final q = reader.getQuery(
             DBQueries.mediaById,
             parameters: [map['id'] as int],
           ) as StoreQuery<CLMedia>;
@@ -167,67 +165,16 @@ class DBManager extends Store {
     }
   }
 
-  @override
-  StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
-      dbReader.getQuery(query, parameters: parameters);
-
-  @override
-  Future<T?> read<T>(StoreQuery<T> query) => dbReader.read(query);
-
-  @override
-  Future<List<T?>> readMultiple<T>(StoreQuery<T> query) =>
-      dbReader.readMultiple(query);
-
-  @override
-  Future<Collection?> getCollectionByLabel(String label) async {
-    final q = dbReader.getQuery(
-      DBQueries.collectionByLabel,
-      parameters: [label],
-    ) as StoreQuery<Collection>;
-
-    return dbReader.read(q);
-  }
-
-  @override
-  Future<CLMedia?> getMediaByServerUID(int serverUID) async {
-    final q = dbReader.getQuery(
-      DBQueries.mediaByServerUID,
-      parameters: [serverUID],
-    ) as StoreQuery<CLMedia>;
-
-    return dbReader.read(q);
-  }
-
-  @override
-  Future<CLMedia?> getMediaById(int id) async {
-    final q = dbReader.getQuery(
-      DBQueries.mediaById,
-      parameters: [id],
-    ) as StoreQuery<CLMedia>;
-
-    return dbReader.read(q);
-  }
-
-  @override
-  Future<CLMedia?> getMediaByMD5String(String md5String) {
-    final q = dbReader.getQuery(
-      DBQueries.mediaByMD5,
-      parameters: [md5String],
-    ) as StoreQuery<CLMedia>;
-
-    return dbReader.read(q);
-  }
-
   DBManager copyWith({
     SqliteDatabase? db,
     DBWriter? dbWriter,
-    DBReader? dbReader,
+    DBReader? reader,
     void Function()? onReload,
   }) {
     return DBManager._(
+      reader ?? this.reader,
       db: db ?? this.db,
       dbWriter: dbWriter ?? this.dbWriter,
-      dbReader: dbReader ?? this.dbReader,
       onReload: onReload ?? this.onReload,
     );
   }
@@ -235,7 +182,7 @@ class DBManager extends Store {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'DBManager(db: $db, dbWriter: $dbWriter, dbReader: $dbReader, onReload: $onReload)';
+    return 'DBManager(db: $db, dbWriter: $dbWriter, onReload: $onReload)';
   }
 
   @override
@@ -244,15 +191,11 @@ class DBManager extends Store {
 
     return other.db == db &&
         other.dbWriter == dbWriter &&
-        other.dbReader == dbReader &&
         other.onReload == onReload;
   }
 
   @override
   int get hashCode {
-    return db.hashCode ^
-        dbWriter.hashCode ^
-        dbReader.hashCode ^
-        onReload.hashCode;
+    return db.hashCode ^ dbWriter.hashCode ^ onReload.hashCode;
   }
 }

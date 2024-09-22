@@ -4,8 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:mime/mime.dart';
 import 'package:store/store.dart';
 
-import 'ext_cl_medias.dart';
-
 @immutable
 class TrackedMedia {
   const TrackedMedia(this.current, this.update);

@@ -1,19 +1,22 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
-import 'm3_db_queries.dart';
 import 'm3_db_query.dart';
 
-class DBReader {
+@immutable
+class DBReader extends StoreReader {
   DBReader(this.tx);
-  SqliteWriteContext tx;
+  final SqliteWriteContext tx;
 
+  @override
   Future<T?> read<T>(StoreQuery<T> query) {
     return (query as DBQuery<T>).read(tx);
   }
 
+  @override
   Future<List<T>> readMultiple<T>(StoreQuery<T> query) {
     return (query as DBQuery<T>).readMultiple(tx);
   }
@@ -27,6 +30,7 @@ class DBReader {
     );
   }
 
+  @override
   Future<Collection?> getCollectionByLabel(
     String label,
   ) async {
@@ -109,6 +113,37 @@ class DBReader {
     );
   }
 
+  @override
+  Future<CLMedia?> getMediaByServerUID(int serverUID) async {
+    final q = getQuery(
+      DBQueries.mediaByServerUID,
+      parameters: [serverUID],
+    ) as StoreQuery<CLMedia>;
+
+    return read(q);
+  }
+
+  @override
+  Future<CLMedia?> getMediaById(int id) async {
+    final q = getQuery(
+      DBQueries.mediaById,
+      parameters: [id],
+    ) as StoreQuery<CLMedia>;
+
+    return read(q);
+  }
+
+  @override
+  Future<CLMedia?> getMediaByMD5String(String md5String) {
+    final q = getQuery(
+      DBQueries.mediaByMD5,
+      parameters: [md5String],
+    ) as StoreQuery<CLMedia>;
+
+    return read(q);
+  }
+
+  @override
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
-      Queries.getQuery(query, parameters: parameters);
+      getQuery(query, parameters: parameters);
 }

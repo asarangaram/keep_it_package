@@ -48,7 +48,7 @@ abstract class StoreReader {
   Future<T?> read<T>(StoreQuery<T> query);
 
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query);
-  Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
+
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
   Future<Collection?> getCollectionByLabel(String label);
   Future<CLMedia?> getMediaByServerUID(int serverUID);
@@ -74,6 +74,8 @@ abstract class Store {
   Future<void> deleteMedia(CLMedia media);
 
   Future<void> reloadStore();
+
+  Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
 
   void dispose();
 }
