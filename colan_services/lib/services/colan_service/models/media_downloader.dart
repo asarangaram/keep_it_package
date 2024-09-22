@@ -21,14 +21,12 @@ class TaskCompleter {
 
 class MediaDownloader {
   MediaDownloader({
-    required this.store,
     required this.server,
     required this.directories,
     required this.downloader,
     this.onDone,
   });
 
-  final Store store;
   final CLDirectories directories;
   final CLServer server;
   final Future<void> Function(CLMedia media)? onDone;
@@ -81,26 +79,20 @@ class MediaDownloader {
   BaseDirectory get _mediaBaseDirectory => BaseDirectory.applicationSupport;
 
   Future<void> _markPreviewAsDownloaded(CLMedia media) async {
-    final mediaInDB = await store.updateMediaFromMap({
-      'id': media.id,
-      'previewLog': null,
-      'isPreviewCached': true,
-    });
-    if (mediaInDB != null) {
-      await onDone?.call(mediaInDB);
-    }
+    final mediaInDB = media.updatePreviewCache(
+      previewLogUpdated: null,
+      isPreviewCachedUpdated: true,
+    );
+    await onDone?.call(mediaInDB);
   }
 
   Future<void> _markMediaAsDownloaded(CLMedia media) async {
-    final mediaInDB = await store.updateMediaFromMap({
-      'id': media.id,
-      'mediaLog': null,
-      'isMediaCached': true,
-      'isMediaOriginal': true,
-    });
-    if (mediaInDB != null) {
-      await onDone?.call(mediaInDB);
-    }
+    final mediaInDB = media.updateMediaCache(
+      mediaLogUpdated: null,
+      isMediaCachedUpdated: true,
+      isMediaOriginalUpdated: true,
+    );
+    await onDone?.call(mediaInDB);
   }
 
   Future<TaskCompleter> _startPreviewDownload(
@@ -115,14 +107,12 @@ class MediaDownloader {
       filename: media.previewFileName,
       group: group,
       onDone: (task, {errorLog}) async {
-        final mediaInDB = await store.updateMediaFromMap({
-          'id': media.id,
-          'previewLog': errorLog,
-          'isPreviewCached': errorLog == null,
-        });
-        if (mediaInDB != null) {
-          await onDone?.call(mediaInDB);
-        }
+        final mediaInDB = media.updatePreviewCache(
+          previewLogUpdated: errorLog,
+          isPreviewCachedUpdated: errorLog == null,
+        );
+
+        await onDone?.call(mediaInDB);
         completer.complete(task);
       },
     );
@@ -141,15 +131,14 @@ class MediaDownloader {
       filename: media.mediaFileName,
       group: group,
       onDone: (task, {errorLog}) async {
-        final mediaInDB = await store.updateMediaFromMap({
-          'id': media.id,
-          'mediaLog': errorLog,
-          'isMediaCached': errorLog == null,
-          'isMediaOriginal': errorLog == null && media.mustDownloadOriginal,
-        });
-        if (mediaInDB != null) {
-          await onDone?.call(mediaInDB);
-        }
+        final mediaInDB = media.updateMediaCache(
+          mediaLogUpdated: errorLog,
+          isMediaCachedUpdated: errorLog == null,
+          isMediaOriginalUpdated:
+              errorLog == null && media.mustDownloadOriginal,
+        );
+
+        await onDone?.call(mediaInDB);
         completer.complete(task);
       },
     );

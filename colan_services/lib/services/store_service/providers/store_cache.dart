@@ -398,52 +398,6 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     return updated;
   }
 
-  Future<CLMedia?> refreshMedia(CLMedia media) async {
-    var mediaList = List<CLMedia>.from(currentState.mediaList);
-
-    final existing = currentState.getMediaById(media.id);
-
-    if (existing != null) {
-      mediaList = mediaList.replaceNthEntry(mediaList.indexOf(existing), media);
-    } else {
-      mediaList = [...mediaList, media];
-    }
-
-    currentState = currentState.copyWith(mediaList: mediaList);
-    return media;
-  }
-
-  Future<void> refreshMediaMultiple(
-    List<CLMedia> mediaMultiple, {
-    void Function(Progress progress)? onProgress,
-  }) async {
-    var mediaList = List<CLMedia>.from(currentState.mediaList);
-
-    for (final (i, m) in mediaMultiple.indexed) {
-      if (m.id != null) {
-        final updated = m;
-        final existing = currentState.getMediaById(updated.id);
-
-        if (existing != null) {
-          mediaList =
-              mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
-        } else {
-          mediaList = [...mediaList, updated];
-        }
-      }
-
-      onProgress?.call(
-        Progress(
-          fractCompleted: i / mediaMultiple.length,
-          currentItem: m.name,
-        ),
-      );
-    }
-    currentState = currentState.copyWith(mediaList: mediaList);
-
-    return;
-  }
-
   Future<List<CLMedia>> updateMediaMultiple(
     List<CLMedia> mediaMultiple, {
     void Function(Progress progress)? onProgress,
@@ -452,6 +406,7 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     var mediaList = List<CLMedia>.from(currentState.mediaList);
 
     final updatedList = <CLMedia>[];
+    final mediaFiles2Delete = <CLMedia>[];
     for (final (i, m) in mediaMultiple.indexed) {
       if (m.id != null) {
         final updated = await store.upsertMedia(m);
@@ -461,6 +416,9 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
           if (existing != null) {
             mediaList =
                 mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
+            if (existing.md5String != updated.md5String) {
+              mediaFiles2Delete.add(existing);
+            }
           } else {
             mediaList = [...mediaList, updated];
           }
@@ -475,6 +433,12 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       );
     }
     currentState = currentState.copyWith(mediaList: mediaList);
+    for (final media in mediaFiles2Delete) {
+      // File is changed. the new file will be uploaded, but delete
+      // older.
+      await File(currentState.getMediaAbsolutePath(media)).deleteIfExists();
+      await File(currentState.getPreviewAbsolutePath(media)).deleteIfExists();
+    }
     return updatedList;
   }
 

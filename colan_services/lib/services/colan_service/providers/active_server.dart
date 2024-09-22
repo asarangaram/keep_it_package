@@ -55,10 +55,9 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
       mediaDownloader = MediaDownloader(
         downloader: downloader,
         server: state!,
-        store: await storeFuture,
         directories: await directoriesFuture,
         onDone: (media) async {
-          await ref.read(storeCacheProvider.notifier).refreshMedia(media);
+          await ref.read(storeCacheProvider.notifier).updateMedia(media);
         },
       );
       log('Media Downloader initialized for server $state');
@@ -73,11 +72,10 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     if (!syncInPorgress) {
       ref.read(syncStatusProvider.notifier).state = true;
       {
-        final store = await storeFuture;
         // Upload logic here
         unawaited(
-          state!.downloadMediaInfo(store).then((mapList) async {
-            final updates = await store.analyseChanges(mapList);
+          state!.downloadMediaInfo().then((mapList) async {
+            final updates = await (await storeFuture).analyseChanges(mapList);
             final result = await updateChanges(updates);
 
             if (result && mediaDownloader != null) {
@@ -99,15 +97,8 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     return false;
   }
 
-  Future<bool> deleteMediaByIdOnLocal(Set<int> serverUIDs2Delete) async {
-    final store = await storeFuture;
-    final idList = <int>{};
-    for (final serverUID in serverUIDs2Delete) {
-      final m = await store.getMediaByServerUID(serverUID);
-      if (m != null) {
-        idList.add(m.id!);
-      }
-    }
+  Future<bool> deleteMediasByIdOnLocal(Set<CLMedia> mediaSet) async {
+    final idList = mediaSet.map((e) => e.id!).toSet();
 
     return ref
         .read(storeCacheProvider.notifier)
@@ -115,27 +106,16 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   }
 
   Future<bool> insertMediaOnLocal(Set<CLMedia> mediaSet) async {
-    final store = await storeFuture;
-    for (final m in mediaSet) {
-      await store.upsertMedia(m);
-    }
-    await ref.read(storeCacheProvider.notifier).onRefresh();
+    await ref
+        .read(storeCacheProvider.notifier)
+        .updateMediaMultiple(mediaSet.toList());
     return true;
   }
 
-  Future<bool> updateMediaOnLocal(Set<TrackedMedia> mediaSet) async {
-    final store = await storeFuture;
-    for (final m in mediaSet) {
-      if (m.current.md5String != m.update.md5String) {
-        await store.upsertMedia(
-          m.update.copyWith(isPreviewCached: false, isMediaCached: false),
-        );
-        // TODO: delete files from m.current
-      } else {
-        await store.upsertMedia(m.update);
-      }
-    }
-    await ref.read(storeCacheProvider.notifier).onRefresh();
+  Future<bool> updateMediaOnLocal(Set<CLMedia> mediaSet) async {
+    await ref
+        .read(storeCacheProvider.notifier)
+        .updateMediaMultiple(mediaSet.toList());
     return false;
   }
 
@@ -147,18 +127,19 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     return false;
   }
 
-  Future<bool> deleteMediaByIdOnServer(Set<int> serverUIDs) async {
+  Future<bool> deleteMediaByIdOnServer(Set<CLMedia> mediaSet) async {
     return false;
   }
 
   Future<bool> updateChanges(MediaUpdatesFromServer updates) async {
-    var result = await deleteMediaByIdOnLocal({...updates.deletedOnServer});
+    var result = await deleteMediasByIdOnLocal({...updates.deletedOnServer});
     result |= await insertMediaOnLocal({...updates.newOnServer});
     result |= await updateMediaOnLocal({...updates.updatedOnServer});
-
     result |= await insertMediaOnServer({...updates.newOnLocal});
     result |= await updateMediaOnServer({...updates.updatedOnLocal});
-    result |= await deleteMediaByIdOnServer({...updates.deletedOnServer});
+    result |= await deleteMediaByIdOnServer(
+      {...updates.deletedOnServer},
+    );
 
     return result;
   }

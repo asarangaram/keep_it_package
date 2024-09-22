@@ -36,9 +36,9 @@ class MediaUpdatesFromServer {
     required this.newOnServer,
     required this.newOnLocal,
   });
-  final List<int> deletedOnServer;
-  final List<int> deletedOnLocal;
-  final List<TrackedMedia> updatedOnServer;
+  final List<CLMedia> deletedOnServer;
+  final List<CLMedia> deletedOnLocal;
+  final List<CLMedia> updatedOnServer;
   final List<TrackedMedia> updatedOnLocal;
   final List<CLMedia> newOnServer;
   final List<CLMedia> newOnLocal;
@@ -59,14 +59,15 @@ extension StoreExt on Store {
         mediaOnServerIter.map((e) => e['serverUID'] as int);
 
     /// Any serverUID, found in local, but not in Server are 'deletedOnServer'
-    final serverMediaAll = getQuery<int>(DBQueries.serverUIDAll);
+    final serverMediaAll = getQuery<CLMedia>(DBQueries.serverUIDAll);
 
     /// Any item that don't have serverUID are local, ignore locally deleted
     final deletedOnServer = (await readMultipleByQuery(serverMediaAll))
-        .where((e) => !serverUIDOnServer.contains(e));
+        .where((e) => !serverUIDOnServer.contains(e.serverUID))
+        .toList();
 
-    final deletedOnLocal = <int>[];
-    final updatedOnServer = <TrackedMedia>[];
+    final deletedOnLocal = <CLMedia>[];
+    final updatedOnServer = <CLMedia>[];
     final updatedOnLocal = <TrackedMedia>[];
     final newOnServer = <CLMedia>[];
     final allUpdates = <CLMedia>[];
@@ -111,7 +112,7 @@ extension StoreExt on Store {
       if (mediaInDB == null) {
         newOnServer.add(updated);
       } else if (localChangeIsLatest && (mediaInDB.isDeleted ?? false)) {
-        deletedOnLocal.add(mediaInDB.id!);
+        deletedOnLocal.add(mediaInDB);
       } else if (localChangeIsLatest && (mediaInDB.isEdited)) {
         updatedOnLocal.add(
           TrackedMedia(
@@ -121,10 +122,7 @@ extension StoreExt on Store {
         );
       } else {
         updatedOnServer.add(
-          TrackedMedia(
-            mediaInDB,
-            StoreExtCLMedia.mediaFromServerMap(mediaInDB, map),
-          ),
+          StoreExtCLMedia.mediaFromServerMap(mediaInDB, map),
         );
       }
 
@@ -138,12 +136,12 @@ extension StoreExt on Store {
     allUpdates.addAll(newOnLocal);
 
     return MediaUpdatesFromServer(
-      deletedOnServer: List.unmodifiable(deletedOnServer),
-      deletedOnLocal: List.unmodifiable(deletedOnLocal),
-      updatedOnServer: List.unmodifiable(updatedOnServer),
+      deletedOnServer: List<CLMedia>.unmodifiable(deletedOnServer),
+      deletedOnLocal: List<CLMedia>.unmodifiable(deletedOnLocal),
+      updatedOnServer: List<CLMedia>.unmodifiable(updatedOnServer),
       updatedOnLocal: List.unmodifiable(updatedOnLocal),
-      newOnServer: List.unmodifiable(newOnServer),
-      newOnLocal: List.unmodifiable(newOnLocal),
+      newOnServer: List<CLMedia>.unmodifiable(newOnServer),
+      newOnLocal: List<CLMedia>.unmodifiable(newOnLocal),
     );
   }
 

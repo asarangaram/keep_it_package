@@ -314,6 +314,69 @@ class CLMedia extends CLMediaBase {
     );
   }
 
+  CLMedia updatePreviewCache({
+    required String? previewLogUpdated,
+    required bool isPreviewCachedUpdated,
+  }) {
+    return CLMedia(
+      name: name,
+      type: type,
+      fExt: fExt,
+      ref: ref,
+      id: id,
+      collectionId: collectionId,
+      originalDate: originalDate,
+      createdDate: createdDate,
+      updatedDate: updatedDate,
+      md5String: md5String,
+      isDeleted: isDeleted,
+      isHidden: isHidden,
+      pin: pin,
+      isAux: isAux,
+      isPreviewCached: isPreviewCachedUpdated,
+      isMediaCached: isMediaCached,
+      isMediaOriginal: isMediaOriginal,
+      isEdited: isEdited,
+      previewLog: previewLogUpdated,
+      mediaLog: mediaLog,
+      serverUID: serverUID,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+    );
+  }
+
+  CLMedia updateMediaCache({
+    required String? mediaLogUpdated,
+    required bool isMediaCachedUpdated,
+    required bool isMediaOriginalUpdated,
+  }) {
+    return CLMedia(
+      name: name,
+      type: type,
+      fExt: fExt,
+      ref: ref,
+      id: id,
+      collectionId: collectionId,
+      originalDate: originalDate,
+      createdDate: createdDate,
+      updatedDate: updatedDate,
+      md5String: md5String,
+      isDeleted: isDeleted,
+      isHidden: isHidden,
+      pin: pin,
+      isAux: isAux,
+      isPreviewCached: isPreviewCached,
+      isMediaCached: isMediaCachedUpdated,
+      isMediaOriginal: isMediaOriginalUpdated,
+      isEdited: isEdited,
+      previewLog: previewLog,
+      mediaLog: mediaLogUpdated,
+      serverUID: serverUID,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+    );
+  }
+
   bool get isMediaWaitingForDownload =>
       !isMediaCached && mediaLog == null && haveItOffline;
 

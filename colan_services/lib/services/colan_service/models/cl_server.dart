@@ -2,10 +2,8 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 
-import 'package:colan_services/internal/extensions/ext_store.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
 
 import 'rest_api.dart';
 
@@ -159,8 +157,7 @@ class CLServer {
     return RestApi(baseURL, client: client).download(endPoint, targetFilePath);
   }
 
-  Future<List<dynamic>> downloadMediaInfo(
-    Store store, {
+  Future<List<dynamic>> downloadMediaInfo({
     http.Client? client,
     List<String>? types,
   }) async {
