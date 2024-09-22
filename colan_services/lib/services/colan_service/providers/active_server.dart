@@ -102,28 +102,6 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     return false;
   }
 
-  Future<bool> deleteMediasByIdOnLocal(Set<CLMedia> mediaSet) async {
-    final idList = mediaSet.map((e) => e.id!).toSet();
-
-    return ref
-        .read(storeCacheProvider.notifier)
-        .permanentlyDeleteMediaMultiple(idList);
-  }
-
-  Future<bool> insertMediaOnLocal(Set<CLMedia> mediaSet) async {
-    await ref
-        .read(storeCacheProvider.notifier)
-        .updateMediaMultiple(mediaSet.toList());
-    return true;
-  }
-
-  Future<bool> updateMediaOnLocal(Set<CLMedia> mediaSet) async {
-    await ref
-        .read(storeCacheProvider.notifier)
-        .updateMediaMultiple(mediaSet.toList());
-    return false;
-  }
-
   Future<bool> insertMediaOnServer(Set<CLMedia> mediaSet) async {
     return false;
   }
@@ -137,9 +115,20 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   }
 
   Future<bool> updateChanges(MediaUpdatesFromServer updates) async {
-    var result = await deleteMediasByIdOnLocal({...updates.deletedOnServer});
-    result |= await insertMediaOnLocal({...updates.newOnServer});
-    result |= await updateMediaOnLocal({...updates.updatedOnServer});
+    var result = await ref
+        .read(storeCacheProvider.notifier)
+        .permanentlyDeleteMediaMultiple(
+          updates.deletedOnServer.map((e) => e.id!).toSet(),
+        );
+
+    try {
+      await ref.read(storeCacheProvider.notifier).updateMediaMultiple(
+        [...updates.updatedOnServer, ...updates.newOnServer],
+      );
+    } catch (e) {
+      result |= false;
+    }
+
     result |= await insertMediaOnServer({...updates.newOnLocal});
     result |= await updateMediaOnServer({...updates.updatedOnLocal});
     result |= await deleteMediaByIdOnServer(
