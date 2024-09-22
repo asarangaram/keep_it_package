@@ -44,7 +44,7 @@ class MediaUpdatesFromServer {
   final List<CLMedia> newOnLocal;
 }
 
-extension StoreExt on Store {
+extension StoreReaderExt on StoreReader {
   Future<List<CLMedia>> notesByMediaId(int mediaId) async {
     final q = getQuery(DBQueries.notesByMediaId, parameters: [mediaId])
         as StoreQuery<CLMedia>;
@@ -52,8 +52,10 @@ extension StoreExt on Store {
   }
 
   Future<MediaUpdatesFromServer> analyseChanges(
-    List<dynamic> mediaMap,
-  ) async {
+    List<dynamic> mediaMap, {
+    required Future<Collection> Function(String label)
+        createCollectionIfMissing,
+  }) async {
     final mediaOnServerIter = mediaMap.map((e) => e as Map<String, dynamic>);
     final serverUIDOnServer =
         mediaOnServerIter.map((e) => e['serverUID'] as int);
@@ -145,50 +147,6 @@ extension StoreExt on Store {
     );
   }
 
-  Future<CLMedias> updateStoreFromMediaMapList(List<dynamic> mediaMap) async {
-    final mediaUpdates = await StoreExtCLMedias.mediasFromServerList(
-      mediaMap,
-      onGetCollectionByLabel: createCollectionIfMissing,
-      onGetMedia: getMedia,
-    );
-    final updatesFromServer = <CLMedia>[];
-    for (final m in mediaUpdates.entries) {
-      final bool mediaFileChanged;
-      final CLMedia? currMedia;
-      if (m.id != null) {
-        currMedia = await getMediaById(m.id!);
-        mediaFileChanged = (currMedia?.md5String != m.md5String);
-      } else {
-        mediaFileChanged = false;
-        currMedia = null;
-      }
-      final CLMedia? mediaInDB;
-      if (currMedia != m) {
-        if ((currMedia?.isEdited ?? false) || (currMedia?.isDeleted ?? false)) {
-          // Editted and deleted media will be dealt by uploader or conflict
-          // resolver. Downloader skips
-          mediaInDB = null;
-        } else {
-          if (mediaFileChanged) {
-            mediaInDB = await upsertMedia(
-              m.copyWith(isPreviewCached: false, isMediaCached: false),
-            );
-            await deleteMedia(currMedia!);
-          } else {
-            mediaInDB = await upsertMedia(m);
-          }
-        }
-      } else {
-        mediaInDB = currMedia;
-      }
-
-      if (mediaInDB != null) {
-        updatesFromServer.add(mediaInDB);
-      }
-    }
-    return CLMedias(updatesFromServer);
-  }
-
   Future<CLMedia?> getMedia({
     int? id,
     int? serverUID,
@@ -212,11 +170,6 @@ extension StoreExt on Store {
 
   Future<List<T>> readMultipleByQuery<T>(StoreQuery<T> q) async {
     return (await readMultiple<T>(q)).nonNullableList;
-  }
-
-  Future<Collection> createCollectionIfMissing(String label) async {
-    return (await getCollectionByLabel(label)) ??
-        await upsertCollection(Collection(label: label));
   }
 
   Future<List<CLMedia>> get checkDBForPreviewDownloadPending async {

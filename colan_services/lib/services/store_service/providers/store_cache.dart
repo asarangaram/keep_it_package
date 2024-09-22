@@ -80,18 +80,18 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<List<Collection>> loadCollections() async {
     final store = await storeFuture;
-    final q = store.getQuery(
+    final q = store.reader.getQuery(
       DBQueries.collections,
     ) as StoreQuery<Collection>;
-    return (await store.readMultiple(q)).nonNullableList;
+    return (await store.reader.readMultiple(q)).nonNullableList;
   }
 
   Future<List<CLMedia>> loadMedia() async {
     final store = await storeFuture;
-    final q = store.getQuery(
+    final q = store.reader.getQuery(
       DBQueries.medias,
     ) as StoreQuery<CLMedia>;
-    return (await store.readMultiple(q)).nonNullableList;
+    return (await store.reader.readMultiple(q)).nonNullableList;
   }
 
   Future<Collection> upsertCollection(Collection collection) async {
@@ -823,9 +823,15 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
 
   Future<List<CLMedia>> getNotes(int mediaId) async {
     final store = await storeFuture;
-    final noteIds = await store.notesByMediaId(mediaId);
+    final noteIds = await store.reader.notesByMediaId(mediaId);
     return _currentState
         .getMediaMultipleByIds(noteIds.map((e) => e.id!).toList());
+  }
+
+  Future<Collection> createCollectionIfMissing(String label) async {
+    final store = await storeFuture;
+    return (await store.reader.getCollectionByLabel(label)) ??
+        await upsertCollection(Collection(label: label));
   }
 }
 

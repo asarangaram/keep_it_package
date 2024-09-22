@@ -75,7 +75,12 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         // Upload logic here
         unawaited(
           state!.downloadMediaInfo().then((mapList) async {
-            final updates = await (await storeFuture).analyseChanges(mapList);
+            final updates = await (await storeFuture).reader.analyseChanges(
+                  mapList,
+                  createCollectionIfMissing: ref
+                      .read(storeCacheProvider.notifier)
+                      .createCollectionIfMissing,
+                );
             final result = await updateChanges(updates);
 
             if (result && mediaDownloader != null) {
@@ -149,8 +154,8 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
 
     log('Starting file download');
     {
-      var previewsPending = await store.checkDBForPreviewDownloadPending;
-      var mediaPending = await store.checkDBForMediaDownloadPending;
+      var previewsPending = await store.reader.checkDBForPreviewDownloadPending;
+      var mediaPending = await store.reader.checkDBForMediaDownloadPending;
 
       while (previewsPending.isNotEmpty && mediaPending.isNotEmpty) {
         final currTasks = await triggerBatchDownload(
@@ -161,8 +166,8 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         log('waiting for the downloads to complete');
         await Future.wait(currTasks.map((e) => e.completer.future));
         runningTasks.removeWhere((e) => e.completer.isCompleted);
-        previewsPending = await store.checkDBForPreviewDownloadPending;
-        mediaPending = await store.checkDBForMediaDownloadPending;
+        previewsPending = await store.reader.checkDBForPreviewDownloadPending;
+        mediaPending = await store.reader.checkDBForMediaDownloadPending;
         log('Recheck DB for now items');
       }
     }
