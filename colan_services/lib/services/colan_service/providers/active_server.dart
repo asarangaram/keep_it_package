@@ -57,7 +57,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         server: state!,
         directories: await directoriesFuture,
         onDone: (map) async {
-          log('download completed ${map["id"]}');
+          //  log('download completed ${map["id"]}');
           await ref.read(storeCacheProvider.notifier).updateMediaFromMap(map);
         },
       );
@@ -67,8 +67,13 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     }
   }
 
+  bool get workOffline => ref.read(workingOfflineProvider);
+  bool get onlineStatus => ref.read(serverOnlineStatusProvider);
+
   Future<bool?> sync() async {
     if (state == null) return false;
+    if (workOffline || !onlineStatus) return false;
+
     final syncInPorgress = ref.read(syncStatusProvider);
     if (!syncInPorgress) {
       ref.read(syncStatusProvider.notifier).state = true;
@@ -171,7 +176,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     log('nothing to download, Exit.');
   }
 
-  Future<void> abortDownloads(MediaDownloader mediaDownloader) async {
+  Future<void> abortDownloads() async {
     if (runningTasks.isNotEmpty) {
       log('Cancelling ${runningTasks.length} pending downloads');
       for (final t in runningTasks) {
@@ -193,18 +198,22 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     log('trigger download for ${previewsPending.length} previews');
     final currentTasks = <TaskCompleter>[];
     for (final media in previewsPending) {
-      final instance = await downloader.downloadPreview(media);
-      if (instance != null) {
-        runningTasks.add(instance);
-        currentTasks.add(instance);
+      if (!workOffline && onlineStatus) {
+        final instance = await downloader.downloadPreview(media);
+        if (instance != null) {
+          runningTasks.add(instance);
+          currentTasks.add(instance);
+        }
       }
     }
     log('trigger download for ${mediaPending.length} medias');
     for (final media in mediaPending) {
-      final instance = await downloader.downloadMedia(media);
-      if (instance != null) {
-        runningTasks.add(instance);
-        currentTasks.add(instance);
+      if (!workOffline && onlineStatus) {
+        final instance = await downloader.downloadMedia(media);
+        if (instance != null) {
+          runningTasks.add(instance);
+          currentTasks.add(instance);
+        }
       }
     }
     return currentTasks;
@@ -213,7 +222,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   @override
   void dispose() {
     if (mediaDownloader != null) {
-      abortDownloads(mediaDownloader!);
+      abortDownloads();
     }
     super.dispose();
   }
@@ -225,14 +234,13 @@ final activeServerProvider =
   final directories = ref.watch(deviceDirectoriesProvider.future);
   final downloader = ref.watch(downloaderProvider);
   final registerredServer = ref.watch(registeredServerProvider);
-  final workOffline = ref.watch(workingOfflineProvider);
-  final onlineStatus = ref.watch(serverOnlineStatusProvider);
+
   final notifier = ActiveServerNotifier(
     ref: ref,
     storeFuture: store,
     directoriesFuture: directories,
     downloader: downloader,
-    server: workOffline || (!onlineStatus) ? null : registerredServer,
+    server: registerredServer,
   );
 
   return notifier;
