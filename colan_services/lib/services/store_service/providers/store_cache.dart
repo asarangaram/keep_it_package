@@ -48,7 +48,7 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       return currentState;
     });
 
-    log('state updated: $state ', name: 'Store Notifier');
+    //  log('state updated: $state ', name: 'Store Notifier');
   }
 
   Future<void> _initialize() async {
@@ -386,7 +386,6 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       var mediaList = List<CLMedia>.from(currentState.mediaList);
 
       final existingMedia = currentState.getMediaById(map['id'] as int?);
-      log('existing Media $existingMedia');
 
       if (existingMedia != null) {
         mediaList = mediaList.replaceNthEntry(
