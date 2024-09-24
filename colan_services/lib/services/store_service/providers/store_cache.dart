@@ -379,21 +379,15 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
   }
 
   Future<CLMedia?> updateMediaFromMap(Map<String, dynamic> map) async {
-    log('updates in map: $map');
     final store = await storeFuture;
-    var mediaList = List<CLMedia>.from(currentState.mediaList);
-    final Map<String, dynamic> existingMap;
-    final existingMedia = currentState.getMediaById(map['id'] as int?);
-    log('existing Media $existingMedia');
-    existingMap = existingMedia?.toMap() ?? {};
-    // Overwrite updated keys
-    for (final key in map.keys) {
-      existingMap[key] = map[key];
-    }
-
-    final updated = await store.upsertMedia(CLMedia.fromMap(existingMap));
+    final updated = await store.updateMediaFromMap(map);
 
     if (updated != null) {
+      var mediaList = List<CLMedia>.from(currentState.mediaList);
+
+      final existingMedia = currentState.getMediaById(map['id'] as int?);
+      log('existing Media $existingMedia');
+
       if (existingMedia != null) {
         mediaList = mediaList.replaceNthEntry(
           mediaList.indexOf(existingMedia),
@@ -402,9 +396,9 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       } else {
         mediaList = [...mediaList, updated];
       }
+      currentState = currentState.copyWith(mediaList: mediaList);
     }
 
-    currentState = currentState.copyWith(mediaList: mediaList);
     return updated;
   }
 
