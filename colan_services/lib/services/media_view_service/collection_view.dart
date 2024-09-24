@@ -15,19 +15,18 @@ class CollectionView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     MediaQuery.of(context);
-    return CLAspectRationDecorated(
-      hasBorder: true,
-      borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: GetStore(
-        builder: (theStore) {
-          final mediaList = theStore.getMediaByCollectionId(
-            collection.id,
-            maxCount: 4,
-            isRandom: true,
-          );
+    return GetStore(
+      builder: (theStore) {
+        final mediaList = theStore.getMediaByCollectionId(
+          collection.id,
+          maxCount: 4,
+          isRandom: true,
+        );
 
-          if (mediaList.isEmpty || true) {
-            return CLAspectRationDecorated(
+        if (mediaList.isEmpty || true) {
+          return Badge.count(
+            count: theStore.getMediaCountByCollectionId(collection.id),
+            child: CLAspectRationDecorated(
               hasBorder: true,
               borderRadius: const BorderRadius.all(Radius.circular(16)),
               child: Center(
@@ -35,10 +34,14 @@ class CollectionView extends ConsumerWidget {
                   collection.label.characters.first,
                 ),
               ),
-            );
-            // ignore: dead_code
-          } else {
-            return CLMediaCollage.byMatrixSize(
+            ),
+          );
+          // ignore: dead_code
+        } else {
+          return CLAspectRationDecorated(
+            hasBorder: true,
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+            child: CLMediaCollage.byMatrixSize(
               mediaList.length,
               hCount: 2,
               vCount: 2,
@@ -51,10 +54,10 @@ class CollectionView extends ConsumerWidget {
                   collection.label.characters.first,
                 ),
               ),
-            );
-          }
-        },
-      ),
+            ),
+          );
+        }
+      },
     );
   }
 }
