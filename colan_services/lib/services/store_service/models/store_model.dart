@@ -54,8 +54,7 @@ class StoreCache {
 
     return iterable.where(
       (e) =>
-          (e.isMediaLocallyAvailable || (!e.haveItOffline && server != null)) &&
-              e.isPreviewLocallyAvailable ||
+          e.isPreviewLocallyAvailable ||
           (e.isPreviewWaitingForDownload && server != null),
     );
   }
@@ -120,6 +119,12 @@ class StoreCache {
 
   List<CLMedia> getMediaMultipleByIds(List<int> idList) {
     return mediaList.where((e) => idList.contains(e.id)).toList();
+  }
+
+  int getMediaCountByCollectionId(int? collectionId) {
+    return validMedia
+        .where((e) => e.collectionId == collectionId && !(e.isHidden ?? false))
+        .length;
   }
 
   List<CLMedia> getMediaByCollectionId(
