@@ -115,25 +115,31 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   }
 
   Future<bool> updateChanges(MediaUpdatesFromServer updates) async {
-    var result = await ref
-        .read(storeCacheProvider.notifier)
-        .permanentlyDeleteMediaMultiple(
-          updates.deletedOnServer.map((e) => e.id!).toSet(),
-        );
+    var result = true;
 
-    try {
-      await ref.read(storeCacheProvider.notifier).updateMediaMultiple(
-        [...updates.updatedOnServer, ...updates.newOnServer],
-      );
-    } catch (e) {
-      result |= false;
+    if (updates.deletedOnServer.isNotEmpty) {
+      result = await ref
+          .read(storeCacheProvider.notifier)
+          .permanentlyDeleteMediaMultiple(
+            updates.deletedOnServer.map((e) => e.id!).toSet(),
+          );
+    }
+    final upserts = [...updates.updatedOnServer, ...updates.newOnServer];
+    if (upserts.isNotEmpty) {
+      try {
+        await ref.read(storeCacheProvider.notifier).updateMediaMultiple(
+          [...updates.updatedOnServer, ...updates.newOnServer],
+        );
+      } catch (e) {
+        result |= false;
+      }
     }
 
-    result |= await insertMediaOnServer({...updates.newOnLocal});
+    /* result |= await insertMediaOnServer({...updates.newOnLocal});
     result |= await updateMediaOnServer({...updates.updatedOnLocal});
     result |= await deleteMediaByIdOnServer(
       {...updates.deletedOnServer},
-    );
+    ); */
 
     return result;
   }

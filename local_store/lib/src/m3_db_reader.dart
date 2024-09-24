@@ -1,5 +1,6 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'package:local_store/src/m3_db_queries.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
@@ -145,5 +146,5 @@ class DBReader extends StoreReader {
 
   @override
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
-      getQuery(query, parameters: parameters);
+      Queries.getQuery(query, parameters: parameters);
 }
