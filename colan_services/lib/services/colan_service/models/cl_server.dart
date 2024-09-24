@@ -74,8 +74,11 @@ class CLServer {
   Future<bool> hasConnection({http.Client? client}) async {
     try {
       final id = await RestApi(baseURL, client: client).getURLStatus();
-      return this.id != null && this.id == id;
+      final hasId = this.id != null && this.id == id;
+      log('has id: $hasId');
+      return hasId;
     } catch (e) {
+      log('has id: failed $e');
       return false;
     }
   }
@@ -161,18 +164,16 @@ class CLServer {
     http.Client? client,
     List<String>? types,
   }) async {
-    if (await hasConnection(client: client)) {
-      try {
-        final mediaMapList = [
-          for (final mediaType in types ?? ['image', 'video'])
-            ...jsonDecode(
-              await getEndpoint('/media?type=$mediaType', client: client),
-            ) as List<dynamic>,
-        ];
-        return mediaMapList;
-      } catch (e) {
-        /** */
-      }
+    try {
+      final mediaMapList = [
+        for (final mediaType in types ?? ['image', 'video'])
+          ...jsonDecode(
+            await getEndpoint('/media?type=$mediaType', client: client),
+          ) as List<dynamic>,
+      ];
+      return mediaMapList;
+    } catch (e) {
+      log('error in download $e');
     }
     return [];
   }

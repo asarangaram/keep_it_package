@@ -56,8 +56,9 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         downloader: downloader,
         server: state!,
         directories: await directoriesFuture,
-        onDone: (media) async {
-          await ref.read(storeCacheProvider.notifier).updateMedia(media);
+        onDone: (map) async {
+          log('download completed ${map["id"]}');
+          await ref.read(storeCacheProvider.notifier).updateMediaFromMap(map);
         },
       );
       log('Media Downloader initialized for server $state');
@@ -75,6 +76,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         // Upload logic here
         unawaited(
           state!.downloadMediaInfo().then((mapList) async {
+            log('Found ${mapList.length} items in the server');
             final updates = await (await storeFuture).reader.analyseChanges(
                   mapList,
                   createCollectionIfMissing: ref

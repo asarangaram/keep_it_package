@@ -215,7 +215,7 @@ class CLMedia extends CLMediaBase {
       'isHidden': (isHidden ?? false) ? 1 : 0,
       'pin': pin,
       'collectionId': collectionId,
-      'isAux': isAux,
+      'isAux': isAux ? 1 : 0,
       'id': id,
       'isPreviewCached': isPreviewCached ? 1 : 0,
       'isMediaCached': isMediaCached ? 1 : 0,

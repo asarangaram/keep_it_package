@@ -378,6 +378,36 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     );
   }
 
+  Future<CLMedia?> updateMediaFromMap(Map<String, dynamic> map) async {
+    log('updates in map: $map');
+    final store = await storeFuture;
+    var mediaList = List<CLMedia>.from(currentState.mediaList);
+    final Map<String, dynamic> existingMap;
+    final existingMedia = currentState.getMediaById(map['id'] as int?);
+    log('existing Media $existingMedia');
+    existingMap = existingMedia?.toMap() ?? {};
+    // Overwrite updated keys
+    for (final key in map.keys) {
+      existingMap[key] = map[key];
+    }
+
+    final updated = await store.upsertMedia(CLMedia.fromMap(existingMap));
+
+    if (updated != null) {
+      if (existingMedia != null) {
+        mediaList = mediaList.replaceNthEntry(
+          mediaList.indexOf(existingMedia),
+          updated,
+        );
+      } else {
+        mediaList = [...mediaList, updated];
+      }
+    }
+
+    currentState = currentState.copyWith(mediaList: mediaList);
+    return updated;
+  }
+
   Future<CLMedia?> updateMedia(CLMedia media) async {
     final store = await storeFuture;
     var mediaList = List<CLMedia>.from(currentState.mediaList);
@@ -408,20 +438,18 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     final updatedList = <CLMedia>[];
     final mediaFiles2Delete = <CLMedia>[];
     for (final (i, m) in mediaMultiple.indexed) {
-      if (m.id != null) {
-        final updated = await store.upsertMedia(m);
-        if (updated != null) {
-          final existing = currentState.getMediaById(updated.id);
-          updatedList.add(updated);
-          if (existing != null) {
-            mediaList =
-                mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
-            if (existing.md5String != updated.md5String) {
-              mediaFiles2Delete.add(existing);
-            }
-          } else {
-            mediaList = [...mediaList, updated];
+      final updated = await store.upsertMedia(m);
+      if (updated != null) {
+        final existing = currentState.getMediaById(updated.id);
+        updatedList.add(updated);
+        if (existing != null) {
+          mediaList =
+              mediaList.replaceNthEntry(mediaList.indexOf(existing), updated);
+          if (existing.md5String != updated.md5String) {
+            mediaFiles2Delete.add(existing);
           }
+        } else {
+          mediaList = [...mediaList, updated];
         }
       }
 

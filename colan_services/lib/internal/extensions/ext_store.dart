@@ -1,5 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:colan_services/internal/extensions/ext_cl_media.dart';
 import 'package:colan_services/internal/extensions/list.dart';
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:mime/mime.dart';
 import 'package:store/store.dart';
@@ -40,6 +44,40 @@ class MediaUpdatesFromServer {
   final List<TrackedMedia> updatedOnLocal;
   final List<CLMedia> newOnServer;
   final List<CLMedia> newOnLocal;
+
+  @override
+  bool operator ==(covariant MediaUpdatesFromServer other) {
+    if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
+
+    return listEquals(other.deletedOnServer, deletedOnServer) &&
+        listEquals(other.deletedOnLocal, deletedOnLocal) &&
+        listEquals(other.updatedOnServer, updatedOnServer) &&
+        listEquals(other.updatedOnLocal, updatedOnLocal) &&
+        listEquals(other.newOnServer, newOnServer) &&
+        listEquals(other.newOnLocal, newOnLocal);
+  }
+
+  @override
+  int get hashCode {
+    return deletedOnServer.hashCode ^
+        deletedOnLocal.hashCode ^
+        updatedOnServer.hashCode ^
+        updatedOnLocal.hashCode ^
+        newOnServer.hashCode ^
+        newOnLocal.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'MediaUpdatesFromServer( '
+        'deletedOnServer: ${deletedOnServer.length}, '
+        'deletedOnLocal: ${deletedOnLocal.length}, '
+        'updatedOnServer: ${updatedOnServer.length}, '
+        'updatedOnLocal: ${updatedOnLocal.length}, '
+        'newOnServer: ${newOnServer.length}, '
+        'newOnLocal: ${newOnLocal.length})';
+  }
 }
 
 extension StoreReaderExt on StoreReader {
@@ -134,8 +172,7 @@ extension StoreReaderExt on StoreReader {
     final newOnLocal = (await readMultipleByQuery(localMediaAll))
         .where((e) => !ids2Update.contains(e.id));
     allUpdates.addAll(newOnLocal);
-
-    return MediaUpdatesFromServer(
+    final mediaUpdates = MediaUpdatesFromServer(
       deletedOnServer: List<CLMedia>.unmodifiable(deletedOnServer),
       deletedOnLocal: List<CLMedia>.unmodifiable(deletedOnLocal),
       updatedOnServer: List<CLMedia>.unmodifiable(updatedOnServer),
@@ -143,6 +180,10 @@ extension StoreReaderExt on StoreReader {
       newOnServer: List<CLMedia>.unmodifiable(newOnServer),
       newOnLocal: List<CLMedia>.unmodifiable(newOnLocal),
     );
+
+    log('Analyse Result: $mediaUpdates');
+
+    return mediaUpdates;
   }
 
   Future<CLMedia?> getMedia({

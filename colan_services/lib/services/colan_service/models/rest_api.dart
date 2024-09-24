@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert' show jsonDecode;
+import 'dart:developer' as dev;
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -18,6 +19,21 @@ class RestApi {
   };
   static const uploadimageTimeout = 15;
 
+  void log(
+    String message, {
+    int level = 0,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    dev.log(
+      message,
+      level: level,
+      error: error,
+      stackTrace: stackTrace,
+      name: 'Online Service: REST API Service',
+    );
+  }
+
   Uri _generateURI(String endPoint) {
     return Uri.parse('$_server$endPoint');
   }
@@ -26,18 +42,25 @@ class RestApi {
 
   Future<int?> getURLStatus() async {
     //await Future.delayed(const Duration(seconds: 2));
-
+    log('ping server $_server');
     final response = await myClient
         .get(Uri.parse(_server))
-        .timeout(const Duration(seconds: 2));
-    if (response.statusCode == 200) {
-      final info = jsonDecode(response.body) as Map<String, dynamic>;
-      if ((info['name'] as String) == 'colan_server') {
-        return info['id'] as int;
+        .timeout(const Duration(seconds: 5));
+    try {
+      if (response.statusCode == 200) {
+        final info = jsonDecode(response.body) as Map<String, dynamic>;
+        if ((info['name'] as String) == 'colan_server') {
+          return info['id'] as int;
+        }
+        log("Error: ${info['name']}");
+        throw Exception(info['name']);
+      } else {
+        log('Error: ${response.statusCode} ${response.body}');
+        throw Exception('${response.statusCode} ${response.body}');
       }
-      throw Exception(info['name']);
-    } else {
-      throw Exception('${response.statusCode} ${response.body}');
+    } catch (e) {
+      log('Error: $e');
+      rethrow;
     }
   }
 
@@ -89,7 +112,10 @@ class RestApi {
         } on Exception catch (e) {
           return e.toString();
         }
-
+      case 'upload':
+        try {} on Exception catch (e) {
+          return e.toString();
+        }
       /* case 'img_upload':
         if (imageData == null) {
           throw Exception('Image not provider');
@@ -170,6 +196,15 @@ class RestApi {
 
   Future<String> delete(String endPoint, {String? auth}) async {
     return (await call('delete', endPoint, auth: auth)) as String;
+  }
+
+  Future<String?> upload(
+    String endPoint,
+    String fileName, {
+    String? auth,
+    Map<String, String>? fields,
+  }) async {
+    return '';
   }
 
   Future<String?> download(
