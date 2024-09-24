@@ -59,6 +59,10 @@ class StoreCache {
     );
   }
 
+  bool hasMediaFile(CLMedia e) {
+    return e.isMediaLocallyAvailable || (!e.haveItOffline && server != null);
+  }
+
   List<Collection> getCollections({bool excludeEmpty = true}) {
     final Iterable<Collection> iterable;
     if (excludeEmpty) {

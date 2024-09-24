@@ -35,15 +35,19 @@ class CollectionTimeLinePage extends ConsumerWidget {
               CLMedia media, {
               required String parentIdentifier,
             }) async {
-              await Navigators.openMedia(
-                context,
-                media.id!,
-                collectionId: collectionId,
-                parentIdentifier: parentIdentifier,
-                actionControl: ActionControl.full(),
-              );
+              if (theStore.hasMediaFile(media)) {
+                await Navigators.openMedia(
+                  context,
+                  media.id!,
+                  collectionId: collectionId,
+                  parentIdentifier: parentIdentifier,
+                  actionControl: ActionControl.full(),
+                );
 
-              return true;
+                return true;
+              }
+
+              return null;
             },
           );
         },

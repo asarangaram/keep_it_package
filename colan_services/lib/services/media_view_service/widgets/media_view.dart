@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:animated_icon/animated_icon.dart';
 import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -141,12 +142,29 @@ class MediaView extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (media.serverUID != null)
+                    if (media.serverUID != null) ...[
+                      OverlayWidgets(
+                        alignment: Alignment.topRight,
+                        sizeFactor: 0.1,
+                        child: Image.asset(
+                          'assets/icon/cloud_on_lan_128px_color.png',
+                          colorBlendMode: BlendMode.dstOut,
+                        ),
+                      ),
                       OverlayWidgets(
                         alignment: Alignment.bottomRight,
                         sizeFactor: 0.15,
-                        child: clIcons.syncIcons.inSync,
+                        child: theStore.hasMediaFile(media)
+                            ? const MediaIsDownloading(
+                                icon: AnimateIcons.cloud,
+                                color: Colors.greenAccent,
+                              )
+                            : const MediaIsDownloading(
+                                icon: AnimateIcons.download,
+                                color: Colors.blueAccent,
+                              ),
                       ),
+                    ],
                   ],
                 ),
               );
@@ -166,6 +184,29 @@ class MediaView extends StatelessWidget {
       autoPlay: autoPlay,
       autoStart: autoStart,
       onLockPage: onLockPage,
+    );
+  }
+}
+
+class MediaIsDownloading extends StatelessWidget {
+  const MediaIsDownloading({
+    required this.icon,
+    super.key,
+    this.color = Colors.black,
+  });
+
+  final AnimateIcons icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimateIcon(
+      key: UniqueKey(),
+      onTap: () {},
+      iconType: IconType.continueAnimation,
+      color: color,
+      animateIcon: icon,
+      //animateIcon: AnimateIcons.download,
     );
   }
 }

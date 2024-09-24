@@ -51,27 +51,18 @@ class SyncIcons {
   final detachIconData = MdiIcons.minusCircle;
   final syncOptionsIconData = Symbols.format_list_bulleted_add;
 
-  final Widget inSync = Stack(
-    alignment: AlignmentDirectional.center,
-    children: [
-      Image.asset(
-        'assets/icon/cloud_on_lan_128px_color.png',
-        colorBlendMode: BlendMode.dstOut,
+  final Widget inSync = Center(
+    child: Symbols.cloud_done_sharp.iconFormatted(
+      size: CLScaleType.veryLarge.iconSize,
+      weight: 700,
+      grade: 100,
+      color: const Color.fromARGB(
+        0xFF,
+        0x00,
+        0xFF,
+        0xEC,
       ),
-      Center(
-        child: Symbols.cloud_done_sharp.iconFormatted(
-          size: CLScaleType.veryLarge.iconSize,
-          weight: 700,
-          grade: 100,
-          color: const Color.fromARGB(
-            0xFF,
-            0x00,
-            0xFF,
-            0xEC,
-          ),
-        ),
-      ),
-    ],
+    ),
   );
 }
 
