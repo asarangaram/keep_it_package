@@ -51,16 +51,18 @@ class Downloader {
 
           switch (update.status) {
             case TaskStatus.complete:
-              handler?.call(update.task);
+              handler?.call(update.task, status: update);
             case TaskStatus.failed:
               handler?.call(
                 update.task,
                 errorLog: update.responseBody ?? 'Unknown Error',
+                status: update,
               );
             case TaskStatus.canceled:
               handler?.call(
                 update.task,
                 errorLog: 'Download cancelled, try again',
+                status: update,
               );
             case TaskStatus.running:
             case TaskStatus.enqueued:
@@ -77,8 +79,12 @@ class Downloader {
   }
 
   late final FileDownloader fileDownloader;
-  final downloads =
-      <String, Future<void> Function(Task task, {String? errorLog})?>{};
+  final downloads = <String,
+      Future<void> Function(
+    Task task, {
+    required TaskStatusUpdate status,
+    String? errorLog,
+  })?>{};
   final statusMap = <String, TaskStatus>{};
   final downloaderStatusStreamController = StreamController<DownloaderStatus>();
 
@@ -87,12 +93,45 @@ class Downloader {
     required BaseDirectory baseDirectory,
     required String directory,
     required String filename,
-    Future<void> Function(Task task, {String? errorLog})? onDone,
+    Future<void> Function(
+      Task task, {
+      required TaskStatusUpdate status,
+      String? errorLog,
+    })? onDone,
     String group = 'Unclassified',
   }) async {
     final task = DownloadTask(
       url: url,
       filename: filename,
+      directory: directory,
+      baseDirectory: baseDirectory,
+      group: group,
+    );
+
+    downloads[task.taskId] = onDone;
+
+    await fileDownloader.enqueue(task);
+    return task;
+  }
+
+  Future<UploadTask> enqueueUpload({
+    required String url,
+    required BaseDirectory baseDirectory,
+    required String directory,
+    required String filename,
+    required Map<String, String> fields,
+    Future<void> Function(
+      Task task, {
+      required TaskStatusUpdate status,
+      String? errorLog,
+    })? onDone,
+    String group = 'upload',
+  }) async {
+    final task = UploadTask(
+      url: url,
+      filename: filename,
+      fileField: 'media',
+      fields: fields,
       directory: directory,
       baseDirectory: baseDirectory,
       group: group,

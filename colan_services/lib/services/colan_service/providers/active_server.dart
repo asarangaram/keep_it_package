@@ -110,6 +110,26 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   }
 
   Future<bool> insertMediaOnServer(Set<CLMedia> mediaSet) async {
+    final store = await storeFuture;
+    log('trigger upload for ${mediaSet.length} new media');
+    final currentTasks = <TaskCompleter>[];
+    for (final media in mediaSet) {
+      if (media.collectionId != null) {
+        if (!workOffline && onlineStatus) {
+          final collection =
+              await store.reader.getCollectionById(media.collectionId!);
+          final instance = await mediaDownloader!.uploadMedia(
+            media,
+            'upload',
+            fields: {'collectionLabel': collection!.label},
+          );
+          runningTasks.add(instance);
+          currentTasks.add(instance);
+        }
+      }
+    }
+    await Future.wait(currentTasks.map((e) => e.completer.future));
+    runningTasks.removeWhere((e) => e.completer.isCompleted);
     return false;
   }
 
@@ -140,6 +160,9 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
       } catch (e) {
         result |= false;
       }
+    }
+    if (updates.newOnLocal.isNotEmpty) {
+      result |= await insertMediaOnServer({...updates.newOnLocal});
     }
 
     /* result |= await insertMediaOnServer({...updates.newOnLocal});

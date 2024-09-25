@@ -51,6 +51,7 @@ abstract class StoreReader {
 
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
   Future<Collection?> getCollectionByLabel(String label);
+  Future<Collection?> getCollectionById(int id);
   Future<CLMedia?> getMediaByServerUID(int serverUID);
   Future<CLMedia?> getMediaByMD5String(String md5String);
   Future<CLMedia?> getMediaById(int id);

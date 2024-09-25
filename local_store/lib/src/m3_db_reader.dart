@@ -41,6 +41,16 @@ class DBReader extends StoreReader {
     );
   }
 
+  @override
+  Future<Collection?> getCollectionById(
+    int id,
+  ) async {
+    return read<Collection>(
+      getQuery(DBQueries.collectionById, parameters: [id])
+          as DBQuery<Collection>,
+    );
+  }
+
   Future<CLMedia?> getMediaByID(
     int id,
   ) {

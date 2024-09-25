@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
@@ -106,7 +107,7 @@ class MediaDownloader {
       directory: directories.thumbnail.name,
       filename: media.previewFileName,
       group: group,
-      onDone: (task, {errorLog}) async {
+      onDone: (task, {required status, errorLog}) async {
         await onDone?.call({
           'id': media.id,
           'previewLog': errorLog,
@@ -130,7 +131,7 @@ class MediaDownloader {
       directory: directories.media.name,
       filename: media.mediaFileName,
       group: group,
-      onDone: (task, {errorLog}) async {
+      onDone: (task, {required status, errorLog}) async {
         await onDone?.call({
           'id': media.id,
           'mediaLog': errorLog,
@@ -138,6 +139,34 @@ class MediaDownloader {
           'isMediaOriginal':
               (errorLog == null && media.mustDownloadOriginal) ? 1 : 0,
         });
+
+        completer.complete(task);
+      },
+    );
+    return TaskCompleter(task, completer);
+  }
+
+  Future<TaskCompleter> uploadMedia(
+    CLMedia media,
+    String group, {
+    required Map<String, String> fields,
+  }) async {
+    final completer = Completer<Task>();
+    final task = await downloader.enqueueUpload(
+      url: server.getEndpointURI(media.mediaUploadEndPoint!).toString(),
+      baseDirectory: _previewBaseDirectory,
+      directory: directories.media.name,
+      filename: media.mediaFileName,
+      group: group,
+      fields: fields,
+      onDone: (task, {required status, errorLog}) async {
+        if (errorLog == null && status.responseBody != null) {
+          final map = jsonDecode(status.responseBody!) as Map<String, dynamic>;
+          await onDone?.call({
+            'id': media.id,
+            ...map,
+          });
+        }
 
         completer.complete(task);
       },
