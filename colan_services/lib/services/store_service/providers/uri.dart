@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'media.dart';
+import 'media_reader.dart';
 
 final mediaUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
-  final mediaAsync = ref.watch(mediaProvider(id));
+  final mediaAsync = ref.watch(validMediaProvider);
 
   return mediaAsync.when<AsyncValue<Uri>>(
     loading: AsyncValue<Uri>.loading,
@@ -13,7 +13,7 @@ final mediaUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
         if (mediaInfo == null) {
           throw Exception('media not found!');
         }
-        return mediaInfo.getMediaUriAsync();
+        return mediaInfo.getMediaUriAsync(id);
       } catch (error, stackTrace) {
         return AsyncValue.error(error, stackTrace);
       }
@@ -22,7 +22,7 @@ final mediaUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
 });
 
 final previewUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
-  final mediaAsync = ref.watch(mediaProvider(id));
+  final mediaAsync = ref.watch(validMediaProvider);
 
   return mediaAsync.when<AsyncValue<Uri>>(
     loading: AsyncValue<Uri>.loading,
@@ -32,7 +32,7 @@ final previewUriProvider = Provider.family<AsyncValue<Uri>, int>((ref, id) {
         if (mediaInfo == null) {
           throw Exception('media not found!');
         }
-        return mediaInfo.getPreviewUriAsync();
+        return mediaInfo.getPreviewUriAsync(id);
       } catch (error, stackTrace) {
         return AsyncValue.error(error, stackTrace);
       }

@@ -1,4 +1,4 @@
-/* // ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:io';
 
@@ -18,47 +18,64 @@ import 'store.dart';
 bool allowOnlineViewIfNotDownloaded = false;
 
 @immutable
-class MediaInfo {
+class MediaInfo2 {
   final CLDirectories directories;
-  final CLMedia media;
+  final List<CLMedia> mediaList;
   final CLServer? server;
-  const MediaInfo({
+  const MediaInfo2({
     required this.directories,
-    required this.media,
+    required this.mediaList,
     required this.server,
   });
 
-  MediaInfo copyWith({
+  MediaInfo2 copyWith({
     CLDirectories? directories,
-    CLMedia? media,
+    List<CLMedia>? mediaList,
     ValueGetter<CLServer?>? server,
   }) {
-    return MediaInfo(
+    return MediaInfo2(
       directories: directories ?? this.directories,
-      media: media ?? this.media,
+      mediaList: mediaList ?? this.mediaList,
       server: server != null ? server.call() : this.server,
     );
   }
 
   @override
   String toString() =>
-      'MediaInfo(directories: $directories, media: $media, server: $server)';
+      // ignore: lines_longer_than_80_chars
+      'MediaInfo(directories: $directories, media: $mediaList, server: $server)';
 
   @override
-  bool operator ==(covariant MediaInfo other) {
+  bool operator ==(covariant MediaInfo2 other) {
     if (identical(this, other)) return true;
 
     return other.directories == directories &&
-        other.media == media &&
+        other.mediaList == mediaList &&
         other.server == server;
   }
 
   @override
-  int get hashCode => directories.hashCode ^ media.hashCode ^ server.hashCode;
+  int get hashCode =>
+      directories.hashCode ^ mediaList.hashCode ^ server.hashCode;
 
-  String getText() {
-    if (media.type != CLMediaType.text) return '';
-    final uri = getMediaUri();
+  //////////////////////////////////////////////////////////////////////////////
+  Iterable<CLMedia> get validMedia {
+    final iterable =
+        mediaList.where((e) => !(e.isDeleted ?? false) && e.mediaLog == null);
+
+    return iterable.where(
+      (e) =>
+          e.isPreviewLocallyAvailable ||
+          (e.isPreviewWaitingForDownload && server != null),
+    );
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  String getText(int id) {
+    final media = mediaList.where((e) => e.id == id).firstOrNull;
+
+    if (media?.type != CLMediaType.text) return '';
+    final uri = Uri.file(getMediaAbsolutePath(media!));
     if (uri.scheme == 'file') {
       final path = uri.toFilePath();
 
@@ -69,17 +86,14 @@ class MediaInfo {
     throw UnimplementedError('Implement for Server');
   }
 
-  Uri getPreviewUri() {
-    return Uri.file(getPreviewAbsolutePath());
-  }
-
-  AsyncValue<Uri> getPreviewUriAsync() {
+  AsyncValue<Uri> getPreviewUriAsync(int id) {
+    final media = mediaList.where((e) => e.id == id).firstOrNull;
     final flag = allowOnlineViewIfNotDownloaded;
 
     try {
       return switch (media) {
-        (final CLMedia _) when media.isPreviewLocallyAvailable =>
-          AsyncValue.data(Uri.file(getPreviewAbsolutePath())),
+        (final CLMedia m) when media.isPreviewLocallyAvailable =>
+          AsyncValue.data(Uri.file(getPreviewAbsolutePath(m))),
         (final CLMedia m) when media.isPreviewDownloadFailed =>
           throw Exception(m.previewLog),
         (final CLMedia m) when media.isPreviewWaitingForDownload => flag
@@ -98,11 +112,12 @@ class MediaInfo {
     }
   }
 
-  AsyncValue<Uri> getMediaUriAsync() {
+  AsyncValue<Uri> getMediaUriAsync(int id) {
+    final media = mediaList.where((e) => e.id == id).firstOrNull;
     try {
       return switch (media) {
-        (final CLMedia _) when media.isMediaLocallyAvailable =>
-          AsyncValue.data(Uri.file(getMediaAbsolutePath())),
+        (final CLMedia m) when media.isMediaLocallyAvailable =>
+          AsyncValue.data(Uri.file(getMediaAbsolutePath(m))),
         (final CLMedia m) when media.isMediaDownloadFailed =>
           throw Exception(m.mediaLog),
         (final CLMedia m) when !media.haveItOffline => server != null
@@ -124,40 +139,46 @@ class MediaInfo {
     }
   }
 
-  Uri getMediaUri() {
-    return Uri.file(getMediaAbsolutePath());
-  }
-
-  String getPreviewAbsolutePath() => p.join(
+  String getPreviewAbsolutePath(CLMedia media) => p.join(
         directories.thumbnail.pathString,
         media.previewFileName,
       );
 
-  String getMediaAbsolutePath() => p.join(
+  String getMediaAbsolutePath(CLMedia media) => p.join(
         directories.media.path.path,
         media.mediaFileName,
       );
 }
 
-final mediaProvider = StreamProvider.family<MediaInfo?, int>((ref, id) async* {
-  final controller = StreamController<MediaInfo?>();
+final validMediaProvider = StreamProvider<MediaInfo2?>((ref) async* {
+  const mediaQuery = DBQueries.validMedia;
+  final controller = StreamController<MediaInfo2?>();
+
+  ref.watch(mediaProvider(mediaQuery)).whenData(controller.add);
+  yield* controller.stream;
+});
+
+final mediaProvider =
+    StreamProvider.family<MediaInfo2?, DBQueries>((ref, query) async* {
+  final controller = StreamController<MediaInfo2?>();
 
   final directories = await ref.watch(deviceDirectoriesProvider.future);
   final store = await ref.watch(storeProvider.future);
   final server = ref.watch(registeredServerProvider);
-  final q = store.reader.getQuery(DBQueries.mediaById, parameters: [id])
-      as StoreQuery<CLMedia>;
+  final q = store.reader.getQuery(query) as StoreQuery<CLMedia>;
 
   ref.watch(dbReaderProvider(q)).whenData((data) {
-    final media = data.firstOrNull as CLMedia?;
+    final mediaList =
+        data.where((e) => e != null).map((e) => e as CLMedia).toList();
 
     controller.add(
-      (media == null)
-          ? null
-          : MediaInfo(directories: directories, media: media, server: server),
+      MediaInfo2(
+        directories: directories,
+        mediaList: mediaList,
+        server: server,
+      ),
     );
   });
 
   yield* controller.stream;
 });
- */
