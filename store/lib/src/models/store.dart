@@ -18,7 +18,7 @@ enum DBQueries {
 
   mediaById,
   mediaByServerUID,
-  validMedia,
+  mediaAllValid,
   mediaAllIncludingAux,
   mediaByCollectionId,
   mediaByPath,

@@ -85,9 +85,8 @@ class Queries {
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
-      /**/ DBQueries.validMedia => DBQuery<CLMedia>.map(
-          sql:
-              'SELECT * FROM Media WHERE isAux = 0 AND isHidden = 0 AND isDeleted = 0 AND mediaLog  IS NULL',
+      /**/ DBQueries.mediaAllValid => DBQuery<CLMedia>.map(
+          sql: 'SELECT * FROM Media WHERE mediaLog IS NULL',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),

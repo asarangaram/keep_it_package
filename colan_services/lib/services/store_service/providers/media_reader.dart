@@ -150,22 +150,14 @@ class MediaInfo2 {
       );
 }
 
-final validMediaProvider = StreamProvider<MediaInfo2?>((ref) async* {
-  const mediaQuery = DBQueries.validMedia;
-  final controller = StreamController<MediaInfo2?>();
-
-  ref.watch(mediaProvider(mediaQuery)).whenData(controller.add);
-  yield* controller.stream;
-});
-
-final mediaProvider =
-    StreamProvider.family<MediaInfo2?, DBQueries>((ref, query) async* {
-  final controller = StreamController<MediaInfo2?>();
+final mediaProvider = StreamProvider<MediaInfo2>((ref) async* {
+  final controller = StreamController<MediaInfo2>();
 
   final directories = await ref.watch(deviceDirectoriesProvider.future);
   final store = await ref.watch(storeProvider.future);
   final server = ref.watch(registeredServerProvider);
-  final q = store.reader.getQuery(query) as StoreQuery<CLMedia>;
+  final q =
+      store.reader.getQuery(DBQueries.mediaAllValid) as StoreQuery<CLMedia>;
 
   ref.watch(dbReaderProvider(q)).whenData((data) {
     final mediaList =

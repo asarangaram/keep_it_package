@@ -114,7 +114,7 @@ class DBReader extends StoreReader {
 
   Future<List<CLMedia>> getMediaAll() {
     return readMultiple<CLMedia>(
-      getQuery(DBQueries.validMedia) as DBQuery<CLMedia>,
+      getQuery(DBQueries.mediaAllValid) as DBQuery<CLMedia>,
     );
   }
 
