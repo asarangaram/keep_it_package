@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../notes_service/notes_service.dart';
-
 import 'providers/show_controls.dart';
 import 'widgets/media_page_view.dart';
 import 'widgets/media_view.dart';
@@ -189,9 +187,9 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                       ref.read(showControlsProvider.notifier).hideNotes();
                     }
                   },
-                  child: NotesService(
+                  /* child: NotesService(
                     media: widget.media[0],
-                  ),
+                  ), */
                 ),
             ],
           )

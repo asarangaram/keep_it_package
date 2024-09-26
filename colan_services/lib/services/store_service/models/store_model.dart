@@ -1,18 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer' as dev;
-import 'dart:io';
 
 import 'package:colan_services/services/colan_service/models/cl_server.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import '../../../internal/extensions/ext_cl_media.dart';
 import '../../../internal/extensions/list.dart';
-import '../../sharing_service/models/share_files.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 
 @immutable
@@ -152,76 +149,12 @@ class StoreCache {
     return media;
   }
 
-  String getText(CLMedia? media) {
-    if (media?.type != CLMediaType.text) return '';
-    final uri = getMediaUri(media!);
-    if (uri.scheme == 'file') {
-      final path = uri.toFilePath();
+  Future<String> createTempFile({required String ext}) async {
+    final dir = directories.download.path; // FIXME temp Directory
+    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
+    final absolutePath = '${dir.path}/$fileBasename.$ext';
 
-      return File(path).existsSync()
-          ? File(path).readAsStringSync()
-          : 'Content Missing. File not found';
-    }
-    throw UnimplementedError('Implement for Server');
-  }
-
-  Uri getPreviewUri(CLMedia media) {
-    return Uri.file(getPreviewAbsolutePath(media));
-  }
-
-  AsyncValue<Uri> getPreviewUriAsync(CLMedia media) {
-    final flag = allowOnlineViewIfNotDownloaded;
-
-    try {
-      return switch (media) {
-        (final CLMedia m) when media.isPreviewLocallyAvailable =>
-          AsyncValue.data(Uri.file(getPreviewAbsolutePath(m))),
-        (final CLMedia m) when media.isPreviewDownloadFailed =>
-          throw Exception(m.previewLog),
-        (final CLMedia m) when media.isPreviewWaitingForDownload => flag
-            ? AsyncValue.data(
-                Uri.parse(
-                  server!
-                      .getEndpointURI('/media/${m.serverUID}/preview')
-                      .toString(),
-                ),
-              )
-            : const AsyncValue<Uri>.loading(),
-        _ => throw UnimplementedError()
-      };
-    } catch (error, stackTrace) {
-      return AsyncError(error, stackTrace);
-    }
-  }
-
-  AsyncValue<Uri> getMediaUriAsync(CLMedia media) {
-    try {
-      return switch (media) {
-        (final CLMedia m) when media.isMediaLocallyAvailable =>
-          AsyncValue.data(Uri.file(getMediaAbsolutePath(m))),
-        (final CLMedia m) when media.isMediaDownloadFailed =>
-          throw Exception(m.mediaLog),
-        (final CLMedia m) when !media.haveItOffline => server != null
-            ? AsyncValue.data(
-                Uri.parse(
-                  server!
-                      .getEndpointURI('/media/${m.serverUID}/'
-                          'download?isOriginal=${m.mustDownloadOriginal}')
-                      .toString(),
-                ),
-              )
-            : throw Exception('Server Not connected'),
-        (final CLMedia _) when media.isMediaWaitingForDownload =>
-          const AsyncValue<Uri>.loading(),
-        _ => throw UnimplementedError()
-      };
-    } catch (error, stackTrace) {
-      return AsyncError(error, stackTrace);
-    }
-  }
-
-  Uri getMediaUri(CLMedia media) {
-    return Uri.file(getMediaAbsolutePath(media));
+    return absolutePath;
   }
 
   String getPreviewAbsolutePath(CLMedia media) => p.join(
@@ -234,14 +167,6 @@ class StoreCache {
         media.mediaFileName,
       );
 
-  Future<String> createTempFile({required String ext}) async {
-    final dir = directories.download.path; // FIXME temp Directory
-    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '${dir.path}/$fileBasename.$ext';
-
-    return absolutePath;
-  }
-
   Future<bool?> shareMedia(
     BuildContext context,
     List<CLMedia> media,
@@ -249,12 +174,13 @@ class StoreCache {
     if (media.isEmpty) {
       return true;
     }
-    final box = context.findRenderObject() as RenderBox?;
+    /* final box = context.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
       context,
       media.map((e) => getMediaUri(e).toFilePath()).toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    );
+    ); */
+    return false;
   }
 
   StoreCache copyWith({

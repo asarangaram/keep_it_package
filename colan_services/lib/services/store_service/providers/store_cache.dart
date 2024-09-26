@@ -70,13 +70,6 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     );
   }
 
-  Future<void> deleteMedia(CLMedia media) async {
-    final mediaFile = File(_currentState.getMediaAbsolutePath(media));
-    final previewFile = File(_currentState.getPreviewAbsolutePath(media));
-    await mediaFile.deleteIfExists();
-    await previewFile.deleteIfExists();
-  }
-
   Future<List<Collection>> loadCollections() async {
     final store = await storeFuture;
     final q = store.reader.getQuery(
@@ -416,7 +409,7 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       }
     }
 
-    currentState = currentState.copyWith(mediaList: mediaList);
+    //  currentState = currentState.copyWith(mediaList: mediaList);
     return updated;
   }
 
@@ -452,7 +445,7 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
         ),
       );
     }
-    currentState = currentState.copyWith(mediaList: mediaList);
+    //  currentState = currentState.copyWith(mediaList: mediaList);
     for (final media in mediaFiles2Delete) {
       // File is changed. the new file will be uploaded, but delete
       // older.
@@ -852,6 +845,13 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     final store = await storeFuture;
     return (await store.reader.getCollectionByLabel(label)) ??
         await upsertCollection(Collection(label: label));
+  }
+
+  Future<void> deleteMedia(CLMedia media) async {
+    final mediaFile = File(currentState.getMediaAbsolutePath(media));
+    final previewFile = File(currentState.getPreviewAbsolutePath(media));
+    await mediaFile.deleteIfExists();
+    await previewFile.deleteIfExists();
   }
 }
 

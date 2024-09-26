@@ -90,9 +90,9 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
                     ref.read(showControlsProvider.notifier).hideNotes();
                   }
                 },
-                child: NotesService(
+                /* child: NotesService(
                   media: media,
-                ),
+                ), */
               ),
           ],
         );
