@@ -58,7 +58,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         directories: await directoriesFuture,
         onDone: (map) async {
           //  log('download completed ${map["id"]}');
-          await ref.read(storeCacheProvider.notifier).updateMediaFromMap(map);
+          //  await ref.read(storeCacheProvider.notifier).updateMediaFromMap(map);
         },
       );
       log('Media Downloader initialized for server $state');
@@ -78,33 +78,26 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     if (!syncInPorgress) {
       ref.read(syncStatusProvider.notifier).state = true;
       {
-        // Upload logic here
-        unawaited(
-          state!.downloadMediaInfo().then((mapList) async {
-            log('Found ${mapList.length} items in the server');
-            final updates = await (await storeFuture).reader.analyseChanges(
-                  mapList,
-                  createCollectionIfMissing: ref
-                      .read(storeCacheProvider.notifier)
-                      .createCollectionIfMissing,
-                );
-            final result = await updateChanges(updates);
-
-            if (result && mediaDownloader != null) {
-              unawaited(
-                downloadFiles(mediaDownloader!).then(
-                  (_) => ref.read(syncStatusProvider.notifier).state = false,
-                ),
-              );
-            } else {
-              log('Sync ignored; either its not required or '
-                  ' downloader not available');
-              ref.read(syncStatusProvider.notifier).state = false;
-            }
-          }),
+        final mapList = await state!.downloadMediaInfo();
+        log('Found ${mapList.length} items in the server');
+        final updates = await (await storeFuture).reader.analyseChanges(
+              mapList,
+              createCollectionIfMissing: ref
+                  .read(storeCacheProvider.notifier)
+                  .createCollectionIfMissing,
+            );
+        final result = await updateChanges(
+          updates,
         );
-        return true;
+        if (result && mediaDownloader != null) {
+          await downloadFiles(mediaDownloader!);
+        } else {
+          log('Sync ignored; either its not required or '
+              ' downloader not available');
+        }
       }
+      ref.read(syncStatusProvider.notifier).state = false;
+      return true;
     }
     return false;
   }
@@ -130,7 +123,7 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     }
     await Future.wait(currentTasks.map((e) => e.completer.future));
     runningTasks.removeWhere((e) => e.completer.isCompleted);
-    return false;
+    return true;
   }
 
   Future<bool> updateMediaOnServer(Set<TrackedMedia> mediaSet) async {

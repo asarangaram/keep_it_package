@@ -381,21 +381,25 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     final store = await storeFuture;
     final updated = await store.updateMediaFromMap(map);
 
-    if (updated != null) {
-      var mediaList = List<CLMedia>.from(currentState.mediaList);
+    /* try {
+      if (updated != null) {
+        var mediaList = List<CLMedia>.from(currentState.mediaList);
 
-      final existingMedia = currentState.getMediaById(map['id'] as int?);
+        final existingMedia = currentState.getMediaById(map['id'] as int?);
 
-      if (existingMedia != null) {
-        mediaList = mediaList.replaceNthEntry(
-          mediaList.indexOf(existingMedia),
-          updated,
-        );
-      } else {
-        mediaList = [...mediaList, updated];
+        if (existingMedia != null) {
+          mediaList = mediaList.replaceNthEntry(
+            mediaList.indexOf(existingMedia),
+            updated,
+          );
+        } else {
+          mediaList = [...mediaList, updated];
+        }
+        currentState = currentState.copyWith(mediaList: mediaList);
       }
-      currentState = currentState.copyWith(mediaList: mediaList);
-    }
+    } catch (e) {
+      print('error is $e');
+    } */
 
     return updated;
   }
@@ -425,12 +429,17 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
     void Function(Progress progress)? onProgress,
   }) async {
     final store = await storeFuture;
-    var mediaList = List<CLMedia>.from(currentState.mediaList);
+    final mediaList = List<CLMedia>.from(currentState.mediaList);
 
-    final updatedList = <CLMedia>[];
-    final mediaFiles2Delete = <CLMedia>[];
-    for (final (i, m) in mediaMultiple.indexed) {
+    final updatedList = <CLMedia?>[];
+    for (final (m) in mediaMultiple) {
       final updated = await store.upsertMedia(m);
+      updatedList.add(updated);
+    }
+
+    /* final mediaFiles2Delete = <CLMedia>[];
+    for (final (i, m) in updatedList.indexed) {
+      final updated = m;
       if (updated != null) {
         final existing = currentState.getMediaById(updated.id);
         updatedList.add(updated);
@@ -444,11 +453,10 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
           mediaList = [...mediaList, updated];
         }
       }
-
       onProgress?.call(
         Progress(
           fractCompleted: i / mediaMultiple.length,
-          currentItem: m.name,
+          currentItem: m?.name ?? 'unknown',
         ),
       );
     }
@@ -458,8 +466,8 @@ class StoreCacheNotifier extends StateNotifier<AsyncValue<StoreCache>> {
       // older.
       await File(currentState.getMediaAbsolutePath(media)).deleteIfExists();
       await File(currentState.getPreviewAbsolutePath(media)).deleteIfExists();
-    }
-    return updatedList;
+    } */
+    return updatedList.nonNullableList;
   }
 
   Stream<Progress> moveToCollectionStream({

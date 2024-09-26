@@ -24,7 +24,11 @@ class WrapStandardQuickMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (onEdit == null && onDelete == null) {
+    return GestureDetector(
+      onTap: onTap,
+      child: child,
+    );
+    /* if (onEdit == null && onDelete == null) {
       return GestureDetector(
         onTap: onTap,
         child: child,
@@ -79,6 +83,6 @@ class WrapStandardQuickMenu extends StatelessWidget {
       },
       onTap: onTap,
       child: child,
-    );
+    ); */
   }
 }

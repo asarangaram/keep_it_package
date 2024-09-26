@@ -152,6 +152,7 @@ class MediaDownloader {
     required Map<String, String> fields,
   }) async {
     final completer = Completer<Task>();
+    final expectedMap = media.toMap();
     final task = await downloader.enqueueUpload(
       url: server.getEndpointURI(media.mediaUploadEndPoint!).toString(),
       baseDirectory: _previewBaseDirectory,
@@ -164,7 +165,8 @@ class MediaDownloader {
           final map = jsonDecode(status.responseBody!) as Map<String, dynamic>;
           await onDone?.call({
             'id': media.id,
-            ...map,
+            for (final key in map.keys)
+              if (expectedMap.keys.contains(key)) key: map[key],
           });
         }
 
