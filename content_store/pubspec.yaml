@@ -10,11 +10,17 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  background_downloader: ^8.5.6
   colan_widgets:
     path: ../colan_widgets
+  collection: ^1.18.0
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
+  flutter_speed_dial: ^7.0.0
+  http: ^1.2.2
+  meta: ^1.12.0
+  pie_chart: ^5.4.0
   store:
     path: ../store
 
