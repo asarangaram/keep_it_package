@@ -68,7 +68,8 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
     return GetStore(
       builder: (theStore) {
         final collections = theStore.getCollections();
-        final newCollection = collections
+
+        final newCollection = collections.entries
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;
         final collectionLablel = newCollection?.label != null
@@ -111,7 +112,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
               children: [
                 Flexible(
                   child: ExistInDifferentCollection(
-                    collections: collections,
+                    collections: collections.entries,
                     parentIdentifier: widget.parentIdentifier,
                     media: currentMedia,
                     onRemove: (m) {

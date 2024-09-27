@@ -95,7 +95,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
                       false;
                   if (!confirmed) return;
                   if (context.mounted) {
-                    await theStore.permanentlyDeleteMediaMultiple(
+                    await theStore.permanentlyDeleteMediaMultipleById(
                       {widget.note!.id!},
                     );
                     textEditingController.clear();
@@ -161,13 +161,16 @@ class _TextNoteState extends ConsumerState<TextNote> {
       final String path;
       path = await theStore.createTempFile(ext: 'txt');
       await File(path).writeAsString(textEditingController.text.trim());
-      await theStore.upsertMedia(
-        path,
-        CLMediaType.text,
-        parents: [widget.media],
-        id: widget.note?.id,
-        isAux: true,
-      );
+      if (widget.note == null) {
+        await theStore.newMedia(
+          path,
+          CLMediaType.text,
+          parents: [widget.media],
+          isAux: true,
+        );
+      } else {
+        await theStore.replaceMedia(path, media: widget.note!);
+      }
 
       if (mounted) {
         textOriginal = theStore.getText(widget.note);

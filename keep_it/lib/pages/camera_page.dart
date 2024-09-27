@@ -26,7 +26,7 @@ class CameraPage extends ConsumerWidget {
                 );
           },
           onNewMedia: (path, {required isVideo}) async {
-            await theStore.upsertMedia(
+            await theStore.newMedia(
               path,
               isVideo ? CLMediaType.video : CLMediaType.image,
               collectionId: collection?.id,

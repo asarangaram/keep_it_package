@@ -67,7 +67,7 @@ class CollectionEditor extends StatelessWidget {
                 onValidate: (value) => validateName(
                   newLabel: value,
                   existingLabel: collection.label,
-                  collections: collections,
+                  collections: collections.entries,
                 ),
               ),
               'description': CLFormTextFieldDescriptor(

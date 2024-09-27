@@ -28,13 +28,14 @@ class SettingsMainPage extends ConsumerWidget {
                           context,
                           ref,
                           CLSharedMedia(
-                            entries: deletedMedia,
+                            entries: deletedMedia.entries,
                             type: UniversalMediaSource.deleted,
                           ),
                         );
                       },
                     ),
-                    title: Text('Deleted Items (${deletedMedia.length})'),
+                    title:
+                        Text('Deleted Items (${deletedMedia.entries.length})'),
                   ),
                 const StorageMonitor(),
                 const ServerSettings(),

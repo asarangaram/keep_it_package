@@ -46,7 +46,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       builder: (theStore) {
         return CLGalleryCore<CLMedia>(
           key: ValueKey(type.identifier),
-          items: theStore.galleryMap(media0.entries),
+          items: CLMedias(media0.entries).galleryMap,
           itemBuilder: (
             context,
             item,
@@ -71,7 +71,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                 );
                 ref.read(universalMediaProvider(type).notifier).mediaGroup =
                     media0.copyWith(
-                  entries: refreshedMedia,
+                  entries: refreshedMedia.entries,
                 );
               }
             },

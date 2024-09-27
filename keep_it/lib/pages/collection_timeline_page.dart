@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/internal/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
           final items = theStore.getMediaByCollectionId(collectionId);
           return TimeLineView(
             label: collection?.label ?? 'All Media',
-            items: items,
+            items: items.galleryMap,
             collection: collection,
             actionControl: actionControl,
             parentIdentifier:
@@ -46,7 +47,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
                 return true;
               }
 
-              return null;
+              return false;
             },
           );
         },
@@ -66,7 +67,7 @@ class TimeLineView extends ConsumerWidget {
 
   final String label;
   final String parentIdentifier;
-  final List<CLMedia> items;
+  final List<GalleryGroup<CLMedia>> items;
   final Future<bool?> Function(
     CLMedia media, {
     required String parentIdentifier,
@@ -93,7 +94,7 @@ class TimeLineView extends ConsumerWidget {
                 ),
           identifier: parentIdentifier,
           columns: 4,
-          galleryMap: theStore.galleryMap(items),
+          galleryMap: items,
           emptyState: const EmptyState(),
           itemBuilder: (context, item, {required quickMenuScopeKey}) =>
               MediaAsFile(
@@ -143,7 +144,7 @@ class TimeLineView extends ConsumerWidget {
                       false;
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
-                    return theStore.deleteMediaMultiple(
+                    return theStore.deleteMediaMultipleById(
                       {...items.map((e) => e.id!)},
                     );
                   }
@@ -171,7 +172,9 @@ class TimeLineView extends ConsumerWidget {
                 CLMenuItem(
                   title: 'Pin',
                   icon: clIcons.pinAll,
-                  onTap: () => theStore.togglePinMultiple(items),
+                  onTap: () => theStore.togglePinMultipleById(
+                    items.map((e) => e.id).nonNullableList.toSet(),
+                  ),
                 ),
             ];
           },

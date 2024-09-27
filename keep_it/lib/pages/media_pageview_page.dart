@@ -46,12 +46,13 @@ class MediaPageViewPage extends StatelessWidget {
             });
             return const EmptyState(message: 'No Media');
           }
-          final initialMedia = items.where((e) => e.id == id).firstOrNull;
+          final initialMedia =
+              items.entries.where((e) => e.id == id).firstOrNull;
           final initialMediaIndex =
-              initialMedia == null ? 0 : items.indexOf(initialMedia);
+              initialMedia == null ? 0 : items.entries.indexOf(initialMedia);
 
           return MediaViewService.pageView(
-            media: items,
+            media: items.entries,
             parentIdentifier: parentIdentifier,
             initialMediaIndex: initialMediaIndex,
           );

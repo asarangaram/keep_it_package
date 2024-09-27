@@ -87,7 +87,7 @@ class MediaWizardService extends ConsumerWidget {
           return SelectAndKeepMedia(
             media: media,
             type: type,
-            galleryMap: theStore.galleryMap(media.entries),
+            galleryMap: CLMedias(media.entries).galleryMap,
           );
         },
       ),
@@ -230,7 +230,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                           false;
                                   if (!confirmed) return confirmed;
                                   if (context.mounted) {
-                                    final res = theStore.deleteMediaMultiple(
+                                    final res =
+                                        theStore.deleteMediaMultipleById(
                                       {...currMedia.map((e) => e.id!)},
                                     );
 

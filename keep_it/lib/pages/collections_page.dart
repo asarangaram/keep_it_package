@@ -32,7 +32,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
           final identifier = 'FolderView Collections'
               ' excludeEmpty: $excludeEmpty';
           final galleryGroups = <GalleryGroup<Collection>>[];
-          for (final rows in collections.convertTo2D(3)) {
+          for (final rows in collections.entries.convertTo2D(3)) {
             galleryGroups.add(
               GalleryGroup(
                 rows,
@@ -97,7 +97,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: CLText.standard(
                             'You have unclassified media. '
-                            '(${staleMedia.length})',
+                            '(${staleMedia.entries.length})',
                           ),
                         ),
                       ),
@@ -106,7 +106,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                           context,
                           ref,
                           CLSharedMedia(
-                            entries: staleMedia,
+                            entries: staleMedia.entries,
                             type: UniversalMediaSource.unclassified,
                           ),
                         ),

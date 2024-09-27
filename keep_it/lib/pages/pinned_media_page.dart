@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/internal/extensions/list.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -41,14 +42,14 @@ class PinnedMediaPage extends ConsumerWidget {
                         actionControl: ActionControl.full(),
                       );
                     },
-                    onLongPress: () => theStore.togglePinMultiple([item]),
+                    onLongPress: () => theStore.togglePinById(item.id!),
                     child: MediaViewService.preview(
                       item,
                       parentIdentifier: parentIdentifier,
                     ),
                   ),
                 ),
-                galleryMap: theStore.galleryMap(media),
+                galleryMap: media.galleryMap,
                 emptyState: const Center(
                   child: CLText.large(
                     'The medias pinned to show in gallery are shown here.',
@@ -64,7 +65,12 @@ class PinnedMediaPage extends ConsumerWidget {
                       title: 'Remove Selected Pins',
                       icon: clIcons.unPinAll,
                       onTap: () async {
-                        await theStore.togglePinMultiple(media);
+                        await theStore.togglePinMultipleById(
+                          media.entries
+                              .map((e) => e.id)
+                              .nonNullableList
+                              .toSet(),
+                        );
 
                         return true;
                       },

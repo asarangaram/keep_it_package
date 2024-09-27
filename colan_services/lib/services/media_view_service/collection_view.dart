@@ -42,11 +42,11 @@ class CollectionView extends ConsumerWidget {
             hasBorder: true,
             borderRadius: const BorderRadius.all(Radius.circular(16)),
             child: CLMediaCollage.byMatrixSize(
-              mediaList.length,
+              mediaList.entries.length,
               hCount: 2,
               vCount: 2,
               itemBuilder: (context, index) => MediaView.preview(
-                mediaList[index],
+                mediaList.entries[index],
                 parentIdentifier: 'TODO HERE',
               ),
               whenNopreview: Center(

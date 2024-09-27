@@ -352,7 +352,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                     ),
                     onPin: ac.onPin(
                       () async {
-                        final res = await theStore.togglePin(media);
+                        final res = await theStore.togglePinById(media.id!);
                         if (res) {
                           setState(() {});
                         }

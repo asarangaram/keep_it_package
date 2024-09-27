@@ -2,68 +2,49 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-abstract class ContentStore {
-  Stream<Progress> analyseMediaStream({
-    required List<CLMediaBase> mediaFiles,
-    required void Function({
-      required List<CLMedia> existingItems,
-      required List<CLMedia> newItems,
-    }) onDone,
-  });
+extension GalleryMapExt on CLMedias {
+  List<GalleryGroup<CLMedia>> get galleryMap => [];
+  bool get isNotEmpty => entries.isNotEmpty;
+  bool get isEmpty => entries.isEmpty;
+}
 
-  List<Collection> getCollections({bool excludeEmpty = true});
+abstract class DBReader {}
+
+abstract class ContentStore {
+  //// Read APIs
+  Collections getCollections({bool excludeEmpty = true});
   Collection? getCollectionById(int? id);
 
-  List<CLMedia> getStaleMedia();
-  List<CLMedia> getPinnedMedia();
-  List<CLMedia> getDeletedMedia();
-
-  List<CLMedia> getMediaByCollectionId(
+  CLMedias getStaleMedia();
+  CLMedias getPinnedMedia();
+  CLMedias getDeletedMedia();
+  CLMedias getMediaByCollectionId(
     int? collectionId, {
     int maxCount = 0,
     bool isRandom = false,
   });
   CLMedia? getMediaById(int? id);
-
+  CLMedias getMediaMultipleByIds(List<int> idList);
   int getMediaCountByCollectionId(int? collectionId);
-  List<CLMedia> getMediaMultipleByIds(List<int> idList);
-
-  Stream<Progress> moveToCollectionStream({
-    required List<CLMedia> media,
-    required Collection collection,
-    Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
-  });
-
-  Future<bool> deleteMediaMultiple(Set<int> ids2Delete);
-
-  List<GalleryGroup<CLMedia>> galleryMap(List<CLMedia> mediaList);
-
-  bool hasMediaFile(CLMedia media);
-
-  Future<bool> deleteCollectionById(
-    int collectionId,
-  );
-  Future<bool> deleteMediaById(int id);
-  Future<bool> permanentlyDeleteMediaMultiple(Set<int> ids2Delete);
-  Future<bool> restoreMediaMultiple(Set<int> ids2Delete);
-
-  // This should not be in this way.
-  Future<bool?> shareMedia(
-    BuildContext context,
-    List<CLMedia> media,
-  );
-  Future<bool> togglePin(CLMedia media);
-  Future<bool> togglePinMultiple(List<CLMedia> media);
 
   String getText(CLMedia? media);
 
+  bool hasMediaFile(CLMedia media);
+
+  Future<bool> deleteCollectionById(int id);
+  Future<bool> deleteMediaById(int id);
+  Future<bool> deleteMediaMultipleById(Set<int> ids2Delete);
+  Future<bool> permanentlyDeleteMediaMultipleById(Set<int> ids2Delete);
+  Future<bool> restoreMediaMultipleById(Set<int> ids2Delete);
+
+  Future<bool> togglePinById(int id);
+  Future<bool> togglePinMultipleById(Set<int> ids2Delete);
+
   Future<String> createTempFile({required String ext});
 
-  Future<Collection> upsertCollection(
-    Collection collection,
-  );
+  Future<Collection> upsertCollection(Collection collection);
 
-  Future<CLMedia?> upsertMedia(
+  Future<CLMedia?> newMedia(
     String path,
     CLMediaType type, {
     bool? isAux,
@@ -76,7 +57,6 @@ abstract class ContentStore {
     bool? isHidden,
     String? pin,
     int? collectionId,
-    int? id,
     bool? isPreviewCached,
     bool? isMediaCached,
     String? previewLog,
@@ -97,5 +77,25 @@ abstract class ContentStore {
     required CLMedia media,
   });
 
+  Stream<Progress> moveToCollectionStream({
+    required List<CLMedia> media,
+    required Collection collection,
+    Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
+  });
+
+  Stream<Progress> analyseMediaStream({
+    required List<CLMediaBase> mediaFiles,
+    required void Function({
+      required List<CLMedia> existingItems,
+      required List<CLMedia> newItems,
+    }) onDone,
+  });
+
   void onRefresh();
+
+  // This should not be in this way.
+  Future<bool?> shareMedia(
+    BuildContext context,
+    List<CLMedia> media,
+  );
 }
