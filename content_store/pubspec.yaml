@@ -23,6 +23,7 @@ dependencies:
   meta: ^1.12.0
   nsd: ^3.0.0
   pie_chart: ^5.4.0
+  shared_preferences: ^2.3.2
   store:
     path: ../store
 
