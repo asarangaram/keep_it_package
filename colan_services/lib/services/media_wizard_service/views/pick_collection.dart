@@ -16,9 +16,11 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStoreUpdater(
-      builder: (theStore) {
-        final collections = theStore.getCollections(excludeEmpty: false);
+    return GetCollectionMultiple(
+      errorBuilder: null,
+      loadingBuilder: null,
+      excludeEmpty: false,
+      builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
             icon: clIcons.next,

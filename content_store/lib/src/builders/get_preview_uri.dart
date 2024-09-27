@@ -1,4 +1,5 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GetPreviewUri extends ConsumerWidget {
@@ -16,6 +17,8 @@ class GetPreviewUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container();
+    return Center(
+      child: loadingBuilder?.call() ?? const CircularProgressIndicator(),
+    );
   }
 }

@@ -22,10 +22,11 @@ class MediaEditorPage extends ConsumerWidget {
       return BasicPageService.message(message: 'No Media Provided');
     }
 
-    return GetStoreUpdater(
-      builder: (theStore) {
-        final media = theStore.getMediaById(mediaId);
-
+    return GetMedia(
+      id: mediaId!,
+      errorBuilder: null,
+      loadingBuilder: null,
+      builder: (media) {
         if (media == null) {
           return BasicPageService.message(message: ' Media not found');
         }
@@ -33,45 +34,52 @@ class MediaEditorPage extends ConsumerWidget {
         return GetMediaUri(
           id: media.id!,
           builder: (mediaUri) {
-            return InvokeEditor(
-              mediaUri: mediaUri,
-              mediaType: media.type,
-              canDuplicateMedia: canDuplicateMedia,
-              onCreateNewFile: () async {
-                return theStore.createTempFile(ext: media.fExt);
-              },
-              onCancel: () async => context.pop(),
-              onSave: (file, {required overwrite}) async {
-                final CLMedia resultMedia;
-                if (overwrite) {
-                  final confirmed = await ConfirmAction.replaceMedia(
-                        context,
-                        media: media,
-                      ) ??
-                      false;
-                  if (confirmed && context.mounted) {
-                    resultMedia =
-                        await theStore.replaceMedia(file, media: media);
-                  } else {
-                    resultMedia = media;
-                  }
-                } else {
-                  final confirmed = await ConfirmAction.cloneAndReplaceMedia(
-                        context,
-                        media: media,
-                      ) ??
-                      false;
-                  if (confirmed && context.mounted) {
-                    resultMedia =
-                        await theStore.cloneAndReplaceMedia(file, media: media);
-                  } else {
-                    resultMedia = media;
-                  }
-                }
+            return GetStoreUpdater(
+              builder: (theStore) {
+                return InvokeEditor(
+                  mediaUri: mediaUri!,
+                  mediaType: media.type,
+                  canDuplicateMedia: canDuplicateMedia,
+                  onCreateNewFile: () async {
+                    return theStore.createTempFile(ext: media.fExt);
+                  },
+                  onCancel: () async => context.pop(),
+                  onSave: (file, {required overwrite}) async {
+                    final CLMedia resultMedia;
+                    if (overwrite) {
+                      final confirmed = await ConfirmAction.replaceMedia(
+                            context,
+                            media: media,
+                          ) ??
+                          false;
+                      if (confirmed && context.mounted) {
+                        resultMedia =
+                            await theStore.replaceMedia(file, media: media);
+                      } else {
+                        resultMedia = media;
+                      }
+                    } else {
+                      final confirmed =
+                          await ConfirmAction.cloneAndReplaceMedia(
+                                context,
+                                media: media,
+                              ) ??
+                              false;
+                      if (confirmed && context.mounted) {
+                        resultMedia = await theStore.cloneAndReplaceMedia(
+                          file,
+                          media: media,
+                        );
+                      } else {
+                        resultMedia = media;
+                      }
+                    }
 
-                if (context.mounted) {
-                  context.pop(resultMedia);
-                }
+                    if (context.mounted) {
+                      context.pop(resultMedia);
+                    }
+                  },
+                );
               },
             );
           },

@@ -26,13 +26,20 @@ class ViewNotes extends StatelessWidget {
               onTap: onTap,
               child: SingleChildScrollView(
                 padding: EdgeInsets.zero,
-                child: Text(
-                  theStore.getText(note),
-                  textAlign: TextAlign.start,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontSize: CLScaleType.standard.fontSize),
+                child: GetMediaText(
+                  id: note.id!,
+                  errorBuilder: null,
+                  loadingBuilder: null,
+                  builder: (text) {
+                    return Text(
+                      text,
+                      textAlign: TextAlign.start,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(fontSize: CLScaleType.standard.fontSize),
+                    );
+                  },
                 ),
               ),
             ),

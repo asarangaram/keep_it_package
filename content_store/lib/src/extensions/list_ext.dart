@@ -1,4 +1,30 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
+
+extension IndexExtonNullableList<T> on List<T?> {
+  List<T> get nonNullableList {
+    return where((e) => e != null).map((e) => e!).toList();
+  }
+}
+
+extension IndexExtonNullableIterable<T> on Iterable<T?> {
+  List<T> get nonNullableList {
+    return where((e) => e != null).map((e) => e!).toList();
+  }
+}
+
+extension RandomExt<T> on List<T> {
+  List<T> pickRandomItems(int count) {
+    final copyList = List<T>.from(this); // Create a copy of the original list
+    if (copyList.length <= count) {
+      return copyList; // Return the entire list if it's shorter than 'count'
+    }
+
+    copyList.shuffle(Random()); // Shuffle the copy list
+    return copyList.take(count).toList();
+  }
+}
 
 extension CompareExtOnSet<T> on Set<T> {
   bool isSame(Set<T> other) {

@@ -26,3 +26,26 @@ class GetDBReader extends ConsumerWidget {
     );
   }
 }
+
+class GetStore extends ConsumerWidget {
+  const GetStore({
+    required this.builder,
+    super.key,
+    this.errorBuilder,
+    this.loadingBuilder,
+  });
+  final Widget Function(Store store) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final storeAsync = ref.watch(storeProvider);
+
+    return storeAsync.when(
+      data: builder,
+      error: errorBuilder ?? (_, __) => Container(),
+      loading: loadingBuilder ?? Container.new,
+    );
+  }
+}

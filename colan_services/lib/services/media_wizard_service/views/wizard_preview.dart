@@ -42,8 +42,8 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       return const SizedBox.expand();
     }
 
-    return GetStoreUpdater(
-      builder: (theStore) {
+    return GetDBReader(
+      builder: (dbReader) {
         return CLGalleryCore<CLMedia>(
           key: ValueKey(type.identifier),
           items: CLMedias(media0.entries).galleryMap,
@@ -63,11 +63,13 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               /// MEdia might have got updated, better reload and update the
               ///  provider
               if (context.mounted) {
-                final refreshedMedia = theStore.getMediaMultipleByIds(
-                  media0.entries
-                      .where((e) => e.id != null)
-                      .map((e) => e.id!)
-                      .toList(),
+                final refreshedMedia = CLMedias(
+                  await dbReader.getMediasByIDList(
+                    media0.entries
+                        .where((e) => e.id != null)
+                        .map((e) => e.id!)
+                        .toList(),
+                  ),
                 );
                 ref.read(universalMediaProvider(type).notifier).mediaGroup =
                     media0.copyWith(

@@ -13,9 +13,10 @@ class SettingsMainPage extends ConsumerWidget {
       title: 'Settings',
       backButton: null,
       pageBuilder: (context, quickMenuScopeKey) {
-        return GetStoreUpdater(
-          builder: (theStore) {
-            final deletedMedia = theStore.getDeletedMedia();
+        return GetDeletedMedia(
+          errorBuilder: null,
+          loadingBuilder: null,
+          builder: (deletedMedia) {
             return ListView(
               children: [
                 if (deletedMedia.isNotEmpty)

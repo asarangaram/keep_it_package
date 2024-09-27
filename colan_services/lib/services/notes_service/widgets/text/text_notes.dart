@@ -17,10 +17,25 @@ class TextNotes extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetStoreUpdater(
       builder: (theStore) {
-        return TextNote(
-          media: media,
-          theStore: theStore,
-          note: notes.firstOrNull,
+        final note = notes.firstOrNull;
+        if (note == null) {
+          TextNote(
+            media: media,
+            theStore: theStore,
+          );
+        }
+
+        return GetMediaText(
+          id: note!.id!,
+          errorBuilder: null,
+          loadingBuilder: null,
+          builder: (text) {
+            return TextNote(
+              media: media,
+              theStore: theStore,
+              note: notes.firstOrNull,
+            );
+          },
         );
       },
     );

@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
-import 'package:colan_services/internal/extensions/ext_cl_media.dart';
-import 'package:colan_services/internal/extensions/list.dart';
 import 'package:collection/collection.dart';
+import 'package:content_store/src/extensions/ext_cl_media.dart';
+import 'package:content_store/src/extensions/list_ext.dart';
 import 'package:meta/meta.dart';
 import 'package:mime/mime.dart';
 import 'package:store/store.dart';

@@ -65,10 +65,10 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
     if (currentMedia.isEmpty) {
       return const EmptyState();
     }
-    return GetStoreUpdater(
-      builder: (theStore) {
-        final collections = theStore.getCollections();
-
+    return GetCollectionMultiple(
+      errorBuilder: null,
+      loadingBuilder: null,
+      builder: (collections) {
         final newCollection = collections.entries
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;

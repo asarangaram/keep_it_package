@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/internal/extensions/list.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -17,77 +16,79 @@ class PinnedMediaPage extends ConsumerWidget {
     const parentIdentifier = 'PinnedMedia';
     return GetStoreUpdater(
       builder: (theStore) {
-        final media = theStore.getPinnedMedia();
+        return GetPinnedMedia(
+          errorBuilder: null,
+          loadingBuilder: null,
+          builder: (media) {
+            return Column(
+              children: [
+                Expanded(
+                  child: CLSimpleGalleryView<CLMedia>(
+                    key: const ValueKey(label),
+                    title: 'Pinned Media',
+                    backButton: null,
+                    itemBuilder: (
+                      context,
+                      item, {
+                      required quickMenuScopeKey,
+                    }) =>
+                        Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: GestureDetector(
+                        onTap: () async {
+                          await Navigators.openMedia(
+                            context,
+                            item.id!,
+                            parentIdentifier: parentIdentifier,
+                            actionControl: ActionControl.full(),
+                          );
+                        },
+                        onLongPress: () => theStore.togglePinById(item.id!),
+                        child: MediaViewService.preview(
+                          item,
+                          parentIdentifier: parentIdentifier,
+                        ),
+                      ),
+                    ),
+                    galleryMap: media.galleryMap,
+                    emptyState: const Center(
+                      child: CLText.large(
+                        'The medias pinned to show in gallery are shown here.',
+                      ),
+                    ),
+                    identifier: 'Pinned Media',
+                    columns: 2,
+                    onRefresh: () async => theStore.onRefresh(),
+                    actionMenu: const [],
+                    selectionActions: (context, items) {
+                      return [
+                        CLMenuItem(
+                          title: 'Remove Selected Pins',
+                          icon: clIcons.unPinAll,
+                          onTap: () async {
+                            await theStore.togglePinMultipleById(
+                              media.entries.map((e) => e.id).toSet(),
+                            );
 
-        return Column(
-          children: [
-            Expanded(
-              child: CLSimpleGalleryView<CLMedia>(
-                key: const ValueKey(label),
-                title: 'Pinned Media',
-                backButton: null,
-                itemBuilder: (
-                  context,
-                  item, {
-                  required quickMenuScopeKey,
-                }) =>
-                    Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: GestureDetector(
-                    onTap: () async {
-                      await Navigators.openMedia(
-                        context,
-                        item.id!,
-                        parentIdentifier: parentIdentifier,
-                        actionControl: ActionControl.full(),
-                      );
+                            return true;
+                          },
+                        ),
+                      ];
                     },
-                    onLongPress: () => theStore.togglePinById(item.id!),
-                    child: MediaViewService.preview(
-                      item,
-                      parentIdentifier: parentIdentifier,
-                    ),
                   ),
                 ),
-                galleryMap: media.galleryMap,
-                emptyState: const Center(
-                  child: CLText.large(
-                    'The medias pinned to show in gallery are shown here.',
-                  ),
-                ),
-                identifier: 'Pinned Media',
-                columns: 2,
-                onRefresh: () async => theStore.onRefresh(),
-                actionMenu: const [],
-                selectionActions: (context, items) {
-                  return [
-                    CLMenuItem(
-                      title: 'Remove Selected Pins',
-                      icon: clIcons.unPinAll,
-                      onTap: () async {
-                        await theStore.togglePinMultipleById(
-                          media.entries
-                              .map((e) => e.id)
-                              .nonNullableList
-                              .toSet(),
-                        );
-
-                        return true;
-                      },
+                if (media.isNotEmpty)
+                  DecoratedBox(
+                    decoration:
+                        BoxDecoration(color: Colors.white.withAlpha(128)),
+                    child: const CLText.standard(
+                      'Long press to remove single item. '
+                      '"Select" to remove multiple items',
                     ),
-                  ];
-                },
-              ),
-            ),
-            if (media.isNotEmpty)
-              DecoratedBox(
-                decoration: BoxDecoration(color: Colors.white.withAlpha(128)),
-                child: const CLText.standard(
-                  'Long press to remove single item. '
-                  '"Select" to remove multiple items',
-                ),
-              ),
-          ],
+                  ),
+              ],
+            );
+          },
         );
       },
     );

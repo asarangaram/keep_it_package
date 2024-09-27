@@ -51,46 +51,54 @@ class CollectionEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: GetStoreUpdater(
-        builder: (theStore) {
-          final collections = theStore.getCollections();
-          final collection = theStore.getCollectionById(collectionId);
-          if (collection == null) return Container(); // FIXME
+      child: GetCollection(
+        id: collectionId,
+        errorBuilder: null,
+        loadingBuilder: null,
+        builder: (collection) {
+          return GetCollectionMultiple(
+            errorBuilder: null,
+            loadingBuilder: null,
+            builder: (collections) {
+              if (collection == null) return Container(); // FIXME
 
-          return CLForm(
-            explicitScrollDownOption: !isDialog,
-            descriptors: {
-              'label': CLFormTextFieldDescriptor(
-                title: 'Name',
-                label: 'Collection Name',
-                initialValue: collection.label,
-                onValidate: (value) => validateName(
-                  newLabel: value,
-                  existingLabel: collection.label,
-                  collections: collections.entries,
-                ),
-              ),
-              'description': CLFormTextFieldDescriptor(
-                title: 'About',
-                label: 'Describe about this collection',
-                initialValue: collection.description ?? '',
-                onValidate: (_) => null,
-                maxLines: 4,
-              ),
-            },
-            onSubmit: (result) async {
-              final label = (result['label']! as CLFormTextFieldResult).value;
-              final desc =
-                  (result['description']! as CLFormTextFieldResult).value;
+              return CLForm(
+                explicitScrollDownOption: !isDialog,
+                descriptors: {
+                  'label': CLFormTextFieldDescriptor(
+                    title: 'Name',
+                    label: 'Collection Name',
+                    initialValue: collection.label,
+                    onValidate: (value) => validateName(
+                      newLabel: value,
+                      existingLabel: collection.label,
+                      collections: collections.entries,
+                    ),
+                  ),
+                  'description': CLFormTextFieldDescriptor(
+                    title: 'About',
+                    label: 'Describe about this collection',
+                    initialValue: collection.description ?? '',
+                    onValidate: (_) => null,
+                    maxLines: 4,
+                  ),
+                },
+                onSubmit: (result) async {
+                  final label =
+                      (result['label']! as CLFormTextFieldResult).value;
+                  final desc =
+                      (result['description']! as CLFormTextFieldResult).value;
 
-              final updated = collection.copyWith(
-                label: label,
-                description: desc.isEmpty ? null : desc,
+                  final updated = collection.copyWith(
+                    label: label,
+                    description: desc.isEmpty ? null : desc,
+                  );
+
+                  onSubmit(updated);
+                },
+                onCancel: isDialog ? null : onCancel,
               );
-
-              onSubmit(updated);
             },
-            onCancel: isDialog ? null : onCancel,
           );
         },
       ),

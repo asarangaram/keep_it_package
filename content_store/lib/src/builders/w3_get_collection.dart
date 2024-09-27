@@ -8,10 +8,14 @@ import 'w3_get_from_store.dart';
 class GetCollection extends ConsumerWidget {
   const GetCollection({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     this.id,
     super.key,
   });
   final Widget Function(Collection? collections) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
   final int? id;
 
   @override
@@ -25,6 +29,8 @@ class GetCollection extends ConsumerWidget {
             as StoreQuery<Collection>;
         return GetFromStore<Collection>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (data) {
             final collection = data.where((e) => e.id == id).firstOrNull;
             return builder(collection);
@@ -38,10 +44,14 @@ class GetCollection extends ConsumerWidget {
 class GetCollectionMultiple extends ConsumerWidget {
   const GetCollectionMultiple({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
-    this.excludeEmpty = false,
+    this.excludeEmpty = true,
   });
   final Widget Function(Collections collections) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
   final bool excludeEmpty;
 
   @override
@@ -57,6 +67,8 @@ class GetCollectionMultiple extends ConsumerWidget {
 
         return GetFromStore<Collection>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (list) => builder(Collections(list)),
         );
       },

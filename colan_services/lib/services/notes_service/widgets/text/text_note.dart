@@ -12,7 +12,7 @@ import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
 
-class TextNote extends ConsumerStatefulWidget {
+class TextNote extends ConsumerWidget {
   const TextNote({
     required this.media,
     required this.theStore,
@@ -21,19 +21,58 @@ class TextNote extends ConsumerStatefulWidget {
   });
   final CLMedia media;
   final CLMedia? note;
-  final ContentStore theStore;
+  final StoreUpdater theStore;
 
   @override
-  ConsumerState<TextNote> createState() => _TextNoteState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (note == null) {
+      return TextNote0(
+        media: media,
+        theStore: theStore,
+        note: note,
+        textOriginal: '',
+      );
+    }
+    return GetMediaText(
+      id: note!.id!,
+      errorBuilder: null,
+      loadingBuilder: null,
+      builder: (text) {
+        return TextNote0(
+          media: media,
+          theStore: theStore,
+          note: note,
+          textOriginal: text,
+        );
+      },
+    );
+  }
 }
 
-class _TextNoteState extends ConsumerState<TextNote> {
+class TextNote0 extends ConsumerStatefulWidget {
+  const TextNote0({
+    required this.media,
+    required this.theStore,
+    required this.textOriginal,
+    this.note,
+    super.key,
+  });
+  final CLMedia media;
+  final CLMedia? note;
+  final StoreUpdater theStore;
+  final String textOriginal;
+
+  @override
+  ConsumerState<TextNote0> createState() => _TextNote0State();
+}
+
+class _TextNote0State extends ConsumerState<TextNote0> {
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
   late bool isEditing;
   bool textModified = false;
-  late String textOriginal;
-  late final ContentStore theStore;
+
+  late final StoreUpdater theStore;
   @override
   void initState() {
     super.initState();
@@ -46,11 +85,10 @@ class _TextNoteState extends ConsumerState<TextNote> {
 
   @override
   void didChangeDependencies() {
-    textOriginal = theStore.getText(widget.note);
-    textEditingController.text = textOriginal;
+    textEditingController.text = widget.textOriginal;
     isEditing = widget.note == null;
     textModified = textEditingController.text.trim().isNotEmpty &&
-        textEditingController.text.trim() != textOriginal;
+        textEditingController.text.trim() != widget.textOriginal;
     super.didChangeDependencies();
   }
 
@@ -99,7 +137,6 @@ class _TextNoteState extends ConsumerState<TextNote> {
                       {widget.note!.id!},
                     );
                     textEditingController.clear();
-                    textOriginal = '';
                   }
                 },
               ),
@@ -117,7 +154,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
             note: widget.note,
             onTap: () {
               textModified = textEditingController.text.trim().isNotEmpty &&
-                  textEditingController.text.trim() != textOriginal;
+                  textEditingController.text.trim() != widget.textOriginal;
               setState(() {});
             },
           ),
@@ -129,7 +166,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
                 clIcons.undoNote,
                 onTap: () {
                   if (widget.note != null) {
-                    textEditingController.text = textOriginal;
+                    textEditingController.text = widget.textOriginal;
                   } else {
                     textEditingController.clear();
                   }
@@ -170,10 +207,6 @@ class _TextNoteState extends ConsumerState<TextNote> {
         );
       } else {
         await theStore.replaceMedia(path, media: widget.note!);
-      }
-
-      if (mounted) {
-        textOriginal = theStore.getText(widget.note);
       }
 
       isEditing = false;

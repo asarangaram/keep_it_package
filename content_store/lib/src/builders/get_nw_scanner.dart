@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/network_scanner.dart';
+import '../providers/scanner.dart';
 
 class GetNetworkScanner extends ConsumerWidget {
   const GetNetworkScanner({
@@ -16,6 +17,7 @@ class GetNetworkScanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container();
+    final scanner = ref.watch(networkScannerProvider);
+    return builder(scanner);
   }
 }

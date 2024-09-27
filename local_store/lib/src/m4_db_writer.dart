@@ -68,16 +68,16 @@ class DBWriter {
     // didn't work.
     // check if this media is used as supplement for any other media
 
-    final parents = await DBReader(tx).getMediaByNoteID(media.id!);
+    final parents = await DBReader(tx).getMediaByNoteId(media.id!);
     if (parents?.isNotEmpty ?? false) {
       for (final parent in parents!) {
         await disconnectNote(tx, note: media, media: parent);
       }
     }
     // check if this media has supplement media
-    final children = await DBReader(tx).getNotesByMediaID(media.id!);
-    if (children?.isNotEmpty ?? false) {
-      for (final child in children!) {
+    final children = await DBReader(tx).getNotesByMediaId(media.id!);
+    if (children.isNotEmpty) {
+      for (final child in children) {
         await disconnectNote(tx, note: child, media: media);
       }
     }

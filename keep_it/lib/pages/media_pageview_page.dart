@@ -20,14 +20,15 @@ class MediaPageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStoreUpdater(
-      builder: (theStore) {
-        if (collectionId == null) {
-          final media = theStore.getMediaById(id);
+    if (collectionId == null) {
+      return GetMedia(
+        id: id,
+        errorBuilder: null,
+        loadingBuilder: null,
+        builder: (media) {
           if (media == null) {
             return const EmptyState();
           }
-
           return CLPopScreen.onSwipe(
             child: MediaViewService(
               media: media,
@@ -38,8 +39,14 @@ class MediaPageViewPage extends StatelessWidget {
                       : actionControl,
             ),
           );
-        } else {
-          final items = theStore.getMediaByCollectionId(collectionId);
+        },
+      );
+    } else {
+      return GetMediaByCollectionId(
+        collectionId: collectionId,
+        errorBuilder: null,
+        loadingBuilder: null,
+        builder: (items) {
           if (items.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               CLPopScreen.onPop(context);
@@ -56,8 +63,8 @@ class MediaPageViewPage extends StatelessWidget {
             parentIdentifier: parentIdentifier,
             initialMediaIndex: initialMediaIndex,
           );
-        }
-      },
-    );
+        },
+      );
+    }
   }
 }

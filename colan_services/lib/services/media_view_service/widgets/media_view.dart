@@ -15,7 +15,7 @@ import '../../../internal/widgets/shimmer.dart';
 
 import '../../basic_page_service/dialogs.dart';
 import '../../basic_page_service/navigators.dart';
-import '../../gallery_service/models/m5_gallery_pin.dart';
+
 import '../../incoming_media_service/models/cl_shared_media.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 import '../providers/show_controls.dart';
@@ -105,7 +105,7 @@ class MediaView extends StatelessWidget {
                       OverlayWidgets(
                         alignment: Alignment.bottomRight,
                         child: FutureBuilder(
-                          future: AlbumManager.isPinBroken(media.pin),
+                          future: theStore.albumManager.isPinBroken(media.pin),
                           builder: (context, snapshot) {
                             return Transform.rotate(
                               angle: math.pi / 4,
@@ -153,15 +153,19 @@ class MediaView extends StatelessWidget {
                       OverlayWidgets(
                         alignment: Alignment.bottomRight,
                         sizeFactor: 0.15,
-                        child: theStore.hasMediaFile(media)
-                            ? const MediaIsDownloading(
-                                icon: AnimateIcons.cloud,
-                                color: Colors.greenAccent,
-                              )
-                            : const MediaIsDownloading(
-                                icon: AnimateIcons.download,
-                                color: Colors.blueAccent,
-                              ),
+                        child: GetMediaUri(
+                          id: media.id!,
+                          loadingBuilder: () => const MediaIsDownloading(
+                            icon: AnimateIcons.download,
+                            color: Colors.blueAccent,
+                          ),
+                          builder: (uri) {
+                            return const MediaIsDownloading(
+                              icon: AnimateIcons.cloud,
+                              color: Colors.greenAccent,
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ],
@@ -268,7 +272,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                         right: showControl.showNotes,
                         child: switch (media.type) {
                           CLMediaType.image => ImageViewer.guesture(
-                              uri: mediaUri,
+                              uri: mediaUri!,
                               autoStart: widget.autoStart,
                               autoPlay: widget.autoPlay,
                               onLockPage: widget.onLockPage,
@@ -277,7 +281,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                               loadingBuilder: GreyShimmer.show,
                             ),
                           CLMediaType.video => VideoPlayer(
-                              uri: mediaUri,
+                              uri: mediaUri!,
                               autoStart: widget.autoStart,
                               autoPlay: widget.autoPlay,
                               onLockPage: widget.onLockPage,

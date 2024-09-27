@@ -20,102 +20,113 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
   bool excludeEmpty = true;
 
   @override
-  Widget build(BuildContext context) => GetStoreUpdater(
-        loadingBuilder: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        builder: (theStore) {
-          final collections =
-              theStore.getCollections(excludeEmpty: excludeEmpty);
-
-          final staleMedia = theStore.getStaleMedia();
-          final identifier = 'FolderView Collections'
-              ' excludeEmpty: $excludeEmpty';
-          final galleryGroups = <GalleryGroup<Collection>>[];
-          for (final rows in collections.entries.convertTo2D(3)) {
-            galleryGroups.add(
-              GalleryGroup(
-                rows,
-                label: null,
-                groupIdentifier: 'Collections',
-                chunkIdentifier: 'Collections',
-              ),
-            );
-          }
-          return Column(
-            children: [
-              Expanded(
-                child: CLSimpleGalleryView(
-                  key: ValueKey(identifier),
-                  title: 'Collections',
-                  backButton: null,
-                  columns: 3,
-                  galleryMap: galleryGroups,
-                  emptyState: const EmptyState(),
-                  itemBuilder: (
-                    context,
-                    item, {
-                    required quickMenuScopeKey,
-                  }) =>
-                      CollectionAsFolder(
-                    collection: item,
-                    quickMenuScopeKey: quickMenuScopeKey,
-                  ),
-                  identifier: identifier,
-                  actionMenu: [
-                    CLMenuItem(
-                      title: 'Select File',
-                      icon: clIcons.insertItem,
-                      onTap: () async {
-                        await IncomingMediaMonitor.onPickFiles(
-                          context,
-                          ref,
-                        );
-                        return true;
-                      },
-                    ),
-                    if (ColanPlatformSupport.cameraSupported)
-                      CLMenuItem(
-                        title: 'Open Camera',
-                        icon: clIcons.invokeCamera,
-                        onTap: () async {
-                          await Navigators.openCamera(context);
-                          return true;
-                        },
-                      ),
-                  ],
-                  onRefresh: () async => theStore.onRefresh(),
+  Widget build(BuildContext context) => GetStore(
+        builder: (store) {
+          return GetStaleMedia(
+            errorBuilder: null,
+            loadingBuilder: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            builder: (staleMedia) {
+              return GetCollectionMultiple(
+                excludeEmpty: excludeEmpty,
+                loadingBuilder: () => const Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-              if (staleMedia.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
+                errorBuilder: null,
+                builder: (collections) {
+                  final identifier = 'FolderView Collections'
+                      ' excludeEmpty: $excludeEmpty';
+                  final galleryGroups = <GalleryGroup<Collection>>[];
+                  for (final rows in collections.entries.convertTo2D(3)) {
+                    galleryGroups.add(
+                      GalleryGroup(
+                        rows,
+                        label: null,
+                        groupIdentifier: 'Collections',
+                        chunkIdentifier: 'Collections',
+                      ),
+                    );
+                  }
+                  return Column(
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: CLText.standard(
-                            'You have unclassified media. '
-                            '(${staleMedia.entries.length})',
+                        child: CLSimpleGalleryView(
+                          key: ValueKey(identifier),
+                          title: 'Collections',
+                          backButton: null,
+                          columns: 3,
+                          galleryMap: galleryGroups,
+                          emptyState: const EmptyState(),
+                          itemBuilder: (
+                            context,
+                            item, {
+                            required quickMenuScopeKey,
+                          }) =>
+                              CollectionAsFolder(
+                            collection: item,
+                            quickMenuScopeKey: quickMenuScopeKey,
                           ),
+                          identifier: identifier,
+                          actionMenu: [
+                            CLMenuItem(
+                              title: 'Select File',
+                              icon: clIcons.insertItem,
+                              onTap: () async {
+                                await IncomingMediaMonitor.onPickFiles(
+                                  context,
+                                  ref,
+                                );
+                                return true;
+                              },
+                            ),
+                            if (ColanPlatformSupport.cameraSupported)
+                              CLMenuItem(
+                                title: 'Open Camera',
+                                icon: clIcons.invokeCamera,
+                                onTap: () async {
+                                  await Navigators.openCamera(context);
+                                  return true;
+                                },
+                              ),
+                          ],
+                          onRefresh: () async => store.reloadStore(),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () => MediaWizardService.openWizard(
-                          context,
-                          ref,
-                          CLSharedMedia(
-                            entries: staleMedia.entries,
-                            type: UniversalMediaSource.unclassified,
+                      if (staleMedia.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: CLText.standard(
+                                    'You have unclassified media. '
+                                    '(${staleMedia.entries.length})',
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => MediaWizardService.openWizard(
+                                  context,
+                                  ref,
+                                  CLSharedMedia(
+                                    entries: staleMedia.entries,
+                                    type: UniversalMediaSource.unclassified,
+                                  ),
+                                ),
+                                child: const CLText.small('Show Now'),
+                              ),
+                            ],
                           ),
                         ),
-                        child: const CLText.small('Show Now'),
-                      ),
                     ],
-                  ),
-                ),
-            ],
+                  );
+                },
+              );
+            },
           );
         },
       );

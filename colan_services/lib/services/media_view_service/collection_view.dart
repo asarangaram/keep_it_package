@@ -15,17 +15,14 @@ class CollectionView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     MediaQuery.of(context);
-    return GetStoreUpdater(
-      builder: (theStore) {
-        final mediaList = theStore.getMediaByCollectionId(
-          collection.id,
-          maxCount: 4,
-          isRandom: true,
-        );
-
+    return GetMediaByCollectionId(
+      collectionId: collection.id,
+      errorBuilder: null,
+      loadingBuilder: null,
+      builder: (mediaList) {
         if (mediaList.isEmpty || true) {
           return Badge.count(
-            count: theStore.getMediaCountByCollectionId(collection.id),
+            count: mediaList.entries.length,
             child: CLAspectRationDecorated(
               hasBorder: true,
               borderRadius: const BorderRadius.all(Radius.circular(16)),

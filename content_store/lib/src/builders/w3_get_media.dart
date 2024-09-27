@@ -8,10 +8,14 @@ import 'w3_get_from_store.dart';
 class GetMedia extends ConsumerWidget {
   const GetMedia({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     required this.id,
     super.key,
   });
   final Widget Function(CLMedia? media) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
   final int id;
 
   @override
@@ -23,6 +27,8 @@ class GetMedia extends ConsumerWidget {
 
         return GetFromStore<CLMedia>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (data) {
             final media = data.where((e) => e.id == id).firstOrNull;
 
@@ -37,10 +43,14 @@ class GetMedia extends ConsumerWidget {
 class GetMediaByCollectionId extends ConsumerWidget {
   const GetMediaByCollectionId({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     this.collectionId,
     super.key,
   });
-  final Widget Function(List<CLMedia> items) builder;
+  final Widget Function(CLMedias items) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
   final int? collectionId;
 
   @override
@@ -57,6 +67,8 @@ class GetMediaByCollectionId extends ConsumerWidget {
         ) as StoreQuery<CLMedia>;
         return GetFromStore<CLMedia>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (media) {
             media.sort((a, b) {
               final aDate = a.originalDate ?? a.createdDate;
@@ -67,7 +79,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
               }
               return 0;
             });
-            return builder(media);
+            return builder(CLMedias(media));
           },
         );
       },
@@ -75,13 +87,17 @@ class GetMediaByCollectionId extends ConsumerWidget {
   }
 }
 
-class GetMediaMultiple extends ConsumerWidget {
-  const GetMediaMultiple({
+class GetMediaMultipleByIds extends ConsumerWidget {
+  const GetMediaMultipleByIds({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     required this.idList,
     super.key,
   });
-  final Widget Function(List<CLMedia> items) builder;
+  final Widget Function(CLMedias items) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
   final List<int> idList;
 
   @override
@@ -95,6 +111,8 @@ class GetMediaMultiple extends ConsumerWidget {
 
         return GetFromStore<CLMedia>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (media) {
             media.sort((a, b) {
               final aDate = a.originalDate ?? a.createdDate;
@@ -105,7 +123,7 @@ class GetMediaMultiple extends ConsumerWidget {
               }
               return 0;
             });
-            return builder(media);
+            return builder(CLMedias(media));
           },
         );
       },
@@ -116,9 +134,13 @@ class GetMediaMultiple extends ConsumerWidget {
 class GetPinnedMedia extends ConsumerWidget {
   const GetPinnedMedia({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLMedia> items) builder;
+  final Widget Function(CLMedias items) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,6 +151,8 @@ class GetPinnedMedia extends ConsumerWidget {
         final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
         return GetFromStore<CLMedia>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (media) {
             media.sort((a, b) {
               final aDate = a.originalDate ?? a.createdDate;
@@ -139,7 +163,7 @@ class GetPinnedMedia extends ConsumerWidget {
               }
               return 0;
             });
-            return builder(media);
+            return builder(CLMedias(media));
           },
         );
       },
@@ -150,9 +174,13 @@ class GetPinnedMedia extends ConsumerWidget {
 class GetStaleMedia extends ConsumerWidget {
   const GetStaleMedia({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLMedia> items) builder;
+  final Widget Function(CLMedias items) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -163,6 +191,8 @@ class GetStaleMedia extends ConsumerWidget {
         final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
         return GetFromStore<CLMedia>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (media) {
             media.sort((a, b) {
               final aDate = a.originalDate ?? a.createdDate;
@@ -173,7 +203,7 @@ class GetStaleMedia extends ConsumerWidget {
               }
               return 0;
             });
-            return builder(media);
+            return builder(CLMedias(media));
           },
         );
       },
@@ -184,9 +214,13 @@ class GetStaleMedia extends ConsumerWidget {
 class GetDeletedMedia extends ConsumerWidget {
   const GetDeletedMedia({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLMedia> items) builder;
+  final Widget Function(CLMedias items) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -197,6 +231,8 @@ class GetDeletedMedia extends ConsumerWidget {
         final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
         return GetFromStore<CLMedia>(
           query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (media) {
             media.sort((a, b) {
               final aDate = a.originalDate ?? a.createdDate;
@@ -207,7 +243,7 @@ class GetDeletedMedia extends ConsumerWidget {
               }
               return 0;
             });
-            return builder(media);
+            return builder(CLMedias(media));
           },
         );
       },

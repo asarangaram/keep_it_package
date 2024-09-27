@@ -23,7 +23,7 @@ class AudioRecorder extends ConsumerStatefulWidget {
     this.onEditCancel,
   });
   final CLMedia media;
-  final ContentStore theStore;
+  final StoreUpdater theStore;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
@@ -36,7 +36,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
   late final RecorderController recorderController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
-  late final ContentStore theStore;
+  late final StoreUpdater theStore;
   bool isRecording = false;
   bool isRecordingCompleted = false;
 
@@ -177,7 +177,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
           setState(() {});
         }
       } else {
-        final path = await theStore.createTempFile(ext: 'aac');
+        final path = theStore.createTempFile(ext: 'aac');
         await recorderController.record(path: path); // Path is optional
       }
     } catch (e) {

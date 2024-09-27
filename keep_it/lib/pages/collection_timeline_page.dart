@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/internal/extensions/list.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -20,34 +19,24 @@ class CollectionTimeLinePage extends ConsumerWidget {
   final ActionControl actionControl;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => GetStoreUpdater(
-        builder: (theStore) {
-          final collection = theStore.getCollectionById(collectionId);
-          final items = theStore.getMediaByCollectionId(collectionId);
-          return TimeLineView(
-            label: collection?.label ?? 'All Media',
-            items: items.galleryMap,
-            collection: collection,
-            actionControl: actionControl,
-            parentIdentifier:
-                'Gallery View Media CollectionId: ${collection?.id}',
-            onTapMedia: (
-              CLMedia media, {
-              required String parentIdentifier,
-            }) async {
-              if (theStore.hasMediaFile(media)) {
-                await Navigators.openMedia(
-                  context,
-                  media.id!,
-                  collectionId: collectionId,
-                  parentIdentifier: parentIdentifier,
-                  actionControl: ActionControl.full(),
-                );
-
-                return true;
-              }
-
-              return false;
+  Widget build(BuildContext context, WidgetRef ref) => GetCollection(
+        id: collectionId,
+        errorBuilder: null,
+        loadingBuilder: null,
+        builder: (collection) {
+          return GetMediaByCollectionId(
+            collectionId: collectionId,
+            errorBuilder: null,
+            loadingBuilder: null,
+            builder: (items) {
+              return TimeLineView(
+                label: collection?.label ?? 'All Media',
+                items: items.galleryMap,
+                collection: collection,
+                actionControl: actionControl,
+                parentIdentifier:
+                    'Gallery View Media CollectionId: ${collection?.id}',
+              );
             },
           );
         },
@@ -59,7 +48,6 @@ class TimeLineView extends ConsumerWidget {
     required this.label,
     required this.parentIdentifier,
     required this.items,
-    required this.onTapMedia,
     required this.actionControl,
     required this.collection,
     super.key,
@@ -68,10 +56,6 @@ class TimeLineView extends ConsumerWidget {
   final String label;
   final String parentIdentifier;
   final List<GalleryGroup<CLMedia>> items;
-  final Future<bool?> Function(
-    CLMedia media, {
-    required String parentIdentifier,
-  }) onTapMedia;
 
   final ActionControl actionControl;
   final Collection? collection;
@@ -97,12 +81,28 @@ class TimeLineView extends ConsumerWidget {
           galleryMap: items,
           emptyState: const EmptyState(),
           itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-              MediaAsFile(
-            media: item,
-            parentIdentifier: parentIdentifier,
-            onTap: () => onTapMedia(item, parentIdentifier: parentIdentifier),
-            quickMenuScopeKey: quickMenuScopeKey,
-            actionControl: actionControl,
+              GetMediaUri(
+            id: item.id!,
+            builder: (uri) {
+              return MediaAsFile(
+                media: item,
+                parentIdentifier: parentIdentifier,
+                onTap: uri == null
+                    ? null
+                    : () async {
+                        await Navigators.openMedia(
+                          context,
+                          item.id!,
+                          collectionId: item.collectionId,
+                          parentIdentifier: parentIdentifier,
+                          actionControl: ActionControl.full(),
+                        );
+                        return true;
+                      },
+                quickMenuScopeKey: quickMenuScopeKey,
+                actionControl: actionControl,
+              );
+            },
           ),
           actionMenu: [
             CLMenuItem(
@@ -173,7 +173,7 @@ class TimeLineView extends ConsumerWidget {
                   title: 'Pin',
                   icon: clIcons.pinAll,
                   onTap: () => theStore.togglePinMultipleById(
-                    items.map((e) => e.id).nonNullableList.toSet(),
+                    items.map((e) => e.id).toSet(),
                   ),
                 ),
             ];

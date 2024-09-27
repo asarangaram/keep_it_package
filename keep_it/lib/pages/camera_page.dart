@@ -12,41 +12,47 @@ class CameraPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStoreUpdater(
       builder: (theStore) {
-        final collection = theStore.getCollectionById(collectionId);
-        return CLCameraService(
-          parentIdentifier: 'CLCameraService',
-          onCancel: () => CLPopScreen.onPop(context),
-          onError: (String message, {required dynamic error}) async {
-            await ref
-                .read(
-                  notificationMessageProvider.notifier,
-                )
-                .push(
-                  '$message [$error]',
+        return GetCollection(
+          id: collectionId,
+          errorBuilder: null,
+          loadingBuilder: null,
+          builder: (collection) {
+            return CLCameraService(
+              parentIdentifier: 'CLCameraService',
+              onCancel: () => CLPopScreen.onPop(context),
+              onError: (String message, {required dynamic error}) async {
+                await ref
+                    .read(
+                      notificationMessageProvider.notifier,
+                    )
+                    .push(
+                      '$message [$error]',
+                    );
+              },
+              onNewMedia: (path, {required isVideo}) async {
+                await theStore.newMedia(
+                  path,
+                  isVideo ? CLMediaType.video : CLMediaType.image,
+                  collectionId: collection?.id,
                 );
-          },
-          onNewMedia: (path, {required isVideo}) async {
-            await theStore.newMedia(
-              path,
-              isVideo ? CLMediaType.video : CLMediaType.image,
-              collectionId: collection?.id,
-            );
-            return null;
-          },
-          onDone: (mediaList) async {
-            await MediaWizardService.openWizard(
-              context,
-              ref,
-              CLSharedMedia(
-                entries: mediaList,
-                type: UniversalMediaSource.captured,
-                collection: collection,
-              ),
-            );
+                return null;
+              },
+              onDone: (mediaList) async {
+                await MediaWizardService.openWizard(
+                  context,
+                  ref,
+                  CLSharedMedia(
+                    entries: mediaList,
+                    type: UniversalMediaSource.captured,
+                    collection: collection,
+                  ),
+                );
 
-            if (context.mounted) {
-              await CLPopScreen.onPop(context);
-            }
+                if (context.mounted) {
+                  await CLPopScreen.onPop(context);
+                }
+              },
+            );
           },
         );
       },

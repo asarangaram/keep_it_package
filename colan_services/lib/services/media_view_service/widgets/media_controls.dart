@@ -181,7 +181,7 @@ class ControllerMenu extends StatelessWidget {
                   id: media.id!,
                   builder: (uri) {
                     return VideoDefaultControls(
-                      uri: uri,
+                      uri: uri!,
                       errorBuilder: (_, __) => Container(),
                       loadingBuilder: Container.new,
                     );

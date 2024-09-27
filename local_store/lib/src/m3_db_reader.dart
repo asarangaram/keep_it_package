@@ -70,6 +70,7 @@ class DBReader extends StoreReader {
     );
   }
 
+  @override
   Future<List<CLMedia>> getMediasByIDList(
     List<int> idList,
   ) {
@@ -79,6 +80,7 @@ class DBReader extends StoreReader {
     );
   }
 
+  @override
   Future<List<CLMedia>> getMediaByCollectionId(
     int collectionId,
   ) async {
@@ -88,7 +90,8 @@ class DBReader extends StoreReader {
     );
   }
 
-  Future<List<CLMedia>?> getNotesByMediaID(
+  @override
+  Future<List<CLMedia>> getNotesByMediaId(
     int mediaId,
   ) {
     return readMultiple(
@@ -97,7 +100,7 @@ class DBReader extends StoreReader {
     );
   }
 
-  Future<List<CLMedia>?> getMediaByNoteID(
+  Future<List<CLMedia>?> getMediaByNoteId(
     int noteId,
   ) async {
     return readMultiple(

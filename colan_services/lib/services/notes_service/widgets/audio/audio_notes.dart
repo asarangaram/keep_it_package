@@ -45,7 +45,7 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                           id: note.id!,
                           builder: (uri) {
                             return AudioChip(
-                              uri.path, // FIXME won't work for http(s)
+                              uri!.path, // FIXME won't work for http(s)
                               label: note.name,
                               editMode: editMode && widget.notes.isNotEmpty,
                               onEditMode: () {
