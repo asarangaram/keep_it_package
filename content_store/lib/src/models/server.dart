@@ -1,21 +1,63 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:content_store/src/models/cl_server.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
-abstract class Server {
-  CLServer? identity;
-  bool get isOffline;
-  bool get workingOffline;
-  bool get isSyncing;
+@immutable
+class Server {
+  final CLServer? identity;
+  final bool isOffline;
+  final bool workingOffline;
+  final bool isSyncing;
+  final bool canSync;
+  final bool isRegistered;
+  const Server({
+    this.identity,
+    this.isOffline = true,
+    this.workingOffline = true,
+    this.isSyncing = false,
+  })  : canSync = !workingOffline && !isOffline,
+        isRegistered = identity != null;
 
-  bool get canSync;
+  Server copyWith({
+    ValueGetter<CLServer?>? identity,
+    bool? isOffline,
+    bool? workingOffline,
+    bool? isSyncing,
+  }) {
+    return Server(
+      identity: identity != null ? identity.call() : this.identity,
+      isOffline: isOffline ?? this.isOffline,
+      workingOffline: workingOffline ?? this.workingOffline,
+      isSyncing: isSyncing ?? this.isSyncing,
+    );
+  }
 
-  Future<bool> goOnline();
-  Future<bool> workOffline();
+  @override
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'Server(identity: $identity, isOffline: $isOffline, workingOffline: $workingOffline, isSyncing: $isSyncing, canSync: $canSync, isRegistered: $isRegistered)';
+  }
 
-  Future<bool?> sync();
-  Future<bool?> checkStatus();
-  Future<bool?> deregister();
+  @override
+  bool operator ==(covariant Server other) {
+    if (identical(this, other)) return true;
 
-  Future<bool?> register(CLServer candidate);
+    return other.identity == identity &&
+        other.isOffline == isOffline &&
+        other.workingOffline == workingOffline &&
+        other.isSyncing == isSyncing &&
+        other.canSync == canSync &&
+        other.isRegistered == isRegistered;
+  }
 
-  bool get isRegistered;
+  @override
+  int get hashCode {
+    return identity.hashCode ^
+        isOffline.hashCode ^
+        workingOffline.hashCode ^
+        isSyncing.hashCode ^
+        canSync.hashCode ^
+        isRegistered.hashCode;
+  }
 }

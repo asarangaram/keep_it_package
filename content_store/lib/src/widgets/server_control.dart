@@ -1,13 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import 'controls.dart';
-import 'downloader_progressbar.dart';
 import '../builders/get_downloader.dart';
 import '../builders/get_server.dart';
+import '../providers/server.dart';
+import 'controls.dart';
+import 'downloader_progressbar.dart';
 
 class ServerControl extends ConsumerWidget {
   const ServerControl({super.key});
@@ -39,21 +39,27 @@ class ServerControl extends ConsumerWidget {
                         if (!server.isOffline)
                           if (!server.workingOffline)
                             SpeedDialChild(
-                              onTap: server.workOffline,
+                              onTap: () {
+                                ref.read(serverProvider.notifier).workOffline();
+                              },
                               labelWidget: const SpeedDialChildWrapper(
                                 child: WorkOffline(),
                               ),
                             )
                           else
                             SpeedDialChild(
-                              onTap: server.goOnline,
+                              onTap: () {
+                                ref.read(serverProvider.notifier).goOnline();
+                              },
                               labelWidget: const SpeedDialChildWrapper(
                                 child: GoOnline(),
                               ),
                             ),
-                        if (!server.isOffline && !server.workingOffline)
+                        if (server.canSync)
                           SpeedDialChild(
-                            onTap: server.sync,
+                            onTap: () {
+                              ref.read(serverProvider.notifier).sync();
+                            },
                             labelWidget: const SyncServer(),
                           ),
                       ],

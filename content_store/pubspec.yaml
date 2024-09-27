@@ -14,12 +14,14 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.18.0
+  connectivity_plus: ^6.0.5
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
   flutter_speed_dial: ^7.0.0
   http: ^1.2.2
   meta: ^1.12.0
+  nsd: ^3.0.0
   pie_chart: ^5.4.0
   store:
     path: ../store

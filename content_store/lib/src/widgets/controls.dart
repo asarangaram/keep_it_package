@@ -3,6 +3,7 @@ import 'package:content_store/src/builders/get_server.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/server.dart';
 import 'labeled_icon_horiz.dart';
 
 class WorkOffline extends ConsumerWidget {
@@ -122,11 +123,17 @@ class OfflinePreference extends ConsumerWidget {
         }
         if (server.workingOffline) {
           return ConnectServer(
-            onTap: server.goOnline,
+            onTap: () async {
+              ref.read(serverProvider.notifier).goOnline();
+              return true;
+            },
           );
         }
         return DisconnectServer(
-          onTap: server.workOffline,
+          onTap: () async {
+            ref.read(serverProvider.notifier).workOffline();
+            return true;
+          },
         );
       },
     );

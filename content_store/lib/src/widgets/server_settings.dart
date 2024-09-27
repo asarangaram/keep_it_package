@@ -3,9 +3,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'controls.dart';
 import '../builders/get_nw_scanner.dart';
 import '../builders/get_server.dart';
+import '../providers/server.dart';
+import 'controls.dart';
 import 'registered_server.dart';
 
 class ServerSettings extends ConsumerWidget {
@@ -35,13 +36,20 @@ class ServerSettings extends ConsumerWidget {
                         const OfflinePreference(),
                         if (server.canSync)
                           SyncServer1(
-                            onTap: server.sync,
+                            onTap: () async {
+                              ref.read(serverProvider.notifier).sync();
+                              return true;
+                            },
                           )
                         else
                           Container(),
                         if (server.isRegistered)
                           DeregisterServer(
-                            onTap: server.deregister,
+                            onTap: () async {
+                              // Confirm before deregisterring
+                              ref.read(serverProvider.notifier).sync();
+                              return true;
+                            },
                           )
                         else
                           Container(),
@@ -140,7 +148,9 @@ class ServerSettings extends ConsumerWidget {
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          server.register(candidate);
+                                          ref
+                                              .read(serverProvider.notifier)
+                                              .register(candidate);
                                         },
                                     )
                                   else

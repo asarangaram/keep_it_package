@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../builders/get_server.dart';
+import '../providers/server.dart';
 
 class RegisterredServerView extends ConsumerWidget {
   const RegisterredServerView({super.key});
@@ -32,7 +33,9 @@ class RegisterredServerView extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                   recognizer: TapGestureRecognizer()
-                    ..onTap = server.checkStatus,
+                    ..onTap = () async {
+                      ref.read(serverProvider.notifier).goOnline();
+                    },
                 ),
               ],
             ),
