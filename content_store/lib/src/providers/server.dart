@@ -99,11 +99,17 @@ class ServerNotifier extends StateNotifier<Server> {
   }
 
   void checkStatus() {
+    if (state.isRegistered) {
+      state.identity!.hasConnection().then((isOnline) {
+        currState = state.copyWith(isOffline: !isOnline);
+      });
+    }
     return;
   }
 
   Future<void> _sync() async {
     // await state.sync();
+    await Future<void>.delayed(const Duration(seconds: 10));
   }
 
   @override
@@ -123,7 +129,7 @@ class ServerNotifier extends StateNotifier<Server> {
       level: level,
       error: error,
       stackTrace: stackTrace,
-      name: 'Online Service: Media Downloader',
+      name: 'Online Service | Server',
     );
   }
 }
