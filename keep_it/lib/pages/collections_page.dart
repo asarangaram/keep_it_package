@@ -20,7 +20,7 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
   bool excludeEmpty = true;
 
   @override
-  Widget build(BuildContext context) => GetStore(
+  Widget build(BuildContext context) => GetStoreUpdater(
         loadingBuilder: () => const Center(
           child: CircularProgressIndicator(),
         ),

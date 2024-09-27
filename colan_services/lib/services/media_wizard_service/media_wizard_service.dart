@@ -82,7 +82,7 @@ class MediaWizardService extends ConsumerWidget {
     }
 
     return CLPopScreen.onSwipe(
-      child: GetStore(
+      child: GetStoreUpdater(
         builder: (theStore) {
           return SelectAndKeepMedia(
             media: media,
@@ -155,7 +155,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   Widget build(BuildContext context) {
     final currMedia =
         (isSelectionMode ? selectedMedia.entries : widget.media.entries);
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return WizardLayout(
           title: widget.type.label,

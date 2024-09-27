@@ -15,7 +15,7 @@ class CollectionView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     MediaQuery.of(context);
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         final mediaList = theStore.getMediaByCollectionId(
           collection.id,

@@ -12,7 +12,7 @@ class ViewNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return InputDecorator(
           decoration: NotesTextFieldDecoration.inputDecoration(

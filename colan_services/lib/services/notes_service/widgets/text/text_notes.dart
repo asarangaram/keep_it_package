@@ -15,7 +15,7 @@ class TextNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return TextNote(
           media: media,

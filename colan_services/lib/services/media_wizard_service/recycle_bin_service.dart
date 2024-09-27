@@ -86,7 +86,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
   Widget build(BuildContext context) {
     final currMedia =
         (isSelectionMode ? selectedMedia.entries : widget.media.entries);
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return WizardLayout(
           title: widget.type.label,

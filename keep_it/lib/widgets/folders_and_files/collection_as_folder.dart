@@ -19,7 +19,7 @@ class CollectionAsFolder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,

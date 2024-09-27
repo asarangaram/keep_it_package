@@ -20,7 +20,7 @@ class MediaPageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         if (collectionId == null) {
           final media = theStore.getMediaById(id);

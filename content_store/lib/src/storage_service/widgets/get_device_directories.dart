@@ -1,7 +1,7 @@
-import 'package:colan_services/services/storage_service/models/file_system/models/cl_directories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/file_system/models/cl_directories.dart';
 import '../providers/directories.dart';
 
 class GetDeviceDirectories extends ConsumerWidget {

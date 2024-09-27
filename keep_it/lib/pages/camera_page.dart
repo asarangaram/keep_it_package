@@ -10,7 +10,7 @@ class CameraPage extends ConsumerWidget {
   final int? collectionId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         final collection = theStore.getCollectionById(collectionId);
         return CLCameraService(

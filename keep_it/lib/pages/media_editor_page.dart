@@ -22,7 +22,7 @@ class MediaEditorPage extends ConsumerWidget {
       return BasicPageService.message(message: 'No Media Provided');
     }
 
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         final media = theStore.getMediaById(mediaId);
 

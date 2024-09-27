@@ -27,7 +27,7 @@ class MediaAsFile extends ConsumerWidget {
   final ActionControl actionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return WrapStandardQuickMenu(
           quickMenuScopeKey: quickMenuScopeKey,

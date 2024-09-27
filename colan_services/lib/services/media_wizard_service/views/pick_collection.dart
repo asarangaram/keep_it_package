@@ -16,7 +16,7 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         final collections = theStore.getCollections(excludeEmpty: false);
         return CLWizardFormField(

@@ -20,7 +20,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
   final ActionControl actionControl;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => GetStore(
+  Widget build(BuildContext context, WidgetRef ref) => GetStoreUpdater(
         builder: (theStore) {
           final collection = theStore.getCollectionById(collectionId);
           final items = theStore.getMediaByCollectionId(collectionId);
@@ -78,7 +78,7 @@ class TimeLineView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return CLSimpleGalleryView(
           key: ValueKey(label),

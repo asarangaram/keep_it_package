@@ -42,7 +42,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       return const SizedBox.expand();
     }
 
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return CLGalleryCore<CLMedia>(
           key: ValueKey(type.identifier),

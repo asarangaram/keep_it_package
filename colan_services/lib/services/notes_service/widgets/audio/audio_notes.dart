@@ -31,7 +31,7 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
 
   @override
   Widget build(BuildContext context) {
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         final audioNotes = widget.notes.isEmpty
             ? const SizedBox.shrink()

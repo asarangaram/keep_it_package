@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/store.dart';
 
-class GetStore extends ConsumerWidget {
-  const GetStore({
+class GetStoreUpdater extends ConsumerWidget {
+  const GetStoreUpdater({
     required this.builder,
     super.key,
     this.errorBuilder,

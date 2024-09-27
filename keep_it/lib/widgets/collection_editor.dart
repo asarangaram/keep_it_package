@@ -51,7 +51,7 @@ class CollectionEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: GetStore(
+      child: GetStoreUpdater(
         builder: (theStore) {
           final collections = theStore.getCollections();
           final collection = theStore.getCollectionById(collectionId);

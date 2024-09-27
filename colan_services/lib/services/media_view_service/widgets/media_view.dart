@@ -84,7 +84,7 @@ class MediaView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isPreview) {
-      return GetStore(
+      return GetStoreUpdater(
         builder: (theStore) {
           return GetPreviewUri(
             id: media.id!,
@@ -246,7 +246,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
     final media = widget.media;
     final ac = widget.actionControl;
     final showControl = ref.watch(showControlsProvider);
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         return GetMediaUri(
           id: media.id!,

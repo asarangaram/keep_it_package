@@ -15,17 +15,24 @@ dependencies:
     path: ../colan_widgets
   collection: ^1.18.0
   connectivity_plus: ^6.0.5
+  exif: ^3.3.0
+  ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
   flutter_speed_dial: ^7.0.0
   http: ^1.2.2
+  local_store:
+    path: ../local_store
   meta: ^1.12.0
   nsd: ^3.0.0
+  path: ^1.9.0
+  path_provider: ^2.1.4
   pie_chart: ^5.4.0
   shared_preferences: ^2.3.2
   store:
     path: ../store
+  watcher: ^1.1.0
 
 
 dev_dependencies:

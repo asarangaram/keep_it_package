@@ -15,7 +15,7 @@ class PinnedMediaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const label = 'pinnedMedia';
     const parentIdentifier = 'PinnedMedia';
-    return GetStore(
+    return GetStoreUpdater(
       builder: (theStore) {
         final media = theStore.getPinnedMedia();
 
