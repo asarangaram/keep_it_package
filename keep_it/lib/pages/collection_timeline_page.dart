@@ -1,7 +1,6 @@
-// ignore_for_file: unused_element
-
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -78,8 +77,6 @@ class TimeLineView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final galleryGroups = ref.watch(groupedItemsProvider(items));
-
     return GetStore(
       builder: (theStore) {
         return CLSimpleGalleryView(
@@ -96,7 +93,7 @@ class TimeLineView extends ConsumerWidget {
                 ),
           identifier: parentIdentifier,
           columns: 4,
-          galleryMap: galleryGroups,
+          galleryMap: theStore.galleryMap(items),
           emptyState: const EmptyState(),
           itemBuilder: (context, item, {required quickMenuScopeKey}) =>
               MediaAsFile(
@@ -132,8 +129,7 @@ class TimeLineView extends ConsumerWidget {
                 },
               ),
           ],
-          onRefresh: () async =>
-              ref.read(storeCacheProvider.notifier).onRefresh(),
+          onRefresh: () async => theStore.onRefresh(),
           selectionActions: (context, items) {
             return [
               CLMenuItem(
@@ -147,10 +143,7 @@ class TimeLineView extends ConsumerWidget {
                       false;
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
-                    return ref
-                        .read(storeCacheProvider.notifier)
-                        .deleteMediaMultiple(
-                      theStore,
+                    return theStore.deleteMediaMultiple(
                       {...items.map((e) => e.id!)},
                     );
                   }
@@ -178,9 +171,7 @@ class TimeLineView extends ConsumerWidget {
                 CLMenuItem(
                   title: 'Pin',
                   icon: clIcons.pinAll,
-                  onTap: () => ref
-                      .read(storeCacheProvider.notifier)
-                      .togglePinMultiple(theStore, items),
+                  onTap: () => theStore.togglePinMultiple(items),
                 ),
             ];
           },

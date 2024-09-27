@@ -1,14 +1,13 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
 import '../../../basic_page_service/dialogs.dart';
-import '../../../store_service/models/store_model.dart';
-import '../../../store_service/providers/store_cache.dart';
 import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
@@ -22,7 +21,7 @@ class TextNote extends ConsumerStatefulWidget {
   });
   final CLMedia media;
   final CLMedia? note;
-  final StoreCache theStore;
+  final ContentStore theStore;
 
   @override
   ConsumerState<TextNote> createState() => _TextNoteState();
@@ -34,7 +33,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
   late bool isEditing;
   bool textModified = false;
   late String textOriginal;
-  late final StoreCache theStore;
+  late final ContentStore theStore;
   @override
   void initState() {
     super.initState();
@@ -96,10 +95,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
                       false;
                   if (!confirmed) return;
                   if (context.mounted) {
-                    await ref
-                        .read(storeCacheProvider.notifier)
-                        .permanentlyDeleteMediaMultiple(
-                      theStore,
+                    await theStore.permanentlyDeleteMediaMultiple(
                       {widget.note!.id!},
                     );
                     textEditingController.clear();
@@ -165,14 +161,13 @@ class _TextNoteState extends ConsumerState<TextNote> {
       final String path;
       path = await theStore.createTempFile(ext: 'txt');
       await File(path).writeAsString(textEditingController.text.trim());
-      await ref.read(storeCacheProvider.notifier).upsertMedia(
-            theStore,
-            path,
-            CLMediaType.text,
-            parents: [widget.media],
-            id: widget.note?.id,
-            isAux: true,
-          );
+      await theStore.upsertMedia(
+        path,
+        CLMediaType.text,
+        parents: [widget.media],
+        id: widget.note?.id,
+        isAux: true,
+      );
 
       if (mounted) {
         textOriginal = theStore.getText(widget.note);

@@ -1,13 +1,13 @@
 import 'dart:math' as math;
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:media_viewers/media_viewers.dart';
 import 'package:store/store.dart';
 
-import '../../store_service/widgets/builders.dart';
 import '../providers/show_controls.dart';
 
 class MediaControls extends ConsumerWidget {

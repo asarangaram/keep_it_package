@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:animated_icon/animated_icon.dart';
 import 'package:colan_services/internal/widgets/broken_image.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,12 +14,10 @@ import 'package:store/store.dart';
 import '../../../internal/widgets/shimmer.dart';
 
 import '../../basic_page_service/dialogs.dart';
+import '../../basic_page_service/navigators.dart';
 import '../../gallery_service/models/m5_gallery_pin.dart';
 import '../../incoming_media_service/models/cl_shared_media.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
-import '../../store_service/models/navigators.dart';
-import '../../store_service/providers/store_cache.dart';
-import '../../store_service/widgets/builders.dart';
 import '../providers/show_controls.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
@@ -327,9 +326,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                           false;
                       if (!confirmed) return confirmed;
                       if (context.mounted) {
-                        return ref
-                            .read(storeCacheProvider.notifier)
-                            .deleteMediaById(theStore, media.id!);
+                        return theStore.deleteMediaById(media.id!);
                       }
                       return false;
                     }),
@@ -355,9 +352,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                     ),
                     onPin: ac.onPin(
                       () async {
-                        final res = await ref
-                            .read(storeCacheProvider.notifier)
-                            .togglePin(theStore, media);
+                        final res = await theStore.togglePin(media);
                         if (res) {
                           setState(() {});
                         }

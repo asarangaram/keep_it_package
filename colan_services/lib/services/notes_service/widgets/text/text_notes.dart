@@ -1,7 +1,7 @@
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/widgets/builders.dart';
 import 'text_note.dart';
 
 class TextNotes extends StatelessWidget {

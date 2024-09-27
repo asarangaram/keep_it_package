@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -28,9 +29,7 @@ class CollectionAsFolder extends ConsumerWidget {
               collection: collection,
             );
             if (updated != null && context.mounted) {
-              await ref
-                  .read(storeCacheProvider.notifier)
-                  .upsertCollection(theStore, updated);
+              await theStore.upsertCollection(updated);
             }
 
             return true;
@@ -43,9 +42,7 @@ class CollectionAsFolder extends ConsumerWidget {
                 false;
             if (!confirmed) return confirmed;
             if (context.mounted) {
-              return ref
-                  .read(storeCacheProvider.notifier)
-                  .deleteCollectionById(theStore, collection.id!);
+              return theStore.deleteCollectionById(collection.id!);
             }
             return null;
           },

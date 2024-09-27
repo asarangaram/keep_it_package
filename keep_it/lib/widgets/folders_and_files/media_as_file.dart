@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_editors/media_editors.dart';
@@ -39,9 +40,7 @@ class MediaAsFile extends ConsumerWidget {
             ),
           ),
           onDelete: () async {
-            return ref
-                .read(storeCacheProvider.notifier)
-                .deleteMediaById(theStore, media.id!);
+            return theStore.deleteMediaById(media.id!);
           },
           onShare: () => theStore.shareMedia(context, [media]),
           onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)

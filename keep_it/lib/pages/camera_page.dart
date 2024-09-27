@@ -1,7 +1,9 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 class CameraPage extends ConsumerWidget {
   const CameraPage({super.key, this.collectionId});
@@ -24,12 +26,11 @@ class CameraPage extends ConsumerWidget {
                 );
           },
           onNewMedia: (path, {required isVideo}) async {
-            await ref.read(storeCacheProvider.notifier).newImageOrVideo(
-                  theStore,
-                  path,
-                  isVideo: isVideo,
-                  collection: collection,
-                );
+            await theStore.upsertMedia(
+              path,
+              isVideo ? CLMediaType.video : CLMediaType.image,
+              collectionId: collection?.id,
+            );
             return null;
           },
           onDone: (mediaList) async {

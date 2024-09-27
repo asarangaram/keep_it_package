@@ -1,11 +1,11 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../media_view_service/widgets/media_view.dart';
 
-import '../store_service/widgets/builders.dart';
 import 'widgets/cl_media_collage.dart';
 
 class CollectionView extends ConsumerWidget {

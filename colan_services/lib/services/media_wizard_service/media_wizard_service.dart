@@ -1,4 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,9 +8,7 @@ import 'package:store/store.dart';
 import '../basic_page_service/dialogs.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
 import '../notification_services/provider/notify.dart';
-import '../store_service/providers/group_view.dart';
-import '../store_service/providers/store_cache.dart';
-import '../store_service/widgets/builders.dart';
+
 import 'providers/universal_media.dart';
 import 'recycle_bin_service.dart';
 import 'views/create_collection_wizard.dart';
@@ -81,12 +80,16 @@ class MediaWizardService extends ConsumerWidget {
       });
       return const SizedBox.expand();
     }
-    final galleryMap = ref.watch(singleGroupItemProvider(media.entries));
+
     return CLPopScreen.onSwipe(
-      child: SelectAndKeepMedia(
-        media: media,
-        type: type,
-        galleryMap: galleryMap,
+      child: GetStore(
+        builder: (theStore) {
+          return SelectAndKeepMedia(
+            media: media,
+            type: type,
+            galleryMap: theStore.galleryMap(media.entries),
+          );
+        },
       ),
     );
   }
@@ -176,10 +179,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                   /// the universalMediaProvider
                   /// We only need to update the collectionId
                   : StreamBuilder<Progress>(
-                      stream: ref
-                          .read(storeCacheProvider.notifier)
-                          .moveToCollectionStream(
-                        theStore,
+                      stream: theStore.moveToCollectionStream(
                         media: currMedia,
                         collection: targetCollection!,
                         onDone: ({
@@ -230,10 +230,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                           false;
                                   if (!confirmed) return confirmed;
                                   if (context.mounted) {
-                                    final res = ref
-                                        .read(storeCacheProvider.notifier)
-                                        .deleteMediaMultiple(
-                                      theStore,
+                                    final res = theStore.deleteMediaMultiple(
                                       {...currMedia.map((e) => e.id!)},
                                     );
 

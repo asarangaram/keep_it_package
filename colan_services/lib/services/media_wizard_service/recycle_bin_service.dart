@@ -1,13 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../basic_page_service/dialogs.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
-import '../store_service/providers/group_view.dart';
-import '../store_service/providers/store_cache.dart';
-import '../store_service/widgets/builders.dart';
+
 import 'providers/universal_media.dart';
 import 'views/wizard_preview.dart';
 
@@ -27,12 +26,11 @@ class RecycleBinService extends ConsumerWidget {
       });
       return const SizedBox.expand();
     }
-    final galleryMap = ref.watch(singleGroupItemProvider(media.entries));
+
     return CLPopScreen.onSwipe(
       child: SelectAndRestoreMedia(
         media: media,
         type: type,
-        galleryMap: galleryMap,
       ),
     );
   }
@@ -42,13 +40,10 @@ class SelectAndRestoreMedia extends ConsumerStatefulWidget {
   const SelectAndRestoreMedia({
     required this.media,
     required this.type,
-    required this.galleryMap,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
-
-  final List<GalleryGroup<CLMedia>> galleryMap;
 
   @override
   ConsumerState<SelectAndRestoreMedia> createState() =>
@@ -119,12 +114,9 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                               false;
                       if (!confirmed) return confirmed;
                       if (context.mounted) {
-                        final res = await ref
-                            .read(storeCacheProvider.notifier)
-                            .restoreMediaMultiple(
-                              theStore,
-                              currMedia.map((e) => e.id!).toSet(),
-                            );
+                        final res = await theStore.restoreMediaMultiple(
+                          currMedia.map((e) => e.id!).toSet(),
+                        );
 
                         if (res) {
                           await ref
@@ -158,12 +150,10 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                                 false;
                             if (!confirmed) return confirmed;
                             if (context.mounted) {
-                              final res = await ref
-                                  .read(storeCacheProvider.notifier)
-                                  .permanentlyDeleteMediaMultiple(
-                                    theStore,
-                                    currMedia.map((e) => e.id!).toSet(),
-                                  );
+                              final res =
+                                  await theStore.permanentlyDeleteMediaMultiple(
+                                currMedia.map((e) => e.id!).toSet(),
+                              );
 
                               if (res) {
                                 await ref

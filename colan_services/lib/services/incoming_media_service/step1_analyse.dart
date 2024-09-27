@@ -1,4 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,12 +31,10 @@ class AnalysePage extends ConsumerWidget {
             title: 'Analysing Shared Media',
             onCancel: onCancel,
             child: StreamProgressView(
-              stream: () =>
-                  ref.read(storeCacheProvider.notifier).analyseMediaStream(
-                        theStore,
-                        mediaFiles: incomingMedia.entries,
-                        onDone: onDone,
-                      ),
+              stream: () => theStore.analyseMediaStream(
+                mediaFiles: incomingMedia.entries,
+                onDone: onDone,
+              ),
               onCancel: onCancel,
             ),
           ),

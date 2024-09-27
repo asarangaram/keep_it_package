@@ -1,7 +1,6 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/store_service/widgets/builders.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -51,9 +50,8 @@ class MediaEditorPage extends ConsumerWidget {
                       ) ??
                       false;
                   if (confirmed && context.mounted) {
-                    resultMedia = await ref
-                        .read(storeCacheProvider.notifier)
-                        .replaceMedia(theStore, file, media: media);
+                    resultMedia =
+                        await theStore.replaceMedia(file, media: media);
                   } else {
                     resultMedia = media;
                   }
@@ -64,9 +62,8 @@ class MediaEditorPage extends ConsumerWidget {
                       ) ??
                       false;
                   if (confirmed && context.mounted) {
-                    resultMedia = await ref
-                        .read(storeCacheProvider.notifier)
-                        .cloneAndReplaceMedia(theStore, file, media: media);
+                    resultMedia =
+                        await theStore.cloneAndReplaceMedia(file, media: media);
                   } else {
                     resultMedia = media;
                   }

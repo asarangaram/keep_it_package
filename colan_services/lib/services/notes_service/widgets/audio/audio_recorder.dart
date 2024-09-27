@@ -4,12 +4,11 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/models/store_model.dart';
-import '../../../store_service/providers/store_cache.dart';
 import 'decorations.dart';
 import 'live_audio_view.dart';
 import 'recorded_audio_view.dart';
@@ -24,7 +23,7 @@ class AudioRecorder extends ConsumerStatefulWidget {
     this.onEditCancel,
   });
   final CLMedia media;
-  final StoreCache theStore;
+  final ContentStore theStore;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
@@ -37,7 +36,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
   late final RecorderController recorderController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
-  late final StoreCache theStore;
+  late final ContentStore theStore;
   bool isRecording = false;
   bool isRecordingCompleted = false;
 
@@ -150,13 +149,12 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await ref.read(storeCacheProvider.notifier).upsertMedia(
-            theStore,
-            audioMessage!,
-            CLMediaType.audio,
-            parents: [widget.media],
-            isAux: true,
-          );
+      await theStore.upsertMedia(
+        audioMessage!,
+        CLMediaType.audio,
+        parents: [widget.media],
+        isAux: true,
+      );
 
       audioMessage = null;
       setState(() {});

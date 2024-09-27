@@ -1,12 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../basic_page_service/navigators.dart';
 import '../../media_view_service/media_view_service.dart';
-import '../../store_service/models/navigators.dart';
-import '../../store_service/providers/group_view.dart';
-import '../../store_service/widgets/builders.dart';
+
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -41,18 +41,17 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       });
       return const SizedBox.expand();
     }
-    final galleryMap = ref.watch(singleGroupItemProvider(media0.entries));
 
-    return CLGalleryCore<CLMedia>(
-      key: ValueKey(type.identifier),
-      items: galleryMap,
-      itemBuilder: (
-        context,
-        item,
-      ) =>
-          GetStore(
-        builder: (theStore) {
-          return GestureDetector(
+    return GetStore(
+      builder: (theStore) {
+        return CLGalleryCore<CLMedia>(
+          key: ValueKey(type.identifier),
+          items: theStore.galleryMap(media0.entries),
+          itemBuilder: (
+            context,
+            item,
+          ) =>
+              GestureDetector(
             onTap: () async {
               await Navigators.openEditor(
                 context,
@@ -83,12 +82,12 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                 parentIdentifier: type.identifier,
               ),
             ),
-          );
-        },
-      ),
-      columns: 4,
-      onSelectionChanged: onSelectionChanged,
-      keepSelected: freezeView,
+          ),
+          columns: 4,
+          onSelectionChanged: onSelectionChanged,
+          keepSelected: freezeView,
+        );
+      },
     );
   }
 }

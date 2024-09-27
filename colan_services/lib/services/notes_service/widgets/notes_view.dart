@@ -1,8 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../store_service/widgets/builders.dart';
 import 'audio/audio_notes.dart';
 import 'text/text_notes.dart';
 
@@ -60,7 +60,7 @@ class _NotesViewState extends State<NotesView> {
               height: kMinInteractiveDimension * 5,
               child: GetNotesByMediaId(
                 mediaId: widget.media.id!,
-                buildOnData: (notes) {
+                builder: (notes) {
                   final textNotes = notes.where(
                     (e) {
                       return e.type == CLMediaType.text;

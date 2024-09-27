@@ -1,6 +1,7 @@
 import 'package:colan_services/colan_services.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,16 +41,14 @@ class PinnedMediaPage extends ConsumerWidget {
                         actionControl: ActionControl.full(),
                       );
                     },
-                    onLongPress: () => ref
-                        .read(storeCacheProvider.notifier)
-                        .togglePinMultiple(theStore, [item]),
+                    onLongPress: () => theStore.togglePinMultiple([item]),
                     child: MediaViewService.preview(
                       item,
                       parentIdentifier: parentIdentifier,
                     ),
                   ),
                 ),
-                galleryMap: ref.watch(singleGroupItemProvider(media)),
+                galleryMap: theStore.galleryMap(media),
                 emptyState: const Center(
                   child: CLText.large(
                     'The medias pinned to show in gallery are shown here.',
@@ -57,8 +56,7 @@ class PinnedMediaPage extends ConsumerWidget {
                 ),
                 identifier: 'Pinned Media',
                 columns: 2,
-                onRefresh: () async =>
-                    ref.read(storeCacheProvider.notifier).onRefresh(),
+                onRefresh: () async => theStore.onRefresh(),
                 actionMenu: const [],
                 selectionActions: (context, items) {
                   return [
@@ -66,9 +64,7 @@ class PinnedMediaPage extends ConsumerWidget {
                       title: 'Remove Selected Pins',
                       icon: clIcons.unPinAll,
                       onTap: () async {
-                        await ref
-                            .read(storeCacheProvider.notifier)
-                            .togglePinMultiple(theStore, media);
+                        await theStore.togglePinMultiple(media);
 
                         return true;
                       },

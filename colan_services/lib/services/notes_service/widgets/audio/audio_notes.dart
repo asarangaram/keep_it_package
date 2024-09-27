@@ -1,10 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/providers/store_cache.dart';
-import '../../../store_service/widgets/builders.dart';
 import 'audio_note.dart';
 import 'audio_recorder.dart';
 
@@ -60,9 +59,7 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                                 if (widget.notes.length == 1) {
                                   editMode = false;
                                 }
-                                ref
-                                    .read(storeCacheProvider.notifier)
-                                    .deleteMediaById(theStore, note.id!);
+                                theStore.deleteMediaById(note.id!);
                               },
                             );
                           },

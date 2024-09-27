@@ -1,11 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../basic_page_service/empty_state.dart';
 import '../media_view_service/media_view_service.dart';
-import '../store_service/widgets/builders.dart';
+
 import 'models/cl_shared_media.dart';
 
 class DuplicatePage extends StatelessWidget {

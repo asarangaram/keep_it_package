@@ -1,9 +1,8 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../store_service/widgets/builders.dart';
 import '../../models/input_decoration.dart';
 
 class ViewNotes extends StatelessWidget {
