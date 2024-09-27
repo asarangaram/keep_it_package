@@ -25,6 +25,8 @@ class GetFromStore<T> extends ConsumerWidget {
     final dataAsync = ref.watch(dbReaderProvider(query));
     return ShowAsyncValue<List<dynamic>>(
       dataAsync,
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (data) {
         return builder(data.map((e) => e as T).toList());
       },

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/uri.dart';
+import '../models/broken_image.dart';
+import '../models/shimmer.dart';
+
 class GetPreviewUri extends ConsumerWidget {
   const GetPreviewUri({
     required this.id,
@@ -17,8 +21,14 @@ class GetPreviewUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: loadingBuilder?.call() ?? const CircularProgressIndicator(),
+    final eW = errorBuilder ?? BrokenImage.show;
+    final lW = loadingBuilder ?? GreyShimmer.show;
+
+    final previewUri = ref.watch(previewUriProvider(id));
+    return previewUri.when(
+      data: (uriAsync) => uriAsync.when(data: builder, error: eW, loading: lW),
+      error: eW,
+      loading: lW,
     );
   }
 }

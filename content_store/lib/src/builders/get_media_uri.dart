@@ -1,5 +1,9 @@
+import 'package:content_store/src/models/broken_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/uri.dart';
+import '../models/shimmer.dart';
 
 class GetMediaUri extends ConsumerWidget {
   const GetMediaUri({
@@ -18,9 +22,14 @@ class GetMediaUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (nullOnError) return builder(null);
-    return Center(
-      child: loadingBuilder?.call() ?? const CircularProgressIndicator(),
+    final eW = errorBuilder ?? BrokenImage.show;
+    final lW = loadingBuilder ?? GreyShimmer.show;
+
+    final previewUri = ref.watch(mediaUriProvider(id));
+    return previewUri.when(
+      data: (uriAsync) => uriAsync.when(data: builder, error: eW, loading: lW),
+      error: nullOnError ? (_, __) => builder(null) : eW,
+      loading: lW,
     );
   }
 }

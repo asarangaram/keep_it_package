@@ -11,12 +11,14 @@ import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heif_converter/heif_converter.dart';
 import 'package:image/image.dart' as img;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import 'cl_server.dart';
 import 'gallery_pin.dart';
 import 'share_files.dart';
 import 'url_handler.dart';
@@ -30,15 +32,17 @@ extension GalleryMapExt on CLMedias {
 abstract class DBReader {}
 
 class StoreUpdater {
-  StoreUpdater(this.store, this.directories)
+  StoreUpdater({required this.store, required this.directories, this.server})
       : tempCollectionName = '*** Recently Captured',
-        albumManager = AlbumManager(albumName: 'KeepIt');
+        albumManager = AlbumManager(albumName: 'KeepIt'),
+        allowOnlineViewIfNotDownloaded = false;
   final Store store;
   final CLDirectories directories;
-
+  final CLServer? server;
   final AlbumManager albumManager;
 
   final String tempCollectionName;
+  final bool allowOnlineViewIfNotDownloaded;
 
   //// Read APIs
 
@@ -815,6 +819,54 @@ class StoreUpdater {
       files.toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
+  }
+
+  AsyncValue<Uri> getPreviewUriAsync(CLMedia media) {
+    final flag = allowOnlineViewIfNotDownloaded;
+
+    try {
+      return switch (media) {
+        (final CLMedia m) when media.isPreviewLocallyAvailable =>
+          AsyncValue.data(Uri.file(getPreviewAbsolutePath(m))),
+        (final CLMedia m) when media.isPreviewDownloadFailed =>
+          throw Exception(m.previewLog),
+        (final CLMedia m) when media.isPreviewWaitingForDownload =>
+          flag && m.previewEndPoint != null && server != null
+              ? AsyncValue.data(
+                  Uri.parse(
+                    server!.getEndpointURI(m.previewEndPoint!).toString(),
+                  ),
+                )
+              : const AsyncValue<Uri>.loading(),
+        _ => throw UnimplementedError()
+      };
+    } catch (error, stackTrace) {
+      return AsyncError(error, stackTrace);
+    }
+  }
+
+  AsyncValue<Uri> getMediaUriAsync(CLMedia media) {
+    try {
+      return switch (media) {
+        (final CLMedia m) when media.isMediaLocallyAvailable =>
+          AsyncValue.data(Uri.file(getMediaAbsolutePath(m))),
+        (final CLMedia m) when media.isMediaDownloadFailed =>
+          throw Exception(m.mediaLog),
+        (final CLMedia m) when !media.haveItOffline =>
+          server != null && m.mediaEndPoint != null
+              ? AsyncValue.data(
+                  Uri.parse(
+                    server!.getEndpointURI(m.mediaEndPoint!).toString(),
+                  ),
+                )
+              : throw Exception('Server Not connected'),
+        (final CLMedia _) when media.isMediaWaitingForDownload =>
+          const AsyncValue<Uri>.loading(),
+        _ => throw UnimplementedError()
+      };
+    } catch (error, stackTrace) {
+      return AsyncError(error, stackTrace);
+    }
   }
 
   void onRefresh() {}

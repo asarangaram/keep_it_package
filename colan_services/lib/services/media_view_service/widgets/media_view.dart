@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:animated_icon/animated_icon.dart';
-import 'package:colan_services/internal/widgets/broken_image.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_editors/media_editors.dart';
 import 'package:media_viewers/media_viewers.dart';
 import 'package:store/store.dart';
-
-import '../../../internal/widgets/shimmer.dart';
 
 import '../../basic_page_service/dialogs.dart';
 import '../../basic_page_service/navigators.dart';

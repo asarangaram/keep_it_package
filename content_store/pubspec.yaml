@@ -36,6 +36,7 @@ dependencies:
   pie_chart: ^5.4.0
   share_plus: ^10.0.2
   shared_preferences: ^2.3.2
+  shimmer: ^3.0.0
   store:
     path: ../store
   watcher: ^1.1.0
