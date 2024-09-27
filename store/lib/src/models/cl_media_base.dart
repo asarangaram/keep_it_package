@@ -7,6 +7,8 @@ import 'package:meta/meta.dart';
 import '../extensions/ext_file.dart';
 import 'cl_media_type.dart';
 
+typedef ValueGetter<T> = T Function();
+
 @immutable
 class CLMediaBase {
   const CLMediaBase({
@@ -72,34 +74,34 @@ class CLMediaBase {
   }
 
   CLMediaBase copyWith({
-    String? name,
-    CLMediaType? type,
-    String? fExt,
-    String? ref,
-    DateTime? originalDate,
-    DateTime? createdDate,
-    DateTime? updatedDate,
-    String? md5String,
-    bool? isDeleted,
-    bool? isHidden,
-    String? pin,
-    int? collectionId,
-    bool? isAux,
+    ValueGetter<String>? name,
+    ValueGetter<CLMediaType>? type,
+    ValueGetter<String>? fExt,
+    ValueGetter<String?>? ref,
+    ValueGetter<DateTime?>? originalDate,
+    ValueGetter<DateTime?>? createdDate,
+    ValueGetter<DateTime?>? updatedDate,
+    ValueGetter<String?>? md5String,
+    ValueGetter<bool?>? isDeleted,
+    ValueGetter<bool?>? isHidden,
+    ValueGetter<String?>? pin,
+    ValueGetter<int?>? collectionId,
+    ValueGetter<bool>? isAux,
   }) {
     return CLMediaBase(
-      name: name ?? this.name,
-      type: type ?? this.type,
-      fExt: fExt ?? this.fExt,
-      ref: ref ?? this.ref,
-      originalDate: originalDate ?? this.originalDate,
-      createdDate: createdDate ?? this.createdDate,
-      updatedDate: updatedDate ?? this.updatedDate,
-      md5String: md5String ?? this.md5String,
-      isDeleted: isDeleted ?? this.isDeleted,
-      isHidden: isHidden ?? this.isHidden,
-      pin: pin ?? this.pin,
-      collectionId: collectionId ?? this.collectionId,
-      isAux: isAux ?? this.isAux,
+      name: name != null ? name() : this.name,
+      type: type != null ? type() : this.type,
+      fExt: fExt != null ? fExt() : this.fExt,
+      collectionId: collectionId != null ? collectionId() : this.collectionId,
+      ref: ref != null ? ref() : this.ref,
+      originalDate: originalDate != null ? originalDate() : this.originalDate,
+      createdDate: createdDate != null ? createdDate() : this.createdDate,
+      updatedDate: updatedDate != null ? updatedDate() : this.updatedDate,
+      md5String: md5String != null ? md5String() : this.md5String,
+      isDeleted: isDeleted != null ? isDeleted() : this.isDeleted,
+      isHidden: isHidden != null ? isHidden() : this.isHidden,
+      pin: pin != null ? pin() : this.pin,
+      isAux: isAux != null ? isAux() : this.isAux,
     );
   }
 

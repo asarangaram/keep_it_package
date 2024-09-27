@@ -33,6 +33,31 @@ class CLMedia extends CLMediaBase {
     super.isAux,
     this.id,
   });
+  const CLMedia.strict({
+    required super.name,
+    required super.type,
+    required super.fExt,
+    required super.collectionId,
+    required this.isPreviewCached,
+    required this.isMediaCached,
+    required this.isMediaOriginal,
+    required this.isEdited,
+    required this.previewLog,
+    required this.mediaLog,
+    required this.serverUID,
+    required this.haveItOffline,
+    required this.mustDownloadOriginal,
+    required super.ref,
+    required super.originalDate,
+    required super.createdDate,
+    required super.updatedDate,
+    required super.md5String,
+    required super.isDeleted,
+    required super.isHidden,
+    required super.pin,
+    required super.isAux,
+    required this.id,
+  });
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
     return CLMedia(
@@ -84,57 +109,62 @@ class CLMedia extends CLMediaBase {
   final bool isEdited;
   final bool haveItOffline;
   final bool mustDownloadOriginal;
-
   @override
   CLMedia copyWith({
-    String? name,
-    CLMediaType? type,
-    String? fExt,
-    String? ref,
-    DateTime? originalDate,
-    DateTime? createdDate,
-    DateTime? updatedDate,
-    String? md5String,
-    bool? isDeleted,
-    bool? isHidden,
-    String? pin,
-    int? collectionId,
-    bool? isAux,
-    int? id,
-    bool? isPreviewCached,
-    bool? isMediaCached,
-    String? previewLog,
-    String? mediaLog,
-    bool? isMediaOriginal,
-    int? serverUID,
-    bool? isEdited,
-    bool? haveItOffline,
-    bool? mustDownloadOriginal,
+    ValueGetter<String>? name,
+    ValueGetter<CLMediaType>? type,
+    ValueGetter<String>? fExt,
+    ValueGetter<String?>? ref,
+    ValueGetter<DateTime?>? originalDate,
+    ValueGetter<DateTime?>? createdDate,
+    ValueGetter<DateTime?>? updatedDate,
+    ValueGetter<String?>? md5String,
+    ValueGetter<bool?>? isDeleted,
+    ValueGetter<bool?>? isHidden,
+    ValueGetter<String?>? pin,
+    ValueGetter<int?>? collectionId,
+    ValueGetter<bool>? isAux,
+    ValueGetter<int?>? id,
+    ValueGetter<bool>? isPreviewCached,
+    ValueGetter<bool>? isMediaCached,
+    ValueGetter<String?>? previewLog,
+    ValueGetter<String?>? mediaLog,
+    ValueGetter<bool>? isMediaOriginal,
+    ValueGetter<int?>? serverUID,
+    ValueGetter<bool>? isEdited,
+    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool>? mustDownloadOriginal,
   }) {
-    return CLMedia(
-      name: name ?? this.name,
-      type: type ?? this.type,
-      fExt: fExt ?? this.fExt,
-      ref: ref ?? this.ref,
-      originalDate: originalDate ?? this.originalDate,
-      createdDate: createdDate ?? this.createdDate,
-      updatedDate: updatedDate ?? this.updatedDate,
-      md5String: md5String ?? this.md5String,
-      isDeleted: isDeleted ?? this.isDeleted,
-      isHidden: isHidden ?? this.isHidden,
-      pin: pin ?? this.pin,
-      collectionId: collectionId ?? this.collectionId,
-      isAux: isAux ?? this.isAux,
-      id: id ?? this.id,
-      isPreviewCached: isPreviewCached ?? this.isPreviewCached,
-      isMediaCached: isMediaCached ?? this.isMediaCached,
-      previewLog: previewLog ?? this.previewLog,
-      mediaLog: mediaLog ?? this.mediaLog,
-      isMediaOriginal: isMediaOriginal ?? this.isMediaOriginal,
-      serverUID: serverUID ?? this.serverUID,
-      isEdited: isEdited ?? this.isEdited,
-      haveItOffline: haveItOffline ?? this.haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal ?? this.mustDownloadOriginal,
+    return CLMedia.strict(
+      name: name != null ? name() : this.name,
+      type: type != null ? type() : this.type,
+      fExt: fExt != null ? fExt() : this.fExt,
+      collectionId: collectionId != null ? collectionId() : this.collectionId,
+      isPreviewCached:
+          isPreviewCached != null ? isPreviewCached() : this.isPreviewCached,
+      isMediaCached:
+          isMediaCached != null ? isMediaCached() : this.isMediaCached,
+      isMediaOriginal:
+          isMediaOriginal != null ? isMediaOriginal() : this.isMediaOriginal,
+      isEdited: isEdited != null ? isEdited() : this.isEdited,
+      previewLog: previewLog != null ? previewLog() : this.previewLog,
+      mediaLog: mediaLog != null ? mediaLog() : this.mediaLog,
+      serverUID: serverUID != null ? serverUID() : this.serverUID,
+      haveItOffline:
+          haveItOffline != null ? haveItOffline() : this.haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal != null
+          ? mustDownloadOriginal()
+          : this.mustDownloadOriginal,
+      ref: ref != null ? ref() : this.ref,
+      originalDate: originalDate != null ? originalDate() : this.originalDate,
+      createdDate: createdDate != null ? createdDate() : this.createdDate,
+      updatedDate: updatedDate != null ? updatedDate() : this.updatedDate,
+      md5String: md5String != null ? md5String() : this.md5String,
+      isDeleted: isDeleted != null ? isDeleted() : this.isDeleted,
+      isHidden: isHidden != null ? isHidden() : this.isHidden,
+      pin: pin != null ? pin() : this.pin,
+      isAux: isAux != null ? isAux() : this.isAux,
+      id: id != null ? id() : this.id,
     );
   }
 
@@ -231,151 +261,6 @@ class CLMedia extends CLMediaBase {
 
   @override
   String toJson() => json.encode(toMap());
-
-  CLMedia removePin() {
-    return CLMedia(
-      name: name,
-      type: type,
-      fExt: fExt,
-      ref: ref,
-      id: id,
-      collectionId: collectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      isAux: isAux,
-      isPreviewCached: isPreviewCached,
-      isMediaCached: isMediaCached,
-      isMediaOriginal: isMediaOriginal,
-      isEdited: isEdited,
-      previewLog: previewLog,
-      mediaLog: mediaLog,
-      serverUID: serverUID,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
-    );
-  }
-
-  CLMedia removeId() {
-    return CLMedia(
-      name: name,
-      type: type,
-      fExt: fExt,
-      ref: ref,
-      collectionId: collectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      pin: pin,
-      isAux: isAux,
-      isPreviewCached: isPreviewCached,
-      isMediaCached: isMediaCached,
-      isMediaOriginal: isMediaOriginal,
-      isEdited: isEdited,
-      previewLog: previewLog,
-      mediaLog: mediaLog,
-      serverUID: serverUID,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
-    );
-  }
-
-  CLMedia setCollectionId(int? newCollectionId) {
-    return CLMedia(
-      name: name,
-      type: type,
-      fExt: fExt,
-      ref: ref,
-      id: id,
-      collectionId: newCollectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      pin: pin,
-      isAux: isAux,
-      isPreviewCached: isPreviewCached,
-      isMediaCached: isMediaCached,
-      isMediaOriginal: isMediaOriginal,
-      isEdited: isEdited,
-      previewLog: previewLog,
-      mediaLog: mediaLog,
-      serverUID: serverUID,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
-    );
-  }
-
-  CLMedia updatePreviewCache({
-    required String? previewLogUpdated,
-    required bool isPreviewCachedUpdated,
-  }) {
-    return CLMedia(
-      name: name,
-      type: type,
-      fExt: fExt,
-      ref: ref,
-      id: id,
-      collectionId: collectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      pin: pin,
-      isAux: isAux,
-      isPreviewCached: isPreviewCachedUpdated,
-      isMediaCached: isMediaCached,
-      isMediaOriginal: isMediaOriginal,
-      isEdited: isEdited,
-      previewLog: previewLogUpdated,
-      mediaLog: mediaLog,
-      serverUID: serverUID,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
-    );
-  }
-
-  CLMedia updateMediaCache({
-    required String? mediaLogUpdated,
-    required bool isMediaCachedUpdated,
-    required bool isMediaOriginalUpdated,
-  }) {
-    return CLMedia(
-      name: name,
-      type: type,
-      fExt: fExt,
-      ref: ref,
-      id: id,
-      collectionId: collectionId,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      pin: pin,
-      isAux: isAux,
-      isPreviewCached: isPreviewCached,
-      isMediaCached: isMediaCachedUpdated,
-      isMediaOriginal: isMediaOriginalUpdated,
-      isEdited: isEdited,
-      previewLog: previewLog,
-      mediaLog: mediaLogUpdated,
-      serverUID: serverUID,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
-    );
-  }
 
   bool get isMediaWaitingForDownload =>
       !isMediaCached && mediaLog == null && haveItOffline;

@@ -196,14 +196,14 @@ class _TextNote0State extends ConsumerState<TextNote0> {
   Future<void> onEditDone() async {
     if (textModified) {
       final String path;
-      path = await theStore.createTempFile(ext: 'txt');
+      path = theStore.createTempFile(ext: 'txt');
       await File(path).writeAsString(textEditingController.text.trim());
       if (widget.note == null) {
         await theStore.newMedia(
           path,
-          CLMediaType.text,
+          type: CLMediaType.text,
           parents: [widget.media],
-          isAux: true,
+          isAux: () => true,
         );
       } else {
         await theStore.replaceMedia(path, media: widget.note!);

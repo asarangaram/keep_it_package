@@ -18,4 +18,3 @@ export 'services/notification_services/notification_service.dart'
     show NotificationService;
 export 'services/notification_services/provider/notify.dart'
     show notificationMessageProvider;
-export 'services/sharing_service/models/share_files.dart' show ShareManager;

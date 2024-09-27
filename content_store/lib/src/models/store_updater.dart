@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 import 'dart:typed_data';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/src/extensions/ext_cl_media.dart';
+import 'package:content_store/src/extensions/list_ext.dart';
 import 'package:content_store/src/storage_service/models/file_system/models/cl_directories.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
@@ -17,6 +18,8 @@ import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import 'gallery_pin.dart';
+import 'share_files.dart';
+import 'url_handler.dart';
 
 extension GalleryMapExt on CLMedias {
   List<GalleryGroup<CLMedia>> get galleryMap => [];
@@ -67,7 +70,7 @@ class StoreUpdater {
     final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.copyWith(isDeleted: true));
+      await store.upsertMedia(m.copyWith(isDeleted: () => true));
     }
     return true;
   }
@@ -75,7 +78,7 @@ class StoreUpdater {
   Future<bool> deleteMediaById(int id) async {
     final m = await store.reader.getMediaById(id);
     if (m != null) {
-      await store.upsertMedia(m.copyWith(isDeleted: true));
+      await store.upsertMedia(m.copyWith(isDeleted: () => true));
     }
     return true;
   }
@@ -84,7 +87,7 @@ class StoreUpdater {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.copyWith(isDeleted: true));
+      await store.upsertMedia(m.copyWith(isDeleted: () => true));
     }
     return true;
   }
@@ -93,7 +96,7 @@ class StoreUpdater {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.copyWith(isDeleted: false));
+      await store.upsertMedia(m.copyWith(isDeleted: () => false));
     }
     return true;
   }
@@ -121,17 +124,13 @@ class StoreUpdater {
     return true;
   }
 
-  Future<bool> togglePinById(int id) {
-    throw UnimplementedError();
+  Future<bool> togglePinById(int id) async {
+    return togglePinMultipleById({id});
   }
 
-  Future<bool> togglePinMultipleById(Set<int?> ids2Delete) {
-    throw UnimplementedError();
-  }
-
-  Future<bool> togglePinMultiple(
-    List<CLMedia> media,
-  ) async {
+  Future<bool> togglePinMultipleById(Set<int?> ids2Delete) async {
+    final media =
+        await store.reader.getMediasByIDList(ids2Delete.nonNullableList);
     if (media.any((e) => e.pin == null)) {
       return pinMediaMultiple(media);
     } else {
@@ -148,7 +147,7 @@ class StoreUpdater {
     );
     if (res) {
       for (final m in pinnedMedia) {
-        await store.upsertMedia(m.removePin());
+        await store.upsertMedia(m.copyWith(pin: () => null));
       }
     }
     return res;
@@ -174,7 +173,7 @@ class StoreUpdater {
           desc: 'KeepIT',
         );
         if (pin != null) {
-          updatedMedia.add(media.copyWith(pin: pin));
+          updatedMedia.add(media.copyWith(pin: () => pin));
         }
       }
     }
@@ -212,167 +211,235 @@ class StoreUpdater {
   }
 
   Future<CLMedia?> newMedia(
-    String path,
-    CLMediaType type, {
-    bool? isAux,
-    String? ref,
-    DateTime? originalDate,
-    DateTime? createdDate,
-    DateTime? updatedDate,
-    String? md5String,
-    bool? isDeleted,
-    bool? isHidden,
-    String? pin,
-    int? collectionId,
-    bool? isPreviewCached,
-    bool? isMediaCached,
-    String? previewLog,
-    String? mediaLog,
-    bool? isMediaOriginal,
-    int? serverUID,
-    bool? isEdited,
-    bool? haveItOffline,
-    bool? mustDownloadOriginal,
+    String path, {
+    required CLMediaType type,
+    ValueGetter<String>? fExt,
+    ValueGetter<String>? name,
+    ValueGetter<String?>? ref,
+    ValueGetter<DateTime?>? originalDate,
+    ValueGetter<DateTime?>? createdDate,
+    ValueGetter<DateTime?>? updatedDate,
+    /*  ValueGetter<String?>? md5String, */
+    ValueGetter<bool?>? isDeleted,
+    ValueGetter<bool?>? isHidden,
+    ValueGetter<String?>? pin,
+    ValueGetter<int?>? collectionId,
+    ValueGetter<bool>? isAux,
+    /* ValueGetter<int?>? id, */
+    ValueGetter<bool>? isPreviewCached,
+    ValueGetter<bool>? isMediaCached,
+    ValueGetter<String?>? previewLog,
+    ValueGetter<String?>? mediaLog,
+    ValueGetter<bool>? isMediaOriginal,
+    ValueGetter<int?>? serverUID,
+    ValueGetter<bool>? isEdited,
+    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
   }) async {
-    return null;
+    final defaultName = name != null ? name() : p.basename(path);
+    final computedMD5String = await File(path).checksum;
+    final isAux0 = isAux?.call() ?? false;
+    final collectionId0 = collectionId != null ? collectionId() : null;
+    final int collectionId1;
+    final bool? isHidden0;
+    if (collectionId0 == null) {
+      collectionId1 =
+          (isAux0 ? (await _notesCollection) : (await _defaultCollection)).id!;
+      isHidden0 = true;
+    } else {
+      collectionId1 = collectionId0;
+      isHidden0 = null;
+    }
+    final pathExt = p.extension(path);
+    final String fExt0;
+    if (pathExt.replaceAll('.', '').isEmpty) {
+      fExt0 = 'unknown';
+    } else {
+      fExt0 = fExt != null ? fExt() : p.extension(path);
+    }
 
-    /*  return upsertMedia(
-      path,
-      type,
-      isAux: isAux,
-      ref: ref,
-      originalDate: originalDate,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      md5String: md5String,
-      isDeleted: isDeleted,
-      isHidden: isHidden,
-      pin: pin,
-      collectionId: collectionId,
-      isPreviewCached: isPreviewCached,
-      isMediaCached: isMediaCached,
-      previewLog: previewLog,
-      mediaLog: mediaLog,
-      isMediaOriginal: isMediaOriginal,
-      serverUID: serverUID,
-      isEdited: isEdited,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
-      parents: parents,
+    final updated0 = CLMedia.strict(
       id: null,
-    ); */
+      md5String: computedMD5String,
+      name: defaultName,
+      type: type,
+      collectionId: collectionId1,
+      isHidden: isHidden0 ?? (isHidden != null ? isHidden() : false),
+
+      fExt: fExt0,
+      isAux: isAux0,
+      // Set defaults if not provided
+      isPreviewCached: isPreviewCached?.call() ?? false,
+      isMediaCached: isMediaCached?.call() ?? false,
+      isMediaOriginal: isMediaOriginal?.call() ?? false,
+      isEdited: isEdited?.call() ?? false,
+      previewLog: previewLog != null ? previewLog() : null,
+      mediaLog: mediaLog != null ? mediaLog() : null,
+      serverUID: serverUID != null ? serverUID() : null,
+      haveItOffline: haveItOffline?.call() ?? true,
+      mustDownloadOriginal: mustDownloadOriginal?.call() ?? false,
+      ref: ref != null ? ref() : null,
+      originalDate: originalDate != null ? originalDate() : null,
+      createdDate: createdDate != null ? createdDate() : null,
+      updatedDate: updatedDate != null ? updatedDate() : null,
+      isDeleted: isDeleted != null ? isDeleted() : false,
+
+      pin: pin != null ? pin() : null,
+    );
+    return _upsertMedia(
+      updated0.copyWith(createdDate: DateTime.now),
+      parents: parents,
+      path: path,
+    );
   }
 
   Future<CLMedia?> updateMedia(
-    CLMedia media,
-    String path,
-    CLMediaType type, {
-    required ValueGetter<bool?>? isAux,
-    required ValueGetter<String?>? ref_111,
-    required ValueGetter<DateTime?>? originalDate_111,
-    required ValueGetter<DateTime?>? createdDate_111,
-    required ValueGetter<DateTime?>? updatedDate_111,
-    required ValueGetter<String?>? md5String_111,
-    required ValueGetter<bool?>? isDeleted_111,
-    required ValueGetter<bool?>? isHidden_111,
-    required ValueGetter<String?>? pin_111,
-    required ValueGetter<int?>? collectionId_111,
-    required ValueGetter<bool?>? isPreviewCached_111,
-    required ValueGetter<bool?>? isMediaCached_111,
-    required ValueGetter<String?>? previewLog_111,
-    required ValueGetter<String?>? mediaLog_111,
-    required ValueGetter<bool?>? isMediaOriginal_111,
-    required ValueGetter<int?>? serverUID_111,
-    required ValueGetter<bool?>? isEdited_111,
-    required ValueGetter<bool?>? haveItOffline_111,
-    required ValueGetter<bool?>? mustDownloadOriginal_111,
-    required ValueGetter<List<CLMedia>?>? parents_111,
-    required ValueGetter<int?>? id_111,
+    CLMedia media, {
+    String? path,
+    CLMediaType? type,
+    ValueGetter<String>? fExt,
+    ValueGetter<String>? name,
+    ValueGetter<String?>? ref,
+    ValueGetter<DateTime?>? originalDate,
+    ValueGetter<DateTime?>? createdDate,
+    ValueGetter<DateTime?>? updatedDate,
+    /*  ValueGetter<String?>? md5String, */
+    ValueGetter<bool?>? isDeleted,
+    ValueGetter<bool?>? isHidden,
+    ValueGetter<String?>? pin,
+    ValueGetter<int?>? collectionId,
+    ValueGetter<bool>? isAux,
+    ValueGetter<int?>? id, // id is overwritten only to clone
+    ValueGetter<bool>? isPreviewCached,
+    ValueGetter<bool>? isMediaCached,
+    ValueGetter<String?>? previewLog,
+    ValueGetter<String?>? mediaLog,
+    ValueGetter<bool>? isMediaOriginal,
+    ValueGetter<int?>? serverUID,
+    ValueGetter<bool>? isEdited,
+    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool>? mustDownloadOriginal,
+    List<CLMedia>? parents,
   }) async {
-    return null;
+    if (media.pin != null && path == null) {
+      throw Exception('Remove pin before updating media');
+    }
+    if (id != null && id() != null) {
+      throw Exception('id can only be cleared');
+    }
+    final defaultName = name != null ? name() : media.name;
+    final isAux0 = isAux?.call() ?? media.isAux;
+    final collectionId0 =
+        collectionId != null ? collectionId() : media.collectionId!;
+    final int collectionId1;
+    final bool? isHidden0;
+    if (collectionId0 == null) {
+      collectionId1 =
+          (isAux0 ? (await _notesCollection) : (await _defaultCollection)).id!;
+      isHidden0 = true;
+    } else {
+      collectionId1 = collectionId0;
+      isHidden0 = media.isHidden;
+    }
+    final String fExt0;
+    final String computedMD5String;
+    if (path != null) {
+      // File changed
+      computedMD5String = await File(path).checksum;
+      final pathExt = p.extension(path);
+      if (pathExt.replaceAll('.', '').isEmpty) {
+        fExt0 = '.unk'; // FIXME: Use MIME to determine
+      } else {
+        fExt0 = fExt != null ? fExt() : p.extension(path);
+      }
+    } else {
+      computedMD5String = media.md5String!;
+      fExt0 = media.fExt;
+    }
+
+    final updated0 = CLMedia.strict(
+      id: id != null ? id() : media.id,
+      md5String: computedMD5String,
+      name: defaultName,
+      type: type ?? media.type,
+      collectionId: collectionId1,
+      isHidden: isHidden0 ?? (isHidden != null ? isHidden() : false),
+      fExt: fExt0,
+      isAux: isAux0,
+
+      // Set defaults if not provided
+      isPreviewCached: isPreviewCached?.call() ?? false,
+      isMediaCached: isMediaCached?.call() ?? false,
+      isMediaOriginal: isMediaOriginal?.call() ?? false,
+
+      isEdited: isEdited?.call() ?? false,
+      previewLog: previewLog != null ? previewLog() : null,
+      mediaLog: mediaLog != null ? mediaLog() : null,
+      serverUID: serverUID != null ? serverUID() : media.serverUID,
+      haveItOffline: haveItOffline?.call() ?? media.haveItOffline,
+      mustDownloadOriginal:
+          mustDownloadOriginal?.call() ?? media.mustDownloadOriginal,
+      ref: ref != null ? ref() : media.ref,
+      originalDate: originalDate != null ? originalDate() : media.originalDate,
+      createdDate: createdDate != null ? createdDate() : media.originalDate,
+      updatedDate: updatedDate != null ? updatedDate() : media.updatedDate,
+      isDeleted: isDeleted != null ? isDeleted() : media.isDeleted,
+      // clear pin if new path provided
+      pin: pin != null
+          ? pin()
+          : (path != null)
+              ? null
+              : media.pin,
+    );
+
+    return _upsertMedia(updated0, parents: parents, path: path);
   }
 
-  Future<Collection> get notesCollection async =>
+  Future<CLMedia?> _upsertMedia(
+    CLMedia media, {
+    CLMedia? originalMedia,
+    String? path,
+    List<CLMedia>? parents,
+  }) async {
+    // Save Media
+    final CLMedia updated0;
+    if (path != null) {
+      final currentMediaPath = getMediaAbsolutePath(media);
+      File(path).copySync(currentMediaPath);
+
+      updated0 = await _generateMediaPreview(
+        media: media.copyWith(
+          isMediaCached: () => true,
+          isMediaOriginal: () => true,
+        ),
+      );
+    } else {
+      updated0 = media;
+    }
+    if (originalMedia == updated0) {
+      return originalMedia;
+    }
+    // Update in DB
+    final mediaFromDB = await store.upsertMedia(
+      updated0.copyWith(updatedDate: DateTime.now),
+      parents: parents,
+    );
+    return mediaFromDB;
+  }
+
+  Future<Collection> get _notesCollection async =>
       await store.reader.getCollectionByLabel('*** Notes') ??
       (await upsertCollection(
         const Collection(label: '*** Notes'),
       ));
-  Future<Collection> get defaultCollection async =>
+  Future<Collection> get _defaultCollection async =>
       await store.reader.getCollectionByLabel(tempCollectionName) ??
       (await upsertCollection(
         Collection(label: tempCollectionName),
       ));
 
-  /*  Future<CLMedia?> upsertMedia({
-    required String path,
-    required CLMediaType type,
-    required bool? isAux,
-    required String? ref,
-    required DateTime? originalDate,
-    required DateTime? createdDate,
-    required DateTime? updatedDate,
-    required String? md5String,
-    required bool? isDeleted,
-    required bool? isHidden,
-    required String? pin,
-    required int? collectionId,
-    required bool? isPreviewCached,
-    required bool? isMediaCached,
-    required String? previewLog,
-    required String? mediaLog,
-    required bool? isMediaOriginal,
-    required int? serverUID,
-    required bool? isEdited,
-    required bool? haveItOffline,
-    required bool? mustDownloadOriginal,
-    required List<CLMedia>? parents,
-    required int? id,
-  }) async {
-    final md5String0 = md5String ?? await File(path).checksum;
-    final isAux0 = isAux ?? false;
-    final collectionId0 = collectionId ??
-        (isAux0.call() ? (await notesCollection) : (await defaultCollection))
-            .id!;
-    final savedMedia = CLMedia(
-      /// These parameter are reset when a new content is provided
-      id: id,
-      name: p.basename(path),
-      fExt: p.extension(path),
-      type: type,
-      md5String: md5String0,
-      isPreviewCached: false,
-      isMediaCached: false,
-      previewLog: null,
-      mediaLog: null,
-      isMediaOriginal: true,
-
-      /// Unless overridden, these parameters will be taken from media, if not,
-      /// a default value is provided
-      collectionId: collectionId0,
-      isHidden: collectionId0 == (await defaultCollection).id!,
-      isDeleted: isDeleted ?? false,
-      isAux: isAux0,
-
-      isEdited: isEdited ?? false,
-      serverUID: serverUID,
-      haveItOffline: haveItOffline ?? true,
-      mustDownloadOriginal: mustDownloadOriginal ?? false,
-    );
-
-    final mediaFromDB = await store.upsertMedia(
-      savedMedia.copyWith(isMediaCached: true, isMediaOriginal: true),
-      parents: parents,
-    );
-    if (mediaFromDB != null) {
-      final currentMediaPath = getMediaAbsolutePath(mediaFromDB);
-      File(path).copySync(currentMediaPath);
-      return generateMediaPreview(media: mediaFromDB);
-    }
-    return null;
-  } */
-
-  Future<CLMedia> generateMediaPreview({
+  Future<CLMedia> _generateMediaPreview({
     required CLMedia media,
     int dimension = 256,
   }) async {
@@ -380,7 +447,7 @@ class StoreUpdater {
     try {
       final currentMediaPath = getMediaAbsolutePath(media);
       final currentPreviewPath = getPreviewAbsolutePath(media);
-      final error = <String, String>{};
+      final error = <String, String>{}; // Could use Completer ?
 
       final res = await generatePreview(
         inputFile: currentMediaPath,
@@ -393,19 +460,21 @@ class StoreUpdater {
       );
       if (res) {
         updateMedia = updateMedia.copyWith(
-          isPreviewCached: true,
-          isMediaCached: true,
+          isPreviewCached: () => true,
+          previewLog: () => null,
         );
       } else {
         if (error.isNotEmpty) {
           updateMedia = updateMedia.copyWith(
-            mediaLog: jsonEncode(error),
+            isPreviewCached: () => false,
+            previewLog: () => jsonEncode(error),
           );
         }
       }
     } catch (e) {
       updateMedia = updateMedia.copyWith(
-        mediaLog:
+        isPreviewCached: () => false,
+        previewLog: () =>
             jsonEncode({'decodeError': 'Exception while generating preview'}),
       );
     }
@@ -557,23 +626,109 @@ class StoreUpdater {
   Future<CLMedia> replaceMedia(
     String path, {
     required CLMedia media,
-  }) {
-    throw UnimplementedError();
+  }) async {
+    return (await updateMedia(media, path: path)) ?? media;
   }
 
   Future<CLMedia> cloneAndReplaceMedia(
     String path, {
     required CLMedia media,
-  }) {
-    throw UnimplementedError();
+  }) async {
+    return (await updateMedia(media, path: path, id: () => null)) ?? media;
   }
 
   Stream<Progress> moveToCollectionStream({
     required List<CLMedia> media,
     required Collection collection,
     Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
-  }) {
-    throw UnimplementedError();
+  }) async* {
+    final Collection updatedCollection;
+    if (collection.id == null) {
+      yield const Progress(
+        fractCompleted: 0,
+        currentItem: 'Creating new collection',
+      );
+      final withId = await store.reader.getCollectionByLabel(collection.label);
+      updatedCollection = await upsertCollection(withId ?? collection);
+    } else {
+      updatedCollection = collection;
+    }
+    yield Progress(
+      fractCompleted: 0,
+      currentItem: 'moving to collection : ${updatedCollection.label}',
+    );
+
+    if (media.isNotEmpty) {
+      final updatedList = <CLMedia>[];
+
+      for (final (i, m) in media.indexed) {
+        final updated = await updateMedia(
+          m,
+          isHidden: () => false,
+          collectionId: () => updatedCollection.id!,
+        );
+        if (updated != null) {
+          updatedList.add(updated);
+        }
+
+        yield Progress(
+          fractCompleted: i / media.length,
+          currentItem: m.name,
+        );
+        await Future<void>.delayed(const Duration(microseconds: 10));
+      }
+      await onDone?.call(mediaMultiple: updatedList);
+    }
+  }
+
+  static Future<CLMediaBase> tryDownloadMedia(
+    CLMediaBase mediaFile, {
+    required CLDirectories deviceDirectories,
+  }) async {
+    if (mediaFile.type != CLMediaType.url) {
+      return mediaFile;
+    }
+    final mimeType = await URLHandler.getMimeType(
+      mediaFile.name,
+    );
+    if (![
+      CLMediaType.image,
+      CLMediaType.video,
+      //CLMediaType.audio,
+      CLMediaType.file,
+    ].contains(mimeType)) {
+      return mediaFile;
+    }
+    final downloadedFile = await URLHandler.download(
+      mediaFile.name,
+      deviceDirectories.download.path,
+    );
+    if (downloadedFile == null) {
+      return mediaFile;
+    }
+    return mediaFile.copyWith(
+      name: () => downloadedFile,
+      type: () => mimeType!,
+    );
+  }
+
+  static Future<CLMediaBase> identifyMediaType(
+    CLMediaBase mediaFile, {
+    required CLDirectories deviceDirectories,
+  }) async {
+    if (mediaFile.type != CLMediaType.file) {
+      return mediaFile;
+    }
+
+    final mimeType = switch (lookupMimeType(mediaFile.name)) {
+      (final String mime) when mime.startsWith('image') => CLMediaType.image,
+      (final String mime) when mime.startsWith('video') => CLMediaType.video,
+      _ => CLMediaType.file
+    };
+    if (mimeType == CLMediaType.file) {
+      return mediaFile;
+    }
+    return mediaFile.copyWith(type: () => mimeType);
   }
 
   Stream<Progress> analyseMediaStream({
@@ -582,8 +737,66 @@ class StoreUpdater {
       required List<CLMedia> existingItems,
       required List<CLMedia> newItems,
     }) onDone,
-  }) {
-    throw UnimplementedError();
+  }) async* {
+    final existingItems = <CLMedia>[];
+    final newItems = <CLMedia>[];
+    //await Future<void>.delayed(const Duration(seconds: 3));
+    yield Progress(
+      currentItem: p.basename(mediaFiles[0].name),
+      fractCompleted: 0,
+    );
+    for (final (i, item0) in mediaFiles.indexed) {
+      final item1 = await tryDownloadMedia(
+        item0,
+        deviceDirectories: directories,
+      );
+      final item = await identifyMediaType(
+        item1,
+        deviceDirectories: directories,
+      );
+      if (!item.type.isFile) {
+        // Skip for now
+      }
+      if (item.type.isFile) {
+        final file = File(item.name);
+        if (file.existsSync()) {
+          final md5String = await file.checksum;
+          final duplicate = await store.reader.getMediaByMD5String(md5String);
+          if (duplicate != null) {
+            // multiple duplicate may be imported together
+            if (existingItems.where((e) => e.id == duplicate.id!).firstOrNull ==
+                null) {
+              existingItems.add(duplicate);
+            }
+          } else {
+            // avoid recomputing md5
+            final newItem = await newMedia(item.name, type: item.type);
+            if (newItem != null) {
+              newItems.add(newItem);
+            }
+          }
+        } else {
+          /* Missing file? ignoring */
+        }
+      }
+
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+
+      yield Progress(
+        currentItem: (i + 1 == mediaFiles.length)
+            ? ''
+            : p.basename(
+                mediaFiles[i + 1].name,
+              ),
+        fractCompleted: (i + 1) / mediaFiles.length,
+      );
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+    onDone(
+      existingItems: existingItems.where((e) => e.mediaLog == null).toList(),
+      newItems: newItems.where((e) => e.mediaLog == null).toList(),
+    );
   }
 
   // This should not be in this way.
@@ -591,7 +804,17 @@ class StoreUpdater {
     BuildContext context,
     List<CLMedia> media,
   ) {
-    throw UnimplementedError();
+    // For now, lets only focus on locally cached.
+    // FIXME: If the media is from server, we need to find a way
+    // to download and share
+    final files =
+        media.map(getMediaAbsolutePath).where((e) => File(e).existsSync());
+    final box = context.findRenderObject() as RenderBox?;
+    return ShareManager.onShareFiles(
+      context,
+      files.toList(),
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
   }
 
   void onRefresh() {}

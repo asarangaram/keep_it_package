@@ -151,9 +151,9 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
     if (hasAudioMessage) {
       await theStore.newMedia(
         audioMessage!,
-        CLMediaType.audio,
+        type: CLMediaType.audio,
         parents: [widget.media],
-        isAux: true,
+        isAux: () => true,
       );
 
       audioMessage = null;
