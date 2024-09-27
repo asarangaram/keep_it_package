@@ -1,38 +1,40 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:developer' as dev;
 
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_services/internal/extensions/ext_store.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 import '../../storage_service/providers/directories.dart';
-import '../../store_service/providers/store.dart';
-import '../../store_service/providers/store_cache.dart';
-import '../../store_service/providers/sync_in_progress.dart';
 import '../models/cl_server.dart';
 import '../models/downloader.dart';
 import '../models/media_downloader.dart';
+import '../models/server_status.dart';
 import 'downloader_provider.dart';
 import 'online_status.dart';
 import 'registerred_server.dart';
 import 'working_offline.dart';
 
-class ActiveServerNotifier extends StateNotifier<CLServer?> {
+class ActiveServerNotifier extends StateNotifier<ActiveServer> {
   ActiveServerNotifier({
     required this.ref,
     required this.directoriesFuture,
-    required this.storeFuture,
     required this.downloader,
-    CLServer? server,
-  }) : super(server) {
+  }) : super(const ActiveServer()) {
     _initialize();
   }
   final Ref ref;
   final Future<CLDirectories> directoriesFuture;
-  final Future<Store> storeFuture;
+  // final Future<Store> storeFuture;
+
   final Downloader downloader;
   MediaDownloader? mediaDownloader;
+
   final runningTasks = <TaskCompleter>[];
 
   void log(
@@ -51,55 +53,50 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   }
 
   Future<void> _initialize() async {
-    if (state != null) {
-      mediaDownloader = MediaDownloader(
-        downloader: downloader,
-        server: state!,
-        directories: await directoriesFuture,
-        onDone: (map) async {
-          //  log('download completed ${map["id"]}');
-          await ref.read(storeCacheProvider.notifier).updateMediaFromMap(map);
-        },
-      );
-      log('Media Downloader initialized for server $state');
+    if (storeCache == null) return;
+    if (state.server == null) return;
+    mediaDownloader = MediaDownloader(
+      downloader: downloader,
+      server: state.server!,
+      directories: await directoriesFuture,
+      onDone: (map) async {
+        //  log('download completed ${map["id"]}');
+        await storeCache!.updateMediaFromMap(map);
+      },
+    );
+    log('Media Downloader initialized for server $state');
 
-      unawaited(sync());
-    }
+    unawaited(sync());
   }
 
-  bool get workOffline => ref.read(workingOfflineProvider);
-  bool get onlineStatus => ref.read(serverOnlineStatusProvider);
-
   Future<bool?> sync() async {
-    if (state == null) return false;
-    if (workOffline || !onlineStatus) return false;
+    if (storeCache == null) return null;
+    if (server == null) return null;
 
-    final syncInPorgress = ref.read(syncStatusProvider);
-    if (!syncInPorgress) {
-      ref.read(syncStatusProvider.notifier).state = true;
+    if (!state) {
+      state = true;
       {
         // Upload logic here
         unawaited(
-          state!.downloadMediaInfo().then((mapList) async {
+          server!.downloadMediaInfo().then((mapList) async {
             log('Found ${mapList.length} items in the server');
-            final updates = await (await storeFuture).reader.analyseChanges(
-                  mapList,
-                  createCollectionIfMissing: ref
-                      .read(storeCacheProvider.notifier)
-                      .createCollectionIfMissing,
-                );
+            final updates = await storeCache!.analyseChanges(
+              mapList,
+              createCollectionIfMissing: storeCache!.createCollectionIfMissing,
+            );
             final result = await updateChanges(updates);
 
             if (result && mediaDownloader != null) {
-              unawaited(
-                downloadFiles(mediaDownloader!).then(
-                  (_) => ref.read(syncStatusProvider.notifier).state = false,
-                ),
-              );
+              await downloadFiles(mediaDownloader!);
+              if (mounted) {
+                state = false;
+              }
             } else {
               log('Sync ignored; either its not required or '
                   ' downloader not available');
-              ref.read(syncStatusProvider.notifier).state = false;
+              if (mounted) {
+                state = false;
+              }
             }
           }),
         );
@@ -110,22 +107,19 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   }
 
   Future<bool> insertMediaOnServer(Set<CLMedia> mediaSet) async {
-    final store = await storeFuture;
+    if (storeCache == null) return false;
     log('trigger upload for ${mediaSet.length} new media');
     final currentTasks = <TaskCompleter>[];
     for (final media in mediaSet) {
       if (media.collectionId != null) {
-        if (!workOffline && onlineStatus) {
-          final collection =
-              await store.reader.getCollectionById(media.collectionId!);
-          final instance = await mediaDownloader!.uploadMedia(
-            media,
-            'upload',
-            fields: {'collectionLabel': collection!.label},
-          );
-          runningTasks.add(instance);
-          currentTasks.add(instance);
-        }
+        final collection = storeCache!.getCollectionById(media.collectionId);
+        final instance = await mediaDownloader!.uploadMedia(
+          media,
+          'upload',
+          fields: {'collectionLabel': collection!.label},
+        );
+        runningTasks.add(instance);
+        currentTasks.add(instance);
       }
     }
     await Future.wait(currentTasks.map((e) => e.completer.future));
@@ -142,19 +136,18 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
   }
 
   Future<bool> updateChanges(MediaUpdatesFromServer updates) async {
+    if (storeCache == null) return false;
     var result = true;
 
     if (updates.deletedOnServer.isNotEmpty) {
-      result = await ref
-          .read(storeCacheProvider.notifier)
-          .permanentlyDeleteMediaMultiple(
-            updates.deletedOnServer.map((e) => e.id!).toSet(),
-          );
+      result = await storeCache!.permanentlyDeleteMediaMultiple(
+        updates.deletedOnServer.map((e) => e.id!).toSet(),
+      );
     }
     final upserts = [...updates.updatedOnServer, ...updates.newOnServer];
     if (upserts.isNotEmpty) {
       try {
-        await ref.read(storeCacheProvider.notifier).updateMediaMultiple(
+        await storeCache!.updateMediaMultiple(
           [...updates.updatedOnServer, ...updates.newOnServer],
         );
       } catch (e) {
@@ -174,13 +167,13 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     return result;
   }
 
-  Future<void> downloadFiles(MediaDownloader downloader) async {
-    final store = await storeFuture;
+  Future<bool> downloadFiles(MediaDownloader downloader) async {
+    if (storeCache == null) return false;
 
     log('Starting file download');
     {
-      var previewsPending = await store.reader.checkDBForPreviewDownloadPending;
-      var mediaPending = await store.reader.checkDBForMediaDownloadPending;
+      var previewsPending = await storeCache!.checkDBForPreviewDownloadPending;
+      var mediaPending = await storeCache!.checkDBForMediaDownloadPending;
 
       while (previewsPending.isNotEmpty && mediaPending.isNotEmpty) {
         final currTasks = await triggerBatchDownload(
@@ -191,12 +184,13 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
         log('waiting for the downloads to complete');
         await Future.wait(currTasks.map((e) => e.completer.future));
         runningTasks.removeWhere((e) => e.completer.isCompleted);
-        previewsPending = await store.reader.checkDBForPreviewDownloadPending;
-        mediaPending = await store.reader.checkDBForMediaDownloadPending;
+        previewsPending = await storeCache!.checkDBForPreviewDownloadPending;
+        mediaPending = await storeCache!.checkDBForMediaDownloadPending;
         log('Recheck DB for now items');
       }
     }
     log('nothing to download, Exit.');
+    return true;
   }
 
   Future<void> abortDownloads() async {
@@ -221,22 +215,18 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
     log('trigger download for ${previewsPending.length} previews');
     final currentTasks = <TaskCompleter>[];
     for (final media in previewsPending) {
-      if (!workOffline && onlineStatus) {
-        final instance = await downloader.downloadPreview(media);
-        if (instance != null) {
-          runningTasks.add(instance);
-          currentTasks.add(instance);
-        }
+      final instance = await downloader.downloadPreview(media);
+      if (instance != null) {
+        runningTasks.add(instance);
+        currentTasks.add(instance);
       }
     }
     log('trigger download for ${mediaPending.length} medias');
     for (final media in mediaPending) {
-      if (!workOffline && onlineStatus) {
-        final instance = await downloader.downloadMedia(media);
-        if (instance != null) {
-          runningTasks.add(instance);
-          currentTasks.add(instance);
-        }
+      final instance = await downloader.downloadMedia(media);
+      if (instance != null) {
+        runningTasks.add(instance);
+        currentTasks.add(instance);
       }
     }
     return currentTasks;
@@ -252,18 +242,22 @@ class ActiveServerNotifier extends StateNotifier<CLServer?> {
 }
 
 final activeServerProvider =
-    StateNotifierProvider<ActiveServerNotifier, CLServer?>((ref) {
-  final store = ref.watch(storeProvider.future);
+    StateNotifierProvider<ActiveServerNotifier, bool>((ref) {
   final directories = ref.watch(deviceDirectoriesProvider.future);
   final downloader = ref.watch(downloaderProvider);
   final registerredServer = ref.watch(registeredServerProvider);
+  final storeCache = ref.watch(storeCacheProvider);
+  final workOffline = ref.watch(workingOfflineProvider);
+  final onlineStatus = ref.watch(serverOnlineStatusProvider);
 
   final notifier = ActiveServerNotifier(
     ref: ref,
-    storeFuture: store,
+    storeCache: storeCache.whenOrNull(data: (data) => data),
     directoriesFuture: directories,
     downloader: downloader,
-    server: registerredServer,
+    server: (workOffline || !onlineStatus)
+        ? null
+        : storeCache.whenOrNull(data: (data) => registerredServer),
   );
 
   return notifier;

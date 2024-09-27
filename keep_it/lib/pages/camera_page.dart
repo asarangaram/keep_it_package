@@ -25,6 +25,7 @@ class CameraPage extends ConsumerWidget {
           },
           onNewMedia: (path, {required isVideo}) async {
             await ref.read(storeCacheProvider.notifier).newImageOrVideo(
+                  theStore,
                   path,
                   isVideo: isVideo,
                   collection: collection,

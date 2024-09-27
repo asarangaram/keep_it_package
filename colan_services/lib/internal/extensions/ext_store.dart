@@ -210,18 +210,4 @@ extension StoreReaderExt on StoreReader {
   Future<List<T>> readMultipleByQuery<T>(StoreQuery<T> q) async {
     return (await readMultiple<T>(q)).nonNullableList;
   }
-
-  Future<List<CLMedia>> get checkDBForPreviewDownloadPending async {
-    final q = getQuery(
-      DBQueries.previewDownloadPending,
-    ) as StoreQuery<CLMedia>;
-    return (await readMultiple(q)).nonNullableList;
-  }
-
-  Future<List<CLMedia>> get checkDBForMediaDownloadPending async {
-    final q = getQuery(
-      DBQueries.mediaDownloadPending,
-    ) as StoreQuery<CLMedia>;
-    return (await readMultiple(q)).nonNullableList;
-  }
 }

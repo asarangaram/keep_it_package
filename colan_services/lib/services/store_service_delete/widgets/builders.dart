@@ -23,13 +23,17 @@ class GetNotesByMediaId extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FutureBuilder(
-      future: ref.watch(storeCacheProvider.notifier).getNotes(mediaId),
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data != null) {
-          return buildOnData(snapshot.data!);
-        }
-        return const CircularProgressIndicator();
+    return GetStore(
+      builder: (theStore) {
+        return FutureBuilder(
+          future: theStore.getNotes(mediaId),
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return buildOnData(snapshot.data!);
+            }
+            return const CircularProgressIndicator();
+          },
+        );
       },
     );
   }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import '../../store_service/providers/sync_in_progress.dart';
 import '../providers/downloader_status.dart';
 import '../providers/online_status.dart';
 import '../providers/working_offline.dart';
@@ -18,7 +17,7 @@ class ServerControl extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isOnline = ref.watch(serverOnlineStatusProvider);
     final workingOffline = ref.watch(workingOfflineProvider);
-    final syncStatus = ref.watch(syncStatusProvider);
+    final syncStatus = ref.watch(activeServerProvider);
     // ignore: unused_local_variable
     final downloaderStatus = ref.watch(downloaderStatusProvider);
     return Card(

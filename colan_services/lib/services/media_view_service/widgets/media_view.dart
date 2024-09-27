@@ -329,7 +329,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                       if (context.mounted) {
                         return ref
                             .read(storeCacheProvider.notifier)
-                            .deleteMediaById(media.id!);
+                            .deleteMediaById(theStore, media.id!);
                       }
                       return false;
                     }),
@@ -357,7 +357,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                       () async {
                         final res = await ref
                             .read(storeCacheProvider.notifier)
-                            .togglePin(media);
+                            .togglePin(theStore, media);
                         if (res) {
                           setState(() {});
                         }

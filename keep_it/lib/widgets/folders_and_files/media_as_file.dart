@@ -41,7 +41,7 @@ class MediaAsFile extends ConsumerWidget {
           onDelete: () async {
             return ref
                 .read(storeCacheProvider.notifier)
-                .deleteMediaById(media.id!);
+                .deleteMediaById(theStore, media.id!);
           },
           onShare: () => theStore.shareMedia(context, [media]),
           onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)

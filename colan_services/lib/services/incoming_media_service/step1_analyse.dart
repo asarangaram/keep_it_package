@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../store_service/providers/store_cache.dart';
+import '../store_service/widgets/builders.dart';
 import 'models/cl_shared_media.dart';
 
 class AnalysePage extends ConsumerWidget {
@@ -23,20 +24,25 @@ class AnalysePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: WizardLayout(
-        title: 'Analysing Shared Media',
-        onCancel: onCancel,
-        child: StreamProgressView(
-          stream: () =>
-              ref.read(storeCacheProvider.notifier).analyseMediaStream(
-                    mediaFiles: incomingMedia.entries,
-                    onDone: onDone,
-                  ),
-          onCancel: onCancel,
-        ),
-      ),
+    return GetStore(
+      builder: (theStore) {
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: WizardLayout(
+            title: 'Analysing Shared Media',
+            onCancel: onCancel,
+            child: StreamProgressView(
+              stream: () =>
+                  ref.read(storeCacheProvider.notifier).analyseMediaStream(
+                        theStore,
+                        mediaFiles: incomingMedia.entries,
+                        onDone: onDone,
+                      ),
+              onCancel: onCancel,
+            ),
+          ),
+        );
+      },
     );
   }
 }

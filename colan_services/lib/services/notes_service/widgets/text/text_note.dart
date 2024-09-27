@@ -98,7 +98,10 @@ class _TextNoteState extends ConsumerState<TextNote> {
                   if (context.mounted) {
                     await ref
                         .read(storeCacheProvider.notifier)
-                        .permanentlyDeleteMediaMultiple({widget.note!.id!});
+                        .permanentlyDeleteMediaMultiple(
+                      theStore,
+                      {widget.note!.id!},
+                    );
                     textEditingController.clear();
                     textOriginal = '';
                   }
@@ -163,6 +166,7 @@ class _TextNoteState extends ConsumerState<TextNote> {
       path = await theStore.createTempFile(ext: 'txt');
       await File(path).writeAsString(textEditingController.text.trim());
       await ref.read(storeCacheProvider.notifier).upsertMedia(
+            theStore,
             path,
             CLMediaType.text,
             parents: [widget.media],

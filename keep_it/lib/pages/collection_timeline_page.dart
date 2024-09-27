@@ -149,7 +149,10 @@ class TimeLineView extends ConsumerWidget {
                   if (context.mounted) {
                     return ref
                         .read(storeCacheProvider.notifier)
-                        .deleteMediaMultiple({...items.map((e) => e.id!)});
+                        .deleteMediaMultiple(
+                      theStore,
+                      {...items.map((e) => e.id!)},
+                    );
                   }
                   return null;
                 },
@@ -177,7 +180,7 @@ class TimeLineView extends ConsumerWidget {
                   icon: clIcons.pinAll,
                   onTap: () => ref
                       .read(storeCacheProvider.notifier)
-                      .togglePinMultiple(items),
+                      .togglePinMultiple(theStore, items),
                 ),
             ];
           },

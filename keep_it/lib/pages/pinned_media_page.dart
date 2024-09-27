@@ -42,7 +42,7 @@ class PinnedMediaPage extends ConsumerWidget {
                     },
                     onLongPress: () => ref
                         .read(storeCacheProvider.notifier)
-                        .togglePinMultiple([item]),
+                        .togglePinMultiple(theStore, [item]),
                     child: MediaViewService.preview(
                       item,
                       parentIdentifier: parentIdentifier,
@@ -68,7 +68,7 @@ class PinnedMediaPage extends ConsumerWidget {
                       onTap: () async {
                         await ref
                             .read(storeCacheProvider.notifier)
-                            .togglePinMultiple(media);
+                            .togglePinMultiple(theStore, media);
 
                         return true;
                       },

@@ -7,6 +7,7 @@ import '../basic_page_service/dialogs.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
 import '../store_service/providers/group_view.dart';
 import '../store_service/providers/store_cache.dart';
+import '../store_service/widgets/builders.dart';
 import 'providers/universal_media.dart';
 import 'views/wizard_preview.dart';
 
@@ -90,106 +91,115 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
   Widget build(BuildContext context) {
     final currMedia =
         (isSelectionMode ? selectedMedia.entries : widget.media.entries);
-    return WizardLayout(
-      title: widget.type.label,
-      onCancel: () => CLPopScreen.onPop(context),
-      actions: [
-        if (canSelect)
-          CLButtonText.small(
-            toggleSelectModeActionLabel,
-            onTap: onToggleSelectMode,
-          ),
-      ],
-      wizard: WizardDialog(
-        option1: CLMenuItem(
-          title: keepActionLabel,
-          icon: clIcons.save,
-          onTap: hasCandidate
-              ? () async {
-                  keepSelected = true;
-                  setState(() {});
-                  final confirmed = await ConfirmAction.restoreMediaMultiple(
-                        context,
-                        media: currMedia,
-                      ) ??
-                      false;
-                  if (!confirmed) return confirmed;
-                  if (context.mounted) {
-                    final res = await ref
-                        .read(storeCacheProvider.notifier)
-                        .restoreMediaMultiple(
-                          currMedia.map((e) => e.id!).toSet(),
-                        );
-
-                    if (res) {
-                      await ref
-                          .read(
-                            universalMediaProvider(widget.type).notifier,
-                          )
-                          .remove(candidate.entries);
-                      selectedMedia = const CLSharedMedia(entries: []);
-                      keepSelected = false;
-
-                      isSelectionMode = false;
+    return GetStore(
+      builder: (theStore) {
+        return WizardLayout(
+          title: widget.type.label,
+          onCancel: () => CLPopScreen.onPop(context),
+          actions: [
+            if (canSelect)
+              CLButtonText.small(
+                toggleSelectModeActionLabel,
+                onTap: onToggleSelectMode,
+              ),
+          ],
+          wizard: WizardDialog(
+            option1: CLMenuItem(
+              title: keepActionLabel,
+              icon: clIcons.save,
+              onTap: hasCandidate
+                  ? () async {
+                      keepSelected = true;
                       setState(() {});
+                      final confirmed =
+                          await ConfirmAction.restoreMediaMultiple(
+                                context,
+                                media: currMedia,
+                              ) ??
+                              false;
+                      if (!confirmed) return confirmed;
+                      if (context.mounted) {
+                        final res = await ref
+                            .read(storeCacheProvider.notifier)
+                            .restoreMediaMultiple(
+                              theStore,
+                              currMedia.map((e) => e.id!).toSet(),
+                            );
+
+                        if (res) {
+                          await ref
+                              .read(
+                                universalMediaProvider(widget.type).notifier,
+                              )
+                              .remove(candidate.entries);
+                          selectedMedia = const CLSharedMedia(entries: []);
+                          keepSelected = false;
+
+                          isSelectionMode = false;
+                          setState(() {});
+                        }
+                        return res;
+                      }
+                      return null;
                     }
-                    return res;
-                  }
-                  return null;
-                }
-              : null,
-        ),
-        option2: (widget.type.canDelete)
-            ? CLMenuItem(
-                title: deleteActionLabel,
-                icon: clIcons.deleteItem,
-                onTap: hasCandidate
-                    ? () async {
-                        final confirmed =
-                            await ConfirmAction.permanentlyDeleteMediaMultiple(
+                  : null,
+            ),
+            option2: (widget.type.canDelete)
+                ? CLMenuItem(
+                    title: deleteActionLabel,
+                    icon: clIcons.deleteItem,
+                    onTap: hasCandidate
+                        ? () async {
+                            final confirmed = await ConfirmAction
+                                    .permanentlyDeleteMediaMultiple(
                                   context,
                                   media: currMedia,
                                 ) ??
                                 false;
-                        if (!confirmed) return confirmed;
-                        if (context.mounted) {
-                          final res = await ref
-                              .read(storeCacheProvider.notifier)
-                              .permanentlyDeleteMediaMultiple(
-                                currMedia.map((e) => e.id!).toSet(),
-                              );
+                            if (!confirmed) return confirmed;
+                            if (context.mounted) {
+                              final res = await ref
+                                  .read(storeCacheProvider.notifier)
+                                  .permanentlyDeleteMediaMultiple(
+                                    theStore,
+                                    currMedia.map((e) => e.id!).toSet(),
+                                  );
 
-                          if (res) {
-                            await ref
-                                .read(
-                                  universalMediaProvider(widget.type).notifier,
-                                )
-                                .remove(candidate.entries);
-                            selectedMedia = const CLSharedMedia(entries: []);
-                            keepSelected = false;
+                              if (res) {
+                                await ref
+                                    .read(
+                                      universalMediaProvider(widget.type)
+                                          .notifier,
+                                    )
+                                    .remove(candidate.entries);
+                                selectedMedia =
+                                    const CLSharedMedia(entries: []);
+                                keepSelected = false;
 
-                            isSelectionMode = false;
-                            setState(() {});
+                                isSelectionMode = false;
+                                setState(() {});
+                              }
+
+                              return res;
+                            }
+                            return false;
                           }
-
-                          return res;
-                        }
-                        return false;
-                      }
-                    : null,
-              )
-            : null,
-      ),
-      child: WizardPreview(
-        type: widget.type,
-        onSelectionChanged: isSelectionMode
-            ? (List<CLMedia> items) {
-                selectedMedia = selectedMedia.copyWith(entries: items);
-                setState(() {});
-              }
-            : null,
-        freezeView: keepSelected,
-      ),
+                        : null,
+                  )
+                : null,
+          ),
+          child: WizardPreview(
+            type: widget.type,
+            onSelectionChanged: isSelectionMode
+                ? (List<CLMedia> items) {
+                    selectedMedia = selectedMedia.copyWith(entries: items);
+                    setState(() {});
+                  }
+                : null,
+            freezeView: keepSelected,
+          ),
+        );
+      },
     );
   }
 }

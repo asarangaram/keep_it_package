@@ -62,7 +62,7 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                                 }
                                 ref
                                     .read(storeCacheProvider.notifier)
-                                    .deleteMediaById(note.id!);
+                                    .deleteMediaById(theStore, note.id!);
                               },
                             );
                           },
