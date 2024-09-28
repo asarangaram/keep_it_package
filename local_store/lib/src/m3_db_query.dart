@@ -95,7 +95,8 @@ class DBQuery<T> extends StoreQuery<T> {
   int get hashCode {
     return sql.hashCode ^
         triggerOnTables.hashCode ^
-        parameters.hashCode ^
+        (parameters?.fold(0, (hashInit, next) => hashInit! ^ next.hashCode) ??
+            parameters.hashCode) ^
         fromMap.hashCode ^
         dbPath.hashCode;
   }
