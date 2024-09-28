@@ -38,22 +38,6 @@ class StoreUpdater {
   final String tempCollectionName;
   final bool allowOnlineViewIfNotDownloaded;
 
-  //// Read APIs
-
-  /*  Collection? getCollectionById(int? id);
-
-  CLMedias getStaleMedia();
-  CLMedias getPinnedMedia();
-  CLMedias getDeletedMedia();
-  CLMedias getMediaByCollectionId(
-    int? collectionId, {
-    int maxCount = 0,
-    bool isRandom = false,
-  });
-  CLMedia? getMediaById(int? id);
-  CLMedias getMediaMultipleByIds(List<int> idList);
-  int getMediaCountByCollectionId(int? collectionId); */
-
   String getPreviewAbsolutePath(CLMedia media) => p.join(
         directories.thumbnail.pathString,
         media.previewFileName,
