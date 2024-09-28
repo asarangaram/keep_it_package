@@ -66,6 +66,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
       return const EmptyState();
     }
     return GetCollectionMultiple(
+      excludeEmpty: false,
       errorBuilder: null,
       loadingBuilder: null,
       builder: (collections) {
