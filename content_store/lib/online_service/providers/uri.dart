@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../db_service/extensions/ext_cl_media.dart';
-import '../../db_service/extensions/ext_cldirectories.dart';
+import '../../extensions/ext_cl_media.dart';
+import '../../extensions/ext_cldirectories.dart';
 import '../models/cl_server.dart';
 import 'server.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
