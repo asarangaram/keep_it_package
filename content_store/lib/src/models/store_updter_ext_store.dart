@@ -4,36 +4,26 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/src/extensions/ext_cl_media.dart';
-import 'package:content_store/src/extensions/list_ext.dart';
-import 'package:content_store/src/storage_service/models/file_system/models/cl_directories.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heif_converter/heif_converter.dart';
 import 'package:image/image.dart' as img;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../extensions/ext_cldirectories.dart';
+import '../extensions/list_ext.dart';
+import '../storage_service/models/file_system/models/cl_directories.dart';
+
 import 'share_files.dart';
 import 'store_updater.dart';
 import 'url_handler.dart';
 
 extension StoreExt on StoreUpdater {
-  String getPreviewAbsolutePath(CLMedia media) => p.join(
-        directories.thumbnail.pathString,
-        media.previewFileName,
-      );
-
-  String getMediaAbsolutePath(CLMedia media) => p.join(
-        directories.media.path.path,
-        media.mediaFileName,
-      );
-
   Future<bool> deleteCollectionById(int id) async {
     final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
@@ -84,8 +74,8 @@ extension StoreExt on StoreUpdater {
       final medias2Remove = [...mediaMultiple, ...notes];
       for (final m in medias2Remove) {
         await store.deleteMedia(m);
-        await File(getMediaAbsolutePath(m)).deleteIfExists();
-        await File(getPreviewAbsolutePath(m)).deleteIfExists();
+        await File(directories.getMediaAbsolutePath(m)).deleteIfExists();
+        await File(directories.getPreviewAbsolutePath(m)).deleteIfExists();
       }
     }
 
@@ -373,7 +363,7 @@ extension StoreExt on StoreUpdater {
     // Save Media
     final CLMedia updated0;
     if (path != null) {
-      final currentMediaPath = getMediaAbsolutePath(media);
+      final currentMediaPath = directories.getMediaAbsolutePath(media);
       File(path).copySync(currentMediaPath);
 
       updated0 = await _generateMediaPreview(
@@ -413,8 +403,8 @@ extension StoreExt on StoreUpdater {
   }) async {
     var updateMedia = media;
     try {
-      final currentMediaPath = getMediaAbsolutePath(media);
-      final currentPreviewPath = getPreviewAbsolutePath(media);
+      final currentMediaPath = directories.getMediaAbsolutePath(media);
+      final currentPreviewPath = directories.getPreviewAbsolutePath(media);
       final error = <String, String>{}; // Could use Completer ?
 
       final res = await generatePreview(
@@ -775,62 +765,15 @@ extension StoreExt on StoreUpdater {
     // For now, lets only focus on locally cached.
     // FIXME: If the media is from server, we need to find a way
     // to download and share
-    final files =
-        media.map(getMediaAbsolutePath).where((e) => File(e).existsSync());
+    final files = media
+        .map(directories.getMediaAbsolutePath)
+        .where((e) => File(e).existsSync());
     final box = context.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
       context,
       files.toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
-  }
-
-  AsyncValue<Uri> getPreviewUriAsync(CLMedia media) {
-    final flag = allowOnlineViewIfNotDownloaded;
-
-    try {
-      return switch (media) {
-        (final CLMedia m) when media.isPreviewLocallyAvailable =>
-          AsyncValue.data(Uri.file(getPreviewAbsolutePath(m))),
-        (final CLMedia m) when media.isPreviewDownloadFailed =>
-          throw Exception(m.previewLog),
-        (final CLMedia m) when media.isPreviewWaitingForDownload =>
-          flag && m.previewEndPoint != null && server != null
-              ? AsyncValue.data(
-                  Uri.parse(
-                    server!.getEndpointURI(m.previewEndPoint!).toString(),
-                  ),
-                )
-              : const AsyncValue<Uri>.loading(),
-        _ => throw UnimplementedError()
-      };
-    } catch (error, stackTrace) {
-      return AsyncError(error, stackTrace);
-    }
-  }
-
-  AsyncValue<Uri> getMediaUriAsync(CLMedia media) {
-    try {
-      return switch (media) {
-        (final CLMedia m) when media.isMediaLocallyAvailable =>
-          AsyncValue.data(Uri.file(getMediaAbsolutePath(m))),
-        (final CLMedia m) when media.isMediaDownloadFailed =>
-          throw Exception(m.mediaLog),
-        (final CLMedia m) when !media.haveItOffline =>
-          server != null && m.mediaEndPoint != null
-              ? AsyncValue.data(
-                  Uri.parse(
-                    server!.getEndpointURI(m.mediaEndPoint!).toString(),
-                  ),
-                )
-              : throw Exception('Server Not connected'),
-        (final CLMedia _) when media.isMediaWaitingForDownload =>
-          const AsyncValue<Uri>.loading(),
-        _ => throw UnimplementedError()
-      };
-    } catch (error, stackTrace) {
-      return AsyncError(error, stackTrace);
-    }
   }
 
   void onRefresh() {}
