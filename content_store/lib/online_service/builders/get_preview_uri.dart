@@ -1,22 +1,20 @@
-import 'package:content_store/src/models/broken_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/shimmer.dart';
+import '../../db_service/widgets/broken_image.dart';
+import '../../db_service/widgets/shimmer.dart';
 import '../providers/uri.dart';
 
-class GetMediaUri extends ConsumerWidget {
-  const GetMediaUri({
+class GetPreviewUri extends ConsumerWidget {
+  const GetPreviewUri({
     required this.id,
     required this.builder,
     super.key,
     this.errorBuilder,
     this.loadingBuilder,
-    this.nullOnError = false,
   });
   final int id;
-  final bool nullOnError;
-  final Widget Function(Uri? uri) builder;
+  final Widget Function(Uri uri) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
   final Widget Function()? loadingBuilder;
 
@@ -25,10 +23,10 @@ class GetMediaUri extends ConsumerWidget {
     final eW = errorBuilder ?? BrokenImage.show;
     final lW = loadingBuilder ?? GreyShimmer.show;
 
-    final previewUri = ref.watch(mediaUriProvider(id));
+    final previewUri = ref.watch(previewUriProvider(id));
     return previewUri.when(
       data: (uriAsync) => uriAsync.when(data: builder, error: eW, loading: lW),
-      error: nullOnError ? (_, __) => builder(null) : eW,
+      error: eW,
       loading: lW,
     );
   }

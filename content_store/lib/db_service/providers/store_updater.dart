@@ -5,7 +5,7 @@ import 'package:local_store/local_store.dart';
 import 'package:path/path.dart' as p;
 
 import '../models/store_updater.dart';
-import '../storage_service/providers/directories.dart';
+import '../../storage_service/providers/directories.dart';
 
 class StoreUpdaterNotifier extends AsyncNotifier<StoreUpdater> {
   @override

@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cl_server.dart';
 import '../models/server.dart';
-import '../models/store_updater.dart';
-import 'store_updater.dart';
+import '../../db_service/models/store_updater.dart';
+import '../../db_service/providers/store_updater.dart';
 
 class ServerNotifier extends StateNotifier<Server> {
   ServerNotifier(this.storeUpdater) : super(const Server()) {

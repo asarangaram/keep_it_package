@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../extensions/ext_cl_media.dart';
-import '../extensions/ext_cldirectories.dart';
+import '../../db_service/extensions/ext_cl_media.dart';
+import '../../db_service/extensions/ext_cldirectories.dart';
 import '../models/cl_server.dart';
-import '../providers/server.dart';
-import '../storage_service/models/file_system/models/cl_directories.dart';
-import '../storage_service/providers/directories.dart';
-import 'store_updater.dart';
+import 'server.dart';
+import '../../storage_service/models/file_system/models/cl_directories.dart';
+import '../../storage_service/providers/directories.dart';
+import '../../db_service/providers/store_updater.dart';
 
 bool allowOnlineViewIfNotDownloaded = false;
 AsyncValue<Uri> getPreviewUriAsync(

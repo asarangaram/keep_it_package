@@ -1,5 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/src/builders/get_server.dart';
+import 'package:content_store/online_service/builders/get_server.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

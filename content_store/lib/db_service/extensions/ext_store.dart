@@ -2,8 +2,8 @@
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
-import 'package:content_store/src/extensions/ext_cl_media.dart';
-import 'package:content_store/src/extensions/list_ext.dart';
+import 'package:content_store/db_service/extensions/ext_cl_media.dart';
+import 'package:content_store/db_service/extensions/list_ext.dart';
 import 'package:meta/meta.dart';
 import 'package:mime/mime.dart';
 import 'package:store/store.dart';
