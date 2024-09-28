@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../online_service/builders/get_media_uri.dart';
+import 'get_media_uri.dart';
 
 class GetMediaText extends ConsumerWidget {
   const GetMediaText({
