@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:developer' as dev;
+import 'dart:math' as math;
 
 import '../../app_logger.dart';
 
@@ -14,11 +15,11 @@ extension StoreExtensionOnString on String {
   }
 
   void printString({String prefix = ''}) {
-    _infoLogger('$prefix $this');
+    dev.log('$prefix $this', name: 'printString');
   }
 
   String uptoLength(int N) {
-    return substring(0, min(length, N));
+    return substring(0, math.min(length, N));
   }
 
   String capitalizeFirstLetter() {
