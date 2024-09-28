@@ -24,6 +24,12 @@ class WrapStandardQuickMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /*  return GestureDetector(
+      onTap: onTap,
+      child: child,
+    );
+    // Disable quickmenu for now
+    // ignore: dead_code */
     if (onEdit == null && onDelete == null) {
       return GestureDetector(
         onTap: onTap,
