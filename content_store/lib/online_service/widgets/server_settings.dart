@@ -9,8 +9,8 @@ import '../providers/server.dart';
 import 'controls.dart';
 import 'registered_server.dart';
 
-class ServerSettings extends ConsumerWidget {
-  const ServerSettings({super.key});
+class ServerSettingsImpl extends ConsumerWidget {
+  const ServerSettingsImpl({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

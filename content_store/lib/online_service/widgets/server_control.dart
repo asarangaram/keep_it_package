@@ -9,8 +9,8 @@ import '../providers/server.dart';
 import 'controls.dart';
 import 'downloader_progressbar.dart';
 
-class ServerControl extends ConsumerWidget {
-  const ServerControl({super.key});
+class ServerControlImpl extends ConsumerWidget {
+  const ServerControlImpl({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
