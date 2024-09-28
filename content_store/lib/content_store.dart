@@ -1,7 +1,7 @@
 /// Content Store.
 library content_store;
 
-export 'adapters/stubs/server_ui_stubs.dart';
+export 'adapters/widgets/server_ui_adapter.dart';
 export 'db_service/builders/get_db_reader.dart';
 export 'db_service/builders/get_media_text.dart';
 export 'db_service/builders/get_media_uri.dart';

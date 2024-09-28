@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ServerControl extends StatelessWidget {
-  const ServerControl({super.key});
+class ServerControlStub extends StatelessWidget {
+  const ServerControlStub({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -9,8 +9,8 @@ class ServerControl extends StatelessWidget {
   }
 }
 
-class ServerSettings extends StatelessWidget {
-  const ServerSettings({super.key});
+class ServerSettingsStub extends StatelessWidget {
+  const ServerSettingsStub({super.key});
 
   @override
   Widget build(BuildContext context) {
