@@ -23,7 +23,7 @@ class PinnedMediaPage extends ConsumerWidget {
             return Column(
               children: [
                 Expanded(
-                  child: CLSimpleGalleryView<CLMedia>(
+                  child: MediaGalleryView(
                     key: const ValueKey(label),
                     title: 'Pinned Media',
                     backButton: null,
@@ -50,7 +50,7 @@ class PinnedMediaPage extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    galleryMap: media.galleryMap,
+                    medias: media,
                     emptyState: const Center(
                       child: CLText.large(
                         'The medias pinned to show in gallery are shown here.',

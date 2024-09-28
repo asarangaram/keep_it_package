@@ -9,6 +9,7 @@ export 'src/builders/get_preview_uri.dart';
 export 'src/builders/get_store_updater.dart';
 export 'src/builders/w3_get_collection.dart';
 export 'src/builders/w3_get_media.dart';
+export 'src/extensions/ext_cl_medias.dart';
 export 'src/models/broken_image.dart';
 export 'src/models/share_files.dart' show ShareManager;
 export 'src/models/shimmer.dart';

@@ -56,4 +56,7 @@ extension StoreExtCLMedias on CLMedias {
     }
     return CLMedias(updatesFromServer);
   }
+
+  bool get isNotEmpty => entries.isNotEmpty;
+  bool get isEmpty => entries.isEmpty;
 }

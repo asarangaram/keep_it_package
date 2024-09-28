@@ -7,6 +7,7 @@ import 'package:store/store.dart';
 import '../../basic_page_service/navigators.dart';
 import '../../media_view_service/media_view_service.dart';
 
+import '../../media_view_service/providers/group_view.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -42,11 +43,13 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       return const SizedBox.expand();
     }
 
+    final galleryMap = ref.watch(groupedItemsProvider(media0.entries));
+
     return GetDBReader(
       builder: (dbReader) {
         return CLGalleryCore<CLMedia>(
           key: ValueKey(type.identifier),
-          items: CLMedias(media0.entries).galleryMap,
+          items: galleryMap,
           itemBuilder: (
             context,
             item,

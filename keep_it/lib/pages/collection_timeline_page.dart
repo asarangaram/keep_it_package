@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -29,9 +31,10 @@ class CollectionTimeLinePage extends ConsumerWidget {
             errorBuilder: null,
             loadingBuilder: null,
             builder: (items) {
-              return TimeLineView(
+              log('Found ${items.entries.length} media here');
+              return TimelineView(
                 label: collection?.label ?? 'All Media',
-                items: items.galleryMap,
+                items: items,
                 collection: collection,
                 actionControl: actionControl,
                 parentIdentifier:
@@ -43,8 +46,8 @@ class CollectionTimeLinePage extends ConsumerWidget {
       );
 }
 
-class TimeLineView extends ConsumerWidget {
-  const TimeLineView({
+class TimelineView extends ConsumerWidget {
+  const TimelineView({
     required this.label,
     required this.parentIdentifier,
     required this.items,
@@ -55,7 +58,7 @@ class TimeLineView extends ConsumerWidget {
 
   final String label;
   final String parentIdentifier;
-  final List<GalleryGroup<CLMedia>> items;
+  final CLMedias items;
 
   final ActionControl actionControl;
   final Collection? collection;
@@ -64,7 +67,7 @@ class TimeLineView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStoreUpdater(
       builder: (theStore) {
-        return CLSimpleGalleryView(
+        return MediaGalleryView(
           key: ValueKey(label),
           title: label,
           backButton: ColanPlatformSupport.isMobilePlatform
@@ -78,7 +81,7 @@ class TimeLineView extends ConsumerWidget {
                 ),
           identifier: parentIdentifier,
           columns: 4,
-          galleryMap: items,
+          medias: items,
           emptyState: const EmptyState(),
           itemBuilder: (context, item, {required quickMenuScopeKey}) =>
               GetMediaUri(

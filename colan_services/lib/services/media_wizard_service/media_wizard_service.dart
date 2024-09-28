@@ -7,6 +7,7 @@ import 'package:store/store.dart';
 
 import '../basic_page_service/dialogs.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
+import '../media_view_service/providers/group_view.dart';
 import '../notification_services/provider/notify.dart';
 
 import 'providers/universal_media.dart';
@@ -80,6 +81,7 @@ class MediaWizardService extends ConsumerWidget {
       });
       return const SizedBox.expand();
     }
+    final galleryMap = ref.watch(groupedItemsProvider(media.entries));
 
     return CLPopScreen.onSwipe(
       child: GetStoreUpdater(
@@ -87,7 +89,7 @@ class MediaWizardService extends ConsumerWidget {
           return SelectAndKeepMedia(
             media: media,
             type: type,
-            galleryMap: CLMedias(media.entries).galleryMap,
+            galleryMap: galleryMap,
           );
         },
       ),

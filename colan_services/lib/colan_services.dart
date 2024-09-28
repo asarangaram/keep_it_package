@@ -12,6 +12,7 @@ export 'services/incoming_media_service/models/cl_shared_media.dart';
 export 'services/media_view_service/collection_view.dart' show CollectionView;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
+export 'services/media_view_service/widgets/media_gallery_view.dart';
 export 'services/media_wizard_service/media_wizard_service.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;
 export 'services/notification_services/notification_service.dart'

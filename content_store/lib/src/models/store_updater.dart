@@ -23,12 +23,6 @@ import 'gallery_pin.dart';
 import 'share_files.dart';
 import 'url_handler.dart';
 
-extension GalleryMapExt on CLMedias {
-  List<GalleryGroup<CLMedia>> get galleryMap => [];
-  bool get isNotEmpty => entries.isNotEmpty;
-  bool get isEmpty => entries.isEmpty;
-}
-
 abstract class DBReader {}
 
 class StoreUpdater {
@@ -344,7 +338,7 @@ class StoreUpdater {
       isHidden0 = true;
     } else {
       collectionId1 = collectionId0;
-      isHidden0 = media.isHidden;
+      isHidden0 = null;
     }
     final String fExt0;
     final String computedMD5String;
@@ -368,7 +362,7 @@ class StoreUpdater {
       name: defaultName,
       type: type ?? media.type,
       collectionId: collectionId1,
-      isHidden: isHidden0 ?? (isHidden != null ? isHidden() : false),
+      isHidden: isHidden0 ?? (isHidden != null ? isHidden() : media.isHidden),
       fExt: fExt0,
       isAux: isAux0,
 

@@ -15,6 +15,12 @@ import '../draggable/menu_control.dart';
 import 'cl_gallery_core.dart';
 import 'model/gallery_group.dart';
 
+typedef ItemBuilder<T> = Widget Function(
+  BuildContext context,
+  T item, {
+  required QuickMenuScopeKey quickMenuScopeKey,
+});
+
 class CLSimpleGalleryView<T> extends StatefulWidget {
   const CLSimpleGalleryView({
     required this.title,
