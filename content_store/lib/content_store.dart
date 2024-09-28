@@ -11,14 +11,9 @@ export 'src/builders/w3_get_collection.dart';
 export 'src/builders/w3_get_media.dart';
 export 'src/extensions/ext_cl_medias.dart';
 export 'src/models/broken_image.dart';
-export 'src/models/share_files.dart' show ShareManager;
 export 'src/models/shimmer.dart';
 export 'src/models/store_updater.dart';
 export 'src/models/store_updter_ext_store.dart';
-export 'src/providers/db_store.dart';
-export 'src/storage_service/extensions/ext_file.dart' show ExtFileAnalysis;
-export 'src/storage_service/widgets/get_device_directories.dart'
-    show GetDeviceDirectories;
 export 'src/storage_service/widgets/storage_monitor.dart' show StorageMonitor;
 export 'src/widgets/server_control.dart';
 export 'src/widgets/server_settings.dart';

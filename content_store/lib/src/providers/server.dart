@@ -6,13 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cl_server.dart';
 import '../models/server.dart';
+import '../models/store_updater.dart';
+import 'store_updater.dart';
 
 class ServerNotifier extends StateNotifier<Server> {
-  ServerNotifier() : super(const Server()) {
+  ServerNotifier(this.storeUpdater) : super(const Server()) {
     _initialize();
   }
 
   Timer? timer;
+  Future<StoreUpdater> storeUpdater;
 
   Future<void> _initialize() async {
     final prefs = await SharedPreferences.getInstance();
@@ -135,5 +138,6 @@ class ServerNotifier extends StateNotifier<Server> {
 }
 
 final serverProvider = StateNotifierProvider<ServerNotifier, Server>((ref) {
-  return ServerNotifier();
+  final storeUpdater = ref.watch(storeUpdaterProvider.future);
+  return ServerNotifier(storeUpdater);
 });
