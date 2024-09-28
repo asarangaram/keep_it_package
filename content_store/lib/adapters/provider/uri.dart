@@ -1,32 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import '../../extensions/ext_cldirectories.dart';
-import '../../storage_service/models/file_system/models/cl_directories.dart';
-import '../../storage_service/providers/directories.dart';
-import 'store_updater.dart';
+import '../../db_service/providers/store_updater.dart';
 
-@immutable
-class UriProvider {
-  const UriProvider({required this.directories});
-  final CLDirectories directories;
-  AsyncValue<Uri> getPreviewUriAsync(CLMedia m) {
-    return AsyncValue.data(Uri.file(directories.getPreviewAbsolutePath(m)));
-  }
-
-  AsyncValue<Uri> getMediaUriAsync(
-    CLMedia m,
-  ) {
-    return AsyncValue.data(Uri.file(directories.getMediaAbsolutePath(m)));
-  }
-}
+import 'media_path.dart';
 
 final mediaUriProvider =
     FutureProvider.family<AsyncValue<Uri>, int>((ref, id) async {
   final storeAsync = ref.watch(storeUpdaterProvider);
-  final directories = await ref.watch(deviceDirectoriesProvider.future);
 
+  final mediaPathDeterminer =
+      await ref.watch(mediaPathDeterminerProvider.future);
   final noData = storeAsync.when(
     loading: AsyncValue<Uri>.loading,
     error: AsyncValue<Uri>.error,
@@ -39,7 +22,8 @@ final mediaUriProvider =
     if (media == null) {
       throw Exception('media not found!');
     }
-    return UriProvider(directories: directories).getMediaUriAsync(media);
+
+    return mediaPathDeterminer.getMediaUriAsync(media);
   } catch (error, stackTrace) {
     return AsyncValue.error(error, stackTrace);
   }
@@ -48,7 +32,8 @@ final mediaUriProvider =
 final previewUriProvider =
     FutureProvider.family<AsyncValue<Uri>, int>((ref, id) async {
   final storeAsync = ref.watch(storeUpdaterProvider);
-  final directories = await ref.watch(deviceDirectoriesProvider.future);
+  final mediaPathDeterminer =
+      await ref.watch(mediaPathDeterminerProvider.future);
 
   final noData = storeAsync.when(
     loading: AsyncValue<Uri>.loading,
@@ -62,7 +47,7 @@ final previewUriProvider =
     if (media == null) {
       throw Exception('media not found!');
     }
-    return UriProvider(directories: directories).getPreviewUriAsync(media);
+    return mediaPathDeterminer.getPreviewUriAsync(media);
   } catch (error, stackTrace) {
     return AsyncValue.error(error, stackTrace);
   }

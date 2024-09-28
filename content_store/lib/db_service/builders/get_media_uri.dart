@@ -2,7 +2,7 @@ import 'package:content_store/db_service/widgets/broken_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/uri.dart';
+import '../../adapters/provider/uri.dart';
 import '../widgets/shimmer.dart';
 
 class GetMediaUri extends ConsumerWidget {
