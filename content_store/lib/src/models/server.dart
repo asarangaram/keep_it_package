@@ -13,11 +13,12 @@ class Server {
   final bool isRegistered;
   const Server({
     this.identity,
-    this.isOffline = true,
+    bool isOffline = true,
     this.workingOffline = true,
     this.isSyncing = false,
-  })  : canSync = !workingOffline && !isOffline,
-        isRegistered = identity != null;
+  })  : canSync = !workingOffline && !isOffline && identity != null,
+        isRegistered = identity != null,
+        isOffline = isOffline || identity == null;
 
   Server copyWith({
     ValueGetter<CLServer?>? identity,
