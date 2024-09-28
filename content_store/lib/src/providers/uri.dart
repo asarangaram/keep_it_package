@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/store_updter_ext_store.dart';
 import 'store_updater.dart';
 
 final mediaUriProvider =
