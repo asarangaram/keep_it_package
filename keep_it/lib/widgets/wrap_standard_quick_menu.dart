@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class WrapStandardQuickMenu extends StatelessWidget {
@@ -23,11 +24,7 @@ class WrapStandardQuickMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: child,
-    );
-    /*  if (onEdit == null && onDelete == null) {
+    if (onEdit == null && onDelete == null) {
       return GestureDetector(
         onTap: onTap,
         child: child,
@@ -82,6 +79,6 @@ class WrapStandardQuickMenu extends StatelessWidget {
       },
       onTap: onTap,
       child: child,
-    ); */
+    );
   }
 }
