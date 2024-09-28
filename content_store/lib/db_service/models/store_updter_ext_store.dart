@@ -286,7 +286,7 @@ extension StoreExt on StoreUpdater {
     if (id != null && id() != null) {
       throw Exception('id can only be cleared');
     }
-    final defaultName = name != null ? name() : media.name;
+
     final isAux0 = isAux?.call() ?? media.isAux;
     final collectionId0 =
         collectionId != null ? collectionId() : media.collectionId!;
@@ -302,6 +302,7 @@ extension StoreExt on StoreUpdater {
     }
     final String fExt0;
     final String computedMD5String;
+    final String defaultName;
     if (path != null) {
       // File changed
       computedMD5String = await File(path).checksum;
@@ -311,9 +312,15 @@ extension StoreExt on StoreUpdater {
       } else {
         fExt0 = fExt != null ? fExt() : p.extension(path);
       }
+      defaultName = name != null
+          ? name()
+          : id == null
+              ? media.name
+              : p.basename(path);
     } else {
       computedMD5String = media.md5String!;
       fExt0 = media.fExt;
+      defaultName = name != null ? name() : media.name;
     }
 
     final updated0 = CLMedia.strict(
@@ -351,7 +358,8 @@ extension StoreExt on StoreUpdater {
               : media.pin,
     );
 
-    return _upsertMedia(updated0, parents: parents, path: path);
+    return _upsertMedia(updated0,
+        parents: parents, path: path, originalMedia: media);
   }
 
   Future<CLMedia?> _upsertMedia(
