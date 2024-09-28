@@ -122,7 +122,8 @@ class DBQuery<T> extends StoreQuery<T> {
     SqliteWriteContext tx,
   ) async {
     _infoLogger('cmd: $sql, $parameters');
-    final objs = (await tx.getAll(sql, parameters ?? []))
+    final fectched = await tx.getAll(sql, parameters ?? []);
+    final objs = fectched
         .map((e) => (fromMap != null) ? fromMap!(fixedMap(e)) : e as T)
         .where((e) => e != null)
         .map((e) => e! as T)
@@ -186,6 +187,11 @@ class DBQuery<T> extends StoreQuery<T> {
     } catch (e) {
       return (sql, parameters);
     }
+  }
+
+  DBQuery<T> insertParameters(List<Object?> parameters) {
+    final (sql0, parameters0) = DBQuery.preprocessSqlAndParams(sql, parameters);
+    return copyWith(sql: sql0, parameters: parameters0);
   }
 }
 

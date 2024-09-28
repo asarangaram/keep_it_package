@@ -167,7 +167,7 @@ class Queries {
     if (parameters == null) {
       return rawQuery as StoreQuery<T>;
     } else {
-      return rawQuery.copyWith(parameters: parameters) as StoreQuery<T>;
+      return rawQuery.insertParameters(parameters) as StoreQuery<T>;
     }
   }
 }
