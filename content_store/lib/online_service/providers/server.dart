@@ -4,10 +4,10 @@ import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/cl_server.dart';
-import '../models/server.dart';
 import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
+import '../models/cl_server.dart';
+import '../models/server.dart';
 
 class ServerNotifier extends StateNotifier<Server> {
   ServerNotifier(this.storeUpdater) : super(const Server()) {
