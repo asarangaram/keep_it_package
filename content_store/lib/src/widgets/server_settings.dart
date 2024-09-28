@@ -47,7 +47,7 @@ class ServerSettings extends ConsumerWidget {
                           DeregisterServer(
                             onTap: () async {
                               // Confirm before deregisterring
-                              ref.read(serverProvider.notifier).sync();
+                              ref.read(serverProvider.notifier).deregister();
                               return true;
                             },
                           )
