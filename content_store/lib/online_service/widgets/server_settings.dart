@@ -26,7 +26,7 @@ class ServerSettingsImpl extends ConsumerWidget {
                 initiallyExpanded: true,
                 tilePadding: EdgeInsets.zero,
                 subtitle:
-                    server.isRegistered ? null : const RegisterredServerView(),
+                    server.isRegistered ? const RegisterredServerView() : null,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 16),
