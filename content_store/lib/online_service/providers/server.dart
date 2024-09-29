@@ -139,5 +139,11 @@ class ServerNotifier extends StateNotifier<Server> {
 
 final serverProvider = StateNotifierProvider<ServerNotifier, Server>((ref) {
   final storeUpdater = ref.watch(storeUpdaterProvider.future);
-  return ServerNotifier(storeUpdater);
+  final notifier = ServerNotifier(storeUpdater);
+  ref.listenSelf((prev, curr) {
+    if (curr.canSync && !(prev?.canSync ?? false)) {
+      notifier.sync();
+    }
+  });
+  return notifier;
 });
