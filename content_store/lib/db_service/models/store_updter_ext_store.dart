@@ -60,6 +60,7 @@ extension StoreExt on StoreUpdater {
     for (final m in mediaMultiple) {
       await store.upsertMedia(m.copyWith(isDeleted: () => false));
     }
+    store.reloadStore();
     return true;
   }
 

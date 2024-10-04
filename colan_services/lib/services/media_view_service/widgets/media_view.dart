@@ -221,7 +221,7 @@ class MediaIsDownloading extends StatelessWidget {
   }
 }
 
-class MediaView0 extends ConsumerStatefulWidget {
+class MediaView0 extends ConsumerWidget {
   const MediaView0({
     required this.media,
     required this.parentIdentifier,
@@ -243,26 +243,18 @@ class MediaView0 extends ConsumerStatefulWidget {
   final void Function({required bool lock})? onLockPage;
 
   @override
-  ConsumerState<MediaView0> createState() => _MediaView0State();
-}
-
-class _MediaView0State extends ConsumerState<MediaView0> {
-  late CLMedia media;
-  @override
-  void initState() {
-    media = widget.media;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ac = widget.actionControl;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ac = actionControl;
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
       builder: (theStore) {
         return GetMediaUri(
           id: media.id!,
           builder: (mediaUri) {
+            log(
+              'id: ${media.id!} ${media.md5String} ',
+              name: 'MediaView0 | build',
+            );
             return GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () =>
@@ -272,7 +264,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                   const MediaBackground(),
                   Positioned.fill(
                     child: Hero(
-                      tag: '${widget.parentIdentifier} /item/${media.id}',
+                      tag: '$parentIdentifier /item/${media.id}',
                       child: SafeArea(
                         top: showControl.showNotes,
                         bottom: showControl.showNotes,
@@ -281,28 +273,28 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                         child: switch (media.type) {
                           CLMediaType.image => ImageViewer.guesture(
                               uri: mediaUri!,
-                              autoStart: widget.autoStart,
-                              autoPlay: widget.autoPlay,
-                              onLockPage: widget.onLockPage,
-                              isLocked: widget.isLocked,
+                              autoStart: autoStart,
+                              autoPlay: autoPlay,
+                              onLockPage: onLockPage,
+                              isLocked: isLocked,
                               errorBuilder: BrokenImage.show,
                               loadingBuilder: GreyShimmer.show,
                             ),
                           CLMediaType.video => VideoPlayer(
                               uri: mediaUri!,
-                              autoStart: widget.autoStart,
-                              autoPlay: widget.autoPlay,
-                              onLockPage: widget.onLockPage,
-                              isLocked: widget.isLocked,
+                              autoStart: autoStart,
+                              autoPlay: autoPlay,
+                              onLockPage: onLockPage,
+                              isLocked: isLocked,
                               placeHolder: GetPreviewUri(
                                 id: media.id!,
                                 builder: (previewUri) {
                                   return ImageViewer.basic(
                                     uri: previewUri,
-                                    autoStart: widget.autoStart,
-                                    autoPlay: widget.autoPlay,
-                                    onLockPage: widget.onLockPage,
-                                    isLocked: widget.isLocked,
+                                    autoStart: autoStart,
+                                    autoPlay: autoPlay,
+                                    onLockPage: onLockPage,
+                                    isLocked: isLocked,
                                     errorBuilder: BrokenImage.show,
                                     loadingBuilder: GreyShimmer.show,
                                   );
@@ -356,11 +348,11 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                         if (updatedMedia != media && context.mounted) {
                           // If id is same, refresh, and still
                           // global refresh may overwrite.
-                          if (updatedMedia?.id == media.id) {
+                          /* if (updatedMedia?.id == media.id) {
                             setState(() {
-                              media = updatedMedia!;
+                              media = updatedMedia;
                             });
-                          }
+                          } */
                         }
 
                         return true;
@@ -370,7 +362,7 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                       () async {
                         final res = await theStore.togglePinById(media.id!);
                         if (res) {
-                          setState(() {});
+                          /*  setState(() {}); */
                         }
                         return res;
                       },

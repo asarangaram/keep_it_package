@@ -18,15 +18,14 @@ final mediaUriProvider =
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
       final media = await theStore.store.reader.getMediaById(id);
-      if (media == null) {
-        throw Exception('media not found!');
-      }
-      log(
-        'media : ${media.md5String}',
-        name: 'mediaUriProvider',
-      );
+      if (media != null) {
+        log(
+          'media : ${media.md5String}',
+          name: 'mediaUriProvider',
+        );
 
-      controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
+        controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
+      }
     }
   });
   final media = await theStore.store.reader.getMediaById(id);
@@ -51,15 +50,14 @@ final previewUriProvider =
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
       final media = await theStore.store.reader.getMediaById(id);
-      if (media == null) {
-        throw Exception('media not found!');
-      }
-      log(
-        'media : ${media.md5String}',
-        name: 'previewUriProvider',
-      );
+      if (media != null) {
+        log(
+          'media : ${media.md5String}',
+          name: 'previewUriProvider',
+        );
 
-      controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
+        controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
+      }
     }
   });
   final media = await theStore.store.reader.getMediaById(id);
