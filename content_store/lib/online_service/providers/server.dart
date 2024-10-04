@@ -121,7 +121,13 @@ class ServerNotifier extends StateNotifier<Server> {
     return;
   }
 
-  Future<void> _sync() async => (await storeUpdater).sync();
+  Future<void> _sync() async {
+    final mapList = await state.identity?.downloadMediaInfo();
+    if (mapList != null) {
+      log('Found ${mapList.length} items in the server');
+      return (await storeUpdater).sync(mapList);
+    }
+  }
 
   @override
   void dispose() {
