@@ -19,14 +19,14 @@ class TextNotes extends StatelessWidget {
       builder: (theStore) {
         final note = notes.firstOrNull;
         if (note == null) {
-          TextNote(
+          return TextNote(
             media: media,
             theStore: theStore,
           );
         }
 
         return GetMediaText(
-          id: note!.id!,
+          id: note.id!,
           errorBuilder: null,
           loadingBuilder: null,
           builder: (text) {
