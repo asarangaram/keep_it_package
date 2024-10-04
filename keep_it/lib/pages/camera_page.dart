@@ -30,12 +30,11 @@ class CameraPage extends ConsumerWidget {
                     );
               },
               onNewMedia: (path, {required isVideo}) async {
-                await theStore.newMedia(
+                return theStore.newMedia(
                   path,
                   type: isVideo ? CLMediaType.video : CLMediaType.image,
                   collectionId: () => collection?.id,
                 );
-                return null;
               },
               onDone: (mediaList) async {
                 await MediaWizardService.openWizard(
