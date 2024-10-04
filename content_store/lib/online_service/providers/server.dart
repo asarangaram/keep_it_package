@@ -8,6 +8,7 @@ import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
 import '../models/cl_server.dart';
 import '../models/server.dart';
+import '../models/store_updater_ext_server.dart';
 
 class ServerNotifier extends StateNotifier<Server> {
   ServerNotifier(this.storeUpdater) : super(const Server()) {
@@ -94,11 +95,21 @@ class ServerNotifier extends StateNotifier<Server> {
   void workOffline() => setState(state.copyWith(workingOffline: true));
 
   void sync() {
-    if (state.canSync && !state.isSyncing) {
-      setState(state.copyWith(isSyncing: true)).then(
-        (_) => _sync().then((_) => setState(state.copyWith(isSyncing: false))),
-      );
+    if (state.isSyncing) {
+      log('server is already syncing. ignoring duplicate request');
+      return;
     }
+    if (!state.canSync) {
+      log("server can't sync");
+      return;
+    }
+    log('sync starting');
+    setState(state.copyWith(isSyncing: true)).then(
+      (_) => _sync().then((_) {
+        setState(state.copyWith(isSyncing: false));
+        log('sync Completed');
+      }),
+    );
   }
 
   void checkStatus() {
@@ -110,10 +121,7 @@ class ServerNotifier extends StateNotifier<Server> {
     return;
   }
 
-  Future<void> _sync() async {
-    // await state.sync();
-    await Future<void>.delayed(const Duration(seconds: 10));
-  }
+  Future<void> _sync() async => (await storeUpdater).sync();
 
   @override
   void dispose() {
