@@ -81,12 +81,21 @@ class MediaView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log(
+      '${media.md5String}  isPreview: $isPreview',
+      name: 'MediaView | build',
+    );
+
     if (isPreview) {
       return GetStoreUpdater(
         builder: (theStore) {
           return GetPreviewUri(
             id: media.id!,
             builder: (previewUri) {
+              log(
+                'preview URI: $previewUri',
+                name: 'MediaView | build',
+              );
               return Hero(
                 tag: '$parentIdentifier /item/${media.id}',
                 child: ImageViewer.basic(
@@ -238,14 +247,15 @@ class MediaView0 extends ConsumerStatefulWidget {
 }
 
 class _MediaView0State extends ConsumerState<MediaView0> {
+  late CLMedia media;
   @override
   void initState() {
+    media = widget.media;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final media = widget.media;
     final ac = widget.actionControl;
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
@@ -344,9 +354,13 @@ class _MediaView0State extends ConsumerState<MediaView0> {
                           canDuplicateMedia: ac.canDuplicateMedia,
                         );
                         if (updatedMedia != media && context.mounted) {
-                          setState(() {
-                            //media = updatedMedia;
-                          });
+                          // If id is same, refresh, and still
+                          // global refresh may overwrite.
+                          if (updatedMedia?.id == media.id) {
+                            setState(() {
+                              media = updatedMedia!;
+                            });
+                          }
                         }
 
                         return true;

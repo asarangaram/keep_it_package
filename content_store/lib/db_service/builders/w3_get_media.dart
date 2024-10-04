@@ -1,9 +1,27 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import 'get_db_reader.dart';
 import 'w3_get_from_store.dart';
+
+void log(
+  dynamic message, {
+  int level = 0,
+  Object? error,
+  StackTrace? stackTrace,
+  String? name,
+}) {
+  dev.log(
+    message.toString(),
+    level: level,
+    error: error,
+    stackTrace: stackTrace,
+    name: name ?? 'Media Builder',
+  );
+}
 
 class GetMedia extends ConsumerWidget {
   const GetMedia({
@@ -31,7 +49,7 @@ class GetMedia extends ConsumerWidget {
           loadingBuilder: loadingBuilder,
           builder: (data) {
             final media = data.where((e) => e.id == id).firstOrNull;
-
+            log(media?.md5String, name: 'GetMedia');
             return builder(media);
           },
         );
@@ -79,6 +97,10 @@ class GetMediaByCollectionId extends ConsumerWidget {
               }
               return 0;
             });
+            log(
+              media.map((e) => e.md5String).join(','),
+              name: 'GetMediaByCollectionId',
+            );
             return builder(CLMedias(media));
           },
         );

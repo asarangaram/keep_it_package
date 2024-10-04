@@ -56,7 +56,7 @@ class PinnedMediaPage extends ConsumerWidget {
                     ),
                     identifier: 'Pinned Media',
                     columns: 2,
-                    onRefresh: () async => theStore.onRefresh(),
+                    onRefresh: () async => theStore.store.reloadStore(),
                     actionMenu: const [],
                     selectionActions: (context, items) {
                       return [

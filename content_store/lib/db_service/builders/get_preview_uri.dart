@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../adapters/provider/uri.dart';
 import '../widgets/broken_image.dart';
 import '../widgets/shimmer.dart';
-import '../../adapters/provider/uri.dart';
 
 class GetPreviewUri extends ConsumerWidget {
   const GetPreviewUri({

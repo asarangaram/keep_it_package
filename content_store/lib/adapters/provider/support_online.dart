@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SupportOnlineNotifier extends AsyncNotifier<bool> {
   @override
   FutureOr<bool> build() {
-    return true;
+    return false;
   }
 }
 

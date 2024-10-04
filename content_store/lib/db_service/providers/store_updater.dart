@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 
 import '../../storage_service/providers/directories.dart';
 import '../models/store_updater.dart';
+import 'db_reader.dart';
 
 class StoreUpdaterNotifier extends AsyncNotifier<StoreUpdater> {
   @override
@@ -19,7 +20,10 @@ class StoreUpdaterNotifier extends AsyncNotifier<StoreUpdater> {
 
     final store = await createStoreInstance(
       fullPath,
-      onReload: () {},
+      onReload: () {
+        ref.read(refreshReaderProvider.notifier).state =
+            DateTime.now().toIso8601String();
+      },
     );
     return StoreUpdater(
       store: store,

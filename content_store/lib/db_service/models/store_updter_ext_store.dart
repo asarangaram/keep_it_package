@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -30,6 +31,7 @@ extension StoreExt on StoreUpdater {
     for (final m in mediaMultiple) {
       await store.upsertMedia(m.copyWith(isDeleted: () => true));
     }
+    store.reloadStore();
     return true;
   }
 
@@ -38,6 +40,7 @@ extension StoreExt on StoreUpdater {
     if (m != null) {
       await store.upsertMedia(m.copyWith(isDeleted: () => true));
     }
+    store.reloadStore();
     return true;
   }
 
@@ -47,6 +50,7 @@ extension StoreExt on StoreUpdater {
     for (final m in mediaMultiple) {
       await store.upsertMedia(m.copyWith(isDeleted: () => true));
     }
+    store.reloadStore();
     return true;
   }
 
@@ -78,7 +82,7 @@ extension StoreExt on StoreUpdater {
         await File(directories.getPreviewAbsolutePath(m)).deleteIfExists();
       }
     }
-
+    store.reloadStore();
     return true;
   }
 
@@ -89,11 +93,14 @@ extension StoreExt on StoreUpdater {
   Future<bool> togglePinMultipleById(Set<int?> ids2Delete) async {
     final media =
         await store.reader.getMediasByIDList(ids2Delete.nonNullableList);
+    final bool res;
     if (media.any((e) => e.pin == null)) {
-      return pinMediaMultiple(media);
+      res = await pinMediaMultiple(media);
     } else {
-      return removePinMediaMultiple(media);
+      res = await removePinMediaMultiple(media);
     }
+    store.reloadStore();
+    return res;
   }
 
   Future<bool> removePinMediaMultiple(
@@ -108,6 +115,7 @@ extension StoreExt on StoreUpdater {
         await store.upsertMedia(m.copyWith(pin: () => null));
       }
     }
+    store.reloadStore();
     return res;
   }
 
@@ -138,7 +146,7 @@ extension StoreExt on StoreUpdater {
     for (final m in updatedMedia) {
       await store.upsertMedia(m);
     }
-
+    store.reloadStore();
     return true;
   }
 
@@ -146,7 +154,7 @@ extension StoreExt on StoreUpdater {
     String ids,
   ) async {
     final res = await albumManager.removeMedia(ids);
-
+    store.reloadStore();
     return res;
   }
 
@@ -164,7 +172,7 @@ extension StoreExt on StoreUpdater {
       if (collection == c) return collection;
     }
     final updated = store.upsertCollection(collection);
-
+    store.reloadStore();
     return updated;
   }
 
@@ -358,8 +366,12 @@ extension StoreExt on StoreUpdater {
               : media.pin,
     );
 
-    return _upsertMedia(updated0,
-        parents: parents, path: path, originalMedia: media);
+    return _upsertMedia(
+      updated0,
+      parents: parents,
+      path: path,
+      originalMedia: media,
+    );
   }
 
   Future<CLMedia?> _upsertMedia(
@@ -391,6 +403,8 @@ extension StoreExt on StoreUpdater {
       updated0.copyWith(updatedDate: DateTime.now),
       parents: parents,
     );
+    log('store updated');
+    store.reloadStore();
     return mediaFromDB;
   }
 
@@ -643,6 +657,7 @@ extension StoreExt on StoreUpdater {
         );
         await Future<void>.delayed(const Duration(microseconds: 10));
       }
+      store.reloadStore();
       await onDone?.call(mediaMultiple: updatedList);
     }
   }
@@ -759,6 +774,7 @@ extension StoreExt on StoreUpdater {
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 1));
+    store.reloadStore();
     onDone(
       existingItems: existingItems.where((e) => e.mediaLog == null).toList(),
       newItems: newItems.where((e) => e.mediaLog == null).toList(),
@@ -783,6 +799,4 @@ extension StoreExt on StoreUpdater {
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }
-
-  void onRefresh() {}
 }

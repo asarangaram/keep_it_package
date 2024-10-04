@@ -84,7 +84,7 @@ abstract class Store {
   Future<void> deleteCollection(Collection collection);
   Future<void> deleteMedia(CLMedia media);
 
-  Future<void> reloadStore();
+  void reloadStore();
 
   Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
 

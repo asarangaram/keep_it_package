@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,6 +75,16 @@ class MediaViewService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log(
+      '${media.map((e) => e.md5String).join(',')}  isPreview: $isPreview',
+      name: 'MediaViewService | build',
+    );
+    if (!isPreview && media.length > 1) {
+      log(
+        'InitialMedia: ${media[initialMediaIndex].md5String}',
+        name: 'MediaViewService | build',
+      );
+    }
     if (isPreview) {
       return Column(
         children: [

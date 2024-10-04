@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
 import 'dart:math' as math;
 
+// ignore: unused_import
 import '../../app_logger.dart';
 
 extension StoreExtensionOnString on String {
@@ -25,12 +26,5 @@ extension StoreExtensionOnString on String {
   String capitalizeFirstLetter() {
     if (isEmpty) return this; // Return the string as is if it's empty
     return '${this[0].toUpperCase()}${substring(1)}';
-  }
-}
-
-bool _disableInfoLogger = true;
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
   }
 }

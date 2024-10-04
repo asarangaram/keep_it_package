@@ -10,8 +10,9 @@ final mediaPathDeterminerProvider =
     FutureProvider<MediaPathDeterminer>((ref) async {
   final directories = await ref.watch(deviceDirectoriesProvider.future);
   final supportOnline = await ref.watch(supportOnlineProvider.future);
-  final server = ref.watch(serverProvider);
+
   if (supportOnline) {
+    final server = ref.watch(serverProvider);
     return MediaPathDeterminerWithOnlineSupport(
       directories: directories,
       server: server.identity,
