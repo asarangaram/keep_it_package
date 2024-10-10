@@ -29,7 +29,7 @@ extension StoreExt on StoreUpdater {
     final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.copyWith(isDeleted: () => true));
+      await store.upsertMedia(m.updateContent(isDeleted: () => true));
     }
     store.reloadStore();
     return true;
@@ -38,7 +38,7 @@ extension StoreExt on StoreUpdater {
   Future<bool> deleteMediaById(int id) async {
     final m = await store.reader.getMediaById(id);
     if (m != null) {
-      await store.upsertMedia(m.copyWith(isDeleted: () => true));
+      await store.upsertMedia(m.updateContent(isDeleted: () => true));
     }
     store.reloadStore();
     return true;
@@ -48,7 +48,7 @@ extension StoreExt on StoreUpdater {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.copyWith(isDeleted: () => true));
+      await store.upsertMedia(m.updateContent(isDeleted: () => true));
     }
     store.reloadStore();
     return true;
@@ -58,7 +58,7 @@ extension StoreExt on StoreUpdater {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.copyWith(isDeleted: () => false));
+      await store.upsertMedia(m.updateContent(isDeleted: () => false));
     }
     store.reloadStore();
     return true;
@@ -113,7 +113,7 @@ extension StoreExt on StoreUpdater {
     );
     if (res) {
       for (final m in pinnedMedia) {
-        await store.upsertMedia(m.copyWith(pin: () => null));
+        await store.upsertMedia(m.updateStatus(pin: () => null));
       }
     }
     store.reloadStore();
@@ -140,7 +140,7 @@ extension StoreExt on StoreUpdater {
           desc: 'KeepIT',
         );
         if (pin != null) {
-          updatedMedia.add(media.copyWith(pin: () => pin));
+          updatedMedia.add(media.updateStatus(pin: () => pin));
         }
       }
     }
@@ -184,8 +184,8 @@ extension StoreExt on StoreUpdater {
     ValueGetter<String>? name,
     ValueGetter<String?>? ref,
     ValueGetter<DateTime?>? originalDate,
-    ValueGetter<DateTime?>? createdDate,
-    ValueGetter<DateTime?>? updatedDate,
+    /* ValueGetter<DateTime?>? createdDate,
+    ValueGetter<DateTime?>? updatedDate, */
     /*  ValueGetter<String?>? md5String, */
     ValueGetter<bool?>? isDeleted,
     ValueGetter<bool?>? isHidden,
@@ -248,14 +248,12 @@ extension StoreExt on StoreUpdater {
       mustDownloadOriginal: mustDownloadOriginal?.call() ?? false,
       ref: ref != null ? ref() : null,
       originalDate: originalDate != null ? originalDate() : null,
-      createdDate: createdDate != null ? createdDate() : null,
-      updatedDate: updatedDate != null ? updatedDate() : null,
       isDeleted: isDeleted != null ? isDeleted() : false,
 
       pin: pin != null ? pin() : null,
     );
-    return _upsertMedia(
-      updated0.copyWith(createdDate: DateTime.now),
+    return upsertMedia(
+      updated0,
       parents: parents,
       path: path,
     );
@@ -332,42 +330,42 @@ extension StoreExt on StoreUpdater {
       defaultName = name != null ? name() : media.name;
     }
 
-    final updated0 = CLMedia.strict(
-      id: id != null ? id() : media.id,
-      md5String: computedMD5String,
-      name: defaultName,
-      type: type ?? media.type,
-      collectionId: collectionId1,
-      isHidden: isHidden0 ?? (isHidden != null ? isHidden() : media.isHidden),
-      fExt: fExt0,
-      isAux: isAux0,
+    final updated0 = media
+        .updateContent(
+          id: id,
+          md5String: () => computedMD5String,
+          name: () => defaultName,
+          type: type == null ? null : () => type,
+          collectionId: () => collectionId1,
+          fExt: () => fExt0,
+          isAux: () => isAux0,
+          // Set defaults if not provided
+          serverUID: () => serverUID != null ? serverUID() : media.serverUID,
+          ref: ref,
+          originalDate: originalDate,
+          isDeleted: isDeleted,
+          // clear pin if new path provided
+        )
+        .updateStatus(
+          isHidden: () =>
+              isHidden0 ?? (isHidden != null ? isHidden() : media.isHidden),
+          isPreviewCached: () => isPreviewCached?.call() ?? false,
+          isMediaCached: () => isMediaCached?.call() ?? false,
+          isMediaOriginal: () => isMediaOriginal?.call() ?? false,
+          isEdited: () => isEdited?.call() ?? false,
+          previewLog: () => previewLog != null ? previewLog() : null,
+          mediaLog: () => mediaLog != null ? mediaLog() : null,
+          haveItOffline: () => haveItOffline?.call() ?? media.haveItOffline,
+          mustDownloadOriginal: () =>
+              mustDownloadOriginal?.call() ?? media.mustDownloadOriginal,
+          pin: () => pin != null
+              ? pin()
+              : (path != null)
+                  ? null
+                  : media.pin,
+        );
 
-      // Set defaults if not provided
-      isPreviewCached: isPreviewCached?.call() ?? false,
-      isMediaCached: isMediaCached?.call() ?? false,
-      isMediaOriginal: isMediaOriginal?.call() ?? false,
-
-      isEdited: isEdited?.call() ?? false,
-      previewLog: previewLog != null ? previewLog() : null,
-      mediaLog: mediaLog != null ? mediaLog() : null,
-      serverUID: serverUID != null ? serverUID() : media.serverUID,
-      haveItOffline: haveItOffline?.call() ?? media.haveItOffline,
-      mustDownloadOriginal:
-          mustDownloadOriginal?.call() ?? media.mustDownloadOriginal,
-      ref: ref != null ? ref() : media.ref,
-      originalDate: originalDate != null ? originalDate() : media.originalDate,
-      createdDate: createdDate != null ? createdDate() : media.originalDate,
-      updatedDate: updatedDate != null ? updatedDate() : media.updatedDate,
-      isDeleted: isDeleted != null ? isDeleted() : media.isDeleted,
-      // clear pin if new path provided
-      pin: pin != null
-          ? pin()
-          : (path != null)
-              ? null
-              : media.pin,
-    );
-
-    return _upsertMedia(
+    return upsertMedia(
       updated0,
       parents: parents,
       path: path,
@@ -375,11 +373,12 @@ extension StoreExt on StoreUpdater {
     );
   }
 
-  Future<CLMedia?> _upsertMedia(
+  Future<CLMedia?> upsertMedia(
     CLMedia media, {
     CLMedia? originalMedia,
     String? path,
     List<CLMedia>? parents,
+    bool shouldRefresh = true,
   }) async {
     // Save Media
     final CLMedia updated0;
@@ -388,7 +387,7 @@ extension StoreExt on StoreUpdater {
       File(path).copySync(currentMediaPath);
 
       updated0 = await _generateMediaPreview(
-        media: media.copyWith(
+        media: media.updateStatus(
           isMediaCached: () => true,
           isMediaOriginal: () => true,
         ),
@@ -399,13 +398,16 @@ extension StoreExt on StoreUpdater {
     if (originalMedia == updated0) {
       return originalMedia;
     }
+
     // Update in DB
     final mediaFromDB = await store.upsertMedia(
-      updated0.copyWith(updatedDate: DateTime.now),
+      updated0,
       parents: parents,
     );
     log('store updated');
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return mediaFromDB;
   }
 
@@ -440,20 +442,20 @@ extension StoreExt on StoreUpdater {
         },
       );
       if (res) {
-        updateMedia = updateMedia.copyWith(
+        updateMedia = updateMedia.updateStatus(
           isPreviewCached: () => true,
           previewLog: () => null,
         );
       } else {
         if (error.isNotEmpty) {
-          updateMedia = updateMedia.copyWith(
+          updateMedia = updateMedia.updateStatus(
             isPreviewCached: () => false,
             previewLog: () => jsonEncode(error),
           );
         }
       }
     } catch (e) {
-      updateMedia = updateMedia.copyWith(
+      updateMedia = updateMedia.updateStatus(
         isPreviewCached: () => false,
         previewLog: () =>
             jsonEncode({'decodeError': 'Exception while generating preview'}),

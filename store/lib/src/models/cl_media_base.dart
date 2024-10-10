@@ -17,8 +17,6 @@ class CLMediaBase {
     required this.fExt,
     this.ref,
     this.originalDate,
-    this.createdDate,
-    this.updatedDate,
     this.md5String,
     this.isDeleted,
     this.isHidden,
@@ -35,12 +33,6 @@ class CLMediaBase {
       ref: map['ref'] != null ? map['ref'] as String : null,
       originalDate: map['originalDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
-          : null,
-      createdDate: map['createdDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
-          : null,
-      updatedDate: map['updatedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : null,
       md5String: map['md5String'] != null ? map['md5String'] as String : null,
       isDeleted: (map['isDeleted'] as int) != 0,
@@ -60,8 +52,7 @@ class CLMediaBase {
   final String fExt;
   final String? ref;
   final DateTime? originalDate;
-  final DateTime? createdDate;
-  final DateTime? updatedDate;
+
   final String? md5String;
   final bool? isDeleted;
   final bool? isHidden;
@@ -79,8 +70,6 @@ class CLMediaBase {
     ValueGetter<String>? fExt,
     ValueGetter<String?>? ref,
     ValueGetter<DateTime?>? originalDate,
-    ValueGetter<DateTime?>? createdDate,
-    ValueGetter<DateTime?>? updatedDate,
     ValueGetter<String?>? md5String,
     ValueGetter<bool?>? isDeleted,
     ValueGetter<bool?>? isHidden,
@@ -95,8 +84,6 @@ class CLMediaBase {
       collectionId: collectionId != null ? collectionId() : this.collectionId,
       ref: ref != null ? ref() : this.ref,
       originalDate: originalDate != null ? originalDate() : this.originalDate,
-      createdDate: createdDate != null ? createdDate() : this.createdDate,
-      updatedDate: updatedDate != null ? updatedDate() : this.updatedDate,
       md5String: md5String != null ? md5String() : this.md5String,
       isDeleted: isDeleted != null ? isDeleted() : this.isDeleted,
       isHidden: isHidden != null ? isHidden() : this.isHidden,
@@ -108,7 +95,7 @@ class CLMediaBase {
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'CLMediaBase(name: $name, type: $type, fExt: $fExt, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux)';
+    return 'CLMediaBase(name: $name, type: $type, fExt: $fExt, ref: $ref, originalDate: $originalDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux)';
   }
 
   @override
@@ -120,8 +107,6 @@ class CLMediaBase {
         other.fExt == fExt &&
         other.ref == ref &&
         other.originalDate == originalDate &&
-        other.createdDate == createdDate &&
-        other.updatedDate == updatedDate &&
         other.md5String == md5String &&
         other.isDeleted == isDeleted &&
         other.isHidden == isHidden &&
@@ -137,8 +122,6 @@ class CLMediaBase {
         fExt.hashCode ^
         ref.hashCode ^
         originalDate.hashCode ^
-        createdDate.hashCode ^
-        updatedDate.hashCode ^
         md5String.hashCode ^
         isDeleted.hashCode ^
         isHidden.hashCode ^
@@ -154,8 +137,6 @@ class CLMediaBase {
       'fExt': fExt,
       'ref': ref,
       'originalDate': originalDate?.millisecondsSinceEpoch,
-      'createdDate': createdDate?.millisecondsSinceEpoch,
-      'updatedDate': updatedDate?.millisecondsSinceEpoch,
       'md5String': md5String,
       'isDeleted': (isDeleted ?? false) ? 1 : 0,
       'isHidden': (isHidden ?? false) ? 1 : 0,

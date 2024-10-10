@@ -1,22 +1,28 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 
+import 'package:background_downloader/background_downloader.dart';
+import 'package:content_store/extensions/ext_cl_media.dart';
+import 'package:content_store/online_service/providers/downloader_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store/store.dart';
 
 import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
 import '../models/cl_server.dart';
+import '../models/downloader.dart';
 import '../models/server.dart';
 import '../models/store_updater_ext_server.dart';
 
 class ServerNotifier extends StateNotifier<Server> {
-  ServerNotifier(this.storeUpdater) : super(const Server()) {
+  ServerNotifier(this.storeUpdater, this.downloader) : super(const Server()) {
     _initialize();
   }
 
   Timer? timer;
   Future<StoreUpdater> storeUpdater;
+  Downloader downloader;
 
   Future<void> _initialize() async {
     final prefs = await SharedPreferences.getInstance();
@@ -122,11 +128,31 @@ class ServerNotifier extends StateNotifier<Server> {
   }
 
   Future<void> _sync() async {
-    final mapList = await state.identity?.downloadMediaInfo();
-    if (mapList != null) {
-      log('Found ${mapList.length} items in the server');
-      return (await storeUpdater).sync(mapList);
-    }
+    final mapList = await state.identity!.downloadMediaInfo();
+    log('Found ${mapList.length} items in the server');
+    await (await storeUpdater).sync(mapList, onUploadMedia: uploadNewMedia);
+    runningTasks.removeWhere((e) => e.completer.isCompleted);
+  }
+
+  //BaseDirectory get _previewBaseDirectory => BaseDirectory.applicationSupport;
+  BaseDirectory get _mediaBaseDirectory => BaseDirectory.applicationSupport;
+  final runningTasks = <TransferHandle>[];
+
+  Future<TransferHandle> uploadNewMedia(
+    CLMedia media,
+    String group, {
+    required Map<String, String> fields,
+  }) async {
+    final task = downloader.enqueueUpload(
+      url: state.identity!.getEndpointURI(media.mediaPostEndPoint!).toString(),
+      baseDirectory: _mediaBaseDirectory,
+      directory: (await storeUpdater).directories.media.name,
+      filename: media.mediaFileName,
+      group: group,
+      fields: fields,
+    );
+    runningTasks.add(task);
+    return task;
   }
 
   @override
@@ -153,7 +179,8 @@ class ServerNotifier extends StateNotifier<Server> {
 
 final serverProvider = StateNotifierProvider<ServerNotifier, Server>((ref) {
   final storeUpdater = ref.watch(storeUpdaterProvider.future);
-  final notifier = ServerNotifier(storeUpdater);
+  final downloader = ref.watch(downloaderProvider);
+  final notifier = ServerNotifier(storeUpdater, downloader);
   ref.listenSelf((prev, curr) {
     if (curr.canSync && !(prev?.canSync ?? false)) {
       notifier.sync();

@@ -96,5 +96,5 @@ extension FilenameExtOnCLMedia on CLMedia {
   String? get previewEndPoint =>
       serverUID == null ? null : '/media/$serverUID/preview';
 
-  String? get mediaUploadEndPoint => '/media';
+  String? get mediaPostEndPoint => '/media';
 }

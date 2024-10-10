@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:meta/meta.dart';
 
@@ -8,7 +9,7 @@ import 'cl_media_type.dart';
 
 @immutable
 class CLMedia extends CLMediaBase {
-  const CLMedia({
+  CLMedia({
     required super.name,
     required super.type,
     required super.fExt,
@@ -24,40 +25,69 @@ class CLMedia extends CLMediaBase {
     required this.mustDownloadOriginal,
     super.ref,
     super.originalDate,
-    super.createdDate,
-    super.updatedDate,
+    this.createdDate,
+    this.updatedDate,
     super.md5String,
     super.isDeleted,
     super.isHidden,
     super.pin,
     super.isAux,
     this.id,
-  });
-  const CLMedia.strict({
-    required super.name,
-    required super.type,
-    required super.fExt,
-    required super.collectionId,
-    required this.isPreviewCached,
-    required this.isMediaCached,
-    required this.isMediaOriginal,
-    required this.isEdited,
-    required this.previewLog,
-    required this.mediaLog,
-    required this.serverUID,
-    required this.haveItOffline,
-    required this.mustDownloadOriginal,
-    required super.ref,
-    required super.originalDate,
-    required super.createdDate,
-    required super.updatedDate,
-    required super.md5String,
-    required super.isDeleted,
-    required super.isHidden,
-    required super.pin,
-    required super.isAux,
-    required this.id,
-  });
+  }) {
+    log('New: $this', name: 'CLMedia');
+  }
+  factory CLMedia.strict({
+    required String name,
+    required CLMediaType type,
+    required String fExt,
+    required String? ref,
+    required DateTime? originalDate,
+    required String? md5String,
+    required bool? isDeleted,
+    required bool? isHidden,
+    required String? pin,
+    required int? collectionId,
+    required bool isAux,
+    required int? id,
+    required bool isPreviewCached,
+    required bool isMediaCached,
+    required String? previewLog,
+    required String? mediaLog,
+    required bool isMediaOriginal,
+    required int? serverUID,
+    required bool isEdited,
+    required bool haveItOffline,
+    required bool mustDownloadOriginal,
+    DateTime? createdDate,
+    DateTime? updatedDate,
+  }) {
+    final time = DateTime.now();
+    return CLMedia(
+      name: name,
+      type: type,
+      fExt: fExt,
+      collectionId: collectionId,
+      isPreviewCached: isPreviewCached,
+      isMediaCached: isMediaCached,
+      isMediaOriginal: isMediaOriginal,
+      isEdited: isEdited,
+      previewLog: previewLog,
+      mediaLog: mediaLog,
+      serverUID: serverUID,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+      ref: ref,
+      md5String: md5String,
+      isDeleted: isDeleted,
+      isHidden: isHidden,
+      isAux: isAux,
+      id: id,
+      pin: pin,
+      originalDate: originalDate,
+      updatedDate: createdDate ?? time,
+      createdDate: updatedDate ?? time,
+    );
+  }
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
     return CLMedia(
@@ -109,8 +139,10 @@ class CLMedia extends CLMediaBase {
   final bool isEdited;
   final bool haveItOffline;
   final bool mustDownloadOriginal;
-  @override
-  CLMedia copyWith({
+  final DateTime? createdDate;
+  final DateTime? updatedDate;
+
+  CLMedia _copyWith({
     ValueGetter<String>? name,
     ValueGetter<CLMediaType>? type,
     ValueGetter<String>? fExt,
@@ -259,6 +291,22 @@ class CLMedia extends CLMediaBase {
     };
   }
 
+  Map<String, String> toUploadMap() {
+    final map = toMap();
+    final serverFields = <String>[
+      'name',
+      'ref',
+      'originalDate',
+      'createdDate',
+      'updatedDate',
+      'isDeleted',
+    ];
+    map.removeWhere(
+      (key, value) => !serverFields.contains(key) || value == null,
+    );
+    return map.map((key, value) => MapEntry(key, value.toString()));
+  }
+
   @override
   String toJson() => json.encode(toMap());
 
@@ -276,4 +324,94 @@ class CLMedia extends CLMediaBase {
   bool get isPreviewDownloadFailed => serverUID != null && previewLog != null;
 
   bool get isPreviewLocallyAvailable => serverUID == null || isPreviewCached;
+
+  /// Modifying any of these parameters won't modify the date.
+  CLMedia updateStatus({
+    ValueGetter<bool?>? isHidden,
+    ValueGetter<String?>? pin,
+    ValueGetter<bool>? isMediaCached,
+    ValueGetter<bool>? isPreviewCached,
+    ValueGetter<String?>? previewLog,
+    ValueGetter<String?>? mediaLog,
+    ValueGetter<bool>? isMediaOriginal,
+    ValueGetter<bool>? isEdited,
+    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool>? mustDownloadOriginal,
+  }) {
+    return _copyWith(
+      isHidden: isHidden,
+      pin: pin,
+      isMediaCached: isMediaCached,
+      isPreviewCached: isPreviewCached,
+      previewLog: previewLog,
+      mediaLog: mediaLog,
+      isMediaOriginal: isMediaOriginal,
+      isEdited: isEdited,
+      haveItOffline: haveItOffline,
+      mustDownloadOriginal: mustDownloadOriginal,
+    );
+  }
+
+  /// Modifying any of these parameter will be treated as content update
+  /// and the updatedDate is automatically updated.
+  /// if  createdDate is missing (is null), it will be updated with updatedDate
+  ///
+  CLMedia updateContent({
+    ValueGetter<String>? name,
+    ValueGetter<CLMediaType>? type,
+    ValueGetter<String>? fExt,
+    ValueGetter<String?>? ref,
+    ValueGetter<DateTime?>? originalDate,
+    ValueGetter<String?>? md5String,
+    ValueGetter<bool?>? isDeleted,
+    ValueGetter<int?>? collectionId,
+    ValueGetter<bool>? isAux,
+    ValueGetter<int?>? id,
+    ValueGetter<int?>? serverUID,
+  }) {
+    final time = DateTime.now();
+    return _copyWith(
+      name: name,
+      type: type,
+      fExt: fExt,
+      ref: ref,
+      md5String: md5String,
+      isDeleted: isDeleted,
+      collectionId: collectionId,
+      isAux: isAux,
+      id: id,
+      serverUID: serverUID,
+      updatedDate: () => time,
+      createdDate: () => createdDate ?? time,
+    );
+  }
+
+  @override
+  CLMedia copyWith({
+    ValueGetter<String>? name,
+    ValueGetter<CLMediaType>? type,
+    ValueGetter<String>? fExt,
+    ValueGetter<String?>? ref,
+    ValueGetter<DateTime?>? originalDate,
+    ValueGetter<DateTime?>? createdDate,
+    ValueGetter<DateTime?>? updatedDate,
+    ValueGetter<String?>? md5String,
+    ValueGetter<bool?>? isDeleted,
+    ValueGetter<bool?>? isHidden,
+    ValueGetter<String?>? pin,
+    ValueGetter<int?>? collectionId,
+    ValueGetter<bool>? isAux,
+    ValueGetter<int?>? id,
+    ValueGetter<bool>? isPreviewCached,
+    ValueGetter<bool>? isMediaCached,
+    ValueGetter<String?>? previewLog,
+    ValueGetter<String?>? mediaLog,
+    ValueGetter<bool>? isMediaOriginal,
+    ValueGetter<int?>? serverUID,
+    ValueGetter<bool>? isEdited,
+    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool>? mustDownloadOriginal,
+  }) {
+    throw Exception('use either updateContent or updateStatus');
+  }
 }

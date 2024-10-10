@@ -2,8 +2,31 @@
 import 'dart:async';
 
 import 'package:background_downloader/background_downloader.dart';
+import 'package:flutter/foundation.dart';
 
 import 'downloader_status.dart';
+
+@immutable
+class TaskCompleterResult {
+  const TaskCompleterResult({
+    required this.status,
+    this.errorLog,
+  });
+
+  final TaskStatusUpdate status;
+  final String? errorLog;
+
+  @override
+  String toString() => 'TaskCompleterResult(status: ${status.responseBody}, '
+      'errorLog: $errorLog)';
+}
+
+@immutable
+class TransferHandle {
+  const TransferHandle(this.task, this.completer);
+  final Task task;
+  final Completer<TaskCompleterResult> completer;
+}
 
 extension StatisticsExtOnTaskStatus on TaskStatus {
   bool get isWaiting => [
@@ -46,24 +69,30 @@ class Downloader {
           }
           onStatusUpdate(status);
 
-          downloaderStatusStreamController.add(status);
-          final handler = downloads[update.task.taskId];
+          final handler = transfer[update.task.taskId];
 
           switch (update.status) {
             case TaskStatus.complete:
-              handler?.call(update.task, status: update);
+              handler?.completer.complete(
+                TaskCompleterResult(status: update),
+              );
+
             case TaskStatus.failed:
-              handler?.call(
-                update.task,
-                errorLog: update.responseBody ?? 'Unknown Error',
-                status: update,
+              handler?.completer.complete(
+                TaskCompleterResult(
+                  status: update,
+                  errorLog: update.responseBody ?? 'Unknown Error',
+                ),
               );
+
             case TaskStatus.canceled:
-              handler?.call(
-                update.task,
-                errorLog: 'Download cancelled, try again',
-                status: update,
+              handler?.completer.complete(
+                TaskCompleterResult(
+                  status: update,
+                  errorLog: 'Download cancelled, try again',
+                ),
               );
+
             case TaskStatus.running:
             case TaskStatus.enqueued:
             case TaskStatus.notFound:
@@ -79,27 +108,16 @@ class Downloader {
   }
 
   late final FileDownloader fileDownloader;
-  final downloads = <String,
-      Future<void> Function(
-    Task task, {
-    required TaskStatusUpdate status,
-    String? errorLog,
-  })?>{};
+  final transfer = <String, TransferHandle>{};
   final statusMap = <String, TaskStatus>{};
-  final downloaderStatusStreamController = StreamController<DownloaderStatus>();
 
-  Future<DownloadTask> enqueue({
+  TransferHandle enqueue({
     required String url,
     required BaseDirectory baseDirectory,
     required String directory,
     required String filename,
-    Future<void> Function(
-      Task task, {
-      required TaskStatusUpdate status,
-      String? errorLog,
-    })? onDone,
     String group = 'Unclassified',
-  }) async {
+  }) {
     final task = DownloadTask(
       url: url,
       filename: filename,
@@ -108,25 +126,20 @@ class Downloader {
       group: group,
     );
 
-    downloads[task.taskId] = onDone;
-
-    await fileDownloader.enqueue(task);
-    return task;
+    transfer[task.taskId] =
+        TransferHandle(task, Completer<TaskCompleterResult>());
+    fileDownloader.enqueue(task);
+    return transfer[task.taskId]!;
   }
 
-  Future<UploadTask> enqueueUpload({
+  TransferHandle enqueueUpload({
     required String url,
     required BaseDirectory baseDirectory,
     required String directory,
     required String filename,
     required Map<String, String> fields,
-    Future<void> Function(
-      Task task, {
-      required TaskStatusUpdate status,
-      String? errorLog,
-    })? onDone,
     String group = 'upload',
-  }) async {
+  }) {
     final task = UploadTask(
       url: url,
       filename: filename,
@@ -137,10 +150,11 @@ class Downloader {
       group: group,
     );
 
-    downloads[task.taskId] = onDone;
+    transfer[task.taskId] =
+        TransferHandle(task, Completer<TaskCompleterResult>());
 
-    await fileDownloader.enqueue(task);
-    return task;
+    fileDownloader.enqueue(task);
+    return transfer[task.taskId]!;
   }
 
   Future<bool> cancel(String taskId) async {
@@ -150,13 +164,9 @@ class Downloader {
   Future<void> removeCompleted() async {
     final records = await fileDownloader.database.allRecords();
 
-    downloads.removeWhere((key, value) {
+    transfer.removeWhere((key, value) {
       return records.where((e) => e.taskId == key).firstOrNull?.status ==
           TaskStatus.complete;
     });
-  }
-
-  void dispose() {
-    downloaderStatusStreamController.close();
   }
 }

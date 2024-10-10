@@ -1,6 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'dart:developer';
 
+import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/db_service/models/store_updter_ext_store.dart';
+import 'package:meta/meta.dart';
 import 'package:mime/mime.dart';
 import 'package:store/store.dart';
 
@@ -8,9 +12,27 @@ import '../../db_service/models/store_updater.dart';
 import '../../extensions/ext_cl_media.dart';
 import '../../extensions/ext_store.dart';
 import '../../extensions/list_ext.dart';
+import 'downloader.dart';
+
+@immutable
+class TaskCompleter {
+  const TaskCompleter(this.task, this.completer);
+  final Task task;
+  final Completer<void> completer;
+
+  @override
+  String toString() => 'TaskCompleter(task: $task, completer: $completer)';
+}
 
 extension ServerExt on StoreUpdater {
-  Future<void> sync(List<Map<String, dynamic>> mapList) async {
+  Future<void> sync(
+    List<Map<String, dynamic>> mapList, {
+    required Future<TransferHandle> Function(
+      CLMedia media,
+      String group, {
+      required Map<String, String> fields,
+    }) onUploadMedia,
+  }) async {
     final serverUpdates = await analyseChanges(
       mapList,
       createCollectionIfMissing: (label) async {
@@ -18,8 +40,9 @@ extension ServerExt on StoreUpdater {
             upsertCollection(Collection(label: label));
       },
     );
-    print(serverUpdates);
-    await Future<void>.delayed(const Duration(seconds: 10));
+
+    await updateChanges(serverUpdates, onUploadMedia: onUploadMedia);
+    // await Future<void>.delayed(const Duration(seconds: 10));
   }
 
   Future<MediaUpdatesFromServer> analyseChanges(
@@ -96,8 +119,10 @@ extension ServerExt on StoreUpdater {
           ),
         );
       } else {
+        final updateMedia = StoreExtCLMedia.mediaFromServerMap(mediaInDB, map);
+
         updatedOnServer.add(
-          StoreExtCLMedia.mediaFromServerMap(mediaInDB, map),
+          updateMedia,
         );
       }
 
@@ -122,5 +147,94 @@ extension ServerExt on StoreUpdater {
     log('Analyse Result: $mediaUpdates');
 
     return mediaUpdates;
+  }
+
+  Future<bool> updateChanges(
+    MediaUpdatesFromServer updates, {
+    required Future<TransferHandle> Function(
+      CLMedia media,
+      String group, {
+      required Map<String, String> fields,
+    }) onUploadMedia,
+  }) async {
+    var result = true;
+
+    if (updates.deletedOnServer.isNotEmpty) {
+      result = await permanentlyDeleteMediaMultipleById(
+        updates.deletedOnServer.map((e) => e.id!).toSet(),
+      );
+    }
+    final upserts = [...updates.updatedOnServer, ...updates.newOnServer];
+    if (upserts.isNotEmpty) {
+      try {
+        for (final m in updates.updatedOnServer) {
+          await upsertMedia(m, shouldRefresh: false);
+        }
+        for (final m in updates.newOnServer) {
+          await upsertMedia(m, shouldRefresh: false);
+        }
+      } catch (e) {
+        result |= false;
+      }
+    }
+    if (updates.newOnLocal.isNotEmpty) {
+      result |= await insertMediaOnServer(
+        {...updates.newOnLocal},
+        onUploadMedia: onUploadMedia,
+      );
+    }
+
+    /* result |= await insertMediaOnServer({...updates.newOnLocal});
+    result |= await updateMediaOnServer({...updates.updatedOnLocal});
+    result |= await deleteMediaByIdOnServer(
+      {...updates.deletedOnServer},
+    ); */
+
+    return result;
+  }
+
+  Future<bool> insertMediaOnServer(
+    Set<CLMedia> mediaSet, {
+    required Future<TransferHandle> Function(
+      CLMedia media,
+      String group, {
+      required Map<String, String> fields,
+    }) onUploadMedia,
+  }) async {
+    log('trigger upload for ${mediaSet.length} new media');
+    final currentTasks = <TransferHandle>[];
+    for (final media in mediaSet) {
+      if (media.collectionId != null) {
+        {
+          final collection =
+              await store.reader.getCollectionById(media.collectionId!);
+          final fields = media.toUploadMap();
+          fields['collectionLabel'] = collection!.label;
+
+          final instance = await onUploadMedia(
+            media,
+            'upload',
+            fields: fields,
+          );
+
+          currentTasks.add(instance);
+        }
+      }
+    }
+    // ignore: unused_local_variable
+    final results =
+        await Future.wait(currentTasks.map((e) => e.completer.future));
+
+    // FIXME: Handle results here
+
+    return false;
+  }
+
+  Future<bool> updateMediaOnServer(Set<TrackedMedia> mediaSet) async {
+    return false;
+  }
+
+  Future<bool> deleteMediaByIdOnServer(Set<CLMedia> mediaSet) async {
+    return false;
   }
 }
