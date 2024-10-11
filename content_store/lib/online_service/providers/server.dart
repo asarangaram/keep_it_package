@@ -130,8 +130,8 @@ class ServerNotifier extends StateNotifier<Server> {
   Future<void> _sync() async {
     final mapList = await state.identity!.downloadMediaInfo();
     log('Found ${mapList.length} items in the server');
-    await (await storeUpdater).sync(mapList, onUploadMedia: uploadNewMedia);
-    runningTasks.removeWhere((e) => e.completer.isCompleted);
+    //await (await storeUpdater).sync(mapList, onUploadMedia: uploadNewMedia);
+    //runningTasks.removeWhere((e) => e.completer.isCompleted);
   }
 
   //BaseDirectory get _previewBaseDirectory => BaseDirectory.applicationSupport;
