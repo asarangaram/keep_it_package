@@ -23,10 +23,10 @@ class CLMedia extends CLMediaBase {
     required this.serverUID,
     required this.haveItOffline,
     required this.mustDownloadOriginal,
+    required this.createdDate,
+    required this.updatedDate,
     super.ref,
     super.originalDate,
-    this.createdDate,
-    this.updatedDate,
     super.md5String,
     super.isDeleted,
     super.isHidden,
@@ -98,12 +98,10 @@ class CLMedia extends CLMediaBase {
       originalDate: map['originalDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
           : null,
-      createdDate: map['createdDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
-          : null,
-      updatedDate: map['updatedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
-          : null,
+      createdDate:
+          DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int),
+      updatedDate:
+          DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int),
       md5String: map['md5String'] != null ? map['md5String'] as String : null,
       isDeleted: (map['isDeleted'] as int) != 0,
       isHidden: (map['isHidden'] as int? ?? 0) != 0,
@@ -139,8 +137,8 @@ class CLMedia extends CLMediaBase {
   final bool isEdited;
   final bool haveItOffline;
   final bool mustDownloadOriginal;
-  final DateTime? createdDate;
-  final DateTime? updatedDate;
+  final DateTime createdDate;
+  final DateTime updatedDate;
 
   CLMedia _copyWith({
     ValueGetter<String>? name,
@@ -270,8 +268,8 @@ class CLMedia extends CLMediaBase {
       'fExt': fExt,
       'ref': ref,
       'originalDate': originalDate?.millisecondsSinceEpoch,
-      'createdDate': createdDate?.millisecondsSinceEpoch,
-      'updatedDate': updatedDate?.millisecondsSinceEpoch,
+      'createdDate': createdDate.millisecondsSinceEpoch,
+      'updatedDate': updatedDate.millisecondsSinceEpoch,
       'md5String': md5String,
       'isDeleted': (isDeleted ?? false) ? 1 : 0,
       'isHidden': (isHidden ?? false) ? 1 : 0,
@@ -334,7 +332,6 @@ class CLMedia extends CLMediaBase {
     ValueGetter<String?>? previewLog,
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<bool>? isEdited,
     ValueGetter<bool>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
   }) {
@@ -346,7 +343,6 @@ class CLMedia extends CLMediaBase {
       previewLog: previewLog,
       mediaLog: mediaLog,
       isMediaOriginal: isMediaOriginal,
-      isEdited: isEdited,
       haveItOffline: haveItOffline,
       mustDownloadOriginal: mustDownloadOriginal,
     );
@@ -357,6 +353,7 @@ class CLMedia extends CLMediaBase {
   /// if  createdDate is missing (is null), it will be updated with updatedDate
   ///
   CLMedia updateContent({
+    required bool isEdited,
     ValueGetter<String>? name,
     ValueGetter<CLMediaType>? type,
     ValueGetter<String>? fExt,
@@ -382,7 +379,7 @@ class CLMedia extends CLMediaBase {
       id: id,
       serverUID: serverUID,
       updatedDate: () => time,
-      createdDate: () => createdDate ?? time,
+      isEdited: () => isEdited,
     );
   }
 

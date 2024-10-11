@@ -29,7 +29,12 @@ extension StoreExt on StoreUpdater {
     final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.updateContent(isDeleted: () => true));
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => true,
+          isEdited: true,
+        ),
+      );
     }
     store.reloadStore();
     return true;
@@ -38,7 +43,12 @@ extension StoreExt on StoreUpdater {
   Future<bool> deleteMediaById(int id) async {
     final m = await store.reader.getMediaById(id);
     if (m != null) {
-      await store.upsertMedia(m.updateContent(isDeleted: () => true));
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => true,
+          isEdited: true,
+        ),
+      );
     }
     store.reloadStore();
     return true;
@@ -48,7 +58,12 @@ extension StoreExt on StoreUpdater {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.updateContent(isDeleted: () => true));
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => true,
+          isEdited: true,
+        ),
+      );
     }
     store.reloadStore();
     return true;
@@ -58,7 +73,12 @@ extension StoreExt on StoreUpdater {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
-      await store.upsertMedia(m.updateContent(isDeleted: () => false));
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => false,
+          isEdited: true,
+        ),
+      );
     }
     store.reloadStore();
     return true;
@@ -261,6 +281,7 @@ extension StoreExt on StoreUpdater {
 
   Future<CLMedia?> updateMedia(
     CLMedia media, {
+    required bool isEdited,
     String? path,
     CLMediaType? type,
     ValueGetter<String>? fExt,
@@ -282,7 +303,6 @@ extension StoreExt on StoreUpdater {
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<int?>? serverUID,
-    ValueGetter<bool>? isEdited,
     ValueGetter<bool>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
@@ -344,6 +364,7 @@ extension StoreExt on StoreUpdater {
           ref: ref,
           originalDate: originalDate,
           isDeleted: isDeleted,
+          isEdited: isEdited,
           // clear pin if new path provided
         )
         .updateStatus(
@@ -352,7 +373,6 @@ extension StoreExt on StoreUpdater {
           isPreviewCached: () => isPreviewCached?.call() ?? false,
           isMediaCached: () => isMediaCached?.call() ?? false,
           isMediaOriginal: () => isMediaOriginal?.call() ?? false,
-          isEdited: () => isEdited?.call() ?? false,
           previewLog: () => previewLog != null ? previewLog() : null,
           mediaLog: () => mediaLog != null ? mediaLog() : null,
           haveItOffline: () => haveItOffline?.call() ?? media.haveItOffline,
@@ -610,14 +630,26 @@ extension StoreExt on StoreUpdater {
     String path, {
     required CLMedia media,
   }) async {
-    return (await updateMedia(media, path: path)) ?? media;
+    return (await updateMedia(
+          media,
+          path: path,
+          isEdited: true,
+        )) ??
+        media;
   }
 
   Future<CLMedia> cloneAndReplaceMedia(
     String path, {
     required CLMedia media,
   }) async {
-    return (await updateMedia(media, path: path, id: () => null)) ?? media;
+    return (await updateMedia(
+          media,
+          path: path,
+          id: () => null,
+          serverUID: () => null, // Creating new media locally
+          isEdited: false, // Creating new Media locally
+        )) ??
+        media;
   }
 
   Stream<Progress> moveToCollectionStream({
@@ -649,6 +681,7 @@ extension StoreExt on StoreUpdater {
           m,
           isHidden: () => false,
           collectionId: () => updatedCollection.id!,
+          isEdited: true,
         );
         if (updated != null) {
           updatedList.add(updated);

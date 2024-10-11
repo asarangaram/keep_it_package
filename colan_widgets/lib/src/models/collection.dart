@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 class Collection {
   const Collection({
     required this.label,
+    required this.createdDate,
+    required this.updatedDate,
     this.id,
     this.description,
-    this.createdDate,
-    this.updatedDate,
   });
 
   factory Collection.fromMap(
@@ -22,12 +22,8 @@ class Collection {
       label: map['label'] as String,
       description:
           map['description'] != null ? map['description'] as String : null,
-      createdDate: map['createdDate'] != null
-          ? DateTime.parse(map['createdDate'] as String).toLocal()
-          : null,
-      updatedDate: map['updatedDate'] != null
-          ? DateTime.parse(map['updatedDate'] as String).toLocal()
-          : null,
+      createdDate: DateTime.parse(map['createdDate'] as String).toLocal(),
+      updatedDate: DateTime.parse(map['updatedDate'] as String).toLocal(),
     );
   }
   /* factory Collection.fromJson(String source) =>
@@ -36,8 +32,8 @@ class Collection {
   final int? id;
   final String label;
   final String? description;
-  final DateTime? createdDate;
-  final DateTime? updatedDate;
+  final DateTime createdDate;
+  final DateTime updatedDate;
 
   Collection copyWith({
     int? id,

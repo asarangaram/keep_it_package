@@ -92,10 +92,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
               final aDate = a.originalDate ?? a.createdDate;
               final bDate = b.originalDate ?? b.createdDate;
 
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
+              return bDate.compareTo(aDate);
             });
             log(
               media.map((e) => e.md5String).join(','),
@@ -140,10 +137,7 @@ class GetMediaMultipleByIds extends ConsumerWidget {
               final aDate = a.originalDate ?? a.createdDate;
               final bDate = b.originalDate ?? b.createdDate;
 
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
+              return bDate.compareTo(aDate);
             });
             return builder(CLMedias(media));
           },
@@ -180,10 +174,7 @@ class GetPinnedMedia extends ConsumerWidget {
               final aDate = a.originalDate ?? a.createdDate;
               final bDate = b.originalDate ?? b.createdDate;
 
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
+              return bDate.compareTo(aDate);
             });
             return builder(CLMedias(media));
           },
@@ -220,10 +211,7 @@ class GetStaleMedia extends ConsumerWidget {
               final aDate = a.originalDate ?? a.createdDate;
               final bDate = b.originalDate ?? b.createdDate;
 
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
+              return bDate.compareTo(aDate);
             });
             return builder(CLMedias(media));
           },
@@ -260,10 +248,7 @@ class GetDeletedMedia extends ConsumerWidget {
               final aDate = a.originalDate ?? a.createdDate;
               final bDate = b.originalDate ?? b.createdDate;
 
-              if (aDate != null && bDate != null) {
-                return bDate.compareTo(aDate);
-              }
-              return 0;
+              return bDate.compareTo(aDate);
             });
             return builder(CLMedias(media));
           },

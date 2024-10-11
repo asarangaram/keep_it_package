@@ -100,9 +100,8 @@ extension ServerExt on StoreUpdater {
       final updated = StoreExtCLMedia.mediaFromServerMap(mediaInDB, map);
       final bool localChangeIsLatest;
       if (mediaInDB != null) {
-        localChangeIsLatest = [updated.updatedDate, mediaInDB.updatedDate]
-                .every((e) => e != null) &&
-            updated.updatedDate!.isBefore(mediaInDB.updatedDate!);
+        localChangeIsLatest =
+            updated.updatedDate.isBefore(mediaInDB.updatedDate);
       } else {
         localChangeIsLatest = false;
       }

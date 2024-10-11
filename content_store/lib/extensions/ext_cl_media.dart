@@ -67,16 +67,14 @@ extension StoreExtCLMediaList on List<CLMedia> {
           filterredMedia[formattedDate] = [];
         }
         filterredMedia[formattedDate]!.add(entry);
-      } else if (entry.createdDate != null) {
-        formattedDate = '${entry.createdDate!.toDisplayFormat(dataOnly: true)} '
-            '(upload date)';
-        if (!filterredMedia.containsKey(formattedDate)) {
-          filterredMedia[formattedDate] = [];
-        }
-        filterredMedia[formattedDate]!.add(entry);
       } else {
-        noDate.add(entry);
+        formattedDate = '${entry.createdDate.toDisplayFormat(dataOnly: true)} '
+            '(upload date)';
       }
+      if (!filterredMedia.containsKey(formattedDate)) {
+        filterredMedia[formattedDate] = [];
+      }
+      filterredMedia[formattedDate]!.add(entry);
     }
     if (noDate.isNotEmpty) {
       filterredMedia['No Date'] = noDate;

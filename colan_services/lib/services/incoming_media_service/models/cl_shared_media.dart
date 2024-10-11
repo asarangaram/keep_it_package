@@ -61,6 +61,7 @@ class CLSharedMedia {
   CLSharedMedia mergeMismatch() {
     final items = entries.map(
       (e) => e.updateContent(
+        isEdited: true,
         isDeleted: () => false,
         collectionId: () => collection?.id,
       ),
