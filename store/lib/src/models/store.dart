@@ -37,6 +37,7 @@ enum DBQueries {
 
   // Raw values
   serverUIDAll,
+  mediaSyncQuery,
   localMediaAll,
 }
 
