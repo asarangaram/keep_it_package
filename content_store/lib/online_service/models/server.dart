@@ -1,9 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:async';
+
+import 'package:background_downloader/background_downloader.dart';
+import 'package:content_store/online_service/providers/downloader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 
 import 'cl_server.dart';
+import 'server_media.dart';
 
 @immutable
 class Server {
@@ -62,5 +68,54 @@ class Server {
         isSyncing.hashCode ^
         canSync.hashCode ^
         isRegistered.hashCode;
+  }
+
+  Completer<ServerMedia?>? postMedia(
+    ServerMedia media, {
+    required DownloaderNotifier downloader,
+    String endPoint = '/media',
+  }) {
+    if (identity == null) return null;
+    return _postMedia(
+      media,
+      endPoint: endPoint,
+      server: identity!,
+      downloader: downloader,
+      mediaBaseDirectory: BaseDirectory.applicationSupport,
+    );
+  }
+
+  static Completer<ServerMedia?> _postMedia(
+    ServerMedia media, {
+    required CLServer server,
+    required String endPoint,
+    required DownloaderNotifier downloader,
+    required BaseDirectory mediaBaseDirectory,
+  }) {
+    final completer = Completer<ServerMedia?>();
+    if (media.hasFile) {
+      // Use background downloader for multipart upload
+      final task = UploadTask(
+        url: server.getEndpointURI(endPoint).toString(),
+        baseDirectory: mediaBaseDirectory,
+        directory: p.dirname(media.path!),
+        filename: p.basename(media.path!),
+        fileField: 'media',
+      );
+      downloader.upload(
+        task: task,
+        onDone: (TaskStatusUpdate update) async {
+          if (update.status == TaskStatus.complete) {
+            /* final body = update.responseBody;
+            final errorCode = update.responseStatusCode; */
+
+            completer.complete(null);
+          }
+        },
+      );
+    } else {
+      // Use RestAPI
+    }
+    return completer;
   }
 }

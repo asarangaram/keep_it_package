@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/downloader_status.dart';
-import '../providers/downloader_status.dart';
+import '../providers/downloader.dart';
 
 class GetDownloaderStatus extends ConsumerWidget {
   const GetDownloaderStatus({
@@ -17,7 +17,7 @@ class GetDownloaderStatus extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final downloadStatus = ref.watch(downloaderStatusProvider);
+    final downloadStatus = ref.watch(downloaderProvider);
     return builder(downloadStatus);
   }
 }

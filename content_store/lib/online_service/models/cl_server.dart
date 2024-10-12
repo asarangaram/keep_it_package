@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:developer' as dev;
 
@@ -14,6 +13,16 @@ class CLServer {
     required this.port,
     this.id,
   });
+  factory CLServer.fromMap(Map<String, dynamic> map) {
+    return CLServer(
+      name: map['name'] as String,
+      port: map['port'] as int,
+      id: map['id'] != null ? map['id'] as int : null,
+    );
+  }
+
+  factory CLServer.fromJson(String source) =>
+      CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final String name;
   final int port;
@@ -93,18 +102,7 @@ class CLServer {
     };
   }
 
-  factory CLServer.fromMap(Map<String, dynamic> map) {
-    return CLServer(
-      name: map['name'] as String,
-      port: map['port'] as int,
-      id: map['id'] != null ? map['id'] as int : null,
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory CLServer.fromJson(String source) =>
-      CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
   String get identifier {
     const separator = '_';
