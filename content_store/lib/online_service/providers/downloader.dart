@@ -25,6 +25,7 @@ extension StatisticsExtOnTaskStatus on TaskStatus {
 class DownloaderNotifier extends StateNotifier<DownloaderStatus> {
   DownloaderNotifier() : super(const DownloaderStatus()) {
     fileDownloader = FileDownloader();
+
     FileDownloader().updates.listen((update) {
       switch (update) {
         case TaskStatusUpdate():
@@ -62,17 +63,8 @@ class DownloaderNotifier extends StateNotifier<DownloaderStatus> {
   late final FileDownloader fileDownloader;
   final transfer = <String, TransferCompleter>{};
 
-  TransferCompleter download({
-    required DownloadTask task,
-    Future<void> Function(TaskStatusUpdate)? onDone,
-  }) {
-    transfer[task.taskId] = TransferCompleter(task: task, onDone: onDone);
-    fileDownloader.enqueue(task);
-    return transfer[task.taskId]!;
-  }
-
-  TransferCompleter upload({
-    required UploadTask task,
+  TransferCompleter enqueue({
+    required Task task,
     Future<void> Function(TaskStatusUpdate)? onDone,
   }) {
     transfer[task.taskId] = TransferCompleter(task: task, onDone: onDone);

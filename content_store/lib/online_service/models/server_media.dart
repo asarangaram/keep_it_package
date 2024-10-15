@@ -1,9 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
 @immutable
-class ServerMedia {
-  factory ServerMedia({
+class ServerUploadEntity {
+  factory ServerUploadEntity({
     required String path,
     required String name,
     required String collectionLabel,
@@ -15,7 +16,7 @@ class ServerMedia {
     List<int>? notes,
     int? serverUID,
   }) {
-    return ServerMedia._(
+    return ServerUploadEntity._(
       path: path,
       name: name,
       collectionLabel: collectionLabel,
@@ -28,13 +29,13 @@ class ServerMedia {
       serverUID: serverUID,
     );
   }
-  factory ServerMedia.fromCLMedia(
+  factory ServerUploadEntity.fromCLMedia(
     CLMedia? media, {
     String? path,
     String? collectionLabel,
     List<int>? notes,
   }) {
-    return ServerMedia._(
+    return ServerUploadEntity._(
       path: path,
       name: media?.name,
       collectionLabel: collectionLabel,
@@ -47,7 +48,7 @@ class ServerMedia {
       serverUID: media?.serverUID,
     );
   }
-  factory ServerMedia.update({
+  factory ServerUploadEntity.update({
     required int serverUID,
     String? path,
     String? name,
@@ -59,7 +60,7 @@ class ServerMedia {
     String? ref,
     List<int>? notes,
   }) {
-    return ServerMedia._(
+    return ServerUploadEntity._(
       path: path,
       name: name,
       collectionLabel: collectionLabel,
@@ -72,7 +73,7 @@ class ServerMedia {
       serverUID: serverUID,
     );
   }
-  ServerMedia._({
+  ServerUploadEntity._({
     this.path,
     this.name,
     this.collectionLabel,
@@ -127,4 +128,41 @@ class ServerMedia {
   }
 
   bool get hasFile => path != null;
+
+  @override
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'ServerMedia(path: $path, name: $name, collectionLabel: $collectionLabel, createdDate: $createdDate, updatedDate: $updatedDate, isDeleted: $isDeleted, originalDate: $originalDate, ref: $ref, notes: $notes, serverUID: $serverUID)';
+  }
+
+  @override
+  bool operator ==(covariant ServerUploadEntity other) {
+    if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
+
+    return other.path == path &&
+        other.name == name &&
+        other.collectionLabel == collectionLabel &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate &&
+        other.isDeleted == isDeleted &&
+        other.originalDate == originalDate &&
+        other.ref == ref &&
+        listEquals(other.notes, notes) &&
+        other.serverUID == serverUID;
+  }
+
+  @override
+  int get hashCode {
+    return path.hashCode ^
+        name.hashCode ^
+        collectionLabel.hashCode ^
+        createdDate.hashCode ^
+        updatedDate.hashCode ^
+        isDeleted.hashCode ^
+        originalDate.hashCode ^
+        ref.hashCode ^
+        notes.hashCode ^
+        serverUID.hashCode;
+  }
 }

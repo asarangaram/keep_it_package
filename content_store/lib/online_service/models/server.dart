@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/online_service/providers/downloader.dart';
@@ -70,13 +71,13 @@ class Server {
         isRegistered.hashCode;
   }
 
-  Completer<ServerMedia?>? postMedia(
-    ServerMedia media, {
+  Future<Map<String, dynamic>?>? postMedia(
+    ServerUploadEntity media, {
     required DownloaderNotifier downloader,
     String endPoint = '/media',
   }) {
     if (identity == null) return null;
-    return _postMedia(
+    return upsertMedia(
       media,
       endPoint: endPoint,
       server: identity!,
@@ -85,14 +86,14 @@ class Server {
     );
   }
 
-  static Completer<ServerMedia?> _postMedia(
-    ServerMedia media, {
+  static Future<Map<String, dynamic>?> upsertMedia(
+    ServerUploadEntity media, {
     required CLServer server,
     required String endPoint,
     required DownloaderNotifier downloader,
     required BaseDirectory mediaBaseDirectory,
   }) {
-    final completer = Completer<ServerMedia?>();
+    final completer = Completer<Map<String, dynamic>?>();
     if (media.hasFile) {
       // Use background downloader for multipart upload
       final task = UploadTask(
@@ -101,21 +102,45 @@ class Server {
         directory: p.dirname(media.path!),
         filename: p.basename(media.path!),
         fileField: 'media',
+        fields: media.fields,
+        httpRequestMethod: media.serverUID == null ? 'POST' : 'PUT',
       );
-      downloader.upload(
+
+      downloader.enqueue(
         task: task,
         onDone: (TaskStatusUpdate update) async {
-          if (update.status == TaskStatus.complete) {
-            /* final body = update.responseBody;
-            final errorCode = update.responseStatusCode; */
+          try {
+            if (update.exception != null) {
+              throw Exception(update.exception);
+            }
+            if (update.status == TaskStatus.complete) {
+              final errorCode = update.responseStatusCode;
 
-            completer.complete(null);
+              if ((errorCode == 201 || errorCode == 200) &&
+                  update.responseBody != null) {
+                final received =
+                    jsonDecode(update.responseBody!) as Map<String, dynamic>;
+                completer.complete(received);
+              } else {
+                throw Exception(update.responseBody);
+              }
+            } else if (update.status == TaskStatus.canceled) {
+              // ignore if cancelled,
+              completer.complete(null);
+            } else if (update.status == TaskStatus.failed) {
+              throw Exception('download failed');
+            } else if (update.status == TaskStatus.notFound) {
+              throw Exception('unexpected, the download was never queued');
+            }
+          } catch (e, st) {
+            completer.completeError(e, st);
           }
         },
       );
-    } else {
+    } else if (media.serverUID != null) {
+      // Update, that
       // Use RestAPI
     }
-    return completer;
+    return completer.future;
   }
 }
