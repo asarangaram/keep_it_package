@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/online_service/models/cl_server.dart';
 import 'package:content_store/online_service/models/server.dart';
@@ -5,7 +7,10 @@ import 'package:content_store/online_service/models/server_media.dart';
 import 'package:content_store/online_service/providers/downloader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:store/store.dart';
 
 import 'fake_paths.dart';
 
@@ -24,8 +29,12 @@ void main() {
       expect(await server.hasConnection(), true);
     });
 
-    /* test('can post to server?', () async {
-      // print('can post to server?');
+    test('server transactions for a image', () async {
+      const image = 'test_images/5.jpeg';
+      const edittedImage = 'test_images/5_edited.jpeg';
+      final directory = await getApplicationSupportDirectory();
+      final imagePath = join(directory.path, image);
+      final edittedImagePath = join(directory.path, edittedImage);
 
       expect(
         await server.hasConnection(),
@@ -33,96 +42,97 @@ void main() {
         reason: 'Test cant proceed if the server is not online',
       );
 
-      final media = ServerUploadEntity(
-        path: 'test_images/5.jpeg',
-        name: 'test image 5',
-        collectionLabel: 'serverTest',
-        createdDate: DateTime.now(),
-        updatedDate: DateTime.now(),
-        isDeleted: false,
-      );
+      final createdDate = DateTime.now();
+      final int serverUID;
+      final Map<String, dynamic>? referenceMap;
+      {
+        final entity0 = ServerUploadEntity(
+          path: image,
+          name: 'test image 5',
+          collectionLabel: 'serverTest',
+          createdDate: createdDate,
+          isDeleted: false,
+        );
 
-      final received = await Server.upsertMedia(
-        media,
-        server: server,
-        downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
-      );
+        referenceMap = await Server.upsertMedia(
+          entity0,
+          server: server,
+          downloader: downloader,
+          mediaBaseDirectory: BaseDirectory.applicationSupport,
+        );
 
-      expect(received?.containsKey('serverUID'), true);
-    }); */
+        expect(
+          referenceMap?['serverUID'] != null,
+          true,
+          reason: 'failed to create the new media with test image',
+        );
+        serverUID = referenceMap!['serverUID'] as int;
 
-    test('can update with PUT to server?', () async {
-      // print('can post to server?');
+        validate('create a media', referenceMap, {
+          'createdDate': createdDate.millisecondsSinceEpoch,
+          'md5String': await File(imagePath).checksum,
+        });
+      }
+      {
+        final updatedDate = DateTime.now();
+        final entity1 = ServerUploadEntity.update(
+          serverUID: serverUID,
+          path: edittedImage,
+          updatedDate: updatedDate,
+        );
+        final received1 = await Server.upsertMedia(
+          entity1,
+          server: server,
+          downloader: downloader,
+          mediaBaseDirectory: BaseDirectory.applicationSupport,
+        );
+        referenceMap['md5String'] = await File(edittedImagePath).checksum;
+        referenceMap['updatedDate'] = updatedDate.millisecondsSinceEpoch;
+        validate('edit the media', received1, referenceMap);
+      }
+      {
+        const collectionLabel = 'Changed label';
+        final updatedDate = DateTime.now();
+        final entity2 = ServerUploadEntity.update(
+          serverUID: serverUID,
+          collectionLabel: collectionLabel,
+          updatedDate: updatedDate,
+        );
+        final received2 = await Server.upsertMedia(
+          entity2,
+          server: server,
+          downloader: downloader,
+          mediaBaseDirectory: BaseDirectory.applicationSupport,
+        );
+        referenceMap['collectionLabel'] = collectionLabel;
+        referenceMap['updatedDate'] = updatedDate.millisecondsSinceEpoch;
+        validate('update collectionLabel', received2, referenceMap);
+      }
 
-      expect(
-        await server.hasConnection(),
-        true,
-        reason: 'Test cant proceed if the server is not online',
-      );
+      //////////////////////////////////////////////////////////////////////////
+      /// Confirm if we can soft delete the image
+      {
+        final updatedDate = DateTime.now();
+        final entity3 = ServerUploadEntity.update(
+          serverUID: serverUID,
+          isDeleted: true,
+          updatedDate: updatedDate,
+        );
+        final received3 = await Server.upsertMedia(
+          entity3,
+          server: server,
+          downloader: downloader,
+          mediaBaseDirectory: BaseDirectory.applicationSupport,
+        );
+        expect(received3?['serverUID'], serverUID);
 
-      final entity0 = ServerUploadEntity(
-        path: 'test_images/5.jpeg',
-        name: 'test image 5',
-        collectionLabel: 'serverTest',
-        createdDate: DateTime.now(),
-        isDeleted: false,
-      );
-
-      final received0 = await Server.upsertMedia(
-        entity0,
-        server: server,
-        downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
-      );
-
-      expect(received0?.containsKey('serverUID'), true);
-      print(
-        'successfully posted a media and got UID '
-        '${received0!['serverUID'] as int}',
-      );
-
-      /* final entity1 = ServerUploadEntity.update(
-        serverUID: received0!['serverUID'] as int,
-        path: 'test_images/5_edited.jpeg',
-        updatedDate: DateTime.now(),
-      );
-      final received1 = await Server.upsertMedia(
-        entity1,
-        server: server,
-        
-        downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
-      );
-      expect(received1?.containsKey('serverUID'), true); */
-      final entity2 = ServerUploadEntity.update(
-        serverUID: received0['serverUID'] as int,
-        collectionLabel: 'Changed label',
-        updatedDate: DateTime.now(),
-      );
-      final received1 = await Server.upsertMedia(
-        entity2,
-        server: server,
-        downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
-      );
-      expect(received1?.containsKey('serverUID'), true);
-
-      final entity3 = ServerUploadEntity.update(
-        serverUID: received0['serverUID'] as int,
-        isDeleted: true,
-        updatedDate: DateTime.now(),
-      );
-      final received3 = await Server.upsertMedia(
-        entity3,
-        server: server,
-        downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
-      );
-      expect(received3?.containsKey('serverUID'), true);
+        referenceMap['isDeleted'] = 1;
+        referenceMap['updatedDate'] = updatedDate.millisecondsSinceEpoch;
+        validate('soft delete', received3, referenceMap);
+      }
 
       final received4 = await Server.deleteMedia(
-        entity3.serverUID!,
+        serverUID,
         server: server,
         downloader: downloader,
         mediaBaseDirectory: BaseDirectory.applicationSupport,
@@ -130,4 +140,20 @@ void main() {
       expect(received4, true);
     });
   });
+}
+
+void validate(
+  String test,
+  Map<String, dynamic>? map,
+  Map<String, dynamic> reference,
+) {
+  expect(map != null, true, reason: '$test: received map is null');
+  for (final k in reference.keys) {
+    expect(
+      map![k],
+      reference[k],
+      reason:
+          '$test: mismatch: $k, expected: ${reference[k]}, actual: ${map[k]} ',
+    );
+  }
 }
