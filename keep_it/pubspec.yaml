@@ -11,6 +11,7 @@ environment:
 dependencies:
   app_loader:
     path: ../app_loader
+  background_downloader: ^8.5.6
   colan_services:
     path: ../colan_services
   colan_widgets:
@@ -34,6 +35,9 @@ dependencies:
     path: ../media_editors
   mime: ^1.0.5
   path: ^1.9.0
+  path_provider: ^2.1.4
+  path_provider_platform_interface: ^2.1.2
+  plugin_platform_interface: ^2.1.8
   store:
     path: ../store
   tar: ^2.0.0
@@ -48,7 +52,11 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   very_good_analysis: ^6.0.0
+  
+  
   
 flutter_icons:
   android: "launcher_icon"
