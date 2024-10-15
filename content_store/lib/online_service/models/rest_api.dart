@@ -11,13 +11,7 @@ class RestApi {
   final String _server;
   final bool connectViaMobile;
   final http.Client? client;
-  final Map<String, String> postMethodHeader = {
-    // 'Content-Type': 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
-  final Map<String, String> getMethodHeader = {
-    'Content-Type': 'application/json',
-  };
+
   static const uploadimageTimeout = 15;
 
   void log(
@@ -69,13 +63,25 @@ class RestApi {
     String method,
     String endPoint, {
     String? auth,
-    String bodyJSON = '',
+    String json = '',
     String? fileName,
     Uint8List? imageData,
     String? langStr,
     Map<String, String>? extraHeaders,
+    Map<String, dynamic>? form,
   }) async {
-    final headers = postMethodHeader;
+    if (form != null && json.isNotEmpty) {
+      throw Exception("can't use form and json together");
+    }
+    final headers = <String, String>{};
+    if (method == 'get') {
+      headers['Content-Type'] = 'application/json';
+    } else if (form != null) {
+      headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    } else {
+      headers['Content-Type'] = 'application/json';
+    }
+
     if (auth != null) {
       headers['Authorization'] = 'Bearer $auth';
     }
@@ -90,15 +96,17 @@ class RestApi {
     http.Response? response;
     switch (method) {
       case 'post':
-        response = await myClient.post(uri, headers: headers, body: bodyJSON);
+        if (form != null) {
+          response = await myClient.post(uri, headers: headers, body: form);
+        } else {
+          response = await myClient.post(uri, headers: headers, body: json);
+        }
       case 'put':
-        print('on call: $bodyJSON');
-        print(headers);
-        response = await myClient.put(
-          uri,
-          headers: headers,
-          body: jsonDecode(bodyJSON),
-        );
+        if (form != null) {
+          response = await myClient.put(uri, headers: headers, body: form);
+        } else {
+          response = await myClient.put(uri, headers: headers, body: json);
+        }
       case 'get':
         response = await myClient.get(uri, headers: headers);
       case 'delete':
@@ -119,10 +127,7 @@ class RestApi {
         } on Exception catch (e) {
           return e.toString();
         }
-      case 'upload':
-        try {} on Exception catch (e) {
-          return e.toString();
-        }
+
       /* case 'img_upload':
         if (imageData == null) {
           throw Exception('Image not provider');
@@ -182,20 +187,27 @@ class RestApi {
   Future<String> post(
     String endPoint, {
     String? auth,
-    String bodyJSON = '',
+    String json = '',
+    Map<String, dynamic>? form,
   }) async {
-    return (await call('post', endPoint, auth: auth, bodyJSON: bodyJSON))
-        as String;
+    if (form != null) {
+      return (await call('post', endPoint, auth: auth, form: form)) as String;
+    } else {
+      return (await call('post', endPoint, auth: auth, json: json)) as String;
+    }
   }
 
   Future<String> put(
     String endPoint, {
     String? auth,
-    String bodyJSON = '',
+    String json = '',
+    Map<String, dynamic>? form,
   }) async {
-    print('put: $bodyJSON');
-    return (await call('put', endPoint, auth: auth, bodyJSON: bodyJSON))
-        as String;
+    if (form != null) {
+      return (await call('put', endPoint, auth: auth, form: form)) as String;
+    } else {
+      return (await call('put', endPoint, auth: auth, json: json)) as String;
+    }
   }
 
   Future<String> get(String endPoint, {String? auth}) async {
@@ -212,7 +224,7 @@ class RestApi {
     String? auth,
     Map<String, String>? fields,
   }) async {
-    return '';
+    throw UnimplementedError();
   }
 
   Future<String?> download(
@@ -221,23 +233,19 @@ class RestApi {
     String? auth,
     String bodyJSON = '',
   }) async =>
-      await call(
-        'download',
-        endPoint,
-        auth: auth,
-        fileName: fileName,
-      ) as String?;
+      await call('download', endPoint, auth: auth, fileName: fileName)
+          as String?;
 
   Future<Uint8List> audio(
     String endPoint, {
     String? auth,
-    String bodyJSON = '',
+    String json = '',
   }) async {
     return (await call(
       'audio',
       endPoint,
       extraHeaders: {'Accept': 'Application/octet-stream'},
-      bodyJSON: bodyJSON,
+      json: json,
       auth: auth,
     )) as Uint8List;
   }

@@ -146,13 +146,9 @@ class Server {
         },
       );
     } else if (media.serverUID != null) {
-      // Update, that
-      // Use RestAPI
-      final bodyJSON = jsonEncode(media.fields);
-      print(bodyJSON);
-      server.putEndpoint(
+      server.put(
         endPoint0,
-        bodyJSON: bodyJSON,
+        form: media.fields,
       )
         ..onError((e, st) async {
           final error = e?.toString() ?? 'unknown error';
@@ -163,8 +159,37 @@ class Server {
           completer.complete(jsonDecode(responseBody) as Map<String, dynamic>);
         });
     } else {
-      throw Exception('Partial update is not possible for new media');
+      try {
+        throw Exception('Partial update is not possible for new media');
+      } catch (e, st) {
+        completer.completeError(endPoint0, st);
+      }
     }
+    return completer.future;
+  }
+
+  static Future<bool?> deleteMedia(
+    int serverUID, {
+    required CLServer server,
+    required DownloaderNotifier downloader,
+    required BaseDirectory mediaBaseDirectory,
+    String endPoint = '/media',
+  }) {
+    final completer = Completer<bool?>();
+    final String endPoint0;
+    endPoint0 = '$endPoint/$serverUID';
+
+    server.delete(
+      endPoint0,
+    )
+      ..onError((e, st) async {
+        final error = e?.toString() ?? 'unknown error';
+        completer.completeError(error, st);
+        return error;
+      })
+      ..then((responseBody) {
+        completer.complete(responseBody.trim().toLowerCase() == 'true');
+      });
     return completer.future;
   }
 }

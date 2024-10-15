@@ -107,6 +107,27 @@ void main() {
         mediaBaseDirectory: BaseDirectory.applicationSupport,
       );
       expect(received1?.containsKey('serverUID'), true);
+
+      final entity3 = ServerUploadEntity.update(
+        serverUID: received0['serverUID'] as int,
+        isDeleted: true,
+        updatedDate: DateTime.now(),
+      );
+      final received3 = await Server.upsertMedia(
+        entity3,
+        server: server,
+        downloader: downloader,
+        mediaBaseDirectory: BaseDirectory.applicationSupport,
+      );
+      expect(received3?.containsKey('serverUID'), true);
+
+      final received4 = await Server.deleteMedia(
+        entity3.serverUID!,
+        server: server,
+        downloader: downloader,
+        mediaBaseDirectory: BaseDirectory.applicationSupport,
+      );
+      expect(received4, true);
     });
   });
 }

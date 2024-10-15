@@ -130,32 +130,29 @@ class CLServer {
   }) async =>
       RestApi(baseURL, client: client).get(endPoint);
 
-  Future<String> putEndpoint(
+  Future<String> post(
     String endPoint, {
     http.Client? client,
-    String bodyJSON = '{}',
+    String? json,
+    Map<String, dynamic>? form,
   }) async =>
-      RestApi(baseURL, client: client).put(endPoint, bodyJSON: bodyJSON);
+      RestApi(baseURL, client: client)
+          .put(endPoint, json: json ?? '', form: form);
 
-  /* 
-  //FIXME Get Collections if needed
-  Future<Collections> downloadCollections({
+  Future<String> put(
+    String endPoint, {
     http.Client? client,
-  }) async {
-    if (!await hasConnection(client: client)) {
-      // throw Exception(DBSyncStatus.serverNotReachable.name);
-      
-    }
-    final collectionJSON = await getEndpoint('/collection', client: client);
-    final collections = Collections.fromJson(collectionJSON);
-    return Collections(
-      collections.entries
-          .map(
-            (e) => e.copyWith(),
-          )
-          .toList(),
-    );
-  } */
+    String? json,
+    Map<String, dynamic>? form,
+  }) async =>
+      RestApi(baseURL, client: client)
+          .put(endPoint, json: json ?? '', form: form);
+
+  Future<String> delete(
+    String endPoint, {
+    http.Client? client,
+  }) async =>
+      RestApi(baseURL, client: client).delete(endPoint);
 
   Future<String?> download(
     String endPoint,
