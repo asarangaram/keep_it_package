@@ -12,7 +12,8 @@ class RestApi {
   final bool connectViaMobile;
   final http.Client? client;
   final Map<String, String> postMethodHeader = {
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded',
   };
   final Map<String, String> getMethodHeader = {
     'Content-Type': 'application/json',
@@ -91,7 +92,13 @@ class RestApi {
       case 'post':
         response = await myClient.post(uri, headers: headers, body: bodyJSON);
       case 'put':
-        response = await myClient.put(uri, headers: headers, body: bodyJSON);
+        print('on call: $bodyJSON');
+        print(headers);
+        response = await myClient.put(
+          uri,
+          headers: headers,
+          body: jsonDecode(bodyJSON),
+        );
       case 'get':
         response = await myClient.get(uri, headers: headers);
       case 'delete':
@@ -186,6 +193,7 @@ class RestApi {
     String? auth,
     String bodyJSON = '',
   }) async {
+    print('put: $bodyJSON');
     return (await call('put', endPoint, auth: auth, bodyJSON: bodyJSON))
         as String;
   }

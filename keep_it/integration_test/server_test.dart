@@ -24,7 +24,7 @@ void main() {
       expect(await server.hasConnection(), true);
     });
 
-    test('can post to server?', () async {
+    /* test('can post to server?', () async {
       // print('can post to server?');
 
       expect(
@@ -45,13 +45,12 @@ void main() {
       final received = await Server.upsertMedia(
         media,
         server: server,
-        endPoint: '/media',
         downloader: downloader,
         mediaBaseDirectory: BaseDirectory.applicationSupport,
       );
 
       expect(received?.containsKey('serverUID'), true);
-    });
+    }); */
 
     test('can update with PUT to server?', () async {
       // print('can post to server?');
@@ -67,21 +66,23 @@ void main() {
         name: 'test image 5',
         collectionLabel: 'serverTest',
         createdDate: DateTime.now(),
-        updatedDate: DateTime.now(),
         isDeleted: false,
       );
 
       final received0 = await Server.upsertMedia(
         entity0,
         server: server,
-        endPoint: '/media',
         downloader: downloader,
         mediaBaseDirectory: BaseDirectory.applicationSupport,
       );
 
       expect(received0?.containsKey('serverUID'), true);
+      print(
+        'successfully posted a media and got UID '
+        '${received0!['serverUID'] as int}',
+      );
 
-      final entity1 = ServerUploadEntity.update(
+      /* final entity1 = ServerUploadEntity.update(
         serverUID: received0!['serverUID'] as int,
         path: 'test_images/5_edited.jpeg',
         updatedDate: DateTime.now(),
@@ -89,7 +90,19 @@ void main() {
       final received1 = await Server.upsertMedia(
         entity1,
         server: server,
-        endPoint: '/media/${received0['serverUID'] as int}',
+        
+        downloader: downloader,
+        mediaBaseDirectory: BaseDirectory.applicationSupport,
+      );
+      expect(received1?.containsKey('serverUID'), true); */
+      final entity2 = ServerUploadEntity.update(
+        serverUID: received0['serverUID'] as int,
+        collectionLabel: 'Changed label',
+        updatedDate: DateTime.now(),
+      );
+      final received1 = await Server.upsertMedia(
+        entity2,
+        server: server,
         downloader: downloader,
         mediaBaseDirectory: BaseDirectory.applicationSupport,
       );

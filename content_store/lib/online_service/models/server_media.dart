@@ -9,7 +9,6 @@ class ServerUploadEntity {
     required String name,
     required String collectionLabel,
     required DateTime createdDate,
-    required DateTime updatedDate,
     required bool isDeleted,
     DateTime? originalDate,
     String? ref,
@@ -21,7 +20,6 @@ class ServerUploadEntity {
       name: name,
       collectionLabel: collectionLabel,
       createdDate: createdDate,
-      updatedDate: updatedDate,
       isDeleted: isDeleted,
       originalDate: originalDate,
       ref: ref,
@@ -53,7 +51,6 @@ class ServerUploadEntity {
     String? path,
     String? name,
     String? collectionLabel,
-    DateTime? createdDate,
     DateTime? updatedDate,
     bool? isDeleted,
     DateTime? originalDate,
@@ -64,7 +61,6 @@ class ServerUploadEntity {
       path: path,
       name: name,
       collectionLabel: collectionLabel,
-      createdDate: createdDate,
       updatedDate: updatedDate,
       isDeleted: isDeleted,
       originalDate: originalDate,
@@ -85,7 +81,7 @@ class ServerUploadEntity {
     this.notes,
     this.serverUID,
   }) {
-    if (serverUID == null && !isComplete) {
+    if (serverUID == null && !isNewMedia) {
       throw Exception('new media must contain all required fields.');
     }
   }
@@ -116,13 +112,12 @@ class ServerUploadEntity {
     };
   }
 
-  bool get isComplete {
+  bool get isNewMedia {
     return [
       path,
       name,
       collectionLabel,
       createdDate,
-      updatedDate,
       isDeleted,
     ].every((e) => e != null);
   }

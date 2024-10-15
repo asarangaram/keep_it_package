@@ -130,6 +130,13 @@ class CLServer {
   }) async =>
       RestApi(baseURL, client: client).get(endPoint);
 
+  Future<String> putEndpoint(
+    String endPoint, {
+    http.Client? client,
+    String bodyJSON = '{}',
+  }) async =>
+      RestApi(baseURL, client: client).put(endPoint, bodyJSON: bodyJSON);
+
   /* 
   //FIXME Get Collections if needed
   Future<Collections> downloadCollections({

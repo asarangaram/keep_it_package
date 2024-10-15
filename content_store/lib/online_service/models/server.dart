@@ -86,18 +86,26 @@ class Server {
     );
   }
 
+  /// if media has serverUID, update the media on server
+  /// else insert.
   static Future<Map<String, dynamic>?> upsertMedia(
     ServerUploadEntity media, {
     required CLServer server,
-    required String endPoint,
     required DownloaderNotifier downloader,
     required BaseDirectory mediaBaseDirectory,
+    String endPoint = '/media',
   }) {
     final completer = Completer<Map<String, dynamic>?>();
+    final String endPoint0;
+    if (media.serverUID != null) {
+      endPoint0 = '$endPoint/${media.serverUID}';
+    } else {
+      endPoint0 = endPoint;
+    }
     if (media.hasFile) {
       // Use background downloader for multipart upload
       final task = UploadTask(
-        url: server.getEndpointURI(endPoint).toString(),
+        url: server.getEndpointURI(endPoint0).toString(),
         baseDirectory: mediaBaseDirectory,
         directory: p.dirname(media.path!),
         filename: p.basename(media.path!),
@@ -140,6 +148,22 @@ class Server {
     } else if (media.serverUID != null) {
       // Update, that
       // Use RestAPI
+      final bodyJSON = jsonEncode(media.fields);
+      print(bodyJSON);
+      server.putEndpoint(
+        endPoint0,
+        bodyJSON: bodyJSON,
+      )
+        ..onError((e, st) async {
+          final error = e?.toString() ?? 'unknown error';
+          completer.completeError(error, st);
+          return error;
+        })
+        ..then((responseBody) {
+          completer.complete(jsonDecode(responseBody) as Map<String, dynamic>);
+        });
+    } else {
+      throw Exception('Partial update is not possible for new media');
     }
     return completer.future;
   }
