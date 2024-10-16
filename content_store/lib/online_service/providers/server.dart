@@ -1,13 +1,21 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 
+import 'package:background_downloader/background_downloader.dart';
+import 'package:content_store/db_service/models/store_updter_ext_store.dart';
+import 'package:content_store/extensions/list_ext.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store/store.dart';
 
 import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
+import '../../extensions/ext_cl_media.dart';
 import '../models/cl_server.dart';
+import '../models/media_change_tracker.dart';
 import '../models/server.dart';
+import '../models/server_upload_entity.dart';
 import 'downloader.dart';
 
 class ServerNotifier extends StateNotifier<Server> {
@@ -106,7 +114,7 @@ class ServerNotifier extends StateNotifier<Server> {
     }
     log('sync starting');
     setState(state.copyWith(isSyncing: true)).then(
-      (_) => _sync().then((_) {
+      (_) => _sync(state.identity!).then((_) {
         setState(state.copyWith(isSyncing: false));
         log('sync Completed');
       }),
@@ -122,11 +130,217 @@ class ServerNotifier extends StateNotifier<Server> {
     return;
   }
 
-  Future<void> _sync() async {
-    final mapList = await state.identity!.downloadMediaInfo();
-    log('Found ${mapList.length} items in the server');
-    //await (await storeUpdater).sync(mapList, onUploadMedia: uploadNewMedia);
-    //runningTasks.removeWhere((e) => e.completer.isCompleted);
+  Future<void> upload(CLServer server, CLMedia media) async {
+    log('id ${media.id}: upload');
+
+    // ignore: dead_code
+    final store = (await storeUpdater).store;
+    final updater = await storeUpdater;
+    final collection =
+        (await store.reader.getCollectionById(media.collectionId!))!;
+    final entity0 = ServerUploadEntity(
+      path: join(
+        (await storeUpdater).directories.media.relativePath,
+        media.mediaFileName,
+      ),
+      name: media.name,
+      collectionLabel: collection.label,
+      createdDate: media.createdDate,
+      isDeleted: media.isDeleted ?? false,
+      originalDate: media.originalDate,
+      ref: media.ref,
+    );
+
+    try {
+      final resMap = await Server.upsertMedia(
+        entity0,
+        server: server,
+        downloader: downloader,
+        mediaBaseDirectory: BaseDirectory.applicationSupport,
+      );
+      if (resMap != null) {
+        final uploadedMedia = StoreExtCLMedia.mediaFromServerMap(media, resMap);
+        await updater.upsertMedia(uploadedMedia, shouldRefresh: false);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteLocal(CLServer server, CLMedia media) async {
+    log('ServerUID ${media.serverUID}: updateOnServer');
+    return;
+    // ignore: dead_code
+    final updater = await storeUpdater;
+    await updater.permanentlyDeleteMediaMultipleById(
+      {media.id!},
+      shouldRefresh: false,
+    );
+  }
+
+  Future<void> download(CLServer server, CLMedia media) async {
+    log('ServerUID ${media.serverUID}: updateOnServer');
+    return;
+    // ignore: dead_code
+    final updater = await storeUpdater;
+    await updater.upsertMedia(
+      media,
+      shouldRefresh: false,
+    );
+  }
+
+  Future<void> updateLocal(CLServer server, CLMedia media) async {
+    log('ServerUID ${media.serverUID}: updateOnServer');
+    return;
+    // ignore: dead_code
+    final updater = await storeUpdater;
+    await updater.upsertMedia(
+      media,
+      shouldRefresh: false,
+    );
+  }
+
+  Future<void> deleteOnServer(CLServer server, CLMedia media) async {
+    log('ServerUID ${media.serverUID}: updateOnServer');
+    return;
+    // ignore: dead_code
+    await Server.deleteMedia(
+      media.serverUID!,
+      server: server,
+      downloader: downloader,
+      mediaBaseDirectory: BaseDirectory.applicationSupport,
+    );
+  }
+
+  Future<void> updateOnServer(
+    CLServer server,
+    CLMedia media, {
+    bool uploadFile = false,
+  }) async {
+    log('ServerUID ${media.serverUID}: updateOnServer');
+    return;
+    // ignore: dead_code
+    final store = (await storeUpdater).store;
+    final updater = await storeUpdater;
+    final collection =
+        (await store.reader.getCollectionById(media.collectionId!))!;
+    final entity0 = ServerUploadEntity.update(
+      serverUID: media.serverUID!,
+      path: uploadFile ? media.mediaFileName : null,
+      name: media.name,
+      collectionLabel: collection.label,
+      updatedDate: media.updatedDate,
+      isDeleted: media.isDeleted,
+      originalDate: media.originalDate,
+      ref: media.ref,
+    );
+    await Server.upsertMedia(
+      entity0,
+      server: server,
+      downloader: downloader,
+      mediaBaseDirectory: BaseDirectory.applicationSupport,
+    ).then((resMap) {
+      if (resMap != null) {
+        final uploadedMedia = StoreExtCLMedia.mediaFromServerMap(media, resMap);
+        updater
+            .upsertMedia(uploadedMedia, shouldRefresh: false)
+            .then((val) => val != null);
+      }
+    });
+  }
+
+  Future<void> _sync(CLServer server) async {
+    final trackers = await analyse(await state.identity!.downloadMediaInfo());
+
+    log(' ${trackers.length} items need sync');
+    if (trackers.isEmpty) return;
+
+    for (final (i, tracker) in trackers.indexed) {
+      print('sync $i');
+      final l = tracker.current;
+      final s = tracker.update;
+
+      switch (tracker.actionType) {
+        case ActionType.upload:
+          log('id ${l!.id}: upload');
+          await upload(server, l);
+
+        case ActionType.deleteLocal:
+          log('ServerUID ${l!.serverUID}: deleteLocal');
+          await deleteLocal(server, l);
+
+        case ActionType.download:
+          log('ServerUID ${s!.serverUID}: download');
+          await download(server, s);
+
+        case ActionType.updateLocal:
+          log('ServerUID ${s!.serverUID}: updateLocal');
+          await updateLocal(server, s);
+        case ActionType.deleteOnServer:
+          log('ServerUID ${l!.serverUID}: deleteOnServer');
+          await deleteOnServer(server, l);
+
+        case ActionType.updateOnServer:
+          await updateOnServer(
+            server,
+            l!,
+            uploadFile: l.md5String != s!.md5String,
+          );
+        case ActionType.markConflict:
+          log('ServerUID ${s!.serverUID}: Conflict');
+      }
+      if (l != null && s != null) {
+        log('${MapDiff.log(l.toMap(), s.toMap())}');
+      }
+    }
+  }
+
+  Future<List<MediaChangeTracker>> analyse(
+    List<Map<String, dynamic>> mapList,
+  ) async {
+    final store = (await storeUpdater).store;
+    final q = store.reader.getQuery<CLMedia>(DBQueries.mediaSyncQuery);
+    final localItems = (await store.reader.readMultiple(q)).nonNullableList;
+    final trackers = <MediaChangeTracker>[];
+    log('items in local: ${localItems.length}');
+    log('items in Server: ${mapList.length}');
+    for (final serverEntry in mapList) {
+      final localEntry = localItems
+          .where(
+            (e) =>
+                e.serverUID == serverEntry['serverUID'] ||
+                e.md5String == serverEntry['md5String'],
+          )
+          .firstOrNull;
+
+      /// There are scenarios when the collections are not synced
+      /// fully, we may end up creating one. However, other details for
+      /// the newly created collection is not available at this stage, and
+      /// we may need to fetch from server if needed. [KNOWN_ISSUE]
+      if (serverEntry.containsKey('collectionLabel')) {
+        final label = serverEntry['collectionLabel'] as String;
+        final collection = await store.reader.getCollectionByLabel(label) ??
+            (await (await storeUpdater).upsertCollection(
+              Collection(label: label),
+              shouldRefresh: false,
+            ));
+        serverEntry['collectionId'] = collection.id;
+      }
+      trackers.add(
+        MediaChangeTracker(
+          current: localEntry,
+          update: StoreExtCLMedia.mediaFromServerMap(localEntry, serverEntry),
+        ),
+      );
+      if (localEntry != null) {
+        localItems.remove(localEntry);
+      }
+    }
+    // For remaining items
+    trackers.addAll(
+      localItems.map((e) => MediaChangeTracker(current: e, update: null)),
+    );
+    return trackers;
   }
 
   @override
