@@ -25,7 +25,10 @@ import 'store_updater.dart';
 import 'url_handler.dart';
 
 extension StoreExt on StoreUpdater {
-  Future<bool> deleteCollectionById(int id) async {
+  Future<bool> deleteCollectionById(
+    int id, {
+    bool shouldRefresh = true,
+  }) async {
     final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
     for (final m in mediaMultiple) {
@@ -36,11 +39,16 @@ extension StoreExt on StoreUpdater {
         ),
       );
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return true;
   }
 
-  Future<bool> deleteMediaById(int id) async {
+  Future<bool> deleteMediaById(
+    int id, {
+    bool shouldRefresh = true,
+  }) async {
     final m = await store.reader.getMediaById(id);
     if (m != null) {
       await store.upsertMedia(
@@ -50,11 +58,16 @@ extension StoreExt on StoreUpdater {
         ),
       );
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return true;
   }
 
-  Future<bool> deleteMediaMultipleById(Set<int> ids2Delete) async {
+  Future<bool> deleteMediaMultipleById(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
@@ -65,11 +78,16 @@ extension StoreExt on StoreUpdater {
         ),
       );
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return true;
   }
 
-  Future<bool> restoreMediaMultipleById(Set<int> ids2Delete) async {
+  Future<bool> restoreMediaMultipleById(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
     for (final m in mediaMultiple) {
@@ -80,11 +98,16 @@ extension StoreExt on StoreUpdater {
         ),
       );
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return true;
   }
 
-  Future<bool> permanentlyDeleteMediaMultipleById(Set<int> ids2Delete) async {
+  Future<bool> permanentlyDeleteMediaMultipleById(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
     final mediaMultiple =
         await store.reader.getMediasByIDList(ids2Delete.toList());
 
@@ -103,7 +126,9 @@ extension StoreExt on StoreUpdater {
         await File(directories.getPreviewAbsolutePath(m)).deleteIfExists();
       }
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return true;
   }
 
@@ -111,7 +136,10 @@ extension StoreExt on StoreUpdater {
     return togglePinMultipleById({id});
   }
 
-  Future<bool> togglePinMultipleById(Set<int?> ids2Delete) async {
+  Future<bool> togglePinMultipleById(
+    Set<int?> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
     final media =
         await store.reader.getMediasByIDList(ids2Delete.nonNullableList);
     final bool res;
@@ -120,13 +148,16 @@ extension StoreExt on StoreUpdater {
     } else {
       res = await removePinMediaMultiple(media);
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return res;
   }
 
   Future<bool> removePinMediaMultiple(
-    List<CLMedia> mediaMultiple,
-  ) async {
+    List<CLMedia> mediaMultiple, {
+    bool shouldRefresh = true,
+  }) async {
     final pinnedMedia = mediaMultiple.where((e) => e.pin != null).toList();
     final res = await albumManager.removeMultipleMedia(
       pinnedMedia.map((e) => e.pin!).toList(),
@@ -136,13 +167,16 @@ extension StoreExt on StoreUpdater {
         await store.upsertMedia(m.updateStatus(pin: () => null));
       }
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return res;
   }
 
   Future<bool> pinMediaMultiple(
-    List<CLMedia> mediaMultiple,
-  ) async {
+    List<CLMedia> mediaMultiple, {
+    bool shouldRefresh = true,
+  }) async {
     if (mediaMultiple.isEmpty) {
       return true;
     }
@@ -167,15 +201,20 @@ extension StoreExt on StoreUpdater {
     for (final m in updatedMedia) {
       await store.upsertMedia(m);
     }
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return true;
   }
 
   Future<bool> removeMediaFromGallery(
-    String ids,
-  ) async {
+    String ids, {
+    bool shouldRefresh = true,
+  }) async {
     final res = await albumManager.removeMedia(ids);
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return res;
   }
 
@@ -187,13 +226,19 @@ extension StoreExt on StoreUpdater {
     return absolutePath;
   }
 
-  Future<Collection> upsertCollection(Collection collection) async {
+  Future<Collection> upsertCollection(
+    Collection collection, {
+    bool shouldRefresh = true,
+  }) async {
     if (collection.id != null) {
       final c = await store.reader.getCollectionById(collection.id!);
       if (collection == c) return collection;
     }
+
     final updated = store.upsertCollection(collection);
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     return updated;
   }
 
@@ -656,6 +701,7 @@ extension StoreExt on StoreUpdater {
     required List<CLMedia> media,
     required Collection collection,
     Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
+    bool shouldRefresh = true,
   }) async* {
     final Collection updatedCollection;
     if (collection.id == null) {
@@ -693,7 +739,9 @@ extension StoreExt on StoreUpdater {
         );
         await Future<void>.delayed(const Duration(microseconds: 10));
       }
-      store.reloadStore();
+      if (shouldRefresh) {
+        store.reloadStore();
+      }
       await onDone?.call(mediaMultiple: updatedList);
     }
   }
@@ -754,6 +802,7 @@ extension StoreExt on StoreUpdater {
       required List<CLMedia> existingItems,
       required List<CLMedia> newItems,
     }) onDone,
+    bool shouldRefresh = true,
   }) async* {
     final existingItems = <CLMedia>[];
     final newItems = <CLMedia>[];
@@ -810,7 +859,9 @@ extension StoreExt on StoreUpdater {
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 1));
-    store.reloadStore();
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
     onDone(
       existingItems: existingItems.where((e) => e.mediaLog == null).toList(),
       newItems: newItems.where((e) => e.mediaLog == null).toList(),
