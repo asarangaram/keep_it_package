@@ -231,6 +231,22 @@ class CLMedia extends CLMediaBase {
         other.mustDownloadOriginal == mustDownloadOriginal;
   }
 
+  bool isContentSame(covariant CLMedia other) {
+    return other.name == name &&
+        other.type == type &&
+        other.fExt == fExt &&
+        other.ref == ref &&
+        other.originalDate == originalDate &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate &&
+        other.md5String == md5String &&
+        other.isDeleted == isDeleted &&
+        other.collectionId == collectionId &&
+        other.isAux == isAux &&
+        other.serverUID == serverUID &&
+        other.isEdited == isEdited;
+  }
+
   @override
   int get hashCode {
     return name.hashCode ^
