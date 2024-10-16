@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
 import 'cl_server.dart';
-import 'server_media.dart';
+import 'server_upload_entity.dart';
 
 @immutable
 class Server {
