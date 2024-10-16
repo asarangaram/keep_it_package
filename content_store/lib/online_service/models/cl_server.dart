@@ -34,13 +34,13 @@ class CLServer {
     Object? error,
     StackTrace? stackTrace,
   }) {
-    dev.log(
+    /* dev.log(
       message,
       level: level,
       error: error,
       stackTrace: stackTrace,
       name: 'Online Service: Registered Server',
-    );
+    ); */
   }
 
   CLServer copyWith({

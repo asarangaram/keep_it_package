@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/extensions/ext_cl_media.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
@@ -886,4 +887,22 @@ extension StoreExt on StoreUpdater {
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }
+
+  String mediaFileRelativePath(CLMedia media) => p.join(
+        directories.media.relativePath,
+        media.mediaFileName,
+      );
+  String previewFileRelativePath(CLMedia media) => p.join(
+        directories.thumbnail.relativePath,
+        media.previewFileName,
+      );
+
+  String mediaFileAbsolutePath(CLMedia media) => p.join(
+        directories.media.pathString,
+        media.mediaFileName,
+      );
+  String previewFileAbsolutePath(CLMedia media) => p.join(
+        directories.thumbnail.pathString,
+        media.previewFileName,
+      );
 }
