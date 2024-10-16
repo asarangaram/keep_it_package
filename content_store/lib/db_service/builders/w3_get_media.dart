@@ -94,10 +94,10 @@ class GetMediaByCollectionId extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            log(
+            /* log(
               media.map((e) => e.md5String).join(','),
               name: 'GetMediaByCollectionId',
-            );
+            ); */
             return builder(CLMedias(media));
           },
         );

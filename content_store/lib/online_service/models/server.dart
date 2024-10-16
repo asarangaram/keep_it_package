@@ -168,14 +168,14 @@ class Server {
     return completer.future;
   }
 
-  static Future<bool?> deleteMedia(
+  static Future<bool> deleteMedia(
     int serverUID, {
     required CLServer server,
     required DownloaderNotifier downloader,
     required BaseDirectory mediaBaseDirectory,
     String endPoint = '/media',
   }) {
-    final completer = Completer<bool?>();
+    final completer = Completer<bool>();
     final String endPoint0;
     endPoint0 = '$endPoint/$serverUID';
 
@@ -190,6 +190,68 @@ class Server {
       ..then((responseBody) {
         completer.complete(responseBody.trim().toLowerCase() == 'true');
       });
+    return completer.future;
+  }
+
+  static Future<String?> downloadMediaFile(
+    int serverUID,
+    String filename, {
+    required CLServer server,
+    required DownloaderNotifier downloader,
+    required BaseDirectory mediaBaseDirectory,
+    String endPoint = '/media',
+  }) {
+    final completer = Completer<String?>();
+    final endPoint0 = '$endPoint/$serverUID/download';
+    final task = DownloadTask(
+      url: server.getEndpointURI(endPoint0).toString(),
+      baseDirectory: mediaBaseDirectory,
+      directory: p.dirname(filename),
+      filename: p.basename(filename),
+    );
+    downloader.enqueue(
+      task: task,
+      onDone: (TaskStatusUpdate update) async {
+        if (update.status == TaskStatus.complete) {
+          completer.complete(null);
+        } else if (update.status == TaskStatus.failed) {
+          completer.complete(update.responseBody ?? 'unknown error');
+        } else if (update.status == TaskStatus.canceled) {
+          completer.complete('cancelled');
+        }
+      },
+    );
+    return completer.future;
+  }
+
+  static Future<String?> downloadPreviewFile(
+    int serverUID,
+    String filename, {
+    required CLServer server,
+    required DownloaderNotifier downloader,
+    required BaseDirectory mediaBaseDirectory,
+    String endPoint = '/media',
+  }) {
+    final completer = Completer<String?>();
+    final endPoint0 = '$endPoint/$serverUID/preview';
+    final task = DownloadTask(
+      url: server.getEndpointURI(endPoint0).toString(),
+      baseDirectory: mediaBaseDirectory,
+      directory: p.dirname(filename),
+      filename: p.basename(filename),
+    );
+    downloader.enqueue(
+      task: task,
+      onDone: (TaskStatusUpdate update) async {
+        if (update.status == TaskStatus.complete) {
+          completer.complete(null);
+        } else if (update.status == TaskStatus.failed) {
+          completer.complete(update.responseBody ?? 'unknown error');
+        } else if (update.status == TaskStatus.canceled) {
+          completer.complete('cancelled');
+        }
+      },
+    );
     return completer.future;
   }
 }

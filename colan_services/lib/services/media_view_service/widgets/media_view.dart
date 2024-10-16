@@ -81,10 +81,10 @@ class MediaView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(
+    /* log(
       '${media.md5String}  isPreview: $isPreview',
       name: 'MediaView | build',
-    );
+    ); */
 
     if (isPreview) {
       return GetStoreUpdater(
@@ -92,10 +92,10 @@ class MediaView extends StatelessWidget {
           return GetPreviewUri(
             id: media.id!,
             builder: (previewUri) {
-              log(
+              /* log(
                 'preview URI: $previewUri',
                 name: 'MediaView | build',
-              );
+              ); */
               return Hero(
                 tag: '$parentIdentifier /item/${media.id}',
                 child: ImageViewer.basic(

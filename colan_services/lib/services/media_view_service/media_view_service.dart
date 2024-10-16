@@ -75,16 +75,16 @@ class MediaViewService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(
+    /* log(
       '${media.map((e) => e.md5String).join(',')}  isPreview: $isPreview',
       name: 'MediaViewService | build',
-    );
-    if (!isPreview && media.length > 1) {
+    ); */
+    /* if (!isPreview && media.length > 1) {
       log(
         'InitialMedia: ${media[initialMediaIndex].md5String}',
         name: 'MediaViewService | build',
       );
-    }
+    } */
     if (isPreview) {
       return Column(
         children: [

@@ -6,21 +6,22 @@ extension StoreExtCLMedia on CLMedia {
     CLMedia? mediaInDB,
     Map<String, dynamic> map,
   ) {
-    /// if the media is pinned already,
+    /// FIXME: Handle Pin
+    /* /// if the media is pinned already,
     ///   we can't proceed here as the pin need to be updated.
     ///   we can't update pin on mobile devices without user action
     if (mediaInDB?.pin != null) {
       // Mark conflict
       return mediaInDB!;
-    }
+    } */
 
-    /// If we have found by serverUID, and if it is Deleted
+    /* /// If we have found by serverUID, and if it is Deleted
     /// the delete message is yet to upload, hence we can't update this media.
     if (mediaInDB?.serverUID != null && (mediaInDB!.isDeleted ?? false)) {
       return mediaInDB;
-    }
+    } */
 
-    /// Check if the media in server is changed by comparing md5
+    /* /// Check if the media in server is changed by comparing md5
     /// if media is changed / different
     ///   A. It was locally changed, and upload didn't happen correctly or
     ///       yet to be scheduled. In this case, mark it as conflict
@@ -29,7 +30,7 @@ extension StoreExtCLMedia on CLMedia {
         (mediaInDB?.isEdited ?? false)) {
       // Mark conflict
       return mediaInDB!;
-    }
+    } */
 
     map['id'] = mediaInDB?.id;
     if (mediaInDB?.md5String == map['md5String']) {
@@ -44,8 +45,10 @@ extension StoreExtCLMedia on CLMedia {
 
     map['previewLog'] = null;
     map['mediaLog'] = null;
-    map['isDeleted'] = 0; // Deleted Media won't be received in normal download.
-    map['isHidden'] = 0; // Media from server won't be hidden locally
+    // if not marked, assume it is not deleted
+    map['isDeleted'] ??= 0;
+    // Media from server won't be hidden locally
+    map['isHidden'] = 0;
     map['pin'] = null;
     map['isEdited'] = 0;
     map['haveItOffline'] = (mediaInDB?.haveItOffline ?? true) ? 1 : 0;

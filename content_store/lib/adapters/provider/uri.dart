@@ -19,10 +19,10 @@ final mediaUriProvider =
     if (prev != curr) {
       final media = await theStore.store.reader.getMediaById(id);
       if (media != null) {
-        log(
+        /* log(
           'media : ${media.md5String}',
           name: 'mediaUriProvider',
-        );
+        ); */
 
         controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
       }
@@ -32,10 +32,10 @@ final mediaUriProvider =
   if (media == null) {
     throw Exception('media not found!');
   }
-  log(
+  /* log(
     'media : ${media.md5String}',
     name: 'mediaUriProvider',
-  );
+  ); */
   controller.add(mediaPathDeterminer.getMediaUriAsync(media));
   yield* controller.stream;
 });
@@ -51,10 +51,10 @@ final previewUriProvider =
     if (prev != curr) {
       final media = await theStore.store.reader.getMediaById(id);
       if (media != null) {
-        log(
+        /* log(
           'media : ${media.md5String}',
           name: 'previewUriProvider',
-        );
+        ); */
 
         controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
       }
@@ -64,10 +64,10 @@ final previewUriProvider =
   if (media == null) {
     throw Exception('media not found!');
   }
-  log(
+  /* log(
     'media : ${media.md5String}',
     name: 'previewUriProvider',
-  );
+  ); */
   controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
   yield* controller.stream;
 });
