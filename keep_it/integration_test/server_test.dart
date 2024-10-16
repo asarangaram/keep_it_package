@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/online_service/models/cl_server.dart';
 import 'package:content_store/online_service/models/server.dart';
-import 'package:content_store/online_service/models/server_media.dart';
+
+import 'package:content_store/online_service/models/server_upload_entity.dart';
 import 'package:content_store/online_service/providers/downloader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
