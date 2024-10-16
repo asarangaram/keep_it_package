@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:meta/meta.dart';
 
@@ -34,7 +32,7 @@ class CLMedia extends CLMediaBase {
     super.isAux,
     this.id,
   }) {
-    log('New: $this', name: 'CLMedia');
+    //log('New: $this', name: 'CLMedia');
   }
   factory CLMedia.strict({
     required String name,
