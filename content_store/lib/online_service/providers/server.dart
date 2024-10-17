@@ -6,7 +6,6 @@ import 'package:content_store/db_service/models/store_updter_ext_store.dart';
 import 'package:content_store/extensions/list_ext.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/store.dart';
 
