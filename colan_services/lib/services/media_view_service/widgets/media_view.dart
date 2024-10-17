@@ -251,10 +251,10 @@ class MediaView0 extends ConsumerWidget {
         return GetMediaUri(
           id: media.id!,
           builder: (mediaUri) {
-            log(
+            /* log(
               'id: ${media.id!} ${media.md5String} ',
               name: 'MediaView0 | build',
-            );
+            ); */
             return GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () =>
