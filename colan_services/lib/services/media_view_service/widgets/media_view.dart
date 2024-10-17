@@ -152,27 +152,35 @@ class MediaView extends StatelessWidget {
                       OverlayWidgets(
                         alignment: Alignment.topRight,
                         sizeFactor: 0.1,
-                        child: Image.asset(
-                          'assets/icon/cloud_on_lan_128px_color.png',
-                          colorBlendMode: BlendMode.dstOut,
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Image.asset(
+                            'assets/icon/cloud_on_lan_128px_color.png',
+                            colorBlendMode: BlendMode.dstOut,
+                          ),
                         ),
                       ),
                       OverlayWidgets(
                         alignment: Alignment.bottomRight,
                         sizeFactor: 0.15,
-                        child: GetMediaUri(
-                          id: media.id!,
-                          loadingBuilder: () => const MediaIsDownloading(
-                            icon: AnimateIcons.download,
-                            color: Colors.blueAccent,
-                          ),
-                          builder: (uri) {
-                            return const MediaIsDownloading(
-                              icon: AnimateIcons.cloud,
-                              color: Colors.greenAccent,
-                            );
-                          },
-                        ),
+                        child: (media.isEdited)
+                            ? const MediaIsDownloading(
+                                icon: AnimateIcons.upload,
+                                color: Colors.redAccent,
+                              )
+                            : GetMediaUri(
+                                id: media.id!,
+                                loadingBuilder: () => const MediaIsDownloading(
+                                  icon: AnimateIcons.download,
+                                  color: Colors.blueAccent,
+                                ),
+                                builder: (uri) {
+                                  return const MediaIsDownloading(
+                                    icon: AnimateIcons.cloud,
+                                    color: Colors.greenAccent,
+                                  );
+                                },
+                              ),
                       ),
                     ],
                   ],
