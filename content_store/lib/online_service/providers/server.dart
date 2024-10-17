@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/db_service/models/store_updter_ext_store.dart';
 import 'package:content_store/extensions/list_ext.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -211,7 +211,9 @@ class ServerNotifier extends StateNotifier<Server> {
         await updateServerResponse(server, media, resMap);
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
