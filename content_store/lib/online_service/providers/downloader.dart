@@ -91,7 +91,8 @@ class DownloaderNotifier extends StateNotifier<DownloaderStatus> {
   }
 
   Future<void> cancelAll() async {
-    // FIXME: Implement this.
+    await fileDownloader
+        .cancelTasksWithIds(transfer.values.map((e) => e.task.taskId).toList());
   }
 
   @override
