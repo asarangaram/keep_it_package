@@ -153,7 +153,7 @@ class ServerNotifier extends StateNotifier<Server> {
       mediaBaseDirectory: BaseDirectory.applicationSupport,
     );
 
-    final previewLog = await Server.downloadMediaFile(
+    final previewLog = await Server.downloadPreviewFile(
       uploadedMedia.serverUID!,
       updater.previewFileRelativePath(uploadedMedia),
       server: server,
@@ -180,18 +180,15 @@ class ServerNotifier extends StateNotifier<Server> {
   }
 
   Future<void> upload(CLServer server, CLMedia media) async {
+    final updater = await storeUpdater;
     log('id ${media.id}: upload');
 
-    // ignore: dead_code
     final store = (await storeUpdater).store;
 
     final collection =
         (await store.reader.getCollectionById(media.collectionId!))!;
     final entity0 = ServerUploadEntity(
-      path: join(
-        (await storeUpdater).directories.media.relativePath,
-        media.mediaFileName,
-      ),
+      path: updater.mediaFileRelativePath(media),
       name: media.name,
       collectionLabel: collection.label,
       createdDate: media.createdDate,
@@ -219,8 +216,7 @@ class ServerNotifier extends StateNotifier<Server> {
 
   Future<void> deleteLocal(CLServer server, CLMedia media) async {
     log('ServerUID ${media.serverUID}: updateOnServer');
-    return;
-    // ignore: dead_code
+
     final updater = await storeUpdater;
     await updater.permanentlyDeleteMediaMultipleById(
       {media.id!},
@@ -230,19 +226,42 @@ class ServerNotifier extends StateNotifier<Server> {
 
   Future<void> download(CLServer server, CLMedia media) async {
     log('ServerUID ${media.serverUID}: updateOnServer');
-    return;
-    // ignore: dead_code
+
     final updater = await storeUpdater;
     await updater.upsertMedia(
       media,
+      shouldRefresh: false,
+    );
+    final mediaLog = await Server.downloadMediaFile(
+      media.serverUID!,
+      updater.mediaFileRelativePath(media),
+      server: server,
+      downloader: downloader,
+      mediaBaseDirectory: BaseDirectory.applicationSupport,
+    );
+
+    final previewLog = await Server.downloadPreviewFile(
+      media.serverUID!,
+      updater.previewFileRelativePath(media),
+      server: server,
+      downloader: downloader,
+      mediaBaseDirectory: BaseDirectory.applicationSupport,
+    );
+    await updater.upsertMedia(
+      media.updateStatus(
+        isMediaCached: () => mediaLog == null,
+        mediaLog: () => mediaLog == 'cancelled' ? null : mediaLog,
+        isMediaOriginal: () => false,
+        isPreviewCached: () => previewLog == null,
+        previewLog: () => previewLog == 'cancelled' ? null : previewLog,
+      ),
       shouldRefresh: false,
     );
   }
 
   Future<void> updateLocal(CLServer server, CLMedia media) async {
     log('ServerUID ${media.serverUID}: updateOnServer');
-    return;
-    // ignore: dead_code
+
     final updater = await storeUpdater;
     await updater.upsertMedia(
       media,
@@ -307,15 +326,15 @@ class ServerNotifier extends StateNotifier<Server> {
     bool uploadFile = false,
   }) async {
     log('ServerUID ${media.serverUID}: updateOnServer');
+    final updater = await storeUpdater;
 
-    // ignore: dead_code
     final store = (await storeUpdater).store;
 
     final collection =
         (await store.reader.getCollectionById(media.collectionId!))!;
     final entity0 = ServerUploadEntity.update(
       serverUID: media.serverUID!,
-      path: uploadFile ? media.mediaFileName : null,
+      path: uploadFile ? updater.mediaFileRelativePath(media) : null,
       name: media.name,
       collectionLabel: collection.label,
       updatedDate: media.updatedDate,
@@ -359,11 +378,16 @@ class ServerNotifier extends StateNotifier<Server> {
           await deleteOnServer(server, l!);
         case ActionType.updateOnServer:
           final uploadFile = l!.md5String != s!.md5String;
-          await updateOnServer(server, l, uploadFile: uploadFile);
+          await updateOnServer(
+            server,
+            l.updateContent(serverUID: () => s.serverUID!, isEdited: false),
+            uploadFile: uploadFile,
+          );
         case ActionType.markConflict:
           log('ServerUID ${s!.serverUID}: Conflict');
       }
     }
+    (await storeUpdater).store.reloadStore();
   }
 
   Future<List<MediaChangeTracker>> analyse(
