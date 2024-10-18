@@ -43,7 +43,7 @@ class SaveOrCancel extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: CLButtonIcon.small(
-                    Icons.keyboard_hide_outlined,
+                    clIcons.keyboard_hide_outlined,
                     onTap: () => FocusScope.of(context).unfocus(),
                   ),
                 )

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:colan_widgets/colan_widgets.dart' as cl;
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../models/cl_form_field_descriptors.dart';
@@ -100,7 +101,7 @@ class CLFormSelectMultiple extends StatelessWidget {
                               canvasColor: Colors.transparent,
                             ),
                             child: ActionChip(
-                              avatar: const Icon(Icons.add),
+                              avatar: Icon(clIcons.insertItem),
                               label: Text(
                                 fieldState.value!.isEmpty ? 'Add' : 'Add',
                               ),

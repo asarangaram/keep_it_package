@@ -137,6 +137,7 @@ class ComputeSizeAndBuildState extends State<ComputeSizeAndBuild> {
 
   @override
   Widget build(BuildContext context) {
+    MediaQuery.of(context);
     return Container(
       key: _containerKey,
       child: (computedSize == null)

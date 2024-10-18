@@ -2,35 +2,41 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import 'decorations.dart';
 import 'live_audio_view.dart';
 import 'recorded_audio_view.dart';
 
-class AudioRecorder extends StatefulWidget {
+class AudioRecorder extends ConsumerStatefulWidget {
   const AudioRecorder({
     required this.media,
+    required this.theStore,
     this.child,
     super.key,
     this.editMode = false,
     this.onEditCancel,
   });
   final CLMedia media;
+  final StoreUpdater theStore;
   final Widget? child;
   final bool editMode;
   final VoidCallback? onEditCancel;
 
   @override
-  State<AudioRecorder> createState() => _AudioRecorderState();
+  ConsumerState<AudioRecorder> createState() => _AudioRecorderState();
 }
 
-class _AudioRecorderState extends State<AudioRecorder> {
+class _AudioRecorderState extends ConsumerState<AudioRecorder> {
   late final RecorderController recorderController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
-
+  late final StoreUpdater theStore;
   bool isRecording = false;
   bool isRecordingCompleted = false;
 
@@ -39,6 +45,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   @override
   void initState() {
     super.initState();
+    theStore = widget.theStore;
     _initialiseControllers();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
@@ -66,7 +73,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
       return SizedBox(
         width: kMinInteractiveDimension,
         child: CLButtonIcon.small(
-          Icons.save,
+          clIcons.save,
           onTap: _sendAudio,
         ),
       );
@@ -75,8 +82,8 @@ class _AudioRecorderState extends State<AudioRecorder> {
     if (widget.editMode) {
       return IconButton(
         onPressed: widget.onEditCancel,
-        icon: const Icon(
-          Icons.check,
+        icon: Icon(
+          clIcons.doneEditMedia,
         ),
         color: Colors.white,
         iconSize: 28,
@@ -85,7 +92,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
     return SizedBox(
       width: kMinInteractiveDimension,
       child: CLButtonIcon.small(
-        isRecording ? Icons.stop : Icons.mic,
+        isRecording ? clIcons.playerStop : clIcons.microphone,
         onTap: _startOrStopRecording,
       ),
     );
@@ -142,10 +149,11 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await TheStore.of(context).upsertNote(
+      await theStore.newMedia(
         audioMessage!,
-        CLNoteTypes.audio,
-        mediaMultiple: [widget.media],
+        type: CLMediaType.audio,
+        parents: [widget.media],
+        isAux: () => true,
       );
 
       audioMessage = null;
@@ -169,7 +177,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
           setState(() {});
         }
       } else {
-        final path = await TheStore.of(context).createTempFile(ext: 'aac');
+        final path = theStore.createTempFile(ext: 'aac');
         await recorderController.record(path: path); // Path is optional
       }
     } catch (e) {

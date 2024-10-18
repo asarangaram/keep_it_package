@@ -1,9 +1,15 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:store/store.dart';
 
-import '../backup_service/dialogs.dart';
-import '../store_service/providers/gallery_group_provider.dart';
+import '../basic_page_service/dialogs.dart';
+import '../incoming_media_service/models/cl_shared_media.dart';
+import '../media_view_service/providers/group_view.dart';
+import '../notification_services/provider/notify.dart';
+
 import 'providers/universal_media.dart';
 import 'recycle_bin_service.dart';
 import 'views/create_collection_wizard.dart';
@@ -13,11 +19,39 @@ import 'views/wizard_preview.dart';
 class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({
     required this.type,
-    required this.getPreview,
     super.key,
   });
   final UniversalMediaSource type;
-  final Widget Function(CLMedia media) getPreview;
+
+  static Future<bool?> openWizard(
+    BuildContext context,
+    WidgetRef ref,
+    CLSharedMedia sharedMedia,
+  ) async {
+    if (sharedMedia.type == null) {
+      return false;
+    }
+    if (sharedMedia.entries.isEmpty) {
+      await ref
+          .read(notificationMessageProvider.notifier)
+          .push('Nothing to do.');
+      return true;
+    }
+
+    await addMedia(
+      context,
+      ref,
+      media: sharedMedia,
+    );
+    if (context.mounted) {
+      await context.push(
+        '/media_wizard?type='
+        '${sharedMedia.type!.name}',
+      );
+    }
+
+    return true;
+  }
 
   static Future<void> addMedia(
     BuildContext context,
@@ -38,7 +72,6 @@ class MediaWizardService extends ConsumerWidget {
     if (type == UniversalMediaSource.deleted) {
       return RecycleBinService(
         type: type,
-        getPreview: getPreview,
       );
     }
     final media = ref.watch(universalMediaProvider(type));
@@ -48,13 +81,17 @@ class MediaWizardService extends ConsumerWidget {
       });
       return const SizedBox.expand();
     }
-    final galleryMap = ref.watch(singleGroupItemProvider(media.entries));
+    final galleryMap = ref.watch(groupedItemsProvider(media.entries));
+
     return CLPopScreen.onSwipe(
-      child: SelectAndKeepMedia(
-        media: media,
-        type: type,
-        galleryMap: galleryMap,
-        getPreview: getPreview,
+      child: GetStoreUpdater(
+        builder: (theStore) {
+          return SelectAndKeepMedia(
+            media: media,
+            type: type,
+            galleryMap: galleryMap,
+          );
+        },
       ),
     );
   }
@@ -65,12 +102,10 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     required this.media,
     required this.type,
     required this.galleryMap,
-    required this.getPreview,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
-  final Widget Function(CLMedia media) getPreview;
 
   final List<GalleryGroup<CLMedia>> galleryMap;
 
@@ -122,114 +157,119 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   Widget build(BuildContext context) {
     final currMedia =
         (isSelectionMode ? selectedMedia.entries : widget.media.entries);
-    return WizardLayout(
-      title: widget.type.label,
-      onCancel: () => CLPopScreen.onPop(context),
-      actions: [
-        if (canSelect)
-          CLButtonText.small(
-            toggleSelectModeActionLabel,
-            onTap: onToggleSelectMode,
-          ),
-      ],
-      wizard: keepSelected
-          ? !hasCollection
-              ? CreateCollectionWizard(
-                  onDone: ({required collection}) => setState(() {
-                    targetCollection = collection;
-                  }),
-                )
-
-              /// Needed reload as impact of edit is not reflecting in
-              /// the universalMediaProvider
-              /// We only need to update the collectionId
-              : StreamBuilder<Progress>(
-                  stream: TheStore.of(context).moveToCollectionStream(
-                    currMedia,
-                    collection: targetCollection!,
-                    onDone: () {
-                      ref
-                          .read(
-                            universalMediaProvider(widget.type).notifier,
-                          )
-                          .remove(candidate.entries);
-                      selectedMedia = const CLSharedMedia(entries: []);
-                      keepSelected = false;
-                      targetCollection = null;
-                      isSelectionMode = false;
-                      setState(() {});
-                    },
-                  ),
-                  builder: (context, snapShot) => ProgressBar(
-                    progress:
-                        snapShot.hasData ? snapShot.data?.fractCompleted : null,
-                  ),
-                )
-          : WizardDialog(
-              option1: CLMenuItem(
-                title: keepActionLabel,
-                icon: Icons.save,
-                onTap: hasCandidate
-                    ? () async {
-                        keepSelected = true;
-                        targetCollection = widget.media.collection;
-                        setState(() {});
-                        return true;
-                      }
-                    : null,
+    return GetStoreUpdater(
+      builder: (theStore) {
+        return WizardLayout(
+          title: widget.type.label,
+          onCancel: () => CLPopScreen.onPop(context),
+          actions: [
+            if (canSelect)
+              CLButtonText.small(
+                toggleSelectModeActionLabel,
+                onTap: onToggleSelectMode,
               ),
-              option2: (widget.type.canDelete)
-                  ? CLMenuItem(
-                      title: deleteActionLabel,
-                      icon: Icons.delete,
-                      onTap: hasCandidate
-                          ? () async {
-                              final confirmed =
-                                  await ConfirmAction.deleteMediaMultiple(
-                                        context,
-                                        media: currMedia,
-                                      ) ??
-                                      false;
-                              if (!confirmed) return confirmed;
-                              if (context.mounted) {
-                                final res =
-                                    TheStore.of(context).deleteMediaMultiple(
-                                  context,
-                                  currMedia,
-                                );
-
-                                await ref
-                                    .read(
-                                      universalMediaProvider(widget.type)
-                                          .notifier,
-                                    )
-                                    .remove(candidate.entries);
-                                selectedMedia =
-                                    const CLSharedMedia(entries: []);
-                                keepSelected = false;
-                                targetCollection = null;
-                                isSelectionMode = false;
-                                setState(() {});
-
-                                return res;
-                              }
-                              return null;
-                            }
-                          : null,
+          ],
+          wizard: keepSelected
+              ? !hasCollection
+                  ? CreateCollectionWizard(
+                      onDone: ({required collection}) => setState(() {
+                        targetCollection = collection;
+                      }),
                     )
-                  : null,
-            ),
-      child: WizardPreview(
-        getPreview: widget.getPreview,
-        type: widget.type,
-        onSelectionChanged: isSelectionMode
-            ? (List<CLMedia> items) {
-                selectedMedia = selectedMedia.copyWith(entries: items);
-                setState(() {});
-              }
-            : null,
-        freezeView: keepSelected,
-      ),
+
+                  /// Needed reload as impact of edit is not reflecting in
+                  /// the universalMediaProvider
+                  /// We only need to update the collectionId
+                  : StreamBuilder<Progress>(
+                      stream: theStore.moveToCollectionStream(
+                        media: currMedia,
+                        collection: targetCollection!,
+                        onDone: ({
+                          required List<CLMedia> mediaMultiple,
+                        }) async {
+                          await ref
+                              .read(
+                                universalMediaProvider(widget.type).notifier,
+                              )
+                              .remove(candidate.entries);
+                          selectedMedia = const CLSharedMedia(entries: []);
+                          keepSelected = false;
+                          targetCollection = null;
+                          isSelectionMode = false;
+                          setState(() {});
+                        },
+                      ),
+                      builder: (context, snapShot) => ProgressBar(
+                        progress: snapShot.hasData
+                            ? snapShot.data?.fractCompleted
+                            : null,
+                      ),
+                    )
+              : WizardDialog(
+                  option1: CLMenuItem(
+                    title: keepActionLabel,
+                    icon: clIcons.save,
+                    onTap: hasCandidate
+                        ? () async {
+                            keepSelected = true;
+                            targetCollection = widget.media.collection;
+                            setState(() {});
+                            return true;
+                          }
+                        : null,
+                  ),
+                  option2: (widget.type.canDelete)
+                      ? CLMenuItem(
+                          title: deleteActionLabel,
+                          icon: clIcons.deleteItem,
+                          onTap: hasCandidate
+                              ? () async {
+                                  final confirmed =
+                                      await ConfirmAction.deleteMediaMultiple(
+                                            context,
+                                            media: currMedia,
+                                          ) ??
+                                          false;
+                                  if (!confirmed) return confirmed;
+                                  if (context.mounted) {
+                                    final res =
+                                        theStore.deleteMediaMultipleById(
+                                      {...currMedia.map((e) => e.id!)},
+                                    );
+
+                                    await ref
+                                        .read(
+                                          universalMediaProvider(widget.type)
+                                              .notifier,
+                                        )
+                                        .remove(candidate.entries);
+                                    selectedMedia =
+                                        const CLSharedMedia(entries: []);
+                                    keepSelected = false;
+                                    targetCollection = null;
+                                    isSelectionMode = false;
+                                    setState(() {});
+
+                                    return res;
+                                  }
+                                  return null;
+                                }
+                              : null,
+                        )
+                      : null,
+                ),
+          child: WizardPreview(
+            type: widget.type,
+            onSelectionChanged: isSelectionMode
+                ? (List<CLMedia> items) {
+                    selectedMedia = selectedMedia.copyWith(entries: items);
+                    setState(() {});
+                  }
+                : null,
+            freezeView: keepSelected,
+          ),
+        );
+      },
     );
   }
 }

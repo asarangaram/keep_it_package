@@ -1,44 +1,44 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
+import '../media_wizard_service/media_wizard_service.dart';
+import 'models/cl_shared_media.dart';
 import 'step1_analyse.dart';
 import 'step2_duplicates.dart';
 
 class IncomingMediaService extends StatelessWidget {
   const IncomingMediaService({
     required this.incomingMedia,
+    required this.parentIdentifier,
     required this.onDiscard,
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
+  final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
 
   @override
   Widget build(BuildContext context) {
     return IncomingMediaHandler0(
       incomingMedia: incomingMedia,
+      parentIdentifier: parentIdentifier,
       onDiscard: onDiscard,
-      onSave: TheStore.of(context).openWizard,
     );
   }
 }
 
 class IncomingMediaHandler0 extends ConsumerStatefulWidget {
   const IncomingMediaHandler0({
+    required this.parentIdentifier,
     required this.incomingMedia,
     required this.onDiscard,
-    required this.onSave,
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
+  final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
-  final Future<void> Function(
-    BuildContext context,
-    List<CLMedia> media,
-    UniversalMediaSource type, {
-    Collection? collection,
-  }) onSave;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -46,31 +46,45 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
 }
 
 class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
-  CLSharedMedia? candidate;
+  CLSharedMedia? duplicateCandidates;
+  List<CLMedia>? newCandidates;
+
   bool isSaving = false;
   @override
   void didChangeDependencies() {
-    candidate = null;
+    duplicateCandidates = null;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    _infoLogger('build candidate: $candidate, isSaving:$isSaving');
+    _infoLogger('build candidate: $duplicateCandidates, isSaving:$isSaving');
     _infoLogger('incoming Media: ${widget.incomingMedia}');
     final Widget widget0;
     try {
       widget0 = isSaving
           ? const Center(child: CircularProgressIndicator())
-          : (candidate == null)
+          : (duplicateCandidates == null)
               ? AnalysePage(
                   incomingMedia: widget.incomingMedia,
-                  onDone: onSave,
+                  onDone: segretated,
                   onCancel: () => onDiscard(result: false),
                 )
               : DuplicatePage(
-                  incomingMedia: candidate!,
-                  onDone: onSave,
+                  incomingMedia: duplicateCandidates!,
+                  parentIdentifier: widget.parentIdentifier,
+                  onDone: ({required CLSharedMedia? mg}) {
+                    onSave(
+                      mg: CLSharedMedia(
+                        entries: [
+                          ...mg?.entries ?? [],
+                          ...newCandidates ?? [],
+                        ],
+                        collection: widget.incomingMedia.collection,
+                        type: widget.incomingMedia.type,
+                      ),
+                    );
+                  },
                   onCancel: () => onDiscard(result: false),
                 );
     } catch (e) {
@@ -89,48 +103,45 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
     }
   }
 
-  Future<void> onSave({required CLSharedMedia? mg}) async {
+  Future<void> segretated({
+    required List<CLMedia> existingItems,
+    required List<CLMedia> newItems,
+  }) async {
+    final duplicateCandidates0 = CLSharedMedia(
+      entries: existingItems,
+      collection: widget.incomingMedia.collection,
+      type: widget.incomingMedia.type,
+    );
+    if (duplicateCandidates0.targetMismatch.isNotEmpty) {
+      duplicateCandidates = duplicateCandidates0;
+      newCandidates = newItems;
+      setState(() {});
+    } else {
+      await onSave(
+        mg: CLSharedMedia(
+          entries: newItems,
+          collection: widget.incomingMedia.collection,
+          type: widget.incomingMedia.type,
+        ),
+      );
+    }
+  }
+
+  Future<void> onSave({required CLSharedMedia mg}) async {
     _infoLogger(mg.toString());
     _infoLogger('onSave - Enter');
     isSavingState = true;
-    {
-      if (mg?.hasTargetMismatchedItems ?? false) {
-        _infoLogger('duplicates found.');
-        setState(() {
-          candidate = mg;
-        });
-      } else if (mg == null || mg.isEmpty) {
-        _infoLogger('nothing to save. clear incoming media');
-        widget.onDiscard(result: false);
-        _infoLogger('nothing to save. send notification');
-        await widget.onSave(
-          context,
-          [],
-          widget.incomingMedia.type!,
-          collection: widget.incomingMedia.collection,
-        );
-        _infoLogger('nothing to save. return');
-      } else {
-        candidate = null;
-        widget.onDiscard(result: true);
-        if (widget.incomingMedia.type != null) {
-          _infoLogger('saving, type: widget.incomingMedia.type ');
-          await widget.onSave(
-            context,
-            mg.entries,
-            widget.incomingMedia.type!,
-            collection: widget.incomingMedia.collection,
-          );
-          _infoLogger('Saving complete');
-        }
-      }
-    }
+    widget.onDiscard(result: mg.isNotEmpty);
+    await MediaWizardService.openWizard(context, ref, mg);
+    duplicateCandidates = null;
+    newCandidates = null;
+
     isSavingState = false;
     _infoLogger('onSave - Return');
   }
 
   void onDiscard({required bool result}) {
-    candidate = null;
+    duplicateCandidates = null;
     _infoLogger('discard media');
     widget.onDiscard(result: result);
   }

@@ -51,7 +51,9 @@ class CameraPermissionDenied extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: onOpenSettings,
                       label: const Text('Open Settings'),
-                      icon: const Icon(Icons.settings),
+                      icon: Icon(
+                        CameraTheme.of(context).themeData.cameraSettings,
+                      ),
                     ),
                   ),
               ],

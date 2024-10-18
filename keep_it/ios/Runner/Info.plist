@@ -103,5 +103,13 @@
 		<string>To enable microphone access when recording video</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>To enable GPS location access for Exif data</string>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>This app requires access to local network to connect to nearby devices.</string>
+		<key>NSBonjourServices</key>
+		<array>
+			<string>_dartobservatory._tcp</string>
+			<string>_http._tcp</string> 
+		</array>
+		
 	</dict>
 </plist>

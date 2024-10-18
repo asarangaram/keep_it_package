@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../basics/cl_icon.dart';
+import '../../../theme/models/cl_icons.dart';
 
 class SelectableLabel extends StatelessWidget {
   const SelectableLabel({
@@ -33,10 +34,10 @@ class SelectableLabel extends StatelessWidget {
               onTap: () => onSelect?.call(select: noneSelected),
               child: CLIcon.small(
                 noneSelected
-                    ? Icons.check_box_outline_blank
+                    ? clIcons.itemNotSelected
                     : partialSelected
-                        ? Icons.indeterminate_check_box_outlined
-                        : Icons.check_box,
+                        ? clIcons.itemPartiallySelected
+                        : clIcons.itemSelected,
               ),
             ),
           ),

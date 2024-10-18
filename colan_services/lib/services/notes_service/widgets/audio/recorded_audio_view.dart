@@ -53,8 +53,8 @@ class _RecordedAudioViewState extends State<RecordedAudioView> {
             children: [
               CLButtonIcon.standard(
                 controller.playerState.isPlaying
-                    ? Icons.stop
-                    : Icons.play_arrow,
+                    ? clIcons.playerPause
+                    : clIcons.playerPlay,
                 color: const DefaultNotesInputTheme().foregroundColor,
                 onTap: () async {
                   controller.playerState.isPlaying
@@ -84,7 +84,7 @@ class _RecordedAudioViewState extends State<RecordedAudioView> {
                         bottom: 4,
                         right: 4,
                         child: CLButtonIcon.tiny(
-                          Icons.delete,
+                          clIcons.deleteNote,
                           onTap: widget.onDeleteAudio,
                           color: Colors.red,
                         ),

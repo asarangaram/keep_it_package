@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+import 'package:store/store.dart';
 
 import 'edit_collection_description.dart';
 import 'label_viewer.dart';
@@ -62,7 +63,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
         children: [
           LabelViewer(
             label: 'Collection: ${collection!.label}',
-            icon: MdiIcons.pencil,
+            icon: clIcons.editCollectionLabel,
             onTap: () {
               setState(() {
                 onEditLabel = true;

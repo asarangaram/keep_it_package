@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../basics/cl_button.dart';
 import '../../extensions/ext_color.dart';
+import '../../theme/models/cl_icons.dart';
 
 class CLFullscreenBox extends ConsumerStatefulWidget {
   const CLFullscreenBox({
@@ -131,7 +132,7 @@ class WrapCloseButton extends StatelessWidget {
                   padding:
                       const EdgeInsets.only(top: 16, right: 16, bottom: 16),
                   child: CLButtonIcon.small(
-                    Icons.close,
+                    clIcons.closeFullscreen,
                     onTap: onCancel,
                   ),
                 ),

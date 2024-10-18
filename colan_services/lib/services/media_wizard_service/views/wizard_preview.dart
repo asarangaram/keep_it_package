@@ -1,8 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../../store_service/providers/gallery_group_provider.dart';
+import '../../basic_page_service/navigators.dart';
+import '../../media_view_service/media_view_service.dart';
+
+import '../../media_view_service/providers/group_view.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -10,13 +15,11 @@ class WizardPreview extends ConsumerStatefulWidget {
     required this.type,
     required this.onSelectionChanged,
     required this.freezeView,
-    required this.getPreview,
     super.key,
   });
   final UniversalMediaSource type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
-  final Widget Function(CLMedia media) getPreview;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -39,53 +42,57 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       });
       return const SizedBox.expand();
     }
-    final galleryMap = ref.watch(singleGroupItemProvider(media0.entries));
 
-    return CLGalleryCore<CLMedia>(
-      key: ValueKey(type.identifier),
-      items: galleryMap,
-      itemBuilder: (
-        context,
-        item,
-      ) =>
-          Hero(
-        tag: '${type.identifier} /item/${item.id}',
-        child: GestureDetector(
-          onTap: () async {
-            await TheStore.of(context).openEditor(
-              context,
-              item,
-              canDuplicateMedia: false,
-            );
+    final galleryMap = ref.watch(groupedItemsProvider(media0.entries));
 
-            /// MEdia might have got updated, better reload and update the
-            ///  provider
-            if (context.mounted) {
-              final refreshedMedia =
-                  await TheStore.of(context).getMediaMultipleByIds(
-                media0.entries
-                    .where((e) => e.id != null)
-                    .map((e) => e.id!)
-                    .toList(),
+    return GetDBReader(
+      builder: (dbReader) {
+        return CLGalleryCore<CLMedia>(
+          key: ValueKey(type.identifier),
+          items: galleryMap,
+          itemBuilder: (
+            context,
+            item,
+          ) =>
+              GestureDetector(
+            onTap: () async {
+              await Navigators.openEditor(
+                context,
+                ref,
+                item,
+                canDuplicateMedia: false,
               );
-              ref.read(universalMediaProvider(type).notifier).mediaGroup =
-                  media0.copyWith(
-                entries: refreshedMedia
-                    .where((e) => e != null)
-                    .map((e) => e!)
-                    .toList(),
-              );
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: widget.getPreview(item),
+
+              /// MEdia might have got updated, better reload and update the
+              ///  provider
+              if (context.mounted) {
+                final refreshedMedia = CLMedias(
+                  await dbReader.getMediasByIDList(
+                    media0.entries
+                        .where((e) => e.id != null)
+                        .map((e) => e.id!)
+                        .toList(),
+                  ),
+                );
+                ref.read(universalMediaProvider(type).notifier).mediaGroup =
+                    media0.copyWith(
+                  entries: refreshedMedia.entries,
+                );
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: MediaViewService.preview(
+                item,
+                parentIdentifier: type.identifier,
+              ),
+            ),
           ),
-        ),
-      ),
-      columns: 4,
-      onSelectionChanged: onSelectionChanged,
-      keepSelected: freezeView,
+          columns: 4,
+          onSelectionChanged: onSelectionChanged,
+          keepSelected: freezeView,
+        );
+      },
     );
   }
 }

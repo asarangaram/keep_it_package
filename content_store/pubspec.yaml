@@ -1,0 +1,52 @@
+name: content_store
+description: "A new Flutter package project."
+version: 0.0.1
+homepage:
+
+publish_to: none
+
+environment:
+  sdk: '>=3.4.4 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  background_downloader: ^8.5.6
+  colan_widgets:
+    path: ../colan_widgets
+  collection: ^1.18.0
+  connectivity_plus: ^6.0.5
+  exif: ^3.3.0
+  ffmpeg_kit_flutter: ^6.0.3
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  flutter_speed_dial: ^7.0.0
+  heif_converter: ^1.0.0
+  http: ^1.2.2
+  http_parser: ^4.0.2
+  image: ^4.2.0
+  local_store:
+    path: ../local_store
+  meta: ^1.12.0
+  mime: ^1.0.6
+  nsd: ^3.0.0
+  path: ^1.9.0
+  path_provider: ^2.1.4
+  photo_manager: ^3.5.0
+  pie_chart: ^5.4.0
+  share_plus: ^10.0.2
+  shared_preferences: ^2.3.2
+  shimmer: ^3.0.0
+  store:
+    path: ../store
+  watcher: ^1.1.0
+
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^6.0.0
+
+
+flutter:

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../models/cl_form_field_descriptors.dart';
@@ -84,7 +85,7 @@ class CLFormState extends State<CLForm> {
               Align(
                 alignment: Alignment.topRight,
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_circle_down),
+                  icon: Icon(clIcons.down),
                   onPressed: () {
                     if (isMobilePlatform && FocusScope.of(context).hasFocus) {
                       FocusScope.of(context).unfocus();
@@ -109,7 +110,8 @@ class CLFormState extends State<CLForm> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: switch (entry.value.runtimeType) {
-                  const (CLFormSelectMultipleDescriptors) => CLFormSelectMultiple(
+                  const (CLFormSelectMultipleDescriptors) =>
+                    CLFormSelectMultiple(
                       descriptors:
                           entry.value as CLFormSelectMultipleDescriptors,
                       state: state[entry.key]! as CLFormSelectMultipleState,
@@ -161,7 +163,7 @@ class CLFormState extends State<CLForm> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.keyboard_hide),
+                      icon: Icon(clIcons.hideKeyboard),
                       onPressed:
                           (isMobilePlatform && FocusScope.of(context).hasFocus)
                               ? () => FocusScope.of(context).unfocus()

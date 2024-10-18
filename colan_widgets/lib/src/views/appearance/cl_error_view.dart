@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../basics/cl_icon.dart';
 import '../../basics/cl_text.dart';
+import '../../theme/models/cl_icons.dart';
 
 class CLErrorView extends StatelessWidget {
   const CLErrorView({
@@ -26,7 +27,7 @@ class CLErrorView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CLIcon.veryLarge(
-                  Icons.warning,
+                  clIcons.error,
                   color: Theme.of(context).colorScheme.error,
                 ),
                 CLText.veryLarge(

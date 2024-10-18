@@ -1,19 +1,25 @@
 import 'package:colan_widgets/src/extensions/ext_cl_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../basics/cl_button.dart';
 import '../../basics/cl_pop_screen.dart';
 import '../../basics/cl_refresh_indicator.dart';
 import '../../models/cl_menu_item.dart';
 import '../../models/typedefs.dart';
+import '../../theme/models/cl_icons.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
 import '../draggable/menu.dart';
 import '../draggable/menu_control.dart';
 import 'cl_gallery_core.dart';
 import 'model/gallery_group.dart';
+
+typedef ItemBuilder<T> = Widget Function(
+  BuildContext context,
+  T item, {
+  required QuickMenuScopeKey quickMenuScopeKey,
+});
 
 class CLSimpleGalleryView<T> extends StatefulWidget {
   const CLSimpleGalleryView({
@@ -24,8 +30,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.columns,
     required this.backButton,
-    this.onPickFiles,
-    this.onCameraCapture,
+    required this.actionMenu,
     super.key,
     this.onRefresh,
     this.selectionActions,
@@ -37,8 +42,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
 
   final Widget emptyState;
   final String identifier;
-  final void Function(BuildContext context)? onPickFiles;
-  final void Function(BuildContext context)? onCameraCapture;
+  final List<CLMenuItem> actionMenu;
 
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
@@ -61,21 +65,17 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
         backButton: CLButtonIcon.small(
-          MdiIcons.arrowRight,
+          clIcons.pagePop,
           onTap: () => CLPopScreen.onPop(context),
         ),
-        actionsBuilder: [
-          if (widget.onCameraCapture != null)
-            (context, quickMenuScopeKey) => CLButtonIcon.small(
-                  MdiIcons.camera,
-                  onTap: () => widget.onCameraCapture?.call(context),
-                ),
-          if (widget.onPickFiles != null)
-            (context, quickMenuScopeKey) => CLButtonIcon.standard(
-                  Icons.add,
-                  onTap: () => widget.onPickFiles?.call(context),
-                ),
-        ],
+        actionsBuilder: widget.actionMenu
+            .map(
+              (e) => (_, __) => CLButtonIcon.small(
+                    e.icon,
+                    onTap: e.onTap,
+                  ),
+            )
+            .toList(),
         pageBuilder: (context, quickMenuScopeKey) => widget.emptyState,
       );
     } else {
@@ -99,18 +99,14 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                   ),
             if (!isSelectionMode)
               (context, quickMenuScopeKey) => Row(
-                    children: [
-                      if (widget.onPickFiles != null)
-                        CLButtonIcon.standard(
-                          Icons.add,
-                          onTap: () => widget.onPickFiles?.call(context),
-                        ),
-                      if (widget.onCameraCapture != null)
-                        CLButtonIcon.small(
-                          MdiIcons.camera,
-                          onTap: () => widget.onCameraCapture?.call(context),
-                        ),
-                    ],
+                    children: widget.actionMenu
+                        .map(
+                          (e) => CLButtonIcon.small(
+                            e.icon,
+                            onTap: e.onTap,
+                          ),
+                        )
+                        .toList(),
                   ),
           ],
           pageBuilder: (context, quickMenuScopeKey) {

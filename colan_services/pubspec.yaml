@@ -9,40 +9,68 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
+  animated_icon: ^0.0.9
   audio_waveforms: ^1.0.5
+  background_downloader: ^8.5.5
   camera: ^0.11.0+1
   cl_camera:
     path: ../cl_camera
   colan_widgets:
-    path: ../colan_widgets
+    path: ../colan_widgets 
   collection: ^1.18.0
-  device_resources:
-    path: ../device_resources
+  
+  connectivity_plus: ^6.0.5
+  content_store:
+    path: ../content_store
+  dio: ^5.7.0
   event_bus: ^2.0.0
+  exif: ^3.3.0
   extended_image: ^8.2.1
   ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
+  flutter_speed_dial: ^7.0.0
   form_factory:
     path: ../form_factory
   go_router: ^14.2.0
   heif_converter: ^1.0.0
+  http: ^1.2.2
+  http_parser: ^4.0.2
   image: ^4.1.7
+  image_picker: ^1.1.2
+  intl: ^0.18.1
   local_store:
     path: ../local_store
-  material_design_icons_flutter: ^7.0.7296
+  logger: ^2.4.0
+
+  media_editors:
+    path: ../media_editors
+  media_viewers:
+    path: ../media_viewers
+  meta: ^1.12.0
   mime: ^1.0.5
+  multicast_dns: ^0.3.2+7
+  mutex: ^3.1.0
+  nsd: ^3.0.0
   path: ^1.9.0
   
+  path_provider: ^2.1.4
+  photo_manager: ^3.2.3
+  pie_chart: ^5.4.0
+  share_handler: ^0.0.21
+  share_plus: ^10.0.0
   shared_preferences: ^2.2.3
   shimmer: ^3.0.0
+  store:
+    path: ../store
   stream_channel: ^2.1.2
   tar: ^2.0.0
   uuid: ^4.4.0
   video_player: ^2.8.7
   video_thumbnail: ^0.5.3
   video_trimmer: ^3.0.1
+  watcher: ^1.1.0
 
 dev_dependencies:
   flutter_lints: ^4.0.0

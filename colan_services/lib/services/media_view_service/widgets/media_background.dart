@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../video_player_service/providers/show_controls.dart';
+import '../providers/show_controls.dart';
 
 class MediaBackground extends ConsumerWidget {
   const MediaBackground({super.key});

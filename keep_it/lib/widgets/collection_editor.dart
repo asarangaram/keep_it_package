@@ -1,7 +1,8 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
+import 'package:store/store.dart';
 
 class CollectionEditor extends StatelessWidget {
   factory CollectionEditor({
@@ -50,44 +51,54 @@ class CollectionEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
-      child: GetCollectionMultiple(
-        buildOnData: (List<Collection> collections) {
-          final collection =
-              collections.where((e) => e.id == collectionId).first;
-          return CLForm(
-            explicitScrollDownOption: !isDialog,
-            descriptors: {
-              'label': CLFormTextFieldDescriptor(
-                title: 'Name',
-                label: 'Collection Name',
-                initialValue: collection.label,
-                onValidate: (value) => validateName(
-                  newLabel: value,
-                  existingLabel: collection.label,
-                  collections: collections,
-                ),
-              ),
-              'description': CLFormTextFieldDescriptor(
-                title: 'About',
-                label: 'Describe about this collection',
-                initialValue: collection.description ?? '',
-                onValidate: (_) => null,
-                maxLines: 4,
-              ),
-            },
-            onSubmit: (result) async {
-              final label = (result['label']! as CLFormTextFieldResult).value;
-              final desc =
-                  (result['description']! as CLFormTextFieldResult).value;
+      child: GetCollection(
+        id: collectionId,
+        errorBuilder: null,
+        loadingBuilder: null,
+        builder: (collection) {
+          return GetCollectionMultiple(
+            errorBuilder: null,
+            loadingBuilder: null,
+            builder: (collections) {
+              if (collection == null) return Container(); // FIXME
 
-              final updated = collection.copyWith(
-                label: label,
-                description: desc.isEmpty ? null : desc,
+              return CLForm(
+                explicitScrollDownOption: !isDialog,
+                descriptors: {
+                  'label': CLFormTextFieldDescriptor(
+                    title: 'Name',
+                    label: 'Collection Name',
+                    initialValue: collection.label,
+                    onValidate: (value) => validateName(
+                      newLabel: value,
+                      existingLabel: collection.label,
+                      collections: collections.entries,
+                    ),
+                  ),
+                  'description': CLFormTextFieldDescriptor(
+                    title: 'About',
+                    label: 'Describe about this collection',
+                    initialValue: collection.description ?? '',
+                    onValidate: (_) => null,
+                    maxLines: 4,
+                  ),
+                },
+                onSubmit: (result) async {
+                  final label =
+                      (result['label']! as CLFormTextFieldResult).value;
+                  final desc =
+                      (result['description']! as CLFormTextFieldResult).value;
+
+                  final updated = collection.copyWith(
+                    label: label,
+                    description: desc.isEmpty ? null : desc,
+                  );
+
+                  onSubmit(updated);
+                },
+                onCancel: isDialog ? null : onCancel,
               );
-
-              onSubmit(updated);
             },
-            onCancel: isDialog ? null : onCancel,
           );
         },
       ),

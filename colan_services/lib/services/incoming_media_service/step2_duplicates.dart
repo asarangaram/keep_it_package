@@ -1,19 +1,24 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../basic_page_service/empty_state.dart';
-import '../preview_service/view/preview.dart';
-import '../store_service/widgets/w3_get_collection.dart';
+import '../media_view_service/media_view_service.dart';
+
+import 'models/cl_shared_media.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
     required this.incomingMedia,
+    required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
     super.key,
   });
   final CLSharedMedia incomingMedia;
+  final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
@@ -21,12 +26,9 @@ class DuplicatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DuplicatePageStateful(
       incomingMedia: incomingMedia,
+      parentIdentifier: parentIdentifier,
       onDone: onDone,
       onCancel: onCancel,
-      getPreview: (media) => PreviewService(
-        media: media,
-        keepAspectRatio: false,
-      ),
     );
   }
 }
@@ -34,15 +36,15 @@ class DuplicatePage extends StatelessWidget {
 class DuplicatePageStateful extends ConsumerStatefulWidget {
   const DuplicatePageStateful({
     required this.incomingMedia,
+    required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
-    required this.getPreview,
     super.key,
   });
   final CLSharedMedia incomingMedia;
+  final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
-  final Widget Function(CLMedia media) getPreview;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -64,8 +66,11 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
       return const EmptyState();
     }
     return GetCollectionMultiple(
-      buildOnData: (List<Collection> collections) {
-        final newCollection = collections
+      excludeEmpty: false,
+      errorBuilder: null,
+      loadingBuilder: null,
+      builder: (collections) {
+        final newCollection = collections.entries
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;
         final collectionLablel = newCollection?.label != null
@@ -82,7 +87,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                 content: Text('Do you want all the above media to be moved '
                     'to $collectionLablel or skipped?'),
                 option1: CLMenuItem(
-                  icon: Icons.abc,
+                  icon: clIcons.placeHolder,
                   title: 'Move',
                   onTap: () async {
                     widget.onDone(
@@ -92,7 +97,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
                   },
                 ),
                 option2: CLMenuItem(
-                  icon: Icons.abc,
+                  icon: clIcons.placeHolder,
                   title: 'Skip',
                   onTap: () async {
                     widget.onDone(
@@ -106,22 +111,11 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                /* if (alreadyInSameCollection.isNotEmpty)
-                  SizedBox(
-                    height: 100,
-                    width: double.infinity,
-                    child: ExistsInCollection(
-                      media: CLSharedMedia(
-                        list: alreadyInSameCollection,
-                        collectionId: widget.duplicates.collectionId,
-                      ),
-                    ),
-                  ), */
                 Flexible(
                   child: ExistInDifferentCollection(
-                    collections: collections,
+                    collections: collections.entries,
+                    parentIdentifier: widget.parentIdentifier,
                     media: currentMedia,
-                    getPreview: widget.getPreview,
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
                       if (updated?.targetMismatch.isEmpty ?? true) {
@@ -146,22 +140,22 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
 class ExistInDifferentCollection extends StatelessWidget {
   const ExistInDifferentCollection({
     required this.media,
+    required this.parentIdentifier,
     required this.collections,
     required this.onRemove,
-    required this.getPreview,
     super.key,
   });
 
   final CLSharedMedia media;
+  final String parentIdentifier;
   final List<Collection> collections;
   final void Function(CLMedia media) onRemove;
-  final Widget Function(CLMedia media) getPreview;
 
   @override
   Widget build(BuildContext context) {
     final duplicates = media.targetMismatch;
     if (duplicates.isEmpty) {
-      const Center(
+      return const Center(
         child: CLText.large('Nothing to show here'),
       );
     }
@@ -199,7 +193,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                 return SizedBox(
                   height: 80,
                   child: Dismissible(
-                    key: Key(TheStore.of(context).getMediaPath(m)),
+                    key: Key(m.md5String!),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
                       onRemove(m);
@@ -217,7 +211,10 @@ class ExistInDifferentCollection extends StatelessWidget {
                           aspectRatio: 1,
                           child: Padding(
                             padding: const EdgeInsets.all(2),
-                            child: getPreview(m),
+                            child: MediaViewService.preview(
+                              m,
+                              parentIdentifier: parentIdentifier,
+                            ),
                           ),
                         ),
                         Expanded(

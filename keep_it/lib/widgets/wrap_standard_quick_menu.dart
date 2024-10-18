@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class WrapStandardQuickMenu extends StatelessWidget {
   const WrapStandardQuickMenu({
@@ -25,6 +24,12 @@ class WrapStandardQuickMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /*  return GestureDetector(
+      onTap: onTap,
+      child: child,
+    );
+    // Disable quickmenu for now
+    // ignore: dead_code */
     if (onEdit == null && onDelete == null) {
       return GestureDetector(
         onTap: onTap,
@@ -49,13 +54,13 @@ class WrapStandardQuickMenu extends StatelessWidget {
               if (onEdit != null)
                 CLMenuItem(
                   title: 'Edit',
-                  icon: Icons.edit_rounded,
+                  icon: clIcons.imageEdit,
                   onTap: onEdit,
                 ),
               if (onDelete != null)
                 CLMenuItem(
                   title: 'Delete',
-                  icon: Icons.delete_rounded,
+                  icon: clIcons.imageDelete,
                   onTap: onDelete,
                 ),
             ],
@@ -63,13 +68,13 @@ class WrapStandardQuickMenu extends StatelessWidget {
               if (onMove != null)
                 CLMenuItem(
                   title: 'Move',
-                  icon: MdiIcons.imageMove,
+                  icon: clIcons.imageMove,
                   onTap: onMove,
                 ),
               if (onShare != null)
                 CLMenuItem(
                   title: 'Share',
-                  icon: MdiIcons.share,
+                  icon: clIcons.imageShare,
                   onTap: () async {
                     return onShare!();
                   },

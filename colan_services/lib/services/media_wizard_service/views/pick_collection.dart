@@ -1,9 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../store_service/widgets/w3_get_collection.dart';
+import 'package:store/store.dart';
 
 class PickCollection extends StatelessWidget {
   const PickCollection({
@@ -17,10 +17,13 @@ class PickCollection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetCollectionMultiple(
-      buildOnData: (collections) {
+      errorBuilder: null,
+      loadingBuilder: null,
+      excludeEmpty: false,
+      builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
-            icon: MdiIcons.arrowRight,
+            icon: clIcons.next,
             title: 'Next',
             onTap: onTap,
           ),
@@ -30,7 +33,7 @@ class PickCollection extends StatelessWidget {
             labelBuilder: (e) => (e as Collection).label,
             descriptionBuilder: (e) => (e as Collection).description,
             suggestionsAvailable: [
-              ...collections,
+              ...collections.entries,
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,

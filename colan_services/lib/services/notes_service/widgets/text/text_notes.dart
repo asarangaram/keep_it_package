@@ -1,5 +1,6 @@
-import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart';
 
 import 'text_note.dart';
 
@@ -9,14 +10,34 @@ class TextNotes extends StatelessWidget {
     required this.notes,
     super.key,
   });
-  final List<CLTextNote> notes;
+  final List<CLMedia> notes;
   final CLMedia media;
 
   @override
   Widget build(BuildContext context) {
-    return TextNote(
-      media: media,
-      note: notes.firstOrNull,
+    return GetStoreUpdater(
+      builder: (theStore) {
+        final note = notes.firstOrNull;
+        if (note == null) {
+          return TextNote(
+            media: media,
+            theStore: theStore,
+          );
+        }
+
+        return GetMediaText(
+          id: note.id!,
+          errorBuilder: null,
+          loadingBuilder: null,
+          builder: (text) {
+            return TextNote(
+              media: media,
+              theStore: theStore,
+              note: notes.firstOrNull,
+            );
+          },
+        );
+      },
     );
   }
 }

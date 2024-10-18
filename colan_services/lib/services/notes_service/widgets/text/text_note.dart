@@ -1,37 +1,82 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:store/store.dart';
 
-import '../../../backup_service/dialogs.dart';
+import '../../../basic_page_service/dialogs.dart';
 import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
 
-class TextNote extends StatefulWidget {
+class TextNote extends ConsumerWidget {
   const TextNote({
     required this.media,
+    required this.theStore,
     this.note,
     super.key,
   });
   final CLMedia media;
-  final CLTextNote? note;
+  final CLMedia? note;
+  final StoreUpdater theStore;
 
   @override
-  State<TextNote> createState() => _TextNoteState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (note == null) {
+      return TextNote0(
+        media: media,
+        theStore: theStore,
+        note: note,
+        textOriginal: '',
+      );
+    }
+    return GetMediaText(
+      id: note!.id!,
+      errorBuilder: null,
+      loadingBuilder: null,
+      builder: (text) {
+        return TextNote0(
+          media: media,
+          theStore: theStore,
+          note: note,
+          textOriginal: text,
+        );
+      },
+    );
+  }
 }
 
-class _TextNoteState extends State<TextNote> {
+class TextNote0 extends ConsumerStatefulWidget {
+  const TextNote0({
+    required this.media,
+    required this.theStore,
+    required this.textOriginal,
+    this.note,
+    super.key,
+  });
+  final CLMedia media;
+  final CLMedia? note;
+  final StoreUpdater theStore;
+  final String textOriginal;
+
+  @override
+  ConsumerState<TextNote0> createState() => _TextNote0State();
+}
+
+class _TextNote0State extends ConsumerState<TextNote0> {
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
   late bool isEditing;
   bool textModified = false;
-  late String textOriginal;
+
+  late final StoreUpdater theStore;
   @override
   void initState() {
     super.initState();
+    theStore = widget.theStore;
 
     textEditingController = TextEditingController();
     isEditing = widget.note == null;
@@ -40,11 +85,10 @@ class _TextNoteState extends State<TextNote> {
 
   @override
   void didChangeDependencies() {
-    textOriginal = TheStore.of(context).getText(widget.note);
-    textEditingController.text = textOriginal;
+    textEditingController.text = widget.textOriginal;
     isEditing = widget.note == null;
     textModified = textEditingController.text.trim().isNotEmpty &&
-        textEditingController.text.trim() != textOriginal;
+        textEditingController.text.trim() != widget.textOriginal;
     super.didChangeDependencies();
   }
 
@@ -80,7 +124,7 @@ class _TextNoteState extends State<TextNote> {
             controls: [
               Container(),
               CLButtonIcon.small(
-                MdiIcons.delete,
+                clIcons.deleteNote,
                 onTap: () async {
                   final confirmed = await ConfirmAction.deleteNote(
                         context,
@@ -89,8 +133,9 @@ class _TextNoteState extends State<TextNote> {
                       false;
                   if (!confirmed) return;
                   if (context.mounted) {
-                    await TheStore.of(context)
-                        .deleteNote(context, widget.note!);
+                    await theStore.permanentlyDeleteMediaMultipleById(
+                      {widget.note!.id!},
+                    );
                     textEditingController.clear();
                   }
                 },
@@ -109,7 +154,7 @@ class _TextNoteState extends State<TextNote> {
             note: widget.note,
             onTap: () {
               textModified = textEditingController.text.trim().isNotEmpty &&
-                  textEditingController.text.trim() != textOriginal;
+                  textEditingController.text.trim() != widget.textOriginal;
               setState(() {});
             },
           ),
@@ -118,10 +163,10 @@ class _TextNoteState extends State<TextNote> {
           controls: [
             if (textModified) ...[
               CLButtonIcon.small(
-                MdiIcons.undoVariant,
+                clIcons.undoNote,
                 onTap: () {
                   if (widget.note != null) {
-                    textEditingController.text = textOriginal;
+                    textEditingController.text = widget.textOriginal;
                   } else {
                     textEditingController.clear();
                   }
@@ -129,14 +174,14 @@ class _TextNoteState extends State<TextNote> {
                   setState(() {});
                 },
               ),
-              CLButtonIcon.small(MdiIcons.contentSave, onTap: onEditDone),
+              CLButtonIcon.small(clIcons.save, onTap: onEditDone),
             ] else if (widget.note != null) ...[
               Container(),
-              CLButtonIcon.small(MdiIcons.close, onTap: onEditDone),
+              CLButtonIcon.small(clIcons.discardChangeNote, onTap: onEditDone),
             ] else if (focusNode.hasFocus) ...[
               Container(),
               CLButtonIcon.small(
-                MdiIcons.keyboardClose,
+                clIcons.hideKeyboard,
                 onTap: () {
                   focusNode.unfocus();
                 },
@@ -151,29 +196,23 @@ class _TextNoteState extends State<TextNote> {
   Future<void> onEditDone() async {
     if (textModified) {
       final String path;
+      path = theStore.createTempFile(ext: 'txt');
+      await File(path).writeAsString(textEditingController.text.trim());
       if (widget.note == null) {
-        path = await TheStore.of(context).createTempFile(ext: 'txt');
-        await File(path).writeAsString(textEditingController.text.trim());
-
-        if (mounted) {
-          await TheStore.of(context).upsertNote(
-            path,
-            CLNoteTypes.text,
-            mediaMultiple: [widget.media],
-            note: widget.note,
-          );
-        }
-        textOriginal = textEditingController.text.trim();
+        await theStore.newMedia(
+          path,
+          type: CLMediaType.text,
+          parents: [widget.media],
+          isAux: () => true,
+        );
       } else {
-        path = TheStore.of(context).getNotesPath(widget.note!);
-        await File(path).writeAsString(textEditingController.text.trim());
-        if (mounted) {
-          textOriginal = TheStore.of(context).getText(widget.note);
-        }
+        await theStore.replaceMedia(path, media: widget.note!);
       }
 
       isEditing = false;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     } else if (widget.note != null) {
       isEditing = false;
       setState(() {});

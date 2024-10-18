@@ -2,28 +2,29 @@ import 'dart:io';
 
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import 'package:store/store.dart';
+
 import 'providers/captured_media.dart';
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';
 
 class CLCameraService extends ConsumerWidget {
   const CLCameraService({
+    required this.parentIdentifier,
     required this.onDone,
     required this.onNewMedia,
-    required this.getPreview,
     this.onCancel,
     super.key,
     this.onError,
   });
-
+  final String parentIdentifier;
   final VoidCallback? onCancel;
   final Future<void> Function(List<CLMedia> mediaList) onDone;
   final Future<CLMedia?> Function(String, {required bool isVideo}) onNewMedia;
-  final Widget Function(CLMedia media) getPreview;
+
   final void Function(String message, {required dynamic error})? onError;
   static Future<bool> invokeWithSufficientPermission(
     BuildContext context,
@@ -68,7 +69,7 @@ class CLCameraService extends ConsumerWidget {
           },
           previewWidget: PreviewCapturedMedia(
             sendMedia: onDone,
-            getPreview: getPreview,
+            parentIdentifier: parentIdentifier,
           ),
           themeData: DefaultCLCameraIcons(),
           onError: onError,

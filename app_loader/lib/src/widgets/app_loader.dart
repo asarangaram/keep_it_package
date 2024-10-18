@@ -39,7 +39,6 @@ class AppLoader extends ConsumerWidget {
           return AppView(appDescriptor: appDescriptor);
         },
         error: (err, _) {
-          _infoLogger(err.toString());
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             home: CLErrorView(errorMessage: err.toString()),
@@ -54,9 +53,9 @@ class AppLoader extends ConsumerWidget {
   }
 }
 
-bool _disableInfoLogger = true;
+/* bool _disableInfoLogger = true;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i(msg);
   }
-}
+} */

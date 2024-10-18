@@ -7,6 +7,7 @@ import '../../basics/cl_text.dart';
 import '../../extensions/ext_cl_menu_item.dart';
 import '../../models/cl_menu_item.dart';
 import '../../models/cl_scale_type.dart';
+import '../../theme/models/cl_icons.dart';
 import '../quick_menu/cl_quickmenu.dart';
 
 class MainHeader extends ConsumerWidget {
@@ -75,8 +76,8 @@ class MainHeader extends ConsumerWidget {
                           children2D: mainActionItems!.insertOnDone(onDone),
                         );
                       },
-                      child: const CLIcon.small(
-                        Icons.more_vert,
+                      child: CLIcon.small(
+                        clIcons.extraMenu,
                       ),
                     ),
                   ),

@@ -1,20 +1,24 @@
 name: store
-description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: ^3.4.3
 
+# Add regular dependencies here.
 dependencies:
-  flutter:
-    sdk: flutter
-  intl: ^0.19.0
-  
+  collection: ^1.18.0
+  crypto: ^3.0.4
+  http: ^1.2.2
+  intl: ^0.18.0
+  logger: ^2.4.0
+  meta: ^1.12.0 # this version 1.12.0 is required for flutter_test
+  path: ^1.9.0
+  shared_preferences: ^2.3.2
+  # path: ^1.8.0
 
 dev_dependencies:
-  flutter_lints: ^3.0.0
-  flutter_test:
-    sdk: flutter
+  lints: ^3.0.0
+  test: ^1.24.0
   very_good_analysis: ^6.0.0
-flutter:

@@ -1,11 +1,26 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/store.dart';
 
 @immutable
 class DBQuery<T> extends StoreQuery<T> {
   factory DBQuery({
+    required String sql,
+    required Set<String> triggerOnTables,
+    String dbPath = 'Not specified',
+    List<Object?>? parameters,
+  }) {
+    final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
+    return DBQuery._(
+      sql: sql0,
+      triggerOnTables: triggerOnTables,
+      fromMap: null,
+      parameters: parameters0,
+      dbPath: dbPath,
+    );
+  }
+  factory DBQuery.map({
     required String sql,
     required Set<String> triggerOnTables,
     required T? Function(
@@ -34,7 +49,7 @@ class DBQuery<T> extends StoreQuery<T> {
   final String sql;
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
-  final T? Function(Map<String, dynamic> map) fromMap;
+  final T? Function(Map<String, dynamic> map)? fromMap;
   final String dbPath;
 
   DBQuery<T> copyWith({
@@ -44,7 +59,7 @@ class DBQuery<T> extends StoreQuery<T> {
     T? Function(Map<String, dynamic> map)? fromMap,
     String? dbPath,
   }) {
-    return DBQuery<T>(
+    return DBQuery._(
       sql: sql ?? this.sql,
       triggerOnTables: triggerOnTables ?? this.triggerOnTables,
       parameters: parameters ?? this.parameters,
@@ -80,7 +95,8 @@ class DBQuery<T> extends StoreQuery<T> {
   int get hashCode {
     return sql.hashCode ^
         triggerOnTables.hashCode ^
-        parameters.hashCode ^
+        (parameters?.fold(0, (hashInit, next) => hashInit! ^ next.hashCode) ??
+            parameters.hashCode) ^
         fromMap.hashCode ^
         dbPath.hashCode;
   }
@@ -107,8 +123,9 @@ class DBQuery<T> extends StoreQuery<T> {
     SqliteWriteContext tx,
   ) async {
     _infoLogger('cmd: $sql, $parameters');
-    final objs = (await tx.getAll(sql, parameters ?? []))
-        .map((e) => fromMap(fixedMap(e)))
+    final fectched = await tx.getAll(sql, parameters ?? []);
+    final objs = fectched
+        .map((e) => (fromMap != null) ? fromMap!(fixedMap(e)) : e as T)
         .where((e) => e != null)
         .map((e) => e! as T)
         .toList();
@@ -119,7 +136,7 @@ class DBQuery<T> extends StoreQuery<T> {
   Future<T?> read(SqliteWriteContext tx) async {
     _infoLogger('cmd: $sql, $parameters');
     final obj = (await tx.getAll(sql, parameters ?? []))
-        .map((e) => fromMap(fixedMap(e)))
+        .map((e) => (fromMap != null) ? fromMap!(fixedMap(e)) : e as T)
         .firstOrNull;
     _infoLogger('read $obj');
     return obj;
@@ -171,6 +188,11 @@ class DBQuery<T> extends StoreQuery<T> {
     } catch (e) {
       return (sql, parameters);
     }
+  }
+
+  DBQuery<T> insertParameters(List<Object?> parameters) {
+    final (sql0, parameters0) = DBQuery.preprocessSqlAndParams(sql, parameters);
+    return copyWith(sql: sql0, parameters: parameters0);
   }
 }
 
