@@ -9,7 +9,7 @@ class BasicPageService extends StatelessWidget {
     super.key,
   });
   // Use with Page
-  factory BasicPageService.withNavBar({required String message}) {
+  factory BasicPageService.withNavBar({required dynamic message}) {
     return BasicPageService._(
       message: message,
       navBar: true,
@@ -17,14 +17,14 @@ class BasicPageService extends StatelessWidget {
     );
   }
   // Use as Widget
-  factory BasicPageService.message({required String message}) {
+  factory BasicPageService.message({required dynamic message}) {
     return BasicPageService._(
       message: message,
       navBar: false,
       key: ValueKey('$message ${false}'),
     );
   }
-  final String message;
+  final dynamic message;
   final bool navBar;
   @override
   Widget build(BuildContext context) {
@@ -36,9 +36,13 @@ class BasicPageService extends StatelessWidget {
           children: [
             Expanded(
               child: Center(
-                child: CLText.large(
-                  message,
-                ),
+                child: (message is String)
+                    ? CLText.large(
+                        message as String,
+                      )
+                    : (message is Widget)
+                        ? message as Widget
+                        : throw Exception('must be either widget or a string'),
               ),
             ),
             Padding(
