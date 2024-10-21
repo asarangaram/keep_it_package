@@ -33,7 +33,7 @@ class EditCollectionDescription extends StatelessWidget {
       onSubmit: (CLFormFieldResult result) async {
         final description = (result as CLFormTextFieldResult).value;
 
-        onDone(collection.copyWith(description: description));
+        onDone(collection.copyWith(description: () => description));
       },
     );
   }

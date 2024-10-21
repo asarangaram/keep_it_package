@@ -6,6 +6,23 @@ import 'package:meta/meta.dart';
 
 import 'collection.dart';
 
+List<T> updateEntry<T>(
+  List<T> list,
+  bool Function(T) test,
+  T Function(T) replaceBy,
+) {
+  final index = list.indexWhere(test);
+  if (index == -1) {
+    return list;
+  }
+
+  final updatedList = List<T>.from(list);
+
+  updatedList[index] = replaceBy(updatedList[index]);
+
+  return updatedList;
+}
+
 @immutable
 class Collections {
   const Collections(
@@ -69,4 +86,108 @@ class Collections {
 
   factory Collections.fromJson(String source) =>
       Collections.fromList(json.decode(source) as List<dynamic>);
+
+  Collections markForSyncing(int collectionID, {required int serverUID}) {
+    final collection = entries.where((e) => e.id == collectionID).firstOrNull;
+    if (collection == null) return this;
+    if (collection.serverUID != null && collection.serverUID != serverUID) {
+      throw Exception('Incorrect usage of serverUID');
+    }
+
+    return copyWith(
+      entries: updateEntry(
+        entries,
+        (e) => e.id == collectionID,
+        (collection) => collection.copyWith(
+          serverUID: () => serverUID,
+          collectionStoragePreference: CollectionStoragePreference.syncing,
+        ),
+      ),
+    );
+  }
+
+  Collections revertSyncing(int collectionID) {
+    throw UnimplementedError();
+    /* final collection = entries.where((e) => e.id == collectionID).firstOrNull;
+    if (collection == null) return this;
+    if (collection.collectionStoragePreference.isSynced ||
+        collection.collectionStoragePreference.isSyncing) {
+      // nothing to do
+      return this;
+    }
+    return copyWith(
+      entries: updateEntry(
+        entries,
+        (e) => e.id == collectionID,
+        (collection) => collection.copyWith(
+          collectionStoragePreference: CollectionStoragePreference.notSynced,
+        ),
+      ),
+    ); */
+  }
+
+  // Can be moved only when the collection is syncing
+  Collections markAsSynced(int collectionID) {
+    final collection = entries.where((e) => e.id == collectionID).firstOrNull;
+    if (collection == null) return this;
+    if (!collection.collectionStoragePreference.isSyncing) {
+      // nothing to do
+      return this;
+    }
+    return copyWith(
+      entries: updateEntry(
+        entries,
+        (e) => e.id == collectionID,
+        (collection) => collection.copyWith(
+          collectionStoragePreference: CollectionStoragePreference.synced,
+        ),
+      ),
+    );
+  }
+
+  Collections removeServerCopy(int collectionID) {
+    final collection = entries.where((e) => e.id == collectionID).firstOrNull;
+    if (collection == null) return this;
+    if (collection.serverUID == null) {
+      // This is not a server collection, nothing to remove
+      return this;
+    }
+    if (!collection.collectionStoragePreference.isSyncing) {
+      // nothing to do
+      return this;
+    }
+    return copyWith(
+      entries: updateEntry(
+        entries,
+        (e) => e.id == collectionID,
+        (collection) => collection.copyWith(
+          collectionStoragePreference: CollectionStoragePreference.notSynced,
+          serverUID: () => null, // we simply detach
+        ),
+      ),
+    );
+  }
+
+  Collections removeLocalCopy(int collectionID) {
+    final collection = entries.where((e) => e.id == collectionID).firstOrNull;
+    if (collection == null) return this;
+
+    if (collection.serverUID == null) {
+      // This is not a server collection, nothing to remove
+      return this;
+    }
+    if (!collection.collectionStoragePreference.isSyncing) {
+      // nothing to do
+      return this;
+    }
+    return copyWith(
+      entries: updateEntry(
+        entries,
+        (e) => e.id == collectionID,
+        (collection) => collection.copyWith(
+          collectionStoragePreference: CollectionStoragePreference.notSynced,
+        ),
+      ),
+    );
+  }
 }

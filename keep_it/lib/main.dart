@@ -250,7 +250,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        const redirectTo = '';
+        const redirectTo = '/collections/storage_preference';
         if (redirectTo.isNotEmpty) {
           if (location != redirectTo) return redirectTo;
         }

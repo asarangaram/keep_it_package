@@ -480,12 +480,18 @@ extension StoreExt on StoreUpdater {
   Future<Collection> get _notesCollection async =>
       await store.reader.getCollectionByLabel('*** Notes') ??
       (await upsertCollection(
-        const Collection(label: '*** Notes'),
+        const Collection(
+          label: '*** Notes',
+          collectionStoragePreference: CollectionStoragePreference.notSynced,
+        ),
       ));
   Future<Collection> get _defaultCollection async =>
       await store.reader.getCollectionByLabel(tempCollectionName) ??
       (await upsertCollection(
-        Collection(label: tempCollectionName),
+        Collection(
+          label: tempCollectionName,
+          collectionStoragePreference: CollectionStoragePreference.notSynced,
+        ),
       ));
 
   Future<CLMedia> _generateMediaPreview({

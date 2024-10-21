@@ -37,7 +37,11 @@ class PickCollection extends StatelessWidget {
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
-            onCreateByLabel: (label) async => Collection(label: label),
+            onCreateByLabel: (label) async => Collection(
+              label: label,
+              collectionStoragePreference:
+                  CollectionStoragePreference.notSynced,
+            ),
             onValidate: (value) {
               if (value == null) {
                 return "can't be empty";

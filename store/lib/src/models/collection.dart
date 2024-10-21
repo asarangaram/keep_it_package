@@ -3,58 +3,38 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
-enum CollectionStoragePreference { onlineOnly, offlineOnly, synced }
+import 'cl_media_base.dart';
+
+enum CollectionStoragePreference {
+  notSynced,
+
+  syncing,
+  synced;
+
+  bool get isSynced => this == synced;
+  bool get isSyncing => this == syncing;
+  bool get isOnlineOnly => this == notSynced;
+  bool get isOfflineOnly => this == notSynced;
+}
 
 @immutable
-class CollectionBase {
-  const CollectionBase({
+class Collection {
+  const Collection({
     required this.label,
+    required this.collectionStoragePreference,
+    this.id,
     this.description,
     this.createdDate,
     this.updatedDate,
+    this.serverUID,
   });
   final String label;
   final String? description;
   final DateTime? createdDate;
   final DateTime? updatedDate;
-
-  @override
-  bool operator ==(covariant CollectionBase other) {
-    if (identical(this, other)) return true;
-
-    return other.label == label &&
-        other.description == description &&
-        other.createdDate == createdDate &&
-        other.updatedDate == updatedDate;
-  }
-
-  @override
-  int get hashCode {
-    return label.hashCode ^
-        description.hashCode ^
-        createdDate.hashCode ^
-        updatedDate.hashCode;
-  }
-
-  @override
-  String toString() {
-    // ignore: lines_longer_than_80_chars
-    return 'CollectionBase(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate)';
-  }
-}
-
-@immutable
-class Collection extends CollectionBase {
-  const Collection({
-    required super.label,
-    this.id,
-    super.description,
-    super.createdDate,
-    super.updatedDate,
-    this.collectionStoragePreference = CollectionStoragePreference.synced,
-  });
-
+  final int? id;
   final CollectionStoragePreference collectionStoragePreference;
+  final int? serverUID;
 
   factory Collection.fromMap(Map<String, dynamic> map) {
     return Collection(
@@ -68,34 +48,40 @@ class Collection extends CollectionBase {
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : null,
+      collectionStoragePreference: CollectionStoragePreference.values
+          .asNameMap()[map['CollectionStoragePreference'] as String]!,
+      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
     );
   }
 
   factory Collection.fromJson(String source) =>
       Collection.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  final int? id;
-
   Collection copyWith({
-    int? id,
+    ValueGetter<int?>? id,
     String? label,
-    String? description,
-    DateTime? createdDate,
-    DateTime? updatedDate,
+    ValueGetter<String?>? description,
+    ValueGetter<DateTime?>? createdDate,
+    ValueGetter<DateTime?>? updatedDate,
+    CollectionStoragePreference? collectionStoragePreference,
+    ValueGetter<int?>? serverUID,
   }) {
     return Collection(
-      id: id ?? this.id,
+      id: id != null ? id.call() : this.id,
       label: label ?? this.label,
-      description: description ?? this.description,
-      createdDate: createdDate ?? this.createdDate,
-      updatedDate: updatedDate ?? this.updatedDate,
+      description: description != null ? description.call() : this.description,
+      createdDate: createdDate != null ? createdDate.call() : this.createdDate,
+      updatedDate: updatedDate != null ? updatedDate.call() : this.updatedDate,
+      collectionStoragePreference:
+          collectionStoragePreference ?? this.collectionStoragePreference,
+      serverUID: serverUID != null ? serverUID.call() : this.serverUID,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'Collection(id: $id, label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate)';
+    return 'Collection(id: $id, label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, collectionStoragePreference: $collectionStoragePreference, serverUID: $serverUID)';
   }
 
   @override
@@ -106,7 +92,9 @@ class Collection extends CollectionBase {
         other.label == label &&
         other.description == description &&
         other.createdDate == createdDate &&
-        other.updatedDate == updatedDate;
+        other.updatedDate == updatedDate &&
+        other.collectionStoragePreference == collectionStoragePreference &&
+        other.serverUID == serverUID;
   }
 
   @override
@@ -115,7 +103,9 @@ class Collection extends CollectionBase {
         label.hashCode ^
         description.hashCode ^
         createdDate.hashCode ^
-        updatedDate.hashCode;
+        updatedDate.hashCode ^
+        collectionStoragePreference.hashCode ^
+        serverUID.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -125,17 +115,10 @@ class Collection extends CollectionBase {
       'description': description,
       'createdDate': createdDate?.millisecondsSinceEpoch,
       'updatedDate': updatedDate?.millisecondsSinceEpoch,
+      'collectionStoragePreference': collectionStoragePreference.name,
+      'serverUID': serverUID,
     };
   }
 
   String toJson() => json.encode(toMap());
-
-  Collection removeID() {
-    return Collection(
-      label: label,
-      description: description,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-    );
-  }
 }
