@@ -28,24 +28,14 @@ mixin MediaSyncMixIn {
       name: 'Online Service | Server',
     ); */
   }
+
   Future<Map<String, dynamic>> updateCollectionId(
     Map<String, dynamic> map, {
     required StoreUpdater updater,
   }) async {
-    final store = updater.store;
-
     if (map.containsKey('collectionLabel')) {
-      final label = map['collectionLabel'] as String;
-      final collection = await store.reader.getCollectionByLabel(label) ??
-          (await updater.upsertCollection(
-            Collection(
-              label: label,
-              collectionStoragePreference:
-                  CollectionStoragePreference.notSynced,
-            ),
-            shouldRefresh: false,
-          ));
-      map['collectionId'] = collection.id;
+      map['collectionId'] ??=
+          await updater.collectionIdFromLabel(map['collectionLabel'] as String);
     } else {
       throw Exception('collectionLabel is missing');
     }
@@ -296,7 +286,7 @@ mixin MediaSyncMixIn {
     required DownloaderNotifier downloader,
   }) async {
     if (trackers.isEmpty) return;
-
+    log(' ${trackers.length} items need sync');
     for (final (i, tracker) in trackers.indexed) {
       log('sync $i');
       final l = tracker.current; // local

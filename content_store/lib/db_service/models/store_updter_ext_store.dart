@@ -243,6 +243,21 @@ extension StoreExt on StoreUpdater {
     return updated;
   }
 
+  Future<int> collectionIdFromLabel(
+    String label, {
+    bool shouldRefresh = true,
+  }) async {
+    final collection = await store.reader.getCollectionByLabel(label) ??
+        (await upsertCollection(
+          Collection(
+            label: label,
+            collectionStoragePreference: CollectionStoragePreference.notSynced,
+          ),
+          shouldRefresh: false,
+        ));
+    return collection.id!;
+  }
+
   Future<CLMedia?> newMedia(
     String path, {
     required CLMediaType type,

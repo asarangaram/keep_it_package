@@ -1,25 +1,20 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:background_downloader/background_downloader.dart';
-import 'package:content_store/db_service/models/store_updter_ext_store.dart';
 import 'package:content_store/extensions/list_ext.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/store.dart';
 
 import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
-import '../../extensions/ext_cl_media.dart';
 import '../models/cl_server.dart';
-import '../models/media_change_tracker.dart';
 import '../models/server.dart';
-import '../models/server_upload_entity.dart';
 import 'downloader.dart';
-import 'server_sync_mixin.dart';
+import 'media_analyse_mixin.dart';
+import 'media_sync_mixin.dart';
 
-class ServerNotifier extends StateNotifier<Server> with MediaSyncMixIn {
+class ServerNotifier extends StateNotifier<Server>
+    with MediaSyncMixIn, MediaAnalyseMixin {
   ServerNotifier(this.storeUpdater, this.downloader) : super(const Server()) {
     _initialize();
   }
@@ -122,6 +117,18 @@ class ServerNotifier extends StateNotifier<Server> with MediaSyncMixIn {
     );
   }
 
+  Future<void> _sync(CLServer server) async {
+    final updater = await storeUpdater;
+    await mediaSync(
+      await analyse(await serverItemsMap, await localItems),
+      server: server,
+      updater: updater,
+      downloader: downloader,
+    ).then((value) {
+      updater.store.reloadStore();
+    });
+  }
+
   void checkStatus() {
     if (state.isRegistered) {
       state.identity!.hasConnection().then((isOnline) {
@@ -131,7 +138,13 @@ class ServerNotifier extends StateNotifier<Server> with MediaSyncMixIn {
     return;
   }
 
-  Future<void> _sync(CLServer server) async {
+  Future<List<CLMedia>> get localItems async {
+    final store = (await storeUpdater).store;
+    final q = store.reader.getQuery<CLMedia>(DBQueries.mediaSyncQuery);
+    return (await store.reader.readMultiple(q)).nonNullableList;
+  }
+
+  Future<List<Map<String, dynamic>>> get serverItemsMap async {
     final serverItemsMap = await state.identity!.downloadMediaInfo();
     for (final serverEntry in serverItemsMap) {
       /// There are scenarios when the collections are not synced
@@ -140,55 +153,7 @@ class ServerNotifier extends StateNotifier<Server> with MediaSyncMixIn {
       /// we may need to fetch from server if needed. [KNOWN_ISSUE]
       await updateCollectionId(serverEntry, updater: await storeUpdater);
     }
-    final store = (await storeUpdater).store;
-    final q = store.reader.getQuery<CLMedia>(DBQueries.mediaSyncQuery);
-    final localItems = (await store.reader.readMultiple(q)).nonNullableList;
-
-    final trackers = await analyse(serverItemsMap, localItems);
-    log(' ${trackers.length} items need sync');
-    await mediaSync(
-      trackers,
-      server: server,
-      updater: await storeUpdater,
-      downloader: downloader,
-    );
-
-    (await storeUpdater).store.reloadStore();
-  }
-
-  static Future<List<MediaChangeTracker>> analyse(
-    List<Map<String, dynamic>> serverItemsMap,
-    List<CLMedia> localItems,
-  ) async {
-    final trackers = <MediaChangeTracker>[];
-    log('items in local: ${localItems.length}');
-    log('items in Server: ${serverItemsMap.length}');
-    for (final serverEntry in serverItemsMap) {
-      final localEntry = localItems
-          .where(
-            (e) =>
-                e.serverUID == serverEntry['serverUID'] ||
-                e.md5String == serverEntry['md5String'],
-          )
-          .firstOrNull;
-
-      final tracker = MediaChangeTracker(
-        current: localEntry,
-        update: StoreExtCLMedia.mediaFromServerMap(localEntry, serverEntry),
-      );
-
-      if (!tracker.isActionNone) {
-        trackers.add(tracker);
-      }
-      if (localEntry != null) {
-        localItems.remove(localEntry);
-      }
-    }
-    // For remaining items
-    trackers.addAll(
-      localItems.map((e) => MediaChangeTracker(current: e, update: null)),
-    );
-    return trackers;
+    return serverItemsMap;
   }
 
   @override
