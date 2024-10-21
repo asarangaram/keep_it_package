@@ -13,6 +13,7 @@ import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';
 import 'pages/collection_timeline_page.dart';
+import 'pages/collections_list_page.dart';
 import 'pages/collections_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
@@ -156,6 +157,12 @@ class KeepItApp implements AppDescriptor {
           name: 'servers',
           builder: (context, GoRouterState state) {
             return const FullscreenLayout(child: ServersPage());
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'collections/storage_preference',
+          builder: (context, GoRouterState state) {
+            return const CollectionsStoragePreferences();
           },
         ),
 

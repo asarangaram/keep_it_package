@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
+enum CollectionStoragePreference { onlineOnly, offlineOnly, synced }
+
 @immutable
 class CollectionBase {
   const CollectionBase({
@@ -49,7 +51,10 @@ class Collection extends CollectionBase {
     super.description,
     super.createdDate,
     super.updatedDate,
+    this.collectionStoragePreference = CollectionStoragePreference.synced,
   });
+
+  final CollectionStoragePreference collectionStoragePreference;
 
   factory Collection.fromMap(Map<String, dynamic> map) {
     return Collection(

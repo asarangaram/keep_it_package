@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../builders/get_nw_scanner.dart';
 import '../builders/get_server.dart';
@@ -38,6 +39,17 @@ class ServerSettingsImpl extends ConsumerWidget {
                           SyncServer1(
                             onTap: () async {
                               ref.read(serverProvider.notifier).sync();
+                              return true;
+                            },
+                          )
+                        else
+                          Container(),
+                        if (server.canSync)
+                          OpenCollectionsStoragePreferences(
+                            onTap: () async {
+                              // Should got to Navigators
+                              await context
+                                  .push('/collections/storage_preference');
                               return true;
                             },
                           )

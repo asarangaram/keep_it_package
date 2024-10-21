@@ -146,6 +146,7 @@ class CLIcons {
 
   final extraMenu = Icons.more_vert;
   final cameraSettings = Icons.settings;
+  final collectionsSelect = Symbols.list_alt;
 }
 
 CLIcons clIcons = CLIcons();
