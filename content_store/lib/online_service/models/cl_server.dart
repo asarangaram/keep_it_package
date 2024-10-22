@@ -174,7 +174,7 @@ class CLServer {
       ];
       return mediaMapList.map((e) => e as Map<String, dynamic>).toList();
     } catch (e) {
-      log('error in download $e');
+      log('error when downloading $e');
     }
     return [];
   }
