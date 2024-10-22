@@ -1,20 +1,16 @@
 import 'dart:async';
 
-import 'package:content_store/extensions/list_ext.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:store/store.dart';
 
 import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
 import '../models/cl_server.dart';
 import '../models/server.dart';
+import '../models/sync_methods/media.dart';
 import 'downloader.dart';
-import 'media_analyse_mixin.dart';
-import 'media_sync_mixin.dart';
 
-class ServerNotifier extends StateNotifier<Server>
-    with MediaSyncMixIn, MediaAnalyseMixin {
+class ServerNotifier extends StateNotifier<Server> {
   ServerNotifier(this.storeUpdater, this.downloader) : super(const Server()) {
     _initialize();
   }
@@ -119,12 +115,14 @@ class ServerNotifier extends StateNotifier<Server>
 
   Future<void> _sync(CLServer server) async {
     final updater = await storeUpdater;
-    await mediaSync(
-      await analyse(await serverItemsMap, await localItems),
-      server: server,
-      updater: updater,
-      downloader: downloader,
-    ).then((value) {
+    final mediaSyncModule =
+        MediaSyncModule(state.identity!, updater, downloader);
+    await mediaSyncModule
+        .sync(
+      await mediaSyncModule.itemsOnServerMap(null),
+      await mediaSyncModule.itemOnDevice(null),
+    )
+        .then((value) {
       updater.store.reloadStore();
     });
   }
@@ -136,24 +134,6 @@ class ServerNotifier extends StateNotifier<Server>
       });
     }
     return;
-  }
-
-  Future<List<CLMedia>> get localItems async {
-    final store = (await storeUpdater).store;
-    final q = store.reader.getQuery<CLMedia>(DBQueries.mediaSyncQuery);
-    return (await store.reader.readMultiple(q)).nonNullableList;
-  }
-
-  Future<List<Map<String, dynamic>>> get serverItemsMap async {
-    final serverItemsMap = await state.identity!.downloadMediaInfo();
-    for (final serverEntry in serverItemsMap) {
-      /// There are scenarios when the collections are not synced
-      /// fully, we may end up creating one. However, other details for
-      /// the newly created collection is not available at this stage, and
-      /// we may need to fetch from server if needed. [KNOWN_ISSUE]
-      await updateCollectionId(serverEntry, updater: await storeUpdater);
-    }
-    return serverItemsMap;
   }
 
   @override
