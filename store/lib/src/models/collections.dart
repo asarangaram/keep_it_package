@@ -108,7 +108,8 @@ class Collections {
 
   Collections revertSyncing(int collectionID) {
     throw UnimplementedError();
-    /* final collection = entries.where((e) => e.id == collectionID).firstOrNull;
+    /* final collection = entries.where(
+    (e) => e.id == collectionID).firstOrNull;
     if (collection == null) return this;
     if (collection.collectionStoragePreference.isSynced ||
         collection.collectionStoragePreference.isSyncing) {
