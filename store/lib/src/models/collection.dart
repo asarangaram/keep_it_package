@@ -48,8 +48,11 @@ class Collection {
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : null,
-      collectionStoragePreference: CollectionStoragePreference.values
-          .asNameMap()[map['CollectionStoragePreference'] as String]!,
+      collectionStoragePreference: map['CollectionStoragePreference'] == null
+          ? CollectionStoragePreference
+              .notSynced // TODO(anandas): : Fix after db update
+          : CollectionStoragePreference.values
+              .asNameMap()[map['CollectionStoragePreference'] as String]!,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
     );
   }
