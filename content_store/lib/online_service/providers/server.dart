@@ -7,7 +7,7 @@ import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
 import '../models/cl_server.dart';
 import '../models/server.dart';
-import '../models/sync_methods/media.dart';
+import '../models/sync_module/media.dart';
 import 'downloader.dart';
 
 class ServerNotifier extends StateNotifier<Server> {

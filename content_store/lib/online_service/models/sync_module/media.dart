@@ -11,7 +11,7 @@ import '../../../extensions/ext_cl_media.dart';
 import '../media_change_tracker.dart';
 import '../server.dart';
 import '../server_upload_entity.dart';
-import 'sync_methods.dart';
+import 'sync_module.dart';
 
 @immutable
 class MediaSyncModule extends SyncModule<CLMedia> {
