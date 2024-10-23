@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
+import 'cl_entities.dart';
 import 'cl_media_base.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLMedia extends CLMediaBase {
+class CLMedia extends CLMediaBase implements CLEntity {
   CLMedia({
     required super.name,
     required super.type,
@@ -231,6 +232,7 @@ class CLMedia extends CLMediaBase {
         other.mustDownloadOriginal == mustDownloadOriginal;
   }
 
+  @override
   bool isContentSame(covariant CLMedia other) {
     return other.name == name &&
         other.type == type &&
@@ -425,4 +427,17 @@ class CLMedia extends CLMediaBase {
   }) {
     throw Exception('use either updateContent or updateStatus');
   }
+
+  @override
+  bool isChangedAfter(CLEntity other) =>
+      updatedDate.isAfter((other as CLMedia).updatedDate);
+
+  @override
+  bool get isMarkedDeleted => isDeleted ?? false;
+
+  @override
+  bool get isMarkedEditted => isEdited;
+
+  @override
+  bool get hasServerUID => serverUID != null;
 }

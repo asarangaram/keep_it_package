@@ -47,11 +47,11 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     return serverItemsMap;
   }
 
-  Future<List<ChangeTracker<CLMedia>>> analyse(
+  Future<List<ChangeTracker>> analyse(
     List<Map<String, dynamic>> itemsOnServerMap,
     List<CLMedia> itemsOnDevice,
   ) async {
-    final trackers = <MediaChangeTracker>[];
+    final trackers = <ChangeTracker>[];
     log('items in local: ${itemsOnDevice.length}');
     log('items in Server: ${itemsOnServerMap.length}');
     for (final serverEntry in itemsOnServerMap) {
@@ -63,7 +63,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
           )
           .firstOrNull;
 
-      final tracker = MediaChangeTracker(
+      final tracker = ChangeTracker(
         current: localEntry,
         update: StoreExtCLMedia.mediaFromServerMap(localEntry, serverEntry),
       );
@@ -77,7 +77,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     }
     // For remaining items
     trackers.addAll(
-      itemsOnDevice.map((e) => MediaChangeTracker(current: e, update: null)),
+      itemsOnDevice.map((e) => ChangeTracker(current: e, update: null)),
     );
     return trackers;
   }
@@ -92,8 +92,8 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     log(' ${trackers.length} items need sync');
     for (final (i, tracker) in trackers.indexed) {
       log('sync $i');
-      final l = tracker.current; // local
-      final s = tracker.update; // server
+      final l = tracker.current as CLMedia?; // local
+      final s = tracker.update as CLMedia?; // server
       switch (tracker.actionType) {
         case ActionType.none:
           throw Exception('should not have come for sync');

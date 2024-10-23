@@ -14,17 +14,17 @@ enum ActionType {
 }
 
 @immutable
-abstract class ChangeTracker<T> {
+class ChangeTracker {
   ChangeTracker({required this.current, required this.update}) {
     actionType = getActionType();
   }
-  final T? current;
-  final T? update;
+  final CLEntity? current;
+  final CLEntity? update;
 
   late final ActionType actionType;
 
   @override
-  bool operator ==(covariant ChangeTracker<T> other) {
+  bool operator ==(covariant ChangeTracker other) {
     if (identical(this, other)) return true;
 
     return other.current == current && other.update == update;
@@ -45,31 +45,27 @@ abstract class ChangeTracker<T> {
   bool get isActionUpdateLocalCopy => actionType == ActionType.updateLocal;
   bool get markConflict => actionType == ActionType.markConflict;
 
-  bool get isContentSame;
-  bool get hasServerUID;
-  bool get isLocallyEditted;
-  bool get isLocallyDeleted;
-  bool get isLocalLatest;
-
   ActionType getActionType() {
-    if (isContentSame) return ActionType.none;
+    if (current != null && update != null && current!.isContentSame(update!)) {
+      return ActionType.none;
+    }
     if (current == null) {
       return ActionType.download;
     }
     if (update == null) {
-      if (hasServerUID) {
+      if ((current!).hasServerUID) {
         return ActionType.deleteLocal;
       }
       return ActionType.upload;
     }
-    if (!isLocallyEditted) {
+    if (!(current!).isMarkedEditted) {
       return ActionType.updateLocal;
     }
     // If the changes in local is new,
     /* if (isLocalLatest) 
    FIXME:  for now, always assume the local is forced */
     {
-      if (isLocallyDeleted) {
+      if ((current!).isMarkedDeleted) {
         return ActionType.deleteOnServer;
       }
 
@@ -77,47 +73,4 @@ abstract class ChangeTracker<T> {
     }
     /* return ActionType.markConflict; */
   }
-}
-
-@immutable
-class MediaChangeTracker extends ChangeTracker<CLMedia> {
-  MediaChangeTracker({required super.current, required super.update});
-
-  @override
-  bool get isContentSame =>
-      current != null && update != null && current!.isContentSame(update!);
-
-  @override
-  bool get hasServerUID => current!.serverUID != null;
-
-  @override
-  bool get isLocallyEditted => current?.isEdited ?? false;
-
-  @override
-  bool get isLocallyDeleted => current!.isDeleted ?? false;
-
-  @override
-  bool get isLocalLatest => update!.updatedDate.isBefore(current!.updatedDate);
-}
-
-@immutable
-class CollectionChangeTracker extends ChangeTracker<Collection> {
-  CollectionChangeTracker({required super.current, required super.update});
-
-  @override
-  bool get isContentSame => false;
-  //current != null && update != null && current!.isContentSame(update!);
-
-  @override
-  bool get hasServerUID => current!.serverUID != null;
-
-  @override
-  bool get isLocallyEditted => false; //current?.isEdited ?? false;
-
-  @override
-  bool get isLocallyDeleted => false; //current!.isDeleted ?? false;
-
-  @override
-  bool get isLocalLatest =>
-      true; //update!.updatedDate.isBefore(current!.updatedDate);
 }
