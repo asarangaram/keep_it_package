@@ -64,11 +64,14 @@ Collections demoCollections = Collections([
         serverUID = pickRandom([true, false]) ? e + 0x10000 : null;
       }
 
-      return Collection(
+      return Collection.strict(
         id: e,
         label: 'collection $e',
         serverUID: serverUID,
         collectionStoragePreference: storagePreference,
+        isDeleted: false,
+        isEditted: false,
+        description: null,
       );
     },
   ),

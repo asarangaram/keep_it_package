@@ -245,14 +245,17 @@ extension StoreExt on StoreUpdater {
 
   Future<int> collectionIdFromLabel(
     String label, {
+    int? serverUID,
     bool shouldRefresh = true,
   }) async {
+    /// FIXME
+    /// Also use serverUID, as renaming might have occured
+    /// search by serverUID, if not found, search by label.
+    /// If serverUID is missing, mark it
+    /// if label is changed, check if isEditted is marked.
     final collection = await store.reader.getCollectionByLabel(label) ??
         (await upsertCollection(
-          Collection(
-            label: label,
-            collectionStoragePreference: CollectionStoragePreference.notSynced,
-          ),
+          Collection.byLabel(label, serverUID: serverUID),
           shouldRefresh: false,
         ));
     return collection.id!;
@@ -495,18 +498,20 @@ extension StoreExt on StoreUpdater {
   Future<Collection> get _notesCollection async =>
       await store.reader.getCollectionByLabel('*** Notes') ??
       (await upsertCollection(
-        const Collection(
+        Collection.strict(
           label: '*** Notes',
           collectionStoragePreference: CollectionStoragePreference.notSynced,
+          isDeleted: false,
+          isEditted: false,
+          serverUID: null,
+          id: null,
+          description: null,
         ),
       ));
   Future<Collection> get _defaultCollection async =>
       await store.reader.getCollectionByLabel(tempCollectionName) ??
       (await upsertCollection(
-        Collection(
-          label: tempCollectionName,
-          collectionStoragePreference: CollectionStoragePreference.notSynced,
-        ),
+        Collection.byLabel(tempCollectionName),
       ));
 
   Future<CLMedia> _generateMediaPreview({
