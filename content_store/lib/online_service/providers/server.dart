@@ -119,8 +119,8 @@ class ServerNotifier extends StateNotifier<Server> {
         MediaSyncModule(state.identity!, updater, downloader);
     await mediaSyncModule
         .sync(
-      await mediaSyncModule.itemsOnServerMap(null),
-      await mediaSyncModule.itemOnDevice(null),
+      await mediaSyncModule.mediaOnServerMap(null),
+      await mediaSyncModule.mediaOnDevice(null),
     )
         .then((value) {
       updater.store.reloadStore();

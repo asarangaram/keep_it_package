@@ -158,7 +158,7 @@ class Queries {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.mediaSyncQuery => DBQuery<CLMedia>.map(
+      DBQueries.mediaOnDevice => DBQuery<CLMedia>.map(
           sql:
               'SELECT * FROM Media  WHERE serverUID IS NOT NULL OR (serverUID IS NULL AND (isDeleted != 1 OR isDeleted IS NULL));',
           triggerOnTables: const {'Media', 'MediaNote'},

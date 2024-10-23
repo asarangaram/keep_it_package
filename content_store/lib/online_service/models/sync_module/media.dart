@@ -28,12 +28,12 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     return map;
   }
 
-  Future<List<CLMedia>> itemOnDevice(int? collectionID) async {
-    final q = store.reader.getQuery<CLMedia>(DBQueries.mediaSyncQuery);
+  Future<List<CLMedia>> mediaOnDevice(int? collectionID) async {
+    final q = store.reader.getQuery<CLMedia>(DBQueries.mediaOnDevice);
     return (await store.reader.readMultiple(q)).nonNullableList;
   }
 
-  Future<List<Map<String, dynamic>>> itemsOnServerMap(int? collectionID) async {
+  Future<List<Map<String, dynamic>>> mediaOnServerMap(int? collectionID) async {
     final serverItemsMap = await server.downloadMediaInfo();
     if (collectionID == null) {
     } else {}
