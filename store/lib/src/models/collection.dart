@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, lines_longer_than_80_chars
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
@@ -13,7 +13,7 @@ class Collection {
     required this.createdDate,
     required this.updatedDate,
     required this.isDeleted,
-    required this.isEditted,
+    required this.isEdited,
     this.id,
     this.description,
     this.serverUID,
@@ -23,7 +23,7 @@ class Collection {
     required String label,
     required bool haveItOffline,
     required bool isDeleted,
-    required bool isEditted,
+    required bool isEdited,
     required int? id,
     required String? description,
     required int? serverUID,
@@ -40,7 +40,7 @@ class Collection {
       createdDate: createdDate ?? time,
       updatedDate: updatedDate ?? time,
       isDeleted: isDeleted,
-      isEditted: isEditted,
+      isEdited: isEdited,
     );
   }
   factory Collection.byLabel(
@@ -58,7 +58,7 @@ class Collection {
       createdDate: createdDate,
       updatedDate: updatedDate,
       isDeleted: false,
-      isEditted: false,
+      isEdited: false,
     );
   }
   final String label;
@@ -69,7 +69,7 @@ class Collection {
   final bool haveItOffline;
   final int? serverUID;
   final bool isDeleted;
-  final bool isEditted;
+  final bool isEdited;
 
   factory Collection.fromMap(Map<String, dynamic> map) {
     final timeNow = DateTime.now();
@@ -87,7 +87,7 @@ class Collection {
       haveItOffline: (map['haveItOffline'] as int?) != 1,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
-      isEditted: ((map['isEditted'] as int?) ?? false) != 0,
+      isEdited: ((map['isEdited'] as int?) ?? false) != 0,
     );
   }
 
@@ -103,7 +103,7 @@ class Collection {
     bool? haveItOffline,
     ValueGetter<int?>? serverUID,
     bool? isDeleted,
-    bool? isEditted,
+    bool? isEdited,
   }) {
     return Collection(
       label: label ?? this.label,
@@ -114,13 +114,13 @@ class Collection {
       haveItOffline: haveItOffline ?? this.haveItOffline,
       serverUID: serverUID != null ? serverUID.call() : this.serverUID,
       isDeleted: isDeleted ?? this.isDeleted,
-      isEditted: isEditted ?? this.isEditted,
+      isEdited: isEdited ?? this.isEdited,
     );
   }
 
   @override
   String toString() {
-    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, haveItOffline: $haveItOffline, serverUID: $serverUID, isDeleted: $isDeleted, isEditted: $isEditted)';
+    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, haveItOffline: $haveItOffline, serverUID: $serverUID, isDeleted: $isDeleted, isEdited: $isEdited)';
   }
 
   @override
@@ -135,7 +135,7 @@ class Collection {
         other.haveItOffline == haveItOffline &&
         other.serverUID == serverUID &&
         other.isDeleted == isDeleted &&
-        other.isEditted == isEditted;
+        other.isEdited == isEdited;
   }
 
   @override
@@ -148,7 +148,7 @@ class Collection {
         haveItOffline.hashCode ^
         serverUID.hashCode ^
         isDeleted.hashCode ^
-        isEditted.hashCode;
+        isEdited.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -160,6 +160,8 @@ class Collection {
       'updatedDate': updatedDate.millisecondsSinceEpoch,
       'haveItOffline': haveItOffline ? 1 : 0,
       'serverUID': serverUID,
+      'isDeleted': isDeleted ? 1 : 0,
+      'isEdited': isEdited ? 1 : 0,
     };
   }
 

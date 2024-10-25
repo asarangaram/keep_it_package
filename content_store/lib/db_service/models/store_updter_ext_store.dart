@@ -502,7 +502,7 @@ extension StoreExt on StoreUpdater {
           label: '*** Notes',
           haveItOffline: true,
           isDeleted: false,
-          isEditted: false,
+          isEdited: false,
           serverUID: null,
           id: null,
           description: null,
