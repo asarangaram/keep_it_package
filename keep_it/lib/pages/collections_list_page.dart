@@ -4,9 +4,11 @@ import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:store/store.dart';
 
 class CollectionsStoragePreferences extends ConsumerWidget {
@@ -31,10 +33,11 @@ class CollectionsStoragePreferences extends ConsumerWidget {
       builder: (collections) {
         return CollectionsList(
           collections: collections,
-          onSync: (id, serverUID) async {},
-          onCancelSync: (id) async {},
-          onRemoveLocalCopy: (id, serverUID) async {},
-          onRemoveServerCopy: (id, serverUID) async {},
+          onUpload: (collection) {},
+          onSync: (collection) {},
+          onDeleteLocalCopy: (collection) {},
+          onDeleteServerCopy: (collection) {},
+          onDelete: (collection) {},
         );
       },
     );
@@ -51,24 +54,12 @@ Collections demoCollections = Collections([
   ...List.generate(
     100,
     (e) {
-      final CollectionStoragePreference storagePreference = pickRandom([
-        CollectionStoragePreference.notSynced,
-        CollectionStoragePreference.synced,
-        CollectionStoragePreference.syncing,
-      ]);
-      //storagePreference = CollectionStoragePreference.notSynced;
-      final int? serverUID;
-      if (storagePreference.isSynced) {
-        serverUID = e + 0x10000;
-      } else {
-        serverUID = pickRandom([true, false]) ? e + 0x10000 : null;
-      }
-
+      final serverUID = pickRandom([true, false]) ? e + 0x10000 : null;
       return Collection.strict(
         id: e,
         label: 'collection $e',
         serverUID: serverUID,
-        collectionStoragePreference: storagePreference,
+        haveItOffline: pickRandom([true, false]),
         isDeleted: false,
         isEditted: false,
         description: null,
@@ -97,36 +88,76 @@ class _CollectionsListDemoState extends ConsumerState<CollectionsListDemo> {
   Widget build(BuildContext context) {
     return CollectionsList(
       collections: collections,
-      onSync: (collectionID, serverUID) async {
-        collections =
-            collections.markForSyncing(collectionID, serverUID: serverUID);
-        setState(() {});
-        // Perform  Sync
-        await Future<void>.delayed(const Duration(seconds: 2));
-        collections = collections.markAsSynced(collectionID);
-        setState(() {});
-      },
-      onCancelSync: (collectionID) async {
-        collections = collections.revertSyncing(collectionID);
-        setState(() {});
-      },
-      onRemoveLocalCopy: (collectionID, serverUID) async {
-        collections =
-            collections.markForSyncing(collectionID, serverUID: serverUID);
-        setState(() {});
-        // remove Local copy
-        await Future<void>.delayed(const Duration(seconds: 2));
-
-        collections = collections.removeLocalCopy(collectionID);
+      onUpload: (collection) {
+        collections = Collections(
+          List.from(
+            collections.entries.map((e) {
+              if (e.id == collection.id) {
+                // Upload and get serverID
+                return e.copyWith(
+                  serverUID: () => Random().nextInt(100000),
+                  haveItOffline: true,
+                );
+              }
+              return e;
+            }),
+          ),
+        );
         setState(() {});
       },
-      onRemoveServerCopy: (collectionID, serverUID) async {
-        collections =
-            collections.markForSyncing(collectionID, serverUID: serverUID);
+      onSync: (collection) {
+        collections = Collections(
+          List.from(
+            collections.entries.map((e) {
+              if (e.id == collection.id) {
+                // Upload and get serverID
+                return e.copyWith(
+                  haveItOffline: true,
+                );
+              }
+              return e;
+            }),
+          ),
+        );
         setState(() {});
-        // remove Local copy
-        await Future<void>.delayed(const Duration(seconds: 2));
-        collections = collections.removeServerCopy(collectionID);
+      },
+      onDeleteLocalCopy: (collection) {
+        collections = Collections(
+          List.from(
+            collections.entries.map((e) {
+              if (e.id == collection.id) {
+                // Upload and get serverID
+                return e.copyWith(
+                  haveItOffline: false,
+                );
+              }
+              return e;
+            }),
+          ),
+        );
+        setState(() {});
+      },
+      onDelete: (collection) {
+        final entries = List<Collection>.from(collections.entries)
+          ..removeWhere((e) => e.id == collection.id);
+        collections = Collections(entries);
+        setState(() {});
+      },
+      onDeleteServerCopy: (collection) {
+        collections = Collections(
+          List.from(
+            collections.entries.map((e) {
+              if (e.id == collection.id) {
+                // Upload and get serverID
+                return e.copyWith(
+                  serverUID: () => null,
+                  haveItOffline: false,
+                );
+              }
+              return e;
+            }),
+          ),
+        );
         setState(() {});
       },
     );
@@ -136,19 +167,19 @@ class _CollectionsListDemoState extends ConsumerState<CollectionsListDemo> {
 class CollectionsList extends ConsumerStatefulWidget {
   const CollectionsList({
     required this.collections,
+    required this.onUpload,
     required this.onSync,
-    required this.onCancelSync,
-    required this.onRemoveLocalCopy,
-    required this.onRemoveServerCopy,
+    required this.onDeleteLocalCopy,
+    required this.onDeleteServerCopy,
+    required this.onDelete,
     super.key,
   });
   final Collections collections;
-  final Future<void> Function(int collectionId, int serverUID) onSync;
-  final Future<void> Function(int collectionId) onCancelSync;
-  final Future<void> Function(int collectionId, int serverUID)
-      onRemoveLocalCopy;
-  final Future<void> Function(int collectionId, int serverUID)
-      onRemoveServerCopy;
+  final void Function(Collection collection) onUpload;
+  final void Function(Collection collection) onSync;
+  final void Function(Collection collection) onDeleteLocalCopy;
+  final void Function(Collection collection) onDeleteServerCopy;
+  final void Function(Collection collection) onDelete;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -156,20 +187,19 @@ class CollectionsList extends ConsumerStatefulWidget {
 }
 
 class _CollectionsListState extends ConsumerState<CollectionsList> {
+  bool? selection;
+
   @override
   Widget build(BuildContext context) {
-    final collectionStoragePreference =
-        ref.watch(collectionStoragePreferenceFilterProvider);
     final List<Collection> collections;
-    if (collectionStoragePreference == null) {
-      collections = widget.collections.entries;
-    } else {
-      collections = widget.collections.entries
-          .where(
-            (e) => e.collectionStoragePreference == collectionStoragePreference,
-          )
-          .toList();
-    }
+
+    collections = switch (selection) {
+      null => widget.collections.entries,
+      true =>
+        widget.collections.entries.where((e) => e.serverUID != null).toList(),
+      false =>
+        widget.collections.entries.where((e) => e.serverUID == null).toList()
+    };
 
     return FullscreenLayout(
       appBar: AppBar(
@@ -183,37 +213,22 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
             onTap: () => CLPopScreen.onPop(context),
           ),
         ),
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CollectionStoragePreferenceFilter(),
+            padding: const EdgeInsets.only(right: 16),
+            child: SelectionFilter(
+              currentSelection: selection,
+              onSelectionChanged: ({selection}) {
+                setState(() {
+                  this.selection = selection;
+                });
+              },
+            ),
           ),
         ],
       ),
       child: Column(
         children: [
-          if (collectionStoragePreference != null)
-            Container(
-              decoration: BoxDecoration(color: Colors.grey.shade600),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: CLText.tiny(
-                switch (collectionStoragePreference) {
-                  CollectionStoragePreference.notSynced =>
-                    'These collections are only available online or local. '
-                        'If online, You can view only when you are connected '
-                        'to server. '
-                        'Sync them to keep-it on your CoLAN server and local ',
-                  CollectionStoragePreference.synced =>
-                    'These collections are synced. '
-                        'removing them from local will save your space, '
-                        "but won't be available when "
-                        'you are not connected to the server',
-                  CollectionStoragePreference.syncing =>
-                    'These collections are syncing. You may abort syncing'
-                },
-                color: Colors.white,
-              ),
-            ),
           Expanded(
             child: ListView.builder(
               itemCount: collections.length,
@@ -228,75 +243,67 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
                           WidgetSpan(
                             child: Transform.translate(
                               offset: const Offset(0, -10),
-                              child: PopupMenuButton<int>(
-                                child: SizedBox.square(
-                                  dimension: 24,
-                                  child: Image.asset(
-                                    'assets/icon/cloud_on_lan_128px_color.png',
+                              child: PullDownButton(
+                                itemBuilder: (context) => [
+                                  PullDownMenuItem(
+                                    title: 'Delete Server Copy',
+                                    subtitle: 'Detach the device copy. '
+                                        'Delete in server.',
+                                    onTap: () =>
+                                        widget.onDeleteServerCopy(collection),
+                                  ),
+                                  PullDownMenuItem(
+                                    title: 'Delete',
+                                    subtitle: 'delete everything, '
+                                        'including device copy',
+                                    icon: Icons.delete,
+                                    onTap: () => widget.onDelete(collection),
+                                  ),
+                                ],
+                                buttonBuilder: (context, showMenu) =>
+                                    GestureDetector(
+                                  onTap: showMenu,
+                                  child: SizedBox.square(
+                                    dimension: 24,
+                                    child: Image.asset(
+                                      'assets/icon/cloud_on_lan_128px_color.png',
+                                    ),
                                   ),
                                 ),
-                                itemBuilder: (context) {
-                                  return [
-                                    PopupMenuItem<int>(
-                                      value: 1,
-                                      child: const Text('Delete Server Copy'),
-                                      onTap: () {
-                                        showDialog<bool>(
-                                          context: context,
-                                          builder: (context) {
-                                            return const AlertDialog(
-                                              title: Text('Coming Soon'),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ];
-                                },
                               ),
                             ),
                           ),
                       ],
                     ),
                   ),
-                  trailing: switch (collection.collectionStoragePreference) {
-                    CollectionStoragePreference.notSynced =>
-                      CLButtonIcon.standard(
-                        collection.serverUID == null
-                            ? Icons.file_upload
-                            : Icons.check_box_outline_blank,
-                        onTap: () {
-                          if (collection.serverUID != null &&
-                              collection.id != null) {
-                            widget.onSync(
-                              collection.id!,
-                              collection.serverUID!,
-                            );
-                          }
-                          if (collection.serverUID == null) {
-                            const serverUID = 100; // Create ServerUID
-                            widget.onSync(
-                              collection.id!,
-                              serverUID,
-                            );
-                          }
-                        },
-                      ),
-                    CollectionStoragePreference.syncing =>
-                      const CircularProgressIndicator(),
-                    CollectionStoragePreference.synced => CLButtonIcon.standard(
-                        Icons.check_box_outlined,
-                        onTap: () {
-                          if (collection.serverUID != null &&
-                              collection.id != null) {
-                            widget.onRemoveLocalCopy(
-                              collection.id!,
-                              collection.serverUID!,
-                            );
-                          }
-                        },
-                      ),
-                  },
+                  trailing: SizedBox.square(
+                    dimension: 40,
+                    child: switch (collection) {
+                      (final Collection c) when collection.serverUID == null =>
+                        FittedBox(
+                          child: CLButtonIconLabelled.tiny(
+                            Icons.upload,
+                            'Upload',
+                            onTap: () => widget.onUpload(c),
+                          ),
+                        ),
+                      _ => FittedBox(
+                          child: CLButtonIconLabelled.tiny(
+                            collection.haveItOffline
+                                ? Icons.check_box_outlined
+                                : Icons.check_box_outline_blank,
+                            'sync',
+                            onTap: () {
+                              if (collection.haveItOffline) {
+                                widget.onDeleteLocalCopy(collection);
+                              } else {
+                                widget.onSync(collection);
+                              }
+                            },
+                          ),
+                        ),
+                    },
+                  ),
                 );
               },
             ),
@@ -307,27 +314,26 @@ class _CollectionsListState extends ConsumerState<CollectionsList> {
   }
 }
 
-class CollectionStoragePreferenceFilter extends ConsumerWidget {
-  const CollectionStoragePreferenceFilter({
+class SelectionFilter extends ConsumerWidget {
+  const SelectionFilter({
+    required this.currentSelection,
+    required this.onSelectionChanged,
     super.key,
   });
+  final bool? currentSelection;
+  final void Function({bool? selection}) onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionStoragePreference =
-        ref.watch(collectionStoragePreferenceFilterProvider);
-
-    return PopupMenuButton<CollectionStoragePreference?>(
+    return PopupMenuButton<bool?>(
       child: Icon(clIcons.filter),
       itemBuilder: (context) {
         return [
-          ...[null, ...CollectionStoragePreference.values].map((e) {
-            return PopupMenuItem<CollectionStoragePreference?>(
+          ...[null, true, false].map((e) {
+            return PopupMenuItem<bool?>(
               value: e,
               onTap: () {
-                ref
-                    .read(collectionStoragePreferenceFilterProvider.notifier)
-                    .state = e;
+                onSelectionChanged(selection: e);
               },
               child: Row(
                 children: [
@@ -335,12 +341,18 @@ class CollectionStoragePreferenceFilter extends ConsumerWidget {
                     padding: const EdgeInsets.only(right: 4),
                     child: Icon(
                       Icons.check,
-                      color: (e == collectionStoragePreference)
+                      color: (e == currentSelection)
                           ? Colors.black
                           : Colors.transparent,
                     ),
                   ),
-                  Text(e?.name ?? 'All'),
+                  Text(
+                    switch (e) {
+                      null => 'All',
+                      true => 'Server Collections',
+                      false => 'Device Collections'
+                    },
+                  ),
                 ],
               ),
             );
@@ -350,8 +362,3 @@ class CollectionStoragePreferenceFilter extends ConsumerWidget {
     );
   }
 }
-
-final collectionStoragePreferenceFilterProvider =
-    StateProvider<CollectionStoragePreference?>((ref) {
-  return null;
-});

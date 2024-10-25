@@ -38,6 +38,7 @@ dependencies:
   path_provider: ^2.1.4
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
+  pull_down_button: ^0.10.2
   store:
     path: ../store
   tar: ^2.0.0

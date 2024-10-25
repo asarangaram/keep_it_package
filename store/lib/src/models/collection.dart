@@ -5,23 +5,11 @@ import 'package:meta/meta.dart';
 
 import 'cl_media_base.dart';
 
-enum CollectionStoragePreference {
-  notSynced,
-
-  syncing,
-  synced;
-
-  bool get isSynced => this == synced;
-  bool get isSyncing => this == syncing;
-  bool get isOnlineOnly => this == notSynced;
-  bool get isOfflineOnly => this == notSynced;
-}
-
 @immutable
 class Collection {
   const Collection({
     required this.label,
-    required this.collectionStoragePreference,
+    required this.haveItOffline,
     required this.createdDate,
     required this.updatedDate,
     required this.isDeleted,
@@ -33,7 +21,7 @@ class Collection {
 
   factory Collection.strict({
     required String label,
-    required CollectionStoragePreference collectionStoragePreference,
+    required bool haveItOffline,
     required bool isDeleted,
     required bool isEditted,
     required int? id,
@@ -48,7 +36,7 @@ class Collection {
       description: description,
       serverUID: serverUID,
       label: label,
-      collectionStoragePreference: collectionStoragePreference,
+      haveItOffline: haveItOffline,
       createdDate: createdDate ?? time,
       updatedDate: updatedDate ?? time,
       isDeleted: isDeleted,
@@ -66,7 +54,7 @@ class Collection {
       description: null,
       serverUID: serverUID,
       label: label,
-      collectionStoragePreference: CollectionStoragePreference.notSynced,
+      haveItOffline: false,
       createdDate: createdDate,
       updatedDate: updatedDate,
       isDeleted: false,
@@ -78,7 +66,7 @@ class Collection {
   final DateTime createdDate;
   final DateTime updatedDate;
   final int? id;
-  final CollectionStoragePreference collectionStoragePreference;
+  final bool haveItOffline;
   final int? serverUID;
   final bool isDeleted;
   final bool isEditted;
@@ -96,11 +84,7 @@ class Collection {
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : timeNow,
-      collectionStoragePreference: map['CollectionStoragePreference'] == null
-          ? CollectionStoragePreference
-              .notSynced // TODO(anandas): : Fix after db update
-          : CollectionStoragePreference.values
-              .asNameMap()[map['CollectionStoragePreference'] as String]!,
+      haveItOffline: (map['haveItOffline'] as int?) != 1,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isDeleted: (map['isDeleted'] as int) != 0,
       isEditted: (map['isEditted'] as int) != 0,
@@ -116,7 +100,7 @@ class Collection {
     DateTime? createdDate,
     DateTime? updatedDate,
     ValueGetter<int?>? id,
-    CollectionStoragePreference? collectionStoragePreference,
+    bool? haveItOffline,
     ValueGetter<int?>? serverUID,
     bool? isDeleted,
     bool? isEditted,
@@ -127,8 +111,7 @@ class Collection {
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
       id: id != null ? id.call() : this.id,
-      collectionStoragePreference:
-          collectionStoragePreference ?? this.collectionStoragePreference,
+      haveItOffline: haveItOffline ?? this.haveItOffline,
       serverUID: serverUID != null ? serverUID.call() : this.serverUID,
       isDeleted: isDeleted ?? this.isDeleted,
       isEditted: isEditted ?? this.isEditted,
@@ -137,7 +120,7 @@ class Collection {
 
   @override
   String toString() {
-    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, collectionStoragePreference: $collectionStoragePreference, serverUID: $serverUID, isDeleted: $isDeleted, isEditted: $isEditted)';
+    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, haveItOffline: $haveItOffline, serverUID: $serverUID, isDeleted: $isDeleted, isEditted: $isEditted)';
   }
 
   @override
@@ -149,7 +132,7 @@ class Collection {
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
         other.id == id &&
-        other.collectionStoragePreference == collectionStoragePreference &&
+        other.haveItOffline == haveItOffline &&
         other.serverUID == serverUID &&
         other.isDeleted == isDeleted &&
         other.isEditted == isEditted;
@@ -162,7 +145,7 @@ class Collection {
         createdDate.hashCode ^
         updatedDate.hashCode ^
         id.hashCode ^
-        collectionStoragePreference.hashCode ^
+        haveItOffline.hashCode ^
         serverUID.hashCode ^
         isDeleted.hashCode ^
         isEditted.hashCode;
@@ -175,7 +158,7 @@ class Collection {
       'description': description,
       'createdDate': createdDate.millisecondsSinceEpoch,
       'updatedDate': updatedDate.millisecondsSinceEpoch,
-      'collectionStoragePreference': collectionStoragePreference.name,
+      'haveItOffline': haveItOffline ? 1 : 0,
       'serverUID': serverUID,
     };
   }

@@ -500,7 +500,7 @@ extension StoreExt on StoreUpdater {
       (await upsertCollection(
         Collection.strict(
           label: '*** Notes',
-          collectionStoragePreference: CollectionStoragePreference.notSynced,
+          haveItOffline: true,
           isDeleted: false,
           isEditted: false,
           serverUID: null,
