@@ -86,8 +86,8 @@ class Collection {
           : timeNow,
       haveItOffline: (map['haveItOffline'] as int?) != 1,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      isDeleted: (map['isDeleted'] as int) != 0,
-      isEditted: (map['isEditted'] as int) != 0,
+      isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
+      isEditted: ((map['isEditted'] as int?) ?? false) != 0,
     );
   }
 

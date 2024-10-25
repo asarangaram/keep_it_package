@@ -19,3 +19,5 @@ export 'services/notification_services/notification_service.dart'
     show NotificationService;
 export 'services/notification_services/provider/notify.dart'
     show notificationMessageProvider;
+
+export 'services/quick_menu_service/collection_menu.dart' show CollectionMenu;
