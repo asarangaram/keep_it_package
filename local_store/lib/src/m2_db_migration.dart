@@ -8,8 +8,12 @@ final migrations = SqliteMigrations()
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         label TEXT NOT NULL UNIQUE,
         description TEXT,
-        createdDate DATETIME,
-        updatedDate DATETIME
+        createdDate DATETIME NOT NULL,
+        updatedDate DATETIME NOT NULL,
+        isDeleted INTEGER NOT NULL,
+        haveItOffline INTEGER NOT NULL DEFAULT 1,  -- relevant only if ServerUID is present
+        serverUID INTEGER,  -- Nullable, to store serverUID if media is from another server
+        isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
       )
     ''');
       await tx.execute('''
