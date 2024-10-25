@@ -11,8 +11,7 @@ export 'src/models/cl_media.dart' show CLMedia;
 export 'src/models/cl_media_base.dart' show CLMediaBase;
 export 'src/models/cl_media_type.dart' show CLMediaType;
 export 'src/models/cl_medias.dart' show CLMedias;
-export 'src/models/collection.dart'
-    show Collection, CollectionStoragePreference;
+export 'src/models/collection.dart' show Collection;
 export 'src/models/collections.dart' show Collections;
 export 'src/models/download_media/global_preference.dart'
     show DownloadMediaGlobalPreference;
