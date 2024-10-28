@@ -46,6 +46,69 @@ class MediaUpdater {
   }) getCollectionByLabel;
   final String tempCollectionName;
 
+  /// Method: upsert
+  Future<CLMedia?> upsert(
+    CLMedia media0, {
+    bool shouldRefresh = true,
+    String? path,
+    List<CLMedia>? parents,
+  }) async {
+    final CLMedia media;
+    if (path != null) {
+      final currentMediaPath = directories.getMediaAbsolutePath(media0);
+      if (currentMediaPath != path) {
+        File(path).copySync(currentMediaPath);
+      }
+
+      media = await _generateMediaPreview(
+        media: media0.updateStatus(
+          isMediaCached: () => true,
+          isMediaOriginal: () => true,
+        ),
+      );
+    } else {
+      media = media0;
+    }
+    if (media.id != null) {
+      var c = await store.reader.getMediaById(media.id!);
+      if (media.serverUID != null) {
+        c ??= await store.reader.getMediaByServerUID(media.serverUID!);
+      }
+      if (media.md5String != null) {
+        c ??= await store.reader.getMediaByMD5String(media.md5String!);
+      }
+
+      if (c != null) {
+        if (media.id != c.id) {
+          throw Exception('Conflict in id');
+        }
+        if (media.serverUID != c.serverUID && c.serverUID != null) {
+          throw Exception('Conflict in serverUID');
+        }
+      }
+
+      if (c != null && media.isContentSame(c)) {
+        return c;
+      } else {
+        final mediaFromDB = await store.upsertMedia(
+          media.updateContent(
+            isEdited: media.isEdited ?? false,
+            id: () => c!.id!,
+            serverUID: () => c!.serverUID,
+          ),
+          parents: parents,
+        );
+        log('store updated');
+        if (shouldRefresh) {
+          store.reloadStore();
+        }
+        return mediaFromDB;
+      }
+    }
+    return null;
+  }
+
+  /// Method: delete
   Future<bool> delete(
     int id, {
     bool shouldRefresh = true,
@@ -65,47 +128,15 @@ class MediaUpdater {
     return true;
   }
 
-  Future<bool> deleteMultiple(
-    Set<int> ids2Delete, {
-    bool shouldRefresh = true,
-  }) async {
-    final mediaMultiple =
-        await store.reader.getMediasByIDList(ids2Delete.toList());
-    for (final m in mediaMultiple) {
-      await store.upsertMedia(
-        m.updateContent(
-          isDeleted: () => true,
-          isEdited: true,
-        ),
-      );
-    }
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return true;
-  }
-
-  Future<bool> restoreMultiple(
-    Set<int> ids2Delete, {
-    bool shouldRefresh = true,
-  }) async {
-    final mediaMultiple =
-        await store.reader.getMediasByIDList(ids2Delete.toList());
-    for (final m in mediaMultiple) {
-      await store.upsertMedia(
-        m.updateContent(
-          isDeleted: () => false,
-          isEdited: true,
-        ),
-      );
-    }
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return true;
-  }
-
+  // Method: deletePermanently
   Future<bool> deletePermanently(
+    int id, {
+    bool shouldRefresh = true,
+  }) {
+    return deletePermanentlyMultiple({id}, shouldRefresh: shouldRefresh);
+  }
+
+  Future<bool> deletePermanentlyMultiple(
     Set<int> ids2Delete, {
     bool shouldRefresh = true,
   }) async {
@@ -133,7 +164,56 @@ class MediaUpdater {
     return true;
   }
 
-  Future<bool> togglePin(int id) async {
+  /// Method: deleteMultiple
+  Future<bool> deleteMultiple(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
+    final mediaMultiple =
+        await store.reader.getMediasByIDList(ids2Delete.toList());
+    for (final m in mediaMultiple) {
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => true,
+          isEdited: true,
+        ),
+      );
+    }
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
+    return true;
+  }
+
+  Future<bool> restore(
+    int id, {
+    bool shouldRefresh = true,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  // Method: restoreMultiple
+  Future<bool> restoreMultiple(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
+    final mediaMultiple =
+        await store.reader.getMediasByIDList(ids2Delete.toList());
+    for (final m in mediaMultiple) {
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => false,
+          isEdited: true,
+        ),
+      );
+    }
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
+    return true;
+  }
+
+  Future<bool> pinToggle(int id) async {
     return pinToggleMultiple({id});
   }
 
@@ -241,8 +321,8 @@ class MediaUpdater {
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<int?>? serverUID,
-    ValueGetter<bool>? isEdited,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? isEdited,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
   }) async {
@@ -294,7 +374,7 @@ class MediaUpdater {
 
       pin: pin != null ? pin() : null,
     );
-    return upsertMedia(
+    return upsert(
       updated0,
       parents: parents,
       path: path,
@@ -407,50 +487,7 @@ class MediaUpdater {
                   : media.pin,
         );
 
-    return upsertMedia(
-      updated0,
-      parents: parents,
-      path: path,
-      originalMedia: media,
-    );
-  }
-
-  Future<CLMedia?> upsertMedia(
-    CLMedia media, {
-    CLMedia? originalMedia,
-    String? path,
-    List<CLMedia>? parents,
-    bool shouldRefresh = true,
-  }) async {
-    // Save Media
-    final CLMedia updated0;
-    if (path != null) {
-      final currentMediaPath = directories.getMediaAbsolutePath(media);
-      File(path).copySync(currentMediaPath);
-
-      updated0 = await _generateMediaPreview(
-        media: media.updateStatus(
-          isMediaCached: () => true,
-          isMediaOriginal: () => true,
-        ),
-      );
-    } else {
-      updated0 = media;
-    }
-    if (originalMedia == updated0) {
-      return originalMedia;
-    }
-
-    // Update in DB
-    final mediaFromDB = await store.upsertMedia(
-      updated0,
-      parents: parents,
-    );
-    log('store updated');
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return mediaFromDB;
+    return upsert(updated0, parents: parents, path: path);
   }
 
   Future<Collection> get _notesCollection async =>
@@ -659,17 +696,19 @@ class MediaUpdater {
     String path, {
     required CLMedia media,
   }) async {
-    return (await update(
-          media,
-          path: path,
-          id: () => null,
-          serverUID: () => null, // Creating new media locally
-          isEdited: false, // Creating new Media locally
+    return (await create(
+          path,
+          type: media.type,
+          fExt: () => media.fExt,
+          originalDate: () => media.originalDate,
+          collectionId: () => media.collectionId,
+          haveItOffline: () => media.haveItOffline,
+          isAux: () => media.isAux,
         )) ??
         media;
   }
 
-  Stream<Progress> moveToCollectionStream({
+  Stream<Progress> moveMultiple({
     required List<CLMedia> media,
     required Collection collection,
     Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
@@ -723,7 +762,7 @@ class MediaUpdater {
     }
   }
 
-  static Future<CLMediaBase> tryDownloadMedia(
+  static Future<CLMediaBase> _tryDownloadMedia(
     CLMediaBase mediaFile, {
     required CLDirectories deviceDirectories,
   }) async {
@@ -789,7 +828,7 @@ class MediaUpdater {
       fractCompleted: 0,
     );
     for (final (i, item0) in mediaFiles.indexed) {
-      final item1 = await tryDownloadMedia(
+      final item1 = await _tryDownloadMedia(
         item0,
         deviceDirectories: directories,
       );

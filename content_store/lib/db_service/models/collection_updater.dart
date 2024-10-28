@@ -4,6 +4,7 @@ class CollectionUpdater {
   CollectionUpdater(this.store);
   Store store;
 
+  /// Method: upsert
   Future<Collection> upsert(
     Collection collection, {
     bool shouldRefresh = true,
@@ -20,6 +21,7 @@ class CollectionUpdater {
     return updated;
   }
 
+  /// Method: delete
   Future<bool> delete(
     int id, {
     bool shouldRefresh = true,
@@ -34,12 +36,14 @@ class CollectionUpdater {
         ),
       );
     }
+
     if (shouldRefresh) {
       store.reloadStore();
     }
     return true;
   }
 
+  /// Method: deletePermanently
   Future<bool> deletePermanently(
     int id, {
     bool shouldRefresh = true,
@@ -54,6 +58,30 @@ class CollectionUpdater {
       return true;
     }
     return false;
+  }
+
+  /// Method: deleteMultiple
+  Future<bool> deleteMultiple(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  // Method: restore
+  Future<bool> restoreMultiple(
+    int id, {
+    bool shouldRefresh = true,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  // Method: restoreMultiple
+  Future<bool> restore(
+    int id, {
+    bool shouldRefresh = true,
+  }) async {
+    throw UnimplementedError();
   }
 
   Future<Collection> getCollectionByLabel(

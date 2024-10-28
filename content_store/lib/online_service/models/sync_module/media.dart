@@ -124,7 +124,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     log('ServerUID ${media.serverUID}: deleteLocal');
 
     await updater.mediaUpdater.deletePermanently(
-      {media.id!},
+      media.id!,
       shouldRefresh: false,
     );
   }
@@ -152,7 +152,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         if (resMap['isDeleted'] == 1 &&
             resMap['serverUID'] == media.serverUID) {
           await updater.mediaUpdater.deletePermanently(
-            {media.id!},
+            media.id!,
             shouldRefresh: false,
           );
         }
@@ -167,7 +167,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateOnServer');
 
-    await updater.mediaUpdater.upsertMedia(
+    await updater.mediaUpdater.upsert(
       media,
       shouldRefresh: false,
     );
@@ -203,7 +203,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateLocal');
 
-    await updater.mediaUpdater.upsertMedia(
+    await updater.mediaUpdater.upsert(
       media,
       shouldRefresh: false,
     );
@@ -250,7 +250,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       await updateCollectionId(resMap),
     );
 
-    await updater.mediaUpdater.upsertMedia(uploadedMedia, shouldRefresh: false);
+    await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
 
     /* final mediaLog = await Server.downloadMediaFile(
       uploadedMedia.serverUID!,

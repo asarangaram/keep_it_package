@@ -369,7 +369,7 @@ class MediaView0 extends ConsumerWidget {
                     onPin: ac.onPin(
                       () async {
                         final res =
-                            await theStore.mediaUpdater.togglePin(media.id!);
+                            await theStore.mediaUpdater.pinToggle(media.id!);
                         if (res) {
                           /*  setState(() {}); */
                         }

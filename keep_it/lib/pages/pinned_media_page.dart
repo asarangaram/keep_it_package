@@ -42,7 +42,7 @@ class PinnedMediaPage extends ConsumerWidget {
                           );
                         },
                         onLongPress: () =>
-                            theStore.mediaUpdater.togglePin(item.id!),
+                            theStore.mediaUpdater.pinToggle(item.id!),
                         child: MediaViewService.preview(
                           item,
                           parentIdentifier: parentIdentifier,
