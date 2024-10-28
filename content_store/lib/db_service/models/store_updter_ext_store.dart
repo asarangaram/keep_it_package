@@ -26,25 +26,11 @@ import 'store_updater.dart';
 import 'url_handler.dart';
 
 extension StoreExt on StoreUpdater {
-  Future<bool> deleteCollectionById(
+  /* Future<bool> deleteCollectionById(
     int id, {
     bool shouldRefresh = true,
-  }) async {
-    final mediaMultiple = await store.reader.getMediaByCollectionId(id);
-
-    for (final m in mediaMultiple) {
-      await store.upsertMedia(
-        m.updateContent(
-          isDeleted: () => true,
-          isEdited: true,
-        ),
-      );
-    }
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return true;
-  }
+  }) async =>
+      collectionUpdater.delete(id, shouldRefresh: shouldRefresh); */
 
   Future<bool> deleteMediaById(
     int id, {
@@ -101,25 +87,6 @@ extension StoreExt on StoreUpdater {
     }
     if (shouldRefresh) {
       store.reloadStore();
-    }
-    return true;
-  }
-
-  Future<bool> permanentlyDeleteCollectionMultipleById(
-    Set<int> ids2Delete, {
-    bool shouldRefresh = true,
-  }) async {
-    for (final id in ids2Delete) {
-      final collection = await store.reader.getCollectionById(id);
-      if (collection != null) {
-        final medias = await store.reader.getMediaByCollectionId(id);
-        if (medias.isNotEmpty) {
-          await permanentlyDeleteMediaMultipleById(
-            medias.map((e) => e.id!).toSet(),
-          );
-        }
-        await store.deleteCollection(collection);
-      }
     }
     return true;
   }

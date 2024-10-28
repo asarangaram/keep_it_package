@@ -115,6 +115,7 @@ class ServerNotifier extends StateNotifier<Server> {
   }
 
   Future<void> _sync(CLServer server) async {
+    final updater = await storeUpdater;
     // Sync Collections
 
     final collectionSyncModule = await this.collectionSyncModule;
@@ -124,7 +125,7 @@ class ServerNotifier extends StateNotifier<Server> {
       await collectionSyncModule.collectionOnDevice(),
     );
 
-    final updater = await storeUpdater;
+    /*  
     final mediaSyncModule = await this.mediaSyncModule;
     await mediaSyncModule
         .sync(
@@ -133,7 +134,8 @@ class ServerNotifier extends StateNotifier<Server> {
     )
         .then((value) {
       updater.store.reloadStore();
-    });
+    }); */
+    updater.store.reloadStore();
   }
 
   void checkStatus() {

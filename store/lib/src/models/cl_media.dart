@@ -119,8 +119,10 @@ class CLMedia extends CLMediaBase implements CLEntity {
       mediaLog: map['mediaLog'] != null ? map['mediaLog'] as String : null,
       isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      isEdited: (map['isEdited'] as int) != 0,
-      haveItOffline: (map['haveItOffline'] as int) != 0,
+      isEdited: map['isEdited'] == null ? null : (map['isEdited'] as int) != 0,
+      haveItOffline: map['haveItOffline'] == null
+          ? null
+          : (map['haveItOffline'] as int) != 0,
       mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
     );
   }

@@ -43,17 +43,33 @@ class CollectionAsFolder extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding:
+                  const EdgeInsets.only(left: 8, right: 16, top: 2, bottom: 2),
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      collection.label,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        collection.label,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
+                  if (collection.serverUID == null)
+                    SizedBox.square(
+                      dimension: 24,
+                      child: Image.asset('assets/icon/on_device.png'),
+                    )
+                  else
+                    SizedBox.square(
+                      dimension: 24,
+                      child: Image.asset(
+                        'assets/icon/cloud_on_lan_128px_color.png',
+                      ),
+                    ),
                   /* if (collection.serverUID != null)
                     Image.asset(
                       'assets/icon/cloud_on_lan_128px_color.png',
@@ -92,7 +108,7 @@ class CollectionAsFolder extends ConsumerWidget {
         false;
     if (!confirmed) return confirmed;
     if (context.mounted) {
-      return theStore.deleteCollectionById(collection.id!);
+      return theStore.collectionUpdater.delete(collection.id!);
     }
     return false;
   }

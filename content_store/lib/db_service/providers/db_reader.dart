@@ -16,7 +16,7 @@ final dbReaderProvider =
     if (prev != curr) {
       log(
         'Query triggered $dbQuery',
-        name: 'refreshReaderProvider',
+        name: 'dbReaderProvider',
         time: DateTime.now(),
       );
       controller.add(await storeUpdater.store.reader.readMultiple(dbQuery));

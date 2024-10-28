@@ -72,7 +72,8 @@ class CollectionMenu extends StatelessWidget {
               enabled: onDelete != null,
               title: 'Delete',
               icon: clIcons.imageDelete,
-              iconColor: Colors.red,
+              //iconColor: Colors.red,
+              isDestructive: true,
             ),
             if (collection.serverUID == null)
               PullDownMenuItem(
@@ -80,28 +81,14 @@ class CollectionMenu extends StatelessWidget {
                 onTap: onUpload,
                 icon: Icons.upload,
               )
-            else if (collection.haveItOffline)
-              if (isSyncing)
-                const PullDownMenuItem(
-                  onTap: null,
-                  title: 'Syncing',
-                  icon: Icons.check_circle,
-                  iconColor: Colors.green,
-                )
-              else
-                const PullDownMenuItem(
-                  onTap: null,
-                  title: 'Synced',
-                  icon: Icons.check_circle,
-                  iconColor: Colors.green,
-                )
             else
               PullDownMenuItem(
-                onTap: onKeepOffline,
-                enabled: onKeepOffline != null,
-                title: 'Sync',
-                icon: Icons.sync,
-                iconColor: Colors.red,
+                onTap: null,
+                title: 'On Server',
+                icon: collection.haveItOffline == true
+                    ? Icons.cloud_sync
+                    : Icons.cloud,
+                iconColor: Colors.green,
               ),
           ],
         ),

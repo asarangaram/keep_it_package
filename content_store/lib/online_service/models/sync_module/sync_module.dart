@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
@@ -33,12 +34,12 @@ abstract class SyncModule<T> {
     Object? error,
     StackTrace? stackTrace,
   }) {
-    /* dev.log(
+    dev.log(
       message,
       level: level,
       error: error,
       stackTrace: stackTrace,
-      name: 'Online Service | Server',
-    ); */
+      name: 'Online Service | Sync Module',
+    );
   }
 }

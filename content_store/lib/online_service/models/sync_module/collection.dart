@@ -74,8 +74,9 @@ class CollectionSyncModule extends SyncModule<Collection> {
     List<Collection> itemsOnDevice,
   ) async {
     final trackers = await analyse(itemsOnServerMap, itemsOnDevice);
-    if (trackers.isEmpty) return;
     log(' ${trackers.length} items need sync');
+    if (trackers.isEmpty) return;
+
     for (final (i, tracker) in trackers.indexed) {
       log('sync $i');
       final l = tracker.current as Collection?; // local
@@ -110,7 +111,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
     final collection = item;
     log('ServerUID ${collection.serverUID}: deleteLocal');
 
-    await updater.deleteCollectionById(
+    await updater.collectionUpdater.delete(
       collection.id!,
       shouldRefresh: false,
     );
@@ -132,8 +133,8 @@ class CollectionSyncModule extends SyncModule<Collection> {
       if (resMap != null) {
         if (resMap['isDeleted'] == 1 &&
             resMap['serverUID'] == collection.serverUID) {
-          await updater.permanentlyDeleteCollectionMultipleById(
-            {collection.id!},
+          await updater.collectionUpdater.deletePermanently(
+            collection.id!,
             shouldRefresh: false,
           );
         }

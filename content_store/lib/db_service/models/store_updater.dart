@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
+import 'collection_updater.dart';
 import 'gallery_pin.dart';
 
 abstract class DBReader {}
@@ -15,12 +16,13 @@ class StoreUpdater {
     required this.store,
     required this.directories,
   })  : tempCollectionName = '*** Recently Captured',
-        albumManager = AlbumManager(albumName: 'KeepIt');
+        albumManager = AlbumManager(albumName: 'KeepIt'),
+        collectionUpdater = CollectionUpdater(store);
   final Store store;
   final CLDirectories directories;
 
   final AlbumManager albumManager;
-
+  final CollectionUpdater collectionUpdater;
   final String tempCollectionName;
 
   StoreUpdater copyWith({
