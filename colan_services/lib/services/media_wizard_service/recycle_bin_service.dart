@@ -150,8 +150,8 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                                 false;
                             if (!confirmed) return confirmed;
                             if (context.mounted) {
-                              final res =
-                                  await theStore.mediaUpdater.deletePermanently(
+                              final res = await theStore.mediaUpdater
+                                  .deletePermanentlyMultiple(
                                 currMedia.map((e) => e.id!).toSet(),
                               );
 

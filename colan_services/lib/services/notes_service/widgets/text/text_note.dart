@@ -134,7 +134,7 @@ class _TextNote0State extends ConsumerState<TextNote0> {
                   if (!confirmed) return;
                   if (context.mounted) {
                     await theStore.mediaUpdater.deletePermanently(
-                      {widget.note!.id!},
+                      widget.note!.id!,
                     );
                     textEditingController.clear();
                   }
