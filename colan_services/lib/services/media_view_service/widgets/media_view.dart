@@ -163,7 +163,7 @@ class MediaView extends StatelessWidget {
                       OverlayWidgets(
                         alignment: Alignment.bottomRight,
                         sizeFactor: 0.15,
-                        child: (media.isEdited)
+                        child: (media.isEdited ?? false)
                             ? const MediaIsDownloading(
                                 icon: AnimateIcons.upload,
                                 color: Colors.redAccent,

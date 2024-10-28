@@ -64,7 +64,7 @@ extension StoreExtCLMedia on CLMedia {
     map['isHidden'] = 0;
     map['pin'] = null;
     map['isEdited'] = 0;
-    map['haveItOffline'] = (mediaInDB?.haveItOffline ?? true) ? 1 : 0;
+    map['haveItOffline'] = (mediaInDB?.haveItOffline ?? false) ? 1 : 0;
     map['mustDownloadOriginal'] =
         (mediaInDB?.mustDownloadOriginal ?? false) ? 1 : 0;
     return CLMedia.fromMap(map);

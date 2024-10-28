@@ -124,16 +124,16 @@ class ServerNotifier extends StateNotifier<Server> {
       await collectionSyncModule.collectionOnDevice(),
     );
 
-    /* final updater = await storeUpdater;
+    final updater = await storeUpdater;
     final mediaSyncModule = await this.mediaSyncModule;
-     await mediaSyncModule
+    await mediaSyncModule
         .sync(
       await mediaSyncModule.mediaOnServerMap(null),
       await mediaSyncModule.mediaOnDevice(null),
     )
         .then((value) {
       updater.store.reloadStore();
-    }); */
+    });
   }
 
   void checkStatus() {

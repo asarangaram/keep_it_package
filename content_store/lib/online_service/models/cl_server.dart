@@ -183,11 +183,9 @@ class CLServer {
     http.Client? client,
   }) async {
     try {
-      final mapList = [
-        jsonDecode(
-          await getEndpoint('/collection', client: client),
-        ) as List<dynamic>,
-      ];
+      final mapList = jsonDecode(
+        await getEndpoint('/collection', client: client),
+      ) as List<dynamic>;
       return mapList.map((e) => e as Map<String, dynamic>).toList();
     } catch (e) {
       log('error when downloading $e');

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/extensions/list_ext.dart';
 
@@ -173,7 +171,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       media,
       shouldRefresh: false,
     );
-    final mediaLog = await Server.downloadMediaFile(
+    /*  final mediaLog = await Server.downloadMediaFile(
       media.serverUID!,
       updater.mediaFileRelativePath(media),
       server: server,
@@ -197,7 +195,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         previewLog: () => previewLog == 'cancelled' ? null : previewLog,
       ),
       shouldRefresh: false,
-    );
+    ); */
   }
 
   @override
@@ -254,7 +252,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
 
     await updater.upsertMedia(uploadedMedia, shouldRefresh: false);
 
-    final mediaLog = await Server.downloadMediaFile(
+    /* final mediaLog = await Server.downloadMediaFile(
       uploadedMedia.serverUID!,
       updater.mediaFileRelativePath(uploadedMedia),
       server: server,
@@ -278,14 +276,14 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         previewLog: () => previewLog == 'cancelled' ? null : previewLog,
       ),
       shouldRefresh: false,
-    );
+    ); */
     store.reloadStore(); // check if this is really needed here
-    if (media.mediaFileName != uploadedMedia.mediaFileName) {
+    /* if (media.mediaFileName != uploadedMedia.mediaFileName) {
       await File(updater.mediaFileAbsolutePath(media)).deleteIfExists();
     }
     if (media.previewFileName != uploadedMedia.previewFileName) {
       await File(updater.previewFileAbsolutePath(media)).deleteIfExists();
-    }
+    } */
   }
 
   @override

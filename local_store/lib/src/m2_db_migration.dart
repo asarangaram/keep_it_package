@@ -11,9 +11,9 @@ final migrations = SqliteMigrations()
         createdDate DATETIME NOT NULL,
         updatedDate DATETIME NOT NULL,
         isDeleted INTEGER NOT NULL,
-        haveItOffline INTEGER NOT NULL DEFAULT 1,  -- relevant only if ServerUID is present
+        haveItOffline INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
         serverUID INTEGER,  -- Nullable, to store serverUID if media is from another server
-        isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
+        isEdited INTEGER NOT NULL DEFAULT 0 -- relevant only if ServerUID is present
       )
     ''');
       await tx.execute('''
@@ -34,7 +34,7 @@ final migrations = SqliteMigrations()
         isAux INTEGER NOT NULL,
         
         -- User preferences
-        haveItOffline INTEGER NOT NULL DEFAULT 1,  -- relevant only if ServerUID is present
+        haveItOffline INTEGER,  -- relevant only if ServerUID is present
         mustDownloadOriginal INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
 
         -- local status
@@ -44,7 +44,7 @@ final migrations = SqliteMigrations()
         mediaLog TEXT, -- Info stored as json
         isMediaOriginal INTEGER NOT NULL DEFAULT 0,
         serverUID INTEGER,  -- Nullable, to store serverUID if media is from another server
-        isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
+        isEdited INTEGER, -- relevant only if ServerUID is present
 
         FOREIGN KEY (collectionId) REFERENCES Collection(id)
       )

@@ -34,6 +34,9 @@ class CLMedia extends CLMediaBase implements CLEntity {
     this.id,
   }) {
     //log('New: $this', name: 'CLMedia');
+    if (haveItOffline ?? false) {
+      print('haveItOffline is marked as true!!!');
+    }
   }
   factory CLMedia.strict({
     required String name,
@@ -54,8 +57,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
     required String? mediaLog,
     required bool isMediaOriginal,
     required int? serverUID,
-    required bool isEdited,
-    required bool haveItOffline,
+    required bool? isEdited,
+    required bool? haveItOffline,
     required bool mustDownloadOriginal,
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -133,8 +136,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
   final String? mediaLog;
   final bool isMediaOriginal;
   final int? serverUID;
-  final bool isEdited;
-  final bool haveItOffline;
+  final bool? isEdited;
+  final bool? haveItOffline;
   final bool mustDownloadOriginal;
   final DateTime createdDate;
   final DateTime updatedDate;
@@ -160,8 +163,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<int?>? serverUID,
-    ValueGetter<bool>? isEdited,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? isEdited,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
   }) {
     return CLMedia.strict(
@@ -299,8 +302,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
       'mediaLog': mediaLog,
       'isMediaOriginal': isMediaOriginal ? 1 : 0,
       'serverUID': serverUID,
-      'isEdited': isEdited ? 1 : 0,
-      'haveItOffline': haveItOffline ? 1 : 0,
+      'isEdited': isEdited == null ? null : (isEdited! ? 1 : 0),
+      'haveItOffline': haveItOffline == null ? null : (haveItOffline! ? 1 : 0),
       'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
     };
   }
@@ -325,7 +328,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
   String toJson() => json.encode(toMap());
 
   bool get isMediaWaitingForDownload =>
-      !isMediaCached && mediaLog == null && haveItOffline;
+      !isMediaCached && mediaLog == null && (haveItOffline ?? false);
 
   bool get isMediaDownloadFailed =>
       serverUID != null && !isMediaCached && mediaLog != null;
@@ -348,7 +351,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
     ValueGetter<String?>? previewLog,
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
   }) {
     return _copyWith(
@@ -436,7 +439,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
   bool get isMarkedDeleted => isDeleted ?? false;
 
   @override
-  bool get isMarkedEditted => isEdited;
+  bool get isMarkedEditted => isEdited ?? false;
 
   @override
   bool get hasServerUID => serverUID != null;

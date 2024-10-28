@@ -61,7 +61,7 @@ class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {
           AsyncValue.data(Uri.file(directories.getMediaAbsolutePath(m))),
         (final CLMedia _) when m.isMediaDownloadFailed =>
           throw Exception(m.mediaLog),
-        (final CLMedia _) when !m.haveItOffline =>
+        (final CLMedia _) when !(m.haveItOffline ?? false) =>
           server != null && m.mediaEndPoint != null
               ? AsyncValue.data(
                   Uri.parse(

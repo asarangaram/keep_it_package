@@ -347,7 +347,7 @@ extension StoreExt on StoreUpdater {
       previewLog: previewLog != null ? previewLog() : null,
       mediaLog: mediaLog != null ? mediaLog() : null,
       serverUID: serverUID != null ? serverUID() : null,
-      haveItOffline: haveItOffline?.call() ?? true,
+      haveItOffline: haveItOffline?.call(),
       mustDownloadOriginal: mustDownloadOriginal?.call() ?? false,
       ref: ref != null ? ref() : null,
       originalDate: originalDate != null ? originalDate() : null,
