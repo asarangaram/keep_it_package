@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
 class CollectionUpdater {
@@ -21,26 +22,59 @@ class CollectionUpdater {
     return updated;
   }
 
+  Future<Collection> update(
+    Collection collection, {
+    required bool isEdited,
+    bool shouldRefresh = true,
+    String? label,
+    ValueGetter<String?>? description,
+    DateTime? createdDate,
+    DateTime? updatedDate,
+    bool? haveItOffline,
+    ValueGetter<int?>? serverUID,
+    bool? isDeleted,
+  }) {
+    return upsert(
+      collection.copyWith(
+        isEdited: isEdited,
+        label: label,
+        description: description,
+        createdDate: createdDate,
+        updatedDate: updatedDate,
+        haveItOffline: haveItOffline,
+        serverUID: serverUID,
+        isDeleted: isDeleted,
+      ),
+      shouldRefresh: shouldRefresh,
+    );
+  }
+
   /// Method: delete
   Future<bool> delete(
     int id, {
     bool shouldRefresh = true,
   }) async {
-    final mediaMultiple = await store.reader.getMediaByCollectionId(id);
+    final collection = await store.reader.getCollectionById(id);
+    if (collection != null) {
+      final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
-    for (final m in mediaMultiple) {
-      await store.upsertMedia(
-        m.updateContent(
-          isDeleted: () => true,
-          isEdited: true,
-        ),
-      );
-    }
+      for (final m in mediaMultiple) {
+        await store.upsertMedia(
+          m.updateContent(
+            isDeleted: () => true,
+            isEdited: true,
+          ),
+        );
+      }
 
-    if (shouldRefresh) {
-      store.reloadStore();
+      await update(collection, isEdited: true, isDeleted: true);
+
+      if (shouldRefresh) {
+        store.reloadStore();
+      }
+      return true;
     }
-    return true;
+    return false;
   }
 
   /// Method: deletePermanently
