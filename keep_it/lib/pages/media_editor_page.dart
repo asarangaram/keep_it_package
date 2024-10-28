@@ -53,8 +53,8 @@ class MediaEditorPage extends ConsumerWidget {
                           ) ??
                           false;
                       if (confirmed && context.mounted) {
-                        resultMedia =
-                            await theStore.replaceMedia(file, media: media);
+                        resultMedia = await theStore.mediaUpdater
+                            .replaceContent(file, media: media);
                       } else {
                         resultMedia = media;
                       }
@@ -66,7 +66,8 @@ class MediaEditorPage extends ConsumerWidget {
                               ) ??
                               false;
                       if (confirmed && context.mounted) {
-                        resultMedia = await theStore.cloneAndReplaceMedia(
+                        resultMedia = await theStore.mediaUpdater
+                            .updateCloneAndReplaceContent(
                           file,
                           media: media,
                         );

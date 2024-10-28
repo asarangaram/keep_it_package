@@ -41,7 +41,8 @@ class PinnedMediaPage extends ConsumerWidget {
                             actionControl: ActionControl.full(),
                           );
                         },
-                        onLongPress: () => theStore.togglePinById(item.id!),
+                        onLongPress: () =>
+                            theStore.mediaUpdater.togglePin(item.id!),
                         child: MediaViewService.preview(
                           item,
                           parentIdentifier: parentIdentifier,
@@ -64,7 +65,7 @@ class PinnedMediaPage extends ConsumerWidget {
                           title: 'Remove Selected Pins',
                           icon: clIcons.unPinAll,
                           onTap: () async {
-                            await theStore.togglePinMultipleById(
+                            await theStore.mediaUpdater.pinToggleMultiple(
                               media.entries.map((e) => e.id).toSet(),
                             );
 

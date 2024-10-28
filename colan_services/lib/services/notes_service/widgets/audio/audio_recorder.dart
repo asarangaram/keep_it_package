@@ -149,7 +149,7 @@ class _AudioRecorderState extends ConsumerState<AudioRecorder> {
 
   Future<void> _sendAudio() async {
     if (hasAudioMessage) {
-      await theStore.newMedia(
+      await theStore.mediaUpdater.create(
         audioMessage!,
         type: CLMediaType.audio,
         parents: [widget.media],

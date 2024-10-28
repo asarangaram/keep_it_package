@@ -3,7 +3,6 @@ import 'package:content_store/extensions/list_ext.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
-import '../../../db_service/models/store_updter_ext_store.dart';
 import '../../../extensions/ext_cl_media.dart';
 import '../media_change_tracker.dart';
 import '../server.dart';
@@ -16,8 +15,9 @@ class CollectionSyncModule extends SyncModule<Collection> {
     Map<String, dynamic> map,
   ) async {
     if (map.containsKey('collectionLabel')) {
-      map['collectionId'] ??=
-          await updater.collectionIdFromLabel(map['collectionLabel'] as String);
+      map['collectionId'] ??= (await updater.collectionUpdater
+              .getCollectionByLabel(map['collectionLabel'] as String))
+          .id;
     } else {
       throw Exception('collectionLabel is missing');
     }
@@ -149,7 +149,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
     final collection = item;
     log('ServerUID ${collection.serverUID}: download');
 
-    await updater.upsertCollection(
+    await updater.collectionUpdater.upsert(
       collection,
       shouldRefresh: false,
     );
@@ -160,7 +160,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
     final collection = item;
     log('ServerUID ${collection.serverUID}: updateLocal');
 
-    await updater.upsertCollection(
+    await updater.collectionUpdater.upsert(
       collection,
       shouldRefresh: false,
     );
@@ -188,7 +188,8 @@ class CollectionSyncModule extends SyncModule<Collection> {
     final collection = item;
     final uploadedCollection =
         StoreExtCollection.collectionFromServerMap(collection, resMap);
-    await updater.upsertCollection(uploadedCollection, shouldRefresh: false);
+    await updater.collectionUpdater
+        .upsert(uploadedCollection, shouldRefresh: false);
     return;
   }
 

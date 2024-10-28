@@ -145,7 +145,7 @@ class TimelineView extends ConsumerWidget {
                       false;
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
-                    return theStore.deleteMediaMultipleById(
+                    return theStore.mediaUpdater.deleteMultiple(
                       {...items.map((e) => e.id!)},
                     );
                   }
@@ -167,13 +167,13 @@ class TimelineView extends ConsumerWidget {
               CLMenuItem(
                 title: 'Share',
                 icon: clIcons.imageShareAll,
-                onTap: () => theStore.shareMedia(context, items),
+                onTap: () => theStore.mediaUpdater.share(context, items),
               ),
               if (ColanPlatformSupport.isMobilePlatform)
                 CLMenuItem(
                   title: 'Pin',
                   icon: clIcons.pinAll,
-                  onTap: () => theStore.togglePinMultipleById(
+                  onTap: () => theStore.mediaUpdater.pinToggleMultiple(
                     items.map((e) => e.id).toSet(),
                   ),
                 ),

@@ -338,12 +338,12 @@ class MediaView0 extends ConsumerWidget {
                           false;
                       if (!confirmed) return confirmed;
                       if (context.mounted) {
-                        return theStore.deleteMediaById(media.id!);
+                        return theStore.mediaUpdater.delete(media.id!);
                       }
                       return false;
                     }),
                     onShare: ac.onShare(
-                      () => theStore.shareMedia(context, [media]),
+                      () => theStore.mediaUpdater.share(context, [media]),
                     ),
                     onEdit: ac.onEdit(
                       () async {
@@ -368,7 +368,8 @@ class MediaView0 extends ConsumerWidget {
                     ),
                     onPin: ac.onPin(
                       () async {
-                        final res = await theStore.togglePinById(media.id!);
+                        final res =
+                            await theStore.mediaUpdater.togglePin(media.id!);
                         if (res) {
                           /*  setState(() {}); */
                         }

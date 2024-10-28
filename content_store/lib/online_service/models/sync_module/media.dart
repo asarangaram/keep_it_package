@@ -4,7 +4,6 @@ import 'package:content_store/extensions/list_ext.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
-import '../../../db_service/models/store_updter_ext_store.dart';
 import '../../../extensions/ext_cl_media.dart';
 import '../media_change_tracker.dart';
 import '../server.dart';
@@ -18,8 +17,9 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     Map<String, dynamic> map,
   ) async {
     if (map.containsKey('collectionLabel')) {
-      map['collectionId'] ??=
-          await updater.collectionIdFromLabel(map['collectionLabel'] as String);
+      map['collectionId'] ??= (await updater.collectionUpdater
+              .getCollectionByLabel(map['collectionLabel'] as String))
+          .id!;
     } else {
       throw Exception('collectionLabel is missing');
     }
@@ -123,7 +123,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: deleteLocal');
 
-    await updater.permanentlyDeleteMediaMultipleById(
+    await updater.mediaUpdater.deletePermanently(
       {media.id!},
       shouldRefresh: false,
     );
@@ -151,7 +151,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       if (resMap != null) {
         if (resMap['isDeleted'] == 1 &&
             resMap['serverUID'] == media.serverUID) {
-          await updater.permanentlyDeleteMediaMultipleById(
+          await updater.mediaUpdater.deletePermanently(
             {media.id!},
             shouldRefresh: false,
           );
@@ -167,7 +167,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateOnServer');
 
-    await updater.upsertMedia(
+    await updater.mediaUpdater.upsertMedia(
       media,
       shouldRefresh: false,
     );
@@ -203,7 +203,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateLocal');
 
-    await updater.upsertMedia(
+    await updater.mediaUpdater.upsertMedia(
       media,
       shouldRefresh: false,
     );
@@ -220,7 +220,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         await store.reader.getCollectionById(media.collectionId!);
     final entity0 = ServerUploadEntity.update(
       serverUID: media.serverUID!,
-      path: uploadFile ? updater.mediaFileRelativePath(media) : null,
+      path: uploadFile ? updater.mediaUpdater.fileRelativePath(media) : null,
       name: media.name,
       collectionLabel: collection!.label,
       updatedDate: media.updatedDate,
@@ -250,7 +250,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       await updateCollectionId(resMap),
     );
 
-    await updater.upsertMedia(uploadedMedia, shouldRefresh: false);
+    await updater.mediaUpdater.upsertMedia(uploadedMedia, shouldRefresh: false);
 
     /* final mediaLog = await Server.downloadMediaFile(
       uploadedMedia.serverUID!,
@@ -296,7 +296,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final collection =
         await store.reader.getCollectionById(media.collectionId!);
     final entity0 = ServerUploadEntity(
-      path: updater.mediaFileRelativePath(media),
+      path: updater.mediaUpdater.fileRelativePath(media),
       name: media.name,
       collectionLabel: collection!.label,
       createdDate: media.createdDate,

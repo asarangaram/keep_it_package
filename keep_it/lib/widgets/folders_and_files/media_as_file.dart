@@ -40,9 +40,9 @@ class MediaAsFile extends ConsumerWidget {
             ),
           ),
           onDelete: () async {
-            return theStore.deleteMediaById(media.id!);
+            return theStore.mediaUpdater.delete(media.id!);
           },
-          onShare: () => theStore.shareMedia(context, [media]),
+          onShare: () => theStore.mediaUpdater.share(context, [media]),
           onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
               ? null
               : () async {

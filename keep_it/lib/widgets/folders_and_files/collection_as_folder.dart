@@ -94,7 +94,7 @@ class CollectionAsFolder extends ConsumerWidget {
       collection: collection,
     );
     if (updated != null && context.mounted) {
-      await theStore.upsertCollection(updated);
+      await theStore.collectionUpdater.upsert(updated);
     }
 
     return true;
