@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:colan_services/colan_services.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:store/store.dart';
+
+import '../collection_editor.dart';
 
 class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({
@@ -24,6 +29,17 @@ class CollectionAsFolder extends ConsumerWidget {
                 collection: collection,
                 isSyncing: false,
                 child: CollectionView.preview(collection),
+                onTap: () async => onTap(context),
+                onEdit: () async => onEdit(context, theStore),
+                onDelete: () async => onDelete(context, theStore),
+                onUpload: () async {
+                  final serverNotifier = ref.read(serverProvider.notifier);
+                  final collectionSyncModule =
+                      await serverNotifier.collectionSyncModule;
+                  await collectionSyncModule.upload(collection);
+                  serverNotifier.sync();
+                  return true;
+                },
               ),
             ),
             Padding(
@@ -49,5 +65,35 @@ class CollectionAsFolder extends ConsumerWidget {
         );
       },
     );
+  }
+
+  Future<bool> onTap(BuildContext context) async {
+    await Navigators.openCollection(context, collection.id!);
+    return true;
+  }
+
+  Future<bool> onEdit(BuildContext context, StoreUpdater theStore) async {
+    final updated = await CollectionEditor.popupDialog(
+      context,
+      collection: collection,
+    );
+    if (updated != null && context.mounted) {
+      await theStore.upsertCollection(updated);
+    }
+
+    return true;
+  }
+
+  Future<bool> onDelete(BuildContext context, StoreUpdater theStore) async {
+    final confirmed = await ConfirmAction.deleteCollection(
+          context,
+          collection: collection,
+        ) ??
+        false;
+    if (!confirmed) return confirmed;
+    if (context.mounted) {
+      return theStore.deleteCollectionById(collection.id!);
+    }
+    return false;
   }
 }

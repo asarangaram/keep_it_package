@@ -7,6 +7,7 @@ import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
 import '../models/cl_server.dart';
 import '../models/server.dart';
+import '../models/sync_module/collection.dart';
 import '../models/sync_module/media.dart';
 import 'downloader.dart';
 
@@ -114,17 +115,25 @@ class ServerNotifier extends StateNotifier<Server> {
   }
 
   Future<void> _sync(CLServer server) async {
-    final updater = await storeUpdater;
-    final mediaSyncModule =
-        MediaSyncModule(state.identity!, updater, downloader);
-    await mediaSyncModule
+    // Sync Collections
+
+    final collectionSyncModule = await this.collectionSyncModule;
+
+    await collectionSyncModule.sync(
+      await collectionSyncModule.collectionOnServerMap(),
+      await collectionSyncModule.collectionOnDevice(),
+    );
+
+    /* final updater = await storeUpdater;
+    final mediaSyncModule = await this.mediaSyncModule;
+     await mediaSyncModule
         .sync(
       await mediaSyncModule.mediaOnServerMap(null),
       await mediaSyncModule.mediaOnDevice(null),
     )
         .then((value) {
       updater.store.reloadStore();
-    });
+    }); */
   }
 
   void checkStatus() {
@@ -135,6 +144,12 @@ class ServerNotifier extends StateNotifier<Server> {
     }
     return;
   }
+
+  Future<CollectionSyncModule> get collectionSyncModule async =>
+      CollectionSyncModule(state.identity!, await storeUpdater, downloader);
+
+  Future<MediaSyncModule> get mediaSyncModule async =>
+      MediaSyncModule(state.identity!, await storeUpdater, downloader);
 
   @override
   void dispose() {

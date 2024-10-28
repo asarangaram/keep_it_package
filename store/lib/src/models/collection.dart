@@ -2,11 +2,12 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
+import 'package:store/store.dart';
 
 import 'cl_media_base.dart';
 
 @immutable
-class Collection {
+class Collection implements CLEntity {
   const Collection({
     required this.label,
     required this.haveItOffline,
@@ -165,5 +166,45 @@ class Collection {
     };
   }
 
+  Map<String, String> toUploadMap() {
+    final map = toMap();
+    final serverFields = <String>[
+      'label',
+      'description',
+      'createdDate',
+      'updatedDate',
+    ];
+    map.removeWhere(
+      (key, value) => !serverFields.contains(key) || value == null,
+    );
+    return map.map((key, value) => MapEntry(key, value.toString()));
+  }
+
   String toJson() => json.encode(toMap());
+
+  @override
+  bool get hasServerUID => serverUID != null;
+
+  @override
+  bool isChangedAfter(CLEntity other) =>
+      updatedDate.isAfter((other as CLMedia).updatedDate);
+
+  @override
+  bool isContentSame(covariant Collection other) {
+    if (identical(this, other)) return true;
+
+    return other.label == label &&
+        other.description == description &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate &&
+        other.serverUID == serverUID &&
+        other.isDeleted == isDeleted &&
+        other.isEdited == isEdited;
+  }
+
+  @override
+  bool get isMarkedDeleted => isDeleted;
+
+  @override
+  bool get isMarkedEditted => isEdited;
 }

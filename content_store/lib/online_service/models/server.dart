@@ -8,6 +8,7 @@ import 'package:content_store/online_service/providers/downloader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:store/store.dart';
 
 import 'cl_server.dart';
 import 'server_upload_entity.dart';
@@ -252,6 +253,73 @@ class Server {
         }
       },
     );
+    return completer.future;
+  }
+
+  static Future<Map<String, dynamic>?> upsertCollection(
+    Collection collection, {
+    required CLServer server,
+    String endPoint = '/collection',
+  }) {
+    final completer = Completer<Map<String, dynamic>?>();
+    final String endPoint0;
+    if (collection.serverUID != null) {
+      endPoint0 = '$endPoint/${collection.serverUID}';
+    } else {
+      endPoint0 = endPoint;
+    }
+    if (collection.serverUID != null) {
+      server.put(
+        endPoint0,
+        form: collection.toUploadMap(),
+      )
+        ..onError((e, st) async {
+          final error = e?.toString() ?? 'unknown error';
+          completer.completeError(error, st);
+          return error;
+        })
+        ..then((responseBody) {
+          completer.complete(jsonDecode(responseBody) as Map<String, dynamic>);
+        });
+    } else {
+      server.post(
+        endPoint,
+        form: collection.toUploadMap(),
+      )
+        ..onError((e, st) async {
+          final error = e?.toString() ?? 'unknown error';
+          completer.completeError(error, st);
+          return error;
+        })
+        ..then((responseBody) {
+          completer.complete(jsonDecode(responseBody) as Map<String, dynamic>);
+        });
+    }
+    return completer.future;
+  }
+
+  static Future<bool> deleteCollection(
+    int serverUID, {
+    required CLServer server,
+    required DownloaderNotifier downloader,
+    required BaseDirectory mediaBaseDirectory,
+    String endPoint = '/collection',
+  }) {
+    final completer = Completer<bool>();
+    final String endPoint0;
+    endPoint0 = '$endPoint/$serverUID';
+
+    server.delete(
+      endPoint0,
+    )
+      ..onError((e, st) async {
+        final error = e?.toString() ?? 'unknown error';
+        completer.completeError(error, st);
+        return error;
+      })
+      ..then((responseBody) {
+        completer.complete(responseBody.trim().toLowerCase() == 'true');
+      });
     return completer.future;
   }
 }

@@ -123,7 +123,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
   @override
   Future<void> deleteLocal(CLMedia item) async {
     final media = item;
-    log('ServerUID ${media.serverUID}: updateOnServer');
+    log('ServerUID ${media.serverUID}: deleteLocal');
 
     await updater.permanentlyDeleteMediaMultipleById(
       {media.id!},
@@ -134,7 +134,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
   @override
   Future<void> deleteOnServer(CLMedia item) async {
     final media = item;
-    log('ServerUID ${media.serverUID}: updateOnServer');
+    log('ServerUID ${media.serverUID}: deleteOnServer');
     try {
       if (media.isDeleted != true) {
         throw Exception('delete is not marked correctly');
@@ -203,7 +203,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
   @override
   Future<void> updateLocal(CLMedia item) async {
     final media = item;
-    log('ServerUID ${media.serverUID}: updateOnServer');
+    log('ServerUID ${media.serverUID}: updateLocal');
 
     await updater.upsertMedia(
       media,
@@ -318,6 +318,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         await updateServerResponse(media, resMap);
       }
     } catch (e) {
+      /** FIXME, when server fails */
       if (kDebugMode) {
         print(e);
       }

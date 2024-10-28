@@ -136,7 +136,7 @@ class CLServer {
     Map<String, dynamic>? form,
   }) async =>
       RestApi(baseURL, client: client)
-          .put(endPoint, json: json ?? '', form: form);
+          .post(endPoint, json: json ?? '', form: form);
 
   Future<String> put(
     String endPoint, {
@@ -173,6 +173,22 @@ class CLServer {
           ) as List<dynamic>,
       ];
       return mediaMapList.map((e) => e as Map<String, dynamic>).toList();
+    } catch (e) {
+      log('error when downloading $e');
+    }
+    return [];
+  }
+
+  Future<List<Map<String, dynamic>>> downloadCollectionInfo({
+    http.Client? client,
+  }) async {
+    try {
+      final mapList = [
+        jsonDecode(
+          await getEndpoint('/collection', client: client),
+        ) as List<dynamic>,
+      ];
+      return mapList.map((e) => e as Map<String, dynamic>).toList();
     } catch (e) {
       log('error when downloading $e');
     }

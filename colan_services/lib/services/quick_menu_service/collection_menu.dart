@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:store/store.dart';
 
-abstract class CollectionActions {}
-
 class CollectionMenu extends StatelessWidget {
   const CollectionMenu({
     required this.child,
@@ -76,7 +74,13 @@ class CollectionMenu extends StatelessWidget {
               icon: clIcons.imageDelete,
               iconColor: Colors.red,
             ),
-            if (collection.haveItOffline)
+            if (collection.serverUID == null)
+              PullDownMenuItem(
+                title: 'Upload',
+                onTap: onUpload,
+                icon: Icons.upload,
+              )
+            else if (collection.haveItOffline)
               if (isSyncing)
                 const PullDownMenuItem(
                   onTap: null,
@@ -123,13 +127,7 @@ class CollectionMenu extends StatelessWidget {
             ),
           ],
         ),
-        if (collection.serverUID == null)
-          PullDownMenuItem(
-            title: 'Upload',
-            onTap: onUpload,
-            icon: Icons.upload,
-          )
-        else ...[
+        if (collection.serverUID != null) ...[
           PullDownMenuItem(
             title: collection.haveItOffline
                 ? 'Remove Downloads'

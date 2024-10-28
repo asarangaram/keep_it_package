@@ -15,4 +15,5 @@ export 'db_service/models/store_updter_ext_store.dart';
 export 'db_service/widgets/broken_image.dart';
 export 'db_service/widgets/shimmer.dart';
 export 'extensions/ext_cl_medias.dart';
+export 'online_service/providers/server.dart';
 export 'storage_service/widgets/storage_monitor.dart' show StorageMonitor;

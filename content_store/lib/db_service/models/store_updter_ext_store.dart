@@ -105,6 +105,25 @@ extension StoreExt on StoreUpdater {
     return true;
   }
 
+  Future<bool> permanentlyDeleteCollectionMultipleById(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
+    for (final id in ids2Delete) {
+      final collection = await store.reader.getCollectionById(id);
+      if (collection != null) {
+        final medias = await store.reader.getMediaByCollectionId(id);
+        if (medias.isNotEmpty) {
+          await permanentlyDeleteMediaMultipleById(
+            medias.map((e) => e.id!).toSet(),
+          );
+        }
+        await store.deleteCollection(collection);
+      }
+    }
+    return true;
+  }
+
   Future<bool> permanentlyDeleteMediaMultipleById(
     Set<int> ids2Delete, {
     bool shouldRefresh = true,

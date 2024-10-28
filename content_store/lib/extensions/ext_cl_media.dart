@@ -1,5 +1,18 @@
 import 'package:store/store.dart';
 
+extension StoreExtCollection on Collection {
+  static Collection collectionFromServerMap(
+    Collection? collectionInDB,
+    Map<String, dynamic> map,
+  ) {
+    map['id'] = collectionInDB?.id;
+    map['haveItOffline'] = (collectionInDB?.haveItOffline ?? true) ? 1 : 0;
+    map['isDeleted'] ??= 0;
+    map['isEdited'] = 0;
+    return Collection.fromMap(map);
+  }
+}
+
 extension StoreExtCLMedia on CLMedia {
   /// Same like fromMap but uses missing info from another media
   static CLMedia mediaFromServerMap(
