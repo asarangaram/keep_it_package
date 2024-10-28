@@ -64,10 +64,12 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
       return KeepItMainView(
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
-        backButton: CLButtonIcon.small(
-          clIcons.pagePop,
-          onTap: () => CLPopScreen.onPop(context),
-        ),
+        backButton: CLPopScreen.canPop(context)
+            ? CLButtonIcon.small(
+                clIcons.pagePop,
+                onTap: () => CLPopScreen.onPop(context),
+              )
+            : null,
         actionsBuilder: widget.actionMenu
             .map(
               (e) => (_, __) => CLButtonIcon.small(
