@@ -13,7 +13,5 @@ export 'src/models/cl_media_type.dart' show CLMediaType;
 export 'src/models/cl_medias.dart' show CLMedias;
 export 'src/models/collection.dart' show Collection;
 export 'src/models/collections.dart' show Collections;
-export 'src/models/download_media/global_preference.dart'
-    show DownloadMediaGlobalPreference;
 export 'src/models/notes_on_media.dart' show NotesOnMedia;
 export 'src/models/store.dart' show DBQueries, Store, StoreQuery, StoreReader;
