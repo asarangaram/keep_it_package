@@ -15,7 +15,7 @@ class CollectionUpdater {
       if (collection == c) return collection;
     }
 
-    final updated = store.upsertCollection(collection);
+    final updated = await store.upsertCollection(collection);
     if (shouldRefresh) {
       store.reloadStore();
     }
