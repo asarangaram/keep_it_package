@@ -59,7 +59,6 @@ void main() {
           entity0,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
 
         expect(
@@ -85,7 +84,6 @@ void main() {
           entity1,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
         referenceMap['md5String'] = await File(edittedImagePath).checksum;
         referenceMap['updatedDate'] = updatedDate.millisecondsSinceEpoch;
@@ -103,7 +101,6 @@ void main() {
           entity2,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
         referenceMap['collectionLabel'] = collectionLabel;
         referenceMap['updatedDate'] = updatedDate.millisecondsSinceEpoch;
@@ -123,7 +120,6 @@ void main() {
           entity3,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
         expect(received3?['serverUID'], serverUID);
 
