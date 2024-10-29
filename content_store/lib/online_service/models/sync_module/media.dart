@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/extensions/list_ext.dart';
 
 import 'package:flutter/foundation.dart';
@@ -148,7 +145,6 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         entity0,
         server: server,
         downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
       );
       if (resMap != null) {
         if (resMap['isDeleted'] == 1 &&
@@ -240,7 +236,6 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       entity0,
       server: server,
       downloader: downloader,
-      mediaBaseDirectory: BaseDirectory.applicationSupport,
     );
     if (resMap != null) {
       await updateServerResponse(media, resMap);
@@ -298,7 +293,6 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         entity0,
         server: server,
         downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
       );
       if (resMap != null) {
         await updateServerResponse(media, resMap);

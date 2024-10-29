@@ -83,7 +83,6 @@ class Server {
       endPoint: endPoint,
       server: identity!,
       downloader: downloader,
-      mediaBaseDirectory: BaseDirectory.applicationSupport,
     );
   }
 
@@ -93,9 +92,9 @@ class Server {
     ServerUploadEntity media, {
     required CLServer server,
     required DownloaderNotifier downloader,
-    required BaseDirectory mediaBaseDirectory,
     String endPoint = '/media',
   }) {
+    const mediaBaseDirectory = BaseDirectory.applicationSupport;
     final completer = Completer<Map<String, dynamic>?>();
     final String endPoint0;
     if (media.serverUID != null) {
