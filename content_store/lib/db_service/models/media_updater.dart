@@ -69,43 +69,42 @@ class MediaUpdater {
     } else {
       media = media0;
     }
+    CLMedia? c;
     if (media.id != null) {
-      var c = await store.reader.getMediaById(media.id!);
-      if (media.serverUID != null) {
-        c ??= await store.reader.getMediaByServerUID(media.serverUID!);
-      }
-      if (media.md5String != null) {
-        c ??= await store.reader.getMediaByMD5String(media.md5String!);
-      }
+      c = await store.reader.getMediaById(media.id!);
+    }
+    if (c == null && media.serverUID != null) {
+      c ??= await store.reader.getMediaByServerUID(media.serverUID!);
+    }
+    if (c == null && media.md5String != null) {
+      c ??= await store.reader.getMediaByMD5String(media.md5String!);
+    }
 
-      if (c != null) {
-        if (media.id != c.id) {
-          throw Exception('Conflict in id');
-        }
-        if (media.serverUID != c.serverUID && c.serverUID != null) {
-          throw Exception('Conflict in serverUID');
-        }
+    if (c != null) {
+      if (media.id != c.id) {
+        throw Exception('Conflict in id');
       }
-
-      if (c != null && media.isContentSame(c)) {
-        return c;
-      } else {
-        final mediaFromDB = await store.upsertMedia(
-          media.updateContent(
-            isEdited: media.isEdited ?? false,
-            id: () => c!.id!,
-            serverUID: () => c!.serverUID,
-          ),
-          parents: parents,
-        );
-        log('store updated');
-        if (shouldRefresh) {
-          store.reloadStore();
-        }
-        return mediaFromDB;
+      if (media.serverUID != c.serverUID && c.serverUID != null) {
+        throw Exception('Conflict in serverUID');
       }
     }
-    return null;
+
+    if (c != null && media.isContentSame(c)) {
+      return c;
+    }
+    final mediaFromDB = await store.upsertMedia(
+      media.updateContent(
+        isEdited: media.isEdited ?? false,
+        id: () => c?.id,
+        serverUID: () => c?.serverUID,
+      ),
+      parents: parents,
+    );
+    log('store updated');
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
+    return mediaFromDB;
   }
 
   /// Method: delete
