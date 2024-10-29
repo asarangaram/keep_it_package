@@ -25,7 +25,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
   }
 
   Future<List<Collection>> collectionOnDevice() async {
-    final q = store.reader.getQuery<Collection>(DBQueries.collectionsAll);
+    final q = store.reader.getQuery<Collection>(DBQueries.collectionOnDevice);
     return (await store.reader.readMultiple(q)).nonNullableList;
   }
 

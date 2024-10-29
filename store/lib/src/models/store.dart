@@ -38,6 +38,7 @@ enum DBQueries {
   // Raw values
   serverUIDAll,
   mediaOnDevice,
+  collectionOnDevice,
   localMediaAll,
 }
 

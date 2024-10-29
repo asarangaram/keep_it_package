@@ -173,6 +173,7 @@ class Collection implements CLEntity {
       'description',
       'createdDate',
       'updatedDate',
+      'isDeleted',
     ];
     map.removeWhere(
       (key, value) => !serverFields.contains(key) || value == null,

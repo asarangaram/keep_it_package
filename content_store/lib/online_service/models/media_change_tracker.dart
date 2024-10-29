@@ -50,6 +50,10 @@ class ChangeTracker {
       return ActionType.none;
     }
     if (current == null) {
+      // IF server item is markedDeleted, ignore it.
+      if (update!.isMarkedDeleted) {
+        return ActionType.none;
+      }
       return ActionType.download;
     }
     if (update == null) {

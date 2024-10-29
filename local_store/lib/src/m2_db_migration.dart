@@ -12,7 +12,7 @@ final migrations = SqliteMigrations()
         updatedDate DATETIME NOT NULL,
         isDeleted INTEGER NOT NULL,
         haveItOffline INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
-        serverUID INTEGER,  -- Nullable, to store serverUID if media is from another server
+        serverUID INTEGER UNIQUE,  -- Nullable, to store serverUID if media is from another server
         isEdited INTEGER NOT NULL DEFAULT 0 -- relevant only if ServerUID is present
       )
     ''');
@@ -43,7 +43,7 @@ final migrations = SqliteMigrations()
         previewLog TEXT, -- Info stored as json
         mediaLog TEXT, -- Info stored as json
         isMediaOriginal INTEGER NOT NULL DEFAULT 0,
-        serverUID INTEGER,  -- Nullable, to store serverUID if media is from another server
+        serverUID INTEGER UNIQUE,  -- Nullable, to store serverUID if media is from another server
         isEdited INTEGER, -- relevant only if ServerUID is present
 
         FOREIGN KEY (collectionId) REFERENCES Collection(id)
