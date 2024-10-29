@@ -169,16 +169,16 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateOnServer');
 
-    final updated = await updater.mediaUpdater.upsert(
+    await updater.mediaUpdater.upsert(
       media,
       shouldRefresh: false,
     );
-    if (updated != null) {
+    /* final updated =  if (updated != null) {
       await downloadFiles(updated);
-    }
+    } */
   }
 
-  Future<void> downloadFiles(CLMedia media) async {
+  /* Future<void> downloadFiles(CLMedia media) async {
     final mediaLog = await Server.downloadMediaFile(
       media.serverUID!,
       updater.mediaUpdater.fileRelativePath(media),
@@ -204,7 +204,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       ),
       shouldRefresh: false,
     );
-  }
+  } */
 
   @override
   Future<void> updateLocal(CLMedia item) async {
@@ -258,10 +258,9 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       await updateCollectionId(resMap),
     );
 
-    final updated =
-        await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
+    await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
 
-    if (updated != null) {
+    /*final updated =  if (updated != null) {
       await downloadFiles(updated);
       store.reloadStore(); // check if this is really needed here
       if (media.mediaFileName != updated.mediaFileName) {
@@ -272,7 +271,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         await File(updater.mediaUpdater.previewAbsolutePath(media))
             .deleteIfExists();
       }
-    }
+    } */
   }
 
   @override
