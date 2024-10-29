@@ -8,7 +8,7 @@ import 'cl_media_type.dart';
 
 @immutable
 class CLMedia extends CLMediaBase implements CLEntity {
-  CLMedia({
+  const CLMedia({
     required super.name,
     required super.type,
     required super.fExt,
@@ -32,12 +32,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
     super.pin,
     super.isAux,
     this.id,
-  }) {
-    //log('New: $this', name: 'CLMedia');
-    if (haveItOffline ?? false) {
-      print('haveItOffline is marked as true!!!');
-    }
-  }
+  });
   factory CLMedia.strict({
     required String name,
     required CLMediaType type,
