@@ -96,7 +96,6 @@ class MediaUpdater {
       media.updateContent(
         isEdited: media.isEdited ?? false,
         id: () => c?.id,
-        serverUID: () => c?.serverUID,
       ),
       parents: parents,
     );

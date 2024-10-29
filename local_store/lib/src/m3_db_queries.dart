@@ -160,7 +160,7 @@ class Queries {
         ),
       DBQueries.mediaOnDevice => DBQuery<CLMedia>.map(
           sql:
-              'SELECT * FROM Media  WHERE serverUID IS NOT NULL OR (serverUID IS NULL AND (isDeleted != 1 OR isDeleted IS NULL));',
+              'SELECT DISTINCT m.* FROM Media m JOIN Collection c ON m.collectionId = c.id WHERE c.serverUID IS NOT NULL;',
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),

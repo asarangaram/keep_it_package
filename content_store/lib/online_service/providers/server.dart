@@ -125,7 +125,6 @@ class ServerNotifier extends StateNotifier<Server> {
       await collectionSyncModule.collectionOnDevice(),
     );
 
-    /*  
     final mediaSyncModule = await this.mediaSyncModule;
     await mediaSyncModule
         .sync(
@@ -134,7 +133,7 @@ class ServerNotifier extends StateNotifier<Server> {
     )
         .then((value) {
       updater.store.reloadStore();
-    }); */
+    });
     updater.store.reloadStore();
   }
 

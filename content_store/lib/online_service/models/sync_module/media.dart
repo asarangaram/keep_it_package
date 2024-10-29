@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:background_downloader/background_downloader.dart';
 import 'package:content_store/extensions/list_ext.dart';
 
@@ -167,13 +169,19 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateOnServer');
 
-    await updater.mediaUpdater.upsert(
+    final updated = await updater.mediaUpdater.upsert(
       media,
       shouldRefresh: false,
     );
-    /*  final mediaLog = await Server.downloadMediaFile(
+    if (updated != null) {
+      await downloadFiles(updated);
+    }
+  }
+
+  Future<void> downloadFiles(CLMedia media) async {
+    final mediaLog = await Server.downloadMediaFile(
       media.serverUID!,
-      updater.mediaFileRelativePath(media),
+      updater.mediaUpdater.fileRelativePath(media),
       server: server,
       downloader: downloader,
       mediaBaseDirectory: BaseDirectory.applicationSupport,
@@ -181,12 +189,12 @@ class MediaSyncModule extends SyncModule<CLMedia> {
 
     final previewLog = await Server.downloadPreviewFile(
       media.serverUID!,
-      updater.previewFileRelativePath(media),
+      updater.mediaUpdater.previewRelativePath(media),
       server: server,
       downloader: downloader,
       mediaBaseDirectory: BaseDirectory.applicationSupport,
     );
-    await updater.upsertMedia(
+    await updater.mediaUpdater.upsert(
       media.updateStatus(
         isMediaCached: () => mediaLog == null,
         mediaLog: () => mediaLog == 'cancelled' ? null : mediaLog,
@@ -195,7 +203,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         previewLog: () => previewLog == 'cancelled' ? null : previewLog,
       ),
       shouldRefresh: false,
-    ); */
+    );
   }
 
   @override
@@ -250,40 +258,21 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       await updateCollectionId(resMap),
     );
 
-    await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
+    final updated =
+        await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
 
-    /* final mediaLog = await Server.downloadMediaFile(
-      uploadedMedia.serverUID!,
-      updater.mediaFileRelativePath(uploadedMedia),
-      server: server,
-      downloader: downloader,
-      mediaBaseDirectory: BaseDirectory.applicationSupport,
-    );
-
-    final previewLog = await Server.downloadPreviewFile(
-      uploadedMedia.serverUID!,
-      updater.previewFileRelativePath(uploadedMedia),
-      server: server,
-      downloader: downloader,
-      mediaBaseDirectory: BaseDirectory.applicationSupport,
-    );
-    await updater.upsertMedia(
-      uploadedMedia.updateStatus(
-        isMediaCached: () => mediaLog == null,
-        mediaLog: () => mediaLog == 'cancelled' ? null : mediaLog,
-        isMediaOriginal: () => false,
-        isPreviewCached: () => previewLog == null,
-        previewLog: () => previewLog == 'cancelled' ? null : previewLog,
-      ),
-      shouldRefresh: false,
-    ); */
-    store.reloadStore(); // check if this is really needed here
-    /* if (media.mediaFileName != uploadedMedia.mediaFileName) {
-      await File(updater.mediaFileAbsolutePath(media)).deleteIfExists();
+    if (updated != null) {
+      await downloadFiles(updated);
+      store.reloadStore(); // check if this is really needed here
+      if (media.mediaFileName != updated.mediaFileName) {
+        await File(updater.mediaUpdater.fileAbsolutePath(media))
+            .deleteIfExists();
+      }
+      if (media.previewFileName != updated.previewFileName) {
+        await File(updater.mediaUpdater.previewAbsolutePath(media))
+            .deleteIfExists();
+      }
     }
-    if (media.previewFileName != uploadedMedia.previewFileName) {
-      await File(updater.previewFileAbsolutePath(media)).deleteIfExists();
-    } */
   }
 
   @override

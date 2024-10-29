@@ -14,11 +14,11 @@ final dbReaderProvider =
   final controller = StreamController<List<dynamic>>();
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
-      log(
+      /* log(
         'Query triggered $dbQuery',
         name: 'dbReaderProvider',
         time: DateTime.now(),
-      );
+      ); */
       controller.add(await storeUpdater.store.reader.readMultiple(dbQuery));
     }
   });
