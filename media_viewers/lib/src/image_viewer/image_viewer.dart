@@ -146,6 +146,7 @@ class ImageViewer extends StatelessWidget {
           mode: ExtendedImageMode.gesture,
           initGestureConfigHandler:
               hasGesture ? initGestureConfigHandler : null,
+          cache: false,
         )
     };
     if (overlays?.isNotEmpty ?? false) {

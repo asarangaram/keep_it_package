@@ -8,7 +8,7 @@ import 'cl_media_base.dart';
 
 @immutable
 class Collection implements CLEntity {
-  const Collection({
+  Collection({
     required this.label,
     required this.haveItOffline,
     required this.createdDate,
@@ -18,7 +18,11 @@ class Collection implements CLEntity {
     this.id,
     this.description,
     this.serverUID,
-  });
+  }) {
+    if (haveItOffline) {
+      print('haveItOffline is marked as true!!!');
+    }
+  }
 
   factory Collection.strict({
     required String label,
@@ -85,7 +89,7 @@ class Collection implements CLEntity {
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : timeNow,
-      haveItOffline: (map['haveItOffline'] as int?) != 1,
+      haveItOffline: false, //(map['haveItOffline'] as int?) != 1, // FIXME: BUG
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
       isEdited: ((map['isEdited'] as int?) ?? false) != 0,

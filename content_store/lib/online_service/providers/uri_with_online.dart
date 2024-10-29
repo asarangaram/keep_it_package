@@ -17,7 +17,7 @@ class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {
     return MediaPathDeterminerWithOnlineSupport._(
       directories: directories,
       server: server,
-      allowOnlineViewIfNotDownloaded: false,
+      allowOnlineViewIfNotDownloaded: true,
     );
   }
 
