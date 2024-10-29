@@ -8,7 +8,7 @@ import 'cl_media_base.dart';
 
 @immutable
 class Collection implements CLEntity {
-  const Collection({
+  const Collection._({
     required this.label,
     required this.haveItOffline,
     required this.createdDate,
@@ -32,7 +32,7 @@ class Collection implements CLEntity {
     DateTime? updatedDate,
   }) {
     final time = DateTime.now();
-    return Collection(
+    return Collection._(
       id: id,
       description: description,
       serverUID: serverUID,
@@ -74,7 +74,7 @@ class Collection implements CLEntity {
 
   factory Collection.fromMap(Map<String, dynamic> map) {
     final timeNow = DateTime.now();
-    return Collection(
+    return Collection._(
       id: map['id'] != null ? map['id'] as int : null,
       label: map['label'] as String,
       description:
@@ -106,7 +106,7 @@ class Collection implements CLEntity {
     bool? isDeleted,
     bool? isEdited,
   }) {
-    return Collection(
+    return Collection.strict(
       label: label ?? this.label,
       description: description != null ? description.call() : this.description,
       createdDate: createdDate ?? this.createdDate,

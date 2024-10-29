@@ -8,7 +8,7 @@ import 'cl_media_type.dart';
 
 @immutable
 class CLMedia extends CLMediaBase implements CLEntity {
-  const CLMedia({
+  const CLMedia._({
     required super.name,
     required super.type,
     required super.fExt,
@@ -59,7 +59,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
     DateTime? updatedDate,
   }) {
     final time = DateTime.now();
-    return CLMedia(
+    return CLMedia._(
       name: name,
       type: type,
       fExt: fExt,
@@ -87,7 +87,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
   }
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
-    return CLMedia(
+    return CLMedia.strict(
       name: map['name'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       fExt: map['fExt'] as String,
