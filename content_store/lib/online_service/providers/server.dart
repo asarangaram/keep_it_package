@@ -126,7 +126,7 @@ class ServerNotifier extends StateNotifier<Server> {
 
       updater.store.reloadStore();
     } catch (e) {
-      print('Sync error: $e');
+      log('Sync error: $e');
       /** */
     }
   }
