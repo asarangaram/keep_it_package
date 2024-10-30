@@ -40,6 +40,28 @@ class CollectionAsFolder extends ConsumerWidget {
                   serverNotifier.sync();
                   return true;
                 },
+                onKeepOffline: () async {
+                  if (!collection.haveItOffline && collection.hasServerUID) {
+                    final serverNotifier = ref.read(serverProvider.notifier);
+                    final collectionSyncModule =
+                        await serverNotifier.collectionSyncModule;
+                    await collectionSyncModule.updater.collectionUpdater
+                        .upsert(collection.copyWith(haveItOffline: true));
+                    serverNotifier.sync();
+                  }
+                  return true;
+                },
+                onDeleteLocalCopy: () async {
+                  if (collection.haveItOffline && collection.hasServerUID) {
+                    final serverNotifier = ref.read(serverProvider.notifier);
+                    final collectionSyncModule =
+                        await serverNotifier.collectionSyncModule;
+                    await collectionSyncModule.updater.collectionUpdater
+                        .upsert(collection.copyWith(haveItOffline: false));
+                    serverNotifier.sync();
+                  }
+                  return true;
+                },
               ),
             ),
             Padding(

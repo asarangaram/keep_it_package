@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../online_service/providers/server.dart';
 import 'get_db_reader.dart';
 import 'w3_get_from_store.dart';
 
@@ -36,6 +37,54 @@ class GetCollection extends ConsumerWidget {
             return builder(collection);
           },
         );
+      },
+    );
+  }
+}
+
+class GetShowableCollectionMultiple extends ConsumerWidget {
+  const GetShowableCollectionMultiple({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    super.key,
+    this.excludeEmpty = true,
+  });
+  final Widget Function(
+    Collections collections,
+    Collections availableCollections, {
+    required bool isAllAvailable,
+  }) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
+  final bool excludeEmpty;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canSync =
+        ref.watch(serverProvider.select((server) => server.canSync));
+    return GetCollectionMultiple(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      excludeEmpty: excludeEmpty,
+      builder: (collections) {
+        if (!canSync) {
+          final visibleCollections = Collections(
+            collections.entries
+                .where(
+                  (c) => !c.hasServerUID || (c.hasServerUID && c.haveItOffline),
+                )
+                .toList(),
+          );
+          return builder(
+            collections,
+            visibleCollections,
+            isAllAvailable:
+                visibleCollections.entries.length == collections.entries.length,
+          );
+        } else {
+          return builder(collections, collections, isAllAvailable: true);
+        }
       },
     );
   }

@@ -14,17 +14,24 @@ final dbReaderProvider =
   final controller = StreamController<List<dynamic>>();
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
+      final res = await storeUpdater.store.reader.readMultiple(dbQuery);
       /* log(
-        'Query triggered $dbQuery',
+        'Query triggered $dbQuery : $res',
         name: 'dbReaderProvider',
         time: DateTime.now(),
       ); */
-      controller.add(await storeUpdater.store.reader.readMultiple(dbQuery));
+      controller.add(res);
     }
   });
 
   // Handling 'IN ???'
-  yield await storeUpdater.store.reader.readMultiple(dbQuery);
+  final res = await storeUpdater.store.reader.readMultiple(dbQuery);
+  /* log(
+    'Query triggered $dbQuery : $res',
+    name: 'dbReaderProvider',
+    time: DateTime.now(),
+  ); */
+  yield res;
   yield* controller.stream;
 });
 

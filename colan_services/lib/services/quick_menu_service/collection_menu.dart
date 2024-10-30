@@ -41,8 +41,8 @@ class CollectionMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isOffline =
-        ref.watch(serverProvider.select((server) => server.isOffline));
+    final canSync =
+        ref.watch(serverProvider.select((server) => server.canSync));
     return PullDownButton(
       itemBuilder: (context) => [
         PullDownMenuHeader(
@@ -102,35 +102,41 @@ class CollectionMenu extends ConsumerWidget {
             ),
           ],
         ),
-        if (!isOffline)
+
+        if (canSync)
           if (!collection.hasServerUID)
-            PullDownMenuTitle(
-              title: GestureDetector(
-                onTap: onUpload,
-                child: const UploadMenuOption(),
-              ),
+            PullDownMenuItem(
+              onTap: onUpload,
+              title: 'Upload',
+              icon: Icons.upload_sharp,
             )
           else if (!collection.haveItOffline)
-            PullDownMenuTitle(
-              title: GestureDetector(
-                onTap: onUpload,
-                child: const SyncMenuOption(),
-              ),
+            PullDownMenuItem(
+              onTap: onKeepOffline,
+              title: 'Download',
+              subtitle: 'To view offline',
+              icon: Icons.download_sharp,
             )
           else
-            PullDownMenuTitle(
-              title: GestureDetector(
-                onTap: onUpload,
-                child: const UnsyncMenuOption(),
-              ),
+            PullDownMenuItem(
+              onTap: onDeleteLocalCopy,
+              title: 'Remove downloads',
+              subtitle: 'Freeup space on this device',
+              icon: Icons.download_done_sharp,
             )
         else if (collection.hasServerUID && collection.haveItOffline)
-          PullDownMenuTitle(
-            title: GestureDetector(
-              onTap: onUpload,
-              child: const OfflineSyncedMenuOption(),
-            ),
+          PullDownMenuItem(
+            onTap: onDeleteLocalCopy,
+            title: 'Remove downloads',
+            subtitle: 'Freeup space on this device',
+            icon: Icons.download_done_sharp,
           ),
+        PullDownMenuTitle(
+          title: MapInfo(
+            collection.toMapForDisplay(),
+            title: 'Details',
+          ),
+        ),
       ],
       buttonAnchor: PullDownMenuAnchor.center,
       buttonBuilder: (context, showMenu) {
@@ -141,6 +147,94 @@ class CollectionMenu extends ConsumerWidget {
           child: child,
         );
       },
+    );
+  }
+}
+
+class MapInfo extends StatefulWidget {
+  const MapInfo(
+    this.map, {
+    super.key,
+    this.title,
+  });
+  final Map<String, dynamic> map;
+  final String? title;
+
+  @override
+  State<MapInfo> createState() => _MapInfoState();
+}
+
+class _MapInfoState extends State<MapInfo> {
+  bool show = false;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Table(
+          border: TableBorder.all(),
+          children: [
+            TableRow(
+              children: [
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Text(
+                    widget.title ?? 'Details:',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                TableCell(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        show = !show;
+                      });
+                    },
+                    child: Align(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          show ? 'Hide' : 'show',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (show)
+              for (final entry in widget.map.entries)
+                TableRow(
+                  children: [
+                    TableCell(child: PaddedText(entry.key)),
+                    TableCell(child: PaddedText(entry.value.toString())),
+                  ],
+                ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class PaddedText extends StatelessWidget {
+  const PaddedText(this.text, {super.key, this.style});
+  final String text;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Text(
+        text,
+        textAlign: TextAlign.left,
+        style: style,
+      ),
     );
   }
 }
@@ -201,7 +295,7 @@ class UploadMenuOption extends StatelessWidget {
                   ),
                 ),
                 TextSpan(
-                  text: ' to upload and preserve '
+                  text: 'Tap here to upload and preserve '
                       'this on your local cloud',
                 ),
               ],

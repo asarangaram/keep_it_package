@@ -20,12 +20,18 @@ class CollectionView extends ConsumerWidget {
       errorBuilder: null,
       loadingBuilder: null,
       builder: (mediaList) {
+        final borderColor = collection.hasServerUID
+            ? collection.haveItOffline
+                ? Colors.blue
+                : Colors.green
+            : null;
         if (mediaList.isEmpty || true) {
           return Badge.count(
             count: mediaList.entries.length,
             child: CLAspectRationDecorated(
               hasBorder: true,
               borderRadius: const BorderRadius.all(Radius.circular(16)),
+              borderColor: borderColor,
               child: Center(
                 child: CLText.veryLarge(
                   collection.label.characters.first,
@@ -35,9 +41,11 @@ class CollectionView extends ConsumerWidget {
           );
           // ignore: dead_code
         } else {
+          print('borderColor1: $borderColor');
           return CLAspectRationDecorated(
             hasBorder: true,
             borderRadius: const BorderRadius.all(Radius.circular(16)),
+            borderColor: borderColor,
             child: CLMediaCollage.byMatrixSize(
               mediaList.entries.length,
               hCount: 2,
