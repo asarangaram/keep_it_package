@@ -44,7 +44,9 @@ class CollectionSyncModule extends SyncModule<Collection> {
     for (final serverEntry in itemsOnServerMap) {
       final localEntry = itemsOnDevice
           .where(
-            (e) => e.serverUID == serverEntry['serverUID'],
+            (e) =>
+                e.serverUID == serverEntry['serverUID'] ||
+                e.label == serverEntry['label'],
           )
           .firstOrNull;
 
@@ -61,6 +63,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
         itemsOnDevice.remove(localEntry);
       }
     }
+
     // For remaining items
     trackers.addAll(
       itemsOnDevice.map((e) => ChangeTracker(current: e, update: null)),

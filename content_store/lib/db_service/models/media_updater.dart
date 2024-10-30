@@ -81,7 +81,7 @@ class MediaUpdater {
     }
 
     if (c != null) {
-      if (media.id != c.id) {
+      if (media.id != null && media.id != c.id) {
         throw Exception('Conflict in id');
       }
       if (media.serverUID != c.serverUID && c.serverUID != null) {
