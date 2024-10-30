@@ -165,8 +165,13 @@ class Queries {
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.collectionOnDevice => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection  ',
+          sql: 'SELECT * FROM Collection',
           /** WHERE serverUID IS NOT NULL OR (serverUID IS NULL AND isDeleted != 1); */
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionToSync => DBQuery<Collection>.map(
+          sql: 'SELECT * FROM Collection WHERE serverUID IS NOT NULL',
           triggerOnTables: const {'Collection'},
           fromMap: Collection.fromMap,
         ),

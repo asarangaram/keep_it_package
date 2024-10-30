@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store/store.dart';
 
 import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
@@ -115,26 +116,19 @@ class ServerNotifier extends StateNotifier<Server> {
   }
 
   Future<void> _sync(CLServer server) async {
-    final updater = await storeUpdater;
-    // Sync Collections
+    try {
+      final updater = await storeUpdater;
+      await (await collectionSyncModule).sync();
+      await (await mediaSyncModule(
+        await updater.store.reader.collectionsToSync,
+      ))
+          .sync();
 
-    final collectionSyncModule = await this.collectionSyncModule;
-
-    await collectionSyncModule.sync(
-      await collectionSyncModule.collectionOnServerMap(),
-      await collectionSyncModule.collectionOnDevice(),
-    );
-
-    final mediaSyncModule = await this.mediaSyncModule;
-    await mediaSyncModule
-        .sync(
-      await mediaSyncModule.mediaOnServerMap(null),
-      await mediaSyncModule.mediaOnDevice(null),
-    )
-        .then((value) {
       updater.store.reloadStore();
-    });
-    updater.store.reloadStore();
+    } catch (e) {
+      print('Sync error: $e');
+      /** */
+    }
   }
 
   void checkStatus() {
@@ -149,8 +143,13 @@ class ServerNotifier extends StateNotifier<Server> {
   Future<CollectionSyncModule> get collectionSyncModule async =>
       CollectionSyncModule(state.identity!, await storeUpdater, downloader);
 
-  Future<MediaSyncModule> get mediaSyncModule async =>
-      MediaSyncModule(state.identity!, await storeUpdater, downloader);
+  Future<MediaSyncModule> mediaSyncModule(List<Collection> collections) async =>
+      MediaSyncModule(
+        state.identity!,
+        await storeUpdater,
+        downloader,
+        collections,
+      );
 
   @override
   void dispose() {

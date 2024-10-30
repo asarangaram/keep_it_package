@@ -9,37 +9,35 @@ import 'sync_module.dart';
 
 @immutable
 class MediaSyncModule extends SyncModule<CLMedia> {
-  MediaSyncModule(super.server, super.updater, super.downloader);
-  Future<Map<String, dynamic>> updateCollectionId(
-    Map<String, dynamic> map,
-  ) async {
-    if (map.containsKey('collectionLabel')) {
-      map['collectionId'] ??= (await updater.collectionUpdater
-              .getCollectionByLabel(map['collectionLabel'] as String))
-          .id!;
-    } else {
-      throw Exception('collectionLabel is missing');
-    }
-    return map;
-  }
-
-  Future<List<CLMedia>> mediaOnDevice(int? collectionID) async {
-    final q = store.reader.getQuery<CLMedia>(DBQueries.mediaOnDevice);
-    return (await store.reader.readMultiple(q)).nonNullableList;
-  }
-
-  Future<List<Map<String, dynamic>>> mediaOnServerMap(int? collectionID) async {
+  MediaSyncModule(
+    super.server,
+    super.updater,
+    super.downloader,
+    this.collectionsToSync,
+  );
+  final List<Collection> collectionsToSync;
+  Future<List<Map<String, dynamic>>> get mediaOnServerMap async {
+    final collectionLabels = collectionsToSync.map((e) => e.label);
     final serverItemsMap = await server.downloadMediaInfo();
-    if (collectionID == null) {
-    } else {}
+    serverItemsMap.removeWhere(
+        (map) => !collectionLabels.contains(map['collectionLabel']));
+    final list = <Map<String, dynamic>>[];
     for (final serverEntry in serverItemsMap) {
-      /// There are scenarios when the collections are not synced
-      /// fully, we may end up creating one. However, other details for
-      /// the newly created collection is not available at this stage, and
-      /// we may need to fetch from server if needed. [KNOWN_ISSUE]
-      await updateCollectionId(serverEntry);
+      final label = serverEntry['collectionLabel'] as String?;
+      if (label == null) {
+        throw Exception('collectionLabel is missing');
+      }
+
+      final collection =
+          collectionsToSync.where((e) => e.label == label).firstOrNull;
+      if (collection == null) {
+        throw Exception('Collection not found for the provided label');
+      }
+      // update collectionId
+      serverEntry['collectionId'] = collection.id;
+      list.add(serverEntry);
     }
-    return serverItemsMap;
+    return list;
   }
 
   Future<List<ChangeTracker>> analyse(
@@ -78,10 +76,10 @@ class MediaSyncModule extends SyncModule<CLMedia> {
   }
 
   @override
-  Future<void> sync(
-    List<Map<String, dynamic>> itemsOnServerMap,
-    List<CLMedia> itemsOnDevice,
-  ) async {
+  Future<void> sync() async {
+    final itemsOnServerMap = await mediaOnServerMap;
+    final itemsOnDevice = await updater.store.reader.mediaOnDevice;
+
     final trackers = await analyse(itemsOnServerMap, itemsOnDevice);
     if (trackers.isEmpty) return;
     log(' ${trackers.length} items need sync');
@@ -245,11 +243,16 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     CLMedia item,
     Map<String, dynamic> resMap,
   ) async {
+    final collection = collectionsToSync
+        .where((e) => e.label == resMap['collectionLabel'])
+        .firstOrNull;
+    if (collection == null) {
+      throw Exception('Collection not found for the provided label');
+    }
+    resMap['collectionId'] = collection.id;
+
     final media = item;
-    final uploadedMedia = StoreExtCLMedia.mediaFromServerMap(
-      media,
-      await updateCollectionId(resMap),
-    );
+    final uploadedMedia = StoreExtCLMedia.mediaFromServerMap(media, resMap);
 
     await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
 

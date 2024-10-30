@@ -23,10 +23,7 @@ abstract class SyncModule<T> {
   Future<void> updateLocal(T item);
   Future<void> updateOnServer(T item);
 
-  Future<void> sync(
-    List<Map<String, dynamic>> itemsOnServerMap,
-    List<T> itemsOnDevice,
-  );
+  Future<void> sync();
 
   void log(
     String message, {

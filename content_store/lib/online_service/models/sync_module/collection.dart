@@ -22,12 +22,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
     return map;
   }
 
-  Future<List<Collection>> collectionOnDevice() async {
-    final q = store.reader.getQuery<Collection>(DBQueries.collectionOnDevice);
-    return (await store.reader.readMultiple(q)).nonNullableList;
-  }
-
-  Future<List<Map<String, dynamic>>> collectionOnServerMap() async {
+  Future<List<Map<String, dynamic>>> get collectionOnServerMap async {
     final serverItemsMap = await server.downloadCollectionInfo();
     return serverItemsMap;
   }
@@ -70,10 +65,10 @@ class CollectionSyncModule extends SyncModule<Collection> {
   }
 
   @override
-  Future<void> sync(
-    List<Map<String, dynamic>> itemsOnServerMap,
-    List<Collection> itemsOnDevice,
-  ) async {
+  Future<void> sync() async {
+    final itemsOnServerMap = await collectionOnServerMap;
+    final itemsOnDevice = await updater.store.reader.collectionOnDevice;
+
     final trackers = await analyse(itemsOnServerMap, itemsOnDevice);
     log(' ${trackers.length} items need sync');
     if (trackers.isEmpty) return;

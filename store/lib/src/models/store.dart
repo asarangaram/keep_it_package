@@ -39,6 +39,7 @@ enum DBQueries {
   serverUIDAll,
   mediaOnDevice,
   collectionOnDevice,
+  collectionToSync,
   localMediaAll,
 }
 
@@ -52,8 +53,7 @@ abstract class StoreReader {
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
 
   Future<T?> get<T>(DBQueries query, {List<Object?>? parameters}) async {
-    final q = getQuery(DBQueries.collectionById, parameters: parameters)
-        as StoreQuery<T>;
+    final q = getQuery(query, parameters: parameters) as StoreQuery<T>;
     return read(q);
   }
 
@@ -61,10 +61,18 @@ abstract class StoreReader {
     DBQueries query, {
     List<Object?>? parameters,
   }) async {
-    final q = getQuery(DBQueries.collectionById, parameters: parameters)
-        as StoreQuery<T>;
+    final q = getQuery(query, parameters: parameters) as StoreQuery<T>;
     return (await readMultiple<T>(q)).nonNullableList;
   }
+
+  Future<List<Collection>> get collectionsToSync async =>
+      getMultiple(DBQueries.collectionToSync);
+
+  Future<List<Collection>> get collectionOnDevice async =>
+      getMultiple(DBQueries.collectionOnDevice);
+
+  Future<List<CLMedia>> get mediaOnDevice async =>
+      getMultiple(DBQueries.mediaOnDevice);
 
   Future<Collection?> getCollectionByID(int id) async =>
       get<Collection>(DBQueries.collectionById, parameters: [id]);
