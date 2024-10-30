@@ -17,7 +17,7 @@ class EditCollectionDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLWizardFormField(
       actionMenu: (context, onTap) => CLMenuItem(
-        icon: clIcons.pagePop,
+        icon: clIcons.save,
         title: 'Save',
         onTap: onTap,
       ),
