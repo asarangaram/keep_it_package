@@ -85,7 +85,7 @@ class Collection implements CLEntity {
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : timeNow,
-      haveItOffline: (map['haveItOffline'] as int?) != 1,
+      haveItOffline: (map['haveItOffline'] as int?) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
       isEdited: ((map['isEdited'] as int?) ?? false) != 0,
@@ -163,6 +163,20 @@ class Collection implements CLEntity {
       'serverUID': serverUID,
       'isDeleted': isDeleted ? 1 : 0,
       'isEdited': isEdited ? 1 : 0,
+    };
+  }
+
+  Map<String, dynamic> toMapForDisplay() {
+    return <String, dynamic>{
+      'id': id,
+      'label': label,
+      'description': description,
+      'createdDate': createdDate,
+      'updatedDate': updatedDate,
+      'haveItOffline': haveItOffline,
+      'serverUID': serverUID,
+      'isDeleted': isDeleted,
+      'isEdited': isEdited,
     };
   }
 
