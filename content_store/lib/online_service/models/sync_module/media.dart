@@ -20,7 +20,8 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final collectionLabels = collectionsToSync.map((e) => e.label);
     final serverItemsMap = await server.downloadMediaInfo();
     serverItemsMap.removeWhere(
-        (map) => !collectionLabels.contains(map['collectionLabel']));
+      (map) => !collectionLabels.contains(map['collectionLabel']),
+    );
     final list = <Map<String, dynamic>>[];
     for (final serverEntry in serverItemsMap) {
       final label = serverEntry['collectionLabel'] as String?;
