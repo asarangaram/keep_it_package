@@ -41,7 +41,6 @@ class CollectionView extends ConsumerWidget {
           );
           // ignore: dead_code
         } else {
-          print('borderColor1: $borderColor');
           return CLAspectRationDecorated(
             hasBorder: true,
             borderRadius: const BorderRadius.all(Radius.circular(16)),
