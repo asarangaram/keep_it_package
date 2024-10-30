@@ -1,9 +1,12 @@
+import 'package:animated_icon/animated_icon.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:store/store.dart';
 
-class CollectionMenu extends StatelessWidget {
+class CollectionMenu extends ConsumerWidget {
   const CollectionMenu({
     required this.child,
     required this.collection,
@@ -38,7 +41,9 @@ class CollectionMenu extends StatelessWidget {
   final bool isSyncing;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isOffline =
+        ref.watch(serverProvider.select((server) => server.isOffline));
     return PullDownButton(
       itemBuilder: (context) => [
         PullDownMenuHeader(
@@ -47,18 +52,16 @@ class CollectionMenu extends StatelessWidget {
             return SizedBox.square(
               dimension: 24,
               child: collection.serverUID == null
-                  ? Image.asset('assets/icon/on_device.png')
+                  ? Image.asset('assets/icon/not_on_server.png')
                   : Image.asset(
                       'assets/icon/cloud_on_lan_128px_color.png',
                     ),
             );
           },
         ),
+
         //if (downloadStatusWidget != null)
-        PullDownMenuTitle(
-          title: downloadStatusWidget ??
-              const CLText.tiny('Unknown download Status'),
-        ),
+
         PullDownMenuActionsRow.medium(
           items: [
             PullDownMenuItem(
@@ -75,24 +78,16 @@ class CollectionMenu extends StatelessWidget {
               //iconColor: Colors.red,
               isDestructive: true,
             ),
-            if (collection.serverUID == null)
-              PullDownMenuItem(
-                title: 'Upload',
-                onTap: onUpload,
-                icon: Icons.upload,
-              )
-            else
-              PullDownMenuItem(
-                onTap: null,
-                title: 'On Server',
-                icon: collection.haveItOffline == true
-                    ? Icons.cloud_sync
-                    : Icons.cloud,
-                iconColor: Colors.green,
-              ),
+            PullDownMenuItem(
+              onTap: onShare,
+              enabled: onShare != null,
+              title: 'Share',
+              icon: clIcons.imageShare,
+            ),
           ],
         ),
-        PullDownMenuActionsRow.medium(
+        //if (onMove != null || onPin != null)
+        PullDownMenuActionsRow.small(
           items: [
             PullDownMenuItem(
               onTap: onMove,
@@ -104,40 +99,39 @@ class CollectionMenu extends StatelessWidget {
               onTap: onPin,
               enabled: onPin != null,
               title: 'Pin',
-              icon: Icons.sync_alt,
-            ),
-            PullDownMenuItem(
-              onTap: onShare,
-              enabled: onShare != null,
-              title: 'Share',
-              icon: clIcons.imageShare,
+              icon: clIcons.pinAll,
             ),
           ],
         ),
-        if (collection.serverUID != null) ...[
-          PullDownMenuItem(
-            title: collection.haveItOffline
-                ? 'Remove Downloads'
-                : ' Have it Offline',
-            subtitle: collection.haveItOffline
-                ? 'delete local media. Still available online'
-                : 'download the media to device',
-            onTap: collection.haveItOffline ? onDeleteLocalCopy : onKeepOffline,
-            enabled: collection.haveItOffline
-                ? onDeleteLocalCopy != null
-                : onKeepOffline != null,
-            icon: collection.haveItOffline
-                ? Icons.check_box_outlined
-                : Icons.check_box_outline_blank,
+        if (!isOffline)
+          if (!collection.hasServerUID)
+            PullDownMenuTitle(
+              title: GestureDetector(
+                onTap: onUpload,
+                child: const UploadMenuOption(),
+              ),
+            )
+          else if (!collection.haveItOffline)
+            PullDownMenuTitle(
+              title: GestureDetector(
+                onTap: onUpload,
+                child: const SyncMenuOption(),
+              ),
+            )
+          else
+            PullDownMenuTitle(
+              title: GestureDetector(
+                onTap: onUpload,
+                child: const UnsyncMenuOption(),
+              ),
+            )
+        else if (collection.hasServerUID && collection.haveItOffline)
+          PullDownMenuTitle(
+            title: GestureDetector(
+              onTap: onUpload,
+              child: const OfflineSyncedMenuOption(),
+            ),
           ),
-          PullDownMenuItem(
-            title: 'Delete Server Copy',
-            subtitle: 'Delete in server. ' "can't access from other devices",
-            onTap: onDeleteServerCopy,
-            icon: Icons.cloud_off,
-            iconColor: Colors.red,
-          ),
-        ],
       ],
       buttonAnchor: PullDownMenuAnchor.center,
       buttonBuilder: (context, showMenu) {
@@ -148,6 +142,177 @@ class CollectionMenu extends StatelessWidget {
           child: child,
         );
       },
+    );
+  }
+}
+
+class OfflineSyncedMenuOption extends StatelessWidget {
+  const OfflineSyncedMenuOption({
+    super.key,
+  });
+  static Widget? cache;
+
+  @override
+  Widget build(BuildContext context) {
+    return cache ??= const Row(
+      children: [
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: ' Any changed into this collection '
+                      'will be synced when you go online',
+                ),
+              ],
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: CLIcon.tiny(
+            Icons.drive_folder_upload_outlined,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class UploadMenuOption extends StatelessWidget {
+  const UploadMenuOption({
+    super.key,
+  });
+  static Widget? cache;
+
+  @override
+  Widget build(BuildContext context) {
+    return cache ??= const Row(
+      children: [
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Tap here',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                TextSpan(
+                  text: ' to upload and preserve '
+                      'this on your local cloud',
+                ),
+              ],
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: CLIcon.tiny(
+            Icons.drive_folder_upload_outlined,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class SyncMenuOption extends StatelessWidget {
+  const SyncMenuOption({
+    super.key,
+  });
+  static Widget? cache;
+
+  @override
+  Widget build(BuildContext context) {
+    return cache ??= const Row(
+      children: [
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'This Collection is avaiable online. ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(
+                  text: 'Tap here ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                TextSpan(text: 'to download and keep in this device'),
+              ],
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: SizedBox.square(
+            dimension: 30,
+            child: FittedBox(
+              child: CLIconLabelled.small(
+                Icons.check_box_outline_blank,
+                'Not\nSyncing',
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class UnsyncMenuOption extends StatelessWidget {
+  const UnsyncMenuOption({
+    super.key,
+  });
+  static Widget? cache;
+
+  @override
+  Widget build(BuildContext context) {
+    return cache ??= const Row(
+      children: [
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'This Collection is synced to this device. ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(
+                  text: 'Tap here ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                TextSpan(text: 'to remove the downloads and freeup space'),
+              ],
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: SizedBox.square(
+            dimension: 30,
+            child: FittedBox(
+              child: CLIconLabelled.tiny(
+                Icons.check_box_outlined,
+                'Syncing',
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

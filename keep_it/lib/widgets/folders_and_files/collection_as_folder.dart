@@ -45,12 +45,11 @@ class CollectionAsFolder extends ConsumerWidget {
             ),
             Padding(
               padding:
-                  const EdgeInsets.only(left: 8, right: 16, top: 2, bottom: 2),
+                  const EdgeInsets.only(left: 16, right: 16, top: 2, bottom: 2),
               child: Row(
                 children: [
                   Expanded(
                     child: Align(
-                      alignment: Alignment.centerLeft,
                       child: Text(
                         collection.label,
                         maxLines: 2,
@@ -59,23 +58,14 @@ class CollectionAsFolder extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  if (collection.serverUID == null)
-                    Icon(MdiIcons.alphaLCircle)
-                  /* SizedBox.square(
-                      dimension: 24,
-                      child: Image.asset('assets/icon/on_device.png'),
-                    ) */
-                  else
-                    SizedBox.square(
-                      dimension: 24,
-                      child: Image.asset(
-                        'assets/icon/cloud_on_lan_128px_color.png',
-                      ),
+                  SizedBox.square(
+                    dimension: 20,
+                    child: Image.asset(
+                      (collection.serverUID == null)
+                          ? 'assets/icon/not_on_server.png'
+                          : 'assets/icon/cloud_on_lan_128px_color.png',
                     ),
-                  /* if (collection.serverUID != null)
-                    Image.asset(
-                      'assets/icon/cloud_on_lan_128px_color.png',
-                    ), */
+                  ),
                 ],
               ),
             ),
