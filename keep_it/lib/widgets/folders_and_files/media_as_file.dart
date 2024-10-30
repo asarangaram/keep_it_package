@@ -27,10 +27,13 @@ class MediaAsFile extends ConsumerWidget {
   final ActionControl actionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final readOnly =
+        (media.type == CLMediaType.video && !VideoEditor.isSupported) ||
+            (!media.isMediaCached || !media.isMediaOriginal);
+
     return GetStoreUpdater(
       builder: (theStore) {
-        return WrapStandardQuickMenu(
-          quickMenuScopeKey: quickMenuScopeKey,
+        return MediaMenu(
           onMove: () => MediaWizardService.openWizard(
             context,
             ref,
@@ -42,8 +45,10 @@ class MediaAsFile extends ConsumerWidget {
           onDelete: () async {
             return theStore.mediaUpdater.delete(media.id!);
           },
-          onShare: () => theStore.mediaUpdater.share(context, [media]),
-          onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
+          onShare: media.isMediaCached
+              ? () => theStore.mediaUpdater.share(context, [media])
+              : null,
+          onEdit: readOnly
               ? null
               : () async {
                   /* final updatedMedia =  */ await Navigators.openEditor(
@@ -54,7 +59,13 @@ class MediaAsFile extends ConsumerWidget {
                   );
                   return true;
                 },
-          onTap: onTap,
+          onDeleteLocalCopy: () async {
+            return false;
+          },
+          onKeepOffline: () async {
+            return false;
+          },
+          media: media,
           child: MediaViewService.preview(
             media,
             parentIdentifier: parentIdentifier,

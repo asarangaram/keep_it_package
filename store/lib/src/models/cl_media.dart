@@ -305,6 +305,34 @@ class CLMedia extends CLMediaBase implements CLEntity {
     };
   }
 
+  Map<String, dynamic> toMapForDisplay() {
+    return <String, dynamic>{
+      'name': name,
+      'type': type.name,
+      'fExt': fExt,
+      'ref': ref,
+      'originalDate': originalDate,
+      'createdDate': createdDate,
+      'updatedDate': updatedDate,
+      'md5String': md5String,
+      'isDeleted': isDeleted,
+      'isHidden': isDeleted,
+      'pin': pin,
+      'collectionId': collectionId,
+      'isAux': isAux,
+      'id': id,
+      'isPreviewCached': isPreviewCached,
+      'isMediaCached': isMediaCached,
+      'previewLog': previewLog?.substring(0, 15),
+      'mediaLog': mediaLog?.substring(0, 15),
+      'isMediaOriginal': isMediaOriginal,
+      'serverUID': serverUID,
+      'isEdited': isEdited,
+      'haveItOffline': haveItOffline,
+      'mustDownloadOriginal': mustDownloadOriginal,
+    };
+  }
+
   Map<String, String> toUploadMap() {
     final map = toMap();
     final serverFields = <String>[
