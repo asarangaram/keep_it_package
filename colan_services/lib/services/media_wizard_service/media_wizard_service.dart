@@ -172,6 +172,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
           wizard: keepSelected
               ? !hasCollection
                   ? CreateCollectionWizard(
+                      isValidSuggestion: (collection) {
+                        // ALLOW NEW COLLECTION OR SERVER COLLECTION
+                        // IF ANY OF THE MEDIA IS FROM SERVER
+                        return collection.id == null ||
+                            (currMedia.any((e) => e.hasServerUID) &&
+                                collection.hasServerUID);
+                      },
                       onDone: ({required collection}) => setState(() {
                         targetCollection = collection;
                       }),

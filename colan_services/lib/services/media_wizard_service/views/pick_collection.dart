@@ -10,9 +10,11 @@ class PickCollection extends StatelessWidget {
     required this.collection,
     required this.onDone,
     super.key,
+    this.isValidSuggestion,
   });
   final Collection? collection;
   final void Function(Collection) onDone;
+  final bool Function(Collection collection)? isValidSuggestion;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,10 @@ class PickCollection extends StatelessWidget {
             labelBuilder: (e) => (e as Collection).label,
             descriptionBuilder: (e) => (e as Collection).description,
             suggestionsAvailable: [
-              ...collections.entries,
+              if (isValidSuggestion != null)
+                ...collections.entries.where((e) => isValidSuggestion!(e))
+              else
+                ...collections.entries,
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
