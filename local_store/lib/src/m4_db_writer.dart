@@ -26,7 +26,7 @@ class DBWriter {
     return (await collectionTable.upsert(
       tx,
       collection,
-      uniqueColumn: ['id', 'label'],
+      uniqueColumn: ['id', 'serverUID', 'label'],
     ))!;
   }
 
