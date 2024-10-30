@@ -5,6 +5,7 @@ library store;
 
 export 'app_logger.dart';
 export 'extensions.dart';
+export 'src/extensions/ext_list.dart';
 export 'src/extensions/map_operations.dart' show MapDiff;
 export 'src/models/cl_entities.dart';
 export 'src/models/cl_media.dart' show CLMedia;

@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
+import '../extensions/ext_list.dart';
 import 'cl_media.dart';
-
 import 'collection.dart';
 
 enum DBQueries {
@@ -48,25 +48,81 @@ abstract class StoreQuery<T> {
 
 abstract class StoreReader {
   Future<T?> read<T>(StoreQuery<T> query);
-
   Future<List<T?>> readMultiple<T>(StoreQuery<T> query);
-
   StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
-  Future<Collection?> getCollectionByLabel(String label);
-  Future<Collection?> getCollectionById(int id);
 
-  Future<CLMedia?> getMediaByServerUID(int serverUID);
-  Future<CLMedia?> getMediaByMD5String(String md5String);
-  Future<CLMedia?> getMediaById(int id);
-  Future<List<CLMedia>> getMediasByIDList(
-    List<int> idList,
-  );
-  Future<List<CLMedia>> getMediaByCollectionId(
-    int collectionId,
-  );
-  Future<List<CLMedia>> getNotesByMediaId(
-    int mediaId,
-  );
+  Future<T?> get<T>(DBQueries query, {List<Object?>? parameters}) async {
+    final q = getQuery(DBQueries.collectionById, parameters: parameters)
+        as StoreQuery<T>;
+    return read(q);
+  }
+
+  Future<List<T>> getMultiple<T>(
+    DBQueries query, {
+    List<Object?>? parameters,
+  }) async {
+    final q = getQuery(DBQueries.collectionById, parameters: parameters)
+        as StoreQuery<T>;
+    return (await readMultiple<T>(q)).nonNullableList;
+  }
+
+  Future<Collection?> getCollectionByID(int id) async =>
+      get<Collection>(DBQueries.collectionById, parameters: [id]);
+
+  Future<Collection?> getCollectionByLabel(String label) async =>
+      get(DBQueries.collectionByLabel, parameters: [label]);
+
+  Future<Collection?> getCollectionById(int id) async =>
+      get(DBQueries.collectionById, parameters: [id]);
+
+  Future<CLMedia?> getMediaByID(int id) async =>
+      get(DBQueries.mediaById, parameters: [id]);
+
+  Future<List<Collection>> getCollectionsByIDList(List<int> idList) async =>
+      getMultiple(
+        DBQueries.collectionByIdList,
+        parameters: ['(${idList.join(', ')})'],
+      );
+
+  Future<List<CLMedia>> getMediasByIDList(List<int> idList) async =>
+      getMultiple(
+        DBQueries.mediaByIdList,
+        parameters: ['(${idList.join(', ')})'],
+      );
+
+  Future<List<CLMedia>> getMediaByCollectionId(int collectionId) async =>
+      getMultiple(
+        DBQueries.mediaByCollectionId,
+        parameters: [collectionId],
+      );
+
+  Future<List<CLMedia>> getNotesByMediaId(int mediaId) async =>
+      getMultiple(DBQueries.notesByMediaId, parameters: [mediaId]);
+
+  Future<List<CLMedia>?> getMediaByNoteId(int noteId) async =>
+      getMultiple(DBQueries.mediaByNoteID, parameters: [noteId]);
+
+  Future<List<Collection>?> getCollectionAll() async =>
+      getMultiple(DBQueries.collectionsAll);
+
+  Future<List<CLMedia>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
+
+  Future<List<CLMedia>> getNotesAll() async => getMultiple(DBQueries.notesAll);
+
+  Future<CLMedia?> getMediaByServerUID(int serverUID) async => get(
+        DBQueries.mediaByServerUID,
+        parameters: [serverUID],
+      );
+
+  Future<CLMedia?> getMediaById(int id) async => get(
+        DBQueries.mediaById,
+        parameters: [id],
+      );
+
+  Future<CLMedia?> getMediaByMD5String(String md5String) async => get(
+        DBQueries.mediaByMD5,
+        parameters: [md5String],
+      );
 }
 
 @immutable
