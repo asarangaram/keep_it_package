@@ -8,8 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
 
-import '../wrap_standard_quick_menu.dart';
-
 class MediaAsFile extends ConsumerWidget {
   const MediaAsFile({
     required this.media,
