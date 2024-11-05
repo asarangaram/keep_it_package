@@ -58,9 +58,12 @@ class CollectionSyncModule extends SyncModule<Collection> {
     }
 
     // For remaining items
-    trackers.addAll(
-      itemsOnDevice.map((e) => ChangeTracker(current: e, update: null)),
-    );
+    for (final item in itemsOnDevice) {
+      final tracker = ChangeTracker(current: item, update: null);
+      if (!tracker.isActionNone) {
+        trackers.add(tracker);
+      }
+    }
     return trackers;
   }
 
@@ -81,8 +84,8 @@ class CollectionSyncModule extends SyncModule<Collection> {
         case ActionType.none:
           throw Exception('should not have come for sync');
         case ActionType.upload:
-          // upload is called individually for collection
-          break;
+          await upload(l!);
+
         case ActionType.deleteLocal:
           await deleteLocal(l!);
         case ActionType.download:
@@ -196,7 +199,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
 
     try {
       final resMap = await Server.upsertCollection(
-        collection,
+        collection.copyWith(serverUID: () => null),
         server: server,
       );
       if (resMap != null) {

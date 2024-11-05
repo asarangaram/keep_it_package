@@ -175,9 +175,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       isValidSuggestion: (collection) {
                         // ALLOW NEW COLLECTION OR SERVER COLLECTION
                         // IF ANY OF THE MEDIA IS FROM SERVER
-                        return collection.id == null ||
-                            (currMedia.any((e) => e.hasServerUID) &&
-                                collection.hasServerUID);
+
+                        if (currMedia.any((e) => e.hasServerUID)) {
+                          return collection.id == null ||
+                              collection.hasServerUID;
+                        } else {
+                          return true;
+                        }
                       },
                       onDone: ({required collection}) => setState(() {
                         targetCollection = collection;
@@ -190,7 +194,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                   : StreamBuilder<Progress>(
                       stream: theStore.mediaUpdater.moveMultiple(
                         media: currMedia,
-                        collection: targetCollection!,
+                        collection: targetCollection!.copyWith(
+                          // mark to upload as atlease one media is from server
+                          serverUID: (currMedia.any((e) => e.hasServerUID) &&
+                                  !targetCollection!.hasServerUID)
+                              ? () => -1
+                              : null,
+                        ),
                         onDone: ({
                           required List<CLMedia> mediaMultiple,
                         }) async {
@@ -204,6 +214,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           targetCollection = null;
                           isSelectionMode = false;
                           setState(() {});
+                          ref.read(serverProvider.notifier).sync();
                         },
                       ),
                       builder: (context, snapShot) => ProgressBar(

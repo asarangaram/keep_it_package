@@ -33,11 +33,11 @@ class CollectionAsFolder extends ConsumerWidget {
                 onEdit: () async => onEdit(context, theStore),
                 onDelete: () async => onDelete(context, theStore),
                 onUpload: () async {
-                  final serverNotifier = ref.read(serverProvider.notifier);
-                  final collectionSyncModule =
-                      await serverNotifier.collectionSyncModule;
-                  await collectionSyncModule.upload(collection);
-                  serverNotifier.sync();
+                  await theStore.collectionUpdater.upsert(
+                    collection.copyWith(serverUID: () => -1, isEdited: true),
+                  );
+                  ref.read(serverProvider.notifier).sync();
+
                   return true;
                 },
                 onKeepOffline: () async {

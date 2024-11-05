@@ -222,4 +222,7 @@ class Collection implements CLEntity {
 
   @override
   bool get isMarkedEditted => isEdited;
+
+  @override
+  bool get isMarkedForUpload => serverUID == -1;
 }

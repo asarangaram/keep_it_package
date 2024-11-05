@@ -273,7 +273,10 @@ class MediaSyncModule extends SyncModule<CLMedia> {
 
   @override
   Future<void> upload(CLMedia item) async {
-    final media = item;
+    final media = item.updateContent(
+      isEdited: false,
+      serverUID: () => null,
+    );
     log('id ${media.id}: upload');
 
     final store = updater.store;

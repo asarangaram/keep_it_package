@@ -468,4 +468,9 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   bool get hasServerUID => serverUID != null;
+
+  // for local item, always mark this flag, it will be filterred out
+  // by collection. [caution]
+  @override
+  bool get isMarkedForUpload => serverUID == null;
 }

@@ -57,10 +57,13 @@ class ChangeTracker {
       return ActionType.download;
     }
     if (update == null) {
+      if ((current!).isMarkedForUpload) {
+        return ActionType.upload;
+      }
       if ((current!).hasServerUID) {
         return ActionType.deleteLocal;
       }
-      return ActionType.upload;
+      return ActionType.none;
     }
     if (!(current!).isMarkedEditted) {
       return ActionType.updateLocal;
