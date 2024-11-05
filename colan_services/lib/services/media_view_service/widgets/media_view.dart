@@ -148,41 +148,6 @@ class MediaView extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (media.serverUID != null) ...[
-                      OverlayWidgets(
-                        alignment: Alignment.topRight,
-                        sizeFactor: 0.1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Image.asset(
-                            'assets/icon/cloud_on_lan_128px_color.png',
-                            colorBlendMode: BlendMode.dstOut,
-                          ),
-                        ),
-                      ),
-                      OverlayWidgets(
-                        alignment: Alignment.bottomRight,
-                        sizeFactor: 0.15,
-                        child: (media.isEdited ?? false)
-                            ? const MediaIsDownloading(
-                                icon: AnimateIcons.upload,
-                                color: Colors.redAccent,
-                              )
-                            : GetMediaUri(
-                                id: media.id!,
-                                loadingBuilder: () => const MediaIsDownloading(
-                                  icon: AnimateIcons.download,
-                                  color: Colors.blueAccent,
-                                ),
-                                builder: (uri) {
-                                  return const MediaIsDownloading(
-                                    icon: AnimateIcons.cloud,
-                                    color: Colors.greenAccent,
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
                   ],
                 ),
               );
@@ -191,14 +156,15 @@ class MediaView extends StatelessWidget {
         },
       );
     }
+    final readOnly =
+        (media.type == CLMediaType.video && !VideoEditor.isSupported) ||
+            (!media.isMediaCached || !media.isMediaOriginal);
     return MediaView0(
       media: media,
       parentIdentifier: parentIdentifier,
       isLocked: isLocked,
       actionControl:
-          (media.type == CLMediaType.video && !VideoEditor.isSupported)
-              ? actionControl.copyWith(allowEdit: false)
-              : actionControl,
+          readOnly ? actionControl.copyWith(allowEdit: false) : actionControl,
       autoPlay: autoPlay,
       autoStart: autoStart,
       onLockPage: onLockPage,

@@ -63,6 +63,7 @@ class MediaAsFile extends ConsumerWidget {
           onKeepOffline: () async {
             return false;
           },
+          onTap: onTap,
           media: media,
           child: MediaViewService.preview(
             media,
