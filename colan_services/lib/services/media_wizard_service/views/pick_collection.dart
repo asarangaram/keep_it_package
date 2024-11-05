@@ -32,7 +32,8 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as Collection).label,
+            labelBuilder: (e) =>
+                '${(e as Collection).label} ${e.hasServerUID ? '*' : ''}',
             descriptionBuilder: (e) => (e as Collection).description,
             suggestionsAvailable: [
               if (isValidSuggestion != null)
