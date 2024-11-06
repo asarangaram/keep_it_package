@@ -158,7 +158,7 @@ class MediaView extends StatelessWidget {
     }
     final readOnly =
         (media.type == CLMediaType.video && !VideoEditor.isSupported) ||
-            (!media.isMediaCached || !media.isMediaOriginal);
+            (!media.isMediaCached);
     return MediaView0(
       media: media,
       parentIdentifier: parentIdentifier,

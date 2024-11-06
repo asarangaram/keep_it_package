@@ -35,7 +35,7 @@ class MediaAsFile extends ConsumerWidget {
         }
         final readOnly =
             (media0.type == CLMediaType.video && !VideoEditor.isSupported) ||
-                (!media0.isMediaCached || !media0.isMediaOriginal);
+                (!media0.isMediaCached);
         return GetCollection(
           id: media0.collectionId,
           loadingBuilder: () => const Center(child: Text('GetCollection')),
