@@ -296,7 +296,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     CLMedia media, {
     required bool isCollectionSynced,
   }) async {
-    log('<downloadMediaFile> trigger download for media ${media.id}');
+    /* log('<downloadMediaFile> trigger download for media ${media.id}'); */
     final file = File(updater.mediaUpdater.fileAbsolutePath(media));
     if (file.existsSync()) {
       final needDownload = !media.isMediaCached &&
@@ -322,12 +322,8 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         });
 
     if (!needDownload) {
-      log('<downloadMediaFile>  download not required '
-          'for media ${media.id}');
-      log('media.isMediaCached ${media.isMediaCached}');
-      log('media.mediaLog ${media.mediaLog}');
-      log('media.haveItOffline ${media.haveItOffline}');
-      log('isCollectionSynced $isCollectionSynced');
+      /* log('<downloadMediaFile>  download not required '
+          'for media ${media.id}'); */
 
       return;
     }
@@ -338,18 +334,18 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       downloader: downloader,
       mediaBaseDirectory: BaseDirectory.applicationSupport,
     );
-    log('media download status '
-        'for ${media.id}: ${mediaLog == null}');
+    /* log('media download status '
+        'for ${media.id}: ${mediaLog == null}'); */
     final mediaInDB = await updater.store.updateMediaFromMap({
       'id': media.id,
       'isMediaCached': mediaLog == null ? 1 : 0,
       'mediaLog': mediaLog == 'cancelled' ? null : mediaLog,
     });
     if (mediaInDB != null) {
-      log('<downloadMediaFile>  media in DB updated '
-          'for media ${media.id} with status ${mediaLog == null}');
+      /* log('<downloadMediaFile>  media in DB updated '
+          'for media ${media.id} with status ${mediaLog == null}'); */
     } else {
-      log('preview update failed for ${media.id} ');
+      /* log('preview update failed for ${media.id} '); */
     }
   }
 
