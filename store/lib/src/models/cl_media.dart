@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:meta/meta.dart';
 
@@ -8,7 +9,7 @@ import 'cl_media_type.dart';
 
 @immutable
 class CLMedia extends CLMediaBase implements CLEntity {
-  const CLMedia._({
+  CLMedia._({
     required super.name,
     required super.type,
     required super.fExt,
@@ -32,7 +33,9 @@ class CLMedia extends CLMediaBase implements CLEntity {
     super.pin,
     super.isAux,
     this.id,
-  });
+  }) {
+    log('media $id: haveItOffline is marked as $haveItOffline');
+  }
   factory CLMedia.strict({
     required String name,
     required CLMediaType type,
@@ -246,7 +249,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
         other.collectionId == collectionId &&
         other.isAux == isAux &&
         other.serverUID == serverUID &&
-        other.isEdited == isEdited;
+        other.isEdited == isEdited &&
+        other.haveItOffline == haveItOffline;
   }
 
   @override

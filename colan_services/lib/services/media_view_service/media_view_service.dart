@@ -84,23 +84,13 @@ class MediaViewService extends StatelessWidget {
       );
     } */
     if (isPreview) {
-      return Column(
-        children: [
-          Expanded(
-            child: CLAspectRationDecorated(
-              //hasBorder: true,
-              //borderRadius: const BorderRadius.all(Radius.circular(16)),
-              child: MediaView.preview(
-                media[0],
-                parentIdentifier: parentIdentifier,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
-            child: CLLabel.tiny(media[0].name),
-          ),
-        ],
+      return CLAspectRationDecorated(
+        //hasBorder: true,
+        //borderRadius: const BorderRadius.all(Radius.circular(16)),
+        child: MediaView.preview(
+          media[0],
+          parentIdentifier: parentIdentifier,
+        ),
       );
     }
     if (media.length == 1) {

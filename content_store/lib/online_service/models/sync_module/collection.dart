@@ -110,7 +110,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
     final collection = item;
     log('ServerUID ${collection.serverUID}: deleteLocal');
 
-    await updater.collectionUpdater.delete(
+    await updater.collectionUpdater.deletePermanently(
       collection.id!,
       shouldRefresh: false,
     );

@@ -119,16 +119,62 @@ class ServerNotifier extends StateNotifier<Server> {
     try {
       final updater = await storeUpdater;
       await (await collectionSyncModule).sync();
-      await (await mediaSyncModule(
+
+      final mediaSyncModule = await this.mediaSyncModule(
         await updater.store.reader.collectionsToSync,
-      ))
-          .sync();
+      );
+
+      await mediaSyncModule.sync();
 
       updater.store.reloadStore();
     } catch (e) {
       log('Sync error: $e');
       /** */
     }
+  }
+
+  Future<void> _downloadMediaFile(CLServer server, CLMedia media) async {
+    try {
+      final updater = await storeUpdater;
+      final collectionsToSync = await updater.store.reader.collectionsToSync;
+
+      final mediaSyncModule = await this.mediaSyncModule(
+        await updater.store.reader.collectionsToSync,
+      );
+      final syncedCollections =
+          collectionsToSync.where((e) => e.haveItOffline).toList();
+
+      await mediaSyncModule.downloadMediaFile(
+        media,
+        isCollectionSynced: syncedCollections
+                .where((e) => e.id == media.collectionId)
+                .firstOrNull !=
+            null,
+      );
+      updater.store.reloadStore();
+      await _sync(server);
+    } catch (e) {
+      log('Sync error: $e');
+      /** */
+    }
+  }
+
+  void downloadMediaFile(CLMedia media) {
+    if (state.isSyncing) {
+      log('server is already syncing. ignoring duplicate request');
+      return;
+    }
+    if (!state.canSync) {
+      log("server can't sync");
+      return;
+    }
+    log('sync starting');
+    setState(state.copyWith(isSyncing: true)).then(
+      (_) => _downloadMediaFile(state.identity!, media).then((_) {
+        setState(state.copyWith(isSyncing: false));
+        log('sync Completed');
+      }),
+    );
   }
 
   void checkStatus() {

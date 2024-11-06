@@ -43,10 +43,20 @@ class CollectionAsFolder extends ConsumerWidget {
                 onKeepOffline: () async {
                   if (!collection.haveItOffline && collection.hasServerUID) {
                     final serverNotifier = ref.read(serverProvider.notifier);
-                    final collectionSyncModule =
-                        await serverNotifier.collectionSyncModule;
-                    await collectionSyncModule.updater.collectionUpdater
+                    final updater = await serverNotifier.storeUpdater;
+
+                    await updater.collectionUpdater
                         .upsert(collection.copyWith(haveItOffline: true));
+                    final media = await updater.store.reader
+                        .getMediaByCollectionId(collection.id!);
+                    for (final m in media) {
+                      await updater.mediaUpdater.update(
+                        m,
+                        haveItOffline: () => null,
+                        isEdited: false,
+                      );
+                    }
+                    updater.store.reloadStore();
                     serverNotifier.sync();
                   }
                   return true;
@@ -54,10 +64,16 @@ class CollectionAsFolder extends ConsumerWidget {
                 onDeleteLocalCopy: () async {
                   if (collection.haveItOffline && collection.hasServerUID) {
                     final serverNotifier = ref.read(serverProvider.notifier);
-                    final collectionSyncModule =
-                        await serverNotifier.collectionSyncModule;
-                    await collectionSyncModule.updater.collectionUpdater
+                    final updater = await serverNotifier.storeUpdater;
+
+                    await updater.collectionUpdater
                         .upsert(collection.copyWith(haveItOffline: false));
+                    final media = await updater.store.reader
+                        .getMediaByCollectionId(collection.id!);
+                    for (final m in media) {
+                      await theStore.mediaUpdater
+                          .deleteLocalCopy(m, haveItOffline: () => null);
+                    }
                     serverNotifier.sync();
                   }
                   return true;

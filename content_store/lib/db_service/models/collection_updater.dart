@@ -124,8 +124,13 @@ class CollectionUpdater {
     DateTime? updatedDate,
     int? serverUID,
     bool shouldRefresh = true,
+    bool restoreIfNeeded = false,
   }) async {
-    return (await store.reader.getCollectionByLabel(label)) ??
+    var collectionInDB = await store.reader.getCollectionByLabel(label);
+    if (restoreIfNeeded && collectionInDB?.isDeleted != null) {
+      collectionInDB = await upsert(collectionInDB!.copyWith(isDeleted: false));
+    }
+    return collectionInDB ??
         await upsert(
           Collection.byLabel(
             label,

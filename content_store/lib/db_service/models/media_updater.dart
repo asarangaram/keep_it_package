@@ -42,6 +42,7 @@ class MediaUpdater {
     DateTime? updatedDate,
     int? serverUID,
     bool shouldRefresh,
+    bool restoreIfNeeded,
   }) getCollectionByLabel;
   final String tempCollectionName;
 
@@ -66,8 +67,16 @@ class MediaUpdater {
         ),
       );
     } else {
-      media = media0;
+      final currentMediaPath = directories.getMediaAbsolutePath(media0);
+      final currentPreviewPath = directories.getPreviewAbsolutePath(media0);
+      final isMediaCached = File(currentMediaPath).existsSync();
+      final isPreviewCached = File(currentPreviewPath).existsSync();
+      media = media0.updateStatus(
+        isMediaCached: () => isMediaCached,
+        isPreviewCached: () => isPreviewCached,
+      );
     }
+
     CLMedia? c;
     if (media.id != null) {
       c = await store.reader.getMediaById(media.id!);
@@ -402,7 +411,7 @@ class MediaUpdater {
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<int?>? serverUID,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
   }) async {
@@ -488,10 +497,10 @@ class MediaUpdater {
   }
 
   Future<Collection> get _notesCollection async =>
-      getCollectionByLabel('*** Notes');
+      getCollectionByLabel('*** Notes', restoreIfNeeded: true);
 
   Future<Collection> get _defaultCollection async =>
-      getCollectionByLabel(tempCollectionName);
+      getCollectionByLabel(tempCollectionName, restoreIfNeeded: true);
 
   Future<CLMedia> _generateMediaPreview({
     required CLMedia media,
@@ -723,6 +732,7 @@ class MediaUpdater {
         createdDate: collection.createdDate,
         updatedDate: collection.updatedDate,
         shouldRefresh: false,
+        restoreIfNeeded: true,
       );
     } else {
       updatedCollection = collection;
@@ -917,4 +927,29 @@ class MediaUpdater {
         directories.thumbnail.pathString,
         media.previewFileName,
       );
+
+  Future<bool> markHaveItOffline(CLMedia media) async {
+    final m = await upsert(media.updateStatus(haveItOffline: () => true));
+
+    return m != null;
+  }
+
+  Future<bool> deleteLocalCopy(
+    CLMedia media, {
+    ValueGetter<bool?>? haveItOffline,
+  }) async {
+    final m = await upsert(
+      media.updateStatus(
+        haveItOffline: haveItOffline ?? () => false,
+        isMediaCached: () => false,
+        mediaLog: () => null,
+      ),
+    );
+    if (m != null) {
+      final file = fileAbsolutePath(media);
+      await File(file).deleteIfExists();
+    }
+    store.reloadStore();
+    return m != null;
+  }
 }

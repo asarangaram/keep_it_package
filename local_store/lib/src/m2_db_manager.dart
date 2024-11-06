@@ -138,10 +138,7 @@ class DBManager extends Store {
       });
 
   @override
-  Future<void> reloadStore() async {
-    log('Reload triggered');
-    onReload();
-  }
+  Future<void> reloadStore() async => onReload();
 
   @override
   Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery) async* {

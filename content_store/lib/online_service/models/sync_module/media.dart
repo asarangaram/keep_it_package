@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
@@ -70,9 +74,13 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       }
     }
     // For remaining items
-    trackers.addAll(
-      itemsOnDevice.map((e) => ChangeTracker(current: e, update: null)),
-    );
+
+    for (final item in itemsOnDevice) {
+      final tracker = ChangeTracker(current: item, update: null);
+      if (!tracker.isActionNone) {
+        trackers.add(tracker);
+      }
+    }
     return trackers;
   }
 
@@ -112,6 +120,25 @@ class MediaSyncModule extends SyncModule<CLMedia> {
           throw UnimplementedError();
       }
     }
+    unawaited(downloadMediaFiles());
+  }
+
+  Future<void> downloadMediaFiles() async {
+    log('triggerred downloadMediaFiles');
+    final mediaOnDevice = await updater.store.reader.mediaOnDevice;
+    final syncedCollections =
+        collectionsToSync.where((e) => e.haveItOffline).toList();
+
+    for (final m in mediaOnDevice) {
+      final collection =
+          syncedCollections.where((e) => e.id == m.collectionId).firstOrNull;
+
+      await downloadMediaFile(
+        m,
+        isCollectionSynced: collection != null,
+      );
+    }
+    updater.store.reloadStore();
   }
 
   @override
@@ -162,42 +189,107 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateOnServer');
 
-    await updater.mediaUpdater.upsert(
+    await updater.mediaUpdater
+        .upsert(
       media,
       shouldRefresh: false,
-    );
+    )
+        .then((_) {
+      downloadPreview(media);
+    });
     /* final updated =  if (updated != null) {
       await downloadFiles(updated);
     } */
   }
 
-  /* Future<void> downloadFiles(CLMedia media) async {
-    final mediaLog = await Server.downloadMediaFile(
+  void downloadPreview(CLMedia media) {
+    final fileMissing =
+        !File(updater.mediaUpdater.fileAbsolutePath(media)).existsSync();
+    if (media.isPreviewWaitingForDownload || fileMissing) {
+      Server.downloadPreviewFile(
+        media.serverUID!,
+        updater.mediaUpdater.previewRelativePath(media),
+        server: server,
+        downloader: downloader,
+        mediaBaseDirectory: BaseDirectory.applicationSupport,
+      ).then((previewLog) {
+        updater.store.updateMediaFromMap({
+          'id': media.id,
+          'isPreviewCached': previewLog == null,
+          'previewLog': previewLog == 'cancelled' ? null : previewLog,
+        }).then((mediaInDB) {
+          if (mediaInDB != null) {
+            log('preview download status '
+                'for ${media.id}: ${previewLog == null}');
+          } else {
+            log('preview update failed for ${media.id} ');
+          }
+        });
+      });
+    }
+  }
+
+  Future<void> downloadMediaFile(
+    CLMedia media, {
+    required bool isCollectionSynced,
+  }) async {
+    log('<downloadMediaFile> trigger download for media ${media.id}');
+    final file = File(updater.mediaUpdater.fileAbsolutePath(media));
+    if (file.existsSync()) {
+      final needDownload = !media.isMediaCached &&
+          media.mediaLog == null &&
+          (media.haveItOffline ?? isCollectionSynced);
+      if (needDownload) {
+        await updater.store.updateMediaFromMap({
+          'id': media.id,
+          'isMediaCached': true,
+          'mediaLog': null,
+        });
+      }
+      updater.store.reloadStore();
+
+      return;
+    }
+    final needDownload = !media.isMediaCached &&
+        media.mediaLog == null &&
+        (switch (media.haveItOffline) {
+          null => isCollectionSynced,
+          false => false,
+          true => true
+        });
+
+    if (!needDownload) {
+      log('<downloadMediaFile>  download not required '
+          'for media ${media.id}');
+      return;
+    }
+    return Server.downloadMediaFile(
       media.serverUID!,
       updater.mediaUpdater.fileRelativePath(media),
       server: server,
       downloader: downloader,
       mediaBaseDirectory: BaseDirectory.applicationSupport,
-    );
-
-    final previewLog = await Server.downloadPreviewFile(
-      media.serverUID!,
-      updater.mediaUpdater.previewRelativePath(media),
-      server: server,
-      downloader: downloader,
-      mediaBaseDirectory: BaseDirectory.applicationSupport,
-    );
-    await updater.mediaUpdater.upsert(
-      media.updateStatus(
-        isMediaCached: () => mediaLog == null,
-        mediaLog: () => mediaLog == 'cancelled' ? null : mediaLog,
-        isMediaOriginal: () => false,
-        isPreviewCached: () => previewLog == null,
-        previewLog: () => previewLog == 'cancelled' ? null : previewLog,
-      ),
-      shouldRefresh: false,
-    );
-  } */
+    ).then<void>((mediaLog) {
+      log('<downloadMediaFile>  download completed '
+          'for media ${media.id} with status ${mediaLog == null}');
+      updater.store.updateMediaFromMap({
+        'id': media.id,
+        'isMediaCached': mediaLog == null ? 1 : 0,
+        'mediaLog': mediaLog == 'cancelled' ? null : mediaLog,
+      }).then((mediaInDB) {
+        if (mediaInDB != null) {
+          log('preview download status '
+              'for ${media.id}: ${mediaLog == null}');
+        } else {
+          log('preview update failed for ${media.id} ');
+        }
+        log('<downloadMediaFile>  media in DB updated '
+            'for media ${media.id} with status ${mediaLog == null}');
+        updater.store.reloadStore();
+      });
+      return;
+    });
+  }
 
   @override
   Future<void> updateLocal(CLMedia item) async {
@@ -255,7 +347,11 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     final uploadedMedia = StoreExtCLMedia.mediaFromServerMap(media, resMap);
 
-    await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
+    await updater.mediaUpdater
+        .upsert(uploadedMedia, shouldRefresh: false)
+        .then((_) {
+      downloadPreview(media);
+    });
 
     /*final updated =  if (updated != null) {
       await downloadFiles(updated);
