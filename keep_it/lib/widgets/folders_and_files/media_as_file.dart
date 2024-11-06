@@ -76,13 +76,20 @@ class MediaAsFile extends ConsumerWidget {
                           return true;
                         },
                   onDeleteLocalCopy: () async {
-                    await theStore.mediaUpdater.deleteLocalCopy(media0);
+                    await theStore.mediaUpdater
+                        .deleteLocalCopy(media0, shouldRefresh: false);
                     ref.read(serverProvider.notifier).sync();
                     return true;
                   },
                   onKeepOffline: () async {
-                    await theStore.mediaUpdater.markHaveItOffline(media0);
-                    ref.read(serverProvider.notifier).downloadMediaFile(media0);
+                    final mediaInDB = await theStore.mediaUpdater
+                        .markHaveItOffline(media0, shouldRefresh: false);
+                    if (mediaInDB != null) {
+                      ref
+                          .read(serverProvider.notifier)
+                          .downloadMediaFile(mediaInDB);
+                    }
+
                     return true;
                   },
                   onTap: onTap,

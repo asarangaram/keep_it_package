@@ -94,37 +94,38 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final itemsOnDevice = await updater.store.reader.mediaOnDevice;
 
     final trackers = await analyse(itemsOnServerMap, itemsOnDevice);
-    if (trackers.isEmpty) return;
     log(' ${trackers.length} items need sync');
-    for (final (i, tracker) in trackers.indexed) {
-      log('sync $i');
-      final l = tracker.current as CLMedia?; // local
-      final s = tracker.update as CLMedia?; // server
-      switch (tracker.actionType) {
-        case ActionType.none:
-          throw Exception('should not have come for sync');
-        case ActionType.upload:
-          await upload(l!);
-        case ActionType.deleteLocal:
-          await deleteLocal(l!);
-        case ActionType.download:
-          await download(s!);
-        case ActionType.updateLocal:
-          await updateLocal(s!);
-        case ActionType.deleteOnServer:
-          await deleteOnServer(l!);
-        case ActionType.updateOnServer:
-          final uploadFile = l!.md5String != s!.md5String;
-          await updateOnServer(
-            l.updateContent(serverUID: () => s.serverUID, isEdited: false),
-            uploadFile: uploadFile,
-          );
-        case ActionType.markConflict:
-          log('ServerUID ${s!.serverUID}: Conflict');
-          throw UnimplementedError();
+    if (trackers.isNotEmpty) {
+      for (final (i, tracker) in trackers.indexed) {
+        log('sync $i');
+        final l = tracker.current as CLMedia?; // local
+        final s = tracker.update as CLMedia?; // server
+        switch (tracker.actionType) {
+          case ActionType.none:
+            throw Exception('should not have come for sync');
+          case ActionType.upload:
+            await upload(l!);
+          case ActionType.deleteLocal:
+            await deleteLocal(l!);
+          case ActionType.download:
+            await download(s!);
+          case ActionType.updateLocal:
+            await updateLocal(s!);
+          case ActionType.deleteOnServer:
+            await deleteOnServer(l!);
+          case ActionType.updateOnServer:
+            final uploadFile = l!.md5String != s!.md5String;
+            await updateOnServer(
+              l.updateContent(serverUID: () => s.serverUID, isEdited: false),
+              uploadFile: uploadFile,
+            );
+          case ActionType.markConflict:
+            log('ServerUID ${s!.serverUID}: Conflict');
+            throw UnimplementedError();
+        }
       }
     }
-    unawaited(downloadMediaFiles());
+    await downloadMediaFiles();
   }
 
   Future<void> downloadMediaFiles() async {
@@ -142,7 +143,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         isCollectionSynced: collection != null,
       );
     }
-    updater.store.reloadStore();
+    //updater.store.reloadStore();
   }
 
   @override
@@ -308,7 +309,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
           'mediaLog': null,
         });
       }
-      updater.store.reloadStore();
+      //updater.store.reloadStore();
 
       return;
     }
@@ -323,34 +324,33 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     if (!needDownload) {
       log('<downloadMediaFile>  download not required '
           'for media ${media.id}');
+      log('media.isMediaCached ${media.isMediaCached}');
+      log('media.mediaLog ${media.mediaLog}');
+      log('media.haveItOffline ${media.haveItOffline}');
+      log('isCollectionSynced $isCollectionSynced');
+
       return;
     }
-    return Server.downloadMediaFile(
+    final mediaLog = await Server.downloadMediaFile(
       media.serverUID!,
       updater.mediaUpdater.fileRelativePath(media),
       server: server,
       downloader: downloader,
       mediaBaseDirectory: BaseDirectory.applicationSupport,
-    ).then<void>((mediaLog) {
-      log('<downloadMediaFile>  download completed '
-          'for media ${media.id} with status ${mediaLog == null}');
-      updater.store.updateMediaFromMap({
-        'id': media.id,
-        'isMediaCached': mediaLog == null ? 1 : 0,
-        'mediaLog': mediaLog == 'cancelled' ? null : mediaLog,
-      }).then((mediaInDB) {
-        if (mediaInDB != null) {
-          log('preview download status '
-              'for ${media.id}: ${mediaLog == null}');
-        } else {
-          log('preview update failed for ${media.id} ');
-        }
-        log('<downloadMediaFile>  media in DB updated '
-            'for media ${media.id} with status ${mediaLog == null}');
-        updater.store.reloadStore();
-      });
-      return;
+    );
+    log('media download status '
+        'for ${media.id}: ${mediaLog == null}');
+    final mediaInDB = await updater.store.updateMediaFromMap({
+      'id': media.id,
+      'isMediaCached': mediaLog == null ? 1 : 0,
+      'mediaLog': mediaLog == 'cancelled' ? null : mediaLog,
     });
+    if (mediaInDB != null) {
+      log('<downloadMediaFile>  media in DB updated '
+          'for media ${media.id} with status ${mediaLog == null}');
+    } else {
+      log('preview update failed for ${media.id} ');
+    }
   }
 
   @override

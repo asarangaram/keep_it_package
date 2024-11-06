@@ -152,7 +152,7 @@ class ServerNotifier extends StateNotifier<Server> {
             null,
       );
       updater.store.reloadStore();
-      await _sync(server);
+      //await _sync(server);
     } catch (e) {
       log('Sync error: $e');
       /** */

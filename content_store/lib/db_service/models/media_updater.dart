@@ -888,15 +888,22 @@ class MediaUpdater {
         media.previewFileName,
       );
 
-  Future<bool> markHaveItOffline(CLMedia media) async {
-    final m = await upsert(media.updateStatus(haveItOffline: () => true));
+  Future<CLMedia?> markHaveItOffline(
+    CLMedia media, {
+    bool shouldRefresh = true,
+  }) async {
+    final m = await upsert(
+      media.updateStatus(haveItOffline: () => true),
+      shouldRefresh: shouldRefresh,
+    );
 
-    return m != null;
+    return m;
   }
 
   Future<bool> deleteLocalCopy(
     CLMedia media, {
     ValueGetter<bool?>? haveItOffline,
+    bool shouldRefresh = true,
   }) async {
     final m = await upsert(
       media.updateStatus(
@@ -904,12 +911,13 @@ class MediaUpdater {
         isMediaCached: () => false,
         mediaLog: () => null,
       ),
+      shouldRefresh: shouldRefresh,
     );
     if (m != null) {
       final file = fileAbsolutePath(media);
       await File(file).deleteIfExists();
     }
-    store.reloadStore();
+    // FIXME store.reloadStore();
     return m != null;
   }
 }
