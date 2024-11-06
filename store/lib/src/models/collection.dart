@@ -49,13 +49,14 @@ class Collection implements CLEntity {
     DateTime? createdDate,
     DateTime? updatedDate,
     int? serverUID,
+    String? description,
   }) {
     return Collection.strict(
       id: null,
-      description: null,
+      description: description,
       serverUID: serverUID,
       label: label,
-      haveItOffline: false,
+      haveItOffline: serverUID == null || serverUID == -1,
       createdDate: createdDate,
       updatedDate: updatedDate,
       isDeleted: false,
