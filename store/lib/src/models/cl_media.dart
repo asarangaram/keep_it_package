@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:meta/meta.dart';
 
 import 'cl_entities.dart';
@@ -9,7 +7,7 @@ import 'cl_media_type.dart';
 
 @immutable
 class CLMedia extends CLMediaBase implements CLEntity {
-  CLMedia._({
+  const CLMedia._({
     required super.name,
     required super.type,
     required super.fExt,
@@ -33,9 +31,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
     super.pin,
     super.isAux,
     this.id,
-  }) {
-    log('media $id: haveItOffline is marked as $haveItOffline');
-  }
+  });
   factory CLMedia.strict({
     required String name,
     required CLMediaType type,
@@ -237,7 +233,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   bool isContentSame(covariant CLMedia other) {
-    return other.name == name &&
+    final isSame = other.name == name &&
         other.type == type &&
         other.fExt == fExt &&
         other.ref == ref &&
@@ -251,6 +247,10 @@ class CLMedia extends CLMediaBase implements CLEntity {
         other.serverUID == serverUID &&
         other.isEdited == isEdited &&
         other.haveItOffline == haveItOffline;
+    if (!isSame) {
+      // print(MapDiff.log(other.toMapForDisplay(), toMapForDisplay()));
+    }
+    return isSame;
   }
 
   @override
