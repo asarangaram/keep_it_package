@@ -37,14 +37,20 @@ class MediaAsFile extends ConsumerWidget {
             (media0.type == CLMediaType.video && !VideoEditor.isSupported) ||
                 (!media0.isMediaCached || !media0.isMediaOriginal);
         return GetCollection(
-          id: media0.id,
+          id: media0.collectionId,
           loadingBuilder: () => const Center(child: Text('GetCollection')),
           errorBuilder: (p0, p1) =>
               const Center(child: Text('GetCollection Error')),
-          builder: (collection) {
-            final isMediaWaitingForDownload = !media0.isMediaCached &&
+          builder: (collection0) {
+            final collection = collection0!;
+
+            final haveItOffline =
+                media0.haveItOffline ?? collection.haveItOffline;
+
+            final isMediaWaitingForDownload = media0.hasServerUID &&
+                !media0.isMediaCached &&
                 media0.mediaLog == null &&
-                (media0.haveItOffline ?? collection?.haveItOffline ?? false);
+                haveItOffline;
 
             return GetStoreUpdater(
               builder: (theStore) {
