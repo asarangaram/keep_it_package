@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
+import 'package:content_store/content_store.dart';
+import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
@@ -195,38 +197,96 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       shouldRefresh: false,
     )
         .then((_) {
-      downloadPreview(media);
+      previewHandler(media);
     });
-    /* final updated =  if (updated != null) {
-      await downloadFiles(updated);
-    } */
   }
 
-  void downloadPreview(CLMedia media) {
-    final fileMissing =
-        !File(updater.mediaUpdater.fileAbsolutePath(media)).existsSync();
-    if (media.isPreviewWaitingForDownload || fileMissing) {
-      Server.downloadPreviewFile(
-        media.serverUID!,
-        updater.mediaUpdater.previewRelativePath(media),
-        server: server,
-        downloader: downloader,
-        mediaBaseDirectory: BaseDirectory.applicationSupport,
-      ).then((previewLog) {
-        updater.store.updateMediaFromMap({
-          'id': media.id,
-          'isPreviewCached': previewLog == null,
-          'previewLog': previewLog == 'cancelled' ? null : previewLog,
-        }).then((mediaInDB) {
-          if (mediaInDB != null) {
-            log('preview download status '
-                'for ${media.id}: ${previewLog == null}');
-          } else {
-            log('preview update failed for ${media.id} ');
-          }
-        });
-      });
+  Future<String?> downloadOrGenerate(CLMedia media) async {
+    try {
+      if (media.hasServerUID) {
+        // download
+        return await Server.downloadPreviewFile(
+          media.serverUID!,
+          updater.mediaUpdater.previewRelativePath(media),
+          server: server,
+          downloader: downloader,
+          mediaBaseDirectory: BaseDirectory.applicationSupport,
+        );
+      } else {
+        // generate
+        final currentMediaPath =
+            updater.directories.getMediaAbsolutePath(media);
+        final currentPreviewPath =
+            updater.directories.getPreviewAbsolutePath(media);
+        return MediaUpdater.generatePreview(
+          inputFile: currentMediaPath,
+          outputFile: currentPreviewPath,
+          type: media.type,
+        );
+      }
+    } catch (e) {
+      /**/
     }
+    return null;
+  }
+
+  Future<void> previewHandler(CLMedia media) async {
+    await _previewHandler(
+      isPreviewCached: media.isPreviewCached,
+      previousPreviewLog: media.previewLog,
+      previewFile: updater.directories.getPreviewAbsolutePath(media),
+      onGetPreview: () => downloadOrGenerate(media),
+      onUpdatePreviewStatus: ({
+        required bool isPreviewCached,
+        String? previewLog,
+      }) async =>
+          updater.store.updateMediaFromMap({
+        'id': media.id,
+        'isPreviewCached': isPreviewCached,
+        'previewLog': previewLog,
+      }),
+      infoLogger: (info) => log('<downloadPreview> [${media.id}] $info'),
+    );
+  }
+
+  static Future<bool> _previewHandler({
+    required bool isPreviewCached,
+    required String previewFile,
+    required Future<String?> Function() onGetPreview,
+    required Future<CLMedia?> Function({
+      required bool isPreviewCached,
+      String? previewLog,
+    }) onUpdatePreviewStatus,
+    required String? previousPreviewLog,
+    void Function(String info)? infoLogger,
+  }) async {
+    infoLogger?.call('trigger download for preview ');
+    final previewFileExists = File(previewFile).existsSync();
+
+    if (previewFileExists && isPreviewCached) {
+      infoLogger?.call('Valid preview. Nothing to do');
+      return true;
+    }
+    // if error is marked, we can't proceed.
+
+    final String? previewLog;
+    if (!previewFileExists) {
+      if (previousPreviewLog == null) {
+        infoLogger?.call('Missing preview file. Try generate or download');
+        previewLog = await onGetPreview();
+      } else {
+        infoLogger?.call('Preview generation failed. Check error');
+        return false;
+      }
+    } else {
+      infoLogger?.call('Found preview file. Marking as exists');
+      previewLog = null;
+    }
+    final mediaInDB = await onUpdatePreviewStatus(
+      isPreviewCached: previewLog == null,
+      previewLog: previewLog,
+    );
+    return mediaInDB != null;
   }
 
   Future<void> downloadMediaFile(
@@ -350,7 +410,7 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     await updater.mediaUpdater
         .upsert(uploadedMedia, shouldRefresh: false)
         .then((_) {
-      downloadPreview(media);
+      previewHandler(media);
     });
 
     /*final updated =  if (updated != null) {

@@ -510,45 +510,30 @@ class MediaUpdater {
     try {
       final currentMediaPath = directories.getMediaAbsolutePath(media);
       final currentPreviewPath = directories.getPreviewAbsolutePath(media);
-      final error = <String, String>{}; // Could use Completer ?
 
-      final res = await generatePreview(
+      final preveiwLog = await generatePreview(
         inputFile: currentMediaPath,
         outputFile: currentPreviewPath,
         type: media.type,
         dimension: dimension,
-        onError: (p0) {
-          error[p0.key] = p0.value;
-        },
       );
-      if (res) {
-        updateMedia = updateMedia.updateStatus(
-          isPreviewCached: () => true,
-          previewLog: () => null,
-        );
-      } else {
-        if (error.isNotEmpty) {
-          updateMedia = updateMedia.updateStatus(
-            isPreviewCached: () => false,
-            previewLog: () => jsonEncode(error),
-          );
-        }
-      }
+      updateMedia = updateMedia.updateStatus(
+        isPreviewCached: () => preveiwLog == null,
+        previewLog: () => preveiwLog,
+      );
     } catch (e) {
       updateMedia = updateMedia.updateStatus(
         isPreviewCached: () => false,
-        previewLog: () =>
-            jsonEncode({'decodeError': 'Exception while generating preview'}),
+        previewLog: () => 'decodeError: ' 'Exception while generating preview',
       );
     }
     return updateMedia;
   }
 
-  static Future<bool> generatePreview({
+  static Future<String?> generatePreview({
     required String inputFile,
     required String outputFile,
     required CLMediaType type,
-    required void Function(MapEntry<String, String> entry) onError,
     int dimension = 256,
   }) async {
     switch (type) {
@@ -560,31 +545,21 @@ class MediaUpdater {
             output: '$inputFile.jpeg',
           );
           if (jpegPath == null) {
-            onError(
-              const MapEntry(
-                'decodeError',
-                'HeifConverter  Failed to convert HEIC file to JPEG',
-              ),
-            );
-            inputImage = null;
+            return 'decodeError: '
+                'HeifConverter  Failed to convert HEIC file to JPEG';
           } else {
             inputImage = img.decodeJpg(File(jpegPath).readAsBytesSync());
             if (inputImage == null) {
-              onError(
-                const MapEntry(
-                  'decodeError',
-                  'Failed to decode jpeg image (converted from heic)',
-                ),
-              );
+              return 'decodeError: '
+                  'Failed to decode jpeg image (converted from heic)';
             }
           }
         } else {
           inputImage = img.decodeImage(File(inputFile).readAsBytesSync());
           if (inputImage == null) {
-            onError(const MapEntry('decodeError', 'Failed to decode Image'));
+            return 'decodeError: ' 'Failed to decode Image';
           }
         }
-        if (inputImage == null) return false;
 
         final int thumbnailHeight;
         final int thumbnailWidth;
@@ -605,7 +580,7 @@ class MediaUpdater {
         File(outputFile).writeAsBytesSync(
           Uint8List.fromList(img.encodeJpg(thumbnail)),
         );
-        return true;
+        return null;
 
       case CLMediaType.video:
         await File(outputFile).deleteIfExists();
@@ -629,14 +604,8 @@ class MediaUpdater {
           } else {
             final log = await probleSession.getAllLogsAsString();
 
-            onError(
-              MapEntry(
-                  'decodeError',
-                  'FFprobeKit return code: $probeReturnCode. '
-                      'Details: $log}'),
-            );
-
-            return false;
+            return 'decodeError: FFprobeKit return code: $probeReturnCode. '
+                'Details: $log}';
           }
           final tileSize = _computeTileSize(frameCount);
           final frameFreq = (frameCount / (tileSize * tileSize)).floor();
@@ -652,27 +621,20 @@ class MediaUpdater {
           if (!ReturnCode.isSuccess(returnCode)) {
             await File(outputFile).deleteIfExists();
             final log = await session.getAllLogsAsString();
-            onError(MapEntry('previewError', 'FFmpegKit:$log'));
+            return 'previewError: FFmpegKit:$log';
           }
 
-          return ReturnCode.isSuccess(returnCode);
+          return null;
         } catch (e) {
           await File(outputFile).deleteIfExists();
-          onError(MapEntry('previewError', 'FFmpegKit crashed $e'));
-          return false;
+          return 'previewError: FFmpegKit crashed $e';
         }
 
       case CLMediaType.text:
       case CLMediaType.url:
       case CLMediaType.audio:
       case CLMediaType.file:
-        onError(
-          const MapEntry(
-            'decodeError',
-            "Unsupported Media Type. Preview can't be generated",
-          ),
-        );
-        return false;
+        return "decodeError: Unsupported Media Type. Preview can't be generated";
     }
   }
 
