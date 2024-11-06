@@ -194,14 +194,13 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     log('ServerUID ${media.serverUID}: updateOnServer');
 
-    await updater.mediaUpdater
-        .upsert(
+    final mediaInDB = await updater.mediaUpdater.upsert(
       media,
       shouldRefresh: false,
-    )
-        .then((_) {
-      previewHandler(media);
-    });
+    );
+    if (mediaInDB != null) {
+      await previewHandler(mediaInDB);
+    }
   }
 
   Future<String?> downloadOrGenerate(CLMedia media) async {
@@ -405,11 +404,11 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     final media = item;
     final uploadedMedia = StoreExtCLMedia.mediaFromServerMap(media, resMap);
 
-    await updater.mediaUpdater
-        .upsert(uploadedMedia, shouldRefresh: false)
-        .then((_) {
-      previewHandler(media);
-    });
+    final mediaInDB =
+        await updater.mediaUpdater.upsert(uploadedMedia, shouldRefresh: false);
+    if (mediaInDB != null) {
+      await previewHandler(mediaInDB);
+    }
 
     /*final updated =  if (updated != null) {
       await downloadFiles(updated);
