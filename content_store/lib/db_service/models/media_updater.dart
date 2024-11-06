@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -99,13 +98,14 @@ class MediaUpdater {
     }
 
     final mediaFromDB = await store.upsertMedia(
-      media.updateContent(
-        isEdited: media.isEdited ?? false,
-        id: () => c?.id,
-      ),
+      (media.id != null)
+          ? media
+          : media.updateContent(
+              isEdited: media.isEdited ?? false,
+              id: () => c?.id,
+            ),
       parents: parents,
     );
-    log('store updated');
     if (shouldRefresh) {
       store.reloadStore();
     }
@@ -632,7 +632,8 @@ class MediaUpdater {
       case CLMediaType.url:
       case CLMediaType.audio:
       case CLMediaType.file:
-        return "decodeError: Unsupported Media Type. Preview can't be generated";
+        return 'decodeError: '
+            "Unsupported Media Type. Preview can't be generated";
     }
   }
 
