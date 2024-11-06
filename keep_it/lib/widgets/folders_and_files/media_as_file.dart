@@ -27,8 +27,8 @@ class MediaAsFile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMedia(
       id: media.id!,
-      loadingBuilder: Container.new,
-      errorBuilder: (p0, p1) => Container(),
+      loadingBuilder: () => const Center(child: Text('getMedia')),
+      errorBuilder: (p0, p1) => const Center(child: Text('getMedia Error')),
       builder: (media0) {
         if (media0 == null) {
           return Container();
@@ -38,8 +38,9 @@ class MediaAsFile extends ConsumerWidget {
                 (!media0.isMediaCached || !media0.isMediaOriginal);
         return GetCollection(
           id: media0.id,
-          loadingBuilder: Container.new,
-          errorBuilder: (p0, p1) => Container(),
+          loadingBuilder: () => const Center(child: Text('GetCollection')),
+          errorBuilder: (p0, p1) =>
+              const Center(child: Text('GetCollection Error')),
           builder: (collection) {
             final isMediaWaitingForDownload = !media0.isMediaCached &&
                 media0.mediaLog == null &&
