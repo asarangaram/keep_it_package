@@ -7,7 +7,7 @@ import 'package:store/store.dart';
 import 'get_db_reader.dart';
 import 'w3_get_from_store.dart';
 
-void log(
+void _log(
   dynamic message, {
   int level = 0,
   Object? error,
@@ -49,7 +49,7 @@ class GetMedia extends ConsumerWidget {
           loadingBuilder: loadingBuilder,
           builder: (data) {
             final media = data.where((e) => e.id == id).firstOrNull;
-            log(media?.md5String, name: 'GetMedia');
+            _log(media?.md5String, name: 'GetMedia');
             return builder(media);
           },
         );

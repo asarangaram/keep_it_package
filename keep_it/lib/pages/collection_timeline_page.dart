@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -7,6 +9,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../widgets/folders_and_files/media_as_file.dart';
+
+void _log(
+  dynamic message, {
+  int level = 0,
+  Object? error,
+  StackTrace? stackTrace,
+  String? name,
+}) {
+  dev.log(
+    message.toString(),
+    level: level,
+    error: error,
+    stackTrace: stackTrace,
+    name: name ?? 'Media Builder',
+  );
+}
 
 class CollectionTimeLinePage extends ConsumerWidget {
   const CollectionTimeLinePage({
@@ -29,7 +47,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
             errorBuilder: null,
             loadingBuilder: null,
             builder: (items) {
-              log('Found ${items.entries.length} media here');
+              _log('Found ${items.entries.length} media here');
               return TimelineView(
                 label: collection?.label ?? 'All Media',
                 items: items,

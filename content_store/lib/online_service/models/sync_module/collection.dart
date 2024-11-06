@@ -9,6 +9,8 @@ import 'sync_module.dart';
 @immutable
 class CollectionSyncModule extends SyncModule<Collection> {
   CollectionSyncModule(super.server, super.updater, super.downloader);
+  @override
+  String get moduleName => 'Collection Sync';
   Future<Map<String, dynamic>> updateCollectionId(
     Map<String, dynamic> map,
   ) async {

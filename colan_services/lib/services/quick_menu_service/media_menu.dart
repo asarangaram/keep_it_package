@@ -109,7 +109,7 @@ class MediaMenu extends ConsumerWidget {
               ],
             ),
 
-            if (canSync && collection.haveItOffline)
+            if (canSync && collection.haveItOffline && media.hasServerUID)
               if (media.isMediaCached)
                 PullDownMenuItem(
                   onTap: onDeleteLocalCopy,

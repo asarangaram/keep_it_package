@@ -25,6 +25,8 @@ abstract class SyncModule<T> {
 
   Future<void> sync();
 
+  String get moduleName;
+
   void log(
     String message, {
     int level = 0,
@@ -36,7 +38,7 @@ abstract class SyncModule<T> {
       level: level,
       error: error,
       stackTrace: stackTrace,
-      name: 'Online Service | Sync Module',
+      name: 'Online Service | $moduleName',
     );
   }
 }

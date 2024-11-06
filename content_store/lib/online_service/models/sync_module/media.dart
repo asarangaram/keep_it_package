@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
-import 'package:content_store/content_store.dart';
-import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
+import '../../../db_service/models/media_updater.dart';
 import '../../../extensions/ext_cl_media.dart';
+import '../../../extensions/ext_cldirectories.dart';
 import '../media_change_tracker.dart';
 import '../server.dart';
 import '../server_upload_entity.dart';
@@ -22,6 +22,8 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     this.collectionsToSync,
   );
   final List<Collection> collectionsToSync;
+  @override
+  String get moduleName => 'Media Sync';
   Future<List<Map<String, dynamic>>> get mediaOnServerMap async {
     final collectionLabels = collectionsToSync.map((e) => e.label);
     final serverItemsMap = await server.downloadMediaInfo();

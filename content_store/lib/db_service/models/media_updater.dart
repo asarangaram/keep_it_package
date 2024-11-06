@@ -67,14 +67,15 @@ class MediaUpdater {
         ),
       );
     } else {
-      final currentMediaPath = directories.getMediaAbsolutePath(media0);
+      /* final currentMediaPath = directories.getMediaAbsolutePath(media0);
       final currentPreviewPath = directories.getPreviewAbsolutePath(media0);
       final isMediaCached = File(currentMediaPath).existsSync();
       final isPreviewCached = File(currentPreviewPath).existsSync();
       media = media0.updateStatus(
         isMediaCached: () => isMediaCached,
         isPreviewCached: () => isPreviewCached,
-      );
+      ); */
+      media = media0;
     }
 
     CLMedia? c;
@@ -97,9 +98,6 @@ class MediaUpdater {
       }
     }
 
-    if (c != null && media.isContentSame(c)) {
-      return c;
-    }
     final mediaFromDB = await store.upsertMedia(
       media.updateContent(
         isEdited: media.isEdited ?? false,
