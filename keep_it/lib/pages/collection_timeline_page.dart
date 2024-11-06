@@ -100,28 +100,21 @@ class TimelineView extends ConsumerWidget {
           medias: items,
           emptyState: const EmptyState(),
           itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-              GetMediaUri(
-            id: item.id!,
-            builder: (uri) {
-              return MediaAsFile(
-                media: item,
+              MediaAsFile(
+            media: item,
+            parentIdentifier: parentIdentifier,
+            onTap: () async {
+              await Navigators.openMedia(
+                context,
+                item.id!,
+                collectionId: item.collectionId,
                 parentIdentifier: parentIdentifier,
-                onTap: uri == null
-                    ? null
-                    : () async {
-                        await Navigators.openMedia(
-                          context,
-                          item.id!,
-                          collectionId: item.collectionId,
-                          parentIdentifier: parentIdentifier,
-                          actionControl: ActionControl.full(),
-                        );
-                        return true;
-                      },
-                quickMenuScopeKey: quickMenuScopeKey,
-                actionControl: actionControl,
+                actionControl: ActionControl.full(),
               );
+              return true;
             },
+            quickMenuScopeKey: quickMenuScopeKey,
+            actionControl: actionControl,
           ),
           actionMenu: [
             CLMenuItem(
