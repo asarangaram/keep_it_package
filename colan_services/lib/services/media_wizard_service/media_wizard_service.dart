@@ -175,7 +175,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       isValidSuggestion: (collection) {
                         // ALLOW NEW COLLECTION OR SERVER COLLECTION
                         // IF ANY OF THE MEDIA IS FROM SERVER
-
+                        if (collection.isDeleted) return false;
                         if (currMedia.any((e) => e.hasServerUID)) {
                           return collection.id == null ||
                               collection.hasServerUID;
