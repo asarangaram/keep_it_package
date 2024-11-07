@@ -64,7 +64,7 @@ class ServerNotifier extends StateNotifier<Server> {
         identity: () => liveStatus,
       );
       timer?.cancel();
-      timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      timer = Timer.periodic(const Duration(seconds: 30), (Timer timer) {
         if (state.isRegistered) {
           server.identity!.getServerLiveStatus().then((liveStatus) {
             currState = state.copyWith(
