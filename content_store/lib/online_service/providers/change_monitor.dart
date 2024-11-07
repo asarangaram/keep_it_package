@@ -18,10 +18,7 @@ class ChangeMonitor {
 final serverChangeMonitorProvider = StreamProvider<ChangeMonitor>((ref) async* {
   final controller = StreamController<ChangeMonitor>();
   Future<ChangeMonitor> loader(Server server) async {
-    if (server.canSync) {
-      print('serverTimeStamps: ${server.identity?.serverTimeStamps}');
-    }
-    return const ChangeMonitor(hasChange: false);
+    return ChangeMonitor(hasChange: server.identity != server.previousIdentity);
   }
 
   ref.listen(serverProvider, (prev, curr) async {

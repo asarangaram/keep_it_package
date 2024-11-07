@@ -10,18 +10,22 @@ import 'rest_api.dart';
 @immutable
 class CLServer {
   const CLServer({
-    required this.name,
+    required this.address,
     required this.port,
+    this.name,
     this.id,
-    this.serverTimeStamps,
+    this.status,
   });
   factory CLServer.fromMap(Map<String, dynamic> map) {
     return CLServer(
-      name: map['name'] as String,
+      address: map['address'] as String,
       port: map['port'] as int,
+      name: map['name'] != null ? map['name'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
-      serverTimeStamps: map['status'] != null
-          ? ServerTimeStamps.fromMap(map['status'] as Map<String, dynamic>)
+      status: map['status'] != null
+          ? ServerTimeStamps.fromMap(
+              map['status'] as Map<String, dynamic>,
+            )
           : null,
     );
   }
@@ -29,10 +33,11 @@ class CLServer {
   factory CLServer.fromJson(String source) =>
       CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  final String name;
+  final String address;
   final int port;
+  final String? name;
   final int? id;
-  final ServerTimeStamps? serverTimeStamps;
+  final ServerTimeStamps? status;
 
   void log(
     String message, {
@@ -50,65 +55,70 @@ class CLServer {
   }
 
   CLServer copyWith({
-    String? name,
+    String? address,
     int? port,
+    ValueGetter<String?>? name,
     ValueGetter<int?>? id,
-    ValueGetter<ServerTimeStamps?>? serverTimeStamps,
+    ValueGetter<ServerTimeStamps?>? status,
   }) {
     return CLServer(
-      name: name ?? this.name,
+      address: address ?? this.address,
       port: port ?? this.port,
+      name: name != null ? name.call() : this.name,
       id: id != null ? id.call() : this.id,
-      serverTimeStamps: serverTimeStamps != null
-          ? serverTimeStamps.call()
-          : this.serverTimeStamps,
+      status: status != null ? status.call() : this.status,
     );
   }
 
   @override
   String toString() {
-    return 'CLServer(name: $name, port: $port, id: $id, serverTimeStamps: $serverTimeStamps)';
+    // ignore: lines_longer_than_80_chars
+    return 'CLServer(address: $address, port: $port, name: $name, id: $id, status: $status)';
   }
 
   @override
   bool operator ==(covariant CLServer other) {
     if (identical(this, other)) return true;
 
-    return other.name == name &&
+    return other.address == address &&
         other.port == port &&
+        other.name == name &&
         other.id == id &&
-        other.serverTimeStamps == serverTimeStamps;
+        other.status == status;
   }
 
   @override
   int get hashCode {
-    return name.hashCode ^
+    return address.hashCode ^
         port.hashCode ^
+        name.hashCode ^
         id.hashCode ^
-        serverTimeStamps.hashCode;
+        status.hashCode;
   }
 
   Future<CLServer?> withId({http.Client? client}) async {
     try {
-      final id = await RestApi(baseURL, client: client).getURLStatus();
-      if (id == null) {
-        throw Exception('Missing id');
+      final map = await RestApi(baseURL, client: client).getURLStatus();
+      final serverMap = toMap()..addAll(map);
+      final server = CLServer.fromMap(serverMap);
+      if (server.hasID) {
+        return server;
       }
-      return copyWith(id: () => id);
+      throw Exception('Missing id');
     } catch (e) {
       return null;
     }
   }
 
-  Future<bool> hasConnection({http.Client? client}) async {
+  Future<CLServer?> getServerLiveStatus({http.Client? client}) async {
     try {
-      final id = await RestApi(baseURL, client: client).getURLStatus();
-      final hasId = this.id != null && this.id == id;
+      final server = await withId(client: client);
+      final hasId = server != null && id != null && id == server.id;
       log('has id: $hasId');
-      return hasId;
+      return hasId ? server : null;
     } catch (e) {
       log('has id: failed $e');
-      return false;
+      return null;
     }
   }
 
@@ -116,9 +126,11 @@ class CLServer {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'name': name,
+      'address': address,
       'port': port,
+      'name': name,
       'id': id,
+      'status': status?.toMap(),
     };
   }
 
@@ -214,5 +226,5 @@ class CLServer {
     return [];
   }
 
-  String get baseURL => 'http://$name:$port';
+  String get baseURL => 'http://$address:$port';
 }

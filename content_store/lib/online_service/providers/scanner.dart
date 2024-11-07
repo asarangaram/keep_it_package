@@ -99,7 +99,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner> {
     for (final e in discovery?.services ?? <Service>[]) {
       if (e.name != null && e.name!.endsWith('cloudonlapapps')) {
         final server =
-            await CLServer(name: e.host!, port: e.port ?? 5000).withId();
+            await CLServer(address: e.host!, port: e.port ?? 5000).withId();
         if (server != null) {
           servers.add(server);
         }

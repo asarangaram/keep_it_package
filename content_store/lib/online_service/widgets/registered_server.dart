@@ -15,7 +15,8 @@ class RegisterredServerView extends ConsumerWidget {
         if (server.identity == null) return const SizedBox.shrink();
         final map = <String, Widget>{
           'Server': Text(server.identity!.identifier),
-          'Location': Text('${server.identity!.name}:${server.identity!.port}'),
+          'Location':
+              Text('${server.identity!.address}:${server.identity!.port}'),
           'Status': Text.rich(
             TextSpan(
               children: [

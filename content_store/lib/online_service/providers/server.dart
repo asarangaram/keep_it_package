@@ -31,6 +31,7 @@ class ServerNotifier extends StateNotifier<Server> {
 
       await setState(
         state.copyWith(
+          previousIdentity: () => identity,
           identity: () => identity,
           workingOffline: workingOffline,
         ),
@@ -57,13 +58,19 @@ class ServerNotifier extends StateNotifier<Server> {
     }
     await prefs.setBool('workingOffline', state.workingOffline);
     if (state.isRegistered) {
-      final isOnline = (await server.identity?.hasConnection()) ?? false;
-      currState = state.copyWith(isOffline: !isOnline);
+      final liveStatus = await server.identity?.getServerLiveStatus();
+      currState = state.copyWith(
+        isOffline: liveStatus == null,
+        identity: () => liveStatus,
+      );
       timer?.cancel();
-      timer = Timer.periodic(const Duration(seconds: 30), (Timer timer) {
+      timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
         if (state.isRegistered) {
-          server.identity!.hasConnection().then((isOnline) {
-            currState = state.copyWith(isOffline: !isOnline);
+          server.identity!.getServerLiveStatus().then((liveStatus) {
+            currState = state.copyWith(
+              isOffline: liveStatus == null,
+              identity: () => liveStatus,
+            );
           });
         } else {
           timer.cancel();
@@ -109,7 +116,12 @@ class ServerNotifier extends StateNotifier<Server> {
     log('sync starting');
     setState(state.copyWith(isSyncing: true)).then(
       (_) => _sync(state.identity!).then((_) {
-        setState(state.copyWith(isSyncing: false));
+        setState(
+          state.copyWith(
+            isSyncing: false,
+            previousIdentity: () => state.identity,
+          ),
+        );
         log('sync Completed');
       }),
     );
@@ -175,15 +187,6 @@ class ServerNotifier extends StateNotifier<Server> {
         log('sync Completed');
       }),
     );
-  }
-
-  void checkStatus() {
-    if (state.isRegistered) {
-      state.identity!.hasConnection().then((isOnline) {
-        currState = state.copyWith(isOffline: !isOnline);
-      });
-    }
-    return;
   }
 
   Future<CollectionSyncModule> get collectionSyncModule async =>

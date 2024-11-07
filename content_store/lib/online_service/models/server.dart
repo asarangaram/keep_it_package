@@ -21,7 +21,9 @@ class Server {
   final bool canSync;
   final bool isRegistered;
   final bool isSyncing;
+  final CLServer? previousIdentity;
   const Server({
+    this.previousIdentity,
     this.identity,
     bool isOffline = true,
     this.workingOffline = true,
@@ -35,19 +37,23 @@ class Server {
     bool? isOffline,
     bool? workingOffline,
     bool? isSyncing,
+    ValueGetter<CLServer?>? previousIdentity,
   }) {
     return Server(
       identity: identity != null ? identity.call() : this.identity,
       isOffline: isOffline ?? this.isOffline,
       workingOffline: workingOffline ?? this.workingOffline,
       isSyncing: isSyncing ?? this.isSyncing,
+      previousIdentity: previousIdentity != null
+          ? previousIdentity.call()
+          : this.previousIdentity,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'Server(identity: $identity, isOffline: $isOffline, workingOffline: $workingOffline, isSyncing: $isSyncing, canSync: $canSync, isRegistered: $isRegistered)';
+    return 'Server(identity: $identity, isOffline: $isOffline, workingOffline: $workingOffline, canSync: $canSync, isRegistered: $isRegistered, isSyncing: $isSyncing, previousIdentity: $previousIdentity)';
   }
 
   @override
@@ -57,9 +63,10 @@ class Server {
     return other.identity == identity &&
         other.isOffline == isOffline &&
         other.workingOffline == workingOffline &&
-        other.isSyncing == isSyncing &&
         other.canSync == canSync &&
-        other.isRegistered == isRegistered;
+        other.isRegistered == isRegistered &&
+        other.isSyncing == isSyncing &&
+        other.previousIdentity == previousIdentity;
   }
 
   @override
@@ -67,9 +74,10 @@ class Server {
     return identity.hashCode ^
         isOffline.hashCode ^
         workingOffline.hashCode ^
-        isSyncing.hashCode ^
         canSync.hashCode ^
-        isRegistered.hashCode;
+        isRegistered.hashCode ^
+        isSyncing.hashCode ^
+        previousIdentity.hashCode;
   }
 
   Future<Map<String, dynamic>?>? postMedia(

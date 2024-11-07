@@ -136,7 +136,8 @@ class ServerSettingsImpl extends ConsumerWidget {
                                 children: [
                                   TextSpan(
                                     text: '${candidate.identifier} '
-                                        '[${candidate.name}:${candidate.port}]'
+                                        // ignore: lines_longer_than_80_chars
+                                        '[${candidate.address}:${candidate.port}]'
                                         ' \u00A0\u00A0\u00A0\u00A0',
                                   ),
                                   if (candidate != server.identity)
