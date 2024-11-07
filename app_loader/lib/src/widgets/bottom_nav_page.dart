@@ -64,15 +64,11 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
             ),
             child: NotificationService(
               child: CLPopScreen.onSwipe(
-                child: Stack(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Expanded(child: widget.child),
-                        const ServerControl(),
-                      ],
-                    ),
+                    Expanded(child: widget.child),
+                    const ServerControl(),
                   ],
                 ),
               ),

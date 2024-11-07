@@ -6,6 +6,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import '../builders/get_downloader.dart';
 import '../builders/get_server.dart';
 import '../providers/server.dart';
+import 'change_monitor.dart';
 import 'controls.dart';
 import 'downloader_progressbar.dart';
 
@@ -31,66 +32,75 @@ class ServerControlImpl extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                 child: Row(
                   children: [
-                    SpeedDial(
-                      overlayOpacity: 0,
-                      elevation: 0,
-                      buttonSize: const Size(30, 30),
-                      children: [
-                        if (!server.isOffline)
-                          if (!server.workingOffline)
-                            SpeedDialChild(
-                              onTap: () {
-                                ref.read(serverProvider.notifier).workOffline();
-                              },
-                              labelWidget: const SpeedDialChildWrapper(
-                                child: WorkOffline(),
-                              ),
-                            )
-                          else
-                            SpeedDialChild(
-                              onTap: () {
-                                ref.read(serverProvider.notifier).goOnline();
-                              },
-                              labelWidget: const SpeedDialChildWrapper(
-                                child: GoOnline(),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          ...[
+                            SpeedDial(
+                              overlayOpacity: 0,
+                              elevation: 0,
+                              buttonSize: const Size(30, 30),
+                              children: [
+                                if (!server.isOffline)
+                                  if (!server.workingOffline)
+                                    SpeedDialChild(
+                                      onTap: () {
+                                        ref
+                                            .read(serverProvider.notifier)
+                                            .workOffline();
+                                      },
+                                      labelWidget: const SpeedDialChildWrapper(
+                                        child: WorkOffline(),
+                                      ),
+                                    )
+                                  else
+                                    SpeedDialChild(
+                                      onTap: () {
+                                        ref
+                                            .read(serverProvider.notifier)
+                                            .goOnline();
+                                      },
+                                      labelWidget: const SpeedDialChildWrapper(
+                                        child: GoOnline(),
+                                      ),
+                                    ),
+                                if (server.canSync)
+                                  SpeedDialChild(
+                                    onTap: () {
+                                      ref.read(serverProvider.notifier).sync();
+                                    },
+                                    labelWidget: const SyncServer(),
+                                  ),
+                              ],
+                              switchLabelPosition: true,
+                              activeIcon: clIcons.closeFullscreen,
+                              child: Image.asset(
+                                'assets/icon/cloud_on_lan_128px_color.png',
                               ),
                             ),
-                        if (server.canSync)
-                          SpeedDialChild(
-                            onTap: () {
-                              ref.read(serverProvider.notifier).sync();
-                            },
-                            labelWidget: const SyncServer(),
+                            if (server.isSyncing)
+                              const CircularProgressIndicator.adaptive(),
+                            if (downloaderStatus.total > 0)
+                              const SizedBox.square(
+                                dimension: 30,
+                                child: DownloaderProgressPie(),
+                              ),
+                            if (downloaderStatus.running > 0)
+                              const SizedBox.square(
+                                dimension: 30,
+                                child: ActiveDownloadIndicator(),
+                              ),
+                          ].map(
+                            (e) => Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: e,
+                            ),
                           ),
-                      ],
-                      switchLabelPosition: true,
-                      activeIcon: clIcons.closeFullscreen,
-                      child: Image.asset(
-                        'assets/icon/cloud_on_lan_128px_color.png',
+                        ],
                       ),
                     ),
-                    if (server.isSyncing)
-                      const CircularProgressIndicator.adaptive(),
-
-                    if (downloaderStatus.total > 0)
-                      const SizedBox.square(
-                        dimension: 30,
-                        child: DownloaderProgressPie(),
-                      ),
-                    if (downloaderStatus.running > 0)
-                      const SizedBox.square(
-                        dimension: 30,
-                        child: ActiveDownloadIndicator(),
-                      ),
-                    //const Spacer(),
-                  ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.only(left: 16),
-                          child: e,
-                        ),
-                      )
-                      .toList(),
+                    const ChangeMonitor(),
+                  ],
                 ),
               ),
             );
