@@ -1,29 +1,49 @@
 import 'dart:async';
 
+import 'package:content_store/content_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
 import '../../db_service/providers/db_reader.dart';
 import '../../db_service/providers/store_updater.dart';
+import '../models/server.dart';
 
 @immutable
-class LocalChangeMonitor {
-  const LocalChangeMonitor({required this.hasChange});
+class ChangeMonitor {
+  const ChangeMonitor({required this.hasChange});
   final bool hasChange;
 }
 
-final localChangeMonitorProvider =
-    StreamProvider<LocalChangeMonitor>((ref) async* {
+final serverChangeMonitorProvider = StreamProvider<ChangeMonitor>((ref) async* {
+  final controller = StreamController<ChangeMonitor>();
+  Future<ChangeMonitor> loader(Server server) async {
+    if (server.canSync) {
+      print('serverTimeStamps: ${server.identity?.serverTimeStamps}');
+    }
+    return const ChangeMonitor(hasChange: false);
+  }
+
+  ref.listen(serverProvider, (prev, curr) async {
+    if (prev != curr) {
+      controller.add(await loader(curr));
+    }
+  });
+  yield const ChangeMonitor(hasChange: false);
+  yield* controller.stream;
+  return;
+});
+
+final localChangeMonitorProvider = StreamProvider<ChangeMonitor>((ref) async* {
   final storeUpdater = await ref.watch(storeUpdaterProvider.future);
 
-  final controller = StreamController<LocalChangeMonitor>();
+  final controller = StreamController<ChangeMonitor>();
   final dbQuery = storeUpdater.store.reader.getQuery<CLMedia>(DBQueries.medias);
 
-  Future<LocalChangeMonitor> loader() async {
+  Future<ChangeMonitor> loader() async {
     final res =
         (await storeUpdater.store.reader.readMultiple(dbQuery)).nonNullableSet;
-    final change = LocalChangeMonitor(
+    final change = ChangeMonitor(
       hasChange: res.where((e) => e.isEdited ?? false).isNotEmpty,
     );
     return change;

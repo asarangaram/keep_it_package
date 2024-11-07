@@ -1,8 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 
+import 'cl_server_status.dart';
 import 'rest_api.dart';
 
 @immutable
@@ -11,12 +13,16 @@ class CLServer {
     required this.name,
     required this.port,
     this.id,
+    this.serverTimeStamps,
   });
   factory CLServer.fromMap(Map<String, dynamic> map) {
     return CLServer(
       name: map['name'] as String,
       port: map['port'] as int,
       id: map['id'] != null ? map['id'] as int : null,
+      serverTimeStamps: map['status'] != null
+          ? ServerTimeStamps.fromMap(map['status'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -26,6 +32,7 @@ class CLServer {
   final String name;
   final int port;
   final int? id;
+  final ServerTimeStamps? serverTimeStamps;
 
   void log(
     String message, {
@@ -45,27 +52,41 @@ class CLServer {
   CLServer copyWith({
     String? name,
     int? port,
-    int? id,
+    ValueGetter<int?>? id,
+    ValueGetter<ServerTimeStamps?>? serverTimeStamps,
   }) {
     return CLServer(
       name: name ?? this.name,
       port: port ?? this.port,
-      id: id ?? this.id,
+      id: id != null ? id.call() : this.id,
+      serverTimeStamps: serverTimeStamps != null
+          ? serverTimeStamps.call()
+          : this.serverTimeStamps,
     );
   }
 
   @override
-  String toString() => 'Server : ${toJson()}';
+  String toString() {
+    return 'CLServer(name: $name, port: $port, id: $id, serverTimeStamps: $serverTimeStamps)';
+  }
 
   @override
   bool operator ==(covariant CLServer other) {
     if (identical(this, other)) return true;
 
-    return other.name == name && other.port == port && other.id == id;
+    return other.name == name &&
+        other.port == port &&
+        other.id == id &&
+        other.serverTimeStamps == serverTimeStamps;
   }
 
   @override
-  int get hashCode => name.hashCode ^ port.hashCode ^ id.hashCode;
+  int get hashCode {
+    return name.hashCode ^
+        port.hashCode ^
+        id.hashCode ^
+        serverTimeStamps.hashCode;
+  }
 
   Future<CLServer?> withId({http.Client? client}) async {
     try {
@@ -73,7 +94,7 @@ class CLServer {
       if (id == null) {
         throw Exception('Missing id');
       }
-      return copyWith(id: id);
+      return copyWith(id: () => id);
     } catch (e) {
       return null;
     }
