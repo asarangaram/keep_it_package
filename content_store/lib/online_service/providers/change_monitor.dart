@@ -26,7 +26,6 @@ final localChangeMonitorProvider =
     final change = LocalChangeMonitor(
       hasChange: res.where((e) => e.isEdited ?? false).isNotEmpty,
     );
-    print('change detected? : $change');
     return change;
   }
 

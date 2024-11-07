@@ -48,7 +48,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
-    this.excludeEmpty = true,
+    this.queries = DBQueries.collectionsVisibleNotDeleted,
   });
   final Widget Function(
     Collections collections,
@@ -57,7 +57,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
   }) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
   final Widget Function()? loadingBuilder;
-  final bool excludeEmpty;
+  final DBQueries queries;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -20,14 +20,20 @@ class ChangeMonitor extends ConsumerWidget {
     return localChangeMonitorAsync.whenOrNull(
           data: (data) {
             if (data.hasChange) {
-              return CLBlink(
-                blinkDuration: const Duration(milliseconds: 300),
-                child: CLButtonIcon.tiny(
+              if (canSync) {
+                return CLBlink(
+                  blinkDuration: const Duration(milliseconds: 300),
+                  child: CLButtonIcon.tiny(
+                    Icons.upload,
+                    onTap: () {},
+                  ),
+                );
+              } else {
+                return const CLButtonIcon.tiny(
                   Icons.upload,
-                  color: canSync ? null : Colors.red,
-                  onTap: canSync ? () {} : null,
-                ),
-              );
+                  color: Colors.red,
+                );
+              }
             }
             return whenNoChange;
           },
