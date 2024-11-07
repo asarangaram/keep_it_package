@@ -67,7 +67,9 @@ class ServerControlImpl extends ConsumerWidget {
                                 if (server.canSync)
                                   SpeedDialChild(
                                     onTap: () {
-                                      ref.read(serverProvider.notifier).sync();
+                                      ref
+                                          .read(serverProvider.notifier)
+                                          .manualSync();
                                     },
                                     labelWidget: const SyncServer(),
                                   ),

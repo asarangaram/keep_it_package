@@ -84,7 +84,7 @@ class MediaAsFile extends ConsumerWidget {
                   onDeleteLocalCopy: () async {
                     await theStore.mediaUpdater
                         .deleteLocalCopy(media0, shouldRefresh: false);
-                    ref.read(serverProvider.notifier).sync();
+                    ref.read(serverProvider.notifier).instantSync();
                     return true;
                   },
                   onKeepOffline: () async {

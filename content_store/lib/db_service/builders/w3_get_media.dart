@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element, unused_import
+
 import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
@@ -14,13 +16,13 @@ void _log(
   StackTrace? stackTrace,
   String? name,
 }) {
-  dev.log(
+  /* dev.log(
     message.toString(),
     level: level,
     error: error,
     stackTrace: stackTrace,
     name: name ?? 'Media Builder',
-  );
+  ); */
 }
 
 class GetMedia extends ConsumerWidget {

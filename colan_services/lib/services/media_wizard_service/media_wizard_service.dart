@@ -214,7 +214,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           targetCollection = null;
                           isSelectionMode = false;
                           setState(() {});
-                          ref.read(serverProvider.notifier).sync();
+                          ref.read(serverProvider.notifier).instantSync();
                         },
                       ),
                       builder: (context, snapShot) => ProgressBar(

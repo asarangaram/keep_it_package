@@ -37,7 +37,7 @@ class ServerSettingsImpl extends ConsumerWidget {
                         if (server.canSync)
                           SyncServer1(
                             onTap: () async {
-                              ref.read(serverProvider.notifier).sync();
+                              ref.read(serverProvider.notifier).manualSync();
                               return true;
                             },
                           )

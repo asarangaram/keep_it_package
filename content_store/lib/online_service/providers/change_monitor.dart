@@ -23,6 +23,10 @@ final serverChangeMonitorProvider = StreamProvider<ChangeMonitor>((ref) async* {
 
   ref.listen(serverProvider, (prev, curr) async {
     if (prev != curr) {
+      final status = await loader(curr);
+      if (status.hasChange) {
+        ref.read(serverProvider.notifier).autoSync();
+      }
       controller.add(await loader(curr));
     }
   });
@@ -40,10 +44,13 @@ final localChangeMonitorProvider = StreamProvider<ChangeMonitor>((ref) async* {
   Future<ChangeMonitor> loader() async {
     final res =
         (await storeUpdater.store.reader.readMultiple(dbQuery)).nonNullableSet;
-    final change = ChangeMonitor(
+    final status = ChangeMonitor(
       hasChange: res.where((e) => e.isEdited ?? false).isNotEmpty,
     );
-    return change;
+    if (status.hasChange) {
+      ref.read(serverProvider.notifier).autoSync();
+    }
+    return status;
   }
 
   ref.listen(refreshReaderProvider, (prev, curr) async {

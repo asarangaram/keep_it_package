@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -103,8 +104,22 @@ class ServerNotifier extends StateNotifier<Server> {
   void goOnline() => setState(state.copyWith(workingOffline: false));
 
   void workOffline() => setState(state.copyWith(workingOffline: true));
+  void autoSync() {
+    log('autoSync requested');
+    Future.delayed(const Duration(milliseconds: 300), coreSync);
+  }
 
-  void sync() {
+  void manualSync() {
+    log('manualSync requested');
+    coreSync();
+  }
+
+  void instantSync() {
+    log('instantSync requested');
+    coreSync();
+  }
+
+  void coreSync() {
     if (state.isSyncing) {
       log('server is already syncing. ignoring duplicate request');
       return;
@@ -116,14 +131,19 @@ class ServerNotifier extends StateNotifier<Server> {
     log('sync starting');
     setState(state.copyWith(isSyncing: true)).then(
       (_) => _sync(state.identity!).then((_) {
-        setState(
-          state.copyWith(
-            isSyncing: false,
-            previousIdentity: () => state.identity,
-          ),
-        );
+        onSyncDone();
         log('sync Completed');
       }),
+    );
+  }
+
+  Future<void> onSyncDone() async {
+    final liveStatus = await state.identity!.getServerLiveStatus();
+    await setState(
+      state.copyWith(
+        isSyncing: false,
+        previousIdentity: () => liveStatus,
+      ),
     );
   }
 
@@ -212,13 +232,13 @@ class ServerNotifier extends StateNotifier<Server> {
     Object? error,
     StackTrace? stackTrace,
   }) {
-    /* dev.log(
+    dev.log(
       message,
       level: level,
       error: error,
       stackTrace: stackTrace,
       name: 'Online Service | Server',
-    ); */
+    );
   }
 }
 
@@ -228,7 +248,7 @@ final serverProvider = StateNotifierProvider<ServerNotifier, Server>((ref) {
   final notifier = ServerNotifier(storeUpdater, downloaderNotifier);
   ref.listenSelf((prev, curr) {
     if (curr.canSync && !(prev?.canSync ?? false)) {
-      notifier.sync();
+      notifier.autoSync();
     }
   });
   return notifier;

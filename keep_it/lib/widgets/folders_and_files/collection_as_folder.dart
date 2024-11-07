@@ -36,7 +36,7 @@ class CollectionAsFolder extends ConsumerWidget {
                   await theStore.collectionUpdater.upsert(
                     collection.copyWith(serverUID: () => -1, isEdited: true),
                   );
-                  ref.read(serverProvider.notifier).sync();
+                  ref.read(serverProvider.notifier).instantSync();
 
                   return true;
                 },
@@ -57,7 +57,7 @@ class CollectionAsFolder extends ConsumerWidget {
                       );
                     }
                     updater.store.reloadStore();
-                    serverNotifier.sync();
+                    serverNotifier.instantSync();
                   }
                   return true;
                 },
@@ -74,7 +74,7 @@ class CollectionAsFolder extends ConsumerWidget {
                       await theStore.mediaUpdater
                           .deleteLocalCopy(m, haveItOffline: () => null);
                     }
-                    serverNotifier.sync();
+                    serverNotifier.instantSync();
                   }
                   return true;
                 },
