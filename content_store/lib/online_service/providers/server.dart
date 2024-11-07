@@ -45,8 +45,11 @@ class ServerNotifier extends StateNotifier<Server> {
   Server get currState => state;
 
   set currState(Server val) {
-    state = val;
-    log(state.toString());
+    if (state != val) {
+      log('state updated, ${state.hashCode} ${val.hashCode}');
+      state = val;
+      log(state.toString());
+    }
   }
 
   Future<void> setState(Server server) async {
@@ -58,14 +61,14 @@ class ServerNotifier extends StateNotifier<Server> {
       await prefs.remove('myServer');
     }
     await prefs.setBool('workingOffline', state.workingOffline);
+    timer?.cancel();
     if (state.isRegistered) {
       final liveStatus = await server.identity?.getServerLiveStatus();
       currState = state.copyWith(
         isOffline: liveStatus == null,
         identity: () => liveStatus,
       );
-      timer?.cancel();
-      timer = Timer.periodic(const Duration(seconds: 30), (Timer timer) {
+      timer = Timer.periodic(const Duration(seconds: 2), (_) {
         if (state.isRegistered) {
           server.identity!.getServerLiveStatus().then((liveStatus) {
             currState = state.copyWith(
@@ -74,11 +77,11 @@ class ServerNotifier extends StateNotifier<Server> {
             );
           });
         } else {
-          timer.cancel();
+          timer?.cancel();
+          timer = null;
         }
       });
     } else {
-      timer?.cancel();
       timer = null;
     }
   }
