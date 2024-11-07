@@ -49,11 +49,15 @@ class ChangeTracker {
     if (current != null && update != null && current!.isContentSame(update!)) {
       return ActionType.none;
     }
+
     if (current == null) {
-      // IF server item is markedDeleted, ignore it.
+      /* 
+      we still need to have the deleted items in dB, but won't download.
+
+      // If server item is markedDeleted, ignore it.
       if (update!.isMarkedDeleted) {
         return ActionType.none;
-      }
+      } */
       return ActionType.download;
     }
     if (update == null) {

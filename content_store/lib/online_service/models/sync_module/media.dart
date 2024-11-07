@@ -131,8 +131,9 @@ class MediaSyncModule extends SyncModule<CLMedia> {
   Future<void> downloadMediaFiles() async {
     log('triggerred downloadMediaFiles');
     final mediaOnDevice = await updater.store.reader.mediaOnDevice;
-    final syncedCollections =
-        collectionsToSync.where((e) => e.haveItOffline).toList();
+    final syncedCollections = collectionsToSync
+        .where((e) => e.haveItOffline && !e.isDeleted)
+        .toList();
 
     for (final m in mediaOnDevice) {
       final collection =
@@ -178,10 +179,17 @@ class MediaSyncModule extends SyncModule<CLMedia> {
       if (resMap != null) {
         if (resMap['isDeleted'] == 1 &&
             resMap['serverUID'] == media.serverUID) {
+          await updater.mediaUpdater
+              .upsert(media.updateStatus(isMediaCached: () => false));
+          await File(updater.directories.getMediaAbsolutePath(media))
+              .deleteIfExists();
+
+          /* 
+          don't delete the entry, only delete the file
           await updater.mediaUpdater.deletePermanently(
             media.id!,
             shouldRefresh: false,
-          );
+          ); */
         }
       }
     } catch (e) {
@@ -312,13 +320,14 @@ class MediaSyncModule extends SyncModule<CLMedia> {
 
       return;
     }
-    final needDownload = !media.isMediaCached &&
+    var needDownload = !media.isMediaCached &&
         media.mediaLog == null &&
         (switch (media.haveItOffline) {
           null => isCollectionSynced,
           false => false,
           true => true
         });
+    needDownload = needDownload && !(media.isDeleted ?? false);
 
     if (!needDownload) {
       /* log('<downloadMediaFile>  download not required '

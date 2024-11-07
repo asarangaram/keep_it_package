@@ -11,10 +11,14 @@ enum DBQueries {
 
   collectionById,
   collectionByLabel,
-  collectionsAll,
+
+  collectionsVisible,
+  collectionsVisibleNotDeleted,
   collectionsExcludeEmpty,
   collectionsEmpty,
   collectionByIdList,
+  collectionOnDevice,
+  collectionsToSync,
 
   mediaById,
   mediaByServerUID,
@@ -38,8 +42,7 @@ enum DBQueries {
   // Raw values
   serverUIDAll,
   mediaOnDevice,
-  collectionOnDevice,
-  collectionToSync,
+
   localMediaAll,
 }
 
@@ -66,7 +69,7 @@ abstract class StoreReader {
   }
 
   Future<List<Collection>> get collectionsToSync async =>
-      getMultiple(DBQueries.collectionToSync);
+      getMultiple(DBQueries.collectionsToSync);
 
   Future<List<Collection>> get collectionOnDevice async =>
       getMultiple(DBQueries.collectionOnDevice);
@@ -111,7 +114,7 @@ abstract class StoreReader {
       getMultiple(DBQueries.mediaByNoteID, parameters: [noteId]);
 
   Future<List<Collection>?> getCollectionAll() async =>
-      getMultiple(DBQueries.collectionsAll);
+      getMultiple(DBQueries.collectionsVisibleNotDeleted);
 
   Future<List<CLMedia>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
 

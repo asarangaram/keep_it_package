@@ -21,7 +21,7 @@ class PickCollection extends StatelessWidget {
     return GetCollectionMultiple(
       errorBuilder: null,
       loadingBuilder: null,
-      excludeEmpty: false,
+      query: DBQueries.collectionsVisible,
       builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(

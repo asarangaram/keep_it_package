@@ -66,7 +66,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     return GetCollectionMultiple(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      excludeEmpty: excludeEmpty,
+      query: DBQueries.collectionsVisibleNotDeleted,
       builder: (collections) {
         if (!canSync) {
           final visibleCollections = Collections(
@@ -95,24 +95,20 @@ class GetCollectionMultiple extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    required this.query,
     super.key,
-    this.excludeEmpty = true,
   });
   final Widget Function(Collections collections) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
   final Widget Function()? loadingBuilder;
-  final bool excludeEmpty;
+  final DBQueries query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qid = excludeEmpty
-        ? DBQueries.collectionsExcludeEmpty
-        : DBQueries.collectionsAll;
-
     return GetDBReader(
       builder: (dbReader) {
         final q =
-            dbReader.getQuery(qid, parameters: []) as StoreQuery<Collection>;
+            dbReader.getQuery(query, parameters: []) as StoreQuery<Collection>;
 
         return GetFromStore<Collection>(
           query: q,

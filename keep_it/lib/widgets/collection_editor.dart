@@ -57,6 +57,7 @@ class CollectionEditor extends StatelessWidget {
         loadingBuilder: null,
         builder: (collection) {
           return GetCollectionMultiple(
+            query: DBQueries.collections,
             errorBuilder: null,
             loadingBuilder: null,
             builder: (collections) {
