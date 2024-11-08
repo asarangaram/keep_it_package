@@ -6,7 +6,7 @@ import '../../basics/cl_button.dart';
 import '../../basics/cl_pop_screen.dart';
 import '../../basics/cl_refresh_indicator.dart';
 import '../../models/cl_menu_item.dart';
-import '../../models/typedefs.dart';
+
 import '../../theme/models/cl_icons.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
@@ -15,11 +15,7 @@ import '../draggable/menu_control.dart';
 import 'cl_gallery_core.dart';
 import 'model/gallery_group.dart';
 
-typedef ItemBuilder<T> = Widget Function(
-  BuildContext context,
-  T item, {
-  required QuickMenuScopeKey quickMenuScopeKey,
-});
+typedef ItemBuilder<T> = Widget Function(BuildContext context, T item);
 
 class CLSimpleGalleryView<T> extends StatefulWidget {
   const CLSimpleGalleryView({
@@ -72,13 +68,13 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
             : null,
         actionsBuilder: widget.actionMenu
             .map(
-              (e) => (_, __) => CLButtonIcon.small(
+              (e) => (_) => CLButtonIcon.small(
                     e.icon,
                     onTap: e.onTap,
                   ),
             )
             .toList(),
-        pageBuilder: (context, quickMenuScopeKey) => widget.emptyState,
+        pageBuilder: (context) => widget.emptyState,
       );
     } else {
       return ProviderScope(
@@ -91,7 +87,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
           backButton: widget.backButton,
           actionsBuilder: [
             if (widget.selectionActions != null)
-              (context, quickMenuScopeKey) => CLButtonText.small(
+              (context) => CLButtonText.small(
                     isSelectionMode ? 'Done' : 'Select',
                     onTap: () {
                       setState(() {
@@ -100,7 +96,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                     },
                   ),
             if (!isSelectionMode)
-              (context, quickMenuScopeKey) => Row(
+              (context) => Row(
                     children: widget.actionMenu
                         .map(
                           (e) => CLButtonIcon.small(
@@ -111,7 +107,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                         .toList(),
                   ),
           ],
-          pageBuilder: (context, quickMenuScopeKey) {
+          pageBuilder: (context) {
             return Stack(
               key: parentKey,
               children: [
@@ -125,7 +121,6 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                       return widget.itemBuilder(
                         context,
                         item,
-                        quickMenuScopeKey: quickMenuScopeKey,
                       );
                     },
                     columns: widget.columns,

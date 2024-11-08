@@ -11,7 +11,6 @@ class MediaAsFile extends ConsumerWidget {
   const MediaAsFile({
     required this.media,
     required this.parentIdentifier,
-    required this.quickMenuScopeKey,
     required this.onTap,
     super.key,
     this.canDuplicateMedia = true,
@@ -19,7 +18,6 @@ class MediaAsFile extends ConsumerWidget {
   final CLMedia media;
   final String parentIdentifier;
   final Future<bool?> Function()? onTap;
-  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
   final bool canDuplicateMedia;
 
   @override

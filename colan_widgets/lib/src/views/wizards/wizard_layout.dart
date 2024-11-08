@@ -44,15 +44,14 @@ class WizardLayout extends StatelessWidget {
             title: title ?? '',
             backButton: null,
             actionsBuilder: [
-              if (actions != null)
-                ...actions!.map((e) => (context, quickMenuScopeKey) => e),
+              if (actions != null) ...actions!.map((e) => (context) => e),
               if (onCancel != null)
-                (context, quickMenuScopeKey) => CircledIcon(
+                (context) => CircledIcon(
                       clIcons.closeFullscreen,
                       onTap: onCancel,
                     ),
             ],
-            pageBuilder: (context, quickMenuScopeKey) {
+            pageBuilder: (context) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

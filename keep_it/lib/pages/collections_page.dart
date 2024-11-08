@@ -4,23 +4,13 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:store/store.dart';
-
 import '../widgets/folders_and_files/collection_as_folder.dart';
 
-class CollectionsPage extends ConsumerStatefulWidget {
+class CollectionsPage extends ConsumerWidget {
   const CollectionsPage({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => CollectionsPageState();
-}
-
-class CollectionsPageState extends ConsumerState<CollectionsPage> {
-  bool isLoading = false;
-  bool excludeEmpty = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GetStore(
       builder: (store) {
         return GetShowableCollectionMultiple(
@@ -30,25 +20,13 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
           errorBuilder: null,
           builder: (
             collections,
-            visibleCollections, {
+            galleryGroups, {
             required isAllAvailable,
           }) {
-            final identifier = 'FolderView Collections'
-                ' excludeEmpty: $excludeEmpty';
-            final galleryGroups = <GalleryGroup<Collection>>[];
+            const identifier = 'FolderView Collections';
 
-            for (final rows in visibleCollections.entries.convertTo2D(3)) {
-              galleryGroups.add(
-                GalleryGroup(
-                  rows,
-                  label: null,
-                  groupIdentifier: 'Collections',
-                  chunkIdentifier: 'Collections',
-                ),
-              );
-            }
             return CLSimpleGalleryView(
-              key: ValueKey(identifier),
+              key: const ValueKey(identifier),
               title: 'Collections',
               backButton: null,
               columns: 3,
@@ -73,14 +51,8 @@ class CollectionsPageState extends ConsumerState<CollectionsPage> {
                   ),
                 ),
               ),
-              itemBuilder: (
-                context,
-                item, {
-                required quickMenuScopeKey,
-              }) =>
-                  CollectionAsFolder(
+              itemBuilder: (context, item) => CollectionAsFolder(
                 collection: item,
-                quickMenuScopeKey: quickMenuScopeKey,
               ),
               identifier: identifier,
               actionMenu: [

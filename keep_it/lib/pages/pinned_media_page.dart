@@ -25,12 +25,7 @@ class PinnedMediaPage extends ConsumerWidget {
                     key: const ValueKey(label),
                     title: 'Pinned Media',
                     backButton: null,
-                    itemBuilder: (
-                      context,
-                      item, {
-                      required quickMenuScopeKey,
-                    }) =>
-                        Padding(
+                    itemBuilder: (context, item) => Padding(
                       padding: const EdgeInsets.all(4),
                       child: GestureDetector(
                         onTap: () async {

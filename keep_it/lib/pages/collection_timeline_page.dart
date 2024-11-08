@@ -94,8 +94,7 @@ class TimelineView extends ConsumerWidget {
           columns: 4,
           medias: items,
           emptyState: const EmptyState(),
-          itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-              MediaAsFile(
+          itemBuilder: (context, item) => MediaAsFile(
             media: item,
             parentIdentifier: parentIdentifier,
             onTap: () async {
@@ -107,7 +106,6 @@ class TimelineView extends ConsumerWidget {
               );
               return true;
             },
-            quickMenuScopeKey: quickMenuScopeKey,
           ),
           actionMenu: [
             CLMenuItem(

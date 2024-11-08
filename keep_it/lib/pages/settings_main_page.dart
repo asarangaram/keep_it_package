@@ -12,7 +12,7 @@ class SettingsMainPage extends ConsumerWidget {
     return KeepItMainView(
       title: 'Settings',
       backButton: null,
-      pageBuilder: (context, quickMenuScopeKey) {
+      pageBuilder: (context) {
         return GetDeletedMedia(
           errorBuilder: null,
           loadingBuilder: null,

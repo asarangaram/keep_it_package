@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -52,7 +53,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
   });
   final Widget Function(
     Collections collections,
-    Collections availableCollections, {
+    List<GalleryGroup<Collection>> galleryGroups, {
     required bool isAllAvailable,
   }) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
@@ -63,28 +64,43 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final canSync =
         ref.watch(serverProvider.select((server) => server.canSync));
+
     return GetCollectionMultiple(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       query: DBQueries.collectionsVisibleNotDeleted,
       builder: (collections) {
+        final Collections visibleCollections;
         if (!canSync) {
-          final visibleCollections = Collections(
+          visibleCollections = Collections(
             collections.entries
                 .where(
                   (c) => !c.hasServerUID || (c.hasServerUID && c.haveItOffline),
                 )
                 .toList(),
           );
-          return builder(
-            collections,
-            visibleCollections,
-            isAllAvailable:
-                visibleCollections.entries.length == collections.entries.length,
-          );
         } else {
-          return builder(collections, collections, isAllAvailable: true);
+          visibleCollections = collections;
         }
+
+        final galleryGroups = <GalleryGroup<Collection>>[];
+
+        for (final rows in visibleCollections.entries.convertTo2D(3)) {
+          galleryGroups.add(
+            GalleryGroup(
+              rows,
+              label: null,
+              groupIdentifier: 'Collections',
+              chunkIdentifier: 'Collections',
+            ),
+          );
+        }
+        return builder(
+          collections,
+          galleryGroups,
+          isAllAvailable:
+              visibleCollections.entries.length == collections.entries.length,
+        );
       },
     );
   }

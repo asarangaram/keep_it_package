@@ -12,11 +12,9 @@ import '../collection_editor.dart';
 class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({
     required this.collection,
-    required this.quickMenuScopeKey,
     super.key,
   });
   final Collection collection;
-  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
