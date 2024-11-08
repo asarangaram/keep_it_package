@@ -18,14 +18,16 @@ class ChangeMonitor {
 final serverChangeMonitorProvider = StreamProvider<ChangeMonitor>((ref) async* {
   final controller = StreamController<ChangeMonitor>();
   Future<ChangeMonitor> loader(Server server) async {
-    return ChangeMonitor(hasChange: server.identity != server.previousIdentity);
+    return ChangeMonitor(
+      hasChange: server.identity?.status != server.previousIdentity?.status,
+    );
   }
 
   ref.listen(serverProvider, (prev, curr) async {
     if (prev != curr) {
       final status = await loader(curr);
       if (status.hasChange) {
-        ref.read(serverProvider.notifier).autoSync();
+        ref.read(serverProvider.notifier).autoSync(isServerChange: true);
       }
       controller.add(await loader(curr));
     }

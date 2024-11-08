@@ -107,9 +107,12 @@ class ServerNotifier extends StateNotifier<Server> {
   void goOnline() => setState(state.copyWith(workingOffline: false));
 
   void workOffline() => setState(state.copyWith(workingOffline: true));
-  void autoSync() {
+  void autoSync({bool isServerChange = false}) {
     log('autoSync requested');
-    Future.delayed(const Duration(milliseconds: 300), coreSync);
+    if (!isServerChange) {
+      coreSync();
+    }
+    // Future.delayed(const Duration(milliseconds: 300), coreSync);
   }
 
   void manualSync() {
