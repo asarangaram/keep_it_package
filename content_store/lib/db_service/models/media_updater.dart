@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:content_store/extensions/ext_cl_media.dart';
 import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
@@ -336,6 +338,16 @@ class MediaUpdater {
     final collectionId0 = collectionId != null ? collectionId() : null;
     final int collectionId1;
     final bool? isHidden0;
+    final metadata = switch (type) {
+      CLMediaType.image => await File(path).getImageMetaData(),
+      CLMediaType.video => await File(path).getVideoMetaData(),
+      _ => null
+    };
+    final originalDate0 =
+        originalDate ?? (metadata == null ? null : () => metadata.originalDate);
+    if (originalDate0 != null) {
+      log('originalDate is set as ${originalDate0()}');
+    }
     if (collectionId0 == null) {
       collectionId1 =
           (isAux0 ? (await _notesCollection) : (await _defaultCollection)).id!;
@@ -373,7 +385,7 @@ class MediaUpdater {
       haveItOffline: haveItOffline?.call(),
       mustDownloadOriginal: mustDownloadOriginal?.call() ?? false,
       ref: ref != null ? ref() : null,
-      originalDate: originalDate != null ? originalDate() : null,
+      originalDate: originalDate0 != null ? originalDate0() : null,
       isDeleted: isDeleted != null ? isDeleted() : false,
 
       pin: pin != null ? pin() : null,
@@ -436,6 +448,7 @@ class MediaUpdater {
     final String fExt0;
     final String computedMD5String;
     final String defaultName;
+    final ValueGetter<DateTime?>? originalDate0;
     if (path != null) {
       // File changed
       computedMD5String = await File(path).checksum;
@@ -450,10 +463,21 @@ class MediaUpdater {
           : id == null
               ? media.name
               : p.basename(path);
+      final metadata = switch (media.type) {
+        CLMediaType.image => await File(path).getImageMetaData(),
+        CLMediaType.video => await File(path).getVideoMetaData(),
+        _ => null
+      };
+      originalDate0 = originalDate ??
+          (metadata == null ? null : () => metadata.originalDate);
     } else {
       computedMD5String = media.md5String!;
       fExt0 = media.fExt;
       defaultName = name != null ? name() : media.name;
+      originalDate0 = originalDate;
+    }
+    if (originalDate0 != null) {
+      log('originalDate is set as ${originalDate0()}');
     }
 
     final updated0 = media
@@ -468,7 +492,7 @@ class MediaUpdater {
           // Set defaults if not provided
           serverUID: () => serverUID != null ? serverUID() : media.serverUID,
           ref: ref,
-          originalDate: originalDate,
+          originalDate: originalDate0,
           isDeleted: isDeleted,
           isEdited: isEdited,
           // clear pin if new path provided
