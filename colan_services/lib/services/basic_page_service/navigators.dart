@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -61,14 +60,11 @@ class Navigators {
     BuildContext context,
     int mediaId, {
     required String parentIdentifier,
-    required ActionControl actionControl,
     int? collectionId,
   }) async {
     final queryMap = [
       'parentIdentifier="$parentIdentifier"',
       if (collectionId != null) 'collectionId=$collectionId',
-      // ignore: unnecessary_null_comparison
-      if (actionControl != null) 'actionControl=${actionControl.toJson()}',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
 

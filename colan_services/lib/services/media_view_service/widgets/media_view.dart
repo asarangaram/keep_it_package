@@ -15,6 +15,7 @@ import '../../basic_page_service/navigators.dart';
 
 import '../../incoming_media_service/models/cl_shared_media.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
+import '../models/action_control.dart';
 import '../providers/show_controls.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
@@ -23,7 +24,6 @@ class MediaView extends StatelessWidget {
   factory MediaView({
     required CLMedia media,
     required String parentIdentifier,
-    required ActionControl Function(CLMedia media) onGetMediaActionControl,
     required bool autoStart,
     required bool autoPlay,
     bool isLocked = false,
@@ -38,7 +38,6 @@ class MediaView extends StatelessWidget {
       isLocked: isLocked,
       autoStart: autoStart,
       autoPlay: autoPlay,
-      onGetMediaActionControl: onGetMediaActionControl,
       onLockPage: onLockPage,
     );
   }
@@ -53,7 +52,6 @@ class MediaView extends StatelessWidget {
       isLocked: true,
       autoStart: true,
       autoPlay: true,
-      onGetMediaActionControl: (_) => ActionControl.none(),
     );
   }
   const MediaView._({
@@ -61,7 +59,6 @@ class MediaView extends StatelessWidget {
     required this.media,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.onGetMediaActionControl,
     required this.autoStart,
     required this.autoPlay,
     this.onLockPage,
@@ -71,7 +68,6 @@ class MediaView extends StatelessWidget {
 
   final String parentIdentifier;
 
-  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   final bool autoStart;
   final bool autoPlay;
   final bool isLocked;
@@ -160,7 +156,6 @@ class MediaView extends StatelessWidget {
       media: media,
       parentIdentifier: parentIdentifier,
       isLocked: isLocked,
-      onGetMediaActionControl: onGetMediaActionControl,
       autoPlay: autoPlay,
       autoStart: autoStart,
       onLockPage: onLockPage,
@@ -196,7 +191,6 @@ class MediaView0 extends ConsumerWidget {
     required this.media,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.onGetMediaActionControl,
     required this.autoStart,
     required this.autoPlay,
     this.onLockPage,
@@ -206,7 +200,6 @@ class MediaView0 extends ConsumerWidget {
 
   final String parentIdentifier;
 
-  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   final bool autoStart;
   final bool autoPlay;
   final bool isLocked;
@@ -214,7 +207,7 @@ class MediaView0 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ac = onGetMediaActionControl(media);
+    final ac = AccessControlExt.onGetMediaActionControl(media);
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
       builder: (theStore) {

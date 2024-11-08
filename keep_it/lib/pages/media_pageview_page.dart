@@ -2,8 +2,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:media_editors/media_editors.dart';
-import 'package:store/store.dart';
 
 class MediaPageViewPage extends StatelessWidget {
   const MediaPageViewPage({
@@ -15,11 +13,6 @@ class MediaPageViewPage extends StatelessWidget {
   final int? collectionId;
   final int id;
   final String parentIdentifier;
-  ActionControl onGetMediaActionControl(CLMedia media) {
-    return (media.type == CLMediaType.video && !VideoEditor.isSupported)
-        ? ActionControl.full().copyWith(allowEdit: false)
-        : ActionControl.full();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +29,6 @@ class MediaPageViewPage extends StatelessWidget {
             child: MediaViewService(
               media: media,
               parentIdentifier: parentIdentifier,
-              onGetMediaActionControl: onGetMediaActionControl,
             ),
           );
         },
@@ -62,7 +54,6 @@ class MediaPageViewPage extends StatelessWidget {
             media: items.entries,
             parentIdentifier: parentIdentifier,
             initialMediaIndex: initialMediaIndex,
-            onGetMediaActionControl: onGetMediaActionControl,
           );
         },
       );

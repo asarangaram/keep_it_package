@@ -14,14 +14,12 @@ class MediaViewService extends StatelessWidget {
   factory MediaViewService({
     required CLMedia media,
     required String parentIdentifier,
-    required ActionControl Function(CLMedia media) onGetMediaActionControl,
     Key? key,
   }) {
     return MediaViewService._(
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
-      onGetMediaActionControl: onGetMediaActionControl,
       key: key,
       isPreview: false,
     );
@@ -35,7 +33,6 @@ class MediaViewService extends StatelessWidget {
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
-      onGetMediaActionControl: (_) => ActionControl.none(),
       key: key,
       isPreview: true,
     );
@@ -44,14 +41,12 @@ class MediaViewService extends StatelessWidget {
     required int initialMediaIndex,
     required List<CLMedia> media,
     required String parentIdentifier,
-    required ActionControl Function(CLMedia media) onGetMediaActionControl,
     Key? key,
   }) {
     return MediaViewService._(
       initialMediaIndex: initialMediaIndex,
       media: media,
       parentIdentifier: parentIdentifier,
-      onGetMediaActionControl: onGetMediaActionControl,
       key: key,
       isPreview: false,
     );
@@ -60,7 +55,6 @@ class MediaViewService extends StatelessWidget {
     required this.initialMediaIndex,
     required this.media,
     required this.parentIdentifier,
-    required this.onGetMediaActionControl,
     required this.isPreview,
     super.key,
   });
@@ -69,7 +63,6 @@ class MediaViewService extends StatelessWidget {
   final int initialMediaIndex;
   final String parentIdentifier;
   final bool isPreview;
-  final ActionControl Function(CLMedia media) onGetMediaActionControl;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +91,6 @@ class MediaViewService extends StatelessWidget {
         initialMediaIndex: 0,
         media: media,
         parentIdentifier: parentIdentifier,
-        onGetMediaActionControl: onGetMediaActionControl,
         key: key,
       );
     }
@@ -107,7 +99,6 @@ class MediaViewService extends StatelessWidget {
       initialMediaIndex: initialMediaIndex,
       media: media,
       parentIdentifier: parentIdentifier,
-      onGetMediaActionControl: onGetMediaActionControl,
       key: key,
     );
   }
@@ -118,15 +109,12 @@ class MediaViewService0 extends ConsumerStatefulWidget {
     required this.initialMediaIndex,
     required this.media,
     required this.parentIdentifier,
-    required this.onGetMediaActionControl,
     super.key,
   });
 
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
-
-  final ActionControl Function(CLMedia media) onGetMediaActionControl;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -175,7 +163,6 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                   parentIdentifier: widget.parentIdentifier,
                   isLocked: lockPage,
                   onLockPage: onLockPage,
-                  onGetMediaActionControl: widget.onGetMediaActionControl,
                   autoStart: true,
                   autoPlay: true,
                 ),
@@ -198,7 +185,6 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
         : MediaPageView(
             items: widget.media,
             startIndex: widget.initialMediaIndex,
-            onGetMediaActionControl: widget.onGetMediaActionControl,
             parentIdentifier: widget.parentIdentifier,
             isLocked: lockPage,
             onLockPage: onLockPage,

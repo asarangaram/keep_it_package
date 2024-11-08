@@ -38,7 +38,6 @@ class PinnedMediaPage extends ConsumerWidget {
                             context,
                             item.id!,
                             parentIdentifier: parentIdentifier,
-                            actionControl: ActionControl.full(),
                           );
                         },
                         onLongPress: () =>

@@ -13,7 +13,6 @@ class MediaAsFile extends ConsumerWidget {
     required this.parentIdentifier,
     required this.quickMenuScopeKey,
     required this.onTap,
-    required this.onGetMediaActionControl,
     super.key,
   });
   final CLMedia media;
@@ -21,7 +20,6 @@ class MediaAsFile extends ConsumerWidget {
   final Future<bool?> Function()? onTap;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
 
-  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMedia(
@@ -32,7 +30,7 @@ class MediaAsFile extends ConsumerWidget {
         if (media0 == null) {
           return Container();
         }
-        final ac = onGetMediaActionControl(media0);
+        final ac = AccessControlExt.onGetMediaActionControl(media0);
 
         return GetCollection(
           id: media0.collectionId,

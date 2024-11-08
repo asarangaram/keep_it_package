@@ -5,7 +5,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_editors/media_editors.dart';
 
 import 'package:store/store.dart';
 
@@ -35,12 +34,6 @@ class CollectionTimeLinePage extends ConsumerWidget {
 
   final int collectionId;
 
-  ActionControl onGetMediaActionControl(CLMedia media) {
-    return (media.type == CLMediaType.video && !VideoEditor.isSupported)
-        ? ActionControl.full().copyWith(allowEdit: false)
-        : ActionControl.full();
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) => GetCollection(
         id: collectionId,
@@ -57,7 +50,6 @@ class CollectionTimeLinePage extends ConsumerWidget {
                 label: collection?.label ?? 'All Media',
                 items: items,
                 collection: collection,
-                onGetMediaActionControl: onGetMediaActionControl,
                 parentIdentifier:
                     'Gallery View Media CollectionId: ${collection?.id}',
               );
@@ -72,7 +64,6 @@ class TimelineView extends ConsumerWidget {
     required this.label,
     required this.parentIdentifier,
     required this.items,
-    required this.onGetMediaActionControl,
     required this.collection,
     super.key,
   });
@@ -81,7 +72,6 @@ class TimelineView extends ConsumerWidget {
   final String parentIdentifier;
   final CLMedias items;
 
-  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   final Collection? collection;
 
   @override
@@ -114,12 +104,10 @@ class TimelineView extends ConsumerWidget {
                 item.id!,
                 collectionId: item.collectionId,
                 parentIdentifier: parentIdentifier,
-                actionControl: ActionControl.full(),
               );
               return true;
             },
             quickMenuScopeKey: quickMenuScopeKey,
-            onGetMediaActionControl: onGetMediaActionControl,
           ),
           actionMenu: [
             CLMenuItem(

@@ -11,7 +11,6 @@ class MediaPageView extends ConsumerStatefulWidget {
   const MediaPageView({
     required this.items,
     required this.startIndex,
-    required this.onGetMediaActionControl,
     required this.parentIdentifier,
     required this.isLocked,
     this.onLockPage,
@@ -21,7 +20,6 @@ class MediaPageView extends ConsumerStatefulWidget {
 
   final String parentIdentifier;
 
-  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   final int startIndex;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
@@ -72,7 +70,6 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
               child: MediaView(
                 media: media,
                 parentIdentifier: widget.parentIdentifier,
-                onGetMediaActionControl: widget.onGetMediaActionControl,
                 autoStart: currIndex == index,
                 autoPlay: currIndex == index,
                 onLockPage: widget.onLockPage,

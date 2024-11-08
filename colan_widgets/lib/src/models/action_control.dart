@@ -3,8 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../utils/platform_support.dart';
-
 @immutable
 class ActionControl {
   const ActionControl({
@@ -16,37 +14,6 @@ class ActionControl {
     required this.canDuplicateMedia,
   });
 
-  factory ActionControl.full() {
-    return ActionControl(
-      allowEdit: true,
-      allowDelete: true,
-      allowMove: true,
-      allowShare: true,
-      allowPin: ColanPlatformSupport.isMobilePlatform,
-      canDuplicateMedia: true,
-    );
-  }
-  factory ActionControl.none() {
-    return const ActionControl(
-      allowEdit: false,
-      allowDelete: false,
-      allowMove: false,
-      allowShare: false,
-      allowPin: false,
-      canDuplicateMedia: false,
-    );
-  }
-
-  factory ActionControl.editOnly() {
-    return const ActionControl(
-      allowEdit: true,
-      allowDelete: true,
-      allowMove: false,
-      allowShare: true,
-      allowPin: false,
-      canDuplicateMedia: false,
-    );
-  }
   final bool allowEdit;
   final bool allowDelete;
   final bool allowMove;
