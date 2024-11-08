@@ -5,6 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_editors/media_editors.dart';
 
 import 'package:store/store.dart';
 
@@ -29,12 +30,16 @@ void _log(
 class CollectionTimeLinePage extends ConsumerWidget {
   const CollectionTimeLinePage({
     required this.collectionId,
-    required this.actionControl,
     super.key,
   });
 
   final int collectionId;
-  final ActionControl actionControl;
+
+  ActionControl onGetMediaActionControl(CLMedia media) {
+    return (media.type == CLMediaType.video && !VideoEditor.isSupported)
+        ? ActionControl.full().copyWith(allowEdit: false)
+        : ActionControl.full();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => GetCollection(
@@ -52,7 +57,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
                 label: collection?.label ?? 'All Media',
                 items: items,
                 collection: collection,
-                actionControl: actionControl,
+                onGetMediaActionControl: onGetMediaActionControl,
                 parentIdentifier:
                     'Gallery View Media CollectionId: ${collection?.id}',
               );
@@ -67,7 +72,7 @@ class TimelineView extends ConsumerWidget {
     required this.label,
     required this.parentIdentifier,
     required this.items,
-    required this.actionControl,
+    required this.onGetMediaActionControl,
     required this.collection,
     super.key,
   });
@@ -76,7 +81,7 @@ class TimelineView extends ConsumerWidget {
   final String parentIdentifier;
   final CLMedias items;
 
-  final ActionControl actionControl;
+  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   final Collection? collection;
 
   @override
@@ -114,7 +119,7 @@ class TimelineView extends ConsumerWidget {
               return true;
             },
             quickMenuScopeKey: quickMenuScopeKey,
-            actionControl: actionControl,
+            onGetMediaActionControl: onGetMediaActionControl,
           ),
           actionMenu: [
             CLMenuItem(

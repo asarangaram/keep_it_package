@@ -5,7 +5,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
 
 class MediaAsFile extends ConsumerWidget {
@@ -14,7 +13,7 @@ class MediaAsFile extends ConsumerWidget {
     required this.parentIdentifier,
     required this.quickMenuScopeKey,
     required this.onTap,
-    required this.actionControl,
+    required this.onGetMediaActionControl,
     super.key,
   });
   final CLMedia media;
@@ -22,7 +21,7 @@ class MediaAsFile extends ConsumerWidget {
   final Future<bool?> Function()? onTap;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
 
-  final ActionControl actionControl;
+  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMedia(
@@ -33,9 +32,8 @@ class MediaAsFile extends ConsumerWidget {
         if (media0 == null) {
           return Container();
         }
-        final readOnly =
-            (media0.type == CLMediaType.video && !VideoEditor.isSupported) ||
-                (!media0.isMediaCached);
+        final ac = onGetMediaActionControl(media0);
+
         return GetCollection(
           id: media0.collectionId,
           loadingBuilder: () => const Center(child: Text('GetCollection')),
@@ -69,18 +67,15 @@ class MediaAsFile extends ConsumerWidget {
                   onShare: media0.isMediaCached
                       ? () => theStore.mediaUpdater.share(context, [media0])
                       : null,
-                  onEdit: readOnly
-                      ? null
-                      : () async {
-                          /* final updatedMedia =  */ await Navigators
-                              .openEditor(
-                            context,
-                            ref,
-                            media0,
-                            canDuplicateMedia: actionControl.canDuplicateMedia,
-                          );
-                          return true;
-                        },
+                  onEdit: () async {
+                    await Navigators.openEditor(
+                      context,
+                      ref,
+                      media0,
+                      canDuplicateMedia: ac.canDuplicateMedia,
+                    );
+                    return true;
+                  },
                   onDeleteLocalCopy: () async {
                     await theStore.mediaUpdater
                         .deleteLocalCopy(media0, shouldRefresh: false);

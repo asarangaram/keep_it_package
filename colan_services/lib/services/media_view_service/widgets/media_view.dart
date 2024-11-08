@@ -7,7 +7,6 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:media_editors/media_editors.dart';
 import 'package:media_viewers/media_viewers.dart';
 import 'package:store/store.dart';
 
@@ -24,7 +23,7 @@ class MediaView extends StatelessWidget {
   factory MediaView({
     required CLMedia media,
     required String parentIdentifier,
-    required ActionControl actionControl,
+    required ActionControl Function(CLMedia media) onGetMediaActionControl,
     required bool autoStart,
     required bool autoPlay,
     bool isLocked = false,
@@ -39,7 +38,7 @@ class MediaView extends StatelessWidget {
       isLocked: isLocked,
       autoStart: autoStart,
       autoPlay: autoPlay,
-      actionControl: actionControl,
+      onGetMediaActionControl: onGetMediaActionControl,
       onLockPage: onLockPage,
     );
   }
@@ -54,7 +53,7 @@ class MediaView extends StatelessWidget {
       isLocked: true,
       autoStart: true,
       autoPlay: true,
-      actionControl: ActionControl.none(),
+      onGetMediaActionControl: (_) => ActionControl.none(),
     );
   }
   const MediaView._({
@@ -62,7 +61,7 @@ class MediaView extends StatelessWidget {
     required this.media,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.actionControl,
+    required this.onGetMediaActionControl,
     required this.autoStart,
     required this.autoPlay,
     this.onLockPage,
@@ -72,7 +71,7 @@ class MediaView extends StatelessWidget {
 
   final String parentIdentifier;
 
-  final ActionControl actionControl;
+  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   final bool autoStart;
   final bool autoPlay;
   final bool isLocked;
@@ -156,15 +155,12 @@ class MediaView extends StatelessWidget {
         },
       );
     }
-    final readOnly =
-        (media.type == CLMediaType.video && !VideoEditor.isSupported) ||
-            (!media.isMediaCached);
+
     return MediaView0(
       media: media,
       parentIdentifier: parentIdentifier,
       isLocked: isLocked,
-      actionControl:
-          readOnly ? actionControl.copyWith(allowEdit: false) : actionControl,
+      onGetMediaActionControl: onGetMediaActionControl,
       autoPlay: autoPlay,
       autoStart: autoStart,
       onLockPage: onLockPage,
@@ -200,7 +196,7 @@ class MediaView0 extends ConsumerWidget {
     required this.media,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.actionControl,
+    required this.onGetMediaActionControl,
     required this.autoStart,
     required this.autoPlay,
     this.onLockPage,
@@ -210,7 +206,7 @@ class MediaView0 extends ConsumerWidget {
 
   final String parentIdentifier;
 
-  final ActionControl actionControl;
+  final ActionControl Function(CLMedia media) onGetMediaActionControl;
   final bool autoStart;
   final bool autoPlay;
   final bool isLocked;
@@ -218,7 +214,7 @@ class MediaView0 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ac = actionControl;
+    final ac = onGetMediaActionControl(media);
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
       builder: (theStore) {

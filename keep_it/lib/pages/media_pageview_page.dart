@@ -10,13 +10,16 @@ class MediaPageViewPage extends StatelessWidget {
     required this.id,
     required this.collectionId,
     required this.parentIdentifier,
-    required this.actionControl,
     super.key,
   });
   final int? collectionId;
   final int id;
   final String parentIdentifier;
-  final ActionControl actionControl;
+  ActionControl onGetMediaActionControl(CLMedia media) {
+    return (media.type == CLMediaType.video && !VideoEditor.isSupported)
+        ? ActionControl.full().copyWith(allowEdit: false)
+        : ActionControl.full();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +36,7 @@ class MediaPageViewPage extends StatelessWidget {
             child: MediaViewService(
               media: media,
               parentIdentifier: parentIdentifier,
-              actionControl:
-                  (media.type == CLMediaType.video && !VideoEditor.isSupported)
-                      ? actionControl.copyWith(allowEdit: false)
-                      : actionControl,
+              onGetMediaActionControl: onGetMediaActionControl,
             ),
           );
         },
@@ -62,6 +62,7 @@ class MediaPageViewPage extends StatelessWidget {
             media: items.entries,
             parentIdentifier: parentIdentifier,
             initialMediaIndex: initialMediaIndex,
+            onGetMediaActionControl: onGetMediaActionControl,
           );
         },
       );

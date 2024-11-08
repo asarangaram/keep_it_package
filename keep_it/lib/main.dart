@@ -103,7 +103,7 @@ class KeepItApp implements AppDescriptor {
           builder: (context, GoRouterState state) {
             final String parentIdentifier;
             final int? collectionId;
-            final String? actionControlJson;
+
             if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
               parentIdentifier = 'unknown';
             } else {
@@ -115,15 +115,6 @@ class KeepItApp implements AppDescriptor {
               collectionId =
                   int.parse(state.uri.queryParameters['collectionId']!);
             }
-            if (!state.uri.queryParameters.containsKey('actionControl')) {
-              actionControlJson = null;
-            } else {
-              actionControlJson = state.uri.queryParameters['actionControl'];
-            }
-
-            final actionControl = actionControlJson != null
-                ? ActionControl.fromJson(actionControlJson)
-                : ActionControl.none();
 
             return FullscreenLayout(
               useSafeArea: false,
@@ -131,7 +122,6 @@ class KeepItApp implements AppDescriptor {
                 collectionId: collectionId,
                 id: int.parse(state.pathParameters['item_id']!),
                 parentIdentifier: parentIdentifier,
-                actionControl: actionControl,
               ),
             );
           },
@@ -185,7 +175,6 @@ class KeepItApp implements AppDescriptor {
           name: 'items_by_collection/:collectionId',
           builder: (context, GoRouterState state) => CollectionTimeLinePage(
             collectionId: int.parse(state.pathParameters['collectionId']!),
-            actionControl: ActionControl.full(),
           ),
         ),
       ];
