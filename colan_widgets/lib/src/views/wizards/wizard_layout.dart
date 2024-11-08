@@ -43,35 +43,33 @@ class WizardLayout extends StatelessWidget {
           child: KeepItMainView(
             title: title ?? '',
             backButton: null,
-            actionsBuilder: [
-              if (actions != null) ...actions!.map((e) => (context) => e),
+            actions: [
+              if (actions != null) ...actions!.map((e) => e),
               if (onCancel != null)
-                (context) => CircledIcon(
-                      clIcons.closeFullscreen,
-                      onTap: onCancel,
-                    ),
+                CircledIcon(
+                  clIcons.closeFullscreen,
+                  onTap: onCancel,
+                ),
             ],
-            pageBuilder: (context) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Expanded(child: child),
-                  /* const Divider(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(child: child),
+                /* const Divider(
                     height: 16,
                     thickness: 1,
                     indent: 8,
                     endIndent: 8,
                     color: Colors.black,
                   ), */
-                  if (wizard != null) ...[
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    wizard!,
-                  ],
+                if (wizard != null) ...[
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  wizard!,
                 ],
-              );
-            },
+              ],
+            ),
           ),
         ),
       ),

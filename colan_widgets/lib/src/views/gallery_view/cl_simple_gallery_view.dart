@@ -66,15 +66,15 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                 onTap: () => CLPopScreen.onPop(context),
               )
             : null,
-        actionsBuilder: widget.actionMenu
+        actions: widget.actionMenu
             .map(
-              (e) => (_) => CLButtonIcon.small(
-                    e.icon,
-                    onTap: e.onTap,
-                  ),
+              (e) => CLButtonIcon.small(
+                e.icon,
+                onTap: e.onTap,
+              ),
             )
             .toList(),
-        pageBuilder: (context) => widget.emptyState,
+        child: widget.emptyState,
       );
     } else {
       return ProviderScope(
@@ -85,71 +85,65 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         child: KeepItMainView(
           title: widget.title,
           backButton: widget.backButton,
-          actionsBuilder: [
+          actions: [
             if (widget.selectionActions != null)
-              (context) => CLButtonText.small(
-                    isSelectionMode ? 'Done' : 'Select',
-                    onTap: () {
-                      setState(() {
-                        isSelectionMode = !isSelectionMode;
-                      });
-                    },
-                  ),
+              CLButtonText.small(
+                isSelectionMode ? 'Done' : 'Select',
+                onTap: () {
+                  setState(() {
+                    isSelectionMode = !isSelectionMode;
+                  });
+                },
+              ),
             if (!isSelectionMode)
-              (context) => Row(
-                    children: widget.actionMenu
-                        .map(
-                          (e) => CLButtonIcon.small(
-                            e.icon,
-                            onTap: e.onTap,
-                          ),
-                        )
-                        .toList(),
-                  ),
-          ],
-          pageBuilder: (context) {
-            return Stack(
-              key: parentKey,
-              children: [
-                CLRefreshIndicator(
-                  onRefresh: isSelectionMode ? null : widget.onRefresh,
-                  key: ValueKey('${widget.identifier} Refresh'),
-                  child: CLGalleryCore(
-                    key: ValueKey(widget.galleryMap),
-                    items: widget.galleryMap,
-                    itemBuilder: (context, item) {
-                      return widget.itemBuilder(
-                        context,
-                        item,
-                      );
-                    },
-                    columns: widget.columns,
-                    keepSelected: false,
-                    onSelectionChanged: isSelectionMode
-                        ? (List<T> items) {
-                            selectedItems = items;
-                            setState(() {});
-                          }
-                        : null,
-                  ),
+              ...widget.actionMenu.map(
+                (e) => CLButtonIcon.small(
+                  e.icon,
+                  onTap: e.onTap,
                 ),
-                if (isSelectionMode && selectedItems.isNotEmpty)
-                  ActionsDraggableMenu<T>(
-                    items: selectedItems,
-                    tagPrefix: widget.identifier,
-                    onDone: () {
-                      isSelectionMode = false;
-                      //onDone();
-                      if (mounted) {
-                        setState(() {});
-                      }
-                    },
-                    selectionActions: widget.selectionActions,
-                    parentKey: parentKey,
-                  ),
-              ],
-            );
-          },
+              ),
+          ],
+          child: Stack(
+            key: parentKey,
+            children: [
+              CLRefreshIndicator(
+                onRefresh: isSelectionMode ? null : widget.onRefresh,
+                key: ValueKey('${widget.identifier} Refresh'),
+                child: CLGalleryCore(
+                  key: ValueKey(widget.galleryMap),
+                  items: widget.galleryMap,
+                  itemBuilder: (context, item) {
+                    return widget.itemBuilder(
+                      context,
+                      item,
+                    );
+                  },
+                  columns: widget.columns,
+                  keepSelected: false,
+                  onSelectionChanged: isSelectionMode
+                      ? (List<T> items) {
+                          selectedItems = items;
+                          setState(() {});
+                        }
+                      : null,
+                ),
+              ),
+              if (isSelectionMode && selectedItems.isNotEmpty)
+                ActionsDraggableMenu<T>(
+                  items: selectedItems,
+                  tagPrefix: widget.identifier,
+                  onDone: () {
+                    isSelectionMode = false;
+                    //onDone();
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
+                  selectionActions: widget.selectionActions,
+                  parentKey: parentKey,
+                ),
+            ],
+          ),
         ),
       );
     }
