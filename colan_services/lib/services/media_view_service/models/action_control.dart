@@ -23,7 +23,7 @@ extension AccessControlExt on ActionControl {
       allowDelete: true,
       allowMove: true,
       allowShare: isAFile,
-      allowPin: isAFile,
+      allowPin: ColanPlatformSupport.isMobilePlatform,
       canDuplicateMedia: true,
     );
   }
