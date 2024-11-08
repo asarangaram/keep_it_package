@@ -5,6 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:store/store.dart';
 
+import '../basic_page_service/navigators.dart';
+import '../incoming_media_service/models/cl_shared_media.dart';
+import '../media_view_service/models/action_control.dart';
+import '../media_wizard_service/media_wizard_service.dart';
+
 class MediaMenu extends ConsumerWidget {
   const MediaMenu({
     required this.child,
@@ -25,120 +30,193 @@ class MediaMenu extends ConsumerWidget {
   final CLMedia media;
 
   final Widget child;
-  final Future<bool?> Function()? onEdit;
+  final ValueGetter<Future<bool?> Function()?>? onEdit;
   final Widget? downloadStatusWidget;
 
-  final Future<bool?> Function()? onMove;
-  final Future<bool?> Function()? onShare;
+  final ValueGetter<Future<bool?> Function()?>? onMove;
+  final ValueGetter<Future<bool?> Function()?>? onShare;
   final Future<bool?> Function()? onTap;
-  final Future<bool?> Function()? onPin;
-  final Future<bool?> Function()? onUpload;
-  final Future<bool?> Function()? onDelete;
-  final Future<bool?> Function()? onDeleteLocalCopy;
-  final Future<bool?> Function()? onDeleteServerCopy;
-  final Future<bool?> Function()? onKeepOffline;
+  final ValueGetter<Future<bool?> Function()?>? onPin;
+
+  final ValueGetter<Future<bool?> Function()?>? onDelete;
+  final ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy;
+  final ValueGetter<Future<bool?> Function()?>? onKeepOffline;
+
+  final ValueGetter<Future<bool?> Function()?>? onUpload;
+  final ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canSync =
-        ref.watch(serverProvider.select((server) => server.canSync));
-    return GetCollection(
-      id: media.collectionId,
-      loadingBuilder: CircularProgressIndicator.new,
-      errorBuilder: (e, st) => Text(e.toString()),
-      builder: (collection0) {
-        final collection = collection0!;
+    return GetStoreUpdater(
+      builder: (theStore) {
+        final canSync =
+            ref.watch(serverProvider.select((server) => server.canSync));
+        final ac = AccessControlExt.onGetMediaActionControl(media);
 
-        return PullDownButton(
-          itemBuilder: (context) => [
-            PullDownMenuHeader(
-              title: media.name,
-              leadingBuilder: (context, constraints) {
-                return SizedBox.square(
-                  dimension: 24,
-                  child: media.serverUID == null
-                      ? Image.asset('assets/icon/not_on_server.png')
-                      : Image.asset(
-                          'assets/icon/cloud_on_lan_128px_color.png',
-                        ),
+        final onMove = ac.onMove(
+          this.onMove != null
+              ? this.onMove!()
+              : () => MediaWizardService.openWizard(
+                    context,
+                    ref,
+                    CLSharedMedia(
+                      entries: [media],
+                      type: UniversalMediaSource.move,
+                    ),
+                  ),
+        );
+
+        final onEdit = ac.onEdit(
+          this.onEdit != null
+              ? this.onEdit!()
+              : () async {
+                  await Navigators.openEditor(
+                    context,
+                    ref,
+                    media,
+                  );
+                  return true;
+                },
+        );
+
+        final onShare = ac.onShare(
+          this.onShare != null
+              ? this.onShare!()
+              : () => theStore.mediaUpdater.share(context, [media]),
+        );
+        final onDelete = ac.onDelete(
+          this.onDelete != null
+              ? this.onDelete!()
+              : () async => theStore.mediaUpdater.delete(media.id!),
+        );
+        final onPin = ac.onPin(
+          this.onPin != null
+              ? this.onPin!()
+              : () async => theStore.mediaUpdater.pinToggle(media.id!),
+        );
+
+        return GetCollection(
+          id: media.collectionId,
+          loadingBuilder: CircularProgressIndicator.new,
+          errorBuilder: (e, st) => Text(e.toString()),
+          builder: (collection0) {
+            final collection = collection0!;
+
+            final canDeleteLocalCopy = canSync &&
+                collection.haveItOffline &&
+                media.hasServerUID &&
+                media.isMediaCached;
+            final canDownload = canSync &&
+                collection.haveItOffline &&
+                media.hasServerUID &&
+                !media.isMediaCached &&
+                media.haveItOffline != null &&
+                (!media.haveItOffline!);
+            final onDeleteLocalCopy = canDeleteLocalCopy
+                ? this.onDeleteLocalCopy != null
+                    ? this.onDeleteLocalCopy!()
+                    : () async => ref
+                        .read(serverProvider.notifier)
+                        .onDeleteMediaLocalCopy(media)
+                : null;
+            final onKeepOffline = canDownload
+                ? this.onKeepOffline != null
+                    ? this.onKeepOffline!()
+                    : () async => ref
+                        .read(serverProvider.notifier)
+                        .onKeepMediaOffline(media)
+                : null;
+            return PullDownButton(
+              itemBuilder: (context) => [
+                PullDownMenuHeader(
+                  title: media.name,
+                  leadingBuilder: (context, constraints) {
+                    return SizedBox.square(
+                      dimension: 24,
+                      child: media.serverUID == null
+                          ? Image.asset('assets/icon/not_on_server.png')
+                          : Image.asset(
+                              'assets/icon/cloud_on_lan_128px_color.png',
+                            ),
+                    );
+                  },
+                ),
+
+                //if (downloadStatusWidget != null)
+
+                PullDownMenuActionsRow.medium(
+                  items: [
+                    PullDownMenuItem(
+                      onTap: onDelete,
+                      enabled: onDelete != null,
+                      title: 'Delete',
+                      icon: clIcons.imageDelete,
+                      //iconColor: Colors.red,
+                      isDestructive: true,
+                    ),
+                    PullDownMenuItem(
+                      onTap: onMove,
+                      enabled: onMove != null,
+                      title: 'Move',
+                      icon: clIcons.imageMove,
+                    ),
+                  ],
+                ),
+                if (onEdit != null || onPin != null || onShare != null)
+                  PullDownMenuActionsRow.small(
+                    items: [
+                      PullDownMenuItem(
+                        onTap: onEdit,
+                        enabled: onEdit != null,
+                        title: 'Edit',
+                        icon: clIcons.imageEdit,
+                      ),
+                      PullDownMenuItem(
+                        onTap: onPin,
+                        enabled: onPin != null,
+                        title: 'Pin',
+                        icon: clIcons.pinAll,
+                      ),
+                      PullDownMenuItem(
+                        onTap: onShare,
+                        enabled: onShare != null,
+                        title: 'Share',
+                        icon: clIcons.imageShare,
+                      ),
+                    ],
+                  ),
+
+                if (canDeleteLocalCopy)
+                  PullDownMenuItem(
+                    onTap: onDeleteLocalCopy,
+                    title: 'Remove downloads',
+                    subtitle: 'Freeup space on this device',
+                    icon: Icons.download_done_sharp,
+                  ),
+                if (canDownload)
+                  PullDownMenuItem(
+                    onTap: onKeepOffline,
+                    title: 'Download',
+                    subtitle: 'To view offline',
+                    icon: Icons.download_sharp,
+                  ),
+
+                PullDownMenuTitle(
+                  title: MapInfo(
+                    media.toMapForDisplay(),
+                    title: 'Details',
+                  ),
+                ),
+              ],
+              buttonAnchor: PullDownMenuAnchor.center,
+              buttonBuilder: (context, showMenu) {
+                return GestureDetector(
+                  onTap: onTap,
+                  onSecondaryTap: showMenu,
+                  onLongPress: showMenu,
+                  child: child,
                 );
               },
-            ),
-
-            //if (downloadStatusWidget != null)
-
-            PullDownMenuActionsRow.medium(
-              items: [
-                PullDownMenuItem(
-                  onTap: onEdit,
-                  enabled: onEdit != null,
-                  title: 'Edit',
-                  icon: clIcons.imageEdit,
-                ),
-                PullDownMenuItem(
-                  onTap: onDelete,
-                  enabled: onDelete != null,
-                  title: 'Delete',
-                  icon: clIcons.imageDelete,
-                  //iconColor: Colors.red,
-                  isDestructive: true,
-                ),
-                PullDownMenuItem(
-                  onTap: onShare,
-                  enabled: onShare != null,
-                  title: 'Share',
-                  icon: clIcons.imageShare,
-                ),
-              ],
-            ),
-            //if (onMove != null || onPin != null)
-            PullDownMenuActionsRow.small(
-              items: [
-                PullDownMenuItem(
-                  onTap: onMove,
-                  enabled: onMove != null,
-                  title: 'Move',
-                  icon: clIcons.imageMove,
-                ),
-                PullDownMenuItem(
-                  onTap: onPin,
-                  enabled: onPin != null,
-                  title: 'Pin',
-                  icon: clIcons.pinAll,
-                ),
-              ],
-            ),
-
-            if (canSync && collection.haveItOffline && media.hasServerUID)
-              if (media.isMediaCached)
-                PullDownMenuItem(
-                  onTap: onDeleteLocalCopy,
-                  title: 'Remove downloads',
-                  subtitle: 'Freeup space on this device',
-                  icon: Icons.download_done_sharp,
-                )
-              else if (media.haveItOffline != null && (!media.haveItOffline!))
-                PullDownMenuItem(
-                  onTap: onKeepOffline,
-                  title: 'Download',
-                  subtitle: 'To view offline',
-                  icon: Icons.download_sharp,
-                ),
-
-            PullDownMenuTitle(
-              title: MapInfo(
-                media.toMapForDisplay(),
-                title: 'Details',
-              ),
-            ),
-          ],
-          buttonAnchor: PullDownMenuAnchor.center,
-          buttonBuilder: (context, showMenu) {
-            return GestureDetector(
-              onTap: onTap,
-              onSecondaryTap: showMenu,
-              onLongPress: showMenu,
-              child: child,
             );
           },
         );

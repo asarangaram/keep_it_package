@@ -4,14 +4,7 @@ import 'package:store/store.dart';
 
 extension AccessControlExt on ActionControl {
   static ActionControl actionControlNone() {
-    return const ActionControl(
-      allowEdit: false,
-      allowDelete: false,
-      allowMove: false,
-      allowShare: false,
-      allowPin: false,
-      canDuplicateMedia: false,
-    );
+    return const ActionControl();
   }
 
   static ActionControl onGetMediaActionControl(CLMedia media) {

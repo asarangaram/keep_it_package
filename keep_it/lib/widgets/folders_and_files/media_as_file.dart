@@ -14,11 +14,13 @@ class MediaAsFile extends ConsumerWidget {
     required this.quickMenuScopeKey,
     required this.onTap,
     super.key,
+    this.canDuplicateMedia = true,
   });
   final CLMedia media;
   final String parentIdentifier;
   final Future<bool?> Function()? onTap;
   final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  final bool canDuplicateMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +32,6 @@ class MediaAsFile extends ConsumerWidget {
         if (media0 == null) {
           return Container();
         }
-        final ac = AccessControlExt.onGetMediaActionControl(media0);
 
         return GetCollection(
           id: media0.collectionId,
@@ -51,46 +52,6 @@ class MediaAsFile extends ConsumerWidget {
             return GetStoreUpdater(
               builder: (theStore) {
                 return MediaMenu(
-                  onMove: () => MediaWizardService.openWizard(
-                    context,
-                    ref,
-                    CLSharedMedia(
-                      entries: [media0],
-                      type: UniversalMediaSource.move,
-                    ),
-                  ),
-                  onDelete: () async {
-                    return theStore.mediaUpdater.delete(media0.id!);
-                  },
-                  onShare: media0.isMediaCached
-                      ? () => theStore.mediaUpdater.share(context, [media0])
-                      : null,
-                  onEdit: () async {
-                    await Navigators.openEditor(
-                      context,
-                      ref,
-                      media0,
-                      canDuplicateMedia: ac.canDuplicateMedia,
-                    );
-                    return true;
-                  },
-                  onDeleteLocalCopy: () async {
-                    await theStore.mediaUpdater
-                        .deleteLocalCopy(media0, shouldRefresh: false);
-                    ref.read(serverProvider.notifier).instantSync();
-                    return true;
-                  },
-                  onKeepOffline: () async {
-                    final mediaInDB = await theStore.mediaUpdater
-                        .markHaveItOffline(media0, shouldRefresh: false);
-                    if (mediaInDB != null) {
-                      ref
-                          .read(serverProvider.notifier)
-                          .downloadMediaFile(mediaInDB);
-                    }
-
-                    return true;
-                  },
                   onTap: onTap,
                   media: media0,
                   child: Column(
@@ -129,7 +90,7 @@ class MediaAsFile extends ConsumerWidget {
                                     : 'assets/icon/cloud_on_lan_128px_color.png',
                               ),
                             ),
-                            if (media0.isMediaCached)
+                            if (media0.isMediaCached && media0.hasServerUID)
                               const SizedBox.square(
                                 dimension: 10,
                                 child: FittedBox(

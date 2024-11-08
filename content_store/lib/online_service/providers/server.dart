@@ -246,6 +246,24 @@ class ServerNotifier extends StateNotifier<Server> {
       name: 'Online Service | Server',
     );
   }
+
+  Future<bool> onDeleteMediaLocalCopy(CLMedia media) async {
+    final updater = await storeUpdater;
+    await updater.mediaUpdater.deleteLocalCopy(media, shouldRefresh: false);
+    instantSync();
+    return true;
+  }
+
+  Future<bool> onKeepMediaOffline(CLMedia media) async {
+    final updater = await storeUpdater;
+    final mediaInDB = await updater.mediaUpdater
+        .markHaveItOffline(media, shouldRefresh: false);
+    if (mediaInDB != null) {
+      downloadMediaFile(mediaInDB);
+    }
+
+    return true;
+  }
 }
 
 final serverProvider = StateNotifierProvider<ServerNotifier, Server>((ref) {
