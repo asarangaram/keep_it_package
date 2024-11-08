@@ -32,29 +32,22 @@ class KeepItApp implements AppDescriptor {
       };
 
   @override
-  List<CLShellRouteDescriptor> get shellRoutes => [
-        CLShellRouteDescriptor(
-          name: '',
-          builder: (context, GoRouterState state) => const CollectionsPage(),
-          iconData: clIcons.navigateHome,
-          label: 'main',
-        ),
-        CLShellRouteDescriptor(
-          name: 'Pinned',
-          builder: (context, state) => const PinnedMediaPage(),
-          iconData: clIcons.navigatePinPage,
-          label: 'Pinned',
-        ),
-        CLShellRouteDescriptor(
-          name: 'settings',
-          builder: (context, state) => const SettingsMainPage(),
-          iconData: clIcons.navigateSettings,
-          label: 'Settings',
-        ),
-      ];
+  List<CLShellRouteDescriptor> get shellRoutes => [];
 
   @override
   List<CLRouteDescriptor> get fullscreenBuilders => [
+        CLRouteDescriptor(
+          name: 'Pinned',
+          builder: (context, state) => const PinnedMediaPage(),
+        ),
+        CLRouteDescriptor(
+          name: 'settings',
+          builder: (context, state) => const SettingsMainPage(),
+        ),
+        CLRouteDescriptor(
+          name: 'main',
+          builder: (context, GoRouterState state) => const CollectionsPage(),
+        ),
         CLRouteDescriptor(
           name: 'camera',
           builder: (context, GoRouterState state) {
@@ -163,10 +156,6 @@ class KeepItApp implements AppDescriptor {
             return const FullscreenLayout(child: EmptyState());
           },
         ),
-      ];
-
-  @override
-  List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
           name: 'collections',
           builder: (context, GoRouterState state) => const CollectionsPage(),
@@ -178,6 +167,9 @@ class KeepItApp implements AppDescriptor {
           ),
         ),
       ];
+
+  @override
+  List<CLRouteDescriptor> get screenBuilders => [];
 
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
@@ -233,6 +225,7 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
+        if (location == '/') return '/main';
         const redirectTo = '';
         //'/collections/storage_preference';
         if (redirectTo.isNotEmpty) {

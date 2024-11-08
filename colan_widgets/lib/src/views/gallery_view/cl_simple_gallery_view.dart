@@ -60,7 +60,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
       return KeepItMainView(
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
-        backButton: CLPopScreen.canPop(context)
+        leading: CLPopScreen.canPop(context)
             ? CLButtonIcon.small(
                 clIcons.pagePop,
                 onTap: () => CLPopScreen.onPop(context),
@@ -84,7 +84,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         ],
         child: KeepItMainView(
           title: widget.title,
-          backButton: widget.backButton,
+          leading: widget.backButton,
           actions: [
             if (widget.selectionActions != null)
               CLButtonText.small(

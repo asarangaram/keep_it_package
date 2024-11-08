@@ -42,7 +42,6 @@ class WizardLayout extends StatelessWidget {
         child: CLBackground(
           child: KeepItMainView(
             title: title ?? '',
-            backButton: null,
             actions: [
               if (actions != null) ...actions!.map((e) => e),
               if (onCancel != null)
@@ -51,25 +50,15 @@ class WizardLayout extends StatelessWidget {
                   onTap: onCancel,
                 ),
             ],
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(child: child),
-                /* const Divider(
-                    height: 16,
-                    thickness: 1,
-                    indent: 8,
-                    endIndent: 8,
-                    color: Colors.black,
-                  ), */
-                if (wizard != null) ...[
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  wizard!,
-                ],
+            bottomWidgets: [
+              if (wizard != null) ...[
+                const SizedBox(
+                  height: 16,
+                ),
+                wizard!,
               ],
-            ),
+            ],
+            child: child,
           ),
         ),
       ),

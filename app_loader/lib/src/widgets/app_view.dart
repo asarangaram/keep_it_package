@@ -116,25 +116,26 @@ class _RaLRouterState extends ConsumerState<AppView>
 
     _router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: '/${app.shellRoutes.first.name}',
+      initialLocation: '/',
       routes: [
-        StatefulShellRoute.indexedStack(
-          parentNavigatorKey: parentNavigatorKey,
-          branches: shellRoutes,
-          pageBuilder: (
-            BuildContext context,
-            GoRouterState state,
-            StatefulNavigationShell navigationShell,
-          ) {
-            return MaterialPage(
-              child: BottomNavigationPage(
-                onMedia: app.incomingMediaViewBuilder,
-                routes: app.shellRoutes,
-                child: navigationShell,
-              ),
-            );
-          },
-        ),
+        if (shellRoutes.isNotEmpty)
+          StatefulShellRoute.indexedStack(
+            parentNavigatorKey: parentNavigatorKey,
+            branches: shellRoutes,
+            pageBuilder: (
+              BuildContext context,
+              GoRouterState state,
+              StatefulNavigationShell navigationShell,
+            ) {
+              return MaterialPage(
+                child: BottomNavigationPage(
+                  onMedia: app.incomingMediaViewBuilder,
+                  routes: app.shellRoutes,
+                  child: navigationShell,
+                ),
+              );
+            },
+          ),
         ...fullScreenRoutes,
       ],
       redirect: (context, state) {

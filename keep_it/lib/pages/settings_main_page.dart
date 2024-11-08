@@ -11,7 +11,7 @@ class SettingsMainPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
       title: 'Settings',
-      backButton: null,
+      leading: null,
       child: GetDeletedMedia(
         errorBuilder: null,
         loadingBuilder: null,
