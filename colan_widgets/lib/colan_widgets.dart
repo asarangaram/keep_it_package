@@ -37,7 +37,6 @@ export 'src/views/appearance/keep_it_main_view.dart';
 export 'src/views/gallery_view/cl_gallery_core.dart';
 export 'src/views/gallery_view/cl_simple_gallery_view.dart';
 export 'src/views/gallery_view/model/gallery_group.dart';
-export 'src/views/quick_menu/cl_quickmenu.dart';
 export 'src/views/stream_progress_view.dart';
 export 'src/views/wizards/wizard_dialog.dart';
 export 'src/views/wizards/wizard_layout.dart';

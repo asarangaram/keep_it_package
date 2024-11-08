@@ -21,89 +21,81 @@ class ServerControlImpl extends ConsumerWidget {
       builder: (server) {
         return GetDownloaderStatus(
           builder: (downloaderStatus) {
-            return Card(
-              shape: BeveledRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              elevation: 16,
-              color: Theme.of(context).colorScheme.primaryContainer,
-              // padding: const EdgeInsets.all(2),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          ...[
-                            SpeedDial(
-                              overlayOpacity: 0,
-                              elevation: 0,
-                              buttonSize: const Size(30, 30),
-                              children: [
-                                if (!server.isOffline)
-                                  if (!server.workingOffline)
-                                    SpeedDialChild(
-                                      onTap: () {
-                                        ref
-                                            .read(serverProvider.notifier)
-                                            .workOffline();
-                                      },
-                                      labelWidget: const SpeedDialChildWrapper(
-                                        child: WorkOffline(),
-                                      ),
-                                    )
-                                  else
-                                    SpeedDialChild(
-                                      onTap: () {
-                                        ref
-                                            .read(serverProvider.notifier)
-                                            .goOnline();
-                                      },
-                                      labelWidget: const SpeedDialChildWrapper(
-                                        child: GoOnline(),
-                                      ),
-                                    ),
-                                if (server.canSync)
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        ...[
+                          SpeedDial(
+                            overlayOpacity: 0,
+                            elevation: 0,
+                            buttonSize: const Size(30, 30),
+                            children: [
+                              if (!server.isOffline)
+                                if (!server.workingOffline)
                                   SpeedDialChild(
                                     onTap: () {
                                       ref
                                           .read(serverProvider.notifier)
-                                          .manualSync();
+                                          .workOffline();
                                     },
-                                    labelWidget: const SyncServer(),
+                                    labelWidget: const SpeedDialChildWrapper(
+                                      child: WorkOffline(),
+                                    ),
+                                  )
+                                else
+                                  SpeedDialChild(
+                                    onTap: () {
+                                      ref
+                                          .read(serverProvider.notifier)
+                                          .goOnline();
+                                    },
+                                    labelWidget: const SpeedDialChildWrapper(
+                                      child: GoOnline(),
+                                    ),
                                   ),
-                              ],
-                              switchLabelPosition: true,
-                              activeIcon: clIcons.closeFullscreen,
-                              child: Image.asset(
-                                'assets/icon/cloud_on_lan_128px_color.png',
-                              ),
-                            ),
-                            if (server.isSyncing)
-                              const CircularProgressIndicator.adaptive(),
-                            if (downloaderStatus.total > 0)
-                              const SizedBox.square(
-                                dimension: 30,
-                                child: DownloaderProgressPie(),
-                              ),
-                            if (downloaderStatus.running > 0)
-                              const SizedBox.square(
-                                dimension: 30,
-                                child: ActiveDownloadIndicator(),
-                              ),
-                          ].map(
-                            (e) => Padding(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: e,
+                              if (server.canSync)
+                                SpeedDialChild(
+                                  onTap: () {
+                                    ref
+                                        .read(serverProvider.notifier)
+                                        .manualSync();
+                                  },
+                                  labelWidget: const SyncServer(),
+                                ),
+                            ],
+                            switchLabelPosition: true,
+                            activeIcon: clIcons.closeFullscreen,
+                            child: Image.asset(
+                              'assets/icon/cloud_on_lan_128px_color.png',
                             ),
                           ),
-                        ],
-                      ),
+                          if (server.isSyncing)
+                            const CircularProgressIndicator.adaptive(),
+                          if (downloaderStatus.total > 0)
+                            const SizedBox.square(
+                              dimension: 30,
+                              child: DownloaderProgressPie(),
+                            ),
+                          if (downloaderStatus.running > 0)
+                            const SizedBox.square(
+                              dimension: 30,
+                              child: ActiveDownloadIndicator(),
+                            ),
+                        ].map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: e,
+                          ),
+                        ),
+                      ],
                     ),
-                    const ChangeMonitor(),
-                  ],
-                ),
+                  ),
+                  const ChangeMonitor(),
+                ],
               ),
             );
           },

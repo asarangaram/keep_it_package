@@ -15,6 +15,8 @@ class CLFullscreenBox extends ConsumerStatefulWidget {
     this.hasBackground = true,
     this.bottomNavigationBar,
     this.appBar,
+    this.bottomSheet,
+    this.floatingActionButton,
   });
 
   final Widget child;
@@ -25,6 +27,8 @@ class CLFullscreenBox extends ConsumerStatefulWidget {
   final bool hasBackground;
   final Widget? bottomNavigationBar;
   final PreferredSizeWidget? appBar;
+  final Widget? bottomSheet;
+  final Widget? floatingActionButton;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -63,6 +67,10 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
                       appBar: widget.appBar,
                       body: widget.child,
                       bottomNavigationBar: widget.bottomNavigationBar,
+                      bottomSheet: widget.bottomSheet,
+                      floatingActionButtonLocation:
+                          FloatingActionButtonLocation.centerDocked,
+                      floatingActionButton: widget.floatingActionButton,
                     ),
                   );
                 },

@@ -51,7 +51,7 @@ class _RaLRouterState extends ConsumerState<AppView>
   Widget build(BuildContext context) {
     final app = widget.appDescriptor;
 
-    /* final routes = app.screenBuilders.map(
+    final routes = app.screenBuilders.map(
       (e) => GoRoute(
         path: '/${e.name}',
         name: e.name,
@@ -61,7 +61,7 @@ class _RaLRouterState extends ConsumerState<AppView>
           transitionsBuilder: app.transitionBuilder,
         ),
       ),
-    ); */
+    );
     final fullScreenRoutes = app.fullscreenBuilders.map(
       (e) => GoRoute(
         path: '/${e.name}',
@@ -116,7 +116,7 @@ class _RaLRouterState extends ConsumerState<AppView>
 
     _router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: '/${app.shellRoutes.first.name}',
+      initialLocation: '/${app.shellRoutes[1].name}',
       routes: [
         StatefulShellRoute.indexedStack(
           parentNavigatorKey: parentNavigatorKey,

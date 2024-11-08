@@ -34,16 +34,16 @@ class KeepItApp implements AppDescriptor {
   @override
   List<CLShellRouteDescriptor> get shellRoutes => [
         CLShellRouteDescriptor(
-          name: '',
-          builder: (context, GoRouterState state) => const CollectionsPage(),
-          iconData: clIcons.navigateHome,
-          label: 'main',
-        ),
-        CLShellRouteDescriptor(
           name: 'Pinned',
           builder: (context, state) => const PinnedMediaPage(),
           iconData: clIcons.navigatePinPage,
           label: 'Pinned',
+        ),
+        CLShellRouteDescriptor(
+          name: '',
+          builder: (context, GoRouterState state) => const CollectionsPage(),
+          iconData: clIcons.navigateHome,
+          label: 'main',
         ),
         CLShellRouteDescriptor(
           name: 'settings',
