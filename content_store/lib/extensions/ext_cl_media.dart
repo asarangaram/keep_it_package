@@ -109,6 +109,10 @@ extension FilenameExtOnCLMedia on CLMedia {
   String? get mediaEndPoint => serverUID == null
       ? null
       : '/media/$serverUID/download?isOriginal=$mustDownloadOriginal';
+
+  String? get mediaStreamEndPoint =>
+      serverUID == null ? null : '/media/$serverUID/stream/m3u8';
+
   String? get previewEndPoint =>
       serverUID == null ? null : '/media/$serverUID/preview';
 

@@ -65,7 +65,7 @@ class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {
           server != null && m.mediaEndPoint != null
               ? AsyncValue.data(
                   Uri.parse(
-                    server!.getEndpointURI(m.mediaEndPoint!).toString(),
+                    server!.getEndpointURI(m.mediaStreamEndPoint!).toString(),
                   ),
                 )
               : throw Exception('Server Not connected'),

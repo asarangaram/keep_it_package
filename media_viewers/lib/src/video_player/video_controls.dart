@@ -24,7 +24,7 @@ class VideoDefaultControls extends ConsumerWidget {
         VideoPlayerState state,
         VideoPlayerController controller,
       ) {
-        if (state.path == uri.toFilePath()) {
+        if (state.path == uri) {
           return VideoControlsView(controller: controller);
         } else {
           return Container();

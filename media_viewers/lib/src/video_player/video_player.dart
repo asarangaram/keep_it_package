@@ -36,7 +36,7 @@ class VideoPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (uri.scheme != 'file') {
+    /* if (uri.scheme != 'file') {
       log("VideoPlayer can't play $uri");
       return Center(
         child: SizedBox.square(
@@ -44,11 +44,11 @@ class VideoPlayer extends ConsumerWidget {
           child: BrokenImage.show(),
         ),
       );
-    }
+    } */
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (context.mounted && autoStart) {
         await ref.read(videoPlayerStateProvider.notifier).setVideo(
-              uri.toFilePath(),
+              uri,
               autoPlay: autoPlay,
             );
       }
@@ -59,7 +59,7 @@ class VideoPlayer extends ConsumerWidget {
         VideoPlayerState state,
         VideoPlayerController controller,
       ) {
-        if (state.path == uri.toFilePath()) {
+        if (state.path == uri) {
           return VideoLayer(
             controller: controller,
           );

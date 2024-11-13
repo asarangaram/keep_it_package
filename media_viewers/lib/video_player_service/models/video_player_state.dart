@@ -6,7 +6,7 @@ import 'package:video_player/video_player.dart';
 
 @immutable
 class VideoPlayerState {
-  final String? path;
+  final Uri? path;
   final AsyncValue<VideoPlayerController> controllerAsync;
   const VideoPlayerState({
     this.path,
@@ -24,7 +24,7 @@ class VideoPlayerState {
   int get hashCode => path.hashCode ^ controllerAsync.hashCode;
 
   VideoPlayerState copyWith({
-    String? path,
+    Uri? path,
     AsyncValue<VideoPlayerController>? controllerAsync,
   }) {
     return VideoPlayerState(

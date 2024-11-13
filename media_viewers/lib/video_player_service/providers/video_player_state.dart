@@ -9,18 +9,24 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
   VideoPlayerStateNotifier() : super(const VideoPlayerState());
   VideoPlayerController? controller;
 
-  Future<void> setVideo(String path, {bool autoPlay = true}) async {
-    if (state.path == path) return;
-    state = VideoPlayerState(path: path);
+  Future<void> setVideo(Uri uri, {bool autoPlay = true}) async {
+    if (state.path == uri) return;
+    state = VideoPlayerState(path: uri);
     try {
-      if (!File(path).existsSync()) {
-        throw FileSystemException('missing file', path);
-      }
       if (controller != null) {
         await controller!.pause();
         await controller!.dispose();
       }
-      controller = VideoPlayerController.file(File(path));
+      if (uri.scheme == 'file') {
+        final path = uri.toFilePath();
+        if (!File(path).existsSync()) {
+          throw FileSystemException('missing file', path);
+        }
+
+        controller = VideoPlayerController.file(File(path));
+      } else if (['http', 'https'].contains(uri.scheme)) {
+        controller = VideoPlayerController.networkUrl(uri);
+      }
       if (controller == null) {
         throw Exception('Failed to create controller');
       }
@@ -39,7 +45,7 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
     }
   }
 
-  Future<void> stopVideo(String? path) async {
+  Future<void> stopVideo(Uri? path) async {
     if (path == state.path || path == null) {
       if (controller != null) {
         await controller!.pause();
