@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_viewers/src/image_viewer/views/broken_image.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../video_player_service/models/video_player_state.dart';
