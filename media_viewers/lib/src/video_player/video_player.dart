@@ -5,7 +5,6 @@ import 'package:video_player/video_player.dart';
 import '../../video_player_service/models/video_player_state.dart';
 import '../../video_player_service/providers/video_player_state.dart';
 import '../../video_player_service/views/video_layer.dart';
-import '../image_viewer/views/broken_image.dart';
 import 'get_video_controller.dart';
 
 enum PlayerServices { player, controlMenu, playStateBuilder }
