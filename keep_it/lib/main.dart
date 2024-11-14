@@ -259,7 +259,11 @@ void main() {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-  fvp.registerWith();
+  fvp.registerWith(
+    options: {
+      'global': {'logLevel': 'Error'},
+    },
+  );
   runApp(
     ProviderScope(
       child: AppLoader(
