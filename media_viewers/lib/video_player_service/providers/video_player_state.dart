@@ -9,8 +9,19 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
   VideoPlayerStateNotifier() : super(const VideoPlayerState());
   VideoPlayerController? controller;
 
-  Future<void> setVideo(Uri uri, {bool autoPlay = true}) async {
-    if (state.path == uri) return;
+  Future<void> resetVideo({
+    bool autoPlay = true,
+    bool forced = false,
+  }) async {
+    await setVideo(state.path!, forced: true);
+  }
+
+  Future<void> setVideo(
+    Uri uri, {
+    bool autoPlay = true,
+    bool forced = false,
+  }) async {
+    if (!forced && state.path == uri) return;
     state = VideoPlayerState(path: uri);
     try {
       if (controller != null) {
@@ -52,15 +63,14 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
         if (!newController.value.isInitialized) {
           throw Exception('Failed to load Video');
         }
-        // dont autoplay network videos |
-        /* await newController.seekTo(Duration.zero);
+
+        await newController.seekTo(Duration.zero);
         if (autoPlay) {
-           await newController.play();
-        } */
+          await newController.play();
+        }
       } else {
         throw Exception('not supported');
       }
-      print(newController.value);
 
       state = state.copyWith(controllerAsync: AsyncValue.data(newController));
     } catch (error, stackTrace) {
