@@ -8,12 +8,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fvp/fvp.dart' as fvp;
 import 'package:go_router/go_router.dart';
 import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';
 import 'pages/collection_timeline_page.dart';
-
 import 'pages/collections_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
@@ -248,6 +248,7 @@ void main() {
   debugPrintBeginFrameBanner = false;
   debugPrintLayouts = false;
   WidgetsFlutterBinding.ensureInitialized();
+
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     //setWindowTitle('My App');
     setWindowFrame(const Rect.fromLTWH(0, 0, 900, 900 * 16 / 9));
@@ -258,7 +259,7 @@ void main() {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-
+  fvp.registerWith();
   runApp(
     ProviderScope(
       child: AppLoader(
