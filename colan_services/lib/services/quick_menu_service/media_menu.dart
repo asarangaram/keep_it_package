@@ -106,12 +106,16 @@ class MediaMenu extends ConsumerWidget {
                 collection.haveItOffline &&
                 media.hasServerUID &&
                 media.isMediaCached;
+            final haveItOffline = switch (media.haveItOffline) {
+              null => collection.haveItOffline,
+              true => true,
+              false => false
+            };
             final canDownload = canSync &&
-                collection.haveItOffline &&
                 media.hasServerUID &&
                 !media.isMediaCached &&
-                media.haveItOffline != null &&
-                (!media.haveItOffline!);
+                haveItOffline;
+
             final onDeleteLocalCopy = canDeleteLocalCopy
                 ? this.onDeleteLocalCopy != null
                     ? this.onDeleteLocalCopy!()

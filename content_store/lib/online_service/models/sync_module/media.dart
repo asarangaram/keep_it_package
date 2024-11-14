@@ -323,10 +323,14 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     var needDownload = !media.isMediaCached &&
         media.mediaLog == null &&
         (switch (media.haveItOffline) {
-          null => isCollectionSynced,
+          null => switch (media.type) {
+              CLMediaType.image => isCollectionSynced,
+              _ => false
+            },
           false => false,
           true => true
         });
+    //isCollectionSynced
     needDownload = needDownload && !(media.isDeleted ?? false);
 
     if (!needDownload) {

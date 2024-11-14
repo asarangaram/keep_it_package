@@ -39,8 +39,10 @@ class MediaAsFile extends ConsumerWidget {
           builder: (collection0) {
             final collection = collection0!;
 
-            final haveItOffline =
-                media0.haveItOffline ?? collection.haveItOffline;
+            final haveItOffline = switch (media.type) {
+              CLMediaType.image => collection.haveItOffline,
+              _ => false
+            };
 
             final isMediaWaitingForDownload = media0.hasServerUID &&
                 !media0.isMediaCached &&
