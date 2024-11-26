@@ -156,7 +156,11 @@ class ServerNotifier extends StateNotifier<Server> {
   Future<void> _sync(CLServer server) async {
     try {
       final updater = await storeUpdater;
-      await (await collectionSyncModule).sync();
+      try {
+        await (await collectionSyncModule).sync();
+      } catch (e) {
+        /** Ignore errors*/
+      }
 
       final mediaSyncModule = await this.mediaSyncModule(
         await updater.store.reader.collectionsToSync,

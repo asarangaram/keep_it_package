@@ -115,6 +115,7 @@ class CollectionSyncModule extends SyncModule<Collection> {
     await updater.collectionUpdater.deletePermanently(
       collection.id!,
       shouldRefresh: false,
+      onDeleteMedia: updater.mediaUpdater.deletePermanentlyMultiple,
     );
   }
 

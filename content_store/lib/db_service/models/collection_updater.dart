@@ -81,12 +81,23 @@ class CollectionUpdater {
   Future<bool> deletePermanently(
     int id, {
     bool shouldRefresh = true,
+    Future<bool> Function(
+      Set<int> ids2Delete, {
+      bool shouldRefresh,
+    })? onDeleteMedia,
   }) async {
     final collection = await store.reader.getCollectionById(id);
     if (collection != null) {
       final medias = await store.reader.getMediaByCollectionId(id);
       if (medias.isNotEmpty) {
-        throw Exception("can't delete a collection with media");
+        if (onDeleteMedia != null) {
+          await onDeleteMedia(
+            medias.map((e) => e.id!).toSet(),
+            shouldRefresh: shouldRefresh,
+          );
+        } else {
+          throw Exception("can't delete a collection with media");
+        }
       }
       await store.deleteCollection(collection);
       return true;
