@@ -68,7 +68,7 @@ class ServerNotifier extends StateNotifier<Server> {
         isOffline: liveStatus == null,
         identity: () => liveStatus,
       );
-      timer = Timer.periodic(const Duration(seconds: 2), (_) {
+      timer = Timer.periodic(const Duration(seconds: 15), (_) {
         if (state.isRegistered) {
           server.identity!.getServerLiveStatus().then((liveStatus) {
             currState = state.copyWith(
