@@ -62,7 +62,7 @@ class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {
         (final CLMedia _) when m.isMediaDownloadFailed =>
           throw Exception(m.mediaLog),
         (final CLMedia _) when !(m.haveItOffline ?? false) =>
-          server != null && m.mediaEndPoint != null
+          server != null && m.mediaStreamEndPoint != null
               ? AsyncValue.data(
                   Uri.parse(
                     server!.getEndpointURI(m.mediaStreamEndPoint!).toString(),

@@ -110,8 +110,18 @@ extension FilenameExtOnCLMedia on CLMedia {
       ? null
       : '/media/$serverUID/download?isOriginal=$mustDownloadOriginal';
 
-  String? get mediaStreamEndPoint =>
-      serverUID == null ? null : '/media/$serverUID/stream/m3u8';
+  String? get mediaStreamEndPoint {
+    if (serverUID == null) {
+      return null;
+    }
+    if (type == CLMediaType.video) {
+      return '/media/$serverUID/stream/m3u8';
+    }
+    if (type == CLMediaType.image) {
+      return '/media/$serverUID/download?isOriginal=$mustDownloadOriginal';
+    }
+    throw Exception('Unsupported');
+  }
 
   String? get previewEndPoint =>
       serverUID == null ? null : '/media/$serverUID/preview';
