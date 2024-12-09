@@ -19,7 +19,7 @@ final migrations = SqliteMigrations()
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS Media (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL ,
         md5String TEXT NOT NULL UNIQUE,
         type TEXT NOT NULL,
         fExt TEXT CHECK(length(fExt) BETWEEN 2 AND 6),
