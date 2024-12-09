@@ -22,10 +22,6 @@ extension Filter on List<CLMedia> {
       final String formattedDate;
       if (entry.originalDate != null) {
         formattedDate = entry.originalDate!.toDisplayFormat(dataOnly: true);
-        if (!filterredMedia.containsKey(formattedDate)) {
-          filterredMedia[formattedDate] = [];
-        }
-        filterredMedia[formattedDate]!.add(entry);
       } else {
         formattedDate = '${entry.createdDate.toDisplayFormat(dataOnly: true)} '
             '(upload date)';

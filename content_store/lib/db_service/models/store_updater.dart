@@ -5,7 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
+import 'collection_updater.dart';
 import 'gallery_pin.dart';
+import 'media_updater.dart';
 
 abstract class DBReader {}
 
@@ -14,14 +16,25 @@ class StoreUpdater {
   StoreUpdater({
     required this.store,
     required this.directories,
-  })  : tempCollectionName = '*** Recently Captured',
-        albumManager = AlbumManager(albumName: 'KeepIt');
+  }) {
+    tempCollectionName = '*** Recently Captured';
+    albumManager = AlbumManager(albumName: 'KeepIt');
+    collectionUpdater = CollectionUpdater(store);
+    mediaUpdater = MediaUpdater(
+      store: store,
+      directories: directories,
+      albumManager: albumManager,
+      getCollectionByLabel: collectionUpdater.getCollectionByLabel,
+      tempCollectionName: tempCollectionName,
+    );
+  }
   final Store store;
   final CLDirectories directories;
 
-  final AlbumManager albumManager;
-
-  final String tempCollectionName;
+  late final AlbumManager albumManager;
+  late final CollectionUpdater collectionUpdater;
+  late final MediaUpdater mediaUpdater;
+  late final String tempCollectionName;
 
   StoreUpdater copyWith({
     Store? store,
@@ -55,5 +68,13 @@ class StoreUpdater {
         directories.hashCode ^
         albumManager.hashCode ^
         tempCollectionName.hashCode;
+  }
+
+  String createTempFile({required String ext}) {
+    final dir = directories.download.path; // FIXME temp Directory
+    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
+    final absolutePath = '${dir.path}/$fileBasename.$ext';
+
+    return absolutePath;
   }
 }

@@ -59,7 +59,7 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                                 if (widget.notes.length == 1) {
                                   editMode = false;
                                 }
-                                theStore.deleteMediaById(note.id!);
+                                theStore.mediaUpdater.delete(note.id!);
                               },
                             );
                           },

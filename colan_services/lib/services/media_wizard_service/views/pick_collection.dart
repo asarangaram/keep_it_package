@@ -10,16 +10,18 @@ class PickCollection extends StatelessWidget {
     required this.collection,
     required this.onDone,
     super.key,
+    this.isValidSuggestion,
   });
   final Collection? collection;
   final void Function(Collection) onDone;
+  final bool Function(Collection collection)? isValidSuggestion;
 
   @override
   Widget build(BuildContext context) {
     return GetCollectionMultiple(
       errorBuilder: null,
       loadingBuilder: null,
-      excludeEmpty: false,
+      query: DBQueries.collectionsVisible,
       builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
@@ -30,14 +32,18 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as Collection).label,
+            labelBuilder: (e) =>
+                '${(e as Collection).label} ${e.hasServerUID ? '*' : ''}',
             descriptionBuilder: (e) => (e as Collection).description,
             suggestionsAvailable: [
-              ...collections.entries,
+              if (isValidSuggestion != null)
+                ...collections.entries.where((e) => isValidSuggestion!(e))
+              else
+                ...collections.entries,
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
-            onCreateByLabel: (label) async => Collection(label: label),
+            onCreateByLabel: (label) async => Collection.byLabel(label),
             onValidate: (value) {
               if (value == null) {
                 return "can't be empty";

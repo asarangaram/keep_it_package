@@ -8,14 +8,18 @@ final migrations = SqliteMigrations()
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         label TEXT NOT NULL UNIQUE,
         description TEXT,
-        createdDate DATETIME,
-        updatedDate DATETIME
+        createdDate DATETIME NOT NULL,
+        updatedDate DATETIME NOT NULL,
+        isDeleted INTEGER NOT NULL,
+        haveItOffline INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
+        serverUID INTEGER UNIQUE,  -- Nullable, to store serverUID if media is from another server
+        isEdited INTEGER NOT NULL DEFAULT 0 -- relevant only if ServerUID is present
       )
     ''');
       await tx.execute('''
       CREATE TABLE IF NOT EXISTS Media (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL ,
         md5String TEXT NOT NULL UNIQUE,
         type TEXT NOT NULL,
         fExt TEXT CHECK(length(fExt) BETWEEN 2 AND 6),
@@ -30,7 +34,7 @@ final migrations = SqliteMigrations()
         isAux INTEGER NOT NULL,
         
         -- User preferences
-        haveItOffline INTEGER NOT NULL DEFAULT 1,  -- relevant only if ServerUID is present
+        haveItOffline INTEGER,  -- relevant only if ServerUID is present
         mustDownloadOriginal INTEGER NOT NULL DEFAULT 0,  -- relevant only if ServerUID is present
 
         -- local status
@@ -39,8 +43,8 @@ final migrations = SqliteMigrations()
         previewLog TEXT, -- Info stored as json
         mediaLog TEXT, -- Info stored as json
         isMediaOriginal INTEGER NOT NULL DEFAULT 0,
-        serverUID INTEGER,  -- Nullable, to store serverUID if media is from another server
-        isEdited INTEGER NOT NULL DEFAULT 0, -- relevant only if ServerUID is present
+        serverUID INTEGER UNIQUE,  -- Nullable, to store serverUID if media is from another server
+        isEdited INTEGER, -- relevant only if ServerUID is present
 
         FOREIGN KEY (collectionId) REFERENCES Collection(id)
       )

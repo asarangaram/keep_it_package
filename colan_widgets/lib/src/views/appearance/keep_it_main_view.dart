@@ -1,71 +1,44 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../extensions/ext_string.dart';
-import '../quick_menu/cl_quickmenu.dart';
-import 'main_header.dart';
-
-class KeepItMainView extends ConsumerStatefulWidget {
+class KeepItMainView extends StatelessWidget {
   const KeepItMainView({
-    required this.pageBuilder,
+    required this.child,
     required this.backButton,
     super.key,
-    this.actionsBuilder,
+    this.actions,
     this.title,
   });
-  final Widget Function(
-    BuildContext context,
-    GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
-  ) pageBuilder;
-  final List<
-      Widget Function(
-        BuildContext context,
-        GlobalKey<State<StatefulWidget>> quickMenuScopeKey,
-      )>? actionsBuilder;
+  final Widget child;
+  final List<Widget>? actions;
 
   final String? title;
   final Widget? backButton;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => KeepItMainViewState();
-}
-
-class KeepItMainViewState extends ConsumerState<KeepItMainView> {
-  final GlobalKey quickMenuScopeKey = GlobalKey();
-
-  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(2),
-      child: CLQuickMenuScope(
-        key: quickMenuScopeKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            MainHeader(
-              actionsBuilders: widget.actionsBuilder,
-              quickMenuScopeKey: quickMenuScopeKey,
-              title: widget.title?.uptoLength(15),
-              backButton: widget.backButton,
-
-              /* mainActionItems: const [
-                [
-                  CLMenuItem(
-                    title: 'Paste',
-                    icon: clIcons.content_paste_go_outlined,
-                  ),
-                  CLMenuItem(
-                    title: 'Settings',
-                    icon: clIcons.settings,
-                    /*clIcons.settings_applications_sharp,*/
-                  ),
-                ],
-              ], */
+    return CLFullscreenBox(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        centerTitle: false,
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        title: title == null ? null : CLLabel.large(title!),
+        leading: backButton,
+        actions: [
+          if (actions != null && actions!.isNotEmpty)
+            ...actions!.map(
+              (e) => Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: e,
+              ),
             ),
-            Expanded(child: widget.pageBuilder(context, quickMenuScopeKey)),
-          ],
-        ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: child,
       ),
     );
   }

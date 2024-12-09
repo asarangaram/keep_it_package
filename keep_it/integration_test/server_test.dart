@@ -21,13 +21,13 @@ void main() {
 
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   PathProviderPlatform.instance = FakePathProviderPlatform();
-  server = const CLServer(name: 'udesktop.local.', port: 5000, id: 100);
+  server = const CLServer(address: 'udesktop.local.', port: 5000, id: 100);
   downloader = DownloaderNotifier();
 
   group('server: ', () {
     setUp(() {/** Nothing to do for now. */});
     test('is online?', () async {
-      expect(await server.hasConnection(), true);
+      expect(await server.getServerLiveStatus(), true);
     });
 
     test('server transactions for a image', () async {
@@ -38,7 +38,7 @@ void main() {
       final edittedImagePath = join(directory.path, edittedImage);
 
       expect(
-        await server.hasConnection(),
+        await server.getServerLiveStatus(),
         true,
         reason: 'Test cant proceed if the server is not online',
       );
@@ -59,7 +59,6 @@ void main() {
           entity0,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
 
         expect(
@@ -85,7 +84,6 @@ void main() {
           entity1,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
         referenceMap['md5String'] = await File(edittedImagePath).checksum;
         referenceMap['updatedDate'] = updatedDate.millisecondsSinceEpoch;
@@ -103,7 +101,6 @@ void main() {
           entity2,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
         referenceMap['collectionLabel'] = collectionLabel;
         referenceMap['updatedDate'] = updatedDate.millisecondsSinceEpoch;
@@ -123,7 +120,6 @@ void main() {
           entity3,
           server: server,
           downloader: downloader,
-          mediaBaseDirectory: BaseDirectory.applicationSupport,
         );
         expect(received3?['serverUID'], serverUID);
 

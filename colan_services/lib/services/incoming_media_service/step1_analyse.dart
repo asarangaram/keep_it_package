@@ -31,7 +31,7 @@ class AnalysePage extends ConsumerWidget {
             title: 'Analysing Shared Media',
             onCancel: onCancel,
             child: StreamProgressView(
-              stream: () => theStore.analyseMediaStream(
+              stream: () => theStore.mediaUpdater.analyseMultiple(
                 mediaFiles: incomingMedia.entries,
                 onDone: onDone,
               ),

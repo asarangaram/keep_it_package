@@ -172,6 +172,17 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
           wizard: keepSelected
               ? !hasCollection
                   ? CreateCollectionWizard(
+                      isValidSuggestion: (collection) {
+                        // ALLOW NEW COLLECTION OR SERVER COLLECTION
+                        // IF ANY OF THE MEDIA IS FROM SERVER
+                        if (collection.isDeleted) return false;
+                        if (currMedia.any((e) => e.hasServerUID)) {
+                          return collection.id == null ||
+                              collection.hasServerUID;
+                        } else {
+                          return true;
+                        }
+                      },
                       onDone: ({required collection}) => setState(() {
                         targetCollection = collection;
                       }),
@@ -181,9 +192,15 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                   /// the universalMediaProvider
                   /// We only need to update the collectionId
                   : StreamBuilder<Progress>(
-                      stream: theStore.moveToCollectionStream(
+                      stream: theStore.mediaUpdater.moveMultiple(
                         media: currMedia,
-                        collection: targetCollection!,
+                        collection: targetCollection!.copyWith(
+                          // mark to upload as atlease one media is from server
+                          serverUID: (currMedia.any((e) => e.hasServerUID) &&
+                                  !targetCollection!.hasServerUID)
+                              ? () => -1
+                              : null,
+                        ),
                         onDone: ({
                           required List<CLMedia> mediaMultiple,
                         }) async {
@@ -197,6 +214,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           targetCollection = null;
                           isSelectionMode = false;
                           setState(() {});
+                          ref.read(serverProvider.notifier).instantSync();
                         },
                       ),
                       builder: (context, snapShot) => ProgressBar(
@@ -233,7 +251,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                   if (!confirmed) return confirmed;
                                   if (context.mounted) {
                                     final res =
-                                        theStore.deleteMediaMultipleById(
+                                        theStore.mediaUpdater.deleteMultiple(
                                       {...currMedia.map((e) => e.id!)},
                                     );
 

@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_viewers/src/image_viewer/views/broken_image.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../video_player_service/models/video_player_state.dart';
@@ -36,7 +33,7 @@ class VideoPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (uri.scheme != 'file') {
+    /* if (uri.scheme != 'file') {
       log("VideoPlayer can't play $uri");
       return Center(
         child: SizedBox.square(
@@ -44,11 +41,11 @@ class VideoPlayer extends ConsumerWidget {
           child: BrokenImage.show(),
         ),
       );
-    }
+    } */
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (context.mounted && autoStart) {
         await ref.read(videoPlayerStateProvider.notifier).setVideo(
-              uri.toFilePath(),
+              uri,
               autoPlay: autoPlay,
             );
       }
@@ -59,7 +56,7 @@ class VideoPlayer extends ConsumerWidget {
         VideoPlayerState state,
         VideoPlayerController controller,
       ) {
-        if (state.path == uri.toFilePath()) {
+        if (state.path == uri) {
           return VideoLayer(
             controller: controller,
           );
@@ -68,7 +65,18 @@ class VideoPlayer extends ConsumerWidget {
         }
       },
       errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
+      loadingBuilder: () {
+        return Stack(
+          children: [
+            Center(child: placeHolder ?? Container()),
+            const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../video_player_service/builders/audio_control_builder.dart';
+import '../../../video_player_service/providers/video_player_state.dart';
 
 class VideoControlsView extends ConsumerStatefulWidget {
   const VideoControlsView({
@@ -31,9 +32,18 @@ class VideoControlsState extends ConsumerState<VideoControlsView> {
       video.buffered.isEmpty ? Duration.zero : video.buffered.last.end;
 
   String get timestamp {
+    final isLive = durationToDouble(video.duration) > 10 * 60 * 60;
     final currentPosition =
         seekValue == null ? video.position : doubleToDuration(seekValue!);
-    return '${currentPosition.timestamp} / ${video.duration.timestamp}';
+
+    if (isLive) {
+      if (video.isCompleted) {
+        return '__ / __';
+      }
+      return '${currentPosition.timestamp} / __';
+    } else {
+      return '${currentPosition.timestamp} / ${video.duration.timestamp}';
+    }
   }
 
   /// Updates the value of [video] whenever the controller updates.
@@ -64,6 +74,8 @@ class VideoControlsState extends ConsumerState<VideoControlsView> {
 
   @override
   Widget build(BuildContext context) {
+    final isLive =
+        durationToDouble(widget.controller.value.duration) > 10 * 60 * 60;
     return IconTheme(
       data: const IconThemeData(color: Colors.white),
       child: Listener(
@@ -75,34 +87,55 @@ class VideoControlsState extends ConsumerState<VideoControlsView> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Material(
-                color: Colors.transparent,
-                child: Stack(
-                  children: [
-                    // required only for network
-                    SliderTheme(
-                      data: SliderThemeData(
-                        thumbShape: SliderComponentShape.noThumb,
+              if (!isLive)
+                Material(
+                  color: Colors.transparent,
+                  child: Stack(
+                    children: [
+                      // required only for network
+                      SliderTheme(
+                        data: SliderThemeData(
+                          thumbShape: SliderComponentShape.noThumb,
+                        ),
+                        child: Slider(
+                          max: durationToDouble(video.duration),
+                          value: durationToDouble(bufferedPosition),
+                          onChanged: null,
+                        ),
                       ),
-                      child: Slider(
+                      Slider(
                         max: durationToDouble(video.duration),
-                        value: durationToDouble(bufferedPosition),
-                        onChanged: null,
+                        value: seekValue ?? durationToDouble(video.position),
+                        onChanged: (double value) =>
+                            setState(() => seekValue = value),
+                        onChangeEnd: (double value) {
+                          setState(() => seekValue = null);
+                          widget.controller.seekTo(doubleToDuration(value));
+                        },
                       ),
+                    ],
+                  ),
+                )
+              else ...[
+                if (!video.isCompleted) ...[
+                  const Padding(
+                    padding: EdgeInsets.all(2),
+                    child: Text(
+                      'The video is still buffering on the server. '
+                      'Playback may experience some interruptions.',
+                      style: TextStyle(color: Colors.white),
                     ),
-                    Slider(
-                      max: durationToDouble(video.duration),
-                      value: seekValue ?? durationToDouble(video.position),
-                      onChanged: (double value) =>
-                          setState(() => seekValue = value),
-                      onChangeEnd: (double value) {
-                        setState(() => seekValue = null);
-                        widget.controller.seekTo(doubleToDuration(value));
-                      },
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                  SizedBox(
+                    height: 4,
+                    child: (video.isBuffering)
+                        ? const LinearProgressIndicator(
+                            backgroundColor: Colors.red,
+                          )
+                        : null,
+                  ),
+                ],
+              ],
               Row(
                 children: [
                   IconButton(
@@ -141,6 +174,16 @@ class VideoControlsState extends ConsumerState<VideoControlsView> {
   }
 
   void onPlayPause() {
+    if (widget.controller.value.isCompleted) {
+      final isLive = durationToDouble(video.duration) > 10 * 60 * 60;
+      if (isLive) {
+        ref
+            .read(videoPlayerStateProvider.notifier)
+            .resetVideo(forced: true)
+            .then((val) => widget.controller.play());
+      }
+    }
+
     // If the video is playing, pause it.
     if (widget.controller.value.isPlaying) {
       widget.controller.pause();

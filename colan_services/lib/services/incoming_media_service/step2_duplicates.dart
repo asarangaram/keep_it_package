@@ -66,7 +66,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
       return const EmptyState();
     }
     return GetCollectionMultiple(
-      excludeEmpty: false,
+      query: DBQueries.collectionsVisible,
       errorBuilder: null,
       loadingBuilder: null,
       builder: (collections) {
@@ -180,14 +180,16 @@ class ExistInDifferentCollection extends StatelessWidget {
               itemCount: duplicates.length,
               itemBuilder: (BuildContext ctx, index) {
                 final m = duplicates[index];
-                final currCollection =
-                    collections.where((e) => e.id == m.collectionId).first;
+                final currCollection = collections
+                    .where((e) => e.id == m.collectionId)
+                    .firstOrNull;
                 final String currCollectionLabel;
 
                 if (m.isDeleted ?? false) {
                   currCollectionLabel = 'Deleted Items';
                 } else {
-                  currCollectionLabel = currCollection.label;
+                  currCollectionLabel =
+                      currCollection?.label ?? 'somethig wrong';
                 }
 
                 return SizedBox(
@@ -202,7 +204,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       alignment: AlignmentDirectional.center,
                       child: Text(
-                        'Keep the item in "${currCollection.label.trim()}"',
+                        'Keep the item in "${currCollectionLabel.trim()}"',
                       ),
                     ),
                     child: Row(

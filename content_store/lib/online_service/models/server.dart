@@ -8,6 +8,7 @@ import 'package:content_store/online_service/providers/downloader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:store/store.dart';
 
 import 'cl_server.dart';
 import 'server_upload_entity.dart';
@@ -20,7 +21,9 @@ class Server {
   final bool canSync;
   final bool isRegistered;
   final bool isSyncing;
+  final CLServer? previousIdentity;
   const Server({
+    this.previousIdentity,
     this.identity,
     bool isOffline = true,
     this.workingOffline = true,
@@ -34,19 +37,23 @@ class Server {
     bool? isOffline,
     bool? workingOffline,
     bool? isSyncing,
+    ValueGetter<CLServer?>? previousIdentity,
   }) {
     return Server(
       identity: identity != null ? identity.call() : this.identity,
       isOffline: isOffline ?? this.isOffline,
       workingOffline: workingOffline ?? this.workingOffline,
       isSyncing: isSyncing ?? this.isSyncing,
+      previousIdentity: previousIdentity != null
+          ? previousIdentity.call()
+          : this.previousIdentity,
     );
   }
 
   @override
   String toString() {
     // ignore: lines_longer_than_80_chars
-    return 'Server(identity: $identity, isOffline: $isOffline, workingOffline: $workingOffline, isSyncing: $isSyncing, canSync: $canSync, isRegistered: $isRegistered)';
+    return 'Server(identity: $identity, isOffline: $isOffline, workingOffline: $workingOffline, canSync: $canSync, isRegistered: $isRegistered, isSyncing: $isSyncing, previousIdentity: $previousIdentity)';
   }
 
   @override
@@ -56,9 +63,10 @@ class Server {
     return other.identity == identity &&
         other.isOffline == isOffline &&
         other.workingOffline == workingOffline &&
-        other.isSyncing == isSyncing &&
         other.canSync == canSync &&
-        other.isRegistered == isRegistered;
+        other.isRegistered == isRegistered &&
+        other.isSyncing == isSyncing &&
+        other.previousIdentity == previousIdentity;
   }
 
   @override
@@ -66,9 +74,10 @@ class Server {
     return identity.hashCode ^
         isOffline.hashCode ^
         workingOffline.hashCode ^
-        isSyncing.hashCode ^
         canSync.hashCode ^
-        isRegistered.hashCode;
+        isRegistered.hashCode ^
+        isSyncing.hashCode ^
+        previousIdentity.hashCode;
   }
 
   Future<Map<String, dynamic>?>? postMedia(
@@ -82,7 +91,6 @@ class Server {
       endPoint: endPoint,
       server: identity!,
       downloader: downloader,
-      mediaBaseDirectory: BaseDirectory.applicationSupport,
     );
   }
 
@@ -92,9 +100,9 @@ class Server {
     ServerUploadEntity media, {
     required CLServer server,
     required DownloaderNotifier downloader,
-    required BaseDirectory mediaBaseDirectory,
     String endPoint = '/media',
   }) {
+    const mediaBaseDirectory = BaseDirectory.applicationSupport;
     final completer = Completer<Map<String, dynamic>?>();
     final String endPoint0;
     if (media.serverUID != null) {
@@ -249,9 +257,78 @@ class Server {
           completer.complete(update.responseBody ?? 'unknown error');
         } else if (update.status == TaskStatus.canceled) {
           completer.complete('cancelled');
+        } else {
+          completer.complete('cancelled');
         }
       },
     );
+    return completer.future;
+  }
+
+  static Future<Map<String, dynamic>?> upsertCollection(
+    Collection collection, {
+    required CLServer server,
+    String endPoint = '/collection',
+  }) {
+    final completer = Completer<Map<String, dynamic>?>();
+    final String endPoint0;
+    if (collection.serverUID != null) {
+      endPoint0 = '$endPoint/${collection.serverUID}';
+    } else {
+      endPoint0 = endPoint;
+    }
+    if (collection.serverUID != null) {
+      server.put(
+        endPoint0,
+        form: collection.toUploadMap(),
+      )
+        ..onError((e, st) async {
+          final error = e?.toString() ?? 'unknown error';
+          completer.completeError(error, st);
+          return error;
+        })
+        ..then((responseBody) {
+          completer.complete(jsonDecode(responseBody) as Map<String, dynamic>);
+        });
+    } else {
+      server.post(
+        endPoint,
+        form: collection.toUploadMap(),
+      )
+        ..onError((e, st) async {
+          final error = e?.toString() ?? 'unknown error';
+          completer.completeError(error, st);
+          return error;
+        })
+        ..then((responseBody) {
+          completer.complete(jsonDecode(responseBody) as Map<String, dynamic>);
+        });
+    }
+    return completer.future;
+  }
+
+  static Future<bool> deleteCollection(
+    int serverUID, {
+    required CLServer server,
+    required DownloaderNotifier downloader,
+    required BaseDirectory mediaBaseDirectory,
+    String endPoint = '/collection',
+  }) {
+    final completer = Completer<bool>();
+    final String endPoint0;
+    endPoint0 = '$endPoint/$serverUID';
+
+    server.delete(
+      endPoint0,
+    )
+      ..onError((e, st) async {
+        final error = e?.toString() ?? 'unknown error';
+        completer.completeError(error, st);
+        return error;
+      })
+      ..then((responseBody) {
+        completer.complete(responseBody.trim().toLowerCase() == 'true');
+      });
     return completer.future;
   }
 }

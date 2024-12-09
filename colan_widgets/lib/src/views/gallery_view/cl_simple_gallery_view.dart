@@ -6,7 +6,7 @@ import '../../basics/cl_button.dart';
 import '../../basics/cl_pop_screen.dart';
 import '../../basics/cl_refresh_indicator.dart';
 import '../../models/cl_menu_item.dart';
-import '../../models/typedefs.dart';
+
 import '../../theme/models/cl_icons.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
@@ -15,11 +15,7 @@ import '../draggable/menu_control.dart';
 import 'cl_gallery_core.dart';
 import 'model/gallery_group.dart';
 
-typedef ItemBuilder<T> = Widget Function(
-  BuildContext context,
-  T item, {
-  required QuickMenuScopeKey quickMenuScopeKey,
-});
+typedef ItemBuilder<T> = Widget Function(BuildContext context, T item);
 
 class CLSimpleGalleryView<T> extends StatefulWidget {
   const CLSimpleGalleryView({
@@ -64,19 +60,21 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
       return KeepItMainView(
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
-        backButton: CLButtonIcon.small(
-          clIcons.pagePop,
-          onTap: () => CLPopScreen.onPop(context),
-        ),
-        actionsBuilder: widget.actionMenu
+        backButton: CLPopScreen.canPop(context)
+            ? CLButtonIcon.small(
+                clIcons.pagePop,
+                onTap: () => CLPopScreen.onPop(context),
+              )
+            : null,
+        actions: widget.actionMenu
             .map(
-              (e) => (_, __) => CLButtonIcon.small(
-                    e.icon,
-                    onTap: e.onTap,
-                  ),
+              (e) => CLButtonIcon.small(
+                e.icon,
+                onTap: e.onTap,
+              ),
             )
             .toList(),
-        pageBuilder: (context, quickMenuScopeKey) => widget.emptyState,
+        child: widget.emptyState,
       );
     } else {
       return ProviderScope(
@@ -87,72 +85,65 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         child: KeepItMainView(
           title: widget.title,
           backButton: widget.backButton,
-          actionsBuilder: [
+          actions: [
             if (widget.selectionActions != null)
-              (context, quickMenuScopeKey) => CLButtonText.small(
-                    isSelectionMode ? 'Done' : 'Select',
-                    onTap: () {
-                      setState(() {
-                        isSelectionMode = !isSelectionMode;
-                      });
-                    },
-                  ),
+              CLButtonText.small(
+                isSelectionMode ? 'Done' : 'Select',
+                onTap: () {
+                  setState(() {
+                    isSelectionMode = !isSelectionMode;
+                  });
+                },
+              ),
             if (!isSelectionMode)
-              (context, quickMenuScopeKey) => Row(
-                    children: widget.actionMenu
-                        .map(
-                          (e) => CLButtonIcon.small(
-                            e.icon,
-                            onTap: e.onTap,
-                          ),
-                        )
-                        .toList(),
-                  ),
-          ],
-          pageBuilder: (context, quickMenuScopeKey) {
-            return Stack(
-              key: parentKey,
-              children: [
-                CLRefreshIndicator(
-                  onRefresh: isSelectionMode ? null : widget.onRefresh,
-                  key: ValueKey('${widget.identifier} Refresh'),
-                  child: CLGalleryCore(
-                    key: ValueKey(widget.galleryMap),
-                    items: widget.galleryMap,
-                    itemBuilder: (context, item) {
-                      return widget.itemBuilder(
-                        context,
-                        item,
-                        quickMenuScopeKey: quickMenuScopeKey,
-                      );
-                    },
-                    columns: widget.columns,
-                    keepSelected: false,
-                    onSelectionChanged: isSelectionMode
-                        ? (List<T> items) {
-                            selectedItems = items;
-                            setState(() {});
-                          }
-                        : null,
-                  ),
+              ...widget.actionMenu.map(
+                (e) => CLButtonIcon.small(
+                  e.icon,
+                  onTap: e.onTap,
                 ),
-                if (isSelectionMode && selectedItems.isNotEmpty)
-                  ActionsDraggableMenu<T>(
-                    items: selectedItems,
-                    tagPrefix: widget.identifier,
-                    onDone: () {
-                      isSelectionMode = false;
-                      //onDone();
-                      if (mounted) {
-                        setState(() {});
-                      }
-                    },
-                    selectionActions: widget.selectionActions,
-                    parentKey: parentKey,
-                  ),
-              ],
-            );
-          },
+              ),
+          ],
+          child: Stack(
+            key: parentKey,
+            children: [
+              CLRefreshIndicator(
+                onRefresh: isSelectionMode ? null : widget.onRefresh,
+                key: ValueKey('${widget.identifier} Refresh'),
+                child: CLGalleryCore(
+                  key: ValueKey(widget.galleryMap),
+                  items: widget.galleryMap,
+                  itemBuilder: (context, item) {
+                    return widget.itemBuilder(
+                      context,
+                      item,
+                    );
+                  },
+                  columns: widget.columns,
+                  keepSelected: false,
+                  onSelectionChanged: isSelectionMode
+                      ? (List<T> items) {
+                          selectedItems = items;
+                          setState(() {});
+                        }
+                      : null,
+                ),
+              ),
+              if (isSelectionMode && selectedItems.isNotEmpty)
+                ActionsDraggableMenu<T>(
+                  items: selectedItems,
+                  tagPrefix: widget.identifier,
+                  onDone: () {
+                    isSelectionMode = false;
+                    //onDone();
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
+                  selectionActions: widget.selectionActions,
+                  parentKey: parentKey,
+                ),
+            ],
+          ),
         ),
       );
     }

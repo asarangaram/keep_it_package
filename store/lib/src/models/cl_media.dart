@@ -1,13 +1,13 @@
 import 'dart:convert';
-
 import 'package:meta/meta.dart';
 
+import 'cl_entities.dart';
 import 'cl_media_base.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLMedia extends CLMediaBase {
-  CLMedia({
+class CLMedia extends CLMediaBase implements CLEntity {
+  const CLMedia._({
     required super.name,
     required super.type,
     required super.fExt,
@@ -31,9 +31,7 @@ class CLMedia extends CLMediaBase {
     super.pin,
     super.isAux,
     this.id,
-  }) {
-    //log('New: $this', name: 'CLMedia');
-  }
+  });
   factory CLMedia.strict({
     required String name,
     required CLMediaType type,
@@ -53,14 +51,14 @@ class CLMedia extends CLMediaBase {
     required String? mediaLog,
     required bool isMediaOriginal,
     required int? serverUID,
-    required bool isEdited,
-    required bool haveItOffline,
+    required bool? isEdited,
+    required bool? haveItOffline,
     required bool mustDownloadOriginal,
     DateTime? createdDate,
     DateTime? updatedDate,
   }) {
     final time = DateTime.now();
-    return CLMedia(
+    return CLMedia._(
       name: name,
       type: type,
       fExt: fExt,
@@ -88,7 +86,7 @@ class CLMedia extends CLMediaBase {
   }
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
-    return CLMedia(
+    return CLMedia.strict(
       name: map['name'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
       fExt: map['fExt'] as String,
@@ -115,8 +113,10 @@ class CLMedia extends CLMediaBase {
       mediaLog: map['mediaLog'] != null ? map['mediaLog'] as String : null,
       isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      isEdited: (map['isEdited'] as int) != 0,
-      haveItOffline: (map['haveItOffline'] as int) != 0,
+      isEdited: map['isEdited'] == null ? null : (map['isEdited'] as int) != 0,
+      haveItOffline: map['haveItOffline'] == null
+          ? null
+          : (map['haveItOffline'] as int) != 0,
       mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
     );
   }
@@ -132,8 +132,8 @@ class CLMedia extends CLMediaBase {
   final String? mediaLog;
   final bool isMediaOriginal;
   final int? serverUID;
-  final bool isEdited;
-  final bool haveItOffline;
+  final bool? isEdited;
+  final bool? haveItOffline;
   final bool mustDownloadOriginal;
   final DateTime createdDate;
   final DateTime updatedDate;
@@ -159,8 +159,8 @@ class CLMedia extends CLMediaBase {
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<int?>? serverUID,
-    ValueGetter<bool>? isEdited,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? isEdited,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
   }) {
     return CLMedia.strict(
@@ -231,8 +231,9 @@ class CLMedia extends CLMediaBase {
         other.mustDownloadOriginal == mustDownloadOriginal;
   }
 
+  @override
   bool isContentSame(covariant CLMedia other) {
-    return other.name == name &&
+    final isSame = other.name == name &&
         other.type == type &&
         other.fExt == fExt &&
         other.ref == ref &&
@@ -244,7 +245,12 @@ class CLMedia extends CLMediaBase {
         other.collectionId == collectionId &&
         other.isAux == isAux &&
         other.serverUID == serverUID &&
-        other.isEdited == isEdited;
+        other.isEdited == isEdited &&
+        other.haveItOffline == haveItOffline;
+    if (!isSame) {
+      // print(MapDiff.log(other.toMapForDisplay(), toMapForDisplay()));
+    }
+    return isSame;
   }
 
   @override
@@ -297,9 +303,37 @@ class CLMedia extends CLMediaBase {
       'mediaLog': mediaLog,
       'isMediaOriginal': isMediaOriginal ? 1 : 0,
       'serverUID': serverUID,
-      'isEdited': isEdited ? 1 : 0,
-      'haveItOffline': haveItOffline ? 1 : 0,
+      'isEdited': isEdited == null ? null : (isEdited! ? 1 : 0),
+      'haveItOffline': haveItOffline == null ? null : (haveItOffline! ? 1 : 0),
       'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
+    };
+  }
+
+  Map<String, dynamic> toMapForDisplay() {
+    return <String, dynamic>{
+      'name': name,
+      'type': type.name,
+      'fExt': fExt,
+      'ref': ref,
+      'originalDate': originalDate,
+      'createdDate': createdDate,
+      'updatedDate': updatedDate,
+      'md5String': md5String,
+      'isDeleted': isDeleted,
+      'isHidden': isDeleted,
+      'pin': pin,
+      'collectionId': collectionId,
+      'isAux': isAux,
+      'id': id,
+      'isPreviewCached': isPreviewCached,
+      'isMediaCached': isMediaCached,
+      'previewLog': previewLog?.substring(0, 15),
+      'mediaLog': mediaLog?.substring(0, 15),
+      'isMediaOriginal': isMediaOriginal,
+      'serverUID': serverUID,
+      'isEdited': isEdited,
+      'haveItOffline': haveItOffline,
+      'mustDownloadOriginal': mustDownloadOriginal,
     };
   }
 
@@ -323,7 +357,7 @@ class CLMedia extends CLMediaBase {
   String toJson() => json.encode(toMap());
 
   bool get isMediaWaitingForDownload =>
-      !isMediaCached && mediaLog == null && haveItOffline;
+      !isMediaCached && mediaLog == null && (haveItOffline ?? false);
 
   bool get isMediaDownloadFailed =>
       serverUID != null && !isMediaCached && mediaLog != null;
@@ -346,7 +380,7 @@ class CLMedia extends CLMediaBase {
     ValueGetter<String?>? previewLog,
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
   }) {
     return _copyWith(
@@ -425,4 +459,22 @@ class CLMedia extends CLMediaBase {
   }) {
     throw Exception('use either updateContent or updateStatus');
   }
+
+  @override
+  bool isChangedAfter(CLEntity other) =>
+      updatedDate.isAfter((other as CLMedia).updatedDate);
+
+  @override
+  bool get isMarkedDeleted => isDeleted ?? false;
+
+  @override
+  bool get isMarkedEditted => isEdited ?? false;
+
+  @override
+  bool get hasServerUID => serverUID != null;
+
+  // for local item, always mark this flag, it will be filterred out
+  // by collection. [caution]
+  @override
+  bool get isMarkedForUpload => serverUID == null;
 }

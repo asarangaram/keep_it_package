@@ -15,6 +15,18 @@ class Queries {
           triggerOnTables: const {'Collection'},
           fromMap: Collection.fromMap,
         ),
+      DBQueries.collectionsVisible => DBQuery<Collection>.map(
+          sql: 'SELECT * FROM Collection '
+              "WHERE label NOT LIKE '***%'",
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionsVisibleNotDeleted => DBQuery<Collection>.map(
+          sql: 'SELECT * FROM Collection '
+              "WHERE label NOT LIKE '***%'  AND IsDeleted = 0",
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
       DBQueries.medias => DBQuery<CLMedia>.map(
           sql: 'SELECT * FROM Media ',
           triggerOnTables: const {'Media'},
@@ -30,9 +42,14 @@ class Queries {
           triggerOnTables: const {'Collection'},
           fromMap: Collection.fromMap,
         ),
-      DBQueries.collectionsAll => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection '
-              "WHERE label NOT LIKE '***%'",
+      DBQueries.collectionOnDevice => DBQuery<Collection>.map(
+          sql: "SELECT * FROM Collection WHERE label NOT LIKE '***%'",
+          /** WHERE serverUID IS NOT NULL OR (serverUID IS NULL AND isDeleted != 1); */
+          triggerOnTables: const {'Collection'},
+          fromMap: Collection.fromMap,
+        ),
+      DBQueries.collectionsToSync => DBQuery<Collection>.map(
+          sql: 'SELECT * FROM Collection WHERE serverUID IS NOT NULL',
           triggerOnTables: const {'Collection'},
           fromMap: Collection.fromMap,
         ),
@@ -40,7 +57,7 @@ class Queries {
           sql: 'SELECT DISTINCT Collection.* FROM Collection '
               'JOIN Media ON Collection.id = Media.collectionId '
               "WHERE label NOT LIKE '***%' AND "
-              'Media.isDeleted = 0',
+              'Media.isDeleted = 0 AND Collection.IsDeleted = 0',
           triggerOnTables: const {'Collection', 'Media'},
           fromMap: Collection.fromMap,
         ),
@@ -49,7 +66,7 @@ class Queries {
               'LEFT JOIN Media ON Collection.id = Media.collectionId '
               'WHERE Media.collectionId IS NULL AND '
               "label NOT LIKE '***%' AND "
-              'Media.isDeleted = 0',
+              'Media.isDeleted = 0 AND Collection.IsDeleted = 0',
           triggerOnTables: const {'Collection', 'Media'},
           fromMap: Collection.fromMap,
         ),
@@ -158,9 +175,9 @@ class Queries {
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.mediaSyncQuery => DBQuery<CLMedia>.map(
+      DBQueries.mediaOnDevice => DBQuery<CLMedia>.map(
           sql:
-              'SELECT * FROM Media  WHERE serverUID IS NOT NULL OR (serverUID IS NULL AND (isDeleted != 1 OR isDeleted IS NULL));',
+              'SELECT DISTINCT m.* FROM Media m JOIN Collection c ON m.collectionId = c.id WHERE c.serverUID IS NOT NULL;',
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),

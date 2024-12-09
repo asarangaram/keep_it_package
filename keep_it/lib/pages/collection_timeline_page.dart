@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -8,15 +10,29 @@ import 'package:store/store.dart';
 
 import '../widgets/folders_and_files/media_as_file.dart';
 
+void _log(
+  dynamic message, {
+  int level = 0,
+  Object? error,
+  StackTrace? stackTrace,
+  String? name,
+}) {
+  dev.log(
+    message.toString(),
+    level: level,
+    error: error,
+    stackTrace: stackTrace,
+    name: name ?? 'Media Builder',
+  );
+}
+
 class CollectionTimeLinePage extends ConsumerWidget {
   const CollectionTimeLinePage({
     required this.collectionId,
-    required this.actionControl,
     super.key,
   });
 
   final int collectionId;
-  final ActionControl actionControl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => GetCollection(
@@ -29,12 +45,11 @@ class CollectionTimeLinePage extends ConsumerWidget {
             errorBuilder: null,
             loadingBuilder: null,
             builder: (items) {
-              log('Found ${items.entries.length} media here');
+              _log('Found ${items.entries.length} media here');
               return TimelineView(
                 label: collection?.label ?? 'All Media',
                 items: items,
                 collection: collection,
-                actionControl: actionControl,
                 parentIdentifier:
                     'Gallery View Media CollectionId: ${collection?.id}',
               );
@@ -49,7 +64,6 @@ class TimelineView extends ConsumerWidget {
     required this.label,
     required this.parentIdentifier,
     required this.items,
-    required this.actionControl,
     required this.collection,
     super.key,
   });
@@ -58,7 +72,6 @@ class TimelineView extends ConsumerWidget {
   final String parentIdentifier;
   final CLMedias items;
 
-  final ActionControl actionControl;
   final Collection? collection;
 
   @override
@@ -81,28 +94,17 @@ class TimelineView extends ConsumerWidget {
           columns: 4,
           medias: items,
           emptyState: const EmptyState(),
-          itemBuilder: (context, item, {required quickMenuScopeKey}) =>
-              GetMediaUri(
-            id: item.id!,
-            builder: (uri) {
-              return MediaAsFile(
-                media: item,
+          itemBuilder: (context, item) => MediaAsFile(
+            media: item,
+            parentIdentifier: parentIdentifier,
+            onTap: () async {
+              await Navigators.openMedia(
+                context,
+                item.id!,
+                collectionId: item.collectionId,
                 parentIdentifier: parentIdentifier,
-                onTap: uri == null
-                    ? null
-                    : () async {
-                        await Navigators.openMedia(
-                          context,
-                          item.id!,
-                          collectionId: item.collectionId,
-                          parentIdentifier: parentIdentifier,
-                          actionControl: ActionControl.full(),
-                        );
-                        return true;
-                      },
-                quickMenuScopeKey: quickMenuScopeKey,
-                actionControl: actionControl,
               );
+              return true;
             },
           ),
           actionMenu: [
@@ -145,7 +147,7 @@ class TimelineView extends ConsumerWidget {
                       false;
                   if (!confirmed) return confirmed;
                   if (context.mounted) {
-                    return theStore.deleteMediaMultipleById(
+                    return theStore.mediaUpdater.deleteMultiple(
                       {...items.map((e) => e.id!)},
                     );
                   }
@@ -167,13 +169,13 @@ class TimelineView extends ConsumerWidget {
               CLMenuItem(
                 title: 'Share',
                 icon: clIcons.imageShareAll,
-                onTap: () => theStore.shareMedia(context, items),
+                onTap: () => theStore.mediaUpdater.share(context, items),
               ),
               if (ColanPlatformSupport.isMobilePlatform)
                 CLMenuItem(
                   title: 'Pin',
                   icon: clIcons.pinAll,
-                  onTap: () => theStore.togglePinMultipleById(
+                  onTap: () => theStore.mediaUpdater.pinToggleMultiple(
                     items.map((e) => e.id).toSet(),
                   ),
                 ),

@@ -16,6 +16,10 @@ PODS:
     - ffmpeg-kit-ios-https (= 6.0)
     - Flutter
   - Flutter (1.0.0)
+  - fvp (0.27.0):
+    - Flutter
+    - FlutterMacOS
+    - mdk (~> 0.30.0)
   - heif_converter (1.0.0):
     - Flutter
   - image_picker_ios (0.0.1):
@@ -34,6 +38,7 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
+  - mdk (0.30.0)
   - nsd_ios (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -89,6 +94,7 @@ DEPENDENCIES:
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - ffmpeg_kit_flutter (from `.symlinks/plugins/ffmpeg_kit_flutter/ios`)
   - Flutter (from `Flutter`)
+  - fvp (from `.symlinks/plugins/fvp/darwin`)
   - heif_converter (from `.symlinks/plugins/heif_converter/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
@@ -108,6 +114,7 @@ SPEC REPOS:
   trunk:
     - ffmpeg-kit-ios-https
     - libwebp
+    - mdk
     - sqlite3
 
 EXTERNAL SOURCES:
@@ -123,6 +130,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/ffmpeg_kit_flutter/ios"
   Flutter:
     :path: Flutter
+  fvp:
+    :path: ".symlinks/plugins/fvp/darwin"
   heif_converter:
     :path: ".symlinks/plugins/heif_converter/ios"
   image_picker_ios:
@@ -160,10 +169,12 @@ SPEC CHECKSUMS:
   ffmpeg-kit-ios-https: f9c838aa5400a6c5ba12324c6b798f52197ba354
   ffmpeg_kit_flutter: b4ca70cac3fc1d8ac14cdc660754b60870358732
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  fvp: e2a89a4b8c310b01cb81580f37b4cbd10f1cefd7
   heif_converter: e3802659e4104e27e28c4d7bff07903da2f69318
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
+  mdk: 7fe9a9ef09fbb9fc873c48eadc7727f2055dfab8
   nsd_ios: 8c37babdc6538e3350dbed3a52674d2edde98173
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
@@ -179,4 +190,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 466a47047b278c274a860a1a18118b3a0fc396e7
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

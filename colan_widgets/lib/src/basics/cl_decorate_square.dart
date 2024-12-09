@@ -6,6 +6,7 @@ class CLAspectRationDecorated extends StatelessWidget {
     this.child,
     this.hasBorder = false,
     this.borderRadius = BorderRadius.zero,
+    this.borderColor,
     this.padding = EdgeInsets.zero,
     this.aspectRatio = 1.0,
   });
@@ -15,6 +16,7 @@ class CLAspectRationDecorated extends StatelessWidget {
   final BorderRadiusGeometry borderRadius;
   final EdgeInsets padding;
   final double aspectRatio;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,9 @@ class CLAspectRationDecorated extends StatelessWidget {
           borderRadius: borderRadius,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              border: hasBorder ? Border.all() : null,
+              border: hasBorder
+                  ? Border.all(color: borderColor ?? const Color(0xFF000000))
+                  : null,
               borderRadius: borderRadius,
             ),
             child: child,

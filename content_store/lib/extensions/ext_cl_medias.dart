@@ -1,7 +1,6 @@
-import 'package:mime/mime.dart';
 import 'package:store/store.dart';
 
-import 'ext_cl_media.dart';
+import '../../extensions/ext_cl_media.dart';
 
 extension StoreExtCLMedias on CLMedias {
   static Future<CLMedias> mediasFromServerList(
@@ -17,13 +16,6 @@ extension StoreExtCLMedias on CLMedias {
     final allFromServer = <CLMedia>[];
     for (final m in mediaMap) {
       final map = m as Map<String, dynamic>;
-
-      /// IF fExt is not present, try updating from content_type
-      /// For normal scenario, this will be good, for cases where
-      /// extension is not available, we may end up with mime back
-      /// Current version is not handling it assuming all media we recognized
-      /// in this module has valid extension from mime. [KNOWN_ISSUE]
-      map['fExt'] ??= '.${extensionFromMime(map['content_type'] as String)}';
 
       /// There are scenarios when the collections are not synced
       /// fully, we may end up creating one. However, other details for

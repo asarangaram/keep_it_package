@@ -5,60 +5,114 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
-
-import '../wrap_standard_quick_menu.dart';
 
 class MediaAsFile extends ConsumerWidget {
   const MediaAsFile({
     required this.media,
     required this.parentIdentifier,
-    required this.quickMenuScopeKey,
     required this.onTap,
-    required this.actionControl,
     super.key,
+    this.canDuplicateMedia = true,
   });
   final CLMedia media;
   final String parentIdentifier;
   final Future<bool?> Function()? onTap;
-  final GlobalKey<State<StatefulWidget>> quickMenuScopeKey;
+  final bool canDuplicateMedia;
 
-  final ActionControl actionControl;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStoreUpdater(
-      builder: (theStore) {
-        return WrapStandardQuickMenu(
-          quickMenuScopeKey: quickMenuScopeKey,
-          onMove: () => MediaWizardService.openWizard(
-            context,
-            ref,
-            CLSharedMedia(
-              entries: [media],
-              type: UniversalMediaSource.move,
-            ),
-          ),
-          onDelete: () async {
-            return theStore.deleteMediaById(media.id!);
+    return GetMedia(
+      id: media.id!,
+      loadingBuilder: () => const Center(child: Text('getMedia')),
+      errorBuilder: (p0, p1) => const Center(child: Text('getMedia Error')),
+      builder: (media0) {
+        if (media0 == null) {
+          return Container();
+        }
+
+        return GetCollection(
+          id: media0.collectionId,
+          loadingBuilder: () => const Center(child: Text('GetCollection')),
+          errorBuilder: (p0, p1) =>
+              const Center(child: Text('GetCollection Error')),
+          builder: (collection0) {
+            final collection = collection0!;
+
+            final haveItOffline = switch (media.type) {
+              CLMediaType.image => collection.haveItOffline,
+              _ => false
+            };
+
+            final isMediaWaitingForDownload = media0.hasServerUID &&
+                !media0.isMediaCached &&
+                media0.mediaLog == null &&
+                haveItOffline;
+
+            return GetStoreUpdater(
+              builder: (theStore) {
+                return MediaMenu(
+                  onTap: onTap,
+                  media: media0,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: MediaViewService.preview(
+                          media0,
+                          parentIdentifier: parentIdentifier,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 2,
+                          bottom: 2,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Align(
+                                child: Text(
+                                  media0.name,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            SizedBox.square(
+                              dimension: 20,
+                              child: Image.asset(
+                                (media0.serverUID == null)
+                                    ? 'assets/icon/not_on_server.png'
+                                    : 'assets/icon/cloud_on_lan_128px_color.png',
+                              ),
+                            ),
+                            if (media0.isMediaCached && media0.hasServerUID)
+                              const SizedBox.square(
+                                dimension: 10,
+                                child: FittedBox(
+                                  child: CLIcon.standard(Icons.check_circle),
+                                ),
+                              )
+                            else if (isMediaWaitingForDownload)
+                              const SizedBox.square(
+                                dimension: 10,
+                                child: FittedBox(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           },
-          onShare: () => theStore.shareMedia(context, [media]),
-          onEdit: (media.type == CLMediaType.video && !VideoEditor.isSupported)
-              ? null
-              : () async {
-                  /* final updatedMedia =  */ await Navigators.openEditor(
-                    context,
-                    ref,
-                    media,
-                    canDuplicateMedia: actionControl.canDuplicateMedia,
-                  );
-                  return true;
-                },
-          onTap: onTap,
-          child: MediaViewService.preview(
-            media,
-            parentIdentifier: parentIdentifier,
-          ),
         );
       },
     );

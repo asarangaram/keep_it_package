@@ -25,12 +25,7 @@ class PinnedMediaPage extends ConsumerWidget {
                     key: const ValueKey(label),
                     title: 'Pinned Media',
                     backButton: null,
-                    itemBuilder: (
-                      context,
-                      item, {
-                      required quickMenuScopeKey,
-                    }) =>
-                        Padding(
+                    itemBuilder: (context, item) => Padding(
                       padding: const EdgeInsets.all(4),
                       child: GestureDetector(
                         onTap: () async {
@@ -38,10 +33,10 @@ class PinnedMediaPage extends ConsumerWidget {
                             context,
                             item.id!,
                             parentIdentifier: parentIdentifier,
-                            actionControl: ActionControl.full(),
                           );
                         },
-                        onLongPress: () => theStore.togglePinById(item.id!),
+                        onLongPress: () =>
+                            theStore.mediaUpdater.pinToggle(item.id!),
                         child: MediaViewService.preview(
                           item,
                           parentIdentifier: parentIdentifier,
@@ -64,7 +59,7 @@ class PinnedMediaPage extends ConsumerWidget {
                           title: 'Remove Selected Pins',
                           icon: clIcons.unPinAll,
                           onTap: () async {
-                            await theStore.togglePinMultipleById(
+                            await theStore.mediaUpdater.pinToggleMultiple(
                               media.entries.map((e) => e.id).toSet(),
                             );
 

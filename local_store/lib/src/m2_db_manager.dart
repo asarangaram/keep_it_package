@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -138,10 +137,7 @@ class DBManager extends Store {
       });
 
   @override
-  Future<void> reloadStore() async {
-    log('Reload triggered');
-    onReload();
-  }
+  Future<void> reloadStore() async => onReload();
 
   @override
   Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery) async* {

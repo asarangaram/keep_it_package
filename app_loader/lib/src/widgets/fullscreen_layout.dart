@@ -15,6 +15,7 @@ class FullscreenLayout extends StatelessWidget {
     this.backgroundBrightness = 0.25,
     this.hasBackground = true,
     this.bottomNavigationBar,
+    this.appBar,
   });
   final Widget child;
   // final void Function()? onClose;
@@ -24,12 +25,14 @@ class FullscreenLayout extends StatelessWidget {
   final double backgroundBrightness;
   final bool hasBackground;
   final Widget? bottomNavigationBar;
+  final PreferredSizeWidget? appBar;
 
   @override
   Widget build(
     BuildContext context,
   ) {
     return CLFullscreenBox(
+      appBar: appBar,
       hasBackground: hasBackground,
       backgroundColor: backgroundColor,
       hasBorder: hasBorder,

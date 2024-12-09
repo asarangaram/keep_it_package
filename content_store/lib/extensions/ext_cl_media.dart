@@ -1,5 +1,18 @@
 import 'package:store/store.dart';
 
+extension StoreExtCollection on Collection {
+  static Collection collectionFromServerMap(
+    Collection? collectionInDB,
+    Map<String, dynamic> map,
+  ) {
+    map['id'] = collectionInDB?.id;
+    map['haveItOffline'] = (collectionInDB?.haveItOffline ?? false) ? 1 : 0;
+    map['isDeleted'] ??= 0;
+    map['isEdited'] = 0;
+    return Collection.fromMap(map);
+  }
+}
+
 extension StoreExtCLMedia on CLMedia {
   /// Same like fromMap but uses missing info from another media
   static CLMedia mediaFromServerMap(
@@ -51,7 +64,9 @@ extension StoreExtCLMedia on CLMedia {
     map['isHidden'] = 0;
     map['pin'] = null;
     map['isEdited'] = 0;
-    map['haveItOffline'] = (mediaInDB?.haveItOffline ?? true) ? 1 : 0;
+    map['haveItOffline'] = mediaInDB?.haveItOffline == null
+        ? null
+        : (mediaInDB!.haveItOffline! ? 1 : 0);
     map['mustDownloadOriginal'] =
         (mediaInDB?.mustDownloadOriginal ?? false) ? 1 : 0;
     return CLMedia.fromMap(map);
@@ -94,6 +109,20 @@ extension FilenameExtOnCLMedia on CLMedia {
   String? get mediaEndPoint => serverUID == null
       ? null
       : '/media/$serverUID/download?isOriginal=$mustDownloadOriginal';
+
+  String? get mediaStreamEndPoint {
+    if (serverUID == null) {
+      return null;
+    }
+    if (type == CLMediaType.video) {
+      return '/media/$serverUID/stream/m3u8';
+    }
+    if (type == CLMediaType.image) {
+      return '/media/$serverUID/download?isOriginal=$mustDownloadOriginal';
+    }
+    throw Exception('Unsupported');
+  }
+
   String? get previewEndPoint =>
       serverUID == null ? null : '/media/$serverUID/preview';
 

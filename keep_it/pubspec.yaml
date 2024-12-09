@@ -24,12 +24,14 @@ dependencies:
   flutter_riverpod: ^2.5.1
   form_factory:
     path: ../form_factory
+  fvp: ^0.28.0
   go_router: ^14.2.0
   http: ^1.2.2
   http_parser: ^4.0.2
   local_store: 
     path: ../local_store
 
+  material_design_icons_flutter: ^7.0.7296
   material_symbols_icons: ^4.2785.1
   media_editors:
     path: ../media_editors
@@ -74,4 +76,6 @@ flutter:
     - assets/audios/audio3.mp3
     - assets/audios/audio4.mp3
     - assets/icon/cloud_on_lan_128px_color.png
+    - assets/icon/on_device.png
+    - assets/icon/not_on_server.png
 

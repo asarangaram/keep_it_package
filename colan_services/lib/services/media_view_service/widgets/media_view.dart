@@ -7,7 +7,6 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:media_editors/media_editors.dart';
 import 'package:media_viewers/media_viewers.dart';
 import 'package:store/store.dart';
 
@@ -16,6 +15,7 @@ import '../../basic_page_service/navigators.dart';
 
 import '../../incoming_media_service/models/cl_shared_media.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
+import '../models/action_control.dart';
 import '../providers/show_controls.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
@@ -24,7 +24,6 @@ class MediaView extends StatelessWidget {
   factory MediaView({
     required CLMedia media,
     required String parentIdentifier,
-    required ActionControl actionControl,
     required bool autoStart,
     required bool autoPlay,
     bool isLocked = false,
@@ -39,7 +38,6 @@ class MediaView extends StatelessWidget {
       isLocked: isLocked,
       autoStart: autoStart,
       autoPlay: autoPlay,
-      actionControl: actionControl,
       onLockPage: onLockPage,
     );
   }
@@ -54,7 +52,6 @@ class MediaView extends StatelessWidget {
       isLocked: true,
       autoStart: true,
       autoPlay: true,
-      actionControl: ActionControl.none(),
     );
   }
   const MediaView._({
@@ -62,7 +59,6 @@ class MediaView extends StatelessWidget {
     required this.media,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.actionControl,
     required this.autoStart,
     required this.autoPlay,
     this.onLockPage,
@@ -72,7 +68,6 @@ class MediaView extends StatelessWidget {
 
   final String parentIdentifier;
 
-  final ActionControl actionControl;
   final bool autoStart;
   final bool autoPlay;
   final bool isLocked;
@@ -148,41 +143,6 @@ class MediaView extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (media.serverUID != null) ...[
-                      OverlayWidgets(
-                        alignment: Alignment.topRight,
-                        sizeFactor: 0.1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Image.asset(
-                            'assets/icon/cloud_on_lan_128px_color.png',
-                            colorBlendMode: BlendMode.dstOut,
-                          ),
-                        ),
-                      ),
-                      OverlayWidgets(
-                        alignment: Alignment.bottomRight,
-                        sizeFactor: 0.15,
-                        child: (media.isEdited)
-                            ? const MediaIsDownloading(
-                                icon: AnimateIcons.upload,
-                                color: Colors.redAccent,
-                              )
-                            : GetMediaUri(
-                                id: media.id!,
-                                loadingBuilder: () => const MediaIsDownloading(
-                                  icon: AnimateIcons.download,
-                                  color: Colors.blueAccent,
-                                ),
-                                builder: (uri) {
-                                  return const MediaIsDownloading(
-                                    icon: AnimateIcons.cloud,
-                                    color: Colors.greenAccent,
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
                   ],
                 ),
               );
@@ -191,14 +151,11 @@ class MediaView extends StatelessWidget {
         },
       );
     }
+
     return MediaView0(
       media: media,
       parentIdentifier: parentIdentifier,
       isLocked: isLocked,
-      actionControl:
-          (media.type == CLMediaType.video && !VideoEditor.isSupported)
-              ? actionControl.copyWith(allowEdit: false)
-              : actionControl,
       autoPlay: autoPlay,
       autoStart: autoStart,
       onLockPage: onLockPage,
@@ -234,7 +191,6 @@ class MediaView0 extends ConsumerWidget {
     required this.media,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.actionControl,
     required this.autoStart,
     required this.autoPlay,
     this.onLockPage,
@@ -244,7 +200,6 @@ class MediaView0 extends ConsumerWidget {
 
   final String parentIdentifier;
 
-  final ActionControl actionControl;
   final bool autoStart;
   final bool autoPlay;
   final bool isLocked;
@@ -252,7 +207,7 @@ class MediaView0 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ac = actionControl;
+    final ac = AccessControlExt.onGetMediaActionControl(media);
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
       builder: (theStore) {
@@ -338,12 +293,12 @@ class MediaView0 extends ConsumerWidget {
                           false;
                       if (!confirmed) return confirmed;
                       if (context.mounted) {
-                        return theStore.deleteMediaById(media.id!);
+                        return theStore.mediaUpdater.delete(media.id!);
                       }
                       return false;
                     }),
                     onShare: ac.onShare(
-                      () => theStore.shareMedia(context, [media]),
+                      () => theStore.mediaUpdater.share(context, [media]),
                     ),
                     onEdit: ac.onEdit(
                       () async {
@@ -368,7 +323,8 @@ class MediaView0 extends ConsumerWidget {
                     ),
                     onPin: ac.onPin(
                       () async {
-                        final res = await theStore.togglePinById(media.id!);
+                        final res =
+                            await theStore.mediaUpdater.pinToggle(media.id!);
                         if (res) {
                           /*  setState(() {}); */
                         }

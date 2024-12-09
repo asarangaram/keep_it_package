@@ -17,7 +17,7 @@ class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {
     return MediaPathDeterminerWithOnlineSupport._(
       directories: directories,
       server: server,
-      allowOnlineViewIfNotDownloaded: false,
+      allowOnlineViewIfNotDownloaded: true,
     );
   }
 
@@ -61,11 +61,11 @@ class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {
           AsyncValue.data(Uri.file(directories.getMediaAbsolutePath(m))),
         (final CLMedia _) when m.isMediaDownloadFailed =>
           throw Exception(m.mediaLog),
-        (final CLMedia _) when !m.haveItOffline =>
-          server != null && m.mediaEndPoint != null
+        (final CLMedia _) when !(m.haveItOffline ?? false) =>
+          server != null && m.mediaStreamEndPoint != null
               ? AsyncValue.data(
                   Uri.parse(
-                    server!.getEndpointURI(m.mediaEndPoint!).toString(),
+                    server!.getEndpointURI(m.mediaStreamEndPoint!).toString(),
                   ),
                 )
               : throw Exception('Server Not connected'),

@@ -3,50 +3,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../utils/platform_support.dart';
-
 @immutable
 class ActionControl {
   const ActionControl({
-    required this.allowEdit,
-    required this.allowDelete,
-    required this.allowMove,
-    required this.allowShare,
-    required this.allowPin,
-    required this.canDuplicateMedia,
+    this.allowEdit = false,
+    this.allowDelete = false,
+    this.allowMove = false,
+    this.allowShare = false,
+    this.allowPin = false,
+    this.canDuplicateMedia = false,
   });
 
-  factory ActionControl.full() {
-    return ActionControl(
-      allowEdit: true,
-      allowDelete: true,
-      allowMove: true,
-      allowShare: true,
-      allowPin: ColanPlatformSupport.isMobilePlatform,
-      canDuplicateMedia: true,
-    );
-  }
-  factory ActionControl.none() {
-    return const ActionControl(
-      allowEdit: false,
-      allowDelete: false,
-      allowMove: false,
-      allowShare: false,
-      allowPin: false,
-      canDuplicateMedia: false,
-    );
-  }
-
-  factory ActionControl.editOnly() {
-    return const ActionControl(
-      allowEdit: true,
-      allowDelete: true,
-      allowMove: false,
-      allowShare: true,
-      allowPin: false,
-      canDuplicateMedia: false,
-    );
-  }
   final bool allowEdit;
   final bool allowDelete;
   final bool allowMove;
@@ -100,15 +67,15 @@ class ActionControl {
         canDuplicateMedia.hashCode;
   }
 
-  Future<bool?> Function()? onEdit(Future<bool?> Function() cb) =>
+  Future<bool?> Function()? onEdit(Future<bool?> Function()? cb) =>
       allowEdit ? cb : null;
-  Future<bool?> Function()? onDelete(Future<bool?> Function() cb) =>
+  Future<bool?> Function()? onDelete(Future<bool?> Function()? cb) =>
       allowDelete ? cb : null;
-  Future<bool?> Function()? onMove(Future<bool?> Function() cb) =>
+  Future<bool?> Function()? onMove(Future<bool?> Function()? cb) =>
       allowMove ? cb : null;
-  Future<bool?> Function()? onShare(Future<bool?> Function() cb) =>
+  Future<bool?> Function()? onShare(Future<bool?> Function()? cb) =>
       allowShare ? cb : null;
-  Future<bool?> Function()? onPin(Future<bool?> Function() cb) =>
+  Future<bool?> Function()? onPin(Future<bool?> Function()? cb) =>
       allowPin ? cb : null;
 
   Map<String, dynamic> toMap() {

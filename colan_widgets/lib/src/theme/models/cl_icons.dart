@@ -70,7 +70,7 @@ class SyncIcons {
 class CLIcons {
   final SyncIcons syncIcons = SyncIcons();
   final placeHolder = Icons.device_unknown_outlined;
-  final filter = Symbols.filter;
+  final filter = Symbols.filter_list_sharp;
   final camera = MdiIcons.camera;
   final microphone = MdiIcons.microphone;
   final location = MdiIcons.mapMarker;
@@ -146,6 +146,7 @@ class CLIcons {
 
   final extraMenu = Icons.more_vert;
   final cameraSettings = Icons.settings;
+  final collectionsSelect = Symbols.list_alt;
 }
 
 CLIcons clIcons = CLIcons();

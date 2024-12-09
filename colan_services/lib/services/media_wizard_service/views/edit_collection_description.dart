@@ -17,7 +17,7 @@ class EditCollectionDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLWizardFormField(
       actionMenu: (context, onTap) => CLMenuItem(
-        icon: clIcons.pagePop,
+        icon: clIcons.save,
         title: 'Save',
         onTap: onTap,
       ),
@@ -33,7 +33,7 @@ class EditCollectionDescription extends StatelessWidget {
       onSubmit: (CLFormFieldResult result) async {
         final description = (result as CLFormTextFieldResult).value;
 
-        onDone(collection.copyWith(description: description));
+        onDone(collection.copyWith(description: () => description));
       },
     );
   }

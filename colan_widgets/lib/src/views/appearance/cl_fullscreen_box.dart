@@ -14,6 +14,7 @@ class CLFullscreenBox extends ConsumerStatefulWidget {
     this.backgroundBrightness = 0.25,
     this.hasBackground = true,
     this.bottomNavigationBar,
+    this.appBar,
   });
 
   final Widget child;
@@ -23,6 +24,7 @@ class CLFullscreenBox extends ConsumerStatefulWidget {
   final double backgroundBrightness;
   final bool hasBackground;
   final Widget? bottomNavigationBar;
+  final PreferredSizeWidget? appBar;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -39,31 +41,35 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
       onPopInvoked: (val) {
         //print('pop invoked $val;');
       },
-      child: Scaffold(
-        backgroundColor: widget.backgroundColor,
-        body: CLBackground(
-          hasBackground: widget.hasBackground,
-          backgroundBrightness: widget.backgroundBrightness,
-          child: SafeArea(
-            top: widget.useSafeArea,
-            left: widget.useSafeArea,
-            right: widget.useSafeArea,
-            bottom: widget.useSafeArea,
-            child: ClipRect(
-              clipBehavior: Clip.antiAlias,
-              child: _ScaffoldBorder(
-                hasBorder: widget.hasBorder,
-                child: LayoutBuilder(
-                  builder: (context, constraints) => Padding(
+      child: CLBackground(
+        hasBackground: widget.hasBackground,
+        backgroundBrightness: widget.backgroundBrightness,
+        child: SafeArea(
+          top: widget.useSafeArea,
+          left: widget.useSafeArea,
+          right: widget.useSafeArea,
+          bottom: widget.useSafeArea,
+          child: ClipRect(
+            clipBehavior: Clip.antiAlias,
+            child: _ScaffoldBorder(
+              hasBorder: widget.hasBorder,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Padding(
                     padding: EdgeInsets.zero,
-                    child: widget.child,
-                  ),
-                ),
+                    child: Scaffold(
+                      backgroundColor:
+                          widget.backgroundColor ?? Colors.transparent,
+                      appBar: widget.appBar,
+                      body: widget.child,
+                      bottomNavigationBar: widget.bottomNavigationBar,
+                    ),
+                  );
+                },
               ),
             ),
           ),
         ),
-        bottomNavigationBar: widget.bottomNavigationBar,
       ),
     );
   }

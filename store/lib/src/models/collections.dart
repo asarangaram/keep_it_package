@@ -6,6 +6,23 @@ import 'package:meta/meta.dart';
 
 import 'collection.dart';
 
+List<T> updateEntry<T>(
+  List<T> list,
+  bool Function(T) test,
+  T Function(T) replaceBy,
+) {
+  final index = list.indexWhere(test);
+  if (index == -1) {
+    return list;
+  }
+
+  final updatedList = List<T>.from(list);
+
+  updatedList[index] = replaceBy(updatedList[index]);
+
+  return updatedList;
+}
+
 @immutable
 class Collections {
   const Collections(

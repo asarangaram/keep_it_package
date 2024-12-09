@@ -12,6 +12,11 @@ PODS:
   - file_selector_macos (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
+  - fvp (0.27.0):
+    - Flutter
+    - FlutterMacOS
+    - mdk (~> 0.30.0)
+  - mdk (0.30.0)
   - nsd_macos (0.0.1):
     - FlutterMacOS
   - path_provider_foundation (0.0.1):
@@ -54,6 +59,7 @@ DEPENDENCIES:
   - ffmpeg_kit_flutter (from `Flutter/ephemeral/.symlinks/plugins/ffmpeg_kit_flutter/macos`)
   - file_selector_macos (from `Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
+  - fvp (from `Flutter/ephemeral/.symlinks/plugins/fvp/darwin`)
   - nsd_macos (from `Flutter/ephemeral/.symlinks/plugins/nsd_macos/macos`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
   - photo_manager (from `Flutter/ephemeral/.symlinks/plugins/photo_manager/macos`)
@@ -66,6 +72,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - ffmpeg-kit-macos-https
+    - mdk
     - sqlite3
 
 EXTERNAL SOURCES:
@@ -77,6 +84,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
+  fvp:
+    :path: Flutter/ephemeral/.symlinks/plugins/fvp/darwin
   nsd_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/nsd_macos/macos
   path_provider_foundation:
@@ -100,6 +109,8 @@ SPEC CHECKSUMS:
   ffmpeg_kit_flutter: 5bd75928cf88ec177cea410b027681e4bfe09452
   file_selector_macos: 54fdab7caa3ac3fc43c9fac4d7d8d231277f8cf2
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  fvp: e2a89a4b8c310b01cb81580f37b4cbd10f1cefd7
+  mdk: 7fe9a9ef09fbb9fc873c48eadc7727f2055dfab8
   nsd_macos: 1a38a38a33adbb396b4c6f303bc076073514cadc
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   photo_manager: ff695c7a1dd5bc379974953a2b5c0a293f7c4c8a
@@ -112,4 +123,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6acf97521436d16fc31cd5e1a02000905acdb3ae
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

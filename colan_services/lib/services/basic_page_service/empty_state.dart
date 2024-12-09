@@ -4,7 +4,7 @@ import '../../colan_services.dart';
 
 class MessageWidget extends StatelessWidget {
   const MessageWidget({super.key, this.message = 'Empty'});
-  final String message;
+  final dynamic message;
 
   @override
   Widget build(BuildContext context) {

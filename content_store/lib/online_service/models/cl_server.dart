@@ -1,31 +1,43 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 
+import 'cl_server_status.dart';
 import 'rest_api.dart';
 
 @immutable
 class CLServer {
   const CLServer({
-    required this.name,
+    required this.address,
     required this.port,
+    this.name,
     this.id,
+    this.status,
   });
   factory CLServer.fromMap(Map<String, dynamic> map) {
     return CLServer(
-      name: map['name'] as String,
+      address: map['address'] as String,
       port: map['port'] as int,
+      name: map['name'] != null ? map['name'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
+      status: map['status'] != null
+          ? ServerTimeStamps.fromMap(
+              map['status'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 
   factory CLServer.fromJson(String source) =>
       CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  final String name;
+  final String address;
   final int port;
+  final String? name;
   final int? id;
+  final ServerTimeStamps? status;
 
   void log(
     String message, {
@@ -43,51 +55,70 @@ class CLServer {
   }
 
   CLServer copyWith({
-    String? name,
+    String? address,
     int? port,
-    int? id,
+    ValueGetter<String?>? name,
+    ValueGetter<int?>? id,
+    ValueGetter<ServerTimeStamps?>? status,
   }) {
     return CLServer(
-      name: name ?? this.name,
+      address: address ?? this.address,
       port: port ?? this.port,
-      id: id ?? this.id,
+      name: name != null ? name.call() : this.name,
+      id: id != null ? id.call() : this.id,
+      status: status != null ? status.call() : this.status,
     );
   }
 
   @override
-  String toString() => 'Server : ${toJson()}';
+  String toString() {
+    // ignore: lines_longer_than_80_chars
+    return 'CLServer(address: $address, port: $port, name: $name, id: $id, status: $status)';
+  }
 
   @override
   bool operator ==(covariant CLServer other) {
     if (identical(this, other)) return true;
 
-    return other.name == name && other.port == port && other.id == id;
+    return other.address == address &&
+        other.port == port &&
+        other.name == name &&
+        other.id == id &&
+        other.status == status;
   }
 
   @override
-  int get hashCode => name.hashCode ^ port.hashCode ^ id.hashCode;
+  int get hashCode {
+    return address.hashCode ^
+        port.hashCode ^
+        name.hashCode ^
+        id.hashCode ^
+        status.hashCode;
+  }
 
   Future<CLServer?> withId({http.Client? client}) async {
     try {
-      final id = await RestApi(baseURL, client: client).getURLStatus();
-      if (id == null) {
-        throw Exception('Missing id');
+      final map = await RestApi(baseURL, client: client).getURLStatus();
+      final serverMap = toMap()..addAll(map);
+      final server = CLServer.fromMap(serverMap);
+      if (server.hasID) {
+        return server;
       }
-      return copyWith(id: id);
+      throw Exception('Missing id');
     } catch (e) {
       return null;
     }
   }
 
-  Future<bool> hasConnection({http.Client? client}) async {
+  Future<CLServer?> getServerLiveStatus({http.Client? client}) async {
     try {
-      final id = await RestApi(baseURL, client: client).getURLStatus();
-      final hasId = this.id != null && this.id == id;
+      final server = await withId(client: client);
+      final hasId = server != null && id != null && id == server.id;
       log('has id: $hasId');
-      return hasId;
+      return hasId ? server : null;
     } catch (e) {
       log('has id: failed $e');
-      return false;
+      return null;
     }
   }
 
@@ -95,9 +126,11 @@ class CLServer {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'name': name,
+      'address': address,
       'port': port,
+      'name': name,
       'id': id,
+      'status': status?.toMap(),
     };
   }
 
@@ -136,7 +169,7 @@ class CLServer {
     Map<String, dynamic>? form,
   }) async =>
       RestApi(baseURL, client: client)
-          .put(endPoint, json: json ?? '', form: form);
+          .post(endPoint, json: json ?? '', form: form);
 
   Future<String> put(
     String endPoint, {
@@ -174,10 +207,24 @@ class CLServer {
       ];
       return mediaMapList.map((e) => e as Map<String, dynamic>).toList();
     } catch (e) {
-      log('error in download $e');
+      log('error when downloading $e');
     }
     return [];
   }
 
-  String get baseURL => 'http://$name:$port';
+  Future<List<Map<String, dynamic>>> downloadCollectionInfo({
+    http.Client? client,
+  }) async {
+    try {
+      final mapList = jsonDecode(
+        await getEndpoint('/collection', client: client),
+      ) as List<dynamic>;
+      return mapList.map((e) => e as Map<String, dynamic>).toList();
+    } catch (e) {
+      log('error when downloading $e');
+    }
+    return [];
+  }
+
+  String get baseURL => 'http://$address:$port';
 }

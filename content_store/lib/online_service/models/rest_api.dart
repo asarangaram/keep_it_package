@@ -34,7 +34,7 @@ class RestApi {
 
   http.Client get myClient => client ?? http.Client();
 
-  Future<int?> getURLStatus() async {
+  Future<Map<String, dynamic>> getURLStatus() async {
     //await Future.delayed(const Duration(seconds: 2));
     log('ping server $_server');
     final response = await myClient
@@ -44,7 +44,7 @@ class RestApi {
       if (response.statusCode == 200) {
         final info = jsonDecode(response.body) as Map<String, dynamic>;
         if ((info['name'] as String) == 'colan_server') {
-          return info['id'] as int;
+          return info;
         }
         log("Error: ${info['name']}");
         throw Exception(info['name']);

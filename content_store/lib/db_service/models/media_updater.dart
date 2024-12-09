@@ -5,7 +5,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:content_store/extensions/ext_cl_media.dart';
+import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
@@ -17,36 +19,103 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
-import '../../extensions/ext_cldirectories.dart';
-import '../../extensions/list_ext.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 
+import 'gallery_pin.dart';
 import 'share_files.dart';
-import 'store_updater.dart';
+
 import 'url_handler.dart';
 
-extension StoreExt on StoreUpdater {
-  Future<bool> deleteCollectionById(
-    int id, {
-    bool shouldRefresh = true,
-  }) async {
-    final mediaMultiple = await store.reader.getMediaByCollectionId(id);
+class MediaUpdater {
+  MediaUpdater({
+    required this.store,
+    required this.directories,
+    required this.albumManager,
+    required this.getCollectionByLabel,
+    required this.tempCollectionName,
+  });
+  Store store;
+  CLDirectories directories;
+  final AlbumManager albumManager;
+  final Future<Collection> Function(
+    String label, {
+    DateTime? createdDate,
+    DateTime? updatedDate,
+    int? serverUID,
+    bool shouldRefresh,
+    bool restoreIfNeeded,
+  }) getCollectionByLabel;
+  final String tempCollectionName;
 
-    for (final m in mediaMultiple) {
-      await store.upsertMedia(
-        m.updateContent(
-          isDeleted: () => true,
-          isEdited: true,
+  /// Method: upsert
+  Future<CLMedia?> upsert(
+    CLMedia media0, {
+    bool shouldRefresh = true,
+    String? path,
+    List<CLMedia>? parents,
+  }) async {
+    final CLMedia media;
+    if (path != null) {
+      final currentMediaPath = directories.getMediaAbsolutePath(media0);
+      if (currentMediaPath != path) {
+        File(path).copySync(currentMediaPath);
+      }
+
+      media = await _generateMediaPreview(
+        media: media0.updateStatus(
+          isMediaCached: () => true,
+          isMediaOriginal: () => true,
         ),
       );
+    } else {
+      /* final currentMediaPath = directories.getMediaAbsolutePath(media0);
+      final currentPreviewPath = directories.getPreviewAbsolutePath(media0);
+      final isMediaCached = File(currentMediaPath).existsSync();
+      final isPreviewCached = File(currentPreviewPath).existsSync();
+      media = media0.updateStatus(
+        isMediaCached: () => isMediaCached,
+        isPreviewCached: () => isPreviewCached,
+      ); */
+      media = media0;
     }
+
+    CLMedia? c;
+    if (media.id != null) {
+      c = await store.reader.getMediaById(media.id!);
+    }
+    if (c == null && media.serverUID != null) {
+      c ??= await store.reader.getMediaByServerUID(media.serverUID!);
+    }
+    if (c == null && media.md5String != null) {
+      c ??= await store.reader.getMediaByMD5String(media.md5String!);
+    }
+
+    if (c != null) {
+      if (media.id != null && media.id != c.id) {
+        throw Exception('Conflict in id');
+      }
+      if (media.serverUID != c.serverUID && c.serverUID != null) {
+        throw Exception('Conflict in serverUID');
+      }
+    }
+
+    final mediaFromDB = await store.upsertMedia(
+      (media.id != null)
+          ? media
+          : media.updateContent(
+              isEdited: media.isEdited ?? false,
+              id: () => c?.id,
+            ),
+      parents: parents,
+    );
     if (shouldRefresh) {
       store.reloadStore();
     }
-    return true;
+    return mediaFromDB;
   }
 
-  Future<bool> deleteMediaById(
+  /// Method: delete
+  Future<bool> delete(
     int id, {
     bool shouldRefresh = true,
   }) async {
@@ -65,47 +134,15 @@ extension StoreExt on StoreUpdater {
     return true;
   }
 
-  Future<bool> deleteMediaMultipleById(
-    Set<int> ids2Delete, {
+  // Method: deletePermanently
+  Future<bool> deletePermanently(
+    int id, {
     bool shouldRefresh = true,
-  }) async {
-    final mediaMultiple =
-        await store.reader.getMediasByIDList(ids2Delete.toList());
-    for (final m in mediaMultiple) {
-      await store.upsertMedia(
-        m.updateContent(
-          isDeleted: () => true,
-          isEdited: true,
-        ),
-      );
-    }
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return true;
+  }) {
+    return deletePermanentlyMultiple({id}, shouldRefresh: shouldRefresh);
   }
 
-  Future<bool> restoreMediaMultipleById(
-    Set<int> ids2Delete, {
-    bool shouldRefresh = true,
-  }) async {
-    final mediaMultiple =
-        await store.reader.getMediasByIDList(ids2Delete.toList());
-    for (final m in mediaMultiple) {
-      await store.upsertMedia(
-        m.updateContent(
-          isDeleted: () => false,
-          isEdited: true,
-        ),
-      );
-    }
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return true;
-  }
-
-  Future<bool> permanentlyDeleteMediaMultipleById(
+  Future<bool> deletePermanentlyMultiple(
     Set<int> ids2Delete, {
     bool shouldRefresh = true,
   }) async {
@@ -133,11 +170,60 @@ extension StoreExt on StoreUpdater {
     return true;
   }
 
-  Future<bool> togglePinById(int id) async {
-    return togglePinMultipleById({id});
+  /// Method: deleteMultiple
+  Future<bool> deleteMultiple(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
+    final mediaMultiple =
+        await store.reader.getMediasByIDList(ids2Delete.toList());
+    for (final m in mediaMultiple) {
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => true,
+          isEdited: true,
+        ),
+      );
+    }
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
+    return true;
   }
 
-  Future<bool> togglePinMultipleById(
+  Future<bool> restore(
+    int id, {
+    bool shouldRefresh = true,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  // Method: restoreMultiple
+  Future<bool> restoreMultiple(
+    Set<int> ids2Delete, {
+    bool shouldRefresh = true,
+  }) async {
+    final mediaMultiple =
+        await store.reader.getMediasByIDList(ids2Delete.toList());
+    for (final m in mediaMultiple) {
+      await store.upsertMedia(
+        m.updateContent(
+          isDeleted: () => false,
+          isEdited: true,
+        ),
+      );
+    }
+    if (shouldRefresh) {
+      store.reloadStore();
+    }
+    return true;
+  }
+
+  Future<bool> pinToggle(int id) async {
+    return pinToggleMultiple({id});
+  }
+
+  Future<bool> pinToggleMultiple(
     Set<int?> ids2Delete, {
     bool shouldRefresh = true,
   }) async {
@@ -145,9 +231,9 @@ extension StoreExt on StoreUpdater {
         await store.reader.getMediasByIDList(ids2Delete.nonNullableList);
     final bool res;
     if (media.any((e) => e.pin == null)) {
-      res = await pinMediaMultiple(media);
+      res = await pinCreateMultiple(media);
     } else {
-      res = await removePinMediaMultiple(media);
+      res = await pinRemoveMultiple(media);
     }
     if (shouldRefresh) {
       store.reloadStore();
@@ -155,7 +241,7 @@ extension StoreExt on StoreUpdater {
     return res;
   }
 
-  Future<bool> removePinMediaMultiple(
+  Future<bool> pinRemoveMultiple(
     List<CLMedia> mediaMultiple, {
     bool shouldRefresh = true,
   }) async {
@@ -174,7 +260,7 @@ extension StoreExt on StoreUpdater {
     return res;
   }
 
-  Future<bool> pinMediaMultiple(
+  Future<bool> pinCreateMultiple(
     List<CLMedia> mediaMultiple, {
     bool shouldRefresh = true,
   }) async {
@@ -208,7 +294,7 @@ extension StoreExt on StoreUpdater {
     return true;
   }
 
-  Future<bool> removeMediaFromGallery(
+  /* Future<bool> removeFromGallery(
     String ids, {
     bool shouldRefresh = true,
   }) async {
@@ -217,33 +303,9 @@ extension StoreExt on StoreUpdater {
       store.reloadStore();
     }
     return res;
-  }
+  } */
 
-  String createTempFile({required String ext}) {
-    final dir = directories.download.path; // FIXME temp Directory
-    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '${dir.path}/$fileBasename.$ext';
-
-    return absolutePath;
-  }
-
-  Future<Collection> upsertCollection(
-    Collection collection, {
-    bool shouldRefresh = true,
-  }) async {
-    if (collection.id != null) {
-      final c = await store.reader.getCollectionById(collection.id!);
-      if (collection == c) return collection;
-    }
-
-    final updated = store.upsertCollection(collection);
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return updated;
-  }
-
-  Future<CLMedia?> newMedia(
+  Future<CLMedia?> create(
     String path, {
     required CLMediaType type,
     ValueGetter<String>? fExt,
@@ -265,8 +327,8 @@ extension StoreExt on StoreUpdater {
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<int?>? serverUID,
-    ValueGetter<bool>? isEdited,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? isEdited,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
   }) async {
@@ -276,6 +338,16 @@ extension StoreExt on StoreUpdater {
     final collectionId0 = collectionId != null ? collectionId() : null;
     final int collectionId1;
     final bool? isHidden0;
+    final metadata = switch (type) {
+      CLMediaType.image => await File(path).getImageMetaData(),
+      CLMediaType.video => await File(path).getVideoMetaData(),
+      _ => null
+    };
+    final originalDate0 =
+        originalDate ?? (metadata == null ? null : () => metadata.originalDate);
+    if (originalDate0 != null) {
+      log('originalDate is set as ${originalDate0()}');
+    }
     if (collectionId0 == null) {
       collectionId1 =
           (isAux0 ? (await _notesCollection) : (await _defaultCollection)).id!;
@@ -310,22 +382,22 @@ extension StoreExt on StoreUpdater {
       previewLog: previewLog != null ? previewLog() : null,
       mediaLog: mediaLog != null ? mediaLog() : null,
       serverUID: serverUID != null ? serverUID() : null,
-      haveItOffline: haveItOffline?.call() ?? true,
+      haveItOffline: haveItOffline?.call(),
       mustDownloadOriginal: mustDownloadOriginal?.call() ?? false,
       ref: ref != null ? ref() : null,
-      originalDate: originalDate != null ? originalDate() : null,
+      originalDate: originalDate0 != null ? originalDate0() : null,
       isDeleted: isDeleted != null ? isDeleted() : false,
 
       pin: pin != null ? pin() : null,
     );
-    return upsertMedia(
+    return upsert(
       updated0,
       parents: parents,
       path: path,
     );
   }
 
-  Future<CLMedia?> updateMedia(
+  Future<CLMedia?> update(
     CLMedia media, {
     required bool isEdited,
     String? path,
@@ -349,7 +421,7 @@ extension StoreExt on StoreUpdater {
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<int?>? serverUID,
-    ValueGetter<bool>? haveItOffline,
+    ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
   }) async {
@@ -376,6 +448,7 @@ extension StoreExt on StoreUpdater {
     final String fExt0;
     final String computedMD5String;
     final String defaultName;
+    final ValueGetter<DateTime?>? originalDate0;
     if (path != null) {
       // File changed
       computedMD5String = await File(path).checksum;
@@ -390,10 +463,21 @@ extension StoreExt on StoreUpdater {
           : id == null
               ? media.name
               : p.basename(path);
+      final metadata = switch (media.type) {
+        CLMediaType.image => await File(path).getImageMetaData(),
+        CLMediaType.video => await File(path).getVideoMetaData(),
+        _ => null
+      };
+      originalDate0 = originalDate ??
+          (metadata == null ? null : () => metadata.originalDate);
     } else {
       computedMD5String = media.md5String!;
       fExt0 = media.fExt;
       defaultName = name != null ? name() : media.name;
+      originalDate0 = originalDate;
+    }
+    if (originalDate0 != null) {
+      log('originalDate is set as ${originalDate0()}');
     }
 
     final updated0 = media
@@ -408,7 +492,7 @@ extension StoreExt on StoreUpdater {
           // Set defaults if not provided
           serverUID: () => serverUID != null ? serverUID() : media.serverUID,
           ref: ref,
-          originalDate: originalDate,
+          originalDate: originalDate0,
           isDeleted: isDeleted,
           isEdited: isEdited,
           // clear pin if new path provided
@@ -431,62 +515,14 @@ extension StoreExt on StoreUpdater {
                   : media.pin,
         );
 
-    return upsertMedia(
-      updated0,
-      parents: parents,
-      path: path,
-      originalMedia: media,
-    );
-  }
-
-  Future<CLMedia?> upsertMedia(
-    CLMedia media, {
-    CLMedia? originalMedia,
-    String? path,
-    List<CLMedia>? parents,
-    bool shouldRefresh = true,
-  }) async {
-    // Save Media
-    final CLMedia updated0;
-    if (path != null) {
-      final currentMediaPath = directories.getMediaAbsolutePath(media);
-      File(path).copySync(currentMediaPath);
-
-      updated0 = await _generateMediaPreview(
-        media: media.updateStatus(
-          isMediaCached: () => true,
-          isMediaOriginal: () => true,
-        ),
-      );
-    } else {
-      updated0 = media;
-    }
-    if (originalMedia == updated0) {
-      return originalMedia;
-    }
-
-    // Update in DB
-    final mediaFromDB = await store.upsertMedia(
-      updated0,
-      parents: parents,
-    );
-    log('store updated');
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return mediaFromDB;
+    return upsert(updated0, parents: parents, path: path);
   }
 
   Future<Collection> get _notesCollection async =>
-      await store.reader.getCollectionByLabel('*** Notes') ??
-      (await upsertCollection(
-        const Collection(label: '*** Notes'),
-      ));
+      getCollectionByLabel('*** Notes', restoreIfNeeded: true);
+
   Future<Collection> get _defaultCollection async =>
-      await store.reader.getCollectionByLabel(tempCollectionName) ??
-      (await upsertCollection(
-        Collection(label: tempCollectionName),
-      ));
+      getCollectionByLabel(tempCollectionName, restoreIfNeeded: true);
 
   Future<CLMedia> _generateMediaPreview({
     required CLMedia media,
@@ -496,45 +532,30 @@ extension StoreExt on StoreUpdater {
     try {
       final currentMediaPath = directories.getMediaAbsolutePath(media);
       final currentPreviewPath = directories.getPreviewAbsolutePath(media);
-      final error = <String, String>{}; // Could use Completer ?
 
-      final res = await generatePreview(
+      final preveiwLog = await generatePreview(
         inputFile: currentMediaPath,
         outputFile: currentPreviewPath,
         type: media.type,
         dimension: dimension,
-        onError: (p0) {
-          error[p0.key] = p0.value;
-        },
       );
-      if (res) {
-        updateMedia = updateMedia.updateStatus(
-          isPreviewCached: () => true,
-          previewLog: () => null,
-        );
-      } else {
-        if (error.isNotEmpty) {
-          updateMedia = updateMedia.updateStatus(
-            isPreviewCached: () => false,
-            previewLog: () => jsonEncode(error),
-          );
-        }
-      }
+      updateMedia = updateMedia.updateStatus(
+        isPreviewCached: () => preveiwLog == null,
+        previewLog: () => preveiwLog,
+      );
     } catch (e) {
       updateMedia = updateMedia.updateStatus(
         isPreviewCached: () => false,
-        previewLog: () =>
-            jsonEncode({'decodeError': 'Exception while generating preview'}),
+        previewLog: () => 'decodeError: ' 'Exception while generating preview',
       );
     }
     return updateMedia;
   }
 
-  static Future<bool> generatePreview({
+  static Future<String?> generatePreview({
     required String inputFile,
     required String outputFile,
     required CLMediaType type,
-    required void Function(MapEntry<String, String> entry) onError,
     int dimension = 256,
   }) async {
     switch (type) {
@@ -546,31 +567,21 @@ extension StoreExt on StoreUpdater {
             output: '$inputFile.jpeg',
           );
           if (jpegPath == null) {
-            onError(
-              const MapEntry(
-                'decodeError',
-                'HeifConverter  Failed to convert HEIC file to JPEG',
-              ),
-            );
-            inputImage = null;
+            return 'decodeError: '
+                'HeifConverter  Failed to convert HEIC file to JPEG';
           } else {
             inputImage = img.decodeJpg(File(jpegPath).readAsBytesSync());
             if (inputImage == null) {
-              onError(
-                const MapEntry(
-                  'decodeError',
-                  'Failed to decode jpeg image (converted from heic)',
-                ),
-              );
+              return 'decodeError: '
+                  'Failed to decode jpeg image (converted from heic)';
             }
           }
         } else {
           inputImage = img.decodeImage(File(inputFile).readAsBytesSync());
           if (inputImage == null) {
-            onError(const MapEntry('decodeError', 'Failed to decode Image'));
+            return 'decodeError: ' 'Failed to decode Image';
           }
         }
-        if (inputImage == null) return false;
 
         final int thumbnailHeight;
         final int thumbnailWidth;
@@ -591,7 +602,7 @@ extension StoreExt on StoreUpdater {
         File(outputFile).writeAsBytesSync(
           Uint8List.fromList(img.encodeJpg(thumbnail)),
         );
-        return true;
+        return null;
 
       case CLMediaType.video:
         await File(outputFile).deleteIfExists();
@@ -615,16 +626,10 @@ extension StoreExt on StoreUpdater {
           } else {
             final log = await probleSession.getAllLogsAsString();
 
-            onError(
-              MapEntry(
-                  'decodeError',
-                  'FFprobeKit return code: $probeReturnCode. '
-                      'Details: $log}'),
-            );
-
-            return false;
+            return 'decodeError: FFprobeKit return code: $probeReturnCode. '
+                'Details: $log}';
           }
-          final tileSize = computeTileSize(frameCount);
+          final tileSize = _computeTileSize(frameCount);
           final frameFreq = (frameCount / (tileSize * tileSize)).floor();
 
           final session = await FFmpegKit.execute(
@@ -638,31 +643,25 @@ extension StoreExt on StoreUpdater {
           if (!ReturnCode.isSuccess(returnCode)) {
             await File(outputFile).deleteIfExists();
             final log = await session.getAllLogsAsString();
-            onError(MapEntry('previewError', 'FFmpegKit:$log'));
+            return 'previewError: FFmpegKit:$log';
           }
 
-          return ReturnCode.isSuccess(returnCode);
+          return null;
         } catch (e) {
           await File(outputFile).deleteIfExists();
-          onError(MapEntry('previewError', 'FFmpegKit crashed $e'));
-          return false;
+          return 'previewError: FFmpegKit crashed $e';
         }
 
       case CLMediaType.text:
       case CLMediaType.url:
       case CLMediaType.audio:
       case CLMediaType.file:
-        onError(
-          const MapEntry(
-            'decodeError',
-            "Unsupported Media Type. Preview can't be generated",
-          ),
-        );
-        return false;
+        return 'decodeError: '
+            "Unsupported Media Type. Preview can't be generated";
     }
   }
 
-  static int computeTileSize(double frameCount) {
+  static int _computeTileSize(double frameCount) {
     if (frameCount >= 16) {
       return 4;
     } else if (frameCount >= 9) {
@@ -672,11 +671,11 @@ extension StoreExt on StoreUpdater {
     }
   }
 
-  Future<CLMedia> replaceMedia(
+  Future<CLMedia> replaceContent(
     String path, {
     required CLMedia media,
   }) async {
-    return (await updateMedia(
+    return (await update(
           media,
           path: path,
           isEdited: true,
@@ -684,21 +683,23 @@ extension StoreExt on StoreUpdater {
         media;
   }
 
-  Future<CLMedia> cloneAndReplaceMedia(
+  Future<CLMedia> updateCloneAndReplaceContent(
     String path, {
     required CLMedia media,
   }) async {
-    return (await updateMedia(
-          media,
-          path: path,
-          id: () => null,
-          serverUID: () => null, // Creating new media locally
-          isEdited: false, // Creating new Media locally
+    return (await create(
+          path,
+          type: media.type,
+          fExt: () => media.fExt,
+          originalDate: () => media.originalDate,
+          collectionId: () => media.collectionId,
+          haveItOffline: () => media.haveItOffline,
+          isAux: () => media.isAux,
         )) ??
         media;
   }
 
-  Stream<Progress> moveToCollectionStream({
+  Stream<Progress> moveMultiple({
     required List<CLMedia> media,
     required Collection collection,
     Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
@@ -710,8 +711,14 @@ extension StoreExt on StoreUpdater {
         fractCompleted: 0,
         currentItem: 'Creating new collection',
       );
-      final withId = await store.reader.getCollectionByLabel(collection.label);
-      updatedCollection = await upsertCollection(withId ?? collection);
+      updatedCollection = await getCollectionByLabel(
+        collection.label,
+        serverUID: collection.serverUID,
+        createdDate: collection.createdDate,
+        updatedDate: collection.updatedDate,
+        shouldRefresh: false,
+        restoreIfNeeded: true,
+      );
     } else {
       updatedCollection = collection;
     }
@@ -724,7 +731,7 @@ extension StoreExt on StoreUpdater {
       final updatedList = <CLMedia>[];
 
       for (final (i, m) in media.indexed) {
-        final updated = await updateMedia(
+        final updated = await update(
           m,
           isHidden: () => false,
           collectionId: () => updatedCollection.id!,
@@ -747,7 +754,7 @@ extension StoreExt on StoreUpdater {
     }
   }
 
-  static Future<CLMediaBase> tryDownloadMedia(
+  static Future<CLMediaBase> _tryDownloadMedia(
     CLMediaBase mediaFile, {
     required CLDirectories deviceDirectories,
   }) async {
@@ -778,7 +785,7 @@ extension StoreExt on StoreUpdater {
     );
   }
 
-  static Future<CLMediaBase> identifyMediaType(
+  static Future<CLMediaBase> _identifyType(
     CLMediaBase mediaFile, {
     required CLDirectories deviceDirectories,
   }) async {
@@ -797,7 +804,7 @@ extension StoreExt on StoreUpdater {
     return mediaFile.copyWith(type: () => mimeType);
   }
 
-  Stream<Progress> analyseMediaStream({
+  Stream<Progress> analyseMultiple({
     required List<CLMediaBase> mediaFiles,
     required void Function({
       required List<CLMedia> existingItems,
@@ -813,11 +820,11 @@ extension StoreExt on StoreUpdater {
       fractCompleted: 0,
     );
     for (final (i, item0) in mediaFiles.indexed) {
-      final item1 = await tryDownloadMedia(
+      final item1 = await _tryDownloadMedia(
         item0,
         deviceDirectories: directories,
       );
-      final item = await identifyMediaType(
+      final item = await _identifyType(
         item1,
         deviceDirectories: directories,
       );
@@ -837,7 +844,7 @@ extension StoreExt on StoreUpdater {
             }
           } else {
             // avoid recomputing md5
-            final newItem = await newMedia(item.name, type: item.type);
+            final newItem = await create(item.name, type: item.type);
             if (newItem != null) {
               newItems.add(newItem);
             }
@@ -870,7 +877,7 @@ extension StoreExt on StoreUpdater {
   }
 
   // This should not be in this way.
-  Future<bool?> shareMedia(
+  Future<bool?> share(
     BuildContext context,
     List<CLMedia> media,
   ) {
@@ -888,21 +895,54 @@ extension StoreExt on StoreUpdater {
     );
   }
 
-  String mediaFileRelativePath(CLMedia media) => p.join(
+  String fileRelativePath(CLMedia media) => p.join(
         directories.media.relativePath,
         media.mediaFileName,
       );
-  String previewFileRelativePath(CLMedia media) => p.join(
+  String previewRelativePath(CLMedia media) => p.join(
         directories.thumbnail.relativePath,
         media.previewFileName,
       );
 
-  String mediaFileAbsolutePath(CLMedia media) => p.join(
+  String fileAbsolutePath(CLMedia media) => p.join(
         directories.media.pathString,
         media.mediaFileName,
       );
-  String previewFileAbsolutePath(CLMedia media) => p.join(
+  String previewAbsolutePath(CLMedia media) => p.join(
         directories.thumbnail.pathString,
         media.previewFileName,
       );
+
+  Future<CLMedia?> markHaveItOffline(
+    CLMedia media, {
+    bool shouldRefresh = true,
+  }) async {
+    final m = await upsert(
+      media.updateStatus(haveItOffline: () => true),
+      shouldRefresh: shouldRefresh,
+    );
+
+    return m;
+  }
+
+  Future<bool> deleteLocalCopy(
+    CLMedia media, {
+    ValueGetter<bool?>? haveItOffline,
+    bool shouldRefresh = true,
+  }) async {
+    final m = await upsert(
+      media.updateStatus(
+        haveItOffline: haveItOffline ?? () => false,
+        isMediaCached: () => false,
+        mediaLog: () => null,
+      ),
+      shouldRefresh: shouldRefresh,
+    );
+    if (m != null) {
+      final file = fileAbsolutePath(media);
+      await File(file).deleteIfExists();
+    }
+    // FIXME store.reloadStore();
+    return m != null;
+  }
 }

@@ -1,5 +1,4 @@
 import 'package:store/store.dart';
-import 'list_ext.dart';
 
 extension StoreReaderExt on StoreReader {
   Future<List<CLMedia>> notesByMediaId(int mediaId) async {

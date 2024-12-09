@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element, unused_import
+
 import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
@@ -7,20 +9,20 @@ import 'package:store/store.dart';
 import 'get_db_reader.dart';
 import 'w3_get_from_store.dart';
 
-void log(
+void _log(
   dynamic message, {
   int level = 0,
   Object? error,
   StackTrace? stackTrace,
   String? name,
 }) {
-  dev.log(
+  /* dev.log(
     message.toString(),
     level: level,
     error: error,
     stackTrace: stackTrace,
     name: name ?? 'Media Builder',
-  );
+  ); */
 }
 
 class GetMedia extends ConsumerWidget {
@@ -49,7 +51,7 @@ class GetMedia extends ConsumerWidget {
           loadingBuilder: loadingBuilder,
           builder: (data) {
             final media = data.where((e) => e.id == id).firstOrNull;
-            log(media?.md5String, name: 'GetMedia');
+            _log(media?.md5String, name: 'GetMedia');
             return builder(media);
           },
         );

@@ -9,37 +9,76 @@ class VideoPlayerStateNotifier extends StateNotifier<VideoPlayerState> {
   VideoPlayerStateNotifier() : super(const VideoPlayerState());
   VideoPlayerController? controller;
 
-  Future<void> setVideo(String path, {bool autoPlay = true}) async {
-    if (state.path == path) return;
-    state = VideoPlayerState(path: path);
+  Future<void> resetVideo({
+    bool autoPlay = true,
+    bool forced = false,
+  }) async {
+    await setVideo(state.path!, forced: true);
+  }
+
+  Future<void> setVideo(
+    Uri uri, {
+    bool autoPlay = true,
+    bool forced = false,
+  }) async {
+    if (!forced && state.path == uri) return;
+    state = VideoPlayerState(path: uri);
     try {
-      if (!File(path).existsSync()) {
-        throw FileSystemException('missing file', path);
-      }
       if (controller != null) {
         await controller!.pause();
         await controller!.dispose();
       }
-      controller = VideoPlayerController.file(File(path));
-      if (controller == null) {
-        throw Exception('Failed to create controller');
+      final VideoPlayerController newController;
+      if (uri.scheme == 'file') {
+        final path = uri.toFilePath();
+        if (!File(path).existsSync()) {
+          throw FileSystemException('missing file', path);
+        }
+
+        controller = VideoPlayerController.file(File(path));
+        if (controller == null) {
+          throw Exception('Failed to create controller');
+        }
+        newController = controller!;
+        await newController.initialize();
+        if (!newController.value.isInitialized) {
+          throw Exception('Failed to load Video');
+        }
+
+        await newController.seekTo(Duration.zero);
+        if (autoPlay) {
+          await newController.play();
+        }
+      } else if (['http', 'https'].contains(uri.scheme)) {
+        controller = VideoPlayerController.networkUrl(
+          uri,
+          formatHint: VideoFormat.hls,
+          videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+        );
+        if (controller == null) {
+          throw Exception('Failed to create controller');
+        }
+        newController = controller!;
+        await newController.initialize();
+        if (!newController.value.isInitialized) {
+          throw Exception('Failed to load Video');
+        }
+
+        await newController.seekTo(Duration.zero);
+        if (autoPlay) {
+          await newController.play();
+        }
+      } else {
+        throw Exception('not supported');
       }
-      final newController = controller!;
-      await newController.initialize();
-      if (!newController.value.isInitialized) {
-        throw Exception('Failed to load Video');
-      }
-      await newController.seekTo(Duration.zero);
-      if (autoPlay) {
-        await newController.play();
-      }
+
       state = state.copyWith(controllerAsync: AsyncValue.data(newController));
     } catch (error, stackTrace) {
       state = state.copyWith(controllerAsync: AsyncError(error, stackTrace));
     }
   }
 
-  Future<void> stopVideo(String? path) async {
+  Future<void> stopVideo(Uri? path) async {
     if (path == state.path || path == null) {
       if (controller != null) {
         await controller!.pause();

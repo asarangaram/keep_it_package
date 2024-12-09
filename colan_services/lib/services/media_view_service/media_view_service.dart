@@ -14,14 +14,12 @@ class MediaViewService extends StatelessWidget {
   factory MediaViewService({
     required CLMedia media,
     required String parentIdentifier,
-    ActionControl? actionControl,
     Key? key,
   }) {
     return MediaViewService._(
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
-      actionControl: actionControl ?? ActionControl.full(),
       key: key,
       isPreview: false,
     );
@@ -35,7 +33,6 @@ class MediaViewService extends StatelessWidget {
       initialMediaIndex: 0,
       media: [media],
       parentIdentifier: parentIdentifier,
-      actionControl: ActionControl.none(),
       key: key,
       isPreview: true,
     );
@@ -44,14 +41,12 @@ class MediaViewService extends StatelessWidget {
     required int initialMediaIndex,
     required List<CLMedia> media,
     required String parentIdentifier,
-    ActionControl? actionControl,
     Key? key,
   }) {
     return MediaViewService._(
       initialMediaIndex: initialMediaIndex,
       media: media,
       parentIdentifier: parentIdentifier,
-      actionControl: actionControl ?? ActionControl.full(),
       key: key,
       isPreview: false,
     );
@@ -60,7 +55,6 @@ class MediaViewService extends StatelessWidget {
     required this.initialMediaIndex,
     required this.media,
     required this.parentIdentifier,
-    required this.actionControl,
     required this.isPreview,
     super.key,
   });
@@ -69,7 +63,6 @@ class MediaViewService extends StatelessWidget {
   final int initialMediaIndex;
   final String parentIdentifier;
   final bool isPreview;
-  final ActionControl actionControl;
 
   @override
   Widget build(BuildContext context) {
@@ -84,23 +77,13 @@ class MediaViewService extends StatelessWidget {
       );
     } */
     if (isPreview) {
-      return Column(
-        children: [
-          Expanded(
-            child: CLAspectRationDecorated(
-              //hasBorder: true,
-              //borderRadius: const BorderRadius.all(Radius.circular(16)),
-              child: MediaView.preview(
-                media[0],
-                parentIdentifier: parentIdentifier,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
-            child: CLLabel.tiny(media[0].name),
-          ),
-        ],
+      return CLAspectRationDecorated(
+        //hasBorder: true,
+        //borderRadius: const BorderRadius.all(Radius.circular(16)),
+        child: MediaView.preview(
+          media[0],
+          parentIdentifier: parentIdentifier,
+        ),
       );
     }
     if (media.length == 1) {
@@ -108,7 +91,6 @@ class MediaViewService extends StatelessWidget {
         initialMediaIndex: 0,
         media: media,
         parentIdentifier: parentIdentifier,
-        actionControl: actionControl,
         key: key,
       );
     }
@@ -117,7 +99,6 @@ class MediaViewService extends StatelessWidget {
       initialMediaIndex: initialMediaIndex,
       media: media,
       parentIdentifier: parentIdentifier,
-      actionControl: actionControl,
       key: key,
     );
   }
@@ -128,15 +109,12 @@ class MediaViewService0 extends ConsumerStatefulWidget {
     required this.initialMediaIndex,
     required this.media,
     required this.parentIdentifier,
-    required this.actionControl,
     super.key,
   });
 
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
-
-  final ActionControl actionControl;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -185,7 +163,6 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                   parentIdentifier: widget.parentIdentifier,
                   isLocked: lockPage,
                   onLockPage: onLockPage,
-                  actionControl: widget.actionControl,
                   autoStart: true,
                   autoPlay: true,
                 ),
@@ -208,10 +185,8 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
         : MediaPageView(
             items: widget.media,
             startIndex: widget.initialMediaIndex,
-            actionControl: widget.actionControl,
             parentIdentifier: widget.parentIdentifier,
             isLocked: lockPage,
-            canDuplicateMedia: widget.actionControl.canDuplicateMedia,
             onLockPage: onLockPage,
           );
   }

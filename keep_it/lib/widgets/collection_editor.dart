@@ -57,6 +57,7 @@ class CollectionEditor extends StatelessWidget {
         loadingBuilder: null,
         builder: (collection) {
           return GetCollectionMultiple(
+            query: DBQueries.collections,
             errorBuilder: null,
             loadingBuilder: null,
             builder: (collections) {
@@ -91,7 +92,7 @@ class CollectionEditor extends StatelessWidget {
 
                   final updated = collection.copyWith(
                     label: label,
-                    description: desc.isEmpty ? null : desc,
+                    description: () => desc.isEmpty ? null : desc,
                   );
 
                   onSubmit(updated);

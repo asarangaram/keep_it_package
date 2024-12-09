@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fvp/fvp.dart' as fvp;
 import 'package:go_router/go_router.dart';
 import 'package:window_size/window_size.dart';
 
@@ -102,7 +103,7 @@ class KeepItApp implements AppDescriptor {
           builder: (context, GoRouterState state) {
             final String parentIdentifier;
             final int? collectionId;
-            final String? actionControlJson;
+
             if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
               parentIdentifier = 'unknown';
             } else {
@@ -114,15 +115,6 @@ class KeepItApp implements AppDescriptor {
               collectionId =
                   int.parse(state.uri.queryParameters['collectionId']!);
             }
-            if (!state.uri.queryParameters.containsKey('actionControl')) {
-              actionControlJson = null;
-            } else {
-              actionControlJson = state.uri.queryParameters['actionControl'];
-            }
-
-            final actionControl = actionControlJson != null
-                ? ActionControl.fromJson(actionControlJson)
-                : ActionControl.none();
 
             return FullscreenLayout(
               useSafeArea: false,
@@ -130,7 +122,6 @@ class KeepItApp implements AppDescriptor {
                 collectionId: collectionId,
                 id: int.parse(state.pathParameters['item_id']!),
                 parentIdentifier: parentIdentifier,
-                actionControl: actionControl,
               ),
             );
           },
@@ -184,7 +175,6 @@ class KeepItApp implements AppDescriptor {
           name: 'items_by_collection/:collectionId',
           builder: (context, GoRouterState state) => CollectionTimeLinePage(
             collectionId: int.parse(state.pathParameters['collectionId']!),
-            actionControl: ActionControl.full(),
           ),
         ),
       ];
@@ -244,6 +234,7 @@ class KeepItApp implements AppDescriptor {
   @override
   CLRedirector get redirector => (String location) async {
         const redirectTo = '';
+        //'/collections/storage_preference';
         if (redirectTo.isNotEmpty) {
           if (location != redirectTo) return redirectTo;
         }
@@ -257,6 +248,7 @@ void main() {
   debugPrintBeginFrameBanner = false;
   debugPrintLayouts = false;
   WidgetsFlutterBinding.ensureInitialized();
+
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     //setWindowTitle('My App');
     setWindowFrame(const Rect.fromLTWH(0, 0, 900, 900 * 16 / 9));
@@ -267,7 +259,11 @@ void main() {
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
-
+  fvp.registerWith(
+    options: {
+      'global': {'logLevel': 'Error'},
+    },
+  );
   runApp(
     ProviderScope(
       child: AppLoader(

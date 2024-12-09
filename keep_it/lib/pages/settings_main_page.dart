@@ -12,39 +12,36 @@ class SettingsMainPage extends ConsumerWidget {
     return KeepItMainView(
       title: 'Settings',
       backButton: null,
-      pageBuilder: (context, quickMenuScopeKey) {
-        return GetDeletedMedia(
-          errorBuilder: null,
-          loadingBuilder: null,
-          builder: (deletedMedia) {
-            return ListView(
-              children: [
-                if (deletedMedia.isNotEmpty)
-                  ListTile(
-                    leading: Icon(clIcons.recycleBin),
-                    trailing: IconButton(
-                      icon: Icon(clIcons.gotoPage),
-                      onPressed: () async {
-                        await MediaWizardService.openWizard(
-                          context,
-                          ref,
-                          CLSharedMedia(
-                            entries: deletedMedia.entries,
-                            type: UniversalMediaSource.deleted,
-                          ),
-                        );
-                      },
-                    ),
-                    title:
-                        Text('Deleted Items (${deletedMedia.entries.length})'),
+      child: GetDeletedMedia(
+        errorBuilder: null,
+        loadingBuilder: null,
+        builder: (deletedMedia) {
+          return ListView(
+            children: [
+              if (deletedMedia.isNotEmpty)
+                ListTile(
+                  leading: Icon(clIcons.recycleBin),
+                  trailing: IconButton(
+                    icon: Icon(clIcons.gotoPage),
+                    onPressed: () async {
+                      await MediaWizardService.openWizard(
+                        context,
+                        ref,
+                        CLSharedMedia(
+                          entries: deletedMedia.entries,
+                          type: UniversalMediaSource.deleted,
+                        ),
+                      );
+                    },
                   ),
-                const StorageMonitor(),
-                const ServerSettings(),
-              ],
-            );
-          },
-        );
-      },
+                  title: Text('Deleted Items (${deletedMedia.entries.length})'),
+                ),
+              const StorageMonitor(),
+              const ServerSettings(),
+            ],
+          );
+        },
+      ),
     );
   }
 }

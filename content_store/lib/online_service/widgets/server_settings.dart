@@ -37,7 +37,7 @@ class ServerSettingsImpl extends ConsumerWidget {
                         if (server.canSync)
                           SyncServer1(
                             onTap: () async {
-                              ref.read(serverProvider.notifier).sync();
+                              ref.read(serverProvider.notifier).manualSync();
                               return true;
                             },
                           )
@@ -136,7 +136,8 @@ class ServerSettingsImpl extends ConsumerWidget {
                                 children: [
                                   TextSpan(
                                     text: '${candidate.identifier} '
-                                        '[${candidate.name}:${candidate.port}]'
+                                        // ignore: lines_longer_than_80_chars
+                                        '[${candidate.address}:${candidate.port}]'
                                         ' \u00A0\u00A0\u00A0\u00A0',
                                   ),
                                   if (candidate != server.identity)

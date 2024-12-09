@@ -111,6 +111,20 @@ class SyncServer1 extends ConsumerWidget {
   }
 }
 
+class OpenCollectionsStoragePreferences extends ConsumerWidget {
+  const OpenCollectionsStoragePreferences({this.onTap, super.key});
+  final Future<bool?> Function()? onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CLButtonIconLabelled.small(
+      clIcons.collectionsSelect,
+      'Collections',
+      onTap: onTap,
+    );
+  }
+}
+
 class OfflinePreference extends ConsumerWidget {
   const OfflinePreference({super.key});
 

@@ -11,10 +11,8 @@ class MediaPageView extends ConsumerStatefulWidget {
   const MediaPageView({
     required this.items,
     required this.startIndex,
-    required this.actionControl,
     required this.parentIdentifier,
     required this.isLocked,
-    required this.canDuplicateMedia,
     this.onLockPage,
     super.key,
   });
@@ -22,12 +20,10 @@ class MediaPageView extends ConsumerStatefulWidget {
 
   final String parentIdentifier;
 
-  final ActionControl actionControl;
   final int startIndex;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
 
-  final bool canDuplicateMedia;
   @override
   ConsumerState<MediaPageView> createState() => MediaPageViewState();
 }
@@ -74,7 +70,6 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
               child: MediaView(
                 media: media,
                 parentIdentifier: widget.parentIdentifier,
-                actionControl: widget.actionControl,
                 autoStart: currIndex == index,
                 autoPlay: currIndex == index,
                 onLockPage: widget.onLockPage,

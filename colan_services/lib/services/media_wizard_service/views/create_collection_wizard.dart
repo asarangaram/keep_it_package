@@ -12,11 +12,13 @@ class CreateCollectionWizard extends StatefulWidget {
     required this.onDone,
     this.fixedHeight = true,
     super.key,
+    this.isValidSuggestion,
   });
   final bool fixedHeight;
   final void Function({
     required Collection collection,
   }) onDone;
+  final bool Function(Collection collection)? isValidSuggestion;
 
   @override
   State<StatefulWidget> createState() => PickCollectionState();
@@ -47,6 +49,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
     if (collection == null || onEditLabel) {
       child = PickCollection(
         collection: collection,
+        isValidSuggestion: widget.isValidSuggestion,
         onDone: (collection) {
           if (collection.id != null) {
             widget.onDone(collection: collection);
