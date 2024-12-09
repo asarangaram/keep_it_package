@@ -257,6 +257,8 @@ class Server {
           completer.complete(update.responseBody ?? 'unknown error');
         } else if (update.status == TaskStatus.canceled) {
           completer.complete('cancelled');
+        } else {
+          completer.complete('cancelled');
         }
       },
     );
