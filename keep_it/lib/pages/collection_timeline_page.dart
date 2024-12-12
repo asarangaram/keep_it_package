@@ -107,31 +107,39 @@ class TimelineView extends ConsumerWidget {
               return true;
             },
           ),
-          actionMenu: [
-            CLMenuItem(
-              title: 'Select File',
-              icon: clIcons.insertItem,
-              onTap: () async {
-                await IncomingMediaMonitor.onPickFiles(
-                  context,
-                  ref,
-                  collection: collection,
-                );
-                return true;
-              },
-            ),
-            if (ColanPlatformSupport.cameraSupported)
+          actions: [
+            const ShowOrHideSearchOption(),
+            ...[
               CLMenuItem(
-                title: 'Open Camera',
-                icon: clIcons.invokeCamera,
+                title: 'Select File',
+                icon: clIcons.insertItem,
                 onTap: () async {
-                  await Navigators.openCamera(
+                  await IncomingMediaMonitor.onPickFiles(
                     context,
-                    collectionId: collection?.id,
+                    ref,
+                    collection: collection,
                   );
                   return true;
                 },
               ),
+              if (ColanPlatformSupport.cameraSupported)
+                CLMenuItem(
+                  title: 'Open Camera',
+                  icon: clIcons.invokeCamera,
+                  onTap: () async {
+                    await Navigators.openCamera(
+                      context,
+                      collectionId: collection?.id,
+                    );
+                    return true;
+                  },
+                ),
+            ].map(
+              (e) => CLButtonIcon.small(
+                e.icon,
+                onTap: e.onTap,
+              ),
+            ),
           ],
           onRefresh: () async => theStore.store.reloadStore(),
           selectionActions: (context, items) {

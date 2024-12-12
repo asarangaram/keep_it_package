@@ -55,27 +55,35 @@ class CollectionsPage extends ConsumerWidget {
                 collection: item,
               ),
               identifier: identifier,
-              actionMenu: [
-                CLMenuItem(
-                  title: 'Select File',
-                  icon: clIcons.insertItem,
-                  onTap: () async {
-                    await IncomingMediaMonitor.onPickFiles(
-                      context,
-                      ref,
-                    );
-                    return true;
-                  },
-                ),
-                if (ColanPlatformSupport.cameraSupported)
+              actions: [
+                const ShowOrHideSearchOption(),
+                ...[
                   CLMenuItem(
-                    title: 'Open Camera',
-                    icon: clIcons.invokeCamera,
+                    title: 'Select File',
+                    icon: clIcons.insertItem,
                     onTap: () async {
-                      await Navigators.openCamera(context);
+                      await IncomingMediaMonitor.onPickFiles(
+                        context,
+                        ref,
+                      );
                       return true;
                     },
                   ),
+                  if (ColanPlatformSupport.cameraSupported)
+                    CLMenuItem(
+                      title: 'Open Camera',
+                      icon: clIcons.invokeCamera,
+                      onTap: () async {
+                        await Navigators.openCamera(context);
+                        return true;
+                      },
+                    ),
+                ].map(
+                  (e) => CLButtonIcon.small(
+                    e.icon,
+                    onTap: e.onTap,
+                  ),
+                ),
               ],
               onRefresh: () async => store.reloadStore(),
             );

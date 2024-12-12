@@ -52,7 +52,7 @@ class PinnedMediaPage extends ConsumerWidget {
                     identifier: 'Pinned Media',
                     columns: 2,
                     onRefresh: () async => theStore.store.reloadStore(),
-                    actionMenu: const [],
+                    actions: const [],
                     selectionActions: (context, items) {
                       return [
                         CLMenuItem(

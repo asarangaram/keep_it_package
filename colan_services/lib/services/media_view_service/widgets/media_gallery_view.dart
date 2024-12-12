@@ -14,10 +14,12 @@ class MediaGalleryView extends ConsumerWidget {
     required this.itemBuilder,
     required this.columns,
     required this.backButton,
-    required this.actionMenu,
+    required this.actions,
     super.key,
     this.onRefresh,
     this.selectionActions,
+    this.topWidget,
+    this.bottomWidget,
   });
 
   final String title;
@@ -26,7 +28,7 @@ class MediaGalleryView extends ConsumerWidget {
 
   final Widget emptyState;
   final String identifier;
-  final List<CLMenuItem> actionMenu;
+  final List<Widget> actions;
 
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(
@@ -35,6 +37,9 @@ class MediaGalleryView extends ConsumerWidget {
   )? selectionActions;
   final ItemBuilder<CLMedia> itemBuilder;
   final Widget? backButton;
+
+  final Widget? topWidget;
+  final Widget? bottomWidget;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,9 +52,11 @@ class MediaGalleryView extends ConsumerWidget {
       itemBuilder: itemBuilder,
       columns: columns,
       backButton: backButton,
-      actionMenu: actionMenu,
+      actions: actions,
       onRefresh: onRefresh,
       selectionActions: selectionActions,
+      topWidget: topWidget,
+      bottomWidget: bottomWidget,
     );
   }
 }

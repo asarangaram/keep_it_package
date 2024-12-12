@@ -16,5 +16,6 @@ export 'db_service/widgets/broken_image.dart';
 export 'db_service/widgets/shimmer.dart';
 export 'extensions/ext_cl_medias.dart';
 export 'online_service/providers/server.dart';
+export 'search_filters/widgets/filters_view.dart';
 export 'storage_service/extensions/ext_file.dart';
 export 'storage_service/widgets/storage_monitor.dart' show StorageMonitor;

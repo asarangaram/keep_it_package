@@ -26,10 +26,12 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.columns,
     required this.backButton,
-    required this.actionMenu,
+    required this.actions,
     super.key,
     this.onRefresh,
     this.selectionActions,
+    this.topWidget,
+    this.bottomWidget,
   });
 
   final String title;
@@ -38,13 +40,15 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
 
   final Widget emptyState;
   final String identifier;
-  final List<CLMenuItem> actionMenu;
+  final List<Widget> actions;
 
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
       selectionActions;
   final ItemBuilder<T> itemBuilder;
   final Widget? backButton;
+  final Widget? topWidget;
+  final Widget? bottomWidget;
 
   @override
   State<CLSimpleGalleryView<T>> createState() => _CLSimpleGalleryViewState<T>();
@@ -66,15 +70,15 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                 onTap: () => CLPopScreen.onPop(context),
               )
             : null,
-        actions: widget.actionMenu
-            .map(
-              (e) => CLButtonIcon.small(
-                e.icon,
-                onTap: e.onTap,
-              ),
-            )
-            .toList(),
-        child: widget.emptyState,
+        actions: widget.actions,
+        child: Column(
+          children: [
+            if (widget.topWidget != null) widget.topWidget!,
+            const Text('hello'),
+            Expanded(child: widget.emptyState),
+            if (widget.bottomWidget != null) widget.bottomWidget!,
+          ],
+        ),
       );
     } else {
       return ProviderScope(
@@ -95,13 +99,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
                   });
                 },
               ),
-            if (!isSelectionMode)
-              ...widget.actionMenu.map(
-                (e) => CLButtonIcon.small(
-                  e.icon,
-                  onTap: e.onTap,
-                ),
-              ),
+            if (!isSelectionMode) ...widget.actions,
           ],
           child: Stack(
             key: parentKey,
@@ -109,23 +107,31 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
               CLRefreshIndicator(
                 onRefresh: isSelectionMode ? null : widget.onRefresh,
                 key: ValueKey('${widget.identifier} Refresh'),
-                child: CLGalleryCore(
-                  key: ValueKey(widget.galleryMap),
-                  items: widget.galleryMap,
-                  itemBuilder: (context, item) {
-                    return widget.itemBuilder(
-                      context,
-                      item,
-                    );
-                  },
-                  columns: widget.columns,
-                  keepSelected: false,
-                  onSelectionChanged: isSelectionMode
-                      ? (List<T> items) {
-                          selectedItems = items;
-                          setState(() {});
-                        }
-                      : null,
+                child: Column(
+                  children: [
+                    if (widget.topWidget != null) widget.topWidget!,
+                    Flexible(
+                      child: CLGalleryCore(
+                        key: ValueKey(widget.galleryMap),
+                        items: widget.galleryMap,
+                        itemBuilder: (context, item) {
+                          return widget.itemBuilder(
+                            context,
+                            item,
+                          );
+                        },
+                        columns: widget.columns,
+                        keepSelected: false,
+                        onSelectionChanged: isSelectionMode
+                            ? (List<T> items) {
+                                selectedItems = items;
+                                setState(() {});
+                              }
+                            : null,
+                      ),
+                    ),
+                    if (widget.bottomWidget != null) widget.bottomWidget!,
+                  ],
                 ),
               ),
               if (isSelectionMode && selectedItems.isNotEmpty)
