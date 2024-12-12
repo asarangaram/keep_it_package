@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../providers/content_filter.dart';
+import '../providers/filterred_media.dart';
 
 class GetFilterredMedia extends ConsumerWidget {
   const GetFilterredMedia({
