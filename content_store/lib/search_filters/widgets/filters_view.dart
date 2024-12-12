@@ -1,7 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
+import '../models/filter/base_filter.dart';
 import '../providers/filters.dart';
 
 class ShowOrHideSearchOption extends ConsumerWidget {
@@ -83,44 +85,40 @@ class SearchOptions extends ConsumerWidget {
   }
 }
 
-class AddNewFilter extends StatelessWidget {
+class AddNewFilter extends ConsumerWidget {
   const AddNewFilter({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Step Indicator
-            CircleAvatar(
-              radius: 12,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: const Icon(
-                Icons.add_circle,
-                color: Colors.white,
-                size: 24,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unusedFilters =
+        ref.watch(filtersProvider.select((e) => e.unusedFilters));
+    if (unusedFilters.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: CircleAvatar(
+        radius: 12,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: PopupMenuButton<CLFilter<CLMedia>>(
+          onSelected: (CLFilter<CLMedia> item) {
+            ref.read(filtersProvider.notifier).addFilter(item);
+          },
+          padding: EdgeInsets.zero,
+          offset: const Offset(12, 12),
+          icon: const Icon(Icons.add_circle),
+          iconColor: Colors.white,
+          iconSize: 24,
+          itemBuilder: (BuildContext context) =>
+              <PopupMenuEntry<CLFilter<CLMedia>>>[
+            for (final filter in unusedFilters)
+              PopupMenuItem<CLFilter<CLMedia>>(
+                value: filter,
+                child: Text(filter.name),
               ),
-            ),
-            const SizedBox(width: 12),
-            const Center(
-              child: Text(
-                'New Search Option',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
           ],
         ),
-        const SizedBox(width: 16),
-      ],
+      ),
     );
   }
 }

@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
 import 'filter/base_filter.dart';
+import 'filter/ddmmyyyy_filter.dart';
+import 'filter/enum_filter.dart';
 
 @immutable
 class SearchFilters {
@@ -73,4 +75,32 @@ class SearchFilters {
   SearchFilters toggleEdit() => copyWith(editing: !editing);
   SearchFilters enableEdit() => copyWith(editing: true);
   SearchFilters disableEdit() => copyWith(editing: false);
+
+  static final List<CLFilter<CLMedia>> allFilters = [
+    EnumFilter<CLMedia, CLMediaType>(
+      name: 'Search By MediaType',
+      labels: {
+        for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
+      },
+      fieldSelector: (media) => media.type,
+      enabled: false,
+    ),
+    DDMMYYYYFilter(
+      name: 'Search by Date',
+      fieldSelector: (media) => media.createdDate,
+      enabled: false,
+    ),
+  ];
+
+  Map<String, CLFilter<CLMedia>> get allFiltersMap =>
+      {for (final e in allFilters) e.name: e};
+
+  Map<String, CLFilter<CLMedia>> get unusedFiltersMap => Map.fromEntries(
+        allFiltersMap.entries
+            .where((entry) => !availableFilters.contains(entry.key)),
+      );
+
+  List<CLFilter<CLMedia>> get unusedFilters => List.from(
+        allFilters.where((e) => !availableFilters.contains(e.name)),
+      );
 }
