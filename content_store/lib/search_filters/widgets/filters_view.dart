@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/filters.dart';
-import 'height_animation.dart';
 
 class ShowOrHideSearchOption extends ConsumerWidget {
   const ShowOrHideSearchOption({super.key});
