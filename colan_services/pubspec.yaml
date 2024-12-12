@@ -29,7 +29,7 @@ dependencies:
   ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
-  flutter_riverpod: ^2.5.1
+  flutter_riverpod: 2.5.1
   flutter_speed_dial: ^7.0.0
   form_factory:
     path: ../form_factory
