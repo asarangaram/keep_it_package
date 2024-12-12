@@ -11,6 +11,9 @@ class FiltersNotifier extends StateNotifier<SearchFilters> {
 
   void toggleEdit() => state = state.toggleEdit();
 
+  void enableEdit() => state = state.enableEdit();
+  void disableEdit() => state = state.disableEdit();
+
   void updateFilter(CLFilter<CLMedia> filter, String key, dynamic value) =>
       state = state.updateFilter(filter.name, key, value);
 

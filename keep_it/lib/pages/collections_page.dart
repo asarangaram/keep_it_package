@@ -51,6 +51,7 @@ class CollectionsPage extends ConsumerWidget {
                   ),
                 ),
               ),
+              topWidget: const SearchOptions(),
               itemBuilder: (context, item) => CollectionAsFolder(
                 collection: item,
               ),

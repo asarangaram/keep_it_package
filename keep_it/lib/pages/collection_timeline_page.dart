@@ -94,6 +94,7 @@ class TimelineView extends ConsumerWidget {
           columns: 4,
           medias: items,
           emptyState: const EmptyState(),
+          topWidget: const SearchOptions(),
           itemBuilder: (context, item) => MediaAsFile(
             media: item,
             parentIdentifier: parentIdentifier,
