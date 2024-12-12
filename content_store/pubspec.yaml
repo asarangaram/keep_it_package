@@ -41,6 +41,9 @@ dependencies:
   store:
     path: ../store
   watcher: ^1.1.0
+  yet_another_date_picker: 
+    path: ../yet_another_date_picker
+
 
 
 dev_dependencies:

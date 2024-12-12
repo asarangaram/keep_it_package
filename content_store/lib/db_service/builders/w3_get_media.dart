@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../search_filters/builders/get_filtered_media.dart';
 import 'get_db_reader.dart';
 import 'w3_get_from_store.dart';
 
@@ -100,7 +101,12 @@ class GetMediaByCollectionId extends ConsumerWidget {
               media.map((e) => e.md5String).join(','),
               name: 'GetMediaByCollectionId',
             ); */
-            return builder(CLMedias(media));
+            return GetFilterredMedia(
+              incoming: CLMedias(media),
+              builder: builder,
+              loadingBuilder: loadingBuilder,
+              errorBuilder: errorBuilder,
+            );
           },
         );
       },
@@ -141,7 +147,12 @@ class GetMediaMultipleByIds extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return builder(CLMedias(media));
+            return GetFilterredMedia(
+              incoming: CLMedias(media),
+              builder: builder,
+              loadingBuilder: loadingBuilder,
+              errorBuilder: errorBuilder,
+            );
           },
         );
       },
@@ -178,7 +189,12 @@ class GetPinnedMedia extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return builder(CLMedias(media));
+            return GetFilterredMedia(
+              incoming: CLMedias(media),
+              builder: builder,
+              loadingBuilder: loadingBuilder,
+              errorBuilder: errorBuilder,
+            );
           },
         );
       },
@@ -215,7 +231,12 @@ class GetStaleMedia extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return builder(CLMedias(media));
+            return GetFilterredMedia(
+              incoming: CLMedias(media),
+              builder: builder,
+              loadingBuilder: loadingBuilder,
+              errorBuilder: errorBuilder,
+            );
           },
         );
       },
@@ -252,7 +273,12 @@ class GetDeletedMedia extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return builder(CLMedias(media));
+            return GetFilterredMedia(
+              incoming: CLMedias(media),
+              builder: builder,
+              loadingBuilder: loadingBuilder,
+              errorBuilder: errorBuilder,
+            );
           },
         );
       },
