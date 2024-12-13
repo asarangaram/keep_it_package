@@ -19,6 +19,7 @@ class FiltersNotifier extends StateNotifier<SearchFilters> {
 
   void removeFilter(CLFilter<CLMedia> filter) =>
       state = state.removeFilter(filter.name);
+  void clearFilters() => state = state.clearFilters();
 }
 
 final filtersProvider =

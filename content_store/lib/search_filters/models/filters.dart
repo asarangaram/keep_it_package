@@ -65,6 +65,10 @@ class SearchFilters {
     );
   }
 
+  SearchFilters clearFilters() {
+    return copyWith(filters: () => null);
+  }
+
   List<String> get availableFilters {
     return filters?.map((e) => e.name).toList() ?? [];
   }
