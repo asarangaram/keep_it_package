@@ -57,7 +57,7 @@ class CollectionsPage extends ConsumerWidget {
               ),
               identifier: identifier,
               actions: [
-                const ShowOrHideSearchOption(),
+                const SearchIcon(),
                 ...[
                   CLMenuItem(
                     title: 'Select File',
