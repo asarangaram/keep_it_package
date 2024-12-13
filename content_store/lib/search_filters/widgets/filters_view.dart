@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../models/filter/base_filter.dart';
+import '../models/filters.dart';
 import '../providers/filters.dart';
 
 class ShowOrHideSearchOption extends ConsumerWidget {
@@ -43,7 +44,9 @@ class SearchOptions extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ref.read(filtersProvider.notifier).clearFilters();
+                    },
                     child: const Text(
                       'Clear Search',
                       style: TextStyle(
@@ -73,7 +76,7 @@ class SearchOptions extends ConsumerWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AddNewFilter(),
+                    AddNewFilterDropDown(),
                   ],
                 ),
               ),
@@ -105,7 +108,7 @@ class AddNewFilter extends ConsumerWidget {
             ref.read(filtersProvider.notifier).addFilter(item);
           },
           padding: EdgeInsets.zero,
-          offset: const Offset(12, 12),
+          offset: const Offset(0, 12),
           icon: const Icon(Icons.add_circle),
           iconColor: Colors.white,
           iconSize: 24,
@@ -118,6 +121,77 @@ class AddNewFilter extends ConsumerWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class AddNewFilterDropDown extends ConsumerStatefulWidget {
+  const AddNewFilterDropDown({
+    super.key,
+  });
+
+  @override
+  ConsumerState<AddNewFilterDropDown> createState() =>
+      _AddNewFilterDropDownState();
+}
+
+class _AddNewFilterDropDownState extends ConsumerState<AddNewFilterDropDown> {
+  CLFilter<CLMedia>? currentValue;
+  late final String maxString;
+  @override
+  void initState() {
+    maxString = SearchFilters.allFilters
+        .reduce((a, b) => a.name.length >= b.name.length ? a : b)
+        .name;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final unusedFilters =
+        ref.watch(filtersProvider.select((e) => e.unusedFilters));
+    if (unusedFilters.isEmpty) return const SizedBox.shrink();
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CLText.small('Add a search option'),
+          const SizedBox(
+            width: 16,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: DropdownButton<CLFilter<CLMedia>>(
+              isDense: true,
+              onChanged: (CLFilter<CLMedia>? item) {
+                if (item != null) {
+                  ref.read(filtersProvider.notifier).addFilter(item);
+                  setState(() {
+                    currentValue = null;
+                  });
+                }
+              },
+              value: currentValue,
+              items: [
+                for (final filter in unusedFilters)
+                  DropdownMenuItem<CLFilter<CLMedia>>(
+                    value: filter,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CLText.tiny(
+                          maxString,
+                          color: Colors.transparent,
+                        ),
+                        CLText.tiny(filter.name),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
