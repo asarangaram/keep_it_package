@@ -7,6 +7,8 @@ import 'filter/base_filter.dart';
 import 'filter/ddmmyyyy_filter.dart';
 import 'filter/enum_filter.dart';
 
+enum MediaAvailability { local, coLan, synced }
+
 @immutable
 class SearchFilters {
   const SearchFilters({this.filters, this.editing = false});
@@ -93,6 +95,21 @@ class SearchFilters {
         for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
       },
       fieldSelector: (media) => media.type,
+      enabled: true,
+    ),
+    EnumFilter<CLMedia, MediaAvailability>(
+      name: 'Search By Location',
+      labels: {
+        for (var e in MediaAvailability.values) e: e.name,
+      },
+      fieldSelector: (media) {
+        if (media.hasServerUID && media.isMediaCached) {
+          return MediaAvailability.synced;
+        } else if (media.hasServerUID) {
+          return MediaAvailability.coLan;
+        }
+        return MediaAvailability.local;
+      },
       enabled: true,
     ),
     DDMMYYYYFilter(
