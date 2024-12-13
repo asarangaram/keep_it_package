@@ -44,10 +44,22 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
     dynamic value,
   ) {
     return switch (key) {
+      'enable' => _enable(value as bool),
       'select' => _select(value as E),
       'deselect' => _deselect(value as E),
       _ => _toggle(value as E)
     };
+  }
+
+  EnumFilter<T, E> _enable(bool value) {
+    return EnumFilter<T, E>._(
+      name: name,
+      fieldSelector: fieldSelector,
+      labels: labels,
+      referenceIndex: referenceIndex,
+      selectedValues: selectedValues,
+      enabled: value,
+    );
   }
 
   @override

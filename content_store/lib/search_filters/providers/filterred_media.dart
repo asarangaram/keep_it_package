@@ -10,7 +10,9 @@ final filterredMediaProvider =
   var filterred = incoming.entries;
 
   for (final filter in searchfilters()) {
-    filterred = filter.apply(filterred);
+    if (filter.enabled) {
+      filterred = filter.apply(filterred);
+    }
   }
 
   return CLMedias(filterred);

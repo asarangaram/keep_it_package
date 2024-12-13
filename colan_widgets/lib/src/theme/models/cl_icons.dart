@@ -149,6 +149,8 @@ class CLIcons {
   final collectionsSelect = Symbols.list_alt;
   final searchRequest = Symbols.search;
   final searchOpened = Symbols.search_check_2;
+  final selected = Symbols.select_check_box_rounded;
+  final deselected = Symbols.check_box_outline_blank_rounded;
 }
 
 CLIcons clIcons = CLIcons();

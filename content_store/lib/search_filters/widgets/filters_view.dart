@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../models/filter/base_filter.dart';
-import '../models/filters.dart';
 import '../providers/filters.dart';
+import 'add_new_filter.dart';
+import 'ddmmyyyy_filter_view.dart';
+import 'enum_filter_view.dart';
 
 class ShowOrHideSearchOption extends ConsumerWidget {
   const ShowOrHideSearchOption({super.key});
@@ -21,175 +23,149 @@ class ShowOrHideSearchOption extends ConsumerWidget {
   }
 }
 
-class SearchOptions extends ConsumerWidget {
+class SearchOptions extends ConsumerStatefulWidget {
   const SearchOptions({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isExpanded = ref.watch(filtersProvider.select((e) => e.editing));
-    return AnimateSearchOptions(
-      child: Card(
-        elevation: 8,
-        color: Colors.grey.shade100,
-        shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(2), // Adjust the border radius as needed
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              decoration: BoxDecoration(color: Colors.grey.shade300),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      ref.read(filtersProvider.notifier).clearFilters();
-                    },
-                    child: const Text(
-                      'Clear Search',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: CLButtonIcon.tiny(
-                      isExpanded
-                          ? Icons.arrow_drop_down_sharp
-                          : Icons.arrow_drop_up_sharp,
-                      onTap: () =>
-                          ref.read(filtersProvider.notifier).toggleEdit(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isExpanded) ...[
-              const Padding(
-                padding: EdgeInsets.all(8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AddNewFilterDropDown(),
-                  ],
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
+  ConsumerState<SearchOptions> createState() => _SearchOptionsState();
 }
 
-class AddNewFilter extends ConsumerWidget {
-  const AddNewFilter({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final unusedFilters =
-        ref.watch(filtersProvider.select((e) => e.unusedFilters));
-    if (unusedFilters.isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: CircleAvatar(
-        radius: 12,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: PopupMenuButton<CLFilter<CLMedia>>(
-          onSelected: (CLFilter<CLMedia> item) {
-            ref.read(filtersProvider.notifier).addFilter(item);
-          },
-          padding: EdgeInsets.zero,
-          offset: const Offset(0, 12),
-          icon: const Icon(Icons.add_circle),
-          iconColor: Colors.white,
-          iconSize: 24,
-          itemBuilder: (BuildContext context) =>
-              <PopupMenuEntry<CLFilter<CLMedia>>>[
-            for (final filter in unusedFilters)
-              PopupMenuItem<CLFilter<CLMedia>>(
-                value: filter,
-                child: Text(filter.name),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class AddNewFilterDropDown extends ConsumerStatefulWidget {
-  const AddNewFilterDropDown({
-    super.key,
-  });
-
-  @override
-  ConsumerState<AddNewFilterDropDown> createState() =>
-      _AddNewFilterDropDownState();
-}
-
-class _AddNewFilterDropDownState extends ConsumerState<AddNewFilterDropDown> {
-  CLFilter<CLMedia>? currentValue;
-  late final String maxString;
-  @override
-  void initState() {
-    maxString = SearchFilters.allFilters
-        .reduce((a, b) => a.name.length >= b.name.length ? a : b)
-        .name;
-    super.initState();
-  }
-
+class _SearchOptionsState extends ConsumerState<SearchOptions> {
+  bool minimize = false;
   @override
   Widget build(BuildContext context) {
-    final unusedFilters =
-        ref.watch(filtersProvider.select((e) => e.unusedFilters));
-    if (unusedFilters.isEmpty) return const SizedBox.shrink();
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CLText.small('Add a search option'),
-          const SizedBox(
-            width: 16,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: DropdownButton<CLFilter<CLMedia>>(
-              isDense: true,
-              onChanged: (CLFilter<CLMedia>? item) {
-                if (item != null) {
-                  ref.read(filtersProvider.notifier).addFilter(item);
-                  setState(() {
-                    currentValue = null;
-                  });
-                }
-              },
-              value: currentValue,
-              items: [
-                for (final filter in unusedFilters)
-                  DropdownMenuItem<CLFilter<CLMedia>>(
-                    value: filter,
-                    child: Stack(
-                      alignment: Alignment.center,
+    final isExpanded = ref.watch(filtersProvider.select((e) => e.editing));
+    final filters = ref.watch(filtersProvider.select((e) => e.filters));
+
+    final noFilter =
+        filters == null || filters.isEmpty || filters.every((e) => !e.enabled);
+    final hide = !isExpanded && noFilter;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      switchInCurve: Curves.easeInOut,
+      switchOutCurve: Curves.easeInOut,
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return SizeTransition(
+          sizeFactor: animation,
+          child: child,
+        );
+      },
+      child: hide
+          ? const SizedBox.shrink()
+          : Card(
+              elevation: 8,
+              color: Colors.grey.shade100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  2,
+                ), // Adjust the border radius as needed
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey.shade300),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CLText.tiny(
-                          maxString,
-                          color: Colors.transparent,
+                        TextButton(
+                          onPressed: () {
+                            ref.read(filtersProvider.notifier).clearFilters();
+                          },
+                          child: const Text(
+                            'Clear Search',
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
                         ),
-                        CLText.tiny(filter.name),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: CLButtonIcon.tiny(
+                            noFilter
+                                ? Icons.close
+                                : minimize
+                                    ? Icons.arrow_drop_down_sharp
+                                    : Icons.arrow_drop_up_sharp,
+                            onTap: () {
+                              if (noFilter) {
+                                ref
+                                    .read(filtersProvider.notifier)
+                                    .disableEdit();
+                              } else {
+                                setState(() {
+                                  minimize = !minimize;
+                                });
+                                //ref.read(filtersProvider.notifier).toggleEdit();
+                              }
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
-              ],
+                  if (!minimize) ...[
+                    if (!noFilter)
+                      ...filters.map((filter) => FilterView(filter: filter)),
+                    const AddNewFilter(),
+                  ],
+                ],
+              ),
             ),
+    );
+  }
+}
+
+class FilterView extends ConsumerWidget {
+  const FilterView({
+    required this.filter,
+    super.key,
+  });
+  final CLFilter<CLMedia> filter;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Step Indicator
+          CLButtonIcon.tiny(
+            Icons.delete_outline,
+            color: Colors.red,
+            onTap: () {
+              ref.read(filtersProvider.notifier).removeFilter(filter);
+            },
+          ),
+          const SizedBox(width: 12),
+
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                filter.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              switch (filter.filterType) {
+                FilterType.stringFilter => throw UnimplementedError(),
+                FilterType.booleanFilter => throw UnimplementedError(),
+                FilterType.dateFilter => throw UnimplementedError(),
+                FilterType.ddmmyyyyFilter =>
+                  DDMMYYYYFilterViewRow(filter: filter),
+                FilterType.enumFilter => EnumFilterViewRow(
+                    filter: filter,
+                  ),
+              },
+            ],
           ),
         ],
       ),
@@ -197,32 +173,26 @@ class _AddNewFilterDropDownState extends ConsumerState<AddNewFilterDropDown> {
   }
 }
 
-class AnimateSearchOptions extends ConsumerStatefulWidget {
-  const AnimateSearchOptions({required this.child, super.key});
-  final Widget child;
-
+class DottedLinePainter extends CustomPainter {
   @override
-  AnimatedHeightWidgetState createState() => AnimatedHeightWidgetState();
-}
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = size.width // Set the thickness
+      ..style = PaintingStyle.stroke;
 
-class AnimatedHeightWidgetState extends ConsumerState<AnimateSearchOptions> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeInOut,
-          switchOutCurve: Curves.easeInOut,
-          transitionBuilder: (Widget child, Animation<double> animation) {
-            return SizeTransition(
-              sizeFactor: animation,
-              child: child,
-            );
-          },
-          child: widget.child,
-        ),
-      ],
-    );
+    const gap = 3; // Gap between dots
+    const dotWidth = 5; // Width of each dot
+    print(size);
+    for (var y = 0; y < size.height; y += dotWidth + gap) {
+      canvas.drawLine(
+        Offset(size.width / 2, y.toDouble()),
+        Offset(size.width / 2, y.toDouble() + dotWidth),
+        paint,
+      );
+    }
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

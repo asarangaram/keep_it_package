@@ -76,9 +76,15 @@ class SearchFilters {
   List<CLFilter<CLMedia>> call() =>
       filters?.where((e) => e.enabled).toList() ?? [];
 
-  SearchFilters toggleEdit() => copyWith(editing: !editing);
-  SearchFilters enableEdit() => copyWith(editing: true);
-  SearchFilters disableEdit() => copyWith(editing: false);
+  SearchFilters toggleEdit() => editing ? disableEdit() : enableEdit();
+  SearchFilters enableEdit() => copyWith(
+        editing: true,
+        filters: () => filters?.map((e) => e.update('enable', true)).toList(),
+      );
+  SearchFilters disableEdit() => copyWith(
+        editing: false,
+        filters: () => filters?.map((e) => e.update('enable', false)).toList(),
+      );
 
   static final List<CLFilter<CLMedia>> allFilters = [
     EnumFilter<CLMedia, CLMediaType>(
@@ -87,12 +93,12 @@ class SearchFilters {
         for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
       },
       fieldSelector: (media) => media.type,
-      enabled: false,
+      enabled: true,
     ),
     DDMMYYYYFilter(
       name: 'Search by Date',
       fieldSelector: (media) => media.createdDate,
-      enabled: false,
+      enabled: true,
     ),
   ];
 
