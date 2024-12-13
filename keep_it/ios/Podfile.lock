@@ -49,11 +49,11 @@ PODS:
   - photo_manager (2.0.0):
     - Flutter
     - FlutterMacOS
-  - share_handler_ios (0.0.13):
+  - share_handler_ios (0.0.14):
     - Flutter
-    - share_handler_ios/share_handler_ios_models (= 0.0.13)
+    - share_handler_ios/share_handler_ios_models (= 0.0.14)
     - share_handler_ios_models
-  - share_handler_ios/share_handler_ios_models (0.0.13):
+  - share_handler_ios/share_handler_ios_models (0.0.14):
     - Flutter
     - share_handler_ios_models
   - share_handler_ios_models (0.0.9)
@@ -62,20 +62,21 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - "sqlite3 (3.46.0+1)":
-    - "sqlite3/common (= 3.46.0+1)"
-  - "sqlite3/common (3.46.0+1)"
-  - "sqlite3/dbstatvtab (3.46.0+1)":
+  - sqlite3 (3.47.1):
+    - sqlite3/common (= 3.47.1)
+  - sqlite3/common (3.47.1)
+  - sqlite3/dbstatvtab (3.47.1):
     - sqlite3/common
-  - "sqlite3/fts5 (3.46.0+1)":
+  - sqlite3/fts5 (3.47.1):
     - sqlite3/common
-  - "sqlite3/perf-threadsafe (3.46.0+1)":
+  - sqlite3/perf-threadsafe (3.47.1):
     - sqlite3/common
-  - "sqlite3/rtree (3.46.0+1)":
+  - sqlite3/rtree (3.47.1):
     - sqlite3/common
   - sqlite3_flutter_libs (0.0.1):
     - Flutter
-    - "sqlite3 (~> 3.46.0+1)"
+    - FlutterMacOS
+    - sqlite3 (~> 3.47.1)
     - sqlite3/dbstatvtab
     - sqlite3/fts5
     - sqlite3/perf-threadsafe
@@ -106,7 +107,7 @@ DEPENDENCIES:
   - share_handler_ios_models (from `.symlinks/plugins/share_handler_ios/ios/Models`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
-  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
+  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/darwin`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
   - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
 
@@ -155,7 +156,7 @@ EXTERNAL SOURCES:
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sqlite3_flutter_libs:
-    :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
+    :path: ".symlinks/plugins/sqlite3_flutter_libs/darwin"
   video_player_avfoundation:
     :path: ".symlinks/plugins/video_player_avfoundation/darwin"
   video_thumbnail:
@@ -165,7 +166,7 @@ SPEC CHECKSUMS:
   audio_waveforms: cd736909ebc6b6a164eb74701d8c705ce3241e1c
   background_downloader: 9f788ffc5de45acf87d6380e91ca0841066c18cf
   camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
-  connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
+  connectivity_plus: 18382e7311ba19efcaee94442b23b32507b20695
   ffmpeg-kit-ios-https: f9c838aa5400a6c5ba12324c6b798f52197ba354
   ffmpeg_kit_flutter: b4ca70cac3fc1d8ac14cdc660754b60870358732
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
@@ -179,12 +180,12 @@ SPEC CHECKSUMS:
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   photo_manager: ff695c7a1dd5bc379974953a2b5c0a293f7c4c8a
-  share_handler_ios: 088138c17ce73333b4875a35860cd52604041521
+  share_handler_ios: 6dd3a4ac5ca0d955274aec712ba0ecdcaf583e7c
   share_handler_ios_models: fc638c9b4330dc7f082586c92aee9dfa0b87b871
-  share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
+  share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
-  sqlite3: 292c3e1bfe89f64e51ea7fc7dab9182a017c8630
-  sqlite3_flutter_libs: c00457ebd31e59fa6bb830380ddba24d44fbcd3b
+  sqlite3: 1e522f0938463e44b7faf50393b40bdc1e1e456d
+  sqlite3_flutter_libs: 1b4e98da20ebd4e9b1240269b78cdcf492dbe9f3
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
 
