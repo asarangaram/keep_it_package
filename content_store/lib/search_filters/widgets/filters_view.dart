@@ -19,8 +19,9 @@ class _SearchOptionsState extends ConsumerState<SearchOptions> {
   Widget build(BuildContext context) {
     final isExpanded = ref.watch(filtersProvider.select((e) => e.editing));
     final filters = ref.watch(filtersProvider.select((e) => e.filters));
-    final hasFilter = filters != null && filters.isNotEmpty ||
-        filters!.every((e) => e.enabled);
+    final hasFilter = filters != null &&
+        filters.isNotEmpty &&
+        filters.every((e) => e.enabled);
     final hide = !isExpanded && !hasFilter;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
