@@ -7,3 +7,6 @@ keep_it/integration_test/ApplicationSupportPath/backgroundDownloaderDatabase/**
 
 # FVM Version Cache
 .fvm/
+.vscode/settings.json
+.fvmrc
+
