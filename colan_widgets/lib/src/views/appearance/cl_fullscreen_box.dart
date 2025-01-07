@@ -38,9 +38,7 @@ class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (val) {
-        //print('pop invoked $val;');
-      },
+      onPopInvokedWithResult: (didPop, result) {},
       child: CLBackground(
         hasBackground: widget.hasBackground,
         backgroundBrightness: widget.backgroundBrightness,

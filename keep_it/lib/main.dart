@@ -244,10 +244,11 @@ class KeepItApp implements AppDescriptor {
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  debugPrintRebuildDirtyWidgets = true;
   debugPaintSizeEnabled = false;
   debugPrintBeginFrameBanner = false;
   debugPrintLayouts = false;
-  WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     //setWindowTitle('My App');

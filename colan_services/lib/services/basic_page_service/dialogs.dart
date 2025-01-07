@@ -17,7 +17,7 @@ class ConfirmAction {
             child: Text(message),
           ),
           actions: [
-            ButtonBar(
+            OverflowBar(
               alignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(

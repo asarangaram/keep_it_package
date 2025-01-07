@@ -48,7 +48,7 @@ class CLConfirmAction extends StatelessWidget {
             )
           : const SizedBox.shrink(),
       actions: [
-        ButtonBar(
+        OverflowBar(
           alignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(

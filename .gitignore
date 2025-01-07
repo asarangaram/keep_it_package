@@ -4,3 +4,6 @@ pub.dev/.venv/**
 pub.dev/package_info.json
 local_store/testArtifacts/**
 keep_it/integration_test/ApplicationSupportPath/backgroundDownloaderDatabase/**
+
+# FVM Version Cache
+.fvm/
