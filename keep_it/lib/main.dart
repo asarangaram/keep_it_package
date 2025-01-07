@@ -9,7 +9,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fvp/fvp.dart' as fvp;
-import 'package:go_router/go_router.dart';
+
 import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';
@@ -32,36 +32,25 @@ class KeepItApp implements AppDescriptor {
       };
 
   @override
-  List<CLShellRouteDescriptor> get shellRoutes => [
-        CLShellRouteDescriptor(
+  List<CLRouteDescriptor> get screens => [
+        CLRouteDescriptor(
           name: '',
-          builder: (context, GoRouterState state) => const CollectionsPage(),
-          iconData: clIcons.navigateHome,
-          label: 'main',
+          builder: (context, parameters) => const CollectionsPage(),
         ),
-        CLShellRouteDescriptor(
+        CLRouteDescriptor(
           name: 'Pinned',
-          builder: (context, state) => const PinnedMediaPage(),
-          iconData: clIcons.navigatePinPage,
-          label: 'Pinned',
+          builder: (context, parameters) => const PinnedMediaPage(),
         ),
-        CLShellRouteDescriptor(
+        CLRouteDescriptor(
           name: 'settings',
-          builder: (context, state) => const SettingsMainPage(),
-          iconData: clIcons.navigateSettings,
-          label: 'Settings',
+          builder: (context, parameters) => const SettingsMainPage(),
         ),
-      ];
-
-  @override
-  List<CLRouteDescriptor> get fullscreenBuilders => [
         CLRouteDescriptor(
           name: 'camera',
-          builder: (context, GoRouterState state) {
+          builder: (context, parameters) {
             final int? collectionId;
-            if (state.uri.queryParameters.keys.contains('collectionId')) {
-              collectionId =
-                  int.parse(state.uri.queryParameters['collectionId']!);
+            if (parameters.keys.contains('collectionId')) {
+              collectionId = int.parse(parameters['collectionId']!);
             } else {
               collectionId = null;
             }
@@ -73,17 +62,16 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'mediaEditor',
-          builder: (context, GoRouterState state) {
+          builder: (context, parameters) {
             final int? mediaId;
             final bool canDuplicateMedia;
-            if (state.uri.queryParameters.keys.contains('id')) {
-              mediaId = int.parse(state.uri.queryParameters['id']!);
+            if (parameters.keys.contains('id')) {
+              mediaId = int.parse(parameters['id']!);
             } else {
               mediaId = null;
             }
-            if (state.uri.queryParameters.keys.contains('canDuplicateMedia')) {
-              canDuplicateMedia =
-                  state.uri.queryParameters['canDuplicateMedia']! == '1';
+            if (parameters.keys.contains('canDuplicateMedia')) {
+              canDuplicateMedia = parameters['canDuplicateMedia']! == '1';
             } else {
               canDuplicateMedia = false;
             }
@@ -99,28 +87,27 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'media/:item_id',
-          builder: (context, GoRouterState state) {
+          name: 'media',
+          builder: (context, parameters) {
             final String parentIdentifier;
             final int? collectionId;
 
-            if (!state.uri.queryParameters.containsKey('parentIdentifier')) {
+            if (!parameters.containsKey('parentIdentifier')) {
               parentIdentifier = 'unknown';
             } else {
-              parentIdentifier = state.uri.queryParameters['parentIdentifier']!;
+              parentIdentifier = parameters['parentIdentifier']!;
             }
-            if (!state.uri.queryParameters.containsKey('collectionId')) {
+            if (!parameters.containsKey('collectionId')) {
               collectionId = null;
             } else {
-              collectionId =
-                  int.parse(state.uri.queryParameters['collectionId']!);
+              collectionId = int.parse(parameters['collectionId']!);
             }
 
             return FullscreenLayout(
               useSafeArea: false,
               child: MediaPageViewPage(
                 collectionId: collectionId,
-                id: int.parse(state.pathParameters['item_id']!),
+                id: int.parse(parameters['id']!),
                 parentIdentifier: parentIdentifier,
               ),
             );
@@ -129,8 +116,8 @@ class KeepItApp implements AppDescriptor {
 
         CLRouteDescriptor(
           name: 'media_wizard',
-          builder: (context, GoRouterState state) {
-            final typeString = state.uri.queryParameters['type'];
+          builder: (context, parameters) {
+            final typeString = parameters['type'];
             final UniversalMediaSource type;
             if (typeString != null) {
               type = UniversalMediaSource.values.asNameMap()[typeString] ??
@@ -145,7 +132,7 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'servers',
-          builder: (context, GoRouterState state) {
+          builder: (context, parameters) {
             return const FullscreenLayout(child: ServersPage());
           },
         ),
@@ -153,28 +140,24 @@ class KeepItApp implements AppDescriptor {
         // For Testing
         CLRouteDescriptor(
           name: 'empty_state_page',
-          builder: (context, GoRouterState state) {
+          builder: (context, parameters) {
             return const EmptyState();
           },
         ),
         CLRouteDescriptor(
           name: 'empty_state_view',
-          builder: (context, GoRouterState state) {
+          builder: (context, parameters) {
             return const FullscreenLayout(child: EmptyState());
           },
         ),
-      ];
-
-  @override
-  List<CLRouteDescriptor> get screenBuilders => [
         CLRouteDescriptor(
           name: 'collections',
-          builder: (context, GoRouterState state) => const CollectionsPage(),
+          builder: (context, parameters) => const CollectionsPage(),
         ),
         CLRouteDescriptor(
-          name: 'items_by_collection/:collectionId',
-          builder: (context, GoRouterState state) => CollectionTimeLinePage(
-            collectionId: int.parse(state.pathParameters['collectionId']!),
+          name: 'items_by_collection',
+          builder: (context, parameters) => CollectionTimeLinePage(
+            collectionId: int.parse(parameters['id']!),
           ),
         ),
       ];

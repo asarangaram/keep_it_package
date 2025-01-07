@@ -21,9 +21,9 @@ typedef IncomingMediaViewBuilder = Widget Function(
 
 abstract class AppDescriptor {
   String get title;
-  List<CLRouteDescriptor> get screenBuilders;
-  List<CLRouteDescriptor> get fullscreenBuilders;
-  List<CLShellRouteDescriptor> get shellRoutes;
+
+  List<CLRouteDescriptor> get screens;
+
   CLAppInitializer get appInitializer;
   CLTransitionBuilder get transitionBuilder;
   CLRedirector get redirector;

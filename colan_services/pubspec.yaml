@@ -33,7 +33,7 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   form_factory:
     path: ../form_factory
-  go_router: ^14.2.0
+
   heif_converter: ^1.0.0
   http: ^1.2.2
   http_parser: ^4.0.2

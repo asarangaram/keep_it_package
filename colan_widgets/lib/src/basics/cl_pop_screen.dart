@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../utils/key_listener.dart';
 import '../utils/platform_support.dart';
@@ -70,14 +69,10 @@ class CLPopScreen extends StatelessWidget {
   }
 
   static Future<void> onPop(BuildContext context, {bool? result}) async {
-    if (context.mounted && context.canPop()) {
-      if (result != null) {
-        context.pop(result);
-      } else {
-        context.pop();
-      }
+    if (context.mounted && Navigator.canPop(context)) {
+      Navigator.pop(context, result);
     }
   }
 
-  static bool canPop(BuildContext context) => context.canPop();
+  static bool canPop(BuildContext context) => Navigator.canPop(context);
 }

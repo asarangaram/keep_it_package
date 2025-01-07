@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:store/store.dart';
 
 import '../camera_service/cl_camera_service.dart';
@@ -16,9 +16,11 @@ class Navigators {
       context,
       () async {
         if (context.mounted) {
-          await context.push(
-            '/camera'
-            '${collectionId == null ? '' : '?collectionId=$collectionId'}',
+          await Navigator.pushNamed(
+            context,
+            collectionId == null
+                ? '/camera'
+                : '/camera?collectionId=$collectionId',
           );
         }
       },
@@ -39,7 +41,8 @@ class Navigators {
           );
       return media;
     } else {
-      final edittedMedia = await context.push<CLMedia>(
+      final edittedMedia = await Navigator.pushNamed<CLMedia>(
+        context,
         '/mediaEditor?id=${media.id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
       );
       return edittedMedia ?? media;
@@ -50,8 +53,9 @@ class Navigators {
     BuildContext context,
     int collectionId,
   ) async {
-    await context.push(
-      '/items_by_collection/$collectionId',
+    await Navigator.pushNamed(
+      context,
+      '/items_by_collection?id=$collectionId',
     );
     return null;
   }
@@ -68,7 +72,7 @@ class Navigators {
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
 
-    await context.push('/media/$mediaId$query');
+    await Navigator.pushNamed(context, '/media?id=$mediaId&$query');
     return null;
   }
 }

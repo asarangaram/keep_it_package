@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:store/store.dart';
 
 import '../basic_page_service/dialogs.dart';
@@ -44,7 +44,8 @@ class MediaWizardService extends ConsumerWidget {
       media: sharedMedia,
     );
     if (context.mounted) {
-      await context.push(
+      await Navigator.pushNamed(
+        context,
         '/media_wizard?type='
         '${sharedMedia.type!.name}',
       );

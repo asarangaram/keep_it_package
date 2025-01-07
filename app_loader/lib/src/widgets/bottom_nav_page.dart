@@ -1,4 +1,4 @@
-import 'package:colan_services/colan_services.dart';
+/* import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -80,3 +80,4 @@ class _BottomNavigationPageState extends ConsumerState<BottomNavigationPage> {
     );
   }
 }
+ */

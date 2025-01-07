@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class BasicPageService extends StatelessWidget {
   const BasicPageService._({
@@ -60,7 +59,7 @@ class BasicPageService extends StatelessWidget {
                   CLButtonIcon.large(
                     clIcons.navigateHome,
                     color: Theme.of(context).colorScheme.primary,
-                    onTap: () => context.go('/'),
+                    onTap: () => Navigator.pushReplacementNamed(context, '/'),
                   ),
                 ].map((e) => Expanded(child: Center(child: e))).toList(),
               ),
