@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -48,7 +47,7 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
   Widget build(BuildContext context) {
     if (currIndex >= widget.items.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        CLPopScreen.onPop(context);
+        PageManager.of(context, ref).pop();
       });
       return BasicPageService.withNavBar(message: 'Media seems deleted');
     }

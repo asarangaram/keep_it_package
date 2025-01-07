@@ -19,7 +19,7 @@ class CameraPage extends ConsumerWidget {
           builder: (collection) {
             return CLCameraService(
               parentIdentifier: 'CLCameraService',
-              onCancel: () => CLPopScreen.onPop(context),
+              onCancel: () => PageManager.of(context, ref).pop(),
               onError: (String message, {required dynamic error}) async {
                 await ref
                     .read(
@@ -48,7 +48,7 @@ class CameraPage extends ConsumerWidget {
                 );
 
                 if (context.mounted) {
-                  await CLPopScreen.onPop(context);
+                  PageManager.of(context, ref).pop();
                 }
               },
             );

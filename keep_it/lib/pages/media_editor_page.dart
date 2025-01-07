@@ -22,7 +22,7 @@ class MediaEditorPage extends ConsumerWidget {
       mediaId: mediaId,
       canDuplicateMedia: canDuplicateMedia,
       onDone: ({media}) async {
-        Navigator.pop(context, media);
+        PageManager.of(context, ref).pop(media);
       },
     );
   }

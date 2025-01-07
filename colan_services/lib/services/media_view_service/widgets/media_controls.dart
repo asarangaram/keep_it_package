@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:colan_services/services/basic_page_service/page_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,8 @@ class MediaControls extends ConsumerWidget {
               alignment: Alignment.topRight,
               child: Padding(
                 padding: const EdgeInsets.only(right: 8, top: 8),
-                child: CLPopScreen.onTap(
+                child: GestureDetector(
+                  onTap: PageManager.of(context, ref).pop,
                   child: CircledIcon(
                     clIcons.closeFullscreen,
                   ),

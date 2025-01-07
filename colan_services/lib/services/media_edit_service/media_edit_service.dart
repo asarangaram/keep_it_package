@@ -1,11 +1,11 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
 
-class MediaEditService extends StatelessWidget {
+class MediaEditService extends ConsumerWidget {
   const MediaEditService({
     required this.mediaId,
     required this.canDuplicateMedia,
@@ -18,7 +18,7 @@ class MediaEditService extends StatelessWidget {
   final Future<void> Function({CLMedia? media}) onDone;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GetMedia(
       id: mediaId!,
       errorBuilder: null,
@@ -46,6 +46,7 @@ class MediaEditService extends StatelessWidget {
                     if (overwrite) {
                       final confirmed = await ConfirmAction.replaceMedia(
                             context,
+                            ref,
                             media: media,
                           ) ??
                           false;
@@ -59,6 +60,7 @@ class MediaEditService extends StatelessWidget {
                       final confirmed =
                           await ConfirmAction.cloneAndReplaceMedia(
                                 context,
+                                ref,
                                 media: media,
                               ) ??
                               false;
@@ -87,7 +89,7 @@ class MediaEditService extends StatelessWidget {
   }
 }
 
-class InvokeEditor extends StatelessWidget {
+class InvokeEditor extends ConsumerWidget {
   const InvokeEditor({
     required this.mediaUri,
     required this.mediaType,
@@ -104,7 +106,7 @@ class InvokeEditor extends StatelessWidget {
   final Future<void> Function() onCancel;
   final bool canDuplicateMedia;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     switch (mediaType) {
       case CLMediaType.image:
         return ImageEditor(
@@ -125,7 +127,7 @@ class InvokeEditor extends StatelessWidget {
           );
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          CLPopScreen.onPop(context);
+          PageManager.of(context, ref).pop();
         });
         return Container();
       case CLMediaType.text:
@@ -133,7 +135,7 @@ class InvokeEditor extends StatelessWidget {
       case CLMediaType.audio:
       case CLMediaType.file:
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          CLPopScreen.onPop(context);
+          PageManager.of(context, ref).pop();
         });
         return Container();
     }

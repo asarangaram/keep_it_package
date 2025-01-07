@@ -1,9 +1,12 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 class ConfirmAction {
   static Future<bool?> template(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required String title,
     required String message,
   }) async =>
@@ -21,12 +24,14 @@ class ConfirmAction {
               alignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () async => Navigator.of(context).pop(false),
+                  onPressed: () async =>
+                      PageManager.of(context, ref).closeDialog(false),
                   child: const Text('No'),
                 ),
                 ElevatedButton(
                   child: const Text('Yes'),
-                  onPressed: () async => Navigator.of(context).pop(true),
+                  onPressed: () async =>
+                      PageManager.of(context, ref).closeDialog(true),
                 ),
               ],
             ),
@@ -35,29 +40,34 @@ class ConfirmAction {
       );
 
   static Future<bool?> deleteCollection(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required Collection collection,
   }) async =>
       template(
         context,
+        ref,
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete '
             '"${collection.label}" and its content?',
       );
 
   static Future<bool?> deleteMedia(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required CLMedia media,
   }) async =>
       template(
         context,
+        ref,
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete '
             'this ${media.type.name}?',
       );
 
   static Future<bool?> deleteMediaMultiple(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required List<CLMedia> media,
   }) async {
     if (media.isEmpty) {
@@ -67,6 +77,7 @@ class ConfirmAction {
     if (media.length == 1) {
       return ConfirmAction.deleteMedia(
         context,
+        ref,
         media: media[0],
       );
     } else {
@@ -75,24 +86,28 @@ class ConfirmAction {
 
     return template(
       context,
+      ref,
       title: 'Confirm Delete',
       message: msg,
     );
   }
 
   static Future<bool?> permanentlyDeleteMedia(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required CLMedia media,
   }) async =>
       template(
         context,
+        ref,
         title: 'Confirm Delete',
         message: 'Are you sure you want to PERMANENTLY delete '
             'this ${media.type.name}?',
       );
 
   static Future<bool?> permanentlyDeleteMediaMultiple(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required List<CLMedia> media,
   }) async {
     if (media.isEmpty) {
@@ -102,6 +117,7 @@ class ConfirmAction {
     if (media.length == 1) {
       return ConfirmAction.permanentlyDeleteMedia(
         context,
+        ref,
         media: media[0],
       );
     } else {
@@ -111,24 +127,28 @@ class ConfirmAction {
 
     return template(
       context,
+      ref,
       title: 'Confirm Delete',
       message: msg,
     );
   }
 
   static Future<bool?> restoreMedia(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required CLMedia media,
   }) async =>
       template(
         context,
+        ref,
         title: 'Confirm Restore',
         message: 'Are you sure you want to restore '
             'this ${media.type.name}?',
       );
 
   static Future<bool?> restoreMediaMultiple(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required List<CLMedia> media,
   }) async {
     if (media.isEmpty) {
@@ -137,41 +157,49 @@ class ConfirmAction {
     if (media.length == 1) {
       return ConfirmAction.restoreMedia(
         context,
+        ref,
         media: media[0],
       );
     }
     return template(
       context,
+      ref,
       title: 'Confirm Restore',
       message: 'Are you sure you want to restore  ${media.length} items?',
     );
   }
 
   static Future<bool?> replaceMedia(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required CLMedia media,
   }) async =>
       template(
         context,
+        ref,
         title: 'Confirm Replace',
         message: 'This will replace the original file with the above media',
       );
   static Future<bool?> cloneAndReplaceMedia(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required CLMedia media,
   }) async =>
       template(
         context,
+        ref,
         title: 'Save',
         message: 'This will save the above media as a separate copy, '
             'other propertes will be copied from original media',
       );
   static Future<bool?> deleteNote(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required CLMedia note,
   }) async =>
       template(
         context,
+        ref,
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete '
             "this note? You can't recover it",

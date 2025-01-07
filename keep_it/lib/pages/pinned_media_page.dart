@@ -29,8 +29,7 @@ class PinnedMediaPage extends ConsumerWidget {
                       padding: const EdgeInsets.all(4),
                       child: GestureDetector(
                         onTap: () async {
-                          await Navigators.openMedia(
-                            context,
+                          await PageManager.of(context, ref).openMedia(
                             item.id!,
                             parentIdentifier: parentIdentifier,
                           );

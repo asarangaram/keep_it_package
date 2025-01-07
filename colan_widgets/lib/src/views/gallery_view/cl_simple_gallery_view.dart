@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../basics/cl_button.dart';
-import '../../basics/cl_pop_screen.dart';
 import '../../basics/cl_refresh_indicator.dart';
 import '../../models/cl_menu_item.dart';
 
-import '../../theme/models/cl_icons.dart';
 import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
 import '../draggable/menu.dart';
@@ -27,6 +25,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     required this.columns,
     required this.backButton,
     required this.actions,
+    this.leading,
     super.key,
     this.onRefresh,
     this.selectionActions,
@@ -35,6 +34,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
   });
 
   final String title;
+  final Widget? leading;
   final List<GalleryGroup<T>> galleryMap;
   final int columns;
 
@@ -64,12 +64,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
       return KeepItMainView(
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
-        backButton: CLPopScreen.canPop(context)
-            ? CLButtonIcon.small(
-                clIcons.pagePop,
-                onTap: () => CLPopScreen.onPop(context),
-              )
-            : null,
+        backButton: widget.leading,
         actions: widget.actions,
         child: Column(
           children: [

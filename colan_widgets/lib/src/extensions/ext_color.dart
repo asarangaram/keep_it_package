@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 extension ExtColor on Color {
   Color invertColor() {
-    return Color.fromARGB(alpha, 255 - red, 255 - green, 255 - blue);
+    return Color.from(alpha: a, red: 1 - r, green: 1 - g, blue: 1 - b);
   }
 
   Color reduceBrightness(double factor) {

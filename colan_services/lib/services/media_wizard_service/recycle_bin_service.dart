@@ -1,11 +1,9 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
-
-import '../basic_page_service/dialogs.dart';
-import '../incoming_media_service/models/cl_shared_media.dart';
 
 import 'providers/universal_media.dart';
 import 'views/wizard_preview.dart';
@@ -22,7 +20,7 @@ class RecycleBinService extends ConsumerWidget {
     final media = ref.watch(universalMediaProvider(type));
     if (media.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        CLPopScreen.onPop(context);
+        PageManager.of(context, ref).pop();
       });
       return const SizedBox.expand();
     }
@@ -90,7 +88,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
       builder: (theStore) {
         return WizardLayout(
           title: widget.type.label,
-          onCancel: () => CLPopScreen.onPop(context),
+          onCancel: () => PageManager.of(context, ref).pop(),
           actions: [
             if (canSelect)
               CLButtonText.small(
@@ -109,6 +107,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                       final confirmed =
                           await ConfirmAction.restoreMediaMultiple(
                                 context,
+                                ref,
                                 media: currMedia,
                               ) ??
                               false;
@@ -145,6 +144,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                             final confirmed = await ConfirmAction
                                     .permanentlyDeleteMediaMultiple(
                                   context,
+                                  ref,
                                   media: currMedia,
                                 ) ??
                                 false;

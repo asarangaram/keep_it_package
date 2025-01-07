@@ -1,7 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BasicPageService extends StatelessWidget {
+import 'page_manager.dart';
+
+class BasicPageService extends ConsumerWidget {
   const BasicPageService._({
     required this.message,
     required this.navBar,
@@ -26,7 +29,7 @@ class BasicPageService extends StatelessWidget {
   final dynamic message;
   final bool navBar;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8),
@@ -49,17 +52,16 @@ class BasicPageService extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (CLPopScreen.canPop(context))
-                    CLPopScreen.onTap(
-                      child: CLButtonIcon.large(
-                        clIcons.pagePop,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                  if (PageManager.of(context, ref).canPop())
+                    CLButtonIcon.large(
+                      clIcons.pagePop,
+                      color: Theme.of(context).colorScheme.primary,
+                      onTap: PageManager.of(context, ref).pop,
                     ),
                   CLButtonIcon.large(
                     clIcons.navigateHome,
                     color: Theme.of(context).colorScheme.primary,
-                    onTap: () => Navigator.pushReplacementNamed(context, '/'),
+                    onTap: () => PageManager.of(context, ref).home(),
                   ),
                 ].map((e) => Expanded(child: Center(child: e))).toList(),
               ),

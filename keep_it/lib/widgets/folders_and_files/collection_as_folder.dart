@@ -27,9 +27,9 @@ class CollectionAsFolder extends ConsumerWidget {
                 collection: collection,
                 isSyncing: false,
                 child: CollectionView.preview(collection),
-                onTap: () async => onTap(context),
-                onEdit: () async => onEdit(context, theStore),
-                onDelete: () async => onDelete(context, theStore),
+                onTap: () async => onTap(context, ref),
+                onEdit: () async => onEdit(context, ref, theStore),
+                onDelete: () async => onDelete(context, ref, theStore),
                 onUpload: () async {
                   await theStore.collectionUpdater.upsert(
                     collection.copyWith(serverUID: () => -1, isEdited: true),
@@ -110,14 +110,19 @@ class CollectionAsFolder extends ConsumerWidget {
     );
   }
 
-  Future<bool> onTap(BuildContext context) async {
-    await Navigators.openCollection(context, collection.id!);
+  Future<bool> onTap(BuildContext context, WidgetRef ref) async {
+    await PageManager.of(context, ref).openCollection(collection.id!);
     return true;
   }
 
-  Future<bool> onEdit(BuildContext context, StoreUpdater theStore) async {
+  Future<bool> onEdit(
+    BuildContext context,
+    WidgetRef ref,
+    StoreUpdater theStore,
+  ) async {
     final updated = await CollectionEditor.popupDialog(
       context,
+      ref,
       collection: collection,
     );
     if (updated != null && context.mounted) {
@@ -127,9 +132,14 @@ class CollectionAsFolder extends ConsumerWidget {
     return true;
   }
 
-  Future<bool> onDelete(BuildContext context, StoreUpdater theStore) async {
+  Future<bool> onDelete(
+    BuildContext context,
+    WidgetRef ref,
+    StoreUpdater theStore,
+  ) async {
     final confirmed = await ConfirmAction.deleteCollection(
           context,
+          ref,
           collection: collection,
         ) ??
         false;

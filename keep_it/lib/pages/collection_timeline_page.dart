@@ -87,7 +87,7 @@ class TimelineView extends ConsumerWidget {
                   padding: const EdgeInsets.only(right: 16),
                   child: CLButtonIcon.small(
                     clIcons.pagePop,
-                    onTap: () => CLPopScreen.onPop(context),
+                    onTap: () => PageManager.of(context, ref).pop(),
                   ),
                 ),
           identifier: parentIdentifier,
@@ -99,8 +99,7 @@ class TimelineView extends ConsumerWidget {
             media: item,
             parentIdentifier: parentIdentifier,
             onTap: () async {
-              await Navigators.openMedia(
-                context,
+              await PageManager.of(context, ref).openMedia(
                 item.id!,
                 collectionId: item.collectionId,
                 parentIdentifier: parentIdentifier,
@@ -128,8 +127,7 @@ class TimelineView extends ConsumerWidget {
                   title: 'Open Camera',
                   icon: clIcons.invokeCamera,
                   onTap: () async {
-                    await Navigators.openCamera(
-                      context,
+                    await PageManager.of(context, ref).openCamera(
                       collectionId: collection?.id,
                     );
                     return true;
@@ -151,6 +149,7 @@ class TimelineView extends ConsumerWidget {
                 onTap: () async {
                   final confirmed = await ConfirmAction.deleteMediaMultiple(
                         context,
+                        ref,
                         media: items,
                       ) ??
                       false;

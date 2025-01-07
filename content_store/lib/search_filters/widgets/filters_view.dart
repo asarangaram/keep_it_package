@@ -83,7 +83,6 @@ class _SearchOptionsState extends ConsumerState<SearchOptions> {
                                 setState(() {
                                   minimize = !minimize;
                                 });
-                                //ref.read(filtersProvider.notifier).toggleEdit();
                               }
                             },
                           ),

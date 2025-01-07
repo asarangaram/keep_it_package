@@ -28,6 +28,7 @@ export 'src/theme/models/cl_colors.dart';
 export 'src/theme/models/cl_icons.dart';
 export 'src/theme/models/note_theme.dart';
 export 'src/theme/state/cl_theme.dart';
+export 'src/utils/key_listener.dart';
 export 'src/utils/platform_support.dart';
 export 'src/utils/rand_image_generator.dart';
 export 'src/views/appearance/cl_error_view.dart';

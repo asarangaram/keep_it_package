@@ -2,7 +2,7 @@ export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
 export 'services/basic_page_service/dialogs.dart';
 export 'services/basic_page_service/empty_state.dart';
-export 'services/basic_page_service/navigators.dart';
+export 'services/basic_page_service/page_manager.dart';
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart';
 export 'services/incoming_media_service/incoming_media_monitor.dart'

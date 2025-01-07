@@ -1,10 +1,12 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:store/store.dart';
 
-class CollectionEditor extends StatelessWidget {
+class CollectionEditor extends ConsumerWidget {
   factory CollectionEditor({
     required int collectionId,
     required void Function(Collection collection) onSubmit,
@@ -48,7 +50,7 @@ class CollectionEditor extends StatelessWidget {
   final bool isDialog;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
       child: GetCollection(
@@ -128,7 +130,8 @@ class CollectionEditor extends StatelessWidget {
   }
 
   static Future<Collection?> popupDialog(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required Collection collection,
   }) async =>
       showDialog<Collection>(
@@ -136,9 +139,9 @@ class CollectionEditor extends StatelessWidget {
         builder: (BuildContext context) => CollectionEditor.dialog(
           collectionId: collection.id!,
           onSubmit: (collection) {
-            Navigator.of(context).pop(collection);
+            PageManager.of(context, ref).pop(collection);
           },
-          onCancel: () => Navigator.of(context).pop(),
+          onCancel: () => PageManager.of(context, ref).pop(),
         ),
       );
 }

@@ -1,3 +1,4 @@
+/* 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -67,12 +68,5 @@ class CLPopScreen extends StatelessWidget {
       ),
     );
   }
-
-  static Future<void> onPop(BuildContext context, {bool? result}) async {
-    if (context.mounted && Navigator.canPop(context)) {
-      Navigator.pop(context, result);
-    }
-  }
-
-  static bool canPop(BuildContext context) => Navigator.canPop(context);
 }
+ */

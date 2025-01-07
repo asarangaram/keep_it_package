@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../basic_page_service/dialogs.dart';
-import '../incoming_media_service/models/cl_shared_media.dart';
 import '../media_view_service/providers/group_view.dart';
-import '../notification_services/provider/notify.dart';
 
 import 'providers/universal_media.dart';
 import 'recycle_bin_service.dart';
@@ -44,11 +42,7 @@ class MediaWizardService extends ConsumerWidget {
       media: sharedMedia,
     );
     if (context.mounted) {
-      await Navigator.pushNamed(
-        context,
-        '/media_wizard?type='
-        '${sharedMedia.type!.name}',
-      );
+      await PageManager.of(context, ref).openWizard(sharedMedia.type!);
     }
 
     return true;
@@ -78,7 +72,7 @@ class MediaWizardService extends ConsumerWidget {
     final media = ref.watch(universalMediaProvider(type));
     if (media.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        CLPopScreen.onPop(context);
+        PageManager.of(context, ref).pop();
       });
       return const SizedBox.expand();
     }
@@ -162,7 +156,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       builder: (theStore) {
         return WizardLayout(
           title: widget.type.label,
-          onCancel: () => CLPopScreen.onPop(context),
+          onCancel: () => PageManager.of(context, ref).pop(),
           actions: [
             if (canSelect)
               CLButtonText.small(
@@ -246,6 +240,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                   final confirmed =
                                       await ConfirmAction.deleteMediaMultiple(
                                             context,
+                                            ref,
                                             media: currMedia,
                                           ) ??
                                           false;

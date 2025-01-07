@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../basic_page_service/navigators.dart';
+import '../../basic_page_service/page_manager.dart';
 import '../../media_view_service/media_view_service.dart';
 
 import '../../media_view_service/providers/group_view.dart';
@@ -38,7 +38,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     final media0 = ref.watch(universalMediaProvider(type));
     if (media0.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        CLPopScreen.onPop(context);
+        PageManager.of(context, ref).pop();
       });
       return const SizedBox.expand();
     }
@@ -56,9 +56,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           ) =>
               GestureDetector(
             onTap: () async {
-              await Navigators.openEditor(
-                context,
-                ref,
+              await PageManager.of(context, ref).openEditor(
                 item,
                 canDuplicateMedia: false,
               );

@@ -1,9 +1,9 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MediaPageViewPage extends StatelessWidget {
+class MediaPageViewPage extends ConsumerWidget {
   const MediaPageViewPage({
     required this.id,
     required this.collectionId,
@@ -15,7 +15,7 @@ class MediaPageViewPage extends StatelessWidget {
   final String parentIdentifier;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (collectionId == null) {
       return GetMedia(
         id: id,
@@ -41,7 +41,7 @@ class MediaPageViewPage extends StatelessWidget {
         builder: (items) {
           if (items.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              CLPopScreen.onPop(context);
+              PageManager.of(context, ref).pop();
             });
             return const EmptyState(message: 'No Media');
           }

@@ -75,7 +75,7 @@ class CollectionsPage extends ConsumerWidget {
                       title: 'Open Camera',
                       icon: clIcons.invokeCamera,
                       onTap: () async {
-                        await Navigators.openCamera(context);
+                        await PageManager.of(context, ref).openCamera();
                         return true;
                       },
                     ),

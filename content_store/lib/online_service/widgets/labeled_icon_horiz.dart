@@ -29,8 +29,9 @@ class LabeledIconHorizontal extends StatelessWidget {
               BorderRadius.circular(8), // Rounded corners like ElevatedButton
           boxShadow: [
             BoxShadow(
-              color: Colors.black
-                  .withOpacity(0.2), // Slight shadow to simulate elevation
+              color: Colors.black.withValues(
+                alpha: 0.2,
+              ), // Slight shadow to simulate elevation
               blurRadius: 4,
               offset: const Offset(2, 2),
             ),
