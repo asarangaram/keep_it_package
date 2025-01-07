@@ -1,3 +1,4 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -53,7 +54,10 @@ class _RaLRouterState extends ConsumerState<AppView>
           );
         }
         return MaterialPageRoute(
-          builder: (context) => screen.builder(context, uri.queryParameters),
+          builder: (context) => IncomingMediaMonitor(
+            onMedia: app.incomingMediaViewBuilder,
+            child: screen.builder(context, uri.queryParameters),
+          ),
         );
       },
     );
