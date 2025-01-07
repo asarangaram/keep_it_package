@@ -77,7 +77,6 @@ class KeepItApp implements AppDescriptor {
             }
 
             return FullscreenLayout(
-              hasBackground: false,
               backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
               child: MediaEditorPage(
                 mediaId: mediaId,
@@ -228,7 +227,7 @@ class KeepItApp implements AppDescriptor {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  debugPrintRebuildDirtyWidgets = true;
+  debugPrintRebuildDirtyWidgets = false;
   debugPaintSizeEnabled = false;
   debugPrintBeginFrameBanner = false;
   debugPrintLayouts = false;

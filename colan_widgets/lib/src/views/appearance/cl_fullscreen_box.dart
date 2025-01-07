@@ -12,7 +12,7 @@ class CLFullscreenBox extends ConsumerStatefulWidget {
     this.backgroundColor,
     this.hasBorder = false,
     this.backgroundBrightness = 0.25,
-    this.hasBackground = true,
+    this.hasBackground = false,
     this.bottomNavigationBar,
     this.appBar,
   });
@@ -158,7 +158,7 @@ class _ScaffoldBorder extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) {
-    if (!hasBorder) return child;
+    if (!hasBorder) return Scaffold(body: child);
     return Container(
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.all(8),
@@ -176,7 +176,7 @@ class CLBackground extends StatelessWidget {
     required this.child,
     super.key,
     this.backgroundBrightness = 0.25,
-    this.hasBackground = true,
+    this.hasBackground = false,
   });
   final Widget child;
   final double backgroundBrightness;

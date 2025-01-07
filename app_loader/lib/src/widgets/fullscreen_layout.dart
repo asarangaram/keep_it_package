@@ -13,7 +13,7 @@ class FullscreenLayout extends StatelessWidget {
     this.backgroundColor,
     this.hasBorder = false,
     this.backgroundBrightness = 0.25,
-    this.hasBackground = true,
+    this.hasBackground = false,
     this.bottomNavigationBar,
     this.appBar,
   });

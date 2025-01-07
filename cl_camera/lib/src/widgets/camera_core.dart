@@ -505,7 +505,6 @@ class CLCameraCoreState extends State<CLCameraCore>
             showInSnackBar('Audio access is restricted.');
           default:
             showInSnackBar(e.toString());
-            break;
         }
       }
       setState(() {});
@@ -582,7 +581,6 @@ class CLCameraCoreState extends State<CLCameraCore>
           showInSnackBar('Audio access is restricted.');
         default:
           showInSnackBar(e.toString());
-          break;
       }
     }
 
