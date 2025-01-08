@@ -7,6 +7,7 @@ import '../models/filter/base_filter.dart';
 import '../providers/filters.dart';
 import 'ddmmyyyy_filter_view.dart';
 import 'enum_filter_view.dart';
+import 'text_filter.dart';
 
 class FilterView extends ConsumerWidget {
   const FilterView({
@@ -45,7 +46,7 @@ class FilterView extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               switch (filter.filterType) {
-                FilterType.stringFilter => throw UnimplementedError(),
+                FilterType.stringFilter => const TextFilterView(),
                 FilterType.booleanFilter => throw UnimplementedError(),
                 FilterType.dateFilter => throw UnimplementedError(),
                 FilterType.ddmmyyyyFilter =>

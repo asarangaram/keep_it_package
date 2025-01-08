@@ -6,6 +6,7 @@ import 'package:store/store.dart';
 import 'filter/base_filter.dart';
 import 'filter/ddmmyyyy_filter.dart';
 import 'filter/enum_filter.dart';
+import 'filter/string_filter.dart';
 
 enum MediaAvailability { local, coLan, synced }
 
@@ -115,6 +116,13 @@ class SearchFilters {
     DDMMYYYYFilter(
       name: 'Search by Date',
       fieldSelector: (media) => media.createdDate,
+      enabled: true,
+    ),
+    // Consider to add Collection name, notes and tags
+    StringFilter(
+      name: 'TextSearch',
+      fieldSelector: (media) => [media.name, media.ref].join(),
+      query: '',
       enabled: true,
     ),
   ];

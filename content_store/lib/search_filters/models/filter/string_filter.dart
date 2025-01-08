@@ -26,7 +26,29 @@ class StringFilter<T> extends BaseFilter<T, String> {
     dynamic value, {
     String? updateType,
   }) {
-    throw UnimplementedError();
+    return switch (key) {
+      'enable' => _enable(value as bool),
+      'query' => _query(value as String),
+      _ => throw UnimplementedError(),
+    };
+  }
+
+  StringFilter<T> _enable(bool value) {
+    return StringFilter<T>(
+      name: name,
+      fieldSelector: fieldSelector,
+      query: query,
+      enabled: value,
+    );
+  }
+
+  StringFilter<T> _query(String value) {
+    return StringFilter<T>(
+      name: name,
+      fieldSelector: fieldSelector,
+      query: value,
+      enabled: enabled,
+    );
   }
 
   @override
