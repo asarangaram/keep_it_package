@@ -5,12 +5,14 @@ class KeepItMainView extends StatelessWidget {
   const KeepItMainView({
     required this.child,
     required this.backButton,
+    required this.popupActionItems,
     super.key,
     this.actions,
     this.title,
   });
   final Widget child;
   final List<Widget>? actions;
+  final List<CLMenuItem> popupActionItems;
 
   final String? title;
   final Widget? backButton;
@@ -26,6 +28,7 @@ class KeepItMainView extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         title: title == null ? null : CLLabel.large(title!),
         leading: backButton,
+        automaticallyImplyLeading: false,
         actions: [
           if (actions != null && actions!.isNotEmpty)
             ...actions!.map(
@@ -33,6 +36,26 @@ class KeepItMainView extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8),
                 child: e,
               ),
+            ),
+          if (popupActionItems.isNotEmpty)
+            PopupMenuButton<CLMenuItem>(
+              onSelected: (CLMenuItem item) {
+                item.onTap?.call();
+              },
+              itemBuilder: (BuildContext context) {
+                return <PopupMenuEntry<CLMenuItem>>[
+                  for (final item in popupActionItems) ...[
+                    PopupMenuItem<CLMenuItem>(
+                      value: item,
+                      child: ListTile(
+                        leading: Icon(item.icon),
+                        title: Text(item.title),
+                      ),
+                    ),
+                  ],
+                ];
+              },
+              child: const Icon(Icons.more_vert),
             ),
         ],
       ),
