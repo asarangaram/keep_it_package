@@ -69,7 +69,6 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         child: Column(
           children: [
             if (widget.topWidget != null) widget.topWidget!,
-            const Text('hello'),
             Expanded(child: widget.emptyState),
             if (widget.bottomWidget != null) widget.bottomWidget!,
           ],
