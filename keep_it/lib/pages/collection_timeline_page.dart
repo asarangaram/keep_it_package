@@ -140,6 +140,16 @@ class TimelineView extends ConsumerWidget {
               ),
             ),
           ],
+          popupActionItems: [
+            CLMenuItem(
+              title: 'Settings',
+              icon: clIcons.navigateSettings,
+              onTap: () async {
+                await PageManager.of(context, ref).openSettings();
+                return true;
+              },
+            ),
+          ],
           onRefresh: () async => theStore.store.reloadStore(),
           selectionActions: (context, items) {
             return [

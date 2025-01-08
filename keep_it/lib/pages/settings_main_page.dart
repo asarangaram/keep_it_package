@@ -11,7 +11,14 @@ class SettingsMainPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return KeepItMainView(
       title: 'Settings',
-      backButton: null,
+      backButton: Padding(
+        padding: const EdgeInsets.only(right: 16),
+        child: CLButtonIcon.small(
+          clIcons.pagePop,
+          onTap: () => PageManager.of(context, ref).pop(),
+        ),
+      ),
+      popupActionItems: const [],
       child: GetDeletedMedia(
         errorBuilder: null,
         loadingBuilder: null,

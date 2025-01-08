@@ -20,6 +20,7 @@ class MediaGalleryView extends ConsumerWidget {
     this.selectionActions,
     this.topWidget,
     this.bottomWidget,
+    this.popupActionItems = const [],
   });
 
   final String title;
@@ -29,6 +30,7 @@ class MediaGalleryView extends ConsumerWidget {
   final Widget emptyState;
   final String identifier;
   final List<Widget> actions;
+  final List<CLMenuItem> popupActionItems;
 
   final Future<void> Function()? onRefresh;
   final List<CLMenuItem> Function(
@@ -57,6 +59,7 @@ class MediaGalleryView extends ConsumerWidget {
       selectionActions: selectionActions,
       topWidget: topWidget,
       bottomWidget: bottomWidget,
+      popupActionItems: popupActionItems,
     );
   }
 }

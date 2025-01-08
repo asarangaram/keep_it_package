@@ -86,6 +86,16 @@ class CollectionsPage extends ConsumerWidget {
                   ),
                 ),
               ],
+              popupActionItems: [
+                CLMenuItem(
+                  title: 'Settings',
+                  icon: clIcons.navigateSettings,
+                  onTap: () async {
+                    await PageManager.of(context, ref).openSettings();
+                    return true;
+                  },
+                ),
+              ],
               onRefresh: () async => store.reloadStore(),
             );
           },

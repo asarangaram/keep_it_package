@@ -105,6 +105,13 @@ class PageManager extends Navigator {
       '${type.name}',
     );
   }
+
+  Future<void> openSettings() async {
+    await Navigator.pushNamed(
+      context,
+      '/settings',
+    );
+  }
 }
 
 enum CLScreenPopGesture { swipeLeft, onTap }

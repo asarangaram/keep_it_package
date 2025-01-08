@@ -51,6 +51,7 @@ class WizardLayout extends StatelessWidget {
                   onTap: onCancel,
                 ),
             ],
+            popupActionItems: const [],
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

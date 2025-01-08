@@ -31,6 +31,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     this.selectionActions,
     this.topWidget,
     this.bottomWidget,
+    this.popupActionItems = const [],
   });
 
   final String title;
@@ -49,6 +50,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
   final Widget? backButton;
   final Widget? topWidget;
   final Widget? bottomWidget;
+  final List<CLMenuItem> popupActionItems;
 
   @override
   State<CLSimpleGalleryView<T>> createState() => _CLSimpleGalleryViewState<T>();
@@ -66,6 +68,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
         title: widget.title,
         backButton: widget.leading,
         actions: widget.actions,
+        popupActionItems: widget.popupActionItems,
         child: Column(
           children: [
             if (widget.topWidget != null) widget.topWidget!,
@@ -95,6 +98,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
               ),
             if (!isSelectionMode) ...widget.actions,
           ],
+          popupActionItems: widget.popupActionItems,
           child: Stack(
             key: parentKey,
             children: [
