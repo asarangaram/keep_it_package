@@ -38,6 +38,14 @@ class _RaLRouterState extends ConsumerState<AppView>
       debugShowCheckedModeBanner: false,
       title: app.title,
       initialRoute: '/',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      darkTheme: ThemeData(
+        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.light,
       onGenerateRoute: (settings) {
         final uri = Uri.parse(settings.name ?? '');
 

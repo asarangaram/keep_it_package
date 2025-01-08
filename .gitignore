@@ -10,3 +10,4 @@ keep_it/integration_test/ApplicationSupportPath/backgroundDownloaderDatabase/**
 .vscode/settings.json
 .fvmrc
 
+experiment/**

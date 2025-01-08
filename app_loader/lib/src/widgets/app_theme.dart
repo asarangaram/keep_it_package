@@ -10,10 +10,10 @@ class AppTheme extends ConsumerWidget {
     return Theme(
       data: Theme.of(context).copyWith(
         textTheme: Theme.of(context).textTheme.copyWith(
-              bodyLarge: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontFeatures: [const FontFeature.tabularFigures()],
+              ),
             ),
         /* inputDecorationTheme: InputDecorationTheme(
           floatingLabelBehavior: FloatingLabelBehavior.always,
