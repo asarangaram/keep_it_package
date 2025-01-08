@@ -46,7 +46,9 @@ class FilterView extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               switch (filter.filterType) {
-                FilterType.stringFilter => const TextFilterView(),
+                FilterType.stringFilter => TextFilterView(
+                    filter: filter,
+                  ),
                 FilterType.booleanFilter => throw UnimplementedError(),
                 FilterType.dateFilter => throw UnimplementedError(),
                 FilterType.ddmmyyyyFilter =>
