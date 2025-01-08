@@ -25,7 +25,6 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     required this.columns,
     required this.backButton,
     required this.actions,
-    this.leading,
     super.key,
     this.onRefresh,
     this.selectionActions,
@@ -35,7 +34,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
   });
 
   final String title;
-  final Widget? leading;
+
   final List<GalleryGroup<T>> galleryMap;
   final int columns;
 
@@ -66,7 +65,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
       return KeepItMainView(
         key: ValueKey('KeepItMainView ${widget.identifier}'),
         title: widget.title,
-        backButton: widget.leading,
+        backButton: widget.backButton,
         actions: widget.actions,
         popupActionItems: widget.popupActionItems,
         child: Column(
