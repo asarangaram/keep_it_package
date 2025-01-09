@@ -1,10 +1,8 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../models/filter/base_filter.dart';
-import '../models/filter/enum_filter.dart';
 import '../models/filter/string_filter.dart';
 import '../providers/filters.dart';
 
@@ -38,6 +36,17 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
 
   @override
   Widget build(BuildContext context) {
+    controller.addListener(() {
+      if (controller.text == (widget.filter as StringFilter<CLMedia>).query) {
+        return;
+      }
+      print('controller.text: ${controller.text}');
+      ref.read(filtersProvider.notifier).updateFilter(
+            widget.filter,
+            'query',
+            controller.text,
+          );
+    });
     return Padding(
       padding: const EdgeInsets.all(16),
       child: SizedBox(
@@ -49,13 +58,6 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
             border: OutlineInputBorder(),
             labelText: 'Search',
           ),
-          onChanged: (value) {
-            ref.read(filtersProvider.notifier).updateFilter(
-                  widget.filter,
-                  'query',
-                  controller.text,
-                );
-          },
         ),
       ),
     );

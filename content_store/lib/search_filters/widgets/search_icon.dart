@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/filters.dart';
 
-class SearchIcon extends ConsumerWidget {
-  const SearchIcon({super.key});
+class SearchIconOld extends ConsumerWidget {
+  const SearchIconOld({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

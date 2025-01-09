@@ -57,8 +57,12 @@ class SearchOptionsState extends ConsumerState<SearchOptions> {
 
     return Card(
       elevation: 8,
-      color: Colors.grey.shade100,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.surfaceBright,
+          width: 2,
+        ),
         borderRadius: BorderRadius.circular(
           2,
         ), // Adjust the border radius as needed
@@ -76,7 +80,9 @@ class SearchOptionsState extends ConsumerState<SearchOptions> {
         child: Column(
           children: [
             Container(
-              decoration: BoxDecoration(color: Colors.grey.shade300),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

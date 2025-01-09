@@ -33,6 +33,7 @@ class _RaLRouterState extends ConsumerState<AppView>
   @override
   Widget build(BuildContext context) {
     final app = widget.appDescriptor;
+    final themeMode = ref.watch(nightModeProvider);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -45,7 +46,7 @@ class _RaLRouterState extends ConsumerState<AppView>
         primarySwatch: Colors.blue,
         brightness: Brightness.dark,
       ),
-      themeMode: ThemeMode.light,
+      themeMode: themeMode,
       onGenerateRoute: (settings) {
         final uri = Uri.parse(settings.name ?? '');
 
@@ -71,3 +72,7 @@ class _RaLRouterState extends ConsumerState<AppView>
     );
   }
 }
+
+final nightModeProvider = StateProvider<ThemeMode>((ref) {
+  return ThemeMode.light;
+});

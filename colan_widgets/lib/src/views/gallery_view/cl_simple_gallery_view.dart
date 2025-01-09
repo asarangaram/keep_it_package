@@ -62,91 +62,49 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
   @override
   Widget build(BuildContext context) {
     if (widget.galleryMap.isEmpty) {
-      return KeepItMainView(
-        key: ValueKey('KeepItMainView ${widget.identifier}'),
-        title: widget.title,
-        backButton: widget.backButton,
-        actions: widget.actions,
-        popupActionItems: widget.popupActionItems,
-        child: Column(
-          children: [
-            if (widget.topWidget != null) widget.topWidget!,
-            Expanded(child: widget.emptyState),
-            if (widget.bottomWidget != null) widget.bottomWidget!,
-          ],
-        ),
-      );
+      return widget.emptyState;
     } else {
       return ProviderScope(
         overrides: [
           menuControlNotifierProvider
               .overrideWith((ref) => MenuControlNotifier()),
         ],
-        child: KeepItMainView(
-          title: widget.title,
-          backButton: widget.backButton,
-          actions: [
-            if (widget.selectionActions != null)
-              CLButtonText.small(
-                isSelectionMode ? 'Done' : 'Select',
-                onTap: () {
-                  setState(() {
-                    isSelectionMode = !isSelectionMode;
-                  });
-                },
-              ),
-            if (!isSelectionMode) ...widget.actions,
-          ],
-          popupActionItems: widget.popupActionItems,
-          child: Stack(
-            key: parentKey,
-            children: [
-              CLRefreshIndicator(
-                onRefresh: isSelectionMode ? null : widget.onRefresh,
-                key: ValueKey('${widget.identifier} Refresh'),
-                child: Column(
-                  children: [
-                    if (widget.topWidget != null) widget.topWidget!,
-                    Flexible(
-                      child: CLGalleryCore(
-                        key: ValueKey(widget.galleryMap),
-                        items: widget.galleryMap,
-                        itemBuilder: (context, item) {
-                          return widget.itemBuilder(
-                            context,
-                            item,
-                          );
-                        },
-                        columns: widget.columns,
-                        keepSelected: false,
-                        onSelectionChanged: isSelectionMode
-                            ? (List<T> items) {
-                                selectedItems = items;
-                                setState(() {});
-                              }
-                            : null,
-                      ),
-                    ),
-                    if (widget.bottomWidget != null) widget.bottomWidget!,
-                  ],
-                ),
-              ),
-              if (isSelectionMode && selectedItems.isNotEmpty)
-                ActionsDraggableMenu<T>(
-                  items: selectedItems,
-                  tagPrefix: widget.identifier,
-                  onDone: () {
-                    isSelectionMode = false;
-                    //onDone();
-                    if (mounted) {
+        child: Stack(
+          key: parentKey,
+          children: [
+            CLGalleryCore(
+              key: ValueKey(widget.galleryMap),
+              items: widget.galleryMap,
+              itemBuilder: (context, item) {
+                return widget.itemBuilder(
+                  context,
+                  item,
+                );
+              },
+              columns: widget.columns,
+              keepSelected: false,
+              onSelectionChanged: isSelectionMode
+                  ? (List<T> items) {
+                      selectedItems = items;
                       setState(() {});
                     }
-                  },
-                  selectionActions: widget.selectionActions,
-                  parentKey: parentKey,
-                ),
-            ],
-          ),
+                  : null,
+            ),
+            if (isSelectionMode && selectedItems.isNotEmpty)
+              ActionsDraggableMenu<T>(
+                items: selectedItems,
+                tagPrefix: widget.identifier,
+                onDone: () {
+                  isSelectionMode = false;
+                  //onDone();
+                  if (mounted) {
+                    setState(() {});
+                  }
+                },
+                selectionActions: widget.selectionActions,
+                parentKey: parentKey,
+              ),
+          ],
         ),
       );
     }

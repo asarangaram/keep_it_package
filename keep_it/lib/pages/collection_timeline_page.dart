@@ -81,20 +81,11 @@ class TimelineView extends ConsumerWidget {
         return MediaGalleryView(
           key: ValueKey(label),
           title: label,
-          backButton: ColanPlatformSupport.isMobilePlatform
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: CLButtonIcon.small(
-                    clIcons.pagePop,
-                    onTap: () => PageManager.of(context, ref).pop(),
-                  ),
-                ),
+          backButton: null,
           identifier: parentIdentifier,
           columns: 4,
           medias: items,
           emptyState: const EmptyState(),
-          topWidget: const SearchOptions(),
           itemBuilder: (context, item) => MediaAsFile(
             media: item,
             parentIdentifier: parentIdentifier,
@@ -107,49 +98,7 @@ class TimelineView extends ConsumerWidget {
               return true;
             },
           ),
-          actions: [
-            const SearchIcon(),
-            ...[
-              CLMenuItem(
-                title: 'Select File',
-                icon: clIcons.insertItem,
-                onTap: () async {
-                  await IncomingMediaMonitor.onPickFiles(
-                    context,
-                    ref,
-                    collection: collection,
-                  );
-                  return true;
-                },
-              ),
-              if (ColanPlatformSupport.cameraSupported)
-                CLMenuItem(
-                  title: 'Open Camera',
-                  icon: clIcons.invokeCamera,
-                  onTap: () async {
-                    await PageManager.of(context, ref).openCamera(
-                      collectionId: collection?.id,
-                    );
-                    return true;
-                  },
-                ),
-            ].map(
-              (e) => CLButtonIcon.small(
-                e.icon,
-                onTap: e.onTap,
-              ),
-            ),
-          ],
-          popupActionItems: [
-            CLMenuItem(
-              title: 'Settings',
-              icon: clIcons.navigateSettings,
-              onTap: () async {
-                await PageManager.of(context, ref).openSettings();
-                return true;
-              },
-            ),
-          ],
+          actions: const [],
           onRefresh: () async => theStore.store.reloadStore(),
           selectionActions: (context, items) {
             return [

@@ -29,7 +29,7 @@ class CLPage extends ConsumerStatefulWidget {
 
 class _CLPageState extends ConsumerState<CLPage> {
   final ScrollController _scrollController = ScrollController();
-
+  /* final bool _isAppBarExpanded = true; */
   @override
   void dispose() {
     _scrollController.dispose();
@@ -47,78 +47,88 @@ class _CLPageState extends ConsumerState<CLPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        physics: const ClampingScrollPhysics(),
-        controller: _scrollController,
-        slivers: [
-          SliverAppBar(
-            title: widget.title == null ? null : Text(widget.title!),
-            pinned: true,
-            bottom: widget.appBarBottom,
-
-            expandedHeight: 0, // No expanded content
-            collapsedHeight: 30,
-            toolbarHeight: 30,
-            leading: widget.leading ?? const Icon(Icons.abc),
-            shadowColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-
-            actions: [
-              ...(widget.actions ?? <Widget>[]),
-              if (widget.popupMenuItems != null &&
-                  widget.popupMenuItems!.isNotEmpty)
-                PopupMenuButton<CLMenuItem>(
-                  onSelected: (CLMenuItem item) {
-                    item.onTap?.call();
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return <PopupMenuEntry<CLMenuItem>>[
-                      for (final item in widget.popupMenuItems!) ...[
-                        PopupMenuItem<CLMenuItem>(
-                          value: item,
-                          child: ListTile(
-                            leading: Icon(item.icon),
-                            title: Text(item.title),
-                          ),
+      appBar: AppBar(
+        title: widget.title == null ? null : Text(widget.title!),
+        bottom: widget.appBarBottom,
+        toolbarHeight: kMinInteractiveDimension,
+        leading: widget.leading,
+        /* shadowColor: _isAppBarExpanded ? null : Colors.transparent,
+        surfaceTintColor: _isAppBarExpanded ? null : Colors.transparent,
+        backgroundColor: _isAppBarExpanded ? null : Colors.transparent, */
+        automaticallyImplyLeading: false,
+        actions: [
+          ...(widget.actions ?? <Widget>[]).map(
+            (e) => Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: e,
+            ),
+          ),
+          if (widget.popupMenuItems != null &&
+              widget.popupMenuItems!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(right: 32),
+              child: PopupMenuButton<CLMenuItem>(
+                onSelected: (CLMenuItem item) {
+                  item.onTap?.call();
+                },
+                itemBuilder: (BuildContext context) {
+                  return <PopupMenuEntry<CLMenuItem>>[
+                    for (final item in widget.popupMenuItems!) ...[
+                      PopupMenuItem<CLMenuItem>(
+                        value: item,
+                        child: ListTile(
+                          leading: Icon(item.icon),
+                          title: Text(item.title),
                         ),
-                      ],
-                    ];
-                  },
-                  child: const Icon(Icons.more_vert),
-                ),
-            ],
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              ...widget.children,
-            ]),
-          ),
-          SliverFillRemaining(
-            child: widget.child,
-          ),
+                      ),
+                    ],
+                  ];
+                },
+                child: const Icon(Icons.more_vert),
+              ),
+            ),
         ],
       ),
-    );
-  }
-}
+      body: Column(
+        children: [
+          ...widget.children,
+          Expanded(child: widget.child),
+        ],
+      )
+      /* NotificationListener<ScrollNotification>(
+        onNotification: (scrollNotification) {
+          if (scrollNotification is ScrollUpdateNotification) {
+            setState(() {
+              final isExpanded =
+                  scrollNotification.metrics.axis == Axis.vertical &&
+                      scrollNotification.metrics.extentBefore == 0;
+              if (isExpanded != _isAppBarExpanded) {
+                setState(() {
+                  _isAppBarExpanded = isExpanded;
+                });
+              }
+            });
+          }
+          return false;
+        },
+        child: CustomScrollView(
+          // physics: const ClampingScrollPhysics(),
+          controller: _scrollController,
+          slivers: [
+            //...widget.children.map((e) => SliverToBoxAdapter(child: e))
+            SliverList(
+              delegate: SliverChildListDelegate([
+                ...widget.children,
+              ]),
+            ),
 
-class LeadingIcon extends ConsumerWidget {
-  const LeadingIcon({required this.menuItem, super.key});
-  final CLMenuItem menuItem;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final activeCollection = ref.watch(activeCollectionProvider);
-    if (activeCollection == null) {
-      return const SizedBox.shrink();
-    }
-    return CLButtonIcon.standard(
-      menuItem.icon,
-      onTap: () {
-        ref.read(activeCollectionProvider.notifier).state = null;
-      },
+            SliverFillRemaining(
+              child: widget.child,
+            ),
+          ],
+        ),
+      ) */
+      ,
     );
   }
 }

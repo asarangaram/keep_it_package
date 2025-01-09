@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
+import '../appbar_icons.dart';
 import '../collection_editor.dart';
 
 class CollectionAsFolder extends ConsumerWidget {
@@ -111,7 +112,8 @@ class CollectionAsFolder extends ConsumerWidget {
   }
 
   Future<bool> onTap(BuildContext context, WidgetRef ref) async {
-    await PageManager.of(context, ref).openCollection(collection.id!);
+    //await PageManager.of(context, ref).openCollection(collection.id!);
+    ref.read(activeCollectionProvider.notifier).state = collection.id;
     return true;
   }
 
