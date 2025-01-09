@@ -13,7 +13,10 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const topWidget = SearchOptions();
+    const topWidget = Padding(
+      padding: EdgeInsets.only(bottom: 8),
+      child: SearchOptions(),
+    );
     final collectionId = ref.watch(activeCollectionProvider);
     final emptyState = EmptyState(
       menuItems: [
@@ -48,18 +51,30 @@ class MainPage extends ConsumerWidget {
       ),
     );
 
-    if (collectionId == null) {
-      return CollectionsPage(
-        topWidget: topWidget,
-        emptyState: emptyState,
-      );
-    } else {
-      return CollectionTimeLinePage(
-        collectionId: collectionId,
-        topWidget: topWidget,
-        emptyState: emptyState,
-      );
-    }
+    return Scaffold(
+      body: Column(
+        children: [
+          topWidget,
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              switchInCurve: Curves.easeInOut,
+              switchOutCurve: Curves.easeInOut,
+              transitionBuilder: (Widget child, Animation<double> animation) =>
+                  FadeTransition(opacity: animation, child: child),
+              child: (collectionId == null)
+                  ? CollectionsPage(
+                      emptyState: emptyState,
+                    )
+                  : CollectionTimeLinePage(
+                      collectionId: collectionId,
+                      emptyState: emptyState,
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -95,7 +110,7 @@ class CollectionsPage extends ConsumerWidget {
               columns: 3,
               galleryMap: galleryGroups,
               emptyState: emptyState,
-              topWidget: const SearchOptions(),
+              topWidget: topWidget,
               itemBuilder: (context, item) => CollectionAsFolder(
                 collection: item,
               ),
