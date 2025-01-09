@@ -17,7 +17,6 @@ typedef ItemBuilder<T> = Widget Function(BuildContext context, T item);
 
 class CLSimpleGalleryView<T> extends StatefulWidget {
   const CLSimpleGalleryView({
-    required this.title,
     required this.identifier,
     required this.galleryMap,
     required this.emptyState,
@@ -25,6 +24,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     required this.columns,
     required this.backButton,
     required this.actions,
+    this.title,
     super.key,
     this.onRefresh,
     this.selectionActions,
@@ -33,7 +33,7 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
     this.popupActionItems = const [],
   });
 
-  final String title;
+  final String? title;
 
   final List<GalleryGroup<T>> galleryMap;
   final int columns;
