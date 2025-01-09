@@ -35,7 +35,7 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const CollectionsPage(),
+          builder: (context, parameters) => const MainPage(),
         ),
         CLRouteDescriptor(
           name: 'Pinned',
@@ -151,14 +151,14 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'collections',
-          builder: (context, parameters) => const CollectionsPage(),
+          builder: (context, parameters) => const MainPage(),
         ),
-        CLRouteDescriptor(
+        /* CLRouteDescriptor(
           name: 'items_by_collection',
           builder: (context, parameters) => CollectionTimeLinePage(
             collectionId: int.parse(parameters['id']!),
           ),
-        ),
+        ), */
       ];
 
   @override

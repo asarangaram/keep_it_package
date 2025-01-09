@@ -4,10 +4,73 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../navigation/providers/active_collection.dart';
 import '../widgets/folders_and_files/collection_as_folder.dart';
+import 'collection_timeline_page.dart';
+
+class MainPage extends ConsumerWidget {
+  const MainPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const topWidget = SearchOptions();
+    final collectionId = ref.watch(activeCollectionProvider);
+    final emptyState = EmptyState(
+      menuItems: [
+        if (collectionId != null)
+          CLMenuItem(
+            title: 'Reset',
+            icon: clIcons.navigateHome,
+            onTap: () async {
+              ref.read(activeCollectionProvider.notifier).state = null;
+              return true;
+            },
+          ),
+        // add takeonline icon here if not online
+      ],
+      message: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CLText.large('Empty'),
+            /* if (!isAllAvailable)  */ ...[
+              SizedBox(
+                height: 32,
+              ),
+              CLText.standard(
+                'Go Online to view collections '
+                'in the server',
+                color: Colors.grey,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    if (collectionId == null) {
+      return CollectionsPage(
+        topWidget: topWidget,
+        emptyState: emptyState,
+      );
+    } else {
+      return CollectionTimeLinePage(
+        collectionId: collectionId,
+        topWidget: topWidget,
+        emptyState: emptyState,
+      );
+    }
+  }
+}
 
 class CollectionsPage extends ConsumerWidget {
-  const CollectionsPage({super.key});
+  const CollectionsPage({
+    required this.emptyState,
+    this.topWidget,
+    super.key,
+  });
+  final Widget? topWidget;
+  final Widget emptyState;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,26 +94,7 @@ class CollectionsPage extends ConsumerWidget {
               backButton: null,
               columns: 3,
               galleryMap: galleryGroups,
-              emptyState: EmptyState(
-                message: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CLText.large('Empty'),
-                      if (!isAllAvailable) ...[
-                        const SizedBox(
-                          height: 32,
-                        ),
-                        const CLText.standard(
-                          'Go Online to view collections '
-                          'in the server',
-                          color: Colors.grey,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
+              emptyState: emptyState,
               topWidget: const SearchOptions(),
               itemBuilder: (context, item) => CollectionAsFolder(
                 collection: item,

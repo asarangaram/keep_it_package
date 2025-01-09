@@ -4,6 +4,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/navigation/providers/active_collection.dart';
 
 import 'package:store/store.dart';
 
@@ -111,7 +112,8 @@ class CollectionAsFolder extends ConsumerWidget {
   }
 
   Future<bool> onTap(BuildContext context, WidgetRef ref) async {
-    await PageManager.of(context, ref).openCollection(collection.id!);
+    //await PageManager.of(context, ref).openCollection(collection.id!);
+    ref.read(activeCollectionProvider.notifier).state = collection.id;
     return true;
   }
 

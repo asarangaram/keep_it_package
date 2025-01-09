@@ -7,27 +7,34 @@ import 'page_manager.dart';
 class BasicPageService extends ConsumerWidget {
   const BasicPageService._({
     required this.message,
-    required this.navBar,
+    required this.menuItems,
     super.key,
   });
   // Use with Page
-  factory BasicPageService.withNavBar({required dynamic message}) {
+  factory BasicPageService.withNavBar({
+    required dynamic message,
+    List<CLMenuItem>? menuItems,
+  }) {
     return BasicPageService._(
       message: message,
-      navBar: true,
+      menuItems: menuItems,
       key: ValueKey('$message ${true}'),
     );
   }
   // Use as Widget
-  factory BasicPageService.message({required dynamic message}) {
+  factory BasicPageService.message({
+    required dynamic message,
+    List<CLMenuItem>? menuItems,
+  }) {
     return BasicPageService._(
       message: message,
-      navBar: false,
+      menuItems: menuItems,
       key: ValueKey('$message ${false}'),
     );
   }
   final dynamic message;
-  final bool navBar;
+
+  final List<CLMenuItem>? menuItems;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
@@ -52,17 +59,27 @@ class BasicPageService extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (PageManager.of(context, ref).canPop())
+                  if (menuItems != null)
+                    ...menuItems!.map((e) {
+                      return CLButtonIcon.large(
+                        e.icon,
+                        color: Theme.of(context).colorScheme.primary,
+                        onTap: e.onTap,
+                      );
+                    })
+                  else ...[
+                    if (PageManager.of(context, ref).canPop())
+                      CLButtonIcon.large(
+                        clIcons.pagePop,
+                        color: Theme.of(context).colorScheme.primary,
+                        onTap: PageManager.of(context, ref).pop,
+                      ),
                     CLButtonIcon.large(
-                      clIcons.pagePop,
+                      clIcons.navigateHome,
                       color: Theme.of(context).colorScheme.primary,
-                      onTap: PageManager.of(context, ref).pop,
+                      onTap: () => PageManager.of(context, ref).home(),
                     ),
-                  CLButtonIcon.large(
-                    clIcons.navigateHome,
-                    color: Theme.of(context).colorScheme.primary,
-                    onTap: () => PageManager.of(context, ref).home(),
-                  ),
+                  ],
                 ].map((e) => Expanded(child: Center(child: e))).toList(),
               ),
             ),

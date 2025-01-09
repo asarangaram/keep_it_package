@@ -5,6 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/navigation/providers/active_collection.dart';
 
 import 'package:store/store.dart';
 
@@ -29,10 +30,14 @@ void _log(
 class CollectionTimeLinePage extends ConsumerWidget {
   const CollectionTimeLinePage({
     required this.collectionId,
+    required this.emptyState,
+    this.topWidget,
     super.key,
   });
 
   final int collectionId;
+  final Widget? topWidget;
+  final Widget emptyState;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => GetCollection(
@@ -52,6 +57,7 @@ class CollectionTimeLinePage extends ConsumerWidget {
                 collection: collection,
                 parentIdentifier:
                     'Gallery View Media CollectionId: ${collection?.id}',
+                emptyState: emptyState,
               );
             },
           );
@@ -65,8 +71,10 @@ class TimelineView extends ConsumerWidget {
     required this.parentIdentifier,
     required this.items,
     required this.collection,
+    required this.emptyState,
     super.key,
   });
+  final Widget emptyState;
 
   final String label;
   final String parentIdentifier;
@@ -81,19 +89,18 @@ class TimelineView extends ConsumerWidget {
         return MediaGalleryView(
           key: ValueKey(label),
           title: label,
-          backButton: ColanPlatformSupport.isMobilePlatform
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: CLButtonIcon.small(
-                    clIcons.pagePop,
-                    onTap: () => PageManager.of(context, ref).pop(),
-                  ),
-                ),
+          backButton: Padding(
+            padding: EdgeInsets.zero,
+            child: CLButtonIcon.small(
+              clIcons.pagePop,
+              onTap: () =>
+                  ref.read(activeCollectionProvider.notifier).state = null,
+            ),
+          ),
           identifier: parentIdentifier,
           columns: 4,
           medias: items,
-          emptyState: const EmptyState(),
+          emptyState: emptyState,
           topWidget: const SearchOptions(),
           itemBuilder: (context, item) => MediaAsFile(
             media: item,
