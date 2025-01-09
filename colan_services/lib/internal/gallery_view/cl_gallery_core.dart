@@ -1,7 +1,6 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../../basics/cl_text.dart';
-import 'model/gallery_group.dart';
 import 'selection/selectable_item.dart';
 import 'selection/selectable_label.dart';
 import 'selection/selection_count.dart';

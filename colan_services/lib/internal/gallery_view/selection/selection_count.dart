@@ -1,7 +1,5 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
-import '../../../basics/cl_text.dart';
-import '../model/gallery_group.dart';
 
 class SelectionCount extends StatelessWidget {
   const SelectionCount(this.selectionMap, {super.key, this.onSelectAll});

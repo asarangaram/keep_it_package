@@ -25,3 +25,7 @@ export 'services/notification_services/provider/notify.dart'
     show notificationMessageProvider;
 export 'services/quick_menu_service/collection_menu.dart' show CollectionMenu;
 export 'services/quick_menu_service/media_menu.dart' show MediaMenu;
+
+// ignore: directives_ordering
+/// This must go
+export 'internal/gallery_view/cl_simple_gallery_view.dart';

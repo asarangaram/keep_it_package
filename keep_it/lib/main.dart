@@ -13,8 +13,6 @@ import 'package:fvp/fvp.dart' as fvp;
 import 'package:window_size/window_size.dart';
 
 import 'pages/camera_page.dart';
-import 'pages/collection_timeline_page.dart';
-import 'pages/collections_page.dart';
 import 'pages/main_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';

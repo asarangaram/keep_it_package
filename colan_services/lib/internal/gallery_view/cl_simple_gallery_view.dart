@@ -1,17 +1,11 @@
-import 'package:colan_widgets/src/extensions/ext_cl_menu_item.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../basics/cl_button.dart';
-import '../../basics/cl_refresh_indicator.dart';
-import '../../models/cl_menu_item.dart';
-
-import '../appearance/keep_it_main_view.dart';
 import '../draggable/draggable_menu.dart';
 import '../draggable/menu.dart';
 import '../draggable/menu_control.dart';
 import 'cl_gallery_core.dart';
-import 'model/gallery_group.dart';
 
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T item);
 

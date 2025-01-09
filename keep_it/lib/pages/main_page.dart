@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../navigation/providers/active_collection.dart';
 import '../navigation/providers/selection_mode.dart';
-import '../widgets/folders_and_files/collection_as_folder.dart';
 import 'collection_timeline_page.dart';
 import 'collections_page.dart';
 

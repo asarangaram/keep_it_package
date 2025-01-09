@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../../internal/gallery_view/cl_gallery_core.dart';
 import '../../basic_page_service/page_manager.dart';
 import '../../media_view_service/media_view_service.dart';
 

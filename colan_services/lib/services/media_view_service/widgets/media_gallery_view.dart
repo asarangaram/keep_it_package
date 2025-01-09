@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../../internal/gallery_view/cl_simple_gallery_view.dart';
 import '../providers/group_view.dart';
 
 class MediaGalleryView extends ConsumerWidget {
