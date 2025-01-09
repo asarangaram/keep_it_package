@@ -83,14 +83,17 @@ class TimelineView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final galleryMap = ref.watch(groupedItemsProvider(items.entries));
+    if (galleryMap.isEmpty) {
+      return emptyState;
+    }
     return GetStoreUpdater(
       builder: (theStore) {
-        return MediaGalleryView(
+        return CLSimpleGalleryView(
           key: ValueKey(label),
           identifier: parentIdentifier,
           columns: 4,
-          medias: items,
-          emptyState: emptyState,
+          galleryMap: galleryMap,
           itemBuilder: (context, item) => MediaAsFile(
             media: item,
             parentIdentifier: parentIdentifier,
@@ -103,7 +106,6 @@ class TimelineView extends ConsumerWidget {
               return true;
             },
           ),
-          onRefresh: () async => theStore.store.reloadStore(),
           selectionActions: (context, items) {
             return [
               CLMenuItem(

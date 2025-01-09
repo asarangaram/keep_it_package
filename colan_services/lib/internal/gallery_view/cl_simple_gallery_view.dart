@@ -13,24 +13,18 @@ class CLSimpleGalleryView<T> extends StatefulWidget {
   const CLSimpleGalleryView({
     required this.identifier,
     required this.galleryMap,
-    required this.emptyState,
     required this.itemBuilder,
     required this.columns,
-    required this.actions,
     super.key,
     this.selectionActions,
   });
-
   final List<GalleryGroup<T>> galleryMap;
   final int columns;
-
-  final Widget emptyState;
   final String identifier;
-  final List<Widget> actions;
+  final ItemBuilder<T> itemBuilder;
 
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
       selectionActions;
-  final ItemBuilder<T> itemBuilder;
 
   @override
   State<CLSimpleGalleryView<T>> createState() => _CLSimpleGalleryViewState<T>();
@@ -43,7 +37,7 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
   @override
   Widget build(BuildContext context) {
     if (widget.galleryMap.isEmpty) {
-      return widget.emptyState;
+      throw Exception("galleryMap can't be empty");
     } else {
       return ProviderScope(
         overrides: [

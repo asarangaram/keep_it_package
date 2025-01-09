@@ -1,4 +1,3 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
+import '../basic_page_service/dialogs.dart';
+import '../basic_page_service/page_manager.dart';
+import '../incoming_media_service/models/cl_shared_media.dart';
 import '../media_view_service/providers/group_view.dart';
 
+import '../notification_services/provider/notify.dart';
 import 'providers/universal_media.dart';
 import 'recycle_bin_service.dart';
 import 'views/create_collection_wizard.dart';

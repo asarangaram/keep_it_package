@@ -30,17 +30,17 @@ class CollectionsPage extends ConsumerWidget {
             required isAllAvailable,
           }) {
             const identifier = 'FolderView Collections';
-
+            if (galleryGroups.isEmpty) {
+              return emptyState;
+            }
             return CLSimpleGalleryView(
               key: const ValueKey(identifier),
               columns: 3,
               galleryMap: galleryGroups,
-              emptyState: emptyState,
               itemBuilder: (context, item) => CollectionAsFolder(
                 collection: item,
               ),
               identifier: identifier,
-              actions: const [],
             );
           },
         );
