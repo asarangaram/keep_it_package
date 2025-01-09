@@ -88,15 +88,6 @@ class TimelineView extends ConsumerWidget {
       builder: (theStore) {
         return MediaGalleryView(
           key: ValueKey(label),
-          title: label,
-          backButton: Padding(
-            padding: EdgeInsets.zero,
-            child: CLButtonIcon.small(
-              clIcons.pagePop,
-              onTap: () =>
-                  ref.read(activeCollectionProvider.notifier).state = null,
-            ),
-          ),
           identifier: parentIdentifier,
           columns: 4,
           medias: items,
@@ -113,49 +104,6 @@ class TimelineView extends ConsumerWidget {
               return true;
             },
           ),
-          actions: [
-            const SearchIcon(),
-            ...[
-              CLMenuItem(
-                title: 'Select File',
-                icon: clIcons.insertItem,
-                onTap: () async {
-                  await IncomingMediaMonitor.onPickFiles(
-                    context,
-                    ref,
-                    collection: collection,
-                  );
-                  return true;
-                },
-              ),
-              if (ColanPlatformSupport.cameraSupported)
-                CLMenuItem(
-                  title: 'Open Camera',
-                  icon: clIcons.invokeCamera,
-                  onTap: () async {
-                    await PageManager.of(context, ref).openCamera(
-                      collectionId: collection?.id,
-                    );
-                    return true;
-                  },
-                ),
-            ].map(
-              (e) => CLButtonIcon.small(
-                e.icon,
-                onTap: e.onTap,
-              ),
-            ),
-          ],
-          popupActionItems: [
-            CLMenuItem(
-              title: 'Settings',
-              icon: clIcons.navigateSettings,
-              onTap: () async {
-                await PageManager.of(context, ref).openSettings();
-                return true;
-              },
-            ),
-          ],
           onRefresh: () async => theStore.store.reloadStore(),
           selectionActions: (context, items) {
             return [

@@ -23,8 +23,6 @@ class PinnedMediaPage extends ConsumerWidget {
                 Expanded(
                   child: MediaGalleryView(
                     key: const ValueKey(label),
-                    title: 'Pinned Media',
-                    backButton: null,
                     itemBuilder: (context, item) => Padding(
                       padding: const EdgeInsets.all(4),
                       child: GestureDetector(
@@ -51,7 +49,6 @@ class PinnedMediaPage extends ConsumerWidget {
                     identifier: 'Pinned Media',
                     columns: 2,
                     onRefresh: () async => theStore.store.reloadStore(),
-                    actions: const [],
                     selectionActions: (context, items) {
                       return [
                         CLMenuItem(

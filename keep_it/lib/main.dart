@@ -15,6 +15,7 @@ import 'package:window_size/window_size.dart';
 import 'pages/camera_page.dart';
 import 'pages/collection_timeline_page.dart';
 import 'pages/collections_page.dart';
+import 'pages/main_page.dart';
 import 'pages/media_editor_page.dart';
 import 'pages/media_pageview_page.dart';
 import 'pages/media_wizard_page.dart';
@@ -35,7 +36,7 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const MainPage(),
+          builder: (context, parameters) => const MainViewPage(),
         ),
         CLRouteDescriptor(
           name: 'Pinned',
@@ -151,7 +152,7 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'collections',
-          builder: (context, parameters) => const MainPage(),
+          builder: (context, parameters) => const MainViewPage(),
         ),
         /* CLRouteDescriptor(
           name: 'items_by_collection',
