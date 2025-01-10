@@ -19,7 +19,7 @@ class AppTheme extends ConsumerWidget {
               shadowColor: Colors.transparent,
               backgroundColor: Colors.transparent,
               surfaceTintColor: Colors.transparent,
-              centerTitle: true,
+              centerTitle: false,
             ),
         /* inputDecorationTheme: InputDecorationTheme(
           floatingLabelBehavior: FloatingLabelBehavior.always,

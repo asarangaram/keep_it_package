@@ -229,4 +229,9 @@ class Collection implements CLEntity {
 
   @override
   int? get entityId => id;
+
+  @override
+  DateTime? get entityOriginalDate => null;
+  @override
+  DateTime get entityCreatedDate => createdDate;
 }

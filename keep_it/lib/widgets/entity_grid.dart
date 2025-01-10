@@ -25,35 +25,38 @@ class EntityGrid extends ConsumerWidget {
         Animation<double> animation,
       ) =>
           FadeTransition(opacity: animation, child: child),
-      child: entities.isEmpty
-          ? const WhenEmpty()
-          : CLEntityGridView(
-              identifier: identifier,
-              items: entities,
-              itemBuilder: (context, item) => switch (item.runtimeType) {
-                Collection => CollectionAsFolder(
-                    collection: item as Collection,
-                    onTap: () {
-                      ref.read(activeCollectionProvider.notifier).state =
-                          item.id;
-                    },
-                  ),
-                CLMedia => MediaAsFile(
-                    media: item as CLMedia,
-                    parentIdentifier: identifier,
-                    onTap: () async {
-                      await PageManager.of(context, ref).openMedia(
-                        item.id!,
-                        collectionId: item.collectionId,
-                        parentIdentifier: identifier,
-                      );
-                      return true;
-                    },
-                  ),
-                _ => throw UnimplementedError(),
-              },
-              columns: 4,
-            ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: entities.isEmpty
+            ? const WhenEmpty()
+            : CLEntityGridView(
+                identifier: identifier,
+                items: entities,
+                itemBuilder: (context, item) => switch (item.runtimeType) {
+                  Collection => CollectionAsFolder(
+                      collection: item as Collection,
+                      onTap: () {
+                        ref.read(activeCollectionProvider.notifier).state =
+                            item.id;
+                      },
+                    ),
+                  CLMedia => MediaAsFile(
+                      media: item as CLMedia,
+                      parentIdentifier: identifier,
+                      onTap: () async {
+                        await PageManager.of(context, ref).openMedia(
+                          item.id!,
+                          collectionId: item.collectionId,
+                          parentIdentifier: identifier,
+                        );
+                        return true;
+                      },
+                    ),
+                  _ => throw UnimplementedError(),
+                },
+                columns: 4,
+              ),
+      ),
     );
   }
 }
@@ -87,9 +90,44 @@ class CLEntityGridView extends ConsumerWidget {
     return galleryGroups;
   }
 
+  List<GalleryGroupCLEntity<CLEntity>> groupByTime(List<CLEntity> entities) {
+    final galleryGroups = <GalleryGroupCLEntity<CLEntity>>[];
+
+    if (entities.first.runtimeType == Collection) {
+      return group(entities);
+    }
+
+    for (final entry in entities.filterByDate().entries) {
+      if (entry.value.length > 20) {
+        final groups = entry.value.convertTo2D(20);
+
+        for (final (index, group) in groups.indexed) {
+          galleryGroups.add(
+            GalleryGroupCLEntity(
+              group,
+              label: (index == 0) ? entry.key : null,
+              groupIdentifier: entry.key,
+              chunkIdentifier: '${entry.key} $index',
+            ),
+          );
+        }
+      } else {
+        galleryGroups.add(
+          GalleryGroupCLEntity(
+            entry.value,
+            label: entry.key,
+            groupIdentifier: entry.key,
+            chunkIdentifier: entry.key,
+          ),
+        );
+      }
+    }
+    return galleryGroups;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final galleryMap = group(items);
+    final galleryMap = groupByTime(items);
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: galleryMap.length,

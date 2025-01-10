@@ -480,4 +480,9 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   int? get entityId => id;
+
+  @override
+  DateTime? get entityOriginalDate => originalDate;
+  @override
+  DateTime get entityCreatedDate => createdDate;
 }

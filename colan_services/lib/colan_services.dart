@@ -1,3 +1,9 @@
+export 'internal/extensions/list.dart' show Filter;
+
+/// This must go
+export 'internal/gallery_view/cl_simple_gallery_view.dart';
+export 'internal/gallery_view/providers/selector.dart';
+export 'internal/gallery_view/widgets/cl_grid.dart';
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
 export 'services/basic_page_service/dialogs.dart';
@@ -15,6 +21,7 @@ export 'services/media_view_service/collection_view.dart' show CollectionView;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_view_service/models/action_control.dart';
+export 'services/media_view_service/providers/group_view.dart';
 export 'services/media_view_service/widgets/media_gallery_view.dart';
 export 'services/media_view_service/widgets/stale_media_indicator.dart';
 export 'services/media_wizard_service/media_wizard_service.dart';
@@ -25,10 +32,3 @@ export 'services/notification_services/provider/notify.dart'
     show notificationMessageProvider;
 export 'services/quick_menu_service/collection_menu.dart' show CollectionMenu;
 export 'services/quick_menu_service/media_menu.dart' show MediaMenu;
-
-// ignore: directives_ordering
-/// This must go
-export 'internal/gallery_view/cl_simple_gallery_view.dart';
-export 'internal/gallery_view/providers/selector.dart';
-export 'internal/gallery_view/widgets/cl_grid.dart';
-export 'services/media_view_service/providers/group_view.dart';
