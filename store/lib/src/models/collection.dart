@@ -226,4 +226,7 @@ class Collection implements CLEntity {
 
   @override
   bool get isMarkedForUpload => serverUID == -1;
+
+  @override
+  int? get entityId => id;
 }

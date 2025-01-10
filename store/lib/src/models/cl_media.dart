@@ -477,4 +477,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
   // by collection. [caution]
   @override
   bool get isMarkedForUpload => serverUID == null;
+
+  @override
+  int? get entityId => id;
 }

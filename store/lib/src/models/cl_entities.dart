@@ -7,4 +7,5 @@ abstract class CLEntity {
 
   bool get hasServerUID;
   bool isChangedAfter(CLEntity other);
+  int? get entityId;
 }
