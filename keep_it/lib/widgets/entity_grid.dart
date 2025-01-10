@@ -3,8 +3,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/when_empty.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
 
+import '../builders/grouper.dart';
 import '../navigation/providers/active_collection.dart';
 import 'folders_and_files/collection_as_folder.dart';
 import 'folders_and_files/media_as_file.dart';
@@ -74,83 +76,37 @@ class CLEntityGridView extends ConsumerWidget {
   final ItemBuilder itemBuilder;
   final int columns;
 
-  List<GalleryGroupCLEntity<CLEntity>> group(List<CLEntity> entities) {
-    final galleryGroups = <GalleryGroupCLEntity<CLEntity>>[];
-
-    for (final rows in entities.convertTo2D(columns)) {
-      galleryGroups.add(
-        GalleryGroupCLEntity(
-          rows,
-          label: null,
-          groupIdentifier: 'Collections',
-          chunkIdentifier: 'Collections',
-        ),
-      );
-    }
-    return galleryGroups;
-  }
-
-  List<GalleryGroupCLEntity<CLEntity>> groupByTime(List<CLEntity> entities) {
-    final galleryGroups = <GalleryGroupCLEntity<CLEntity>>[];
-
-    if (entities.first.runtimeType == Collection) {
-      return group(entities);
-    }
-
-    for (final entry in entities.filterByDate().entries) {
-      if (entry.value.length > 20) {
-        final groups = entry.value.convertTo2D(20);
-
-        for (final (index, group) in groups.indexed) {
-          galleryGroups.add(
-            GalleryGroupCLEntity(
-              group,
-              label: (index == 0) ? entry.key : null,
-              groupIdentifier: entry.key,
-              chunkIdentifier: '${entry.key} $index',
-            ),
-          );
-        }
-      } else {
-        galleryGroups.add(
-          GalleryGroupCLEntity(
-            entry.value,
-            label: entry.key,
-            groupIdentifier: entry.key,
-            chunkIdentifier: entry.key,
-          ),
-        );
-      }
-    }
-    return galleryGroups;
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final galleryMap = groupByTime(items);
-    return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: galleryMap.length,
-      itemBuilder: (BuildContext context, int groupIndex) {
-        final gallery = galleryMap[groupIndex];
-        final labelWidget = gallery.label == null
-            ? null
-            : CLText.large(
-                gallery.label!,
-                textAlign: TextAlign.start,
-              );
-        return CLGrid<CLEntity>(
-          itemCount: gallery.items.length,
-          columns: columns,
-          itemBuilder: (context, itemIndex) {
-            final itemWidget = itemBuilder(
-              context,
-              gallery.items[itemIndex],
-            );
+    return EntityGrouper(
+      incoming: items,
+      columns: columns,
+      builder: (galleryMap) {
+        return ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: galleryMap.length,
+          itemBuilder: (BuildContext context, int groupIndex) {
+            final gallery = galleryMap[groupIndex];
+            final labelWidget = gallery.label == null
+                ? null
+                : CLText.large(
+                    gallery.label!,
+                    textAlign: TextAlign.start,
+                  );
+            return CLGrid<CLEntity>(
+              itemCount: gallery.items.length,
+              columns: columns,
+              itemBuilder: (context, itemIndex) {
+                final itemWidget = itemBuilder(
+                  context,
+                  gallery.items[itemIndex],
+                );
 
-            return itemWidget;
+                return itemWidget;
+              },
+              header: gallery.label == null ? null : labelWidget,
+            );
           },
-          header: gallery.label == null ? null : labelWidget,
         );
       },
     );

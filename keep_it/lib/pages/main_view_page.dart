@@ -3,8 +3,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../builders/get_main_view_entities.dart';
+import '../builders/grouper.dart';
 import '../widgets/action_icons.dart';
 
 import '../widgets/entity_grid.dart';
@@ -16,6 +18,7 @@ class MainViewPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const on = true;
     Widget errorBuilder(Object e, StackTrace st) =>
         ErrorView(error: e, stackTrace: st);
     const Widget loadingWidget = LoadingView();
@@ -26,6 +29,7 @@ class MainViewPage extends ConsumerWidget {
           leading: const MainViewLeading(),
           automaticallyImplyLeading: false,
           actions: [
+            const GroupAction(),
             const SelectControlIcon(),
             const SearchIcon(),
             const FileSelectAction(),
