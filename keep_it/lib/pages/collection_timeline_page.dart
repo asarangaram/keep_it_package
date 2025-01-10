@@ -1,7 +1,6 @@
 import 'dart:developer' as dev;
 
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,13 +49,12 @@ class CollectionTimeLinePage extends ConsumerWidget {
             loadingBuilder: null,
             builder: (items) {
               _log('Found ${items.entries.length} media here');
+              if (items.isEmpty) {
+                return emptyState;
+              }
               return TimelineView(
-                label: collection?.label ?? 'All Media',
+                parentIdentifier: 'Collection Gallery ${collection?.label}',
                 items: items,
-                collection: collection,
-                parentIdentifier:
-                    'Gallery View Media CollectionId: ${collection?.id}',
-                emptyState: emptyState,
               );
             },
           );
@@ -66,47 +64,41 @@ class CollectionTimeLinePage extends ConsumerWidget {
 
 class TimelineView extends ConsumerWidget {
   const TimelineView({
-    required this.label,
     required this.parentIdentifier,
     required this.items,
-    required this.collection,
-    required this.emptyState,
     super.key,
   });
-  final Widget emptyState;
 
-  final String label;
   final String parentIdentifier;
   final CLMedias items;
-
-  final Collection? collection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryMap = ref.watch(groupedItemsProvider(items.entries));
-    if (galleryMap.isEmpty) {
-      return emptyState;
-    }
-    return GetStoreUpdater(
-      builder: (theStore) {
-        return CLSimpleGalleryView(
-          key: ValueKey(label),
-          identifier: parentIdentifier,
-          columns: 4,
-          galleryMap: galleryMap,
-          itemBuilder: (context, item) => MediaAsFile(
-            media: item,
+
+    return CLSimpleGalleryView<CLMedia>(
+      identifier: parentIdentifier,
+      items: items.entries,
+      itemBuilder: (context, item) => MediaAsFile(
+        media: item as CLMedia,
+        parentIdentifier: parentIdentifier,
+        onTap: () async {
+          await PageManager.of(context, ref).openMedia(
+            item.id!,
+            collectionId: item.collectionId,
             parentIdentifier: parentIdentifier,
-            onTap: () async {
-              await PageManager.of(context, ref).openMedia(
-                item.id!,
-                collectionId: item.collectionId,
-                parentIdentifier: parentIdentifier,
-              );
-              return true;
-            },
-          ),
-          selectionActions: (context, items) {
+          );
+          return true;
+        },
+      ),
+      columns: 4,
+      galleryMap: galleryMap,
+    );
+  }
+}
+
+
+/* selectionActions: (context, items) {
             return [
               CLMenuItem(
                 title: 'Delete',
@@ -153,9 +145,4 @@ class TimelineView extends ConsumerWidget {
                   ),
                 ),
             ];
-          },
-        );
-      },
-    );
-  }
-}
+          }, */

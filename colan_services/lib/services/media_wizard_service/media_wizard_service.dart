@@ -105,7 +105,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
   final CLSharedMedia media;
   final UniversalMediaSource type;
 
-  final List<GalleryGroup<CLMedia>> galleryMap;
+  final List<GalleryGroupCLEntity<CLMedia>> galleryMap;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();

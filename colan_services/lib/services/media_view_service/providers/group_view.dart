@@ -5,16 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 final groupedItemsProvider =
-    StateProvider.family<List<GalleryGroup<CLMedia>>, List<CLMedia>>(
+    StateProvider.family<List<GalleryGroupCLEntity<CLMedia>>, List<CLMedia>>(
         (ref, medias) {
-  final galleryGroups = <GalleryGroup<CLMedia>>[];
+  final galleryGroups = <GalleryGroupCLEntity<CLMedia>>[];
   for (final entry in medias.filterByDate().entries) {
     if (entry.value.length > 20) {
       final groups = entry.value.convertTo2D(20);
 
       for (final (index, group) in groups.indexed) {
         galleryGroups.add(
-          GalleryGroup(
+          GalleryGroupCLEntity(
             group,
             label: (index == 0) ? entry.key : null,
             groupIdentifier: entry.key,
@@ -24,7 +24,7 @@ final groupedItemsProvider =
       }
     } else {
       galleryGroups.add(
-        GalleryGroup(
+        GalleryGroupCLEntity(
           entry.value,
           label: entry.key,
           groupIdentifier: entry.key,

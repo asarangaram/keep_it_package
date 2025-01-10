@@ -2,6 +2,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../builders/showable_collections.dart';
 import '../widgets/folders_and_files/collection_as_folder.dart';
@@ -33,14 +34,14 @@ class CollectionsPage extends ConsumerWidget {
             if (galleryGroups.isEmpty) {
               return emptyState;
             }
-            return CLSimpleGalleryView(
-              key: const ValueKey(identifier),
+            return CLSimpleGalleryView<Collection>(
+              identifier: identifier,
+              items: collections.entries,
+              itemBuilder: (context, item) => CollectionAsFolder(
+                collection: item as Collection,
+              ),
               columns: 3,
               galleryMap: galleryGroups,
-              itemBuilder: (context, item) => CollectionAsFolder(
-                collection: item,
-              ),
-              identifier: identifier,
             );
           },
         );

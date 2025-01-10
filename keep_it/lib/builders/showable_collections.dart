@@ -14,7 +14,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
   });
   final Widget Function(
     Collections collections,
-    List<GalleryGroup<Collection>> galleryGroups, {
+    List<GalleryGroupCLEntity<Collection>> galleryGroups, {
     required bool isAllAvailable,
   }) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
@@ -44,11 +44,11 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
           visibleCollections = collections;
         }
 
-        final galleryGroups = <GalleryGroup<Collection>>[];
+        final galleryGroups = <GalleryGroupCLEntity<Collection>>[];
 
         for (final rows in visibleCollections.entries.convertTo2D(3)) {
           galleryGroups.add(
-            GalleryGroup(
+            GalleryGroupCLEntity(
               rows,
               label: null,
               groupIdentifier: 'Collections',

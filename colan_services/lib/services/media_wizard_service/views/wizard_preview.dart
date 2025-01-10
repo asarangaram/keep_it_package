@@ -49,8 +49,9 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     return GetDBReader(
       builder: (dbReader) {
         return CLGalleryCore<CLMedia>(
+          parentIdentifier: type.identifier,
           key: ValueKey(type.identifier),
-          items: galleryMap,
+          galleryMap: galleryMap,
           itemBuilder: (
             context,
             item,
@@ -88,7 +89,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             ),
           ),
           columns: 4,
-          onSelectionChanged: onSelectionChanged,
           keepSelected: freezeView,
         );
       },

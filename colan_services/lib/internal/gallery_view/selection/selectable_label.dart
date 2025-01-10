@@ -1,21 +1,22 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SelectableLabel extends StatelessWidget {
+import '../model/selector.dart';
+
+class SelectableLabel extends ConsumerWidget {
   const SelectableLabel({
     required this.child,
-    required this.selectionMap,
+    required this.selectionStatus,
     super.key,
     this.onSelect,
   });
   final Widget child;
-  final List<bool> selectionMap;
-  final void Function({required bool select})? onSelect;
+  final SelectionStatus selectionStatus;
+  final void Function()? onSelect;
 
   @override
-  Widget build(BuildContext context) {
-    final noneSelected = selectionMap.every((e) => e == false);
-    final partialSelected = selectionMap.any((e) => e == false);
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -29,13 +30,14 @@ class SelectableLabel extends StatelessWidget {
               horizontal: 8,
             ),
             child: GestureDetector(
-              onTap: () => onSelect?.call(select: noneSelected),
+              onTap: () => onSelect?.call(),
               child: CLIcon.small(
-                noneSelected
-                    ? clIcons.itemNotSelected
-                    : partialSelected
-                        ? clIcons.itemPartiallySelected
-                        : clIcons.itemSelected,
+                switch (selectionStatus) {
+                  SelectionStatus.selectedNone => clIcons.itemNotSelected,
+                  SelectionStatus.selectedPartial =>
+                    clIcons.itemPartiallySelected,
+                  SelectionStatus.selectedAll => clIcons.itemSelected,
+                },
               ),
             ),
           ),

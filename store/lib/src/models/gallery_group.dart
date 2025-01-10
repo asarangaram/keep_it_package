@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import 'cl_entities.dart';
+
 @immutable
 class GalleryGroup<T> {
   const GalleryGroup(
@@ -76,4 +78,36 @@ extension ExtListGalleryGroupMutableBool<bool>
     }
     return items;
   }
+}
+
+@immutable
+class GalleryGroupCLEntity<T extends CLEntity> {
+  const GalleryGroupCLEntity(
+    this.items, {
+    required this.chunkIdentifier,
+    required this.groupIdentifier,
+    required this.label,
+  });
+  final String chunkIdentifier;
+  final String groupIdentifier;
+  final String? label;
+  final List<T> items;
+
+  Set<int?> get getEntityIds => items.map((e) => e.entityId).toSet();
+}
+
+extension GalleryGroupCLEntityListQuery<T extends CLEntity>
+    on List<GalleryGroupCLEntity<T>> {
+  Set<int?> get getEntityIds => expand((item) => item.getEntityIds).toSet();
+  Set<T> get getEntities => expand((item) => item.items).toSet();
+
+  Set<int?> getEntityIdsByGroup(String groupIdentifier) =>
+      where((e) => e.groupIdentifier == groupIdentifier)
+          .expand((item) => item.getEntityIds)
+          .toSet();
+
+  Set<T> getEntitiesByGroup(String groupIdentifier) =>
+      where((e) => e.groupIdentifier == groupIdentifier)
+          .expand((item) => item.items)
+          .toSet();
 }

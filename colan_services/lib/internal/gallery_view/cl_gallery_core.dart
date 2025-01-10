@@ -1,22 +1,27 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import 'model/selector.dart';
+import 'providers/selector.dart';
 import 'selection/selectable_item.dart';
 import 'selection/selectable_label.dart';
 import 'selection/selection_count.dart';
 import 'widgets/cl_grid.dart';
 
-class CLGalleryCore<T> extends StatelessWidget {
+class CLGalleryCore<T extends CLEntity> extends ConsumerWidget {
   const CLGalleryCore({
-    required this.items,
+    required this.parentIdentifier,
+    required this.galleryMap,
     required this.itemBuilder,
     required this.columns,
-    required this.onSelectionChanged,
     required this.keepSelected,
     super.key,
   });
-  final List<GalleryGroup<T>> items;
+
+  final String parentIdentifier;
+  final List<GalleryGroupCLEntity<T>> galleryMap;
   final Widget Function(
     BuildContext context,
     T item,
@@ -25,38 +30,35 @@ class CLGalleryCore<T> extends StatelessWidget {
   final int columns;
   final bool keepSelected;
 
-  final void Function(List<T> items)? onSelectionChanged;
-
   @override
-  Widget build(BuildContext context) {
-    if (onSelectionChanged == null) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectMode = ref.watch(selectModeProvider(parentIdentifier));
+    if (!selectMode) {
       return CLGalleryCore0(
-        items: items,
+        items: galleryMap,
         itemBuilder: itemBuilder,
         columns: columns,
       );
     }
     return CLGalleryCore1(
-      items: items,
+      galleryMap: galleryMap,
       itemBuilder: itemBuilder,
       columns: columns,
-      onSelectionChanged: onSelectionChanged!,
       keepSelected: keepSelected,
     );
   }
 }
 
-class CLGalleryCore1<T> extends StatefulWidget {
+class CLGalleryCore1<T extends CLEntity> extends ConsumerStatefulWidget {
   const CLGalleryCore1({
-    required this.items,
+    required this.galleryMap,
     required this.itemBuilder,
     required this.columns,
-    required this.onSelectionChanged,
     required this.keepSelected,
     super.key,
   });
 
-  final List<GalleryGroup<T>> items;
+  final List<GalleryGroupCLEntity<T>> galleryMap;
   final Widget Function(
     BuildContext context,
     T item,
@@ -64,94 +66,35 @@ class CLGalleryCore1<T> extends StatefulWidget {
 
   final int columns;
 
-  final void Function(List<T> items) onSelectionChanged;
   final bool keepSelected;
 
   @override
-  State<CLGalleryCore1<T>> createState() => _CLGalleryCoreState1<T>();
+  ConsumerState<CLGalleryCore1<T>> createState() => _CLGalleryCoreState1<T>();
 }
 
-class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
-  late List<GalleryGroupMutable<bool>> selectionMap;
-
+class _CLGalleryCoreState1<T extends CLEntity>
+    extends ConsumerState<CLGalleryCore1<T>> {
   @override
   void initState() {
     super.initState();
   }
 
   @override
-  void didChangeDependencies() {
-    selectionMap = createBooleanList(widget.items);
-    super.didChangeDependencies();
-  }
-
-  List<GalleryGroupMutable<bool>> createBooleanList(
-    List<GalleryGroup<T>> originalList,
-  ) {
-    return originalList.map((galleryGroup) {
-      // Map the items list to a list of booleans (initialized to false)
-      final booleanItems = galleryGroup.items.map((item) => false).toList();
-      return GalleryGroupMutable<bool>(
-        booleanItems,
-        groupIdentifier: galleryGroup.groupIdentifier,
-        chunkIdentifier: galleryGroup.chunkIdentifier,
-      );
-    }).toList();
-  }
-
-  void toggleSelection(int groupIndex, int itemIndex) {
-    if (widget.keepSelected) return;
-    selectionMap[groupIndex].items[itemIndex] =
-        !selectionMap[groupIndex].items[itemIndex];
-    widget.onSelectionChanged.call(selectionMap.filterItems(widget.items));
-  }
-
-  void selectGroup(int groupIndex, {required bool select}) {
-    if (widget.keepSelected) return;
-    //final group = selectionMap[groupIndex];
-    final groupIdentifier = selectionMap[groupIndex].groupIdentifier;
-    final group = selectionMap.where(
-      (e) => e.groupIdentifier == groupIdentifier,
-    );
-
-    for (final chunk in group) {
-      for (var i = 0; i < chunk.items.length; i++) {
-        chunk.items[i] = select;
-      }
-    }
-    widget.onSelectionChanged.call(selectionMap.filterItems(widget.items));
-  }
-
-  void selectAll({required bool select}) {
-    if (widget.keepSelected) return;
-    for (var g = 0; g < selectionMap.length; g++) {
-      final group = selectionMap[g];
-
-      for (var i = 0; i < group.items.length; i++) {
-        group.items[i] = select;
-      }
-    }
-    widget.onSelectionChanged.call(selectionMap.filterItems(widget.items));
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final selector = ref.watch(selectorProvider);
+
     return Column(
       children: [
         SelectionCount(
-          selectionMap,
-          onSelectAll: ({required select}) {
-            selectAll(select: select);
-            setState(() {});
-          },
+          groupEntities: widget.galleryMap,
         ),
         Expanded(
           child: ListView.builder(
             //key: ValueKey(widget.galleryMap),
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: widget.items.length,
+            itemCount: widget.galleryMap.length,
             itemBuilder: (BuildContext context, int groupIndex) {
-              final gallery = widget.items[groupIndex];
+              final gallery = widget.galleryMap[groupIndex];
               final labelWidget = gallery.label == null
                   ? null
                   : CLText.large(
@@ -168,11 +111,13 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
                   );
 
                   return SelectableItem(
-                    isSelected: selectionMap[groupIndex].items[itemIndex],
+                    isSelected:
+                        selector.isSelected([gallery.items[itemIndex]]) !=
+                            SelectionStatus.selectedNone,
                     onTap: () {
-                      toggleSelection(groupIndex, itemIndex);
-
-                      setState(() {});
+                      ref
+                          .read(selectorProvider.notifier)
+                          .toggle([gallery.items[itemIndex]]);
                     },
                     child: itemWidget,
                   );
@@ -180,15 +125,19 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
                 header: gallery.label == null
                     ? null
                     : SelectableLabel(
-                        selectionMap: selectionMap[groupIndex].items,
-                        child: labelWidget ?? Container(),
-                        onSelect: ({required select}) {
-                          selectGroup(
-                            groupIndex,
-                            select: select,
-                          );
-                          setState(() {});
+                        selectionStatus: selector.isSelected(
+                          widget.galleryMap
+                              .getEntitiesByGroup(gallery.groupIdentifier)
+                              .toList(),
+                        ),
+                        onSelect: () {
+                          ref.read(selectorProvider.notifier).toggle(
+                                widget.galleryMap
+                                    .getEntitiesByGroup(gallery.groupIdentifier)
+                                    .toList(),
+                              );
                         },
+                        child: labelWidget ?? Container(),
                       ),
               );
             },
@@ -199,7 +148,7 @@ class _CLGalleryCoreState1<T> extends State<CLGalleryCore1<T>> {
   }
 }
 
-class CLGalleryCore0<T> extends StatelessWidget {
+class CLGalleryCore0<T extends CLEntity> extends StatelessWidget {
   const CLGalleryCore0({
     required this.items,
     required this.itemBuilder,
@@ -207,7 +156,7 @@ class CLGalleryCore0<T> extends StatelessWidget {
     super.key,
   });
 
-  final List<GalleryGroup<T>> items;
+  final List<GalleryGroupCLEntity<T>> items;
   final Widget Function(
     BuildContext context,
     T item,
