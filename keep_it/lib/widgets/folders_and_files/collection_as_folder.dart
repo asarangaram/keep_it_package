@@ -4,7 +4,6 @@ import 'package:colan_services/colan_services.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/navigation/providers/active_collection.dart';
 
 import 'package:store/store.dart';
 
@@ -13,9 +12,11 @@ import '../collection_editor.dart';
 class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({
     required this.collection,
+    required this.onTap,
     super.key,
   });
   final Collection collection;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +29,10 @@ class CollectionAsFolder extends ConsumerWidget {
                 collection: collection,
                 isSyncing: false,
                 child: CollectionView.preview(collection),
-                onTap: () async => onTap(context, ref),
+                onTap: () async {
+                  onTap();
+                  return true;
+                },
                 onEdit: () async => onEdit(context, ref, theStore),
                 onDelete: () async => onDelete(context, ref, theStore),
                 onUpload: () async {
@@ -109,12 +113,6 @@ class CollectionAsFolder extends ConsumerWidget {
         );
       },
     );
-  }
-
-  Future<bool> onTap(BuildContext context, WidgetRef ref) async {
-    //await PageManager.of(context, ref).openCollection(collection.id!);
-    ref.read(activeCollectionProvider.notifier).state = collection.id;
-    return true;
   }
 
   Future<bool> onEdit(

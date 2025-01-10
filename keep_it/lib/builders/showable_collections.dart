@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,8 +12,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     this.queries = DBQueries.collectionsVisibleNotDeleted,
   });
   final Widget Function(
-    Collections collections,
-    List<GalleryGroupCLEntity<Collection>> galleryGroups, {
+    Collections collections, {
     required bool isAllAvailable,
   }) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
@@ -44,21 +42,8 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
           visibleCollections = collections;
         }
 
-        final galleryGroups = <GalleryGroupCLEntity<Collection>>[];
-
-        for (final rows in visibleCollections.entries.convertTo2D(3)) {
-          galleryGroups.add(
-            GalleryGroupCLEntity(
-              rows,
-              label: null,
-              groupIdentifier: 'Collections',
-              chunkIdentifier: 'Collections',
-            ),
-          );
-        }
         return builder(
           collections,
-          galleryGroups,
           isAllAvailable:
               visibleCollections.entries.length == collections.entries.length,
         );

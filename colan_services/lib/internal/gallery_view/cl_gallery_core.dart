@@ -16,7 +16,6 @@ class CLGalleryCore<T extends CLEntity> extends ConsumerWidget {
     required this.galleryMap,
     required this.itemBuilder,
     required this.columns,
-    required this.keepSelected,
     super.key,
   });
 
@@ -28,7 +27,6 @@ class CLGalleryCore<T extends CLEntity> extends ConsumerWidget {
   ) itemBuilder;
 
   final int columns;
-  final bool keepSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +42,6 @@ class CLGalleryCore<T extends CLEntity> extends ConsumerWidget {
       galleryMap: galleryMap,
       itemBuilder: itemBuilder,
       columns: columns,
-      keepSelected: keepSelected,
     );
   }
 }
@@ -54,7 +51,6 @@ class CLGalleryCore1<T extends CLEntity> extends ConsumerStatefulWidget {
     required this.galleryMap,
     required this.itemBuilder,
     required this.columns,
-    required this.keepSelected,
     super.key,
   });
 
@@ -65,8 +61,6 @@ class CLGalleryCore1<T extends CLEntity> extends ConsumerStatefulWidget {
   ) itemBuilder;
 
   final int columns;
-
-  final bool keepSelected;
 
   @override
   ConsumerState<CLGalleryCore1<T>> createState() => _CLGalleryCoreState1<T>();

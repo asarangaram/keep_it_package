@@ -15,6 +15,12 @@ class AppTheme extends ConsumerWidget {
                 fontFeatures: [const FontFeature.tabularFigures()],
               ),
             ),
+        appBarTheme: Theme.of(context).appBarTheme.copyWith(
+              shadowColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              centerTitle: true,
+            ),
         /* inputDecorationTheme: InputDecorationTheme(
           floatingLabelBehavior: FloatingLabelBehavior.always,
           disabledBorder: CLTextField.buildOutlineInputBorder(context),

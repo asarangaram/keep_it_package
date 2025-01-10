@@ -97,7 +97,6 @@ class TimelineView extends ConsumerWidget {
   }
 }
 
-
 /* selectionActions: (context, items) {
             return [
               CLMenuItem(

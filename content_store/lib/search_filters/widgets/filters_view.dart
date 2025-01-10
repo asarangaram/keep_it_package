@@ -63,7 +63,7 @@ class SearchOptionsState extends ConsumerState<SearchOptions> {
           2,
         ), // Adjust the border radius as needed
       ),
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 16),
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         switchInCurve: Curves.easeInOut,

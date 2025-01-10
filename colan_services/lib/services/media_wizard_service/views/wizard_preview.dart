@@ -89,7 +89,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             ),
           ),
           columns: 4,
-          keepSelected: freezeView,
         );
       },
     );

@@ -68,7 +68,6 @@ class _CLSimpleGalleryViewState<T> extends State<CLSimpleGalleryView<T>> {
               );
             },
             columns: widget.columns,
-            keepSelected: false,
           ),
           /* if (isSelectionMode && selectedItems.isNotEmpty)
               ActionsDraggableMenu<T>(
