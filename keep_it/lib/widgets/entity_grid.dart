@@ -4,11 +4,12 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/when_empty.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:store/store.dart';
 
 import '../builders/grouper.dart';
 import '../navigation/providers/active_collection.dart';
+import 'cl_entity_grid_view.dart';
 import 'folders_and_files/collection_as_folder.dart';
 import 'folders_and_files/media_as_file.dart';
 
@@ -39,63 +40,75 @@ class EntityGrid extends ConsumerWidget {
         padding: const EdgeInsets.all(8),
         child: entities.isEmpty
             ? const WhenEmpty()
-            : GetFilterredMedia(
-                errorBuilder: errorBuilder,
-                loadingBuilder: loadingBuilder,
-                incoming: entities,
-                builder: (filterred) {
-                  return filterred.isEmpty
-                      ? Center(
-                          child: FilterCount(
-                            total: entities.length,
-                            filterred: filterred.length,
-                          ),
-                        )
-                      : GetGroupedMedia(
-                          incoming: filterred,
-                          columns: 4,
-                          builder: (galleryMap) {
-                            return CLEntityGridView(
-                              identifier: identifier,
-                              galleryMap: galleryMap,
-                              topWidget: Align(
-                                alignment: Alignment.centerRight,
-                                child: FilterCount(
-                                  total: entities.length,
-                                  filterred: filterred.length,
-                                ),
-                              ),
-                              itemBuilder: (context, item) =>
-                                  switch (item.runtimeType) {
-                                Collection => CollectionAsFolder(
-                                    collection: item as Collection,
-                                    onTap: () {
-                                      ref
-                                          .read(
-                                            activeCollectionProvider.notifier,
-                                          )
-                                          .state = item.id;
-                                    },
-                                  ),
-                                CLMedia => MediaAsFile(
-                                    media: item as CLMedia,
-                                    parentIdentifier: identifier,
-                                    onTap: () async {
-                                      await PageManager.of(context, ref)
-                                          .openMedia(
-                                        item.id!,
-                                        collectionId: item.collectionId,
-                                        parentIdentifier: identifier,
-                                      );
-                                      return true;
-                                    },
-                                  ),
-                                _ => throw UnimplementedError(),
-                              },
-                              columns: 4,
-                            );
-                          },
+            : SelectionControl(
+                itemBuilder: (context, item) => switch (item.runtimeType) {
+                  Collection => CollectionAsFolder(
+                      collection: item as Collection,
+                      onTap: () {
+                        ref
+                            .read(
+                              activeCollectionProvider.notifier,
+                            )
+                            .state = item.id;
+                      },
+                    ),
+                  CLMedia => MediaAsFile(
+                      media: item as CLMedia,
+                      parentIdentifier: identifier,
+                      onTap: () async {
+                        await PageManager.of(context, ref).openMedia(
+                          item.id!,
+                          collectionId: item.collectionId,
+                          parentIdentifier: identifier,
                         );
+                        return true;
+                      },
+                    ),
+                  _ => throw UnimplementedError(),
+                },
+                labelBuilder: (context, gallery) {
+                  return gallery.label == null
+                      ? null
+                      : CLText.large(
+                          gallery.label!,
+                          textAlign: TextAlign.start,
+                        );
+                },
+                builder: ({required itemBuilder, required labelBuilder}) {
+                  return GetFilterredMedia(
+                    errorBuilder: errorBuilder,
+                    loadingBuilder: loadingBuilder,
+                    incoming: entities,
+                    builder: (filterred) {
+                      return filterred.isEmpty
+                          ? Center(
+                              child: FilterCount(
+                                total: entities.length,
+                                filterred: filterred.length,
+                              ),
+                            )
+                          : GetGroupedMedia(
+                              incoming: filterred,
+                              columns: 4,
+                              builder: (galleryMap) {
+                                return CLEntityGridView(
+                                  identifier: identifier,
+                                  galleryMap: galleryMap,
+                                  topWidget: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: FilterCount(
+                                      total: entities.length,
+                                      filterred: filterred.length,
+                                    ),
+                                  ),
+                                  labelBuilder: labelBuilder,
+                                  itemBuilder: itemBuilder,
+                                  columns: 4,
+                                );
+                              },
+                            );
+                    },
+                  );
                 },
               ),
       ),
@@ -128,51 +141,30 @@ class FilterCount extends ConsumerWidget {
   }
 }
 
-class CLEntityGridView extends ConsumerWidget {
-  const CLEntityGridView({
-    required this.identifier,
+class SelectionControl extends ConsumerWidget {
+  const SelectionControl({
+    required this.builder,
     required this.itemBuilder,
-    required this.galleryMap,
-    required this.columns,
-    required this.topWidget,
+    required this.labelBuilder,
     super.key,
   });
-  final String identifier;
-  final List<GalleryGroupCLEntity<CLEntity>> galleryMap;
-  final ItemBuilder itemBuilder;
-  final int columns;
-  final Widget topWidget;
+  final Widget Function(BuildContext, CLEntity) itemBuilder;
+  final Widget? Function(
+    BuildContext context,
+    GalleryGroupCLEntity<CLEntity> gallery,
+  ) labelBuilder;
+  final Widget Function({
+    required Widget Function(BuildContext, CLEntity) itemBuilder,
+    required Widget? Function(
+      BuildContext context,
+      GalleryGroupCLEntity<CLEntity> gallery,
+    ) labelBuilder,
+  }) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: galleryMap.length + 1,
-      itemBuilder: (BuildContext context, int groupIndex) {
-        if (groupIndex == 0) {
-          return topWidget;
-        }
-        final gallery = galleryMap[groupIndex - 1];
-        final labelWidget = gallery.label == null
-            ? null
-            : CLText.large(
-                gallery.label!,
-                textAlign: TextAlign.start,
-              );
-        return CLGrid<CLEntity>(
-          itemCount: gallery.items.length,
-          columns: columns,
-          itemBuilder: (context, itemIndex) {
-            final itemWidget = itemBuilder(
-              context,
-              gallery.items[itemIndex],
-            );
-
-            return itemWidget;
-          },
-          header: gallery.label == null ? null : labelWidget,
-        );
-      },
+    return ProviderScope(
+      child: builder(itemBuilder: itemBuilder, labelBuilder: labelBuilder),
     );
   }
 }
