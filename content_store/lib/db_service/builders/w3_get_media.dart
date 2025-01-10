@@ -101,7 +101,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
               media.map((e) => e.md5String).join(','),
               name: 'GetMediaByCollectionId',
             ); */
-            return GetFilterredMedia(
+            return GetFilterredMediaByPass(
               incoming: CLMedias(media),
               builder: builder,
               loadingBuilder: loadingBuilder,
@@ -147,7 +147,7 @@ class GetMediaMultipleByIds extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return GetFilterredMedia(
+            return GetFilterredMediaByPass(
               incoming: CLMedias(media),
               builder: builder,
               loadingBuilder: loadingBuilder,
@@ -189,7 +189,7 @@ class GetPinnedMedia extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return GetFilterredMedia(
+            return GetFilterredMediaByPass(
               incoming: CLMedias(media),
               builder: builder,
               loadingBuilder: loadingBuilder,
@@ -231,7 +231,7 @@ class GetStaleMedia extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return GetFilterredMedia(
+            return GetFilterredMediaByPass(
               incoming: CLMedias(media),
               builder: builder,
               loadingBuilder: loadingBuilder,
@@ -273,7 +273,7 @@ class GetDeletedMedia extends ConsumerWidget {
 
               return bDate.compareTo(aDate);
             });
-            return GetFilterredMedia(
+            return GetFilterredMediaByPass(
               incoming: CLMedias(media),
               builder: builder,
               loadingBuilder: loadingBuilder,

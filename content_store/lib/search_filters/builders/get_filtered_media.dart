@@ -4,8 +4,8 @@ import 'package:store/store.dart';
 
 import '../providers/filterred_media.dart';
 
-class GetFilterredMedia extends ConsumerWidget {
-  const GetFilterredMedia({
+class GetFilterredMediaByPass extends ConsumerWidget {
+  const GetFilterredMediaByPass({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
@@ -19,7 +19,7 @@ class GetFilterredMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filterred = ref.watch(filterredMediaProvider(incoming));
-    return builder(filterred);
+    //final filterred = ref.watch(filterredMediaProvider(incoming));
+    return builder(incoming);
   }
 }
