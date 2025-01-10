@@ -22,7 +22,6 @@ export 'src/models/action_control.dart';
 export 'src/models/cl_dimension.dart';
 export 'src/models/cl_menu_item.dart';
 export 'src/models/cl_scale_type.dart';
-export 'src/models/gallery_group.dart';
 export 'src/models/progress.dart';
 export 'src/models/universal_media_source.dart';
 export 'src/theme/models/cl_colors.dart';
