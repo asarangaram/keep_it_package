@@ -1,12 +1,8 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/widgets/when_empty.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:store/store.dart';
-
-import '../navigation/providers/active_collection.dart';
 
 enum GroupTypes { none, byOriginalDate }
 
@@ -46,8 +42,8 @@ class GroupAction extends ConsumerWidget {
   }
 }
 
-class EntityGrouper extends ConsumerWidget {
-  const EntityGrouper({
+class GetGroupedMedia extends ConsumerWidget {
+  const GetGroupedMedia({
     required this.builder,
     required this.incoming,
     required this.columns,

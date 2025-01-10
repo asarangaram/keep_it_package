@@ -18,7 +18,6 @@ class MainViewPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const on = true;
     Widget errorBuilder(Object e, StackTrace st) =>
         ErrorView(error: e, stackTrace: st);
     const Widget loadingWidget = LoadingView();
@@ -51,6 +50,8 @@ class MainViewPage extends ConsumerWidget {
                       errorBuilder: errorBuilder,
                       builder: (entities) => EntityGrid(
                         entities: entities,
+                        loadingBuilder: () => loadingWidget,
+                        errorBuilder: errorBuilder,
                       ),
                     ),
                   );

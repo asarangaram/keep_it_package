@@ -24,3 +24,27 @@ class GetFilterredMediaByPass extends ConsumerWidget {
     return builder(incoming);
   }
 }
+
+class GetFilterredMedia extends ConsumerWidget {
+  const GetFilterredMedia({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    required this.incoming,
+    super.key,
+  });
+  final Widget Function(List<CLEntity> filterred) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
+  final List<CLEntity> incoming;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (incoming.first.runtimeType == Collection) {
+      return builder(incoming);
+    }
+    final medias = CLMedias(incoming.map((e) => e as CLMedia).toList());
+    final filterred = ref.watch(filterredMediaProvider(medias));
+    return builder(filterred.entries);
+  }
+}
