@@ -1,5 +1,4 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,7 +10,7 @@ class CLEntityGridView extends ConsumerWidget {
     required this.itemBuilder,
     required this.galleryMap,
     required this.columns,
-    required this.topWidget,
+    required this.banners,
     required this.labelBuilder,
     super.key,
   });
@@ -19,7 +18,7 @@ class CLEntityGridView extends ConsumerWidget {
   final List<GalleryGroupCLEntity<CLEntity>> galleryMap;
   final ItemBuilder itemBuilder;
   final int columns;
-  final Widget topWidget;
+  final List<Widget> banners;
   final Widget? Function(
     BuildContext context,
     GalleryGroupCLEntity<CLEntity> gallery,
@@ -29,12 +28,12 @@ class CLEntityGridView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: galleryMap.length + 1,
+      itemCount: galleryMap.length + banners.length,
       itemBuilder: (BuildContext context, int groupIndex) {
-        if (groupIndex == 0) {
-          return topWidget;
+        if (groupIndex < banners.length) {
+          return banners[groupIndex];
         }
-        final gallery = galleryMap[groupIndex - 1];
+        final gallery = galleryMap[groupIndex - banners.length];
         return CLGrid<CLEntity>(
           itemCount: gallery.items.length,
           columns: columns,

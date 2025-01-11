@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -31,20 +32,44 @@ class GetFilterredMedia extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.incoming,
+    this.banners,
     super.key,
   });
-  final Widget Function(List<CLEntity> filterred) builder;
+  final Widget Function(List<CLEntity> filterred, {List<Widget>? banners})
+      builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
   final Widget Function()? loadingBuilder;
   final List<CLEntity> incoming;
+  final List<Widget>? banners;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (incoming.first.runtimeType == Collection) {
       return builder(incoming);
     }
+
     final medias = CLMedias(incoming.map((e) => e as CLMedia).toList());
     final filterred = ref.watch(filterredMediaProvider(medias));
-    return builder(filterred.entries);
+    final topMsg = (filterred.entries.length < incoming.length)
+        ? ' ${filterred.entries.length} out of '
+            '${incoming.length} is Shown.'
+        : null;
+    final banners = [
+      if (topMsg == null)
+        const SizedBox.shrink()
+      else
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: ColoredBox(
+            color: Theme.of(context).colorScheme.onSurface,
+            child: CLText.tiny(
+              topMsg,
+              color: Theme.of(context).colorScheme.surfaceBright,
+            ),
+          ),
+        ),
+    ];
+
+    return builder(filterred.entries, banners: banners);
   }
 }

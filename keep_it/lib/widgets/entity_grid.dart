@@ -41,6 +41,7 @@ class EntityGrid extends ConsumerWidget {
         child: entities.isEmpty
             ? const WhenEmpty()
             : SelectionControl(
+                incoming: entities,
                 itemBuilder: (context, item) => switch (item.runtimeType) {
                   Collection => CollectionAsFolder(
                       collection: item as Collection,
@@ -74,17 +75,23 @@ class EntityGrid extends ConsumerWidget {
                           textAlign: TextAlign.start,
                         );
                 },
-                builder: ({required itemBuilder, required labelBuilder}) {
+                builder: ({
+                  required items,
+                  required itemBuilder,
+                  required labelBuilder,
+                }) {
                   return GetFilterredMedia(
                     errorBuilder: errorBuilder,
                     loadingBuilder: loadingBuilder,
                     incoming: entities,
-                    builder: (filterred) {
+                    banners: const [],
+                    builder: (filterred, {List<Widget>? banners}) {
                       return filterred.isEmpty
                           ? Center(
-                              child: FilterCount(
-                                total: entities.length,
-                                filterred: filterred.length,
+                              child: Column(
+                                children: [
+                                  if (banners != null) ...banners,
+                                ],
                               ),
                             )
                           : GetGroupedMedia(
@@ -94,13 +101,7 @@ class EntityGrid extends ConsumerWidget {
                                 return CLEntityGridView(
                                   identifier: identifier,
                                   galleryMap: galleryMap,
-                                  topWidget: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: FilterCount(
-                                      total: entities.length,
-                                      filterred: filterred.length,
-                                    ),
-                                  ),
+                                  banners: banners ?? [],
                                   labelBuilder: labelBuilder,
                                   itemBuilder: itemBuilder,
                                   columns: 4,
@@ -116,44 +117,22 @@ class EntityGrid extends ConsumerWidget {
   }
 }
 
-class FilterCount extends ConsumerWidget {
-  const FilterCount({required this.total, required this.filterred, super.key});
-  final int total;
-  final int filterred;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final topMsg = (filterred < total)
-        ? ' $filterred out of '
-            '$total is Shown.'
-        : null;
-    if (topMsg == null) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: ColoredBox(
-        color: Theme.of(context).colorScheme.onSurface,
-        child: CLText.tiny(
-          topMsg,
-          color: Theme.of(context).colorScheme.surfaceBright,
-        ),
-      ),
-    );
-  }
-}
-
 class SelectionControl extends ConsumerWidget {
   const SelectionControl({
+    required this.incoming,
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
     super.key,
   });
+  final List<CLEntity> incoming;
   final Widget Function(BuildContext, CLEntity) itemBuilder;
   final Widget? Function(
     BuildContext context,
     GalleryGroupCLEntity<CLEntity> gallery,
   ) labelBuilder;
   final Widget Function({
+    required List<CLEntity> items,
     required Widget Function(BuildContext, CLEntity) itemBuilder,
     required Widget? Function(
       BuildContext context,
@@ -164,7 +143,11 @@ class SelectionControl extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ProviderScope(
-      child: builder(itemBuilder: itemBuilder, labelBuilder: labelBuilder),
+      child: builder(
+        items: incoming,
+        itemBuilder: itemBuilder,
+        labelBuilder: labelBuilder,
+      ),
     );
   }
 }
