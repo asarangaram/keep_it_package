@@ -1,0 +1,3 @@
+[submodule "yet_another_date_picker"]
+	path = yet_another_date_picker
+	url = git@github.com:cloudonlanapps/yet_another_date_picker.git
