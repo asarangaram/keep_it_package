@@ -26,6 +26,7 @@ class EntityGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const numColumns = 3;
     final identifier = ref.watch(mainPageIdentifierProvider);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
@@ -96,15 +97,20 @@ class EntityGrid extends ConsumerWidget {
                             )
                           : GetGroupedMedia(
                               incoming: filterred,
-                              columns: 4,
-                              builder: (galleryMap) {
+                              columns: numColumns,
+                              builder: (galleryMap /* numColumns */) {
                                 return CLEntityGridView(
                                   identifier: identifier,
                                   galleryMap: galleryMap,
-                                  banners: banners ?? [],
+                                  banners: [
+                                    const SizedBox(
+                                      height: kToolbarHeight,
+                                    ),
+                                    ...banners ?? [],
+                                  ],
                                   labelBuilder: labelBuilder,
                                   itemBuilder: itemBuilder,
-                                  columns: 4,
+                                  columns: numColumns,
                                 );
                               },
                             );

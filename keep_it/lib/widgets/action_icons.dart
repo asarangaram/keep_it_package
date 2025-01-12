@@ -3,6 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../navigation/providers/active_collection.dart';
 
@@ -17,7 +18,9 @@ class MainViewTitle extends ConsumerWidget {
       loadingBuilder: SizedBox.shrink,
       errorBuilder: (p0, p1) => const SizedBox.shrink(),
       builder: (collection) {
-        return CLLabel.large(collection?.label ?? 'Collections');
+        return CLLabel.large(
+          collection?.label.capitalizeFirstLetter() ?? 'Collections',
+        );
       },
     );
   }
@@ -51,7 +54,7 @@ class FileSelectAction extends ConsumerWidget {
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => const SizedBox.shrink(),
       builder: (collection) {
-        return CLButtonIcon.standard(
+        return CLButtonIcon.small(
           clIcons.insertItem,
           onTap: () {
             IncomingMediaMonitor.onPickFiles(
@@ -114,8 +117,8 @@ class CameraAction extends ConsumerWidget {
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => const SizedBox.shrink(),
       builder: (collection) {
-        return CLButtonIcon.standard(
-          clIcons.insertItem,
+        return CLButtonIcon.small(
+          clIcons.camera,
           onTap: () {
             PageManager.of(context, ref)
                 .openCamera(collectionId: collection?.id);
