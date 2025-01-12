@@ -16,7 +16,7 @@ PODS:
     - Flutter
     - FlutterMacOS
     - mdk (~> 0.30.0)
-  - mdk (0.30.0)
+  - mdk (0.30.1)
   - nsd_macos (0.0.1):
     - FlutterMacOS
   - path_provider_foundation (0.0.1):
@@ -105,7 +105,7 @@ SPEC CHECKSUMS:
   file_selector_macos: 6280b52b459ae6c590af5d78fc35c7267a3c4b31
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   fvp: 1c6aee112901dd740fb66adcf6ba79fee4f8f105
-  mdk: 7fe9a9ef09fbb9fc873c48eadc7727f2055dfab8
+  mdk: 5b3a56ae10c666309c1796bd72968e91db4d670a
   nsd_macos: a472240e770b92f6c6df1022403aa29c90d012e3
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   photo_manager: d2fbcc0f2d82458700ee6256a15018210a81d413
