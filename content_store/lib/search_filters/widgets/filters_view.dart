@@ -168,20 +168,14 @@ class SearchOptionsState extends ConsumerState<SearchOptions> {
                     ),
                     if (!minimize)
                       if (height == null)
-                        LayoutBuilder(
-                          builder: (context, constrains) {
-                            return SingleChildScrollView(
-                              child: SizedBox(
-                                height: constrains.maxHeight,
-                                child: FittedBox(
-                                  child: SearchOptions0(
-                                    key: globalKey,
-                                    filters: additionalFilters,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                        SizedBox(
+                          height: 200,
+                          child: FittedBox(
+                            child: SearchOptions0(
+                              key: globalKey,
+                              filters: additionalFilters,
+                            ),
+                          ),
                         )
                       else if (height! > widget.maxHeight)
                         SizedBox(
