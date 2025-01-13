@@ -31,7 +31,6 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
   }
 
   void updateFilter() {
-    print('controller updated ${controller.text}');
     ref.read(filtersProvider.notifier).updateDefautTextSearchFilter(
           controller.text,
         );
