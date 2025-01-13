@@ -7,7 +7,7 @@ final filterredMediaProvider =
     StateProvider.family<CLMedias, CLMedias>((ref, incoming) {
   final searchfilters = ref.watch(filtersProvider);
 
-  var filterred = incoming.entries;
+  var filterred = searchfilters.defaultTextSearchFilter.apply(incoming.entries);
 
   for (final filter in searchfilters()) {
     if (filter.enabled) {

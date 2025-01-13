@@ -5,7 +5,12 @@ import 'package:store/store.dart';
 import '../models/filter/base_filter.dart';
 
 class FiltersNotifier extends StateNotifier<SearchFilters> {
-  FiltersNotifier() : super(const SearchFilters());
+  FiltersNotifier()
+      : super(
+          SearchFilters(
+            defaultTextSearchFilter: SearchFilters.textSearchFilter,
+          ),
+        );
 
   void toggleEdit() => state = state.toggleEdit();
 
@@ -14,6 +19,15 @@ class FiltersNotifier extends StateNotifier<SearchFilters> {
 
   void updateFilter(CLFilter<CLMedia> filter, String key, dynamic value) =>
       state = state.updateFilter(filter.name, key, value);
+
+  void updateDefautTextSearchFilter(
+    String query,
+  ) {
+    state = state.copyWith(
+      defaultTextSearchFilter:
+          state.defaultTextSearchFilter.update('query', query),
+    );
+  }
 
   void addFilter(CLFilter<CLMedia> filter) => state = state.addFilter(filter);
 

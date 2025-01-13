@@ -12,25 +12,36 @@ enum MediaAvailability { local, coLan, synced }
 
 @immutable
 class SearchFilters {
-  const SearchFilters({this.filters, this.editing = false});
+  const SearchFilters({
+    required this.defaultTextSearchFilter,
+    this.filters,
+    this.editing = false,
+  });
   final List<CLFilter<CLMedia>>? filters;
+  final StringFilter<CLMedia> defaultTextSearchFilter;
   final bool editing;
   @override
   bool operator ==(covariant SearchFilters other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
-    return listEquals(other.filters, filters);
+    return listEquals(other.filters, filters) &&
+        other.defaultTextSearchFilter == defaultTextSearchFilter &&
+        other.editing == editing;
   }
 
   @override
-  int get hashCode => filters.hashCode;
+  int get hashCode =>
+      filters.hashCode ^ defaultTextSearchFilter.hashCode ^ editing.hashCode;
 
   SearchFilters copyWith({
+    StringFilter<CLMedia>? defaultTextSearchFilter,
     ValueGetter<List<CLFilter<CLMedia>>?>? filters,
     bool? editing,
   }) {
     return SearchFilters(
+      defaultTextSearchFilter:
+          defaultTextSearchFilter ?? this.defaultTextSearchFilter,
       filters: filters != null ? filters.call() : this.filters,
       editing: editing ?? this.editing,
     );
@@ -65,6 +76,14 @@ class SearchFilters {
       filters: () => filters!
           .map((e) => e.name == filterName ? e.update(key, value) : e)
           .toList(),
+    );
+  }
+
+  SearchFilters updateDefautTextSearchFilter(
+    String query,
+  ) {
+    return copyWith(
+      defaultTextSearchFilter: defaultTextSearchFilter.update('query', query),
     );
   }
 
@@ -119,13 +138,19 @@ class SearchFilters {
       enabled: true,
     ),
     // Consider to add Collection name, notes and tags
-    StringFilter(
+    /* StringFilter(
       name: 'TextSearch',
       fieldSelector: (media) => [media.name, media.ref].join(' '),
       query: '',
       enabled: true,
-    ),
+    ), */
   ];
+  static StringFilter<CLMedia> textSearchFilter = StringFilter(
+    name: 'TextSearch',
+    fieldSelector: (media) => [media.name, media.ref].join(' '),
+    query: '',
+    enabled: true,
+  );
 
   Map<String, CLFilter<CLMedia>> get allFiltersMap =>
       {for (final e in allFilters) e.name: e};

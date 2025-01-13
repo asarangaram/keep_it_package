@@ -6,6 +6,7 @@ import 'package:store/store.dart';
 import '../models/filter/base_filter.dart';
 import '../models/filters.dart';
 import '../providers/filters.dart';
+import 'text_filter.dart';
 
 class AddNewFilter extends ConsumerStatefulWidget {
   const AddNewFilter({
@@ -65,7 +66,7 @@ class AddNewFilterState extends ConsumerState<AddNewFilter> {
                     DropdownMenuItem<CLFilter<CLMedia>>(
                       value: filter,
                       child: Stack(
-                        alignment: Alignment.center,
+                        alignment: AlignmentDirectional.centerStart,
                         children: [
                           CLText.tiny(
                             maxString,
@@ -78,44 +79,6 @@ class AddNewFilterState extends ConsumerState<AddNewFilter> {
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class AddNewFilterPopUp extends ConsumerWidget {
-  const AddNewFilterPopUp({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final unusedFilters =
-        ref.watch(filtersProvider.select((e) => e.unusedFilters));
-    if (unusedFilters.isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: CircleAvatar(
-        radius: 12,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: PopupMenuButton<CLFilter<CLMedia>>(
-          onSelected: (CLFilter<CLMedia> item) {
-            ref.read(filtersProvider.notifier).addFilter(item);
-          },
-          padding: EdgeInsets.zero,
-          offset: const Offset(0, 12),
-          icon: const Icon(Icons.add_circle),
-          iconColor: Colors.white,
-          iconSize: 24,
-          itemBuilder: (BuildContext context) =>
-              <PopupMenuEntry<CLFilter<CLMedia>>>[
-            for (final filter in unusedFilters)
-              PopupMenuItem<CLFilter<CLMedia>>(
-                value: filter,
-                child: Text(filter.name),
-              ),
           ],
         ),
       ),

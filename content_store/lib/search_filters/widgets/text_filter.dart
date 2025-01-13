@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -25,36 +26,46 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
     controller = TextEditingController(
       text: (widget.filter as StringFilter<CLMedia>).query,
     );
+    controller.addListener(updateFilter);
     super.initState();
+  }
+
+  void updateFilter() {
+    print('controller updated ${controller.text}');
+    ref.read(filtersProvider.notifier).updateDefautTextSearchFilter(
+          controller.text,
+        );
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    controller
+      ..removeListener(updateFilter)
+      ..dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: SizedBox(
-        width: 200,
-        height: 50,
-        child: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Search',
+    return SizedBox(
+      width: 200,
+      height: 50,
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: 'Search',
+          suffixIcon: Padding(
+            padding: const EdgeInsets.all(8),
+            child: CLButtonIcon.tiny(
+              Icons.backspace_outlined,
+              onTap: () {
+                controller.clear();
+              },
+            ),
           ),
-          onChanged: (value) {
-            ref.read(filtersProvider.notifier).updateFilter(
-                  widget.filter,
-                  'query',
-                  controller.text,
-                );
-          },
         ),
+        //  autofocus: true,
       ),
     );
   }
