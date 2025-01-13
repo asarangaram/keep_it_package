@@ -37,88 +37,82 @@ class EntityGrid extends ConsumerWidget {
         Animation<double> animation,
       ) =>
           FadeTransition(opacity: animation, child: child),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: entities.isEmpty
-            ? const WhenEmpty()
-            : SelectionControl(
-                incoming: entities,
-                itemBuilder: (context, item) => switch (item.runtimeType) {
-                  Collection => CollectionAsFolder(
-                      collection: item as Collection,
-                      onTap: () {
-                        ref
-                            .read(
-                              activeCollectionProvider.notifier,
-                            )
-                            .state = item.id;
-                      },
-                    ),
-                  CLMedia => MediaAsFile(
-                      media: item as CLMedia,
-                      parentIdentifier: identifier,
-                      onTap: () async {
-                        await PageManager.of(context, ref).openMedia(
-                          item.id!,
-                          collectionId: item.collectionId,
-                          parentIdentifier: identifier,
-                        );
-                        return true;
-                      },
-                    ),
-                  _ => throw UnimplementedError(),
-                },
-                labelBuilder: (context, gallery) {
-                  return gallery.label == null
-                      ? null
-                      : CLText.large(
-                          gallery.label!,
-                          textAlign: TextAlign.start,
-                        );
-                },
-                builder: ({
-                  required items,
-                  required itemBuilder,
-                  required labelBuilder,
-                }) {
-                  return GetFilterredMedia(
-                    errorBuilder: errorBuilder,
-                    loadingBuilder: loadingBuilder,
-                    incoming: entities,
-                    banners: const [],
-                    builder: (filterred, {List<Widget>? banners}) {
-                      return filterred.isEmpty
-                          ? Center(
-                              child: Column(
-                                children: [
-                                  if (banners != null) ...banners,
-                                ],
-                              ),
-                            )
-                          : GetGroupedMedia(
-                              incoming: filterred,
-                              columns: numColumns,
-                              builder: (galleryMap /* numColumns */) {
-                                return CLEntityGridView(
-                                  identifier: identifier,
-                                  galleryMap: galleryMap,
-                                  banners: [
-                                    const SizedBox(
-                                      height: kToolbarHeight,
-                                    ),
-                                    ...banners ?? [],
-                                  ],
-                                  labelBuilder: labelBuilder,
-                                  itemBuilder: itemBuilder,
-                                  columns: numColumns,
-                                );
-                              },
-                            );
+      child: entities.isEmpty
+          ? const WhenEmpty()
+          : SelectionControl(
+              incoming: entities,
+              itemBuilder: (context, item) => switch (item.runtimeType) {
+                Collection => CollectionAsFolder(
+                    collection: item as Collection,
+                    onTap: () {
+                      ref
+                          .read(
+                            activeCollectionProvider.notifier,
+                          )
+                          .state = item.id;
                     },
-                  );
-                },
-              ),
-      ),
+                  ),
+                CLMedia => MediaAsFile(
+                    media: item as CLMedia,
+                    parentIdentifier: identifier,
+                    onTap: () async {
+                      await PageManager.of(context, ref).openMedia(
+                        item.id!,
+                        collectionId: item.collectionId,
+                        parentIdentifier: identifier,
+                      );
+                      return true;
+                    },
+                  ),
+                _ => throw UnimplementedError(),
+              },
+              labelBuilder: (context, gallery) {
+                return gallery.label == null
+                    ? null
+                    : CLText.large(
+                        gallery.label!,
+                        textAlign: TextAlign.start,
+                      );
+              },
+              builder: ({
+                required items,
+                required itemBuilder,
+                required labelBuilder,
+              }) {
+                return GetFilterredMedia(
+                  errorBuilder: errorBuilder,
+                  loadingBuilder: loadingBuilder,
+                  incoming: entities,
+                  banners: const [],
+                  builder: (filterred, {List<Widget>? banners}) {
+                    return filterred.isEmpty
+                        ? Center(
+                            child: Column(
+                              children: [
+                                if (banners != null) ...banners,
+                              ],
+                            ),
+                          )
+                        : GetGroupedMedia(
+                            incoming: filterred,
+                            columns: numColumns,
+                            builder: (galleryMap /* numColumns */) {
+                              return CLEntityGridView(
+                                identifier: identifier,
+                                galleryMap: galleryMap,
+                                banners: [
+                                  ...banners ?? [],
+                                ],
+                                labelBuilder: labelBuilder,
+                                itemBuilder: itemBuilder,
+                                columns: numColumns,
+                              );
+                            },
+                          );
+                  },
+                );
+              },
+            ),
     );
   }
 }

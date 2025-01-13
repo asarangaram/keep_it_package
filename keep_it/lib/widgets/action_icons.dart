@@ -18,8 +18,29 @@ class MainViewTitle extends ConsumerWidget {
       loadingBuilder: SizedBox.shrink,
       errorBuilder: (p0, p1) => const SizedBox.shrink(),
       builder: (collection) {
-        return CLLabel.large(
-          collection?.label.capitalizeFirstLetter() ?? 'Collections',
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (collectionId != null)
+                CLButtonIcon.small(
+                  clIcons.pagePop,
+                  onTap: () =>
+                      ref.read(activeCollectionProvider.notifier).state = null,
+                ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text(
+                    collection?.label.capitalizeFirstLetter() ?? 'Collections',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -35,36 +56,15 @@ class MainViewLeading extends ConsumerWidget {
     if (collectionId == null) {
       return const SizedBox.shrink();
     }
-    return CLButtonIcon.small(
-      clIcons.pagePop,
-      onTap: () => ref.read(activeCollectionProvider.notifier).state = null,
-    );
-  }
-}
-
-class FileSelectAction extends ConsumerWidget {
-  const FileSelectAction({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final id = ref.watch(activeCollectionProvider);
-
-    return GetCollection(
-      id: id,
-      errorBuilder: (_, __) => const SizedBox.shrink(),
-      loadingBuilder: () => const SizedBox.shrink(),
-      builder: (collection) {
-        return CLButtonIcon.small(
-          clIcons.insertItem,
-          onTap: () {
-            IncomingMediaMonitor.onPickFiles(
-              context,
-              ref,
-              collection: collection,
-            );
-          },
-        );
-      },
+    return Container(
+      decoration: ShapeDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer.withAlpha(220),
+        shape: const CircleBorder(), // Oval shape
+      ),
+      child: CLButtonIcon.small(
+        clIcons.pagePop,
+        onTap: () => ref.read(activeCollectionProvider.notifier).state = null,
+      ),
     );
   }
 }
@@ -105,24 +105,71 @@ class SelectControlIcon extends ConsumerWidget {
   }
 } */
 
-class CameraAction extends ConsumerWidget {
-  const CameraAction({super.key});
+class ImportIcons extends ConsumerWidget {
+  const ImportIcons({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = ref.watch(activeCollectionProvider);
-
     return GetCollection(
       id: id,
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => const SizedBox.shrink(),
       builder: (collection) {
-        return CLButtonIcon.small(
-          clIcons.camera,
-          onTap: () {
-            PageManager.of(context, ref)
-                .openCamera(collectionId: collection?.id);
-          },
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (id == null) const StaleMediaIndicator(),
+            const ServerControl(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: CircleAvatar(
+                      child: IconButton(
+                        onPressed: () {
+                          IncomingMediaMonitor.onPickFiles(
+                            context,
+                            ref,
+                            collection: collection,
+                          );
+                        },
+                        icon: Icon(clIcons.insertItem),
+                      ),
+                    ),
+                  ),
+                ),
+                if (ColanPlatformSupport.cameraSupported) ...[
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  // Right FAB
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: CircleAvatar(
+                        child: IconButton(
+                          onPressed: () {
+                            PageManager.of(context, ref)
+                                .openCamera(collectionId: collection?.id);
+                          },
+                          icon: Icon(
+                            clIcons.camera,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
         );
       },
     );

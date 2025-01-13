@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../builders/get_main_view_entities.dart';
-import '../builders/grouper.dart';
 import '../navigation/providers/active_collection.dart';
 import '../widgets/action_icons.dart';
 
@@ -24,104 +23,80 @@ class MainViewPage extends ConsumerWidget {
     const Widget loadingWidget = LoadingView();
     return AppTheme(
       child: Scaffold(
-        /* appBar: AppBar(
-          title: const MainViewTitle(),
-          leading: const MainViewLeading(),
-          automaticallyImplyLeading: false,
-          actions: [
-            const GroupAction(),
-            const SelectControlIcon(),
-            const SearchIcon(),
-            const FileSelectAction(),
-            if (ColanPlatformSupport.cameraSupported) const CameraAction(),
-            const ExtraActions(),
-          ],
-        ), */
         body: OnSwipe(
           child: Stack(
             children: [
-              Column(
-                children: [
-                  const SearchOptions(),
-                  Expanded(
-                    child: GetStore(
-                      builder: (store) {
-                        return RefreshIndicator(
-                          onRefresh: /* isSelectionMode ? null : */ () async =>
-                              store.reloadStore(),
-                          child: GetMainViewEntities(
-                            loadingBuilder: () => loadingWidget,
-                            errorBuilder: errorBuilder,
-                            builder: (entities) => EntityGrid(
-                              entities: entities,
+              SafeArea(
+                child: Column(
+                  children: [
+                    if (!ColanPlatformSupport.isMobilePlatform)
+                      const SizedBox(
+                        height: 8,
+                      ),
+                    const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              flex: 3,
+                              child: MainViewTitle(),
+                            ),
+                            Flexible(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircularProgressIndicator.adaptive(),
+                                  SearchIcon(),
+                                  SizedBox(width: 8),
+                                  ExtraActions(),
+                                  SizedBox(width: 8),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SearchOptions(),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: GetStore(
+                        builder: (store) {
+                          return RefreshIndicator(
+                            onRefresh: /* isSelectionMode ? null : */
+                                () async => store.reloadStore(),
+                            child: GetMainViewEntities(
                               loadingBuilder: () => loadingWidget,
                               errorBuilder: errorBuilder,
+                              builder: (entities) => EntityGrid(
+                                entities: entities,
+                                loadingBuilder: () => loadingWidget,
+                                errorBuilder: errorBuilder,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              Positioned(
-                left: 16,
-                top: MediaQuery.of(context).viewPadding.top,
-                child: SizedBox(
-                  // width: MediaQuery.of(context).size.width * 0.5,
-                  // height: 50,
-
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        decoration: ShapeDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primaryContainer
-                              .withAlpha(220),
-                          shape: const CircleBorder(), // Oval shape
-                        ),
-                        child: const MainViewLeading(),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        alignment: Alignment.centerLeft,
-                        decoration: ShapeDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primaryContainer
-                              .withAlpha(220),
-                          shape: const StadiumBorder(), // Oval shape
-                        ),
-                        child: const MainViewTitle(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              /* SafeArea(
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: ColoredBox(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primaryContainer
-                            .withAlpha(200),
-                        child: const MainViewTitle(),
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
-              ), */
+              ),
+              const SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ImportIcons(),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
+        // Bottom Area with Three FABs
       ),
     );
   }

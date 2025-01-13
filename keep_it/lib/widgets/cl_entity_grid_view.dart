@@ -28,10 +28,15 @@ class CLEntityGridView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: galleryMap.length + banners.length,
+      itemCount: galleryMap.length + banners.length + 1,
       itemBuilder: (BuildContext context, int groupIndex) {
         if (groupIndex < banners.length) {
           return banners[groupIndex];
+        }
+        if (groupIndex == galleryMap.length + banners.length) {
+          return SizedBox(
+            height: MediaQuery.of(context).viewPadding.bottom + 80,
+          );
         }
         final gallery = galleryMap[groupIndex - banners.length];
         return CLGrid<CLEntity>(

@@ -80,9 +80,9 @@ class SearchOptionsState extends ConsumerState<SearchOptions> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (hasFilter) ...[
-                    TextButton(
-                      onPressed: () {
+                  if (hasFilter && !minimize) ...[
+                    GestureDetector(
+                      onTap: () {
                         ref.read(filtersProvider.notifier).clearFilters();
                       },
                       child: const Text(
