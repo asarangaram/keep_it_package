@@ -1,7 +1,6 @@
 name: content_store
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
 
 publish_to: none
 
@@ -44,13 +43,9 @@ dependencies:
   yet_another_date_picker: 
     path: ../yet_another_date_picker
 
-
-
 dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
   very_good_analysis: ^6.0.0
 
-
-flutter:

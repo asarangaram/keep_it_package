@@ -121,7 +121,7 @@ class SearchFilters {
     // Consider to add Collection name, notes and tags
     StringFilter(
       name: 'TextSearch',
-      fieldSelector: (media) => [media.name, media.ref].join(),
+      fieldSelector: (media) => [media.name, media.ref].join(' '),
       query: '',
       enabled: true,
     ),

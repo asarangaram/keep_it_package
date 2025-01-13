@@ -20,6 +20,20 @@ class ServerControl extends ConsumerWidget {
   }
 }
 
+class ServerSpeedDial extends ConsumerWidget {
+  const ServerSpeedDial({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(supportOnlineProvider).whenOrNull(
+              data: (supportOnline) => supportOnline
+                  ? const ServerSpeedDialImpl()
+                  : const ServerSpeedDialStub(),
+            ) ??
+        const SizedBox.shrink();
+  }
+}
+
 class ServerSettings extends ConsumerWidget {
   const ServerSettings({super.key});
 

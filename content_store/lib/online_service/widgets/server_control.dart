@@ -113,6 +113,85 @@ class ServerControlImpl extends ConsumerWidget {
   }
 }
 
+class ServerSpeedDialImpl extends ConsumerWidget {
+  const ServerSpeedDialImpl({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetServer(
+      loadingBuilder: SizedBox.shrink,
+      errorBuilder: (_, __) => const SizedBox.shrink(),
+      builder: (server) {
+        return Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            SpeedDial(
+              overlayOpacity: 0,
+              elevation: 0,
+              //buttonSize: const Size(40, 40),
+              backgroundColor:
+                  Theme.of(context).colorScheme.primaryContainer.withAlpha(200),
+              children: [
+                if (!server.isOffline)
+                  if (!server.workingOffline)
+                    SpeedDialChild(
+                      onTap: () {
+                        ref.read(serverProvider.notifier).workOffline();
+                      },
+                      labelWidget: const SpeedDialChildWrapper(
+                        child: WorkOffline(),
+                      ),
+                    )
+                  else
+                    SpeedDialChild(
+                      onTap: () {
+                        ref.read(serverProvider.notifier).goOnline();
+                      },
+                      labelWidget: const SpeedDialChildWrapper(
+                        child: GoOnline(),
+                      ),
+                    ),
+                if (server.canSync)
+                  SpeedDialChild(
+                    onTap: () {
+                      ref.read(serverProvider.notifier).manualSync();
+                    },
+                    labelWidget: const SyncServer(),
+                  ),
+              ],
+              switchLabelPosition: true,
+              activeIcon: clIcons.closeFullscreen,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/icon/cloud_on_lan_128px_color.png',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (server.isSyncing)
+              const SizedBox.square(
+                dimension: 56,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class SpeedDialChildWrapper extends StatelessWidget {
   const SpeedDialChildWrapper({
     required this.child,

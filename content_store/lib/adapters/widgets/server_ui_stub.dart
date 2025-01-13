@@ -9,6 +9,15 @@ class ServerControlStub extends StatelessWidget {
   }
 }
 
+class ServerSpeedDialStub extends StatelessWidget {
+  const ServerSpeedDialStub({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox.shrink();
+  }
+}
+
 class ServerSettingsStub extends StatelessWidget {
   const ServerSettingsStub({super.key});
 

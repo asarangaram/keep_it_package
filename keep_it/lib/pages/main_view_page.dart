@@ -1,13 +1,10 @@
 import 'package:app_loader/app_loader.dart';
-import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../builders/get_main_view_entities.dart';
 import '../navigation/providers/active_collection.dart';
-import '../widgets/action_icons.dart';
 
 import '../widgets/actions/bottom_bar.dart';
 import '../widgets/actions/top_bar.dart';
@@ -53,7 +50,8 @@ class MainViewPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const KeepItBottomBar(),
+                if (MediaQuery.of(context).viewInsets.bottom == 0)
+                  const KeepItBottomBar(),
               ],
             ),
           ),

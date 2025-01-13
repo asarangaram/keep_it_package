@@ -19,20 +19,20 @@ class StaleMediaIndicator extends ConsumerWidget {
       builder: (staleMedia) {
         if (staleMedia.isEmpty) return const SizedBox.shrink();
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.only(right: 8),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: CLText.standard(
-                    'You have unclassified media. '
-                    '(${staleMedia.entries.length})',
-                  ),
-                ),
+              CLText.tiny(
+                'You have unclassified media. '
+                '(${staleMedia.entries.length})',
               ),
-              ElevatedButton(
-                onPressed: () => MediaWizardService.openWizard(
+              const SizedBox(
+                width: 8,
+              ),
+              GestureDetector(
+                onTap: () => MediaWizardService.openWizard(
                   context,
                   ref,
                   CLSharedMedia(
@@ -40,7 +40,14 @@ class StaleMediaIndicator extends ConsumerWidget {
                     type: UniversalMediaSource.unclassified,
                   ),
                 ),
-                child: const CLText.small('Show Now'),
+                child: Text(
+                  'Show Now',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontSize: CLScaleType.small.fontSize,
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
               ),
             ],
           ),
