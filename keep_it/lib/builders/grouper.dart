@@ -10,38 +10,6 @@ final groupMethodProvider = StateProvider<GroupTypes>((ref) {
   return GroupTypes.none;
 });
 
-class GroupAction extends ConsumerWidget {
-  const GroupAction({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final method = ref.watch(groupMethodProvider);
-    return GestureDetector(
-      onTap: () {
-        final updatedMethod = switch (method) {
-          GroupTypes.byOriginalDate => GroupTypes.none,
-          GroupTypes.none => GroupTypes.byOriginalDate,
-        };
-        ref.read(groupMethodProvider.notifier).state = updatedMethod;
-      },
-      child: ShaderMask(
-        shaderCallback: (Rect bounds) {
-          return LinearGradient(
-            colors: switch (method) {
-              GroupTypes.byOriginalDate => [Colors.black, Colors.black],
-              GroupTypes.none => [Colors.grey, Colors.grey],
-            },
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds);
-        },
-        blendMode: BlendMode.srcATop,
-        child: Icon(MdiIcons.fileTree, color: Colors.white),
-      ),
-    );
-  }
-}
-
 class GetGroupedMedia extends ConsumerWidget {
   const GetGroupedMedia({
     required this.builder,

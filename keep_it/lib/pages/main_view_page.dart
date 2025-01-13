@@ -9,6 +9,8 @@ import '../builders/get_main_view_entities.dart';
 import '../navigation/providers/active_collection.dart';
 import '../widgets/action_icons.dart';
 
+import '../widgets/actions/bottom_bar.dart';
+import '../widgets/actions/top_bar.dart';
 import '../widgets/entity_grid.dart';
 import '../widgets/utils/error_view.dart';
 import '../widgets/utils/loading_view.dart';
@@ -24,44 +26,12 @@ class MainViewPage extends ConsumerWidget {
     return AppTheme(
       child: Scaffold(
         body: OnSwipe(
-          child: Stack(
-            children: [
-              SafeArea(
-                child: Column(
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Column(
                   children: [
-                    if (!ColanPlatformSupport.isMobilePlatform)
-                      const SizedBox(
-                        height: 8,
-                      ),
-                    const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              flex: 3,
-                              child: MainViewTitle(),
-                            ),
-                            Flexible(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator.adaptive(),
-                                  SearchIcon(),
-                                  SizedBox(width: 8),
-                                  ExtraActions(),
-                                  SizedBox(width: 8),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SearchOptions(),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                    const KeepItTopBar(),
                     Expanded(
                       child: GetStore(
                         builder: (store) {
@@ -83,17 +53,9 @@ class MainViewPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ),
-              const SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ImportIcons(),
-                  ),
-                ),
-              ),
-            ],
+                const KeepItBottomBar(),
+              ],
+            ),
           ),
         ),
         // Bottom Area with Three FABs
