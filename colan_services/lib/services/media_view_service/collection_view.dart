@@ -1,12 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
-
-import '../media_view_service/widgets/media_view.dart';
-
-import 'widgets/cl_media_collage.dart';
 
 class CollectionView extends ConsumerWidget {
   const CollectionView.preview(this.collection, {super.key});
@@ -15,6 +10,22 @@ class CollectionView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     MediaQuery.of(context);
+    final borderColor = collection.hasServerUID
+        ? collection.haveItOffline
+            ? Colors.blue
+            : Colors.green
+        : null;
+    return CLAspectRationDecorated(
+      hasBorder: true,
+      borderRadius: const BorderRadius.all(Radius.circular(16)),
+      borderColor: borderColor,
+      child: Center(
+        child: CLText.veryLarge(
+          collection.label.characters.first,
+        ),
+      ),
+    );
+    /* 
     return GetMediaByCollectionId(
       collectionId: collection.id,
       errorBuilder: null,
@@ -29,12 +40,12 @@ class CollectionView extends ConsumerWidget {
           return Badge.count(
             count: mediaList.entries.length,
             child: CLAspectRationDecorated(
-              hasBorder: true,
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-              borderColor: borderColor,
-              child: Center(
-                child: CLText.veryLarge(
-                  collection.label.characters.first,
+            hasBorder: true,
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+            borderColor: borderColor,
+            child: Center(
+              child: CLText.veryLarge(
+                collection.label.characters.first,
                 ),
               ),
             ),
@@ -62,12 +73,11 @@ class CollectionView extends ConsumerWidget {
           );
         }
       },
-    );
+    );*/
   }
 }
 
 /* 
-
 
           class CollectionPreviewGenerator extends StatelessWidget {
   const CollectionPreviewGenerator({
