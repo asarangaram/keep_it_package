@@ -5,7 +5,6 @@ import 'package:store/store.dart';
 
 import '../models/filter/base_filter.dart';
 import '../providers/filters.dart';
-import 'add_new_filter.dart';
 import 'filter_view.dart';
 import 'text_filter.dart';
 
