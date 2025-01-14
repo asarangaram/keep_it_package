@@ -1,7 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
+
+import '../navigation/providers/active_collection.dart';
 
 enum GroupTypes { none, byOriginalDate }
 
@@ -14,10 +17,15 @@ class GetGroupedMedia extends ConsumerWidget {
     required this.builder,
     required this.incoming,
     required this.columns,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
   final int columns;
   final List<CLEntity> incoming;
+
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final Widget Function(List<GalleryGroupCLEntity<CLEntity>> galleryMap)
       builder;
   List<GalleryGroupCLEntity<CLEntity>> group(List<CLEntity> entities) {
@@ -69,7 +77,29 @@ class GetGroupedMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ids = incoming
+        .map((e) => (e as CLMedia).collectionId)
+        .where((e) => e != null)
+        .map((e) => e!)
+        .toSet()
+        .toList();
+
+    final collectionId = ref.watch(activeCollectionProvider);
     final method = ref.watch(groupMethodProvider);
+    if (collectionId == null) {
+      return GetCollectionsByIdList(
+        errorBuilder: errorBuilder,
+        loadingBuilder: loadingBuilder,
+        ids: ids,
+        builder: (collections) {
+          return switch (method) {
+            GroupTypes.none => builder(group(collections)),
+            GroupTypes.byOriginalDate => builder(groupByTime(collections)),
+          };
+        },
+      );
+    }
+
     return switch (method) {
       GroupTypes.none => builder(group(incoming)),
       GroupTypes.byOriginalDate => builder(groupByTime(incoming)),

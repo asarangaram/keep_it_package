@@ -41,6 +41,41 @@ class GetCollection extends ConsumerWidget {
   }
 }
 
+class GetCollectionsByIdList extends ConsumerWidget {
+  const GetCollectionsByIdList({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    required this.ids,
+    super.key,
+  });
+  final Widget Function(List<Collection> collections) builder;
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
+  final List<int> ids;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (ids.isEmpty) {
+      return builder([]);
+    }
+    return GetDBReader(
+      builder: (dbReader) {
+        final q = dbReader.getQuery(
+          DBQueries.collectionByIdList,
+          parameters: ['(${ids.join(', ')})'],
+        ) as StoreQuery<Collection>;
+        return GetFromStore<Collection>(
+          query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
+          builder: builder,
+        );
+      },
+    );
+  }
+}
+
 class GetCollectionMultiple extends ConsumerWidget {
   const GetCollectionMultiple({
     required this.builder,

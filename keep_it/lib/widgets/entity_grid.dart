@@ -94,6 +94,8 @@ class EntityGrid extends ConsumerWidget {
                             ),
                           )
                         : GetGroupedMedia(
+                            errorBuilder: errorBuilder,
+                            loadingBuilder: loadingBuilder,
                             incoming: filterred,
                             columns: numColumns,
                             builder: (galleryMap /* numColumns */) {

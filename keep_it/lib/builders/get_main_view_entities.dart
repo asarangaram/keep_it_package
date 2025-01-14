@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../navigation/providers/active_collection.dart';
-import 'showable_collections.dart';
 
 class GetMainViewEntities extends ConsumerWidget {
   const GetMainViewEntities({
@@ -20,7 +19,19 @@ class GetMainViewEntities extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionId = ref.watch(activeCollectionProvider);
-    return collectionId == null
+    return GetMediaByCollectionId(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      collectionId: collectionId,
+      builder: (media) {
+        return builder(media.entries);
+      },
+    );
+  }
+}
+/*
+import 'showable_collections.dart';
+collectionId == null
         ? GetShowableCollectionMultiple(
             errorBuilder: errorBuilder,
             loadingBuilder: loadingBuilder,
@@ -31,13 +42,5 @@ class GetMainViewEntities extends ConsumerWidget {
               return builder(collections.entries);
             },
           )
-        : GetMediaByCollectionId(
-            errorBuilder: errorBuilder,
-            loadingBuilder: loadingBuilder,
-            collectionId: collectionId,
-            builder: (media) {
-              return builder(media.entries);
-            },
-          );
-  }
-}
+        : 
+ */
