@@ -1,3 +1,4 @@
+export 'internal/draggable/menu_control.dart';
 export 'internal/extensions/list.dart' show Filter;
 
 /// This must go

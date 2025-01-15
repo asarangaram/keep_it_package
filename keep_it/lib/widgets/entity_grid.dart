@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,7 @@ class EntityGrid extends ConsumerWidget {
   }
 }
 
-class SelectionControl extends ConsumerWidget {
+class SelectionControl extends ConsumerStatefulWidget {
   const SelectionControl({
     required this.incoming,
     required this.builder,
@@ -143,12 +144,24 @@ class SelectionControl extends ConsumerWidget {
   }) builder;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _SelectionControlState();
+}
+
+class _SelectionControlState extends ConsumerState<SelectionControl> {
+  @override
+  Widget build(BuildContext context) {
     return ProviderScope(
-      child: builder(
-        items: incoming,
-        itemBuilder: itemBuilder,
-        labelBuilder: labelBuilder,
+      overrides: [
+        selectorProvider
+            .overrideWith((ref) => SelectorNotifier(widget.incoming)),
+        menuControlNotifierProvider
+            .overrideWith((ref) => MenuControlNotifier()),
+      ],
+      child: widget.builder(
+        items: widget.incoming,
+        itemBuilder: widget.itemBuilder,
+        labelBuilder: widget.labelBuilder,
       ),
     );
   }
