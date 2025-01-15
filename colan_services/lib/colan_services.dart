@@ -3,7 +3,11 @@ export 'internal/extensions/list.dart' show Filter;
 
 /// This must go
 export 'internal/gallery_view/cl_simple_gallery_view.dart';
+export 'internal/gallery_view/model/selector.dart';
 export 'internal/gallery_view/providers/selector.dart';
+export 'internal/gallery_view/selection/selectable_item.dart';
+export 'internal/gallery_view/selection/selectable_label.dart';
+export 'internal/gallery_view/selection/selection_count.dart';
 export 'internal/gallery_view/widgets/cl_grid.dart';
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;

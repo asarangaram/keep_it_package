@@ -67,7 +67,7 @@ class EntityGrid extends ConsumerWidget {
                   ),
                 _ => throw UnimplementedError(),
               },
-              labelBuilder: (context, gallery) {
+              labelBuilder: (context, galleryMap, gallery) {
                 return gallery.label == null
                     ? null
                     : CLText.large(
@@ -75,22 +75,32 @@ class EntityGrid extends ConsumerWidget {
                         textAlign: TextAlign.start,
                       );
               },
+              bannersBuilder: (context, galleryMap) {
+                return [];
+              },
               builder: ({
                 required items,
                 required itemBuilder,
                 required labelBuilder,
+                required bannersBuilder,
               }) {
                 return GetFilterredMedia(
                   errorBuilder: errorBuilder,
                   loadingBuilder: loadingBuilder,
                   incoming: entities,
-                  banners: const [],
-                  builder: (filterred, {List<Widget>? banners}) {
+                  bannersBuilder: bannersBuilder,
+                  builder: (
+                    List<CLEntity> filterred, {
+                    required List<Widget> Function(
+                      BuildContext,
+                      List<GalleryGroupCLEntity<CLEntity>>,
+                    ) bannersBuilder,
+                  }) {
                     return filterred.isEmpty
                         ? Center(
                             child: Column(
                               children: [
-                                if (banners != null) ...banners,
+                                ...bannersBuilder(context, []),
                               ],
                             ),
                           )
@@ -103,9 +113,7 @@ class EntityGrid extends ConsumerWidget {
                               return CLEntityGridView(
                                 identifier: identifier,
                                 galleryMap: galleryMap,
-                                banners: [
-                                  ...banners ?? [],
-                                ],
+                                bannersBuilder: bannersBuilder,
                                 labelBuilder: labelBuilder,
                                 itemBuilder: itemBuilder,
                                 columns: numColumns,
@@ -120,18 +128,80 @@ class EntityGrid extends ConsumerWidget {
   }
 }
 
-class SelectionControl extends ConsumerStatefulWidget {
+class SelectionControl extends ConsumerWidget {
   const SelectionControl({
     required this.incoming,
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
+    required this.bannersBuilder,
     super.key,
   });
   final List<CLEntity> incoming;
   final Widget Function(BuildContext, CLEntity) itemBuilder;
   final Widget? Function(
     BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    GalleryGroupCLEntity<CLEntity> gallery,
+  ) labelBuilder;
+  final List<Widget> Function(
+    BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+  ) bannersBuilder;
+  final Widget Function({
+    required List<CLEntity> items,
+    required Widget Function(BuildContext, CLEntity) itemBuilder,
+    required Widget? Function(
+      BuildContext context,
+      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+      GalleryGroupCLEntity<CLEntity> gallery,
+    ) labelBuilder,
+    required List<Widget> Function(
+      BuildContext context,
+      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    ) bannersBuilder,
+  }) builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    print('build SelectionControl');
+    final identifier = ref.watch(mainPageIdentifierProvider);
+    final selectionMode = ref.watch(selectModeProvider(identifier));
+    if (!selectionMode) {
+      return builder(
+        items: incoming,
+        itemBuilder: itemBuilder,
+        labelBuilder: labelBuilder,
+        bannersBuilder: bannersBuilder,
+      );
+    }
+    return ProviderScope(
+      overrides: [
+        selectorProvider.overrideWith((ref) => SelectorNotifier(incoming)),
+        menuControlNotifierProvider
+            .overrideWith((ref) => MenuControlNotifier()),
+      ],
+      child: SelectionContol0(
+        builder: builder,
+        itemBuilder: itemBuilder,
+        labelBuilder: labelBuilder,
+      ),
+    );
+  }
+}
+
+class SelectionContol0 extends ConsumerStatefulWidget {
+  const SelectionContol0({
+    required this.builder,
+    required this.itemBuilder,
+    required this.labelBuilder,
+    super.key,
+  });
+
+  final Widget Function(BuildContext, CLEntity) itemBuilder;
+  final Widget? Function(
+    BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     GalleryGroupCLEntity<CLEntity> gallery,
   ) labelBuilder;
   final Widget Function({
@@ -139,30 +209,113 @@ class SelectionControl extends ConsumerStatefulWidget {
     required Widget Function(BuildContext, CLEntity) itemBuilder,
     required Widget? Function(
       BuildContext context,
+      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
       GalleryGroupCLEntity<CLEntity> gallery,
     ) labelBuilder,
+    required List<Widget> Function(
+      BuildContext context,
+      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    ) bannersBuilder,
   }) builder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SelectionControlState();
+      _SelectionContol0State();
 }
 
-class _SelectionControlState extends ConsumerState<SelectionControl> {
+class _SelectionContol0State extends ConsumerState<SelectionContol0> {
+  final GlobalKey parentKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: [
-        selectorProvider
-            .overrideWith((ref) => SelectorNotifier(widget.incoming)),
-        menuControlNotifierProvider
-            .overrideWith((ref) => MenuControlNotifier()),
+    //final identifier = ref.watch(mainPageIdentifierProvider);
+    final selector = ref.watch(selectorProvider);
+    ref.listen(selectorProvider, (prev, curr) {
+      print(curr);
+    });
+    final incoming = selector.entities;
+
+    final selected = selector.count;
+
+    final total = selector.entities.length;
+
+    return Stack(
+      key: parentKey,
+      children: [
+        widget.builder(
+          items: incoming,
+          itemBuilder: (context, item) {
+            final itemWidget = widget.itemBuilder(
+              context,
+              item,
+            );
+
+            return SelectableItem(
+              isSelected:
+                  selector.isSelected([item]) != SelectionStatus.selectedNone,
+              onTap: () {
+                ref.read(selectorProvider.notifier).toggle([item]);
+              },
+              child: itemWidget,
+            );
+          },
+          labelBuilder: (context, galleryMap, gallery) {
+            final labelWidget =
+                widget.labelBuilder(context, galleryMap, gallery);
+            if (labelWidget == null) return const SizedBox.shrink();
+            final candidates =
+                galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList();
+            return SelectableLabel(
+              selectionStatus: selector.isSelected(
+                candidates,
+              ),
+              onSelect: () {
+                print('onSelect - start');
+                ref.read(selectorProvider.notifier).toggle(
+                      candidates,
+                    );
+                print('onSelect - done');
+              },
+              child: labelWidget,
+            );
+          },
+          bannersBuilder: (context, galleryMap) {
+            final allSelectedInVisible =
+                selector.isSelected(galleryMap.getEntities.toList()) ==
+                    SelectionStatus.selectedAll;
+            return [
+              SelectionCountView(
+                selectionMsg: selected == 0
+                    ? null
+                    : ' $selected '
+                        'of $total selected',
+                buttonLabel:
+                    allSelectedInVisible ? 'Select None' : 'Select All',
+                onPressed: () {
+                  if (allSelectedInVisible) {
+                    ref
+                        .read(selectorProvider.notifier)
+                        .deselect(galleryMap.getEntities.toList());
+                  } else {
+                    ref
+                        .read(selectorProvider.notifier)
+                        .select(galleryMap.getEntities.toList());
+                  }
+                },
+              ),
+            ];
+          },
+        ),
+        /* if (selector.items.isNotEmpty)
+          ActionsDraggableMenu<CLEntity>(
+            items: selector.items.toList(),
+            tagPrefix: 'Selection',
+            onDone: () {
+              ref.read(selectModeProvider(identifier).notifier).state = false;
+            },
+            selectionActions: null, // FIXME
+            parentKey: parentKey,
+          ), */
       ],
-      child: widget.builder(
-        items: widget.incoming,
-        itemBuilder: widget.itemBuilder,
-        labelBuilder: widget.labelBuilder,
-      ),
     );
   }
 }

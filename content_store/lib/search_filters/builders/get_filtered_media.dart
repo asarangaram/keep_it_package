@@ -32,20 +32,28 @@ class GetFilterredMedia extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.incoming,
-    this.banners,
+    required this.bannersBuilder,
     super.key,
   });
-  final Widget Function(List<CLEntity> filterred, {List<Widget>? banners})
-      builder;
+  final Widget Function(
+    List<CLEntity> filterred, {
+    required List<Widget> Function(
+      BuildContext,
+      List<GalleryGroupCLEntity<CLEntity>>,
+    ) bannersBuilder,
+  }) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
   final Widget Function()? loadingBuilder;
   final List<CLEntity> incoming;
-  final List<Widget>? banners;
+  final List<Widget> Function(
+    BuildContext,
+    List<GalleryGroupCLEntity<CLEntity>>,
+  ) bannersBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (incoming.first.runtimeType == Collection) {
-      return builder(incoming);
+      return builder(incoming, bannersBuilder: (context, galleryMap) => []);
     }
 
     final medias = CLMedias(incoming.map((e) => e as CLMedia).toList());
@@ -55,9 +63,7 @@ class GetFilterredMedia extends ConsumerWidget {
             '${incoming.length} is Shown.'
         : null;
     final banners = [
-      if (topMsg == null)
-        const SizedBox.shrink()
-      else
+      if (topMsg != null)
         Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: ColoredBox(
@@ -70,6 +76,14 @@ class GetFilterredMedia extends ConsumerWidget {
         ),
     ];
 
-    return builder(filterred.entries, banners: banners);
+    return builder(
+      filterred.entries,
+      bannersBuilder: (context, galleryMap) {
+        return [
+          ...banners,
+          ...bannersBuilder(context, galleryMap),
+        ];
+      },
+    );
   }
 }

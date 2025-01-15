@@ -10,22 +10,28 @@ class CLEntityGridView extends ConsumerWidget {
     required this.itemBuilder,
     required this.galleryMap,
     required this.columns,
-    required this.banners,
     required this.labelBuilder,
+    required this.bannersBuilder,
     super.key,
   });
   final String identifier;
   final List<GalleryGroupCLEntity<CLEntity>> galleryMap;
   final ItemBuilder itemBuilder;
   final int columns;
-  final List<Widget> banners;
+
   final Widget? Function(
     BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     GalleryGroupCLEntity<CLEntity> gallery,
   ) labelBuilder;
+  final List<Widget> Function(
+    BuildContext,
+    List<GalleryGroupCLEntity<CLEntity>>,
+  ) bannersBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final banners = bannersBuilder(context, galleryMap);
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: galleryMap.length + banners.length + 1,
@@ -50,7 +56,7 @@ class CLEntityGridView extends ConsumerWidget {
 
             return itemWidget;
           },
-          header: labelBuilder(context, gallery),
+          header: labelBuilder(context, galleryMap, gallery),
         );
       },
     );

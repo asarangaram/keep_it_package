@@ -64,5 +64,6 @@ class CLSelector {
   int get count => items.length;
 
   @override
-  String toString() => 'CLSelector(entities: $entities, items: $items)';
+  String toString() =>
+      'CLSelector(entities: ${entities.length}, items: ${items.map((e) => e.entityId).toList()})';
 }

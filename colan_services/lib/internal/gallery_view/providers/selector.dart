@@ -18,8 +18,9 @@ class SelectorNotifier extends StateNotifier<CLSelector> {
   void toggle(List<CLEntity> candidates) {
     if (state.isSelected(candidates) == SelectionStatus.selectedNone) {
       select(candidates);
+    } else {
+      deselect(candidates);
     }
-    return deselect(candidates);
   }
 }
 
