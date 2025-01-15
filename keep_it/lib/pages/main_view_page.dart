@@ -3,7 +3,6 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../builders/get_main_view_entities.dart';
 import '../navigation/providers/active_collection.dart';
 
 import '../widgets/actions/bottom_bar.dart';
@@ -35,11 +34,11 @@ class MainViewPage extends ConsumerWidget {
                           return RefreshIndicator(
                             onRefresh: /* isSelectionMode ? null : */
                                 () async => store.reloadStore(),
-                            child: GetMainViewEntities(
+                            child: GetMediaByCollectionId(
                               loadingBuilder: () => loadingWidget,
                               errorBuilder: errorBuilder,
-                              builder: (entities) => EntityGrid(
-                                entities: entities,
+                              builder: (clmedias) => EntityGrid(
+                                entities: clmedias.entries,
                                 loadingBuilder: () => loadingWidget,
                                 errorBuilder: errorBuilder,
                               ),
