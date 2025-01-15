@@ -17,7 +17,9 @@ class StringFilter<T> extends BaseFilter<T, String> {
 
   @override
   List<T> apply(List<T> items) {
-    return items.where((item) => fieldSelector(item).contains(query)).toList();
+    return items
+        .where((item) => fieldSelector(item).contains(query.toLowerCase()))
+        .toList();
   }
 
   @override

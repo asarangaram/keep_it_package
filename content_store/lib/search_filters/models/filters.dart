@@ -147,7 +147,7 @@ class SearchFilters {
   ];
   static StringFilter<CLMedia> textSearchFilter = StringFilter(
     name: 'TextSearch',
-    fieldSelector: (media) => [media.name, media.ref].join(' '),
+    fieldSelector: (media) => [media.name, media.ref].join(' ').toLowerCase(),
     query: '',
     enabled: true,
   );
