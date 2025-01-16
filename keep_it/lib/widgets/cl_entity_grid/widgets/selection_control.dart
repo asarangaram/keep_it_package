@@ -213,6 +213,11 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
                         icon: clIcons.pinAll,
                         onTap: () => theStore.mediaUpdater.pinToggleMultiple(
                           items.map((e) => e.id).toSet(),
+                          onGetPath: (media) {
+                            throw UnimplementedError(
+                              'onGetPath not yet implemented',
+                            );
+                          },
                         ),
                       ),
                   ];

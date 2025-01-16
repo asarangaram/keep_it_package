@@ -4,6 +4,7 @@ import 'package:animated_icon/animated_icon.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -321,16 +322,28 @@ class MediaView0 extends ConsumerWidget {
                         return true;
                       },
                     ),
-                    onPin: ac.onPin(
-                      () async {
-                        final res =
-                            await theStore.mediaUpdater.pinToggle(media.id!);
-                        if (res) {
-                          /*  setState(() {}); */
-                        }
-                        return res;
-                      },
-                    ),
+                    onPin: media.isMediaLocallyAvailable
+                        ? ac.onPin(
+                            () async {
+                              final res =
+                                  await theStore.mediaUpdater.pinToggleMultiple(
+                                {media.id},
+                                onGetPath: (media) {
+                                  if (media.isMediaLocallyAvailable) {
+                                    return theStore.directories
+                                        .getMediaAbsolutePath(media);
+                                  }
+
+                                  return null;
+                                },
+                              );
+                              if (res) {
+                                /*  setState(() {}); */
+                              }
+                              return res;
+                            },
+                          )
+                        : null,
                     media: media,
                   ),
                 ],

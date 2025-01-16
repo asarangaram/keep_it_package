@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -88,7 +89,19 @@ class MediaMenu extends ConsumerWidget {
         final onPin = ac.onPin(
           this.onPin != null
               ? this.onPin!()
-              : () async => theStore.mediaUpdater.pinToggle(media.id!),
+              : media.isMediaLocallyAvailable
+                  ? () async => theStore.mediaUpdater.pinToggleMultiple(
+                        {media.id},
+                        onGetPath: (media) {
+                          if (media.isMediaLocallyAvailable) {
+                            return theStore.directories
+                                .getMediaAbsolutePath(media);
+                          }
+
+                          return null;
+                        },
+                      )
+                  : null,
         );
 
         return GetCollection(
@@ -175,7 +188,7 @@ class MediaMenu extends ConsumerWidget {
                         onTap: onPin,
                         enabled: onPin != null,
                         title: 'Pin',
-                        icon: clIcons.pinAll,
+                        icon: media.pin != null ? clIcons.unPin : clIcons.pin,
                       ),
                       PullDownMenuItem(
                         onTap: onShare,

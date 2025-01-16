@@ -219,19 +219,16 @@ class MediaUpdater {
     return true;
   }
 
-  Future<bool> pinToggle(int id) async {
-    return pinToggleMultiple({id});
-  }
-
   Future<bool> pinToggleMultiple(
     Set<int?> ids2Delete, {
+    required String? Function(CLMedia media) onGetPath,
     bool shouldRefresh = true,
   }) async {
     final media =
         await store.reader.getMediasByIDList(ids2Delete.nonNullableList);
     final bool res;
     if (media.any((e) => e.pin == null)) {
-      res = await pinCreateMultiple(media);
+      res = await pinCreateMultiple(media, onGetPath: onGetPath);
     } else {
       res = await pinRemoveMultiple(media);
     }
@@ -262,6 +259,7 @@ class MediaUpdater {
 
   Future<bool> pinCreateMultiple(
     List<CLMedia> mediaMultiple, {
+    required String? Function(CLMedia media) onGetPath,
     bool shouldRefresh = true,
   }) async {
     if (mediaMultiple.isEmpty) {
@@ -270,18 +268,18 @@ class MediaUpdater {
     final updatedMedia = <CLMedia>[];
     for (final media in mediaMultiple) {
       if (media.id != null) {
-        final pin = await albumManager.addMedia(
-          p.join(
-            directories.media.pathString,
-            media.name,
-          ),
-          title: media.name,
-          isImage: media.type == CLMediaType.image,
-          isVideo: media.type == CLMediaType.video,
-          desc: 'KeepIT',
-        );
-        if (pin != null) {
-          updatedMedia.add(media.updateStatus(pin: () => pin));
+        final path = onGetPath(media);
+        if (path != null) {
+          final pin = await albumManager.addMedia(
+            path,
+            title: media.name,
+            isImage: media.type == CLMediaType.image,
+            isVideo: media.type == CLMediaType.video,
+            desc: 'KeepIT',
+          );
+          if (pin != null) {
+            updatedMedia.add(media.updateStatus(pin: () => pin));
+          }
         }
       }
     }
