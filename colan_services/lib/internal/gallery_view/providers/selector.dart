@@ -22,6 +22,10 @@ class SelectorNotifier extends StateNotifier<CLSelector> {
       deselect(candidates);
     }
   }
+
+  void clear() {
+    state = state.clear();
+  }
 }
 
 final selectorProvider =

@@ -46,6 +46,10 @@ class CLSelector {
     return SelectionStatus.selectedNone;
   }
 
+  List<CLEntity> selectedItems(List<CLEntity> candidates) {
+    return candidates.where(items.contains).toList();
+  }
+
   CLSelector select(List<CLEntity> candidates) {
     return copyWith(items: {...items, ...candidates});
   }
@@ -61,9 +65,13 @@ class CLSelector {
     return deselect(candidates);
   }
 
+  CLSelector clear() {
+    return CLSelector(entities: entities);
+  }
+
   int get count => items.length;
 
   @override
-  String toString() =>
-      'CLSelector(entities: ${entities.length}, items: ${items.map((e) => e.entityId).toList()})';
+  String toString() => 'CLSelector(entities: ${entities.length}, '
+      'items: ${items.map((e) => e.entityId).toList()})';
 }

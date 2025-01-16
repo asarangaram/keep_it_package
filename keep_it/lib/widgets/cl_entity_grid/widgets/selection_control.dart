@@ -2,12 +2,13 @@ import 'package:colan_services/colan_services.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../navigation/providers/active_collection.dart';
+import '../../../navigation/providers/active_collection.dart';
 
 class SelectionControl extends ConsumerWidget {
   const SelectionControl({
@@ -112,10 +113,6 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
 
     final incoming = selector.entities;
 
-    final selected = selector.count;
-
-    final total = selector.entities.length;
-
     return Stack(
       key: parentKey,
       children: [
@@ -155,29 +152,8 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
             );
           },
           bannersBuilder: (context, galleryMap) {
-            final allSelectedInVisible =
-                selector.isSelected(galleryMap.getEntities.toList()) ==
-                    SelectionStatus.selectedAll;
             return [
-              SelectionCountView(
-                selectionMsg: selected == 0
-                    ? null
-                    : ' $selected '
-                        'of $total selected',
-                buttonLabel:
-                    allSelectedInVisible ? 'Select None' : 'Select All',
-                onPressed: () {
-                  if (allSelectedInVisible) {
-                    ref
-                        .read(selectorProvider.notifier)
-                        .deselect(galleryMap.getEntities.toList());
-                  } else {
-                    ref
-                        .read(selectorProvider.notifier)
-                        .select(galleryMap.getEntities.toList());
-                  }
-                },
-              ),
+              SelectionBanner(galleryMap: galleryMap),
             ];
           },
         ),
@@ -246,6 +222,96 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
             },
           ),
       ],
+    );
+  }
+}
+
+class SelectionBanner extends ConsumerWidget {
+  const SelectionBanner({super.key, this.galleryMap = const []});
+  final List<GalleryGroupCLEntity> galleryMap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selector = ref.watch(selectorProvider);
+
+    final allCount = selector.entities.length;
+    final selectedInAllCount = selector.count;
+    final currentItems = galleryMap.getEntities.toList();
+
+    final selectionStatusOnVisible =
+        selector.isSelected(currentItems) == SelectionStatus.selectedAll;
+    final visibleCount = currentItems.length;
+    final selectedInVisible = selector.selectedItems(currentItems);
+    final selectedInVisibleCount = selectedInVisible.length;
+
+    return SelectionCountView(
+      buttonLabel: selectionStatusOnVisible ? 'Select None' : 'Select All',
+      onPressed: () {
+        if (selectionStatusOnVisible) {
+          ref
+              .read(selectorProvider.notifier)
+              .deselect(galleryMap.getEntities.toList());
+        } else {
+          ref
+              .read(selectorProvider.notifier)
+              .select(galleryMap.getEntities.toList());
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (selectedInAllCount > 0) ...[
+            if (selectedInVisibleCount > 0)
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text:
+                          '$selectedInVisibleCount of $visibleCount selected.',
+                    ),
+                    TextSpan(
+                      text: ' Clear ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          ref
+                              .read(selectorProvider.notifier)
+                              .deselect(selectedInVisible);
+                        },
+                    ),
+                  ],
+                ),
+              ),
+            if (visibleCount < allCount)
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Total: $selectedInAllCount of $allCount selected',
+                    ),
+                    TextSpan(
+                      text: ' Clear ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          ref.read(selectorProvider.notifier).clear();
+                        },
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ],
+      ),
     );
   }
 }

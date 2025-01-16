@@ -1,35 +1,40 @@
-import 'package:colan_services/colan_services.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it/widgets/when_empty.dart';
-
 import 'package:store/store.dart';
 
-import '../builders/grouper.dart';
-import '../navigation/providers/active_collection.dart';
-import 'cl_entity_grid_view.dart';
-import 'folders_and_files/collection_as_folder.dart';
-import 'folders_and_files/media_as_file.dart';
-import 'selection_control.dart';
+import '../cl_entity_grid_view.dart';
 
-class EntityGrid extends ConsumerWidget {
-  const EntityGrid({
+import 'widgets/grouper.dart';
+import 'widgets/selection_control.dart';
+
+class CLEntityGrid extends StatelessWidget {
+  const CLEntityGrid({
     required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
+    required this.itemBuilder,
+    required this.parentIdentifier,
+    required this.numColumns,
+    required this.getGrouped,
     super.key,
   });
   final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-
+  final Widget Function(
+    BuildContext,
+    CLEntity, {
+    required String parentIdentifier,
+  }) itemBuilder;
+  final String parentIdentifier;
+  final int numColumns;
+  final Future<List<GalleryGroupCLEntity<CLEntity>>> Function(
+    List<CLEntity> entities,
+  ) getGrouped;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    const numColumns = 3;
-    final identifier = ref.watch(mainPageIdentifierProvider);
+  Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       switchInCurve: Curves.easeInOut,
@@ -43,31 +48,11 @@ class EntityGrid extends ConsumerWidget {
           ? const WhenEmpty()
           : SelectionControl(
               incoming: entities,
-              itemBuilder: (context, item) => switch (item.runtimeType) {
-                Collection => CollectionAsFolder(
-                    collection: item as Collection,
-                    onTap: () {
-                      ref
-                          .read(
-                            activeCollectionProvider.notifier,
-                          )
-                          .state = item.id;
-                    },
-                  ),
-                CLMedia => MediaAsFile(
-                    media: item as CLMedia,
-                    parentIdentifier: identifier,
-                    onTap: () async {
-                      await PageManager.of(context, ref).openMedia(
-                        item.id!,
-                        collectionId: item.collectionId,
-                        parentIdentifier: identifier,
-                      );
-                      return true;
-                    },
-                  ),
-                _ => throw UnimplementedError(),
-              },
+              itemBuilder: (context, item) => itemBuilder(
+                context,
+                item,
+                parentIdentifier: parentIdentifier,
+              ),
               labelBuilder: (context, galleryMap, gallery) {
                 return gallery.label == null
                     ? null
@@ -102,9 +87,10 @@ class EntityGrid extends ConsumerWidget {
                       loadingBuilder: loadingBuilder,
                       incoming: filterred,
                       columns: numColumns,
+                      getGrouped: getGrouped,
                       builder: (galleryMap /* numColumns */) {
                         return CLEntityGridView(
-                          identifier: identifier,
+                          identifier: parentIdentifier,
                           galleryMap: galleryMap,
                           bannersBuilder: bannersBuilder,
                           labelBuilder: labelBuilder,

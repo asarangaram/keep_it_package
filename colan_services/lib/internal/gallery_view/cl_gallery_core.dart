@@ -7,7 +7,6 @@ import 'model/selector.dart';
 import 'providers/selector.dart';
 import 'selection/selectable_item.dart';
 import 'selection/selectable_label.dart';
-import 'selection/selection_count.dart';
 import 'widgets/cl_grid.dart';
 
 class CLGalleryCore<T extends CLEntity> extends ConsumerWidget {
@@ -79,9 +78,6 @@ class _CLGalleryCoreState1<T extends CLEntity>
 
     return Column(
       children: [
-        SelectionCount(
-          groupEntities: widget.galleryMap,
-        ),
         Expanded(
           child: ListView.builder(
             //key: ValueKey(widget.galleryMap),

@@ -65,7 +65,6 @@ class PageManager extends Navigator {
           );
       return media;
     } else {
-      print('media id passed: ${media.id}');
       final edittedMedia = await Navigator.of(context).pushNamed(
         '/mediaEditor?id=${media.id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
       );

@@ -1,45 +1,15 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import '../model/selector.dart';
-import '../providers/selector.dart';
-
-class SelectionCount extends ConsumerWidget {
-  const SelectionCount({super.key, this.groupEntities = const []});
-  final List<GalleryGroupCLEntity> groupEntities;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selector = ref.watch(selectorProvider);
-
-    final total = groupEntities.getEntityIds;
-    final selected = selector.count;
-    final allSelected =
-        selector.isSelected(groupEntities.getEntities.toList()) ==
-            SelectionStatus.selectedAll;
-    return SelectionCountView(
-      selectionMsg: selected == 0
-          ? null
-          : ' $selected '
-              'of $total selected',
-      buttonLabel: allSelected ? 'Select None' : 'Select All',
-      onPressed: () => ref
-          .read(selectorProvider.notifier)
-          .toggle(groupEntities.getEntities.toList()),
-    );
-  }
-}
 
 class SelectionCountView extends StatelessWidget {
   const SelectionCountView({
+    required this.child,
     super.key,
-    this.selectionMsg,
     this.buttonLabel,
     this.onPressed,
   });
-  final String? selectionMsg;
+  final Widget child;
   final String? buttonLabel;
   final void Function()? onPressed;
 
@@ -73,15 +43,9 @@ class SelectionCountView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (selectionMsg != null)
-              Flexible(
-                child: CLText.standard(
-                  selectionMsg!,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
-              )
-            else
-              Flexible(child: Container()),
+            Flexible(
+              child: child,
+            ),
             if (buttonLabel != null)
               ElevatedButton(
                 onPressed: onPressed,
