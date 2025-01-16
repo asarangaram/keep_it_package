@@ -68,8 +68,6 @@ class CollectionGrouper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final method = ref.watch(groupMethodProvider);
-    final canSync =
-        ref.watch(serverProvider.select((server) => server.canSync));
 
     final ids = incoming
         .map((e) => (e as CLMedia).collectionId)
@@ -82,20 +80,10 @@ class CollectionGrouper extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       ids: ids,
       builder: (collections) {
-        final List<Collection> visibleCollections;
-        if (!canSync) {
-          visibleCollections = collections
-              .where(
-                (c) => !c.hasServerUID || (c.hasServerUID && c.haveItOffline),
-              )
-              .toList();
-        } else {
-          visibleCollections = collections;
-        }
         return switch (method) {
-          GroupTypes.none => builder(visibleCollections.group(columns)),
+          GroupTypes.none => builder(collections.group(columns)),
           GroupTypes.byOriginalDate =>
-            builder(visibleCollections.groupByTime(columns)),
+            builder(collections.groupByTime(columns)),
         };
       },
     );

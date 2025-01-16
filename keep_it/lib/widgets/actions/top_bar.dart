@@ -15,6 +15,7 @@ class KeepItTopBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionId = ref.watch(activeCollectionProvider);
+    final identifier = ref.watch(mainPageIdentifierProvider);
     return GetCollection(
       id: collectionId,
       loadingBuilder: SizedBox.shrink,
@@ -33,9 +34,11 @@ class KeepItTopBar extends ConsumerWidget {
                 if (collectionId != null)
                   CLButtonIcon.small(
                     clIcons.pagePop,
-                    onTap: () => ref
-                        .read(activeCollectionProvider.notifier)
-                        .state = null,
+                    onTap: () {
+                      ref.read(selectModeProvider(identifier).notifier).state =
+                          false;
+                      ref.read(activeCollectionProvider.notifier).state = null;
+                    },
                   ),
                 Flexible(
                   flex: 3,

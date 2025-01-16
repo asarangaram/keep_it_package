@@ -164,7 +164,6 @@ class SelectionControl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('build SelectionControl');
     final identifier = ref.watch(mainPageIdentifierProvider);
     final selectionMode = ref.watch(selectModeProvider(identifier));
     if (!selectionMode) {
@@ -227,11 +226,9 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
   final GlobalKey parentKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    //final identifier = ref.watch(mainPageIdentifierProvider);
+    final identifier = ref.watch(mainPageIdentifierProvider);
     final selector = ref.watch(selectorProvider);
-    ref.listen(selectorProvider, (prev, curr) {
-      print(curr);
-    });
+
     final incoming = selector.entities;
 
     final selected = selector.count;
@@ -269,11 +266,9 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
                 candidates,
               ),
               onSelect: () {
-                print('onSelect - start');
                 ref.read(selectorProvider.notifier).toggle(
                       candidates,
                     );
-                print('onSelect - done');
               },
               child: labelWidget,
             );
@@ -305,16 +300,70 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
             ];
           },
         ),
-        /* if (selector.items.isNotEmpty)
-          ActionsDraggableMenu<CLEntity>(
-            items: selector.items.toList(),
-            tagPrefix: 'Selection',
-            onDone: () {
-              ref.read(selectModeProvider(identifier).notifier).state = false;
+        if (selector.items.isNotEmpty)
+          GetStoreUpdater(
+            builder: (theStore) {
+              return ActionsDraggableMenu<CLEntity>(
+                items: selector.items.toList(),
+                tagPrefix: 'Selection',
+                onDone: () {
+                  ref.read(selectModeProvider(identifier).notifier).state =
+                      false;
+                },
+                selectionActions: (context, entities) {
+                  final items = entities.map((e) => e as CLMedia).toList();
+                  return [
+                    CLMenuItem(
+                      title: 'Delete',
+                      icon: clIcons.deleteItem,
+                      onTap: () async {
+                        final confirmed =
+                            await ConfirmAction.deleteMediaMultiple(
+                                  context,
+                                  ref,
+                                  media: items,
+                                ) ??
+                                false;
+                        if (!confirmed) return confirmed;
+                        if (context.mounted) {
+                          return theStore.mediaUpdater.deleteMultiple(
+                            {...items.map((e) => e.id!)},
+                          );
+                        }
+                        return null;
+                      },
+                    ),
+                    CLMenuItem(
+                      title: 'Move',
+                      icon: clIcons.imageMoveAll,
+                      onTap: () => MediaWizardService.openWizard(
+                        context,
+                        ref,
+                        CLSharedMedia(
+                          entries: items,
+                          type: UniversalMediaSource.move,
+                        ),
+                      ),
+                    ),
+                    CLMenuItem(
+                      title: 'Share',
+                      icon: clIcons.imageShareAll,
+                      onTap: () => theStore.mediaUpdater.share(context, items),
+                    ),
+                    if (ColanPlatformSupport.isMobilePlatform)
+                      CLMenuItem(
+                        title: 'Pin',
+                        icon: clIcons.pinAll,
+                        onTap: () => theStore.mediaUpdater.pinToggleMultiple(
+                          items.map((e) => e.id).toSet(),
+                        ),
+                      ),
+                  ];
+                },
+                parentKey: parentKey,
+              );
             },
-            selectionActions: null, // FIXME
-            parentKey: parentKey,
-          ), */
+          ),
       ],
     );
   }

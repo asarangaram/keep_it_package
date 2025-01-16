@@ -3,6 +3,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../builders/available_media.dart';
 import '../navigation/providers/active_collection.dart';
 
 import '../widgets/actions/bottom_bar.dart';
@@ -34,7 +35,7 @@ class MainViewPage extends ConsumerWidget {
                           return RefreshIndicator(
                             onRefresh: /* isSelectionMode ? null : */
                                 () async => store.reloadStore(),
-                            child: GetMediaByCollectionId(
+                            child: GetAvailableMediaByCollectionId(
                               loadingBuilder: () => loadingWidget,
                               errorBuilder: errorBuilder,
                               builder: (clmedias) => EntityGrid(
