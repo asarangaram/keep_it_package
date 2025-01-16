@@ -65,11 +65,15 @@ class PageManager extends Navigator {
           );
       return media;
     } else {
-      final edittedMedia = await Navigator.pushNamed<CLMedia>(
-        context,
+      print('media id passed: ${media.id}');
+      final edittedMedia = await Navigator.of(context).pushNamed(
         '/mediaEditor?id=${media.id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
       );
-      return edittedMedia ?? media;
+      if (edittedMedia is CLMedia?) {
+        return edittedMedia ?? media;
+      } else {
+        throw Exception(UnsupportedError);
+      }
     }
   }
 
