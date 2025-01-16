@@ -3,20 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../navigation/providers/active_collection.dart';
+
 class GetAvailableMediaByCollectionId extends ConsumerWidget {
   const GetAvailableMediaByCollectionId({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    this.collectionId,
     super.key,
   });
   final Widget Function(CLMedias items) builder;
   final Widget Function(Object, StackTrace)? errorBuilder;
   final Widget Function()? loadingBuilder;
-  final int? collectionId;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final collectionId = ref.watch(activeCollectionProvider);
     final canSync =
         ref.watch(serverProvider.select((server) => server.canSync));
     return GetMediaByCollectionId(
@@ -31,7 +33,8 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
                 .where(
                   (c) =>
                       !c.hasServerUID ||
-                      (c.hasServerUID && (c.haveItOffline ?? false)),
+                      (c.hasServerUID &&
+                          ((c.haveItOffline ?? false) || c.isMediaCached)),
                 )
                 .toList(),
           );
