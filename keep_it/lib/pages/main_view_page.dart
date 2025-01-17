@@ -17,15 +17,17 @@ import '../widgets/actions/top_bar.dart';
 
 import '../widgets/folders_and_files/collection_as_folder.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
+import '../widgets/when_error.dart';
 
 class MainViewPage extends ConsumerWidget {
   const MainViewPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Widget errorBuilder(Object e, StackTrace st) =>
-        ErrorView(error: e, stackTrace: st);
-    const Widget loadingWidget = LoadingView();
+    Widget errorBuilder(Object e, StackTrace st) => WhenError(
+          errorMessage: e.toString(),
+        );
+    const Widget loadingWidget = CLLoadingView();
     return AppTheme(
       child: Scaffold(
         body: OnSwipe(
@@ -88,14 +90,8 @@ class KeepItMainGrid extends ConsumerWidget {
     final identifier = ref.watch(mainPageIdentifierProvider);
     final selectionMode = ref.watch(selectModeProvider(identifier));
     return GetStoreUpdater(
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
-      },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (theStore) {
         return GalleryView(
           entities: clmedias.entries,

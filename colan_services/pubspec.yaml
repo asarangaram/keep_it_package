@@ -58,6 +58,7 @@ dependencies:
   path_provider: ^2.1.4
   photo_manager: ^3.2.3
   pie_chart: ^5.4.0
+  progress_indicators: ^1.0.0
   pull_down_button: ^0.10.2
   share_handler: ^0.0.21
   share_plus: ^10.0.0

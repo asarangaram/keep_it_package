@@ -1,0 +1,97 @@
+import 'dart:math' as math;
+import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
+import 'package:flutter/material.dart';
+import 'package:media_viewers/media_viewers.dart';
+import 'package:store/store.dart';
+
+class MediaPreviewService extends StatelessWidget {
+  const MediaPreviewService({
+    required this.media,
+    required this.parentIdentifier,
+    required this.autoStart,
+    required this.autoPlay,
+    required this.onLockPage,
+    required this.isLocked,
+    super.key,
+  });
+
+  final CLMedia media;
+  final String parentIdentifier;
+  final bool autoStart;
+  final bool autoPlay;
+  final void Function({required bool lock})? onLockPage;
+  final bool isLocked;
+
+  @override
+  Widget build(BuildContext context) {
+    return GetStoreUpdater(
+      errorBuilder: BrokenImage.show,
+      loadingBuilder: GreyShimmer.show,
+      builder: (theStore) {
+        return GetPreviewUri(
+          errorBuilder: BrokenImage.show,
+          loadingBuilder: GreyShimmer.show,
+          id: media.id!,
+          builder: (previewUri) {
+            /* log(
+              'preview URI: $previewUri',
+              name: 'MediaView | build',
+            ); */
+            return Hero(
+              tag: '$parentIdentifier /item/${media.id}',
+              child: ImageViewer.basic(
+                uri: previewUri,
+                autoStart: autoStart,
+                autoPlay: autoPlay,
+                onLockPage: onLockPage,
+                isLocked: isLocked,
+                fit: BoxFit.cover,
+                overlays: [
+                  if (media.pin != null)
+                    OverlayWidgets(
+                      alignment: Alignment.bottomRight,
+                      child: FutureBuilder(
+                        future: theStore.albumManager.isPinBroken(media.pin),
+                        builder: (context, snapshot) {
+                          return Transform.rotate(
+                            angle: math.pi / 4,
+                            child: CLIcon.veryLarge(
+                              snapshot.data ?? false
+                                  ? clIcons.brokenPin
+                                  : clIcons.pinned,
+                              color: snapshot.data ?? false
+                                  ? Colors.red
+                                  : Colors.blue,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  if (media.type == CLMediaType.video)
+                    OverlayWidgets(
+                      alignment: Alignment.center,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color:
+                              Theme.of(context).colorScheme.onSurface.withAlpha(
+                                    192,
+                                  ), // Color for the circular container
+                        ),
+                        child: CLIcon.veryLarge(
+                          clIcons.playerPlay,
+                          color:
+                              CLTheme.of(context).colors.iconColorTransparent,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}

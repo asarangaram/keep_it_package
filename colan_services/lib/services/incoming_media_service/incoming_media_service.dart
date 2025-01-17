@@ -1,8 +1,8 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../basic_page_service/cl_error_view.dart';
 import '../media_wizard_service/media_wizard_service.dart';
 import 'models/cl_shared_media.dart';
 import 'step1_analyse.dart';

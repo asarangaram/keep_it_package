@@ -4,10 +4,10 @@ export 'internal/extensions/list.dart' show Filter;
 
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
+export 'services/basic_page_service/cl_error_view.dart' show CLErrorView;
+export 'services/basic_page_service/cl_loading_view.dart' show CLLoadingView;
 export 'services/basic_page_service/dialogs.dart';
 export 'services/basic_page_service/empty_state.dart';
-export 'services/basic_page_service/error_view.dart';
-export 'services/basic_page_service/loading_view.dart';
 export 'services/basic_page_service/page_manager.dart';
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart';
@@ -23,7 +23,7 @@ export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_view_service/models/action_control.dart';
 export 'services/media_view_service/providers/group_view.dart';
-export 'services/media_view_service/widgets/stale_media_indicator.dart';
+export 'services/media_view_service/widgets/stale_media_indicator_service.dart';
 export 'services/media_wizard_service/media_wizard_service.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;
 export 'services/notification_services/notification_service.dart'

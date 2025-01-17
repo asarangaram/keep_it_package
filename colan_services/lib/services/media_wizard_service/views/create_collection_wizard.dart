@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
+import '../../basic_page_service/cl_loading_view.dart';
 import 'edit_collection_description.dart';
 import 'label_viewer.dart';
 import 'pick_collection.dart';

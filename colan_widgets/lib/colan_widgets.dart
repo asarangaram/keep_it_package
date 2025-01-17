@@ -31,9 +31,7 @@ export 'src/theme/state/cl_theme.dart';
 export 'src/utils/key_listener.dart';
 export 'src/utils/platform_support.dart';
 export 'src/utils/rand_image_generator.dart';
-export 'src/views/appearance/cl_error_view.dart';
 export 'src/views/appearance/cl_fullscreen_box.dart';
-export 'src/views/appearance/cl_loading_view.dart';
 export 'src/views/appearance/keep_it_main_view.dart';
 export 'src/views/quick_menu/cl_quickmenu.dart';
 export 'src/views/stale_media_indicator_view.dart'

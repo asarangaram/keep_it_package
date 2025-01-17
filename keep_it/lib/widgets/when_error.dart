@@ -2,13 +2,19 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/navigation/providers/active_collection.dart';
 
-import '../navigation/providers/active_collection.dart';
-
-class WhenEmpty extends ConsumerWidget {
-  const WhenEmpty({
+class WhenError extends ConsumerWidget {
+  const WhenError({
+    required this.errorMessage,
     super.key,
+    this.errorDetails,
+    this.onRecover,
   });
+
+  final String errorMessage;
+  final String? errorDetails;
+  final CLMenuItem? onRecover;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,11 +29,9 @@ class WhenEmpty extends ConsumerWidget {
               return true;
             },
           );
-
     return CLErrorView(
-      errorMessage: 'Empty',
-      errorDetails: 'Go Online to view collections '
-          'in the server',
+      errorMessage: errorMessage,
+      errorDetails: errorDetails,
       onRecover: onRecover,
     );
   }

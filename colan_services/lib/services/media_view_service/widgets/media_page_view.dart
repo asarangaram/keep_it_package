@@ -12,6 +12,8 @@ class MediaPageView extends ConsumerStatefulWidget {
     required this.startIndex,
     required this.parentIdentifier,
     required this.isLocked,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     this.onLockPage,
     super.key,
   });
@@ -22,7 +24,8 @@ class MediaPageView extends ConsumerStatefulWidget {
   final int startIndex;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
-
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   @override
   ConsumerState<MediaPageView> createState() => MediaPageViewState();
 }
@@ -73,6 +76,8 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
                 autoPlay: currIndex == index,
                 onLockPage: widget.onLockPage,
                 isLocked: widget.isLocked,
+                errorBuilder: widget.errorBuilder,
+                loadingBuilder: widget.loadingBuilder,
               ),
             ),
             if (showControl.showNotes && !widget.isLocked)

@@ -14,6 +14,8 @@ class MediaViewService extends StatelessWidget {
   factory MediaViewService({
     required CLMedia media,
     required String parentIdentifier,
+    required Widget Function(Object, StackTrace) errorBuilder,
+    required Widget Function() loadingBuilder,
     Key? key,
   }) {
     return MediaViewService._(
@@ -22,6 +24,8 @@ class MediaViewService extends StatelessWidget {
       parentIdentifier: parentIdentifier,
       key: key,
       isPreview: false,
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
     );
   }
   factory MediaViewService.preview(
@@ -41,6 +45,8 @@ class MediaViewService extends StatelessWidget {
     required int initialMediaIndex,
     required List<CLMedia> media,
     required String parentIdentifier,
+    required Widget Function(Object, StackTrace) errorBuilder,
+    required Widget Function() loadingBuilder,
     Key? key,
   }) {
     return MediaViewService._(
@@ -49,6 +55,8 @@ class MediaViewService extends StatelessWidget {
       parentIdentifier: parentIdentifier,
       key: key,
       isPreview: false,
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
     );
   }
   const MediaViewService._({
@@ -57,13 +65,16 @@ class MediaViewService extends StatelessWidget {
     required this.parentIdentifier,
     required this.isPreview,
     super.key,
+    this.errorBuilder,
+    this.loadingBuilder,
   });
 
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
   final bool isPreview;
-
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
   @override
   Widget build(BuildContext context) {
     if (isPreview) {
@@ -76,12 +87,17 @@ class MediaViewService extends StatelessWidget {
         ),
       );
     }
+    if (errorBuilder == null || loadingBuilder == null) {
+      throw Error();
+    }
     if (media.length == 1) {
       return MediaViewService0._(
         initialMediaIndex: 0,
         media: media,
         parentIdentifier: parentIdentifier,
         key: key,
+        errorBuilder: errorBuilder!,
+        loadingBuilder: loadingBuilder!,
       );
     }
 
@@ -90,6 +106,8 @@ class MediaViewService extends StatelessWidget {
       media: media,
       parentIdentifier: parentIdentifier,
       key: key,
+      errorBuilder: errorBuilder!,
+      loadingBuilder: loadingBuilder!,
     );
   }
 }
@@ -99,12 +117,16 @@ class MediaViewService0 extends ConsumerStatefulWidget {
     required this.initialMediaIndex,
     required this.media,
     required this.parentIdentifier,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
 
   final List<CLMedia> media;
   final int initialMediaIndex;
   final String parentIdentifier;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -155,6 +177,8 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                   onLockPage: onLockPage,
                   autoStart: true,
                   autoPlay: true,
+                  errorBuilder: widget.errorBuilder,
+                  loadingBuilder: widget.loadingBuilder,
                 ),
               ),
               if (showControl.showNotes && !lockPage)
@@ -178,6 +202,8 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
             parentIdentifier: widget.parentIdentifier,
             isLocked: lockPage,
             onLockPage: onLockPage,
+            errorBuilder: widget.errorBuilder,
+            loadingBuilder: widget.loadingBuilder,
           );
   }
 

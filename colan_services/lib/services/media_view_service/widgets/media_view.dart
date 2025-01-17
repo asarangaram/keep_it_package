@@ -1,7 +1,4 @@
-import 'dart:math' as math;
-
-import 'package:animated_icon/animated_icon.dart';
-
+import 'package:colan_services/services/media_view_service/widgets/media_preview_service.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:content_store/extensions/ext_cldirectories.dart';
@@ -27,6 +24,8 @@ class MediaView extends StatelessWidget {
     required String parentIdentifier,
     required bool autoStart,
     required bool autoPlay,
+    required Widget Function(Object, StackTrace) errorBuilder,
+    required Widget Function() loadingBuilder,
     bool isLocked = false,
     void Function({required bool lock})? onLockPage,
     Key? key,
@@ -40,6 +39,8 @@ class MediaView extends StatelessWidget {
       autoStart: autoStart,
       autoPlay: autoPlay,
       onLockPage: onLockPage,
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
     );
   }
   factory MediaView.preview(
@@ -64,6 +65,8 @@ class MediaView extends StatelessWidget {
     required this.autoPlay,
     this.onLockPage,
     super.key,
+    this.errorBuilder,
+    this.loadingBuilder,
   });
   final CLMedia media;
 
@@ -74,7 +77,8 @@ class MediaView extends StatelessWidget {
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
   final bool isPreview;
-
+  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function()? loadingBuilder;
   @override
   Widget build(BuildContext context) {
     /* log(
@@ -83,78 +87,18 @@ class MediaView extends StatelessWidget {
     ); */
 
     if (isPreview) {
-      return GetStoreUpdater(
-        errorBuilder: BrokenImage.show,
-        loadingBuilder: GreyShimmer.show,
-        builder: (theStore) {
-          return GetPreviewUri(
-            errorBuilder: BrokenImage.show,
-            loadingBuilder: GreyShimmer.show,
-            id: media.id!,
-            builder: (previewUri) {
-              /* log(
-                'preview URI: $previewUri',
-                name: 'MediaView | build',
-              ); */
-              return Hero(
-                tag: '$parentIdentifier /item/${media.id}',
-                child: ImageViewer.basic(
-                  uri: previewUri,
-                  autoStart: autoStart,
-                  autoPlay: autoPlay,
-                  onLockPage: onLockPage,
-                  isLocked: isLocked,
-                  fit: BoxFit.cover,
-                  overlays: [
-                    if (media.pin != null)
-                      OverlayWidgets(
-                        alignment: Alignment.bottomRight,
-                        child: FutureBuilder(
-                          future: theStore.albumManager.isPinBroken(media.pin),
-                          builder: (context, snapshot) {
-                            return Transform.rotate(
-                              angle: math.pi / 4,
-                              child: CLIcon.veryLarge(
-                                snapshot.data ?? false
-                                    ? clIcons.brokenPin
-                                    : clIcons.pinned,
-                                color: snapshot.data ?? false
-                                    ? Colors.red
-                                    : Colors.blue,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    if (media.type == CLMediaType.video)
-                      OverlayWidgets(
-                        alignment: Alignment.center,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withAlpha(
-                                  192,
-                                ), // Color for the circular container
-                          ),
-                          child: CLIcon.veryLarge(
-                            clIcons.playerPlay,
-                            color:
-                                CLTheme.of(context).colors.iconColorTransparent,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
+      return MediaPreviewService(
+        media: media,
+        parentIdentifier: parentIdentifier,
+        autoStart: autoStart,
+        autoPlay: autoPlay,
+        onLockPage: onLockPage,
+        isLocked: isLocked,
       );
     }
-
+    if (errorBuilder == null || loadingBuilder == null) {
+      throw Error();
+    }
     return MediaView0(
       media: media,
       parentIdentifier: parentIdentifier,
@@ -162,29 +106,8 @@ class MediaView extends StatelessWidget {
       autoPlay: autoPlay,
       autoStart: autoStart,
       onLockPage: onLockPage,
-    );
-  }
-}
-
-class MediaIsDownloading extends StatelessWidget {
-  const MediaIsDownloading({
-    required this.icon,
-    super.key,
-    this.color = Colors.black,
-  });
-
-  final AnimateIcons icon;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimateIcon(
-      key: UniqueKey(),
-      onTap: () {},
-      iconType: IconType.continueAnimation,
-      color: color,
-      animateIcon: icon,
-      //animateIcon: AnimateIcons.download,
+      errorBuilder: errorBuilder!,
+      loadingBuilder: loadingBuilder!,
     );
   }
 }
@@ -196,6 +119,8 @@ class MediaView0 extends ConsumerWidget {
     required this.isLocked,
     required this.autoStart,
     required this.autoPlay,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     this.onLockPage,
     super.key,
   });
@@ -207,30 +132,19 @@ class MediaView0 extends ConsumerWidget {
   final bool autoPlay;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
-
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ac = AccessControlExt.onGetMediaActionControl(media);
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
-      },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (theStore) {
         return GetMediaUri(
-          errorBuilder: (_, __) {
-            throw UnimplementedError('errorBuilder');
-            // ignore: dead_code
-          },
-          loadingBuilder: () {
-            throw UnimplementedError('loadingBuilder');
-            // ignore: dead_code
-          },
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
           id: media.id!,
           builder: (mediaUri) {
             /* log(

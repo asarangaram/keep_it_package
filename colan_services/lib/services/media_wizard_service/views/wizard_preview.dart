@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../basic_page_service/error_view.dart';
-import '../../basic_page_service/loading_view.dart';
+import '../../basic_page_service/cl_error_view.dart';
+import '../../basic_page_service/cl_loading_view.dart';
 import '../../basic_page_service/page_manager.dart';
 
 import '../../gallery_view_service/gallery_view.dart';
@@ -46,7 +46,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     }
 
     Widget errorBuilder(Object e, StackTrace st) =>
-        ErrorView(error: e, stackTrace: st);
+        CLErrorView(errorMessage: e.toString());
     return GetDBReader(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
@@ -62,7 +62,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           emptyWidget: const CLText.large('Nothing to show here'),
           entities: media0.entries,
           numColumns: 3,
-          loadingBuilder: LoadingView.new,
+          loadingBuilder: CLLoadingView.new,
           errorBuilder: errorBuilder,
           onGroupItems: (entities) async => entities.group(3),
           selectionMode: onSelectionChanged != null, // FIXME
