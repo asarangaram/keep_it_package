@@ -8,7 +8,7 @@ class ActionsDraggableMenu<T> extends StatelessWidget {
   const ActionsDraggableMenu({
     required this.tagPrefix,
     required this.parentKey,
-    required this.selectionActions,
+    required this.selectionActionsBuilder,
     required this.items,
     required this.onDone,
     super.key,
@@ -16,7 +16,7 @@ class ActionsDraggableMenu<T> extends StatelessWidget {
   final String tagPrefix;
   final GlobalKey parentKey;
   final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
-      selectionActions;
+      selectionActionsBuilder;
   final VoidCallback onDone;
   final List<T> items;
   @override
@@ -25,7 +25,7 @@ class ActionsDraggableMenu<T> extends StatelessWidget {
       key: ValueKey('$tagPrefix DraggableMenu'),
       parentKey: parentKey,
       child: Menu(
-        menuItems: selectionActions!(
+        menuItems: selectionActionsBuilder!(
           context,
           items,
         ).insertOnDone(onDone),

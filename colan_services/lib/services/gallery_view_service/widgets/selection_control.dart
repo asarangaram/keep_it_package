@@ -6,9 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../../services/basic_page_service/dialogs.dart';
-import '../../services/incoming_media_service/models/cl_shared_media.dart';
-import '../../services/media_wizard_service/media_wizard_service.dart';
 import '../models/selector.dart';
 import '../providers/menu_control.dart';
 import '../providers/selector.dart';
@@ -26,6 +23,7 @@ class SelectionControl extends ConsumerWidget {
     required this.bannersBuilder,
     required this.selectionMode,
     required this.onChangeSelectionMode,
+    required this.selectionActionsBuilder,
     super.key,
   });
   final List<CLEntity> incoming;
@@ -54,6 +52,8 @@ class SelectionControl extends ConsumerWidget {
   }) builder;
   final bool selectionMode;
   final void Function({required bool enable}) onChangeSelectionMode;
+  final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
+      selectionActionsBuilder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!selectionMode) {
@@ -75,6 +75,7 @@ class SelectionControl extends ConsumerWidget {
         itemBuilder: itemBuilder,
         labelBuilder: labelBuilder,
         onChangeSelectionMode: onChangeSelectionMode,
+        selectionActionsBuilder: selectionActionsBuilder,
       ),
     );
   }
@@ -86,6 +87,7 @@ class SelectionContol0 extends ConsumerStatefulWidget {
     required this.itemBuilder,
     required this.labelBuilder,
     required this.onChangeSelectionMode,
+    required this.selectionActionsBuilder,
     super.key,
   });
 
@@ -109,6 +111,8 @@ class SelectionContol0 extends ConsumerStatefulWidget {
     ) bannersBuilder,
   }) builder;
   final void Function({required bool enable}) onChangeSelectionMode;
+  final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
+      selectionActionsBuilder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -176,61 +180,7 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
                 onDone: () {
                   widget.onChangeSelectionMode(enable: false);
                 },
-                selectionActions: (context, entities) {
-                  final items = entities.map((e) => e as CLMedia).toList();
-                  return [
-                    CLMenuItem(
-                      title: 'Delete',
-                      icon: clIcons.deleteItem,
-                      onTap: () async {
-                        final confirmed =
-                            await ConfirmAction.deleteMediaMultiple(
-                                  context,
-                                  ref,
-                                  media: items,
-                                ) ??
-                                false;
-                        if (!confirmed) return confirmed;
-                        if (context.mounted) {
-                          return theStore.mediaUpdater.deleteMultiple(
-                            {...items.map((e) => e.id!)},
-                          );
-                        }
-                        return null;
-                      },
-                    ),
-                    CLMenuItem(
-                      title: 'Move',
-                      icon: clIcons.imageMoveAll,
-                      onTap: () => MediaWizardService.openWizard(
-                        context,
-                        ref,
-                        CLSharedMedia(
-                          entries: items,
-                          type: UniversalMediaSource.move,
-                        ),
-                      ),
-                    ),
-                    CLMenuItem(
-                      title: 'Share',
-                      icon: clIcons.imageShareAll,
-                      onTap: () => theStore.mediaUpdater.share(context, items),
-                    ),
-                    if (ColanPlatformSupport.isMobilePlatform)
-                      CLMenuItem(
-                        title: 'Pin',
-                        icon: clIcons.pinAll,
-                        onTap: () => theStore.mediaUpdater.pinToggleMultiple(
-                          items.map((e) => e.id).toSet(),
-                          onGetPath: (media) {
-                            throw UnimplementedError(
-                              'onGetPath not yet implemented',
-                            );
-                          },
-                        ),
-                      ),
-                  ];
-                },
+                selectionActionsBuilder: widget.selectionActionsBuilder,
                 parentKey: parentKey,
               );
             },

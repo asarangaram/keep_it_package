@@ -8,8 +8,8 @@ import 'widgets/cl_entity_grid_view.dart';
 import 'widgets/grouper.dart';
 import 'widgets/selection_control.dart';
 
-class CLEntityGrid extends StatelessWidget {
-  const CLEntityGrid({
+class GalleryView extends StatelessWidget {
+  const GalleryView({
     required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
@@ -19,7 +19,8 @@ class CLEntityGrid extends StatelessWidget {
     required this.getGrouped,
     required this.selectionMode,
     required this.onChangeSelectionMode,
-    required this.whenEmpty,
+    required this.emptyWidget,
+    required this.selectionActionsBuilder,
     super.key,
   });
   final List<CLEntity> entities;
@@ -37,7 +38,9 @@ class CLEntityGrid extends StatelessWidget {
   ) getGrouped;
   final bool selectionMode;
   final void Function({required bool enable}) onChangeSelectionMode;
-  final Widget whenEmpty;
+  final Widget emptyWidget;
+  final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
+      selectionActionsBuilder;
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
@@ -50,10 +53,11 @@ class CLEntityGrid extends StatelessWidget {
       ) =>
           FadeTransition(opacity: animation, child: child),
       child: entities.isEmpty
-          ? whenEmpty
+          ? emptyWidget
           : SelectionControl(
               selectionMode: selectionMode,
               onChangeSelectionMode: onChangeSelectionMode,
+              selectionActionsBuilder: selectionActionsBuilder,
               incoming: entities,
               itemBuilder: (context, item) => itemBuilder(
                 context,

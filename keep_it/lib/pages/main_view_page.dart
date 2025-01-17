@@ -1,5 +1,6 @@
 import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,24 +87,78 @@ class KeepItMainGrid extends ConsumerWidget {
     final method = ref.watch(groupMethodProvider);
     final identifier = ref.watch(mainPageIdentifierProvider);
     final selectionMode = ref.watch(selectModeProvider(identifier));
-    return GetStore(
-      builder: (store) {
-        return CLEntityGrid(
+    return GetStoreUpdater(
+      builder: (theStore) {
+        return GalleryView(
           entities: clmedias.entries,
           loadingBuilder: loadingBuilder,
           errorBuilder: errorBuilder,
           parentIdentifier: identifier,
           numColumns: 3,
           selectionMode: selectionMode,
-          whenEmpty: const WhenEmpty(),
+          emptyWidget: const WhenEmpty(),
           onChangeSelectionMode: ({required enable}) {
             ref.read(selectModeProvider(identifier).notifier).state = enable;
+          },
+          selectionActionsBuilder: (context, entities) {
+            final items = entities.map((e) => e as CLMedia).toList();
+            return [
+              CLMenuItem(
+                title: 'Delete',
+                icon: clIcons.deleteItem,
+                onTap: () async {
+                  final confirmed = await ConfirmAction.deleteMediaMultiple(
+                        context,
+                        ref,
+                        media: items,
+                      ) ??
+                      false;
+                  if (!confirmed) return confirmed;
+                  if (context.mounted) {
+                    return theStore.mediaUpdater.deleteMultiple(
+                      {...items.map((e) => e.id!)},
+                    );
+                  }
+                  return null;
+                },
+              ),
+              CLMenuItem(
+                title: 'Move',
+                icon: clIcons.imageMoveAll,
+                onTap: () => MediaWizardService.openWizard(
+                  context,
+                  ref,
+                  CLSharedMedia(
+                    entries: items,
+                    type: UniversalMediaSource.move,
+                  ),
+                ),
+              ),
+              CLMenuItem(
+                title: 'Share',
+                icon: clIcons.imageShareAll,
+                onTap: () => theStore.mediaUpdater.share(context, items),
+              ),
+              if (ColanPlatformSupport.isMobilePlatform)
+                CLMenuItem(
+                  title: 'Pin',
+                  icon: clIcons.pinAll,
+                  onTap: () => theStore.mediaUpdater.pinToggleMultiple(
+                    items.map((e) => e.id).toSet(),
+                    onGetPath: (media) {
+                      throw UnimplementedError(
+                        'onGetPath not yet implemented',
+                      );
+                    },
+                  ),
+                ),
+            ];
           },
           getGrouped: (entities) => getGrouped(
             entities,
             method: method,
             id: collectionId,
-            store: store,
+            store: theStore.store,
           ),
           itemBuilder: (
             context,
