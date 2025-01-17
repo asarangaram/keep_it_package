@@ -12,7 +12,7 @@ class GetDBReader extends ConsumerWidget {
     super.key,
   });
   final Widget Function(StoreReader dbReader) builder;
-  final Widget Function(Object e, StackTrace st) errorBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override

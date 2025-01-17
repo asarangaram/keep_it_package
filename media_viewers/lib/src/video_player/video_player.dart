@@ -28,7 +28,7 @@ class VideoPlayer extends ConsumerWidget {
   final bool isLocked;
 
   final Widget? placeHolder;
-  final Widget Function(Object errorMessage, StackTrace error) errorBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override

@@ -16,21 +16,21 @@ class ServerSettingsImpl extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetNetworkScanner(
       errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       builder: (scanner) {
         return GetServer(
           errorBuilder: (_, __) {
-            throw UnimplementedError('errorBuilder');
+            return const SizedBox.shrink();
             // ignore: dead_code
           },
           loadingBuilder: () {
-            throw UnimplementedError('loadingBuilder');
+            return const SizedBox.shrink();
             // ignore: dead_code
           },
           builder: (server) {

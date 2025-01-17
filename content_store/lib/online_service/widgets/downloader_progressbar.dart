@@ -12,11 +12,11 @@ class DownloaderProgressbar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDownloaderStatus(
       errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       builder: (downloaderStatus) {
@@ -57,12 +57,10 @@ class DownloaderProgressPie extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDownloaderStatus(
       errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
+        return const SizedBox.shrink();
       },
       loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
+        return const SizedBox.shrink();
       },
       builder: (downloaderStatus) {
         final total = downloaderStatus.total.toDouble();
@@ -117,11 +115,11 @@ class ActiveDownloadIndicator extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDownloaderStatus(
       errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       builder: (downloaderStatus) {

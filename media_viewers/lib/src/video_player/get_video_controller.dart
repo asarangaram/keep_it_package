@@ -22,7 +22,7 @@ class GetVideoController extends ConsumerWidget {
     // VideoPlayerState state,
     VideoControls controller,
   ) builder;
-  final Widget Function(Object errorMessage, StackTrace error) errorBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
@@ -54,7 +54,7 @@ class GetVideoControllerWithState extends ConsumerWidget {
     VideoPlayerState state,
     VideoPlayerController controller,
   ) builder;
-  final Widget Function(Object errorMessage, StackTrace error) errorBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override

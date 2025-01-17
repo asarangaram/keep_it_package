@@ -23,7 +23,6 @@ export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_view_service/models/action_control.dart';
 export 'services/media_view_service/providers/group_view.dart';
-export 'services/media_view_service/widgets/media_gallery_view.dart';
 export 'services/media_view_service/widgets/stale_media_indicator.dart';
 export 'services/media_wizard_service/media_wizard_service.dart';
 export 'services/notes_service/notes_service.dart' show NotesService;

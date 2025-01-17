@@ -84,24 +84,12 @@ class MediaView extends StatelessWidget {
 
     if (isPreview) {
       return GetStoreUpdater(
-        errorBuilder: (_, __) {
-          throw UnimplementedError('errorBuilder');
-          // ignore: dead_code
-        },
-        loadingBuilder: () {
-          throw UnimplementedError('loadingBuilder');
-          // ignore: dead_code
-        },
+        errorBuilder: BrokenImage.show,
+        loadingBuilder: GreyShimmer.show,
         builder: (theStore) {
           return GetPreviewUri(
-            errorBuilder: (_, __) {
-              throw UnimplementedError('errorBuilder');
-              // ignore: dead_code
-            },
-            loadingBuilder: () {
-              throw UnimplementedError('loadingBuilder');
-              // ignore: dead_code
-            },
+            errorBuilder: BrokenImage.show,
+            loadingBuilder: GreyShimmer.show,
             id: media.id!,
             builder: (previewUri) {
               /* log(

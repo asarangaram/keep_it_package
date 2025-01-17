@@ -19,21 +19,21 @@ class ServerControlImpl extends ConsumerWidget {
 
     return GetServer(
       errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
+        return const SizedBox.shrink();
         // ignore: dead_code
       },
       builder: (server) {
         return GetDownloaderStatus(
           errorBuilder: (_, __) {
-            throw UnimplementedError('errorBuilder');
+            return const SizedBox.shrink();
             // ignore: dead_code
           },
           loadingBuilder: () {
-            throw UnimplementedError('loadingBuilder');
+            return const SizedBox.shrink();
             // ignore: dead_code
           },
           builder: (downloaderStatus) {

@@ -37,14 +37,8 @@ class MainViewPage extends ConsumerWidget {
                     const KeepItTopBar(),
                     Expanded(
                       child: GetStore(
-                        errorBuilder: (_, __) {
-                          throw UnimplementedError('errorBuilder');
-                          // ignore: dead_code
-                        },
-                        loadingBuilder: () {
-                          throw UnimplementedError('loadingBuilder');
-                          // ignore: dead_code
-                        },
+                        errorBuilder: errorBuilder,
+                        loadingBuilder: () => loadingWidget,
                         builder: (store) {
                           return RefreshIndicator(
                             onRefresh: /* isSelectionMode ? null : */

@@ -14,7 +14,7 @@ class VideoDefaultControls extends ConsumerWidget {
     super.key,
   });
   final Uri uri;
-  final Widget Function(Object errorMessage, StackTrace error) errorBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override

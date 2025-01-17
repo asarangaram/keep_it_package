@@ -18,14 +18,15 @@ class GetPreviewUri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eW = errorBuilder;
-    final lW = loadingBuilder;
-
     final previewUri = ref.watch(previewUriProvider(id));
     return previewUri.when(
-      data: (uriAsync) => uriAsync.when(data: builder, error: eW, loading: lW),
-      error: eW,
-      loading: lW,
+      data: (uriAsync) => uriAsync.when(
+        data: builder,
+        error: errorBuilder,
+        loading: loadingBuilder,
+      ),
+      error: errorBuilder,
+      loading: loadingBuilder,
     );
   }
 }
