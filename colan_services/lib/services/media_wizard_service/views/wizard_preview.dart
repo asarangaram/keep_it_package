@@ -57,11 +57,13 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           loadingBuilder: LoadingView.new,
           errorBuilder: errorBuilder,
           onGroupItems: (entities) async => entities.group(3),
-          selectionMode: false,
+          selectionMode: onSelectionChanged != null, // FIXME
           onChangeSelectionMode: ({required bool enable}) {},
-          selectionActionsBuilder: (context, items) {
-            return [];
-          },
+          selectionActionsBuilder: null,
+          onSelectionChanged: onSelectionChanged == null
+              ? null
+              : (items) => onSelectionChanged
+                  ?.call(items.map((e) => e as CLMedia).toList()),
           itemBuilder: (context, item, {required String parentIdentifier}) {
             return GestureDetector(
               /* onTap: () async {

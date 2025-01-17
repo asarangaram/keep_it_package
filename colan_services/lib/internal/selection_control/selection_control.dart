@@ -23,6 +23,7 @@ class SelectionControl extends ConsumerWidget {
     required this.selectionMode,
     required this.onChangeSelectionMode,
     required this.selectionActionsBuilder,
+    required this.onSelectionChanged,
     super.key,
   });
   final List<CLEntity> incoming;
@@ -53,6 +54,7 @@ class SelectionControl extends ConsumerWidget {
   final void Function({required bool enable}) onChangeSelectionMode;
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
+  final void Function(List<CLEntity>)? onSelectionChanged;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!selectionMode) {
@@ -75,6 +77,7 @@ class SelectionControl extends ConsumerWidget {
         labelBuilder: labelBuilder,
         onChangeSelectionMode: onChangeSelectionMode,
         selectionActionsBuilder: selectionActionsBuilder,
+        onSelectionChanged: onSelectionChanged,
       ),
     );
   }
@@ -87,6 +90,7 @@ class SelectionContol0 extends ConsumerStatefulWidget {
     required this.labelBuilder,
     required this.onChangeSelectionMode,
     required this.selectionActionsBuilder,
+    required this.onSelectionChanged,
     super.key,
   });
 
@@ -112,7 +116,7 @@ class SelectionContol0 extends ConsumerStatefulWidget {
   final void Function({required bool enable}) onChangeSelectionMode;
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
-
+  final void Function(List<CLEntity>)? onSelectionChanged;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _SelectionContol0State();
@@ -120,12 +124,15 @@ class SelectionContol0 extends ConsumerStatefulWidget {
 
 class _SelectionContol0State extends ConsumerState<SelectionContol0> {
   final GlobalKey parentKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     final selector = ref.watch(selectorProvider);
 
     final incoming = selector.entities;
-
+    ref.listen(selectorProvider, (prev, curr) {
+      widget.onSelectionChanged?.call(curr.items.toList());
+    });
     return Stack(
       key: parentKey,
       children: [
@@ -170,7 +177,7 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
             ];
           },
         ),
-        if (selector.items.isNotEmpty)
+        if (selector.items.isNotEmpty && widget.selectionActionsBuilder != null)
           GetStoreUpdater(
             builder: (theStore) {
               return ActionsDraggableMenu<CLEntity>(

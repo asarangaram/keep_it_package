@@ -22,6 +22,7 @@ class GalleryView extends StatelessWidget {
     required this.selectionActionsBuilder,
     super.key,
     this.filterDisabled = false,
+    this.onSelectionChanged,
   });
   final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
@@ -41,6 +42,7 @@ class GalleryView extends StatelessWidget {
   final Widget emptyWidget;
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
+  final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filterDisabled;
   @override
   Widget build(BuildContext context) {
@@ -59,6 +61,7 @@ class GalleryView extends StatelessWidget {
               selectionMode: selectionMode,
               onChangeSelectionMode: onChangeSelectionMode,
               selectionActionsBuilder: selectionActionsBuilder,
+              onSelectionChanged: onSelectionChanged,
               incoming: entities,
               itemBuilder: (context, item) => itemBuilder(
                 context,
