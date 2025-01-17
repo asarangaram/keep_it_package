@@ -12,6 +12,7 @@ import '../models/server.dart';
 import '../models/sync_module/collection.dart';
 import '../models/sync_module/media.dart';
 import 'downloader.dart';
+import 'scanner.dart';
 
 class ServerNotifier extends StateNotifier<Server> {
   ServerNotifier(this.storeUpdater, this.downloader) : super(const Server()) {
@@ -61,19 +62,21 @@ class ServerNotifier extends StateNotifier<Server> {
       await prefs.remove('myServer');
     }
     await prefs.setBool('workingOffline', state.workingOffline);
+    await updateStatus();
+  }
+
+  Future<void> updateStatus() async {
     timer?.cancel();
     if (state.isRegistered) {
-      final liveStatus = await server.identity?.getServerLiveStatus();
+      final liveStatus = await state.identity?.getServerLiveStatus();
       currState = state.copyWith(
         isOffline: liveStatus == null,
-        identity: () => liveStatus,
       );
       timer = Timer.periodic(const Duration(seconds: 15), (_) {
         if (state.isRegistered) {
-          server.identity!.getServerLiveStatus().then((liveStatus) {
+          state.identity!.getServerLiveStatus().then((liveStatus) {
             currState = state.copyWith(
               isOffline: liveStatus == null,
-              identity: () => liveStatus,
             );
           });
         } else {
@@ -274,10 +277,17 @@ final serverProvider = StateNotifierProvider<ServerNotifier, Server>((ref) {
   final storeUpdater = ref.watch(storeUpdaterProvider.future);
   final downloaderNotifier = ref.watch(downloaderProvider.notifier);
   final notifier = ServerNotifier(storeUpdater, downloaderNotifier);
-  ref.listenSelf((prev, curr) {
-    if (curr.canSync && !(prev?.canSync ?? false)) {
-      notifier.autoSync();
-    }
-  });
+
+  ref
+    ..listenSelf((prev, curr) {
+      if (curr.canSync && !(prev?.canSync ?? false)) {
+        notifier.autoSync();
+      }
+    })
+    ..listen(networkScannerProvider, (prev, curr) {
+      if (prev?.lanStatus != curr.lanStatus) {
+        notifier.updateStatus();
+      }
+    });
   return notifier;
 });
