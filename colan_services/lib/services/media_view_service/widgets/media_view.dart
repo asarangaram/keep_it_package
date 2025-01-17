@@ -104,8 +104,6 @@ class MediaView extends StatelessWidget {
                   autoPlay: autoPlay,
                   onLockPage: onLockPage,
                   isLocked: isLocked,
-                  errorBuilder: BrokenImage.show,
-                  loadingBuilder: GreyShimmer.show,
                   fit: BoxFit.cover,
                   overlays: [
                     if (media.pin != null)
@@ -261,8 +259,6 @@ class MediaView0 extends ConsumerWidget {
                               autoPlay: autoPlay,
                               onLockPage: onLockPage,
                               isLocked: isLocked,
-                              errorBuilder: BrokenImage.show,
-                              loadingBuilder: GreyShimmer.show,
                             ),
                           CLMediaType.video => VideoPlayer(
                               uri: mediaUri!,
@@ -287,8 +283,6 @@ class MediaView0 extends ConsumerWidget {
                                     autoPlay: autoPlay,
                                     onLockPage: onLockPage,
                                     isLocked: isLocked,
-                                    errorBuilder: BrokenImage.show,
-                                    loadingBuilder: GreyShimmer.show,
                                   );
                                 },
                               ),

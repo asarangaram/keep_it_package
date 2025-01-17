@@ -36,7 +36,8 @@ export 'src/views/appearance/cl_fullscreen_box.dart';
 export 'src/views/appearance/cl_loading_view.dart';
 export 'src/views/appearance/keep_it_main_view.dart';
 export 'src/views/quick_menu/cl_quickmenu.dart';
-export 'src/views/stale_media_indicator_view.dart' show StaleMediaIndicatorView;
+export 'src/views/stale_media_indicator_view.dart'
+    show CLStaleMediaIndicatorView;
 export 'src/views/stream_progress_view.dart';
 export 'src/views/wizards/wizard_dialog.dart';
 export 'src/views/wizards/wizard_layout.dart';

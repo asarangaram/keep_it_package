@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../incoming_media_service/models/cl_shared_media.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 
-class StaleMediaIndicator extends ConsumerWidget {
-  const StaleMediaIndicator({
+class StaleMediaIndicatorService extends ConsumerWidget {
+  const StaleMediaIndicatorService({
     super.key,
   });
 
@@ -18,7 +18,7 @@ class StaleMediaIndicator extends ConsumerWidget {
       loadingBuilder: () => const SizedBox.shrink(),
       builder: (staleMedia) {
         if (staleMedia.isEmpty) return const SizedBox.shrink();
-        return StaleMediaIndicatorView(
+        return CLStaleMediaIndicatorView(
           staleMediaCount: staleMedia.entries.length,
           onTap: () => MediaWizardService.openWizard(
             context,

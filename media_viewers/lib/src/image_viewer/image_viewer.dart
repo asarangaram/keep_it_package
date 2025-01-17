@@ -48,8 +48,6 @@ class ImageViewer extends StatelessWidget {
     required bool autoStart,
     required bool autoPlay,
     required bool isLocked,
-    required Widget Function(String, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
     Widget? placeHolder,
     void Function({required bool lock})? onLockPage,
     Key? key,
@@ -62,8 +60,6 @@ class ImageViewer extends StatelessWidget {
       autoStart: autoStart,
       autoPlay: autoPlay,
       isLocked: isLocked,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
       onLockPage: onLockPage,
       placeHolder: placeHolder,
       fit: fit,
@@ -76,8 +72,6 @@ class ImageViewer extends StatelessWidget {
     required bool autoStart,
     required bool autoPlay,
     required bool isLocked,
-    required Widget Function(String, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
     Widget? placeHolder,
     void Function({required bool lock})? onLockPage,
     Key? key,
@@ -90,8 +84,6 @@ class ImageViewer extends StatelessWidget {
       autoStart: autoStart,
       autoPlay: autoPlay,
       isLocked: isLocked,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
       onLockPage: onLockPage,
       placeHolder: placeHolder,
       fit: fit,
@@ -104,8 +96,6 @@ class ImageViewer extends StatelessWidget {
     required this.autoStart,
     required this.autoPlay,
     required this.isLocked,
-    required this.errorBuilder,
-    required this.loadingBuilder,
     required this.hasGesture,
     super.key,
     this.fit,
@@ -120,8 +110,6 @@ class ImageViewer extends StatelessWidget {
   final void Function({required bool lock})? onLockPage;
   final bool isLocked;
   final Widget? placeHolder;
-  final Widget Function(String, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
 
   final BoxFit? fit;
   //final GestureConfig Function(ExtendedImageState)? gestureControl;

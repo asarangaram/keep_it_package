@@ -108,7 +108,7 @@ class KeepItBottomBar extends ConsumerWidget {
                     ],
                   ),
                 ),
-                if (id == null) const StaleMediaIndicator(),
+                if (id == null) const StaleMediaIndicatorService(),
               ],
             ),
           );

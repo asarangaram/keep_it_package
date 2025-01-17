@@ -1,8 +1,8 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-class StaleMediaIndicatorView extends StatelessWidget {
-  const StaleMediaIndicatorView({
+class CLStaleMediaIndicatorView extends StatelessWidget {
+  const CLStaleMediaIndicatorView({
     required this.staleMediaCount,
     required this.onTap,
     super.key,
