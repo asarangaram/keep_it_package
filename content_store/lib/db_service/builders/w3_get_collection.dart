@@ -14,8 +14,8 @@ class GetCollection extends ConsumerWidget {
     super.key,
   });
   final Widget Function(Collection? collections) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final int? id;
 
   @override
@@ -24,6 +24,8 @@ class GetCollection extends ConsumerWidget {
       return builder(null);
     }
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(DBQueries.collectionById, parameters: [id])
             as StoreQuery<Collection>;
@@ -50,8 +52,8 @@ class GetCollectionsByIdList extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<Collection> collections) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final List<int> ids;
 
   @override
@@ -60,6 +62,8 @@ class GetCollectionsByIdList extends ConsumerWidget {
       return builder([]);
     }
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(
           DBQueries.collectionByIdList,
@@ -85,13 +89,15 @@ class GetCollectionMultiple extends ConsumerWidget {
     super.key,
   });
   final Widget Function(Collections collections) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final DBQueries query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q =
             dbReader.getQuery(query, parameters: []) as StoreQuery<Collection>;

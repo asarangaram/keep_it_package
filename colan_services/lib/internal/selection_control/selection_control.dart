@@ -179,6 +179,14 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
         ),
         if (selector.items.isNotEmpty && widget.selectionActionsBuilder != null)
           GetStoreUpdater(
+            errorBuilder: (_, __) {
+              throw UnimplementedError('errorBuilder');
+              // ignore: dead_code
+            },
+            loadingBuilder: () {
+              throw UnimplementedError('loadingBuilder');
+              // ignore: dead_code
+            },
             builder: (theStore) {
               return ActionsDraggableMenu<CLEntity>(
                 items: selector.items.toList(),

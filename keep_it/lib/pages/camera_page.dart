@@ -11,11 +11,25 @@ class CameraPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         return GetCollection(
           id: collectionId,
-          errorBuilder: null,
-          loadingBuilder: null,
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () {
+            throw UnimplementedError('loadingBuilder');
+            // ignore: dead_code
+          },
           builder: (collection) {
             return CLCameraService(
               parentIdentifier: 'CLCameraService',

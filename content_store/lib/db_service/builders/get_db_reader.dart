@@ -7,13 +7,13 @@ import '../providers/store_updater.dart';
 class GetDBReader extends ConsumerWidget {
   const GetDBReader({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
   });
   final Widget Function(StoreReader dbReader) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object e, StackTrace st) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,8 +21,8 @@ class GetDBReader extends ConsumerWidget {
 
     return storeAsync.when(
       data: (storeUpdater) => builder(storeUpdater.store.reader),
-      error: errorBuilder ?? (_, __) => Container(),
-      loading: loadingBuilder ?? Container.new,
+      error: errorBuilder,
+      loading: loadingBuilder,
     );
   }
 }
@@ -30,13 +30,13 @@ class GetDBReader extends ConsumerWidget {
 class GetStore extends ConsumerWidget {
   const GetStore({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
   });
   final Widget Function(Store store) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,8 +44,8 @@ class GetStore extends ConsumerWidget {
 
     return storeAsync.when(
       data: (storeUpdater) => builder(storeUpdater.store),
-      error: errorBuilder ?? (_, __) => Container(),
-      loading: loadingBuilder ?? Container.new,
+      error: errorBuilder,
+      loading: loadingBuilder,
     );
   }
 }

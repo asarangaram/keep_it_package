@@ -11,6 +11,14 @@ class RegisterredServerView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetServer(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (server) {
         if (server.identity == null) return const SizedBox.shrink();
         final map = <String, Widget>{

@@ -59,6 +59,14 @@ class _NotesViewState extends State<NotesView> {
             SizedBox(
               height: kMinInteractiveDimension * 5,
               child: GetNotesByMediaId(
+                errorBuilder: (_, __) {
+                  throw UnimplementedError('errorBuilder');
+                  // ignore: dead_code
+                },
+                loadingBuilder: () {
+                  throw UnimplementedError('loadingBuilder');
+                  // ignore: dead_code
+                },
                 mediaId: widget.media.id!,
                 builder: (notes) {
                   final textNotes = notes.where(

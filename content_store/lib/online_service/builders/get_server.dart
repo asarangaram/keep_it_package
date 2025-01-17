@@ -7,13 +7,13 @@ import '../providers/server.dart';
 class GetServer extends ConsumerWidget {
   const GetServer({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
   });
   final Widget Function(Server server) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

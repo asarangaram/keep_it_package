@@ -35,8 +35,14 @@ class TextNote extends ConsumerWidget {
     }
     return GetMediaText(
       id: note!.id!,
-      errorBuilder: null,
-      loadingBuilder: null,
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (text) {
         return TextNote0(
           media: media,

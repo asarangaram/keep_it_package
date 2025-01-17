@@ -9,19 +9,21 @@ class GetNotesByMediaId extends ConsumerWidget {
   const GetNotesByMediaId({
     required this.mediaId,
     required this.builder,
-    this.errorBuilder,
-    this.loadingBuilder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
 
   final int mediaId;
   final Widget Function(List<CLMedia> notes) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q =
             dbReader.getQuery(DBQueries.notesByMediaId, parameters: [mediaId])

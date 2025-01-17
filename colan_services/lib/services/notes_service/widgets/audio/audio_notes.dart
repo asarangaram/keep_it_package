@@ -32,6 +32,14 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
   @override
   Widget build(BuildContext context) {
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         final audioNotes = widget.notes.isEmpty
             ? const SizedBox.shrink()
@@ -42,6 +50,14 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                   children: widget.notes
                       .map(
                         (note) => GetMediaUri(
+                          errorBuilder: (_, __) {
+                            throw UnimplementedError('errorBuilder');
+                            // ignore: dead_code
+                          },
+                          loadingBuilder: () {
+                            throw UnimplementedError('loadingBuilder');
+                            // ignore: dead_code
+                          },
                           id: note.id!,
                           builder: (uri) {
                             return AudioChip(

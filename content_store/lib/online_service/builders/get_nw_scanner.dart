@@ -7,13 +7,13 @@ import '../providers/scanner.dart';
 class GetNetworkScanner extends ConsumerWidget {
   const GetNetworkScanner({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
   });
   final Widget Function(NetworkScanner store) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

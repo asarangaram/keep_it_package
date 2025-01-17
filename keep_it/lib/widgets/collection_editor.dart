@@ -55,13 +55,25 @@ class CollectionEditor extends ConsumerWidget {
       onCancel: isDialog ? onCancel : null,
       child: GetCollection(
         id: collectionId,
-        errorBuilder: null,
-        loadingBuilder: null,
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () {
+          throw UnimplementedError('loadingBuilder');
+          // ignore: dead_code
+        },
         builder: (collection) {
           return GetCollectionMultiple(
             query: DBQueries.collections,
-            errorBuilder: null,
-            loadingBuilder: null,
+            errorBuilder: (_, __) {
+              throw UnimplementedError('errorBuilder');
+              // ignore: dead_code
+            },
+            loadingBuilder: () {
+              throw UnimplementedError('loadingBuilder');
+              // ignore: dead_code
+            },
             builder: (collections) {
               if (collection == null) return Container(); // FIXME
 

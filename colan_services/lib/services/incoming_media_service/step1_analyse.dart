@@ -24,6 +24,14 @@ class AnalysePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         return Padding(
           padding: const EdgeInsets.all(8),

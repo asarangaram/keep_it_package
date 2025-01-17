@@ -180,6 +180,14 @@ class ControllerMenu extends StatelessWidget {
             children: [
               if (media.type == CLMediaType.video)
                 GetMediaUri(
+                  errorBuilder: (_, __) {
+                    throw UnimplementedError('errorBuilder');
+                    // ignore: dead_code
+                  },
+                  loadingBuilder: () {
+                    throw UnimplementedError('loadingBuilder');
+                    // ignore: dead_code
+                  },
                   id: media.id!,
                   builder: (uri) {
                     return VideoDefaultControls(

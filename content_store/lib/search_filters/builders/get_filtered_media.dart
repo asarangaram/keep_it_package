@@ -15,8 +15,8 @@ class GetFilterredMediaByPass extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedias filterredMedia) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final CLMedias incoming;
 
   @override
@@ -43,8 +43,8 @@ class GetFilterredMedia extends ConsumerWidget {
       List<GalleryGroupCLEntity<CLEntity>>,
     ) bannersBuilder,
   }) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final List<CLEntity> incoming;
   final List<Widget> Function(
     BuildContext,

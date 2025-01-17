@@ -7,13 +7,13 @@ import '../providers/downloader.dart';
 class GetDownloaderStatus extends ConsumerWidget {
   const GetDownloaderStatus({
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
   });
   final Widget Function(DownloaderStatus downloaderStatus) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

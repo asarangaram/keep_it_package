@@ -16,6 +16,14 @@ class TextNotes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         final note = notes.firstOrNull;
         if (note == null) {
@@ -27,8 +35,14 @@ class TextNotes extends StatelessWidget {
 
         return GetMediaText(
           id: note.id!,
-          errorBuilder: null,
-          loadingBuilder: null,
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () {
+            throw UnimplementedError('loadingBuilder');
+            // ignore: dead_code
+          },
           builder: (text) {
             return TextNote(
               media: media,

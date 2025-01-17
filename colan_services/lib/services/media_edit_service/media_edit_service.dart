@@ -21,8 +21,14 @@ class MediaEditService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMedia(
       id: mediaId!,
-      errorBuilder: null,
-      loadingBuilder: null,
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (media) {
         if (media == null) {
           return BasicPageService.message(message: ' Media not found');
@@ -30,8 +36,24 @@ class MediaEditService extends ConsumerWidget {
 
         return GetMediaUri(
           id: media.id!,
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () {
+            throw UnimplementedError('loadingBuilder');
+            // ignore: dead_code
+          },
           builder: (mediaUri) {
             return GetStoreUpdater(
+              errorBuilder: (_, __) {
+                throw UnimplementedError('errorBuilder');
+                // ignore: dead_code
+              },
+              loadingBuilder: () {
+                throw UnimplementedError('loadingBuilder');
+                // ignore: dead_code
+              },
               builder: (theStore) {
                 return InvokeEditor(
                   mediaUri: mediaUri!,

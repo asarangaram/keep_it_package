@@ -13,8 +13,8 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedias items) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

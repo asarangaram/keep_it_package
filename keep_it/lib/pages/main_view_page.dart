@@ -37,6 +37,14 @@ class MainViewPage extends ConsumerWidget {
                     const KeepItTopBar(),
                     Expanded(
                       child: GetStore(
+                        errorBuilder: (_, __) {
+                          throw UnimplementedError('errorBuilder');
+                          // ignore: dead_code
+                        },
+                        loadingBuilder: () {
+                          throw UnimplementedError('loadingBuilder');
+                          // ignore: dead_code
+                        },
                         builder: (store) {
                           return RefreshIndicator(
                             onRefresh: /* isSelectionMode ? null : */
@@ -86,6 +94,14 @@ class KeepItMainGrid extends ConsumerWidget {
     final identifier = ref.watch(mainPageIdentifierProvider);
     final selectionMode = ref.watch(selectModeProvider(identifier));
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         return GalleryView(
           entities: clmedias.entries,

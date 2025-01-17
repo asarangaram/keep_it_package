@@ -14,8 +14,8 @@ class GetMediaText extends ConsumerWidget {
     super.key,
   });
   final Widget Function(String text) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final int id;
 
   @override

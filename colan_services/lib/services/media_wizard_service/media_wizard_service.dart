@@ -83,6 +83,14 @@ class MediaWizardService extends ConsumerWidget {
 
     return CLPopScreen.onSwipe(
       child: GetStoreUpdater(
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () {
+          throw UnimplementedError('loadingBuilder');
+          // ignore: dead_code
+        },
         builder: (theStore) {
           return SelectAndKeepMedia(
             media: media,
@@ -156,6 +164,14 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     final currMedia =
         (isSelectionMode ? selectedMedia.entries : widget.media.entries);
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         return WizardLayout(
           title: widget.type.label,

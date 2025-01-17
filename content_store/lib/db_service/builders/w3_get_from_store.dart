@@ -17,8 +17,8 @@ class GetFromStore<T> extends ConsumerWidget {
   });
   final StoreQuery<T> query;
   final Widget Function(List<T> results) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

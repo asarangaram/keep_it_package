@@ -19,8 +19,14 @@ class MediaPageViewPage extends ConsumerWidget {
     if (collectionId == null) {
       return GetMedia(
         id: id,
-        errorBuilder: null,
-        loadingBuilder: null,
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () {
+          throw UnimplementedError('loadingBuilder');
+          // ignore: dead_code
+        },
         builder: (media) {
           if (media == null) {
             return const EmptyState();
@@ -36,8 +42,14 @@ class MediaPageViewPage extends ConsumerWidget {
     } else {
       return GetMediaByCollectionId(
         collectionId: collectionId,
-        errorBuilder: null,
-        loadingBuilder: null,
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () {
+          throw UnimplementedError('loadingBuilder');
+          // ignore: dead_code
+        },
         builder: (items) {
           if (items.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {

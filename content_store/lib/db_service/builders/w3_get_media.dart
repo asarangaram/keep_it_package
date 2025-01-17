@@ -35,13 +35,15 @@ class GetMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedia? media) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final int id;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(DBQueries.mediaById, parameters: [id])
             as StoreQuery<CLMedia>;
@@ -70,8 +72,8 @@ class GetMediaByCollectionId extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedias items) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final int? collectionId;
 
   @override
@@ -81,6 +83,8 @@ class GetMediaByCollectionId extends ConsumerWidget {
         : DBQueries.mediaByCollectionId;
 
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(
           qid,
@@ -123,8 +127,8 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedias items) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final List<int> idList;
 
   @override
@@ -132,6 +136,8 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     const qid = DBQueries.mediaByIdList;
 
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(qid, parameters: ['(${idList.join(', ')})'])
             as StoreQuery<CLMedia>;
@@ -168,14 +174,16 @@ class GetPinnedMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedias items) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const qid = DBQueries.mediaPinned;
 
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
         return GetFromStore<CLMedia>(
@@ -210,14 +218,16 @@ class GetStaleMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedias items) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const qid = DBQueries.mediaStaled;
 
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
         return GetFromStore<CLMedia>(
@@ -252,14 +262,16 @@ class GetDeletedMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(CLMedias items) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const qid = DBQueries.mediaDeleted;
 
     return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
         return GetFromStore<CLMedia>(

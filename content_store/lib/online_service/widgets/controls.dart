@@ -131,6 +131,14 @@ class OfflinePreference extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetServer(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (server) {
         if (server.isOffline) {
           return const SizedBox.shrink();

@@ -15,8 +15,24 @@ class ServerSettingsImpl extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetNetworkScanner(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (scanner) {
         return GetServer(
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () {
+            throw UnimplementedError('loadingBuilder');
+            // ignore: dead_code
+          },
           builder: (server) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

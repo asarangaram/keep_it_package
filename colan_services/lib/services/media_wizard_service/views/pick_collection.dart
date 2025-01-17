@@ -19,8 +19,14 @@ class PickCollection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetCollectionMultiple(
-      errorBuilder: null,
-      loadingBuilder: null,
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       query: DBQueries.collectionsVisible,
       builder: (collections) {
         return CLWizardFormField(

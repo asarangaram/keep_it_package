@@ -11,6 +11,14 @@ class DownloaderProgressbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDownloaderStatus(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (downloaderStatus) {
         final colors = <Color>[
           Colors.green,
@@ -48,6 +56,14 @@ class DownloaderProgressPie extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDownloaderStatus(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (downloaderStatus) {
         final total = downloaderStatus.total.toDouble();
 
@@ -100,6 +116,14 @@ class ActiveDownloadIndicator extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDownloaderStatus(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (downloaderStatus) {
         if (downloaderStatus.running == 0) {
           return Container();

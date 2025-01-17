@@ -48,6 +48,14 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     Widget errorBuilder(Object e, StackTrace st) =>
         ErrorView(error: e, stackTrace: st);
     return GetDBReader(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (dbReader) {
         return GalleryView(
           parentIdentifier: type.name,

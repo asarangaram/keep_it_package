@@ -84,8 +84,24 @@ class MediaView extends StatelessWidget {
 
     if (isPreview) {
       return GetStoreUpdater(
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () {
+          throw UnimplementedError('loadingBuilder');
+          // ignore: dead_code
+        },
         builder: (theStore) {
           return GetPreviewUri(
+            errorBuilder: (_, __) {
+              throw UnimplementedError('errorBuilder');
+              // ignore: dead_code
+            },
+            loadingBuilder: () {
+              throw UnimplementedError('loadingBuilder');
+              // ignore: dead_code
+            },
             id: media.id!,
             builder: (previewUri) {
               /* log(
@@ -211,8 +227,24 @@ class MediaView0 extends ConsumerWidget {
     final ac = AccessControlExt.onGetMediaActionControl(media);
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         return GetMediaUri(
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () {
+            throw UnimplementedError('loadingBuilder');
+            // ignore: dead_code
+          },
           id: media.id!,
           builder: (mediaUri) {
             /* log(
@@ -251,6 +283,14 @@ class MediaView0 extends ConsumerWidget {
                               onLockPage: onLockPage,
                               isLocked: isLocked,
                               placeHolder: GetPreviewUri(
+                                errorBuilder: (_, __) {
+                                  throw UnimplementedError('errorBuilder');
+                                  // ignore: dead_code
+                                },
+                                loadingBuilder: () {
+                                  throw UnimplementedError('loadingBuilder');
+                                  // ignore: dead_code
+                                },
                                 id: media.id!,
                                 builder: (previewUri) {
                                   return ImageViewer.basic(

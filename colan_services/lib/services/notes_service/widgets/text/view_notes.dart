@@ -13,6 +13,14 @@ class ViewNotes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetStoreUpdater(
+      errorBuilder: (_, __) {
+        throw UnimplementedError('errorBuilder');
+        // ignore: dead_code
+      },
+      loadingBuilder: () {
+        throw UnimplementedError('loadingBuilder');
+        // ignore: dead_code
+      },
       builder: (theStore) {
         return InputDecorator(
           decoration: NotesTextFieldDecoration.inputDecoration(
@@ -28,8 +36,14 @@ class ViewNotes extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 child: GetMediaText(
                   id: note.id!,
-                  errorBuilder: null,
-                  loadingBuilder: null,
+                  errorBuilder: (_, __) {
+                    throw UnimplementedError('errorBuilder');
+                    // ignore: dead_code
+                  },
+                  loadingBuilder: () {
+                    throw UnimplementedError('loadingBuilder');
+                    // ignore: dead_code
+                  },
                   builder: (text) {
                     return Text(
                       text,

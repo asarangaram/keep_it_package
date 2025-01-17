@@ -15,8 +15,8 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     Collections collections, {
     required bool isAllAvailable,
   }) builder;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   final DBQueries queries;
 
   @override
