@@ -154,7 +154,7 @@ class KeepItMainGrid extends ConsumerWidget {
                 ),
             ];
           },
-          getGrouped: (entities) => getGrouped(
+          onGroupItems: (entities) => getGrouped(
             entities,
             method: method,
             id: collectionId,

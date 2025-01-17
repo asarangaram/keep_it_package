@@ -1,8 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Menu extends ConsumerWidget {
+class Menu extends StatelessWidget {
   const Menu({
     required this.menuItems,
     super.key,
@@ -10,7 +9,7 @@ class Menu extends ConsumerWidget {
   final List<CLMenuItem> menuItems;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,

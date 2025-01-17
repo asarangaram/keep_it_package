@@ -1,27 +1,27 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
-import 'package:store/store.dart';
-
+import '../../internal/selection_control/selection_control.dart';
 import 'widgets/cl_entity_grid_view.dart';
 import 'widgets/grouper.dart';
-import 'widgets/selection_control.dart';
 
 class GalleryView extends StatelessWidget {
   const GalleryView({
+    required this.parentIdentifier,
     required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
     required this.itemBuilder,
-    required this.parentIdentifier,
     required this.numColumns,
-    required this.getGrouped,
+    required this.onGroupItems,
     required this.selectionMode,
     required this.onChangeSelectionMode,
     required this.emptyWidget,
     required this.selectionActionsBuilder,
     super.key,
+    this.filterDisabled = false,
   });
   final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
@@ -35,12 +35,13 @@ class GalleryView extends StatelessWidget {
   final int numColumns;
   final Future<List<GalleryGroupCLEntity<CLEntity>>> Function(
     List<CLEntity> entities,
-  ) getGrouped;
+  ) onGroupItems;
   final bool selectionMode;
   final void Function({required bool enable}) onChangeSelectionMode;
   final Widget emptyWidget;
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
+  final bool filterDisabled;
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
@@ -86,6 +87,7 @@ class GalleryView extends StatelessWidget {
                   loadingBuilder: loadingBuilder,
                   incoming: entities,
                   bannersBuilder: bannersBuilder,
+                  disabled: filterDisabled,
                   builder: (
                     List<CLEntity> filterred, {
                     required List<Widget> Function(
@@ -98,7 +100,7 @@ class GalleryView extends StatelessWidget {
                       loadingBuilder: loadingBuilder,
                       incoming: filterred,
                       columns: numColumns,
-                      getGrouped: getGrouped,
+                      getGrouped: onGroupItems,
                       builder: (galleryMap /* numColumns */) {
                         return CLEntityGridView(
                           identifier: parentIdentifier,

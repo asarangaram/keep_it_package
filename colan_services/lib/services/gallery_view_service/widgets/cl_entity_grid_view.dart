@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:store/store.dart';
+import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
-import 'cl_grid.dart';
+import 'core/cl_grid.dart';
 
 class CLEntityGridView extends StatelessWidget {
   const CLEntityGridView({

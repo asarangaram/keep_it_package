@@ -34,6 +34,7 @@ class GetFilterredMedia extends ConsumerWidget {
     required this.incoming,
     required this.bannersBuilder,
     super.key,
+    this.disabled = false,
   });
   final Widget Function(
     List<CLEntity> filterred, {
@@ -49,10 +50,11 @@ class GetFilterredMedia extends ConsumerWidget {
     BuildContext,
     List<GalleryGroupCLEntity<CLEntity>>,
   ) bannersBuilder;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (incoming.first.runtimeType == Collection) {
+    if (incoming.first.runtimeType == Collection || disabled) {
       return builder(incoming, bannersBuilder: (context, galleryMap) => []);
     }
 

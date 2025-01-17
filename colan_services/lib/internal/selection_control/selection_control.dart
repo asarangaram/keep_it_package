@@ -6,13 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../models/selector.dart';
-import '../providers/menu_control.dart';
-import '../providers/selector.dart';
-import 'actions_draggable_menu.dart';
-import 'selectable_item.dart';
-import 'selectable_label.dart';
-import 'selection_count.dart';
+import '../draggable_menu/providers/menu_control.dart';
+import '../../services/gallery_view_service/models/selector.dart';
+import 'providers/selector.dart';
+import '../draggable_menu/widgets/actions_draggable_menu.dart';
+import 'widgets/selectable_item.dart';
+import 'widgets/selectable_label.dart';
+import 'widgets/selection_count.dart';
 
 class SelectionControl extends ConsumerWidget {
   const SelectionControl({

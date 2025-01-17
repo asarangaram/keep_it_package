@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
+import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
-class GetGroupedMedia extends ConsumerWidget {
+class GetGroupedMedia extends StatelessWidget {
   const GetGroupedMedia({
     required this.builder,
     required this.incoming,
@@ -25,7 +24,7 @@ class GetGroupedMedia extends ConsumerWidget {
   ) getGrouped;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return FutureBuilder(
       future: getGrouped(incoming),
       builder: (context, snapShot) {

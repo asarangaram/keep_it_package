@@ -1,4 +1,5 @@
 export 'internal/extensions/list.dart' show Filter;
+
 /// This must go
 
 export 'services/basic_page_service/basic_page_service.dart'
@@ -9,8 +10,7 @@ export 'services/basic_page_service/page_manager.dart';
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart';
 export 'services/gallery_view_service/gallery_view.dart' show GalleryView;
-export 'services/gallery_view_service/providers/menu_control.dart';
-export 'services/gallery_view_service/widgets/cl_grid.dart';
+
 export 'services/incoming_media_service/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
 export 'services/incoming_media_service/incoming_media_service.dart';
