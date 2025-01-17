@@ -3,13 +3,12 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:store/store.dart';
 
-import '../draggable_menu/providers/menu_control.dart';
 import '../../services/gallery_view_service/models/selector.dart';
-import 'providers/selector.dart';
+import '../draggable_menu/providers/menu_control.dart';
 import '../draggable_menu/widgets/actions_draggable_menu.dart';
+import 'providers/selector.dart';
 import 'widgets/selectable_item.dart';
 import 'widgets/selectable_label.dart';
 import 'widgets/selection_count.dart';

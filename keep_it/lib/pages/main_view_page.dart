@@ -17,8 +17,6 @@ import '../widgets/actions/top_bar.dart';
 
 import '../widgets/folders_and_files/collection_as_folder.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
-import '../widgets/utils/error_view.dart';
-import '../widgets/utils/loading_view.dart';
 
 class MainViewPage extends ConsumerWidget {
   const MainViewPage({super.key});
