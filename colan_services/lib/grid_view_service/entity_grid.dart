@@ -1,11 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/widgets/when_empty.dart';
+
 import 'package:store/store.dart';
 
-import '../cl_entity_grid_view.dart';
-
+import 'widgets/cl_entity_grid_view.dart';
 import 'widgets/grouper.dart';
 import 'widgets/selection_control.dart';
 
@@ -18,6 +17,9 @@ class CLEntityGrid extends StatelessWidget {
     required this.parentIdentifier,
     required this.numColumns,
     required this.getGrouped,
+    required this.selectionMode,
+    required this.onChangeSelectionMode,
+    required this.whenEmpty,
     super.key,
   });
   final List<CLEntity> entities;
@@ -33,6 +35,9 @@ class CLEntityGrid extends StatelessWidget {
   final Future<List<GalleryGroupCLEntity<CLEntity>>> Function(
     List<CLEntity> entities,
   ) getGrouped;
+  final bool selectionMode;
+  final void Function({required bool enable}) onChangeSelectionMode;
+  final Widget whenEmpty;
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
@@ -45,8 +50,10 @@ class CLEntityGrid extends StatelessWidget {
       ) =>
           FadeTransition(opacity: animation, child: child),
       child: entities.isEmpty
-          ? const WhenEmpty()
+          ? whenEmpty
           : SelectionControl(
+              selectionMode: selectionMode,
+              onChangeSelectionMode: onChangeSelectionMode,
               incoming: entities,
               itemBuilder: (context, item) => itemBuilder(
                 context,

@@ -8,6 +8,7 @@ import 'package:store/store.dart';
 
 import '../../navigation/providers/active_collection.dart';
 import '../../navigation/providers/grouper.dart';
+import '../../navigation/providers/selection_mode.dart';
 
 class KeepItTopBar extends ConsumerWidget {
   const KeepItTopBar({super.key});

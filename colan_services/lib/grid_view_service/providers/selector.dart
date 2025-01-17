@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../model/selector.dart';
+import '../models/selector.dart';
 
 class SelectorNotifier extends StateNotifier<CLSelector> {
   SelectorNotifier(List<CLEntity> entities)
@@ -31,9 +31,4 @@ class SelectorNotifier extends StateNotifier<CLSelector> {
 final selectorProvider =
     StateNotifierProvider<SelectorNotifier, CLSelector>((ref) {
   throw Exception('Not in the scope !');
-});
-
-final selectModeProvider =
-    StateProvider.family<bool, String>((ref, identifier) {
-  return false;
 });

@@ -3,15 +3,17 @@ import 'package:colan_services/colan_services.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it/widgets/when_empty.dart';
 import 'package:store/store.dart';
 
 import '../builders/available_media.dart';
 import '../navigation/providers/active_collection.dart';
 
+import '../navigation/providers/grouper.dart';
+import '../navigation/providers/selection_mode.dart';
 import '../widgets/actions/bottom_bar.dart';
 import '../widgets/actions/top_bar.dart';
-import '../widgets/cl_entity_grid/entity_grid.dart';
-import '../navigation/providers/grouper.dart';
+
 import '../widgets/folders_and_files/collection_as_folder.dart';
 import '../widgets/folders_and_files/media_as_file.dart';
 import '../widgets/utils/error_view.dart';
@@ -83,6 +85,7 @@ class KeepItMainGrid extends ConsumerWidget {
     final collectionId = ref.watch(activeCollectionProvider);
     final method = ref.watch(groupMethodProvider);
     final identifier = ref.watch(mainPageIdentifierProvider);
+    final selectionMode = ref.watch(selectModeProvider(identifier));
     return GetStore(
       builder: (store) {
         return CLEntityGrid(
@@ -91,6 +94,11 @@ class KeepItMainGrid extends ConsumerWidget {
           errorBuilder: errorBuilder,
           parentIdentifier: identifier,
           numColumns: 3,
+          selectionMode: selectionMode,
+          whenEmpty: const WhenEmpty(),
+          onChangeSelectionMode: ({required enable}) {
+            ref.read(selectModeProvider(identifier).notifier).state = enable;
+          },
           getGrouped: (entities) => getGrouped(
             entities,
             method: method,

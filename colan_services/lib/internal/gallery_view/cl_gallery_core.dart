@@ -1,13 +1,13 @@
-import 'package:colan_widgets/colan_widgets.dart';
+/* import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'model/selector.dart';
-import 'providers/selector.dart';
-import 'selection/selectable_item.dart';
-import 'selection/selectable_label.dart';
-import 'widgets/cl_grid.dart';
+import '../../grid_view_service/models/selector.dart';
+import '../../grid_view_service/providers/selector.dart';
+import '../../grid_view_service/widgets/cl_grid.dart';
+import '../../grid_view_service/widgets/selectable_item.dart';
+import '../../grid_view_service/widgets/selectable_label.dart';
 
 class CLGalleryCore<T extends CLEntity> extends ConsumerWidget {
   const CLGalleryCore({
@@ -184,3 +184,4 @@ class CLGalleryCore0<T extends CLEntity> extends StatelessWidget {
     );
   }
 }
+ */

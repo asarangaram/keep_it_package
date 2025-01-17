@@ -1,7 +1,8 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
+
+import 'cl_grid.dart';
 
 class CLEntityGridView extends StatelessWidget {
   const CLEntityGridView({
@@ -15,7 +16,7 @@ class CLEntityGridView extends StatelessWidget {
   });
   final String identifier;
   final List<GalleryGroupCLEntity<CLEntity>> galleryMap;
-  final ItemBuilder itemBuilder;
+  final Widget Function(BuildContext context, CLEntity item) itemBuilder;
   final int columns;
 
   final Widget? Function(

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'menu_control.dart';
+import '../providers/menu_control.dart';
 
 class DraggableMenu extends ConsumerWidget {
   const DraggableMenu({

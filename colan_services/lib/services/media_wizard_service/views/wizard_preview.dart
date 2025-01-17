@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../internal/gallery_view/cl_gallery_core.dart';
 import '../../basic_page_service/page_manager.dart';
-import '../../media_view_service/media_view_service.dart';
 
-import '../../media_view_service/providers/group_view.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -44,52 +41,9 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       return const SizedBox.expand();
     }
 
-    final galleryMap = ref.watch(groupedItemsProvider(media0.entries));
-
     return GetDBReader(
       builder: (dbReader) {
-        return CLGalleryCore<CLMedia>(
-          parentIdentifier: type.identifier,
-          key: ValueKey(type.identifier),
-          galleryMap: galleryMap,
-          itemBuilder: (
-            context,
-            item,
-          ) =>
-              GestureDetector(
-            onTap: () async {
-              await PageManager.of(context, ref).openEditor(
-                item,
-                canDuplicateMedia: false,
-              );
-
-              /// MEdia might have got updated, better reload and update the
-              ///  provider
-              if (context.mounted) {
-                final refreshedMedia = CLMedias(
-                  await dbReader.getMediasByIDList(
-                    media0.entries
-                        .where((e) => e.id != null)
-                        .map((e) => e.id!)
-                        .toList(),
-                  ),
-                );
-                ref.read(universalMediaProvider(type).notifier).mediaGroup =
-                    media0.copyWith(
-                  entries: refreshedMedia.entries,
-                );
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: MediaViewService.preview(
-                item,
-                parentIdentifier: type.identifier,
-              ),
-            ),
-          ),
-          columns: 4,
-        );
+        return const Center(child: Text('Not yet implemented'));
       },
     );
   }

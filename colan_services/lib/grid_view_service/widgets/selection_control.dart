@@ -1,5 +1,3 @@
-import 'package:colan_services/colan_services.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/gestures.dart';
@@ -8,7 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../../../navigation/providers/active_collection.dart';
+import '../../services/basic_page_service/dialogs.dart';
+import '../../services/incoming_media_service/models/cl_shared_media.dart';
+import '../../services/media_wizard_service/media_wizard_service.dart';
+import '../models/selector.dart';
+import '../providers/menu_control.dart';
+import '../providers/selector.dart';
+import 'actions_draggable_menu.dart';
+import 'selectable_item.dart';
+import 'selectable_label.dart';
+import 'selection_count.dart';
 
 class SelectionControl extends ConsumerWidget {
   const SelectionControl({
@@ -17,6 +24,8 @@ class SelectionControl extends ConsumerWidget {
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
+    required this.selectionMode,
+    required this.onChangeSelectionMode,
     super.key,
   });
   final List<CLEntity> incoming;
@@ -43,11 +52,10 @@ class SelectionControl extends ConsumerWidget {
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     ) bannersBuilder,
   }) builder;
-
+  final bool selectionMode;
+  final void Function({required bool enable}) onChangeSelectionMode;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final identifier = ref.watch(mainPageIdentifierProvider);
-    final selectionMode = ref.watch(selectModeProvider(identifier));
     if (!selectionMode) {
       return builder(
         items: incoming,
@@ -66,6 +74,7 @@ class SelectionControl extends ConsumerWidget {
         builder: builder,
         itemBuilder: itemBuilder,
         labelBuilder: labelBuilder,
+        onChangeSelectionMode: onChangeSelectionMode,
       ),
     );
   }
@@ -76,6 +85,7 @@ class SelectionContol0 extends ConsumerStatefulWidget {
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
+    required this.onChangeSelectionMode,
     super.key,
   });
 
@@ -98,6 +108,7 @@ class SelectionContol0 extends ConsumerStatefulWidget {
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     ) bannersBuilder,
   }) builder;
+  final void Function({required bool enable}) onChangeSelectionMode;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -108,7 +119,6 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
   final GlobalKey parentKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    final identifier = ref.watch(mainPageIdentifierProvider);
     final selector = ref.watch(selectorProvider);
 
     final incoming = selector.entities;
@@ -164,8 +174,7 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
                 items: selector.items.toList(),
                 tagPrefix: 'Selection',
                 onDone: () {
-                  ref.read(selectModeProvider(identifier).notifier).state =
-                      false;
+                  widget.onChangeSelectionMode(enable: false);
                 },
                 selectionActions: (context, entities) {
                   final items = entities.map((e) => e as CLMedia).toList();
