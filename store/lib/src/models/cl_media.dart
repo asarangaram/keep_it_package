@@ -485,4 +485,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
   DateTime? get entityOriginalDate => originalDate;
   @override
   DateTime get entityCreatedDate => createdDate;
+
+  bool get isCached =>
+      !hasServerUID || (hasServerUID && (isPreviewCached && isMediaCached));
 }

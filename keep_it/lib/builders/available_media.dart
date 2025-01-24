@@ -31,10 +31,7 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
           available = CLMedias(
             items.entries
                 .where(
-                  (c) =>
-                      !c.hasServerUID ||
-                      (c.hasServerUID &&
-                          ((c.haveItOffline ?? false) || c.isMediaCached)),
+                  (c) => !c.isCached,
                 )
                 .toList(),
           );
