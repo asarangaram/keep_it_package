@@ -498,19 +498,18 @@ class MediaUpdater {
         .updateStatus(
           isHidden: () =>
               isHidden0 ?? (isHidden != null ? isHidden() : media.isHidden),
-          isPreviewCached: () => isPreviewCached?.call() ?? false,
-          isMediaCached: () => isMediaCached?.call() ?? false,
-          isMediaOriginal: () => isMediaOriginal?.call() ?? false,
-          previewLog: () => previewLog != null ? previewLog() : null,
-          mediaLog: () => mediaLog != null ? mediaLog() : null,
-          haveItOffline: () => haveItOffline?.call() ?? media.haveItOffline,
-          mustDownloadOriginal: () =>
-              mustDownloadOriginal?.call() ?? media.mustDownloadOriginal,
-          pin: () => pin != null
+          isPreviewCached: isPreviewCached,
+          isMediaCached: isMediaCached,
+          isMediaOriginal: isMediaOriginal,
+          previewLog: previewLog,
+          mediaLog: mediaLog,
+          haveItOffline: haveItOffline,
+          mustDownloadOriginal: mustDownloadOriginal,
+          pin: () => (pin != null
               ? pin()
               : (path != null)
                   ? null
-                  : media.pin,
+                  : media.pin),
         );
 
     return upsert(updated0, parents: parents, path: path);
