@@ -1,4 +1,3 @@
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:content_store/extensions/ext_cldirectories.dart';
@@ -225,7 +224,7 @@ class MediaView0 extends ConsumerWidget {
                       ),
                     ),
                     onDelete: ac.onDelete(() async {
-                      final confirmed = await ConfirmAction.deleteMediaMultiple(
+                      final confirmed = await DialogService.deleteMediaMultiple(
                             context,
                             ref,
                             media: [media],

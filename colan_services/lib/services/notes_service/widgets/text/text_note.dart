@@ -131,7 +131,7 @@ class _TextNote0State extends ConsumerState<TextNote0> {
               CLButtonIcon.small(
                 clIcons.deleteNote,
                 onTap: () async {
-                  final confirmed = await ConfirmAction.deleteNote(
+                  final confirmed = await DialogService.deleteNote(
                         context,
                         ref,
                         note: widget.note!,

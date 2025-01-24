@@ -110,7 +110,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                       keepSelected = true;
                       setState(() {});
                       final confirmed =
-                          await ConfirmAction.restoreMediaMultiple(
+                          await DialogService.restoreMediaMultiple(
                                 context,
                                 ref,
                                 media: currMedia,
@@ -146,7 +146,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                     icon: clIcons.deleteItem,
                     onTap: hasCandidate
                         ? () async {
-                            final confirmed = await ConfirmAction
+                            final confirmed = await DialogService
                                     .permanentlyDeleteMediaMultiple(
                                   context,
                                   ref,

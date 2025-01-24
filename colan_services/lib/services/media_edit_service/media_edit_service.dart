@@ -64,7 +64,7 @@ class MediaEditService extends ConsumerWidget {
                   onSave: (file, {required overwrite}) async {
                     final CLMedia resultMedia;
                     if (overwrite) {
-                      final confirmed = await ConfirmAction.replaceMedia(
+                      final confirmed = await DialogService.replaceMedia(
                             context,
                             ref,
                             media: media,
@@ -78,7 +78,7 @@ class MediaEditService extends ConsumerWidget {
                       }
                     } else {
                       final confirmed =
-                          await ConfirmAction.cloneAndReplaceMedia(
+                          await DialogService.cloneAndReplaceMedia(
                                 context,
                                 ref,
                                 media: media,

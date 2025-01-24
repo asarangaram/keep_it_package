@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class ConfirmAction {
+class DialogService {
   static Future<bool?> template(
     BuildContext context,
     WidgetRef ref, {
@@ -75,7 +75,7 @@ class ConfirmAction {
     }
     final String msg;
     if (media.length == 1) {
-      return ConfirmAction.deleteMedia(
+      return DialogService.deleteMedia(
         context,
         ref,
         media: media[0],
@@ -115,7 +115,7 @@ class ConfirmAction {
     }
     final String msg;
     if (media.length == 1) {
-      return ConfirmAction.permanentlyDeleteMedia(
+      return DialogService.permanentlyDeleteMedia(
         context,
         ref,
         media: media[0],
@@ -155,7 +155,7 @@ class ConfirmAction {
       return false;
     }
     if (media.length == 1) {
-      return ConfirmAction.restoreMedia(
+      return DialogService.restoreMedia(
         context,
         ref,
         media: media[0],

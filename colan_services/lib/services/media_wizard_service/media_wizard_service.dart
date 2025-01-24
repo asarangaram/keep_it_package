@@ -253,7 +253,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           onTap: hasCandidate
                               ? () async {
                                   final confirmed =
-                                      await ConfirmAction.deleteMediaMultiple(
+                                      await DialogService.deleteMediaMultiple(
                                             context,
                                             ref,
                                             media: currMedia,

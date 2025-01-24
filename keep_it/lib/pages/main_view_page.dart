@@ -117,7 +117,7 @@ class KeepItMainGrid extends ConsumerWidget {
                 title: 'Delete',
                 icon: clIcons.deleteItem,
                 onTap: () async {
-                  final confirmed = await ConfirmAction.deleteMediaMultiple(
+                  final confirmed = await DialogService.deleteMediaMultiple(
                         context,
                         ref,
                         media: items,

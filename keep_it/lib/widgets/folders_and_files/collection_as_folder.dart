@@ -141,7 +141,7 @@ class CollectionAsFolder extends ConsumerWidget {
     WidgetRef ref,
     StoreUpdater theStore,
   ) async {
-    final confirmed = await ConfirmAction.deleteCollection(
+    final confirmed = await DialogService.deleteCollection(
           context,
           ref,
           collection: collection,
