@@ -1,13 +1,13 @@
-export 'services/app_init_service/models/app_descriptor.dart'
+export 'services/app_start_service/models/app_descriptor.dart'
     show
         AppDescriptor,
         CLAppInitializer,
         CLRedirector,
         CLTransitionBuilder,
         IncomingMediaViewBuilder;
-export 'services/app_init_service/models/cl_route_descriptor.dart'
+export 'services/app_start_service/models/cl_route_descriptor.dart'
     show CLRouteDescriptor;
-export 'services/app_init_service/widgets/app_loader.dart' show AppStartService;
+export 'services/app_start_service/app_start_service.dart' show AppStartService;
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
 export 'services/basic_page_service/cl_error_view.dart'

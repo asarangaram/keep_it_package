@@ -13,8 +13,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/app_init.dart';
-import 'app_view.dart';
+import 'providers/app_init.dart';
 
 class AppStartService extends StatelessWidget {
   const AppStartService({
@@ -26,17 +25,16 @@ class AppStartService extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
-      child: AppStartService0(
+      child: _AppLoader(
         appDescriptor: appDescriptor,
       ),
     );
   }
 }
 
-class AppStartService0 extends ConsumerWidget {
-  const AppStartService0({
+class _AppLoader extends ConsumerWidget {
+  const _AppLoader({
     required this.appDescriptor,
-    super.key,
   });
   final AppDescriptor appDescriptor;
   @override
@@ -47,7 +45,42 @@ class AppStartService0 extends ConsumerWidget {
       noteTheme: const DefaultNotesTheme(),
       child: appInitAsync.when(
         data: (success) {
-          return AppView(appDescriptor: appDescriptor);
+          final app = appDescriptor;
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: app.title,
+            initialRoute: '/',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            darkTheme: ThemeData(
+              primarySwatch: Colors.blue,
+              brightness: Brightness.dark,
+            ),
+            themeMode: ThemeMode.light,
+            onGenerateRoute: (settings) {
+              final uri = Uri.parse(settings.name ?? '');
+
+              final screen = app.screens
+                  .where((s) => s.name == uri.path.replaceFirst('/', ''))
+                  .firstOrNull;
+              if (screen == null) {
+                return MaterialPageRoute(
+                  builder: (context) => const Scaffold(
+                    body: Center(
+                      child: Text('404: Page not found'),
+                    ),
+                  ),
+                );
+              }
+              return MaterialPageRoute(
+                builder: (context) => IncomingMediaMonitor(
+                  onMedia: app.incomingMediaViewBuilder,
+                  child: screen.builder(context, uri.queryParameters),
+                ),
+              );
+            },
+          );
         },
         error: (err, _) {
           return MaterialApp(
