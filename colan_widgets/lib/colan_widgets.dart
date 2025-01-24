@@ -13,7 +13,7 @@ export 'src/basics/cl_text.dart' show CLLabel, CLText;
 export 'src/basics/overlay_icon.dart' show OverlayIcon;
 export 'src/basics/progress_bar.dart' show ProgressBar;
 export 'src/extensions/ext_cl_menu_item.dart' show Ext1DCLMenuItem;
-export 'src/extensions/ext_duration.dart' show ExtDuration;
+
 export 'src/extensions/ext_list.dart' show ExtDimension, ExtExclude;
 export 'src/models/action_control.dart' show ActionControl;
 export 'src/models/cl_dimension.dart' show CLDimension;

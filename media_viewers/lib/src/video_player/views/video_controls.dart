@@ -1,11 +1,10 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_viewers/src/video_player/get_video_controller.dart';
+import 'package:media_viewers/src/video_player/views/get_video_controller.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../video_player_service/models/video_player_state.dart';
-import 'views/video_controls_view.dart';
+import '../models/video_player_state.dart';
+import '../builders/video_controls_view.dart';
 
 class VideoDefaultControls extends ConsumerWidget {
   const VideoDefaultControls({
@@ -28,15 +27,13 @@ class VideoDefaultControls extends ConsumerWidget {
         if (state.path == uri) {
           return VideoControlsView(controller: controller);
         } else {
-          return Container();
+          return const SizedBox.shrink();
         }
       },
       errorBuilder: (message, e) {
-        return Container();
+        return const SizedBox.shrink();
       },
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetVideoControllerWithState',
-      ),
+      loadingBuilder: SizedBox.shrink,
     );
   }
 }

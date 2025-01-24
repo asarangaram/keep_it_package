@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../video_player_service/models/video_player_state.dart';
-import '../../video_player_service/providers/video_player_state.dart';
+import '../models/video_player_state.dart';
+import '../providers/video_player_state.dart';
 
 class VideoControls {
   VideoControls({required this.play, required this.pause});

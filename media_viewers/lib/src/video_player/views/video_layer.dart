@@ -1,10 +1,11 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 import '../builders/audio_control_builder.dart';
 import '../builders/timestamp_builder.dart';
+import '../models/cl_icons.dart';
+import '../models/ext_duration.dart';
 
 class VideoLayer extends ConsumerWidget {
   const VideoLayer({
@@ -52,10 +53,10 @@ class VideoLayer extends ConsumerWidget {
                           AudioControlBuilder(
                             controller: controller,
                             builder: (volume) {
-                              return CLIcon.standard(
+                              return Icon(
                                 volume == 0
-                                    ? clIcons.audioMuted
-                                    : clIcons.audioUnmuted,
+                                    ? videoPlayerIcons.audioMuted
+                                    : videoPlayerIcons.audioUnmuted,
                                 color: Colors.white,
                               );
                             },
@@ -66,9 +67,14 @@ class VideoLayer extends ConsumerWidget {
                               required currentPosition,
                               required totalDuration,
                             }) {
-                              return CLText.standard(
+                              return Text(
                                 '${currentPosition.timestamp} / ${totalDuration.timestamp}',
-                                color: Colors.white,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                    ),
                               );
                             },
                           ),

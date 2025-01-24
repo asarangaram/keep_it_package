@@ -2,13 +2,14 @@
 ///
 library;
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../video_player_service/builders/audio_control_builder.dart';
-import '../../../video_player_service/providers/video_player_state.dart';
+import 'audio_control_builder.dart';
+import '../models/cl_icons.dart';
+import '../models/ext_duration.dart';
+import '../providers/video_player_state.dart';
 
 class VideoControlsView extends ConsumerStatefulWidget {
   const VideoControlsView({
@@ -141,15 +142,17 @@ class VideoControlsState extends ConsumerState<VideoControlsView> {
                   IconButton(
                     icon: Icon(
                       video.isPlaying
-                          ? clIcons.playerPause
-                          : clIcons.playerPlay,
+                          ? videoPlayerIcons.playerPause
+                          : videoPlayerIcons.playerPlay,
                     ),
                     onPressed: onPlayPause,
                   ),
                   AudioControlBuilder(
                     controller: widget.controller,
                     builder: (volume) => Icon(
-                      volume == 0 ? clIcons.audioMuted : clIcons.audioUnmuted,
+                      volume == 0
+                          ? videoPlayerIcons.audioMuted
+                          : videoPlayerIcons.audioUnmuted,
                     ),
                   ),
                   const Spacer(),

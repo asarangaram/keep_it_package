@@ -1,6 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+
+import '../models/ext_duration.dart';
 
 class TimeStampBuilder extends StatefulWidget {
   const TimeStampBuilder({

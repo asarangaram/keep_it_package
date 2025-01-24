@@ -1,7 +1,6 @@
 name: media_viewers
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
 
 publish_to: none
 
@@ -10,12 +9,12 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  colan_widgets:
-    path: ../colan_widgets
+  
   extended_image: ^8.2.1
   flutter:
     sdk: flutter
   flutter_riverpod: 2.5.1
+  material_design_icons_flutter: ^7.0.7296
   video_player: ^2.9.1
 
 dev_dependencies:
@@ -24,5 +23,5 @@ dev_dependencies:
     sdk: flutter
   very_good_analysis: ^6.0.0
 
-
 flutter:
+  uses-material-design: true
