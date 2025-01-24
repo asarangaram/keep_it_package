@@ -32,15 +32,6 @@ class CameraPage extends ConsumerWidget {
             return CLCameraService(
               parentIdentifier: 'CLCameraService',
               onCancel: () => PageManager.of(context, ref).pop(),
-              onError: (String message, {required dynamic error}) async {
-                await ref
-                    .read(
-                      notificationMessageProvider.notifier,
-                    )
-                    .push(
-                      '$message [$error]',
-                    );
-              },
               onNewMedia: (path, {required isVideo}) async {
                 return theStore.mediaUpdater.create(
                   path,

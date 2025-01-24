@@ -1,4 +1,4 @@
-import 'package:colan_services/services/media_view_service/widgets/media_preview_service.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:content_store/extensions/ext_cldirectories.dart';
@@ -17,6 +17,7 @@ import '../models/action_control.dart';
 import '../providers/show_controls.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
+import 'media_preview_service.dart';
 
 class MediaView extends StatelessWidget {
   factory MediaView({
