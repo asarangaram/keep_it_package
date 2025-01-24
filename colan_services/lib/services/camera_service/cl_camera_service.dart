@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../../internal/fullscreen_layout.dart';
 import 'providers/captured_media.dart';
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';
@@ -23,54 +24,57 @@ class CLCameraService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStoreUpdater(
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
-      },
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetStoreUpdater',
-      ),
-      builder: (theStore) {
-        return GetCollection(
-          id: collectionId,
-          errorBuilder: (_, __) {
-            throw UnimplementedError('errorBuilder');
-            // ignore: dead_code
-          },
-          loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GetCollection',
-          ),
-          builder: (collection) {
-            return CLCameraService0(
-              parentIdentifier: 'CLCameraService',
-              onCancel: () => PageManager.of(context, ref).pop(),
-              onNewMedia: (path, {required isVideo}) async {
-                return theStore.mediaUpdater.create(
-                  path,
-                  type: isVideo ? CLMediaType.video : CLMediaType.image,
-                  collectionId: () => collection?.id,
-                );
-              },
-              onDone: (mediaList) async {
-                await MediaWizardService.openWizard(
-                  context,
-                  ref,
-                  CLSharedMedia(
-                    entries: mediaList,
-                    type: UniversalMediaSource.captured,
-                    collection: collection,
-                  ),
-                );
+    return FullscreenLayout(
+      useSafeArea: false,
+      child: GetStoreUpdater(
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'GetStoreUpdater',
+        ),
+        builder: (theStore) {
+          return GetCollection(
+            id: collectionId,
+            errorBuilder: (_, __) {
+              throw UnimplementedError('errorBuilder');
+              // ignore: dead_code
+            },
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'GetCollection',
+            ),
+            builder: (collection) {
+              return CLCameraService0(
+                parentIdentifier: 'CLCameraService',
+                onCancel: () => PageManager.of(context, ref).pop(),
+                onNewMedia: (path, {required isVideo}) async {
+                  return theStore.mediaUpdater.create(
+                    path,
+                    type: isVideo ? CLMediaType.video : CLMediaType.image,
+                    collectionId: () => collection?.id,
+                  );
+                },
+                onDone: (mediaList) async {
+                  await MediaWizardService.openWizard(
+                    context,
+                    ref,
+                    CLSharedMedia(
+                      entries: mediaList,
+                      type: UniversalMediaSource.captured,
+                      collection: collection,
+                    ),
+                  );
 
-                if (context.mounted) {
-                  PageManager.of(context, ref).pop();
-                }
-              },
-            );
-          },
-        );
-      },
+                  if (context.mounted) {
+                    PageManager.of(context, ref).pop();
+                  }
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

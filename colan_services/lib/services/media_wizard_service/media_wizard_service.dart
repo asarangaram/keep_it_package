@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
+import '../../internal/fullscreen_layout.dart';
 import '../basic_page_service/dialogs.dart';
 import '../basic_page_service/page_manager.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
@@ -68,9 +69,11 @@ class MediaWizardService extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (type == UniversalMediaSource.deleted) {
-      return CLPopScreen.onSwipe(
-        child: RecycleBinService(
-          type: type,
+      return FullscreenLayout(
+        child: CLPopScreen.onSwipe(
+          child: RecycleBinService(
+            type: type,
+          ),
         ),
       );
     } else {
@@ -79,26 +82,28 @@ class MediaWizardService extends ConsumerWidget {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           PageManager.of(context, ref).pop();
         });
-        return const SizedBox.expand();
+        return const FullscreenLayout(child: SizedBox.expand());
       } else {
         final galleryMap = ref.watch(groupedItemsProvider(media.entries));
 
-        return CLPopScreen.onSwipe(
-          child: GetStoreUpdater(
-            errorBuilder: (_, __) {
-              throw UnimplementedError('errorBuilder');
-              // ignore: dead_code
-            },
-            loadingBuilder: () => CLLoader.widget(
-              debugMessage: 'GetStoreUpdater',
+        return FullscreenLayout(
+          child: CLPopScreen.onSwipe(
+            child: GetStoreUpdater(
+              errorBuilder: (_, __) {
+                throw UnimplementedError('errorBuilder');
+                // ignore: dead_code
+              },
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'GetStoreUpdater',
+              ),
+              builder: (theStore) {
+                return SelectAndKeepMedia(
+                  media: media,
+                  type: type,
+                  galleryMap: galleryMap,
+                );
+              },
             ),
-            builder: (theStore) {
-              return SelectAndKeepMedia(
-                media: media,
-                type: type,
-                galleryMap: galleryMap,
-              );
-            },
           ),
         );
       }

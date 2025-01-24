@@ -13,12 +13,28 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/app_descriptor.dart';
 import '../providers/app_init.dart';
 import 'app_view.dart';
 
-class AppLoader extends ConsumerWidget {
-  const AppLoader({
+class AppStartService extends StatelessWidget {
+  const AppStartService({
+    required this.appDescriptor,
+    super.key,
+  });
+  final AppDescriptor appDescriptor;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProviderScope(
+      child: AppStartService0(
+        appDescriptor: appDescriptor,
+      ),
+    );
+  }
+}
+
+class AppStartService0 extends ConsumerWidget {
+  const AppStartService0({
     required this.appDescriptor,
     super.key,
   });

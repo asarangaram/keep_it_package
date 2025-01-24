@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
 
+import '../../internal/fullscreen_layout.dart';
+
 class MediaEditService extends ConsumerWidget {
   const MediaEditService({
     required this.mediaId,
@@ -21,93 +23,96 @@ class MediaEditService extends ConsumerWidget {
     if (mediaId == null) {
       return BasicPageService.nothingToShow(message: 'No Media Provided');
     }
-    return GetMedia(
-      id: mediaId!,
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
-      },
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetMedia',
-      ),
-      builder: (media) {
-        if (media == null) {
-          return BasicPageService.message(message: ' Media not found');
-        }
+    return FullscreenLayout(
+      backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
+      child: GetMedia(
+        id: mediaId!,
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'GetMedia',
+        ),
+        builder: (media) {
+          if (media == null) {
+            return BasicPageService.message(message: ' Media not found');
+          }
 
-        return GetMediaUri(
-          id: media.id!,
-          errorBuilder: (_, __) {
-            throw UnimplementedError('errorBuilder');
-            // ignore: dead_code
-          },
-          loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GetMediaUri',
-          ),
-          builder: (mediaUri) {
-            return GetStoreUpdater(
-              errorBuilder: (_, __) {
-                throw UnimplementedError('errorBuilder');
-                // ignore: dead_code
-              },
-              loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'GetStoreUpdater',
-              ),
-              builder: (theStore) {
-                return InvokeEditor(
-                  mediaUri: mediaUri!,
-                  mediaType: media.type,
-                  canDuplicateMedia: canDuplicateMedia,
-                  onCreateNewFile: () async {
-                    return theStore.createTempFile(ext: media.fExt);
-                  },
-                  onCancel: () async {
-                    PageManager.of(context, ref).pop(media);
-                  },
-                  onSave: (file, {required overwrite}) async {
-                    final CLMedia resultMedia;
-                    if (overwrite) {
-                      final confirmed = await DialogService.replaceMedia(
-                            context,
-                            ref,
+          return GetMediaUri(
+            id: media.id!,
+            errorBuilder: (_, __) {
+              throw UnimplementedError('errorBuilder');
+              // ignore: dead_code
+            },
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'GetMediaUri',
+            ),
+            builder: (mediaUri) {
+              return GetStoreUpdater(
+                errorBuilder: (_, __) {
+                  throw UnimplementedError('errorBuilder');
+                  // ignore: dead_code
+                },
+                loadingBuilder: () => CLLoader.widget(
+                  debugMessage: 'GetStoreUpdater',
+                ),
+                builder: (theStore) {
+                  return InvokeEditor(
+                    mediaUri: mediaUri!,
+                    mediaType: media.type,
+                    canDuplicateMedia: canDuplicateMedia,
+                    onCreateNewFile: () async {
+                      return theStore.createTempFile(ext: media.fExt);
+                    },
+                    onCancel: () async {
+                      PageManager.of(context, ref).pop(media);
+                    },
+                    onSave: (file, {required overwrite}) async {
+                      final CLMedia resultMedia;
+                      if (overwrite) {
+                        final confirmed = await DialogService.replaceMedia(
+                              context,
+                              ref,
+                              media: media,
+                            ) ??
+                            false;
+                        if (confirmed && context.mounted) {
+                          resultMedia = await theStore.mediaUpdater
+                              .replaceContent(file, media: media);
+                        } else {
+                          resultMedia = media;
+                        }
+                      } else {
+                        final confirmed =
+                            await DialogService.cloneAndReplaceMedia(
+                                  context,
+                                  ref,
+                                  media: media,
+                                ) ??
+                                false;
+                        if (confirmed && context.mounted) {
+                          resultMedia = await theStore.mediaUpdater
+                              .updateCloneAndReplaceContent(
+                            file,
                             media: media,
-                          ) ??
-                          false;
-                      if (confirmed && context.mounted) {
-                        resultMedia = await theStore.mediaUpdater
-                            .replaceContent(file, media: media);
-                      } else {
-                        resultMedia = media;
+                          );
+                        } else {
+                          resultMedia = media;
+                        }
                       }
-                    } else {
-                      final confirmed =
-                          await DialogService.cloneAndReplaceMedia(
-                                context,
-                                ref,
-                                media: media,
-                              ) ??
-                              false;
-                      if (confirmed && context.mounted) {
-                        resultMedia = await theStore.mediaUpdater
-                            .updateCloneAndReplaceContent(
-                          file,
-                          media: media,
-                        );
-                      } else {
-                        resultMedia = media;
-                      }
-                    }
 
-                    if (context.mounted) {
-                      PageManager.of(context, ref).pop(resultMedia);
-                    }
-                  },
-                );
-              },
-            );
-          },
-        );
-      },
+                      if (context.mounted) {
+                        PageManager.of(context, ref).pop(resultMedia);
+                      }
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

@@ -1,13 +1,10 @@
 import 'dart:io';
 
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:fvp/fvp.dart' as fvp;
 
 import 'package:window_size/window_size.dart';
@@ -28,6 +25,10 @@ class KeepItApp implements AppDescriptor {
           builder: (context, parameters) => const GalleryViewService(),
         ),
         CLRouteDescriptor(
+          name: 'collections',
+          builder: (context, parameters) => const GalleryViewService(),
+        ),
+        CLRouteDescriptor(
           name: 'settings',
           builder: (context, parameters) => const SettingsService(),
         ),
@@ -40,10 +41,7 @@ class KeepItApp implements AppDescriptor {
             } else {
               collectionId = null;
             }
-            return FullscreenLayout(
-              useSafeArea: false,
-              child: CLCameraService(collectionId: collectionId),
-            );
+            return CLCameraService(collectionId: collectionId);
           },
         ),
         CLRouteDescriptor(
@@ -62,12 +60,9 @@ class KeepItApp implements AppDescriptor {
               canDuplicateMedia = false;
             }
 
-            return FullscreenLayout(
-              backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-              child: MediaEditService(
-                mediaId: mediaId,
-                canDuplicateMedia: canDuplicateMedia,
-              ),
+            return MediaEditService(
+              mediaId: mediaId,
+              canDuplicateMedia: canDuplicateMedia,
             );
           },
         ),
@@ -88,13 +83,10 @@ class KeepItApp implements AppDescriptor {
               collectionId = int.parse(parameters['collectionId']!);
             }
 
-            return FullscreenLayout(
-              useSafeArea: false,
-              child: MediaViewService(
-                collectionId: collectionId,
-                id: int.parse(parameters['id']!),
-                parentIdentifier: parentIdentifier,
-              ),
+            return MediaViewService(
+              collectionId: collectionId,
+              id: int.parse(parameters['id']!),
+              parentIdentifier: parentIdentifier,
             );
           },
         ),
@@ -109,21 +101,9 @@ class KeepItApp implements AppDescriptor {
             } else {
               type = UniversalMediaSource.unclassified;
             }
-            return FullscreenLayout(
-              child: MediaWizardService(type: type),
-            );
+            return MediaWizardService(type: type);
           },
         ),
-        CLRouteDescriptor(
-          name: 'collections',
-          builder: (context, parameters) => const GalleryViewService(),
-        ),
-        /* CLRouteDescriptor(
-          name: 'items_by_collection',
-          builder: (context, parameters) => CollectionTimeLinePage(
-            collectionId: int.parse(parameters['id']!),
-          ),
-        ), */
       ];
 
   @override
@@ -132,12 +112,10 @@ class KeepItApp implements AppDescriptor {
         required CLMediaFileGroup incomingMedia,
         required void Function({required bool result}) onDiscard,
       }) =>
-          FullscreenLayout(
-            child: IncomingMediaService(
-              parentIdentifier: 'IncomingMediaService',
-              incomingMedia: incomingMedia,
-              onDiscard: onDiscard,
-            ),
+          IncomingMediaService(
+            parentIdentifier: 'IncomingMediaService',
+            incomingMedia: incomingMedia,
+            onDiscard: onDiscard,
           );
 
   @override
@@ -192,13 +170,8 @@ class KeepItApp implements AppDescriptor {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  debugPrintRebuildDirtyWidgets = false;
-  debugPaintSizeEnabled = false;
-  debugPrintBeginFrameBanner = false;
-  debugPrintLayouts = false;
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    //setWindowTitle('My App');
     setWindowFrame(const Rect.fromLTWH(0, 0, 900, 900 * 16 / 9));
 
     setWindowMaxSize(const Size(900, 900 * 16 / 9));
@@ -213,24 +186,5 @@ void main() {
       'global': {'logLevel': 'Error'},
     },
   );
-  runApp(
-    ProviderScope(
-      child: AppLoader(
-        appDescriptor: KeepItApp(),
-      ),
-    ),
-  );
+  runApp(AppStartService(appDescriptor: KeepItApp()));
 }
-
-/* void printGoRouterState(GoRouterState state) {
-  _infoLogger(' state: ${state.extra} ${state.error} ${state.fullPath}'
-      ' ${state.uri} ${state.name} ${state.pageKey} ${state.pathParameters} '
-      '${state.uri.queryParameters} ${state.path} ${state.matchedLocation}');
-}
-
-bool _disableInfoLogger = true;
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
-  }
-} */

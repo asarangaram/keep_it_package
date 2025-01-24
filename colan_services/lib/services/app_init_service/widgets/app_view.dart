@@ -1,7 +1,7 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../incoming_media_service/incoming_media_monitor.dart';
 import '../models/app_descriptor.dart';
 
 class AppView extends ConsumerStatefulWidget {

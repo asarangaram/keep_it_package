@@ -9,45 +9,15 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
-  app_loader:
-    path: ../app_loader
-  background_downloader: ^8.5.6
   colan_services:
     path: ../colan_services
   colan_widgets:
-    path: ../colan_widgets 
-  collection: ^1.18.0
-  content_store:
-    path: ../content_store
+    path: ../colan_widgets
   flutter:
     sdk: flutter
-  flutter_riverpod: 2.5.1
-  form_factory:
-    path: ../form_factory
-  fvp: ^0.28.0
-  http: ^1.2.2
-  http_parser: ^4.0.2
-  local_store: 
-    path: ../local_store
-
-  material_design_icons_flutter: ^7.0.7296
-  material_symbols_icons: ^4.2785.1
-  media_editors:
-    path: ../media_editors
-  mime: ^1.0.5
-  path: ^1.9.0
-  path_provider: ^2.1.4
-  path_provider_platform_interface: ^2.1.2
-  plugin_platform_interface: ^2.1.8
-  store:
-    path: ../store
-  tar: ^2.0.0
-  uuid: ^4.4.0
-  window_size:
-    git:
-      url: https://github.com/google/flutter-desktop-embedding
-      path: plugins/window_size
-
+  fvp: ^0.29.0
+  window_size: ^0.1.0
+  
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^4.0.0
@@ -57,15 +27,12 @@ dev_dependencies:
     sdk: flutter
   very_good_analysis: ^6.0.0
   
-  
-  
 flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/icon.png"
   remove_alpha_ios: true
   
-
 flutter:
   uses-material-design: true
   assets:

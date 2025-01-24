@@ -1,7 +1,6 @@
 name: colan_services
 description: "Various Services"
 version: 0.0.1
-homepage:
 
 publish_to: none
 
@@ -39,6 +38,7 @@ dependencies:
   http_parser: ^4.0.2
   image: ^4.1.7
   image_picker: ^1.1.2
+  
   intl: ^0.18.1
   local_store:
     path: ../local_store
@@ -78,7 +78,12 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
+  path_provider_platform_interface: ^2.1.2
+  plugin_platform_interface: ^2.1.8
   very_good_analysis: ^6.0.0
 
 flutter:
+  uses-material-design: true
  
