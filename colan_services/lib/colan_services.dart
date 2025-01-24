@@ -6,8 +6,7 @@ export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
 export 'services/basic_page_service/cl_error_view.dart'
     show CLErrorPage, CLErrorView;
-export 'services/basic_page_service/cl_loading_view.dart'
-    show CLLoadingPage, CLLoadingView;
+
 export 'services/basic_page_service/dialogs.dart';
 export 'services/basic_page_service/empty_state.dart';
 export 'services/basic_page_service/page_manager.dart';

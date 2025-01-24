@@ -23,9 +23,9 @@ class PickCollection extends StatelessWidget {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        return const GreyShimmerExpandable();
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetCollectionMultiple',
+      ),
       query: DBQueries.collectionsVisible,
       builder: (collections) {
         return CLWizardFormField(

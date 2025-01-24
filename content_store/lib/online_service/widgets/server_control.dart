@@ -22,20 +22,18 @@ class ServerControlImpl extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        return const SizedBox.shrink();
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetServer',
+      ),
       builder: (server) {
         return GetDownloaderStatus(
           errorBuilder: (_, __) {
             return const SizedBox.shrink();
             // ignore: dead_code
           },
-          loadingBuilder: () {
-            return const SizedBox.shrink();
-            // ignore: dead_code
-          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetDownloaderStatus',
+          ),
           builder: (downloaderStatus) {
             return Card(
               shape: BeveledRectangleBorder(
@@ -137,7 +135,9 @@ class ServerSpeedDialImpl extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetServer(
-      loadingBuilder: SizedBox.shrink,
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetServer',
+      ),
       errorBuilder: (_, __) => const SizedBox.shrink(),
       builder: (server) {
         return Stack(

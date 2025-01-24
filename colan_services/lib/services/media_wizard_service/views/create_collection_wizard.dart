@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
-import '../../basic_page_service/cl_loading_view.dart';
 import 'edit_collection_description.dart';
 import 'label_viewer.dart';
 import 'pick_collection.dart';
@@ -89,7 +88,12 @@ class PickCollectionState extends State<CreateCollectionWizard> {
         ],
       );
     } else {
-      child = const Center(child: CLLoadingView(message: 'Saving...'));
+      child = Center(
+        child: CLLoader.widget(
+          message: 'Saving...',
+          debugMessage: 'Saving @ PickCollection',
+        ),
+      );
     }
     if (widget.fixedHeight) {
       return SizedBox(

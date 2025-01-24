@@ -15,10 +15,9 @@ class DownloaderProgressbar extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        return const SizedBox.shrink();
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetDownloaderStatus',
+      ),
       builder: (downloaderStatus) {
         final colors = <Color>[
           Colors.green,
@@ -59,9 +58,9 @@ class DownloaderProgressPie extends ConsumerWidget {
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
       },
-      loadingBuilder: () {
-        return const SizedBox.shrink();
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetDownloaderStatus',
+      ),
       builder: (downloaderStatus) {
         final total = downloaderStatus.total.toDouble();
 
@@ -118,10 +117,9 @@ class ActiveDownloadIndicator extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        return const SizedBox.shrink();
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetDownloaderStatus',
+      ),
       builder: (downloaderStatus) {
         if (downloaderStatus.running == 0) {
           return Container();

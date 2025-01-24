@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,10 +26,9 @@ class CollectionAsFolder extends ConsumerWidget {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
       builder: (theStore) {
         return Column(
           children: [

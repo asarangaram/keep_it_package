@@ -12,7 +12,9 @@ class StorageMonitor extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetDeviceDirectories(
-      loadingBuilder: () => const SizedBox.shrink(),
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetDeviceDirectories',
+      ),
       errorBuilder: (object, st) {
         return const SizedBox.shrink();
       },

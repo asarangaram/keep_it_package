@@ -15,10 +15,9 @@ class CameraPage extends ConsumerWidget {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
       builder: (theStore) {
         return GetCollection(
           id: collectionId,
@@ -26,10 +25,9 @@ class CameraPage extends ConsumerWidget {
             throw UnimplementedError('errorBuilder');
             // ignore: dead_code
           },
-          loadingBuilder: () {
-            throw UnimplementedError('loadingBuilder');
-            // ignore: dead_code
-          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetCollection',
+          ),
           builder: (collection) {
             return CLCameraService(
               parentIdentifier: 'CLCameraService',

@@ -17,10 +17,9 @@ class ViewNotes extends StatelessWidget {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
       builder: (theStore) {
         return InputDecorator(
           decoration: NotesTextFieldDecoration.inputDecoration(
@@ -40,10 +39,9 @@ class ViewNotes extends StatelessWidget {
                     throw UnimplementedError('errorBuilder');
                     // ignore: dead_code
                   },
-                  loadingBuilder: () {
-                    throw UnimplementedError('loadingBuilder');
-                    // ignore: dead_code
-                  },
+                  loadingBuilder: () => CLLoader.widget(
+                    debugMessage: 'GetMediaText',
+                  ),
                   builder: (text) {
                     return Text(
                       text,

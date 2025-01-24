@@ -63,10 +63,9 @@ class _NotesViewState extends State<NotesView> {
                   throw UnimplementedError('errorBuilder');
                   // ignore: dead_code
                 },
-                loadingBuilder: () {
-                  throw UnimplementedError('loadingBuilder');
-                  // ignore: dead_code
-                },
+                loadingBuilder: () => CLLoader.widget(
+                  debugMessage: 'GetNotesByMediaId',
+                ),
                 mediaId: widget.media.id!,
                 builder: (notes) {
                   final textNotes = notes.where(

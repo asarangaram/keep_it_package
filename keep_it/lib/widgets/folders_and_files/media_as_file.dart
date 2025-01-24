@@ -24,7 +24,9 @@ class MediaAsFile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMedia(
       id: media.id!,
-      loadingBuilder: () => const Center(child: Text('getMedia')),
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetMedia',
+      ),
       errorBuilder: (p0, p1) => const Center(child: Text('getMedia Error')),
       builder: (media0) {
         if (media0 == null) {
@@ -33,7 +35,9 @@ class MediaAsFile extends ConsumerWidget {
 
         return GetCollection(
           id: media0.collectionId,
-          loadingBuilder: () => const Center(child: Text('GetCollection')),
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetCollection',
+          ),
           errorBuilder: (p0, p1) =>
               const Center(child: Text('GetCollection Error')),
           builder: (collection0) {
@@ -54,10 +58,9 @@ class MediaAsFile extends ConsumerWidget {
                 throw UnimplementedError('errorBuilder');
                 // ignore: dead_code
               },
-              loadingBuilder: () {
-                throw UnimplementedError('loadingBuilder');
-                // ignore: dead_code
-              },
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'GetStoreUpdater',
+              ),
               builder: (theStore) {
                 return MediaMenu(
                   onTap: onTap,

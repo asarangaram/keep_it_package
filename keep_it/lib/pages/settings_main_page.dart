@@ -24,10 +24,9 @@ class SettingsMainPage extends ConsumerWidget {
           throw UnimplementedError('errorBuilder');
           // ignore: dead_code
         },
-        loadingBuilder: () {
-          throw UnimplementedError('loadingBuilder');
-          // ignore: dead_code
-        },
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'GetDeletedMedia',
+        ),
         builder: (deletedMedia) {
           return ListView(
             children: [

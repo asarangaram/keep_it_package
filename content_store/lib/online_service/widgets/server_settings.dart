@@ -19,20 +19,18 @@ class ServerSettingsImpl extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        return const SizedBox.shrink();
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetNetworkScanner',
+      ),
       builder: (scanner) {
         return GetServer(
           errorBuilder: (_, __) {
             return const SizedBox.shrink();
             // ignore: dead_code
           },
-          loadingBuilder: () {
-            return const SizedBox.shrink();
-            // ignore: dead_code
-          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetServer',
+          ),
           builder: (server) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

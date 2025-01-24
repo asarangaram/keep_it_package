@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -65,18 +66,9 @@ class VideoPlayer extends ConsumerWidget {
         }
       },
       errorBuilder: errorBuilder,
-      loadingBuilder: () {
-        return Stack(
-          children: [
-            Center(child: placeHolder ?? Container()),
-            const Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
-            ),
-          ],
-        );
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetVideoControllerWithState',
+      ),
     );
   }
 }

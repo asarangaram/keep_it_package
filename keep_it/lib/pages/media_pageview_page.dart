@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,7 +22,7 @@ class MediaPageViewPage extends ConsumerWidget {
     Widget errorBuilder(Object e, StackTrace st) => WhenError(
           errorMessage: e.toString(),
         );
-    const Widget loadingWidget = CLLoadingView();
+
     if (collectionId == null) {
       return GetMedia(
         id: id,
@@ -29,10 +30,9 @@ class MediaPageViewPage extends ConsumerWidget {
           throw UnimplementedError('errorBuilder');
           // ignore: dead_code
         },
-        loadingBuilder: () {
-          throw UnimplementedError('loadingBuilder');
-          // ignore: dead_code
-        },
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'GetMedia',
+        ),
         builder: (media) {
           if (media == null) {
             return const EmptyState();
@@ -42,7 +42,9 @@ class MediaPageViewPage extends ConsumerWidget {
               media: media,
               parentIdentifier: parentIdentifier,
               errorBuilder: errorBuilder,
-              loadingBuilder: () => loadingWidget,
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'MediaViewService',
+              ),
             ),
           );
         },
@@ -54,10 +56,9 @@ class MediaPageViewPage extends ConsumerWidget {
           throw UnimplementedError('errorBuilder');
           // ignore: dead_code
         },
-        loadingBuilder: () {
-          throw UnimplementedError('loadingBuilder');
-          // ignore: dead_code
-        },
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'GetMediaByCollectionId',
+        ),
         builder: (items) {
           if (items.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -75,7 +76,9 @@ class MediaPageViewPage extends ConsumerWidget {
             parentIdentifier: parentIdentifier,
             initialMediaIndex: initialMediaIndex,
             errorBuilder: errorBuilder,
-            loadingBuilder: () => loadingWidget,
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'MediaViewService.pageView',
+            ),
           );
         },
       );

@@ -36,10 +36,9 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
       builder: (theStore) {
         final audioNotes = widget.notes.isEmpty
             ? const SizedBox.shrink()
@@ -54,10 +53,9 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                             throw UnimplementedError('errorBuilder');
                             // ignore: dead_code
                           },
-                          loadingBuilder: () {
-                            throw UnimplementedError('loadingBuilder');
-                            // ignore: dead_code
-                          },
+                          loadingBuilder: () => CLLoader.widget(
+                            debugMessage: 'GetMediaUri',
+                          ),
                           id: note.id!,
                           builder: (uri) {
                             return AudioChip(

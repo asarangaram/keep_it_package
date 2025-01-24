@@ -21,7 +21,9 @@ class KeepItBottomBar extends ConsumerWidget {
       child: GetCollection(
         id: id,
         errorBuilder: (_, __) => const SizedBox.shrink(),
-        loadingBuilder: () => const SizedBox.shrink(),
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'GetCollection',
+        ),
         builder: (collection) {
           return Padding(
             padding: EdgeInsets.only(

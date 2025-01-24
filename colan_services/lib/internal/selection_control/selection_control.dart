@@ -183,10 +183,9 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
               throw UnimplementedError('errorBuilder');
               // ignore: dead_code
             },
-            loadingBuilder: () {
-              throw UnimplementedError('loadingBuilder');
-              // ignore: dead_code
-            },
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'GetStoreUpdater',
+            ),
             builder: (theStore) {
               return ActionsDraggableMenu<CLEntity>(
                 items: selector.items.toList(),

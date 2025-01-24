@@ -27,11 +27,15 @@ class MediaPreviewService extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetStoreUpdater(
       errorBuilder: BrokenImage.show,
-      loadingBuilder: GreyShimmer.show,
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
       builder: (theStore) {
         return GetPreviewUri(
           errorBuilder: BrokenImage.show,
-          loadingBuilder: GreyShimmer.show,
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetPreviewUri',
+          ),
           id: media.id!,
           builder: (previewUri) {
             /* log(

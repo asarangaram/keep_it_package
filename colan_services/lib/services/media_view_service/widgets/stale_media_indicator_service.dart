@@ -5,6 +5,8 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+
+
 class StaleMediaIndicatorService extends ConsumerWidget {
   const StaleMediaIndicatorService({
     super.key,
@@ -14,7 +16,9 @@ class StaleMediaIndicatorService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStaleMedia(
       errorBuilder: (p0, p1) => const SizedBox.shrink(),
-      loadingBuilder: () => const SizedBox.shrink(),
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStaleMedia',
+      ),
       builder: (staleMedia) {
         if (staleMedia.isEmpty) return const SizedBox.shrink();
         return CLStaleMediaIndicatorView(

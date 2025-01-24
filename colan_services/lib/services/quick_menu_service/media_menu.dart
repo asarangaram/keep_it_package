@@ -53,10 +53,9 @@ class MediaMenu extends ConsumerWidget {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
       builder: (theStore) {
         final canSync =
             ref.watch(serverProvider.select((server) => server.canSync));
@@ -114,7 +113,9 @@ class MediaMenu extends ConsumerWidget {
 
         return GetCollection(
           id: media.collectionId,
-          loadingBuilder: CircularProgressIndicator.new,
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetCollection',
+          ),
           errorBuilder: (e, st) => Text(e.toString()),
           builder: (collection0) {
             final collection = collection0!;

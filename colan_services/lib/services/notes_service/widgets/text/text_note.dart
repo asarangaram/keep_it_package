@@ -39,10 +39,9 @@ class TextNote extends ConsumerWidget {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetMediaText',
+      ),
       builder: (text) {
         return TextNote0(
           media: media,

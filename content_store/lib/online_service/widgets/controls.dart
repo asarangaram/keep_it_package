@@ -135,10 +135,7 @@ class OfflinePreference extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        return const SizedBox.shrink();
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(debugMessage: 'GetServer' ,),
       builder: (server) {
         if (server.isOffline) {
           return const SizedBox.shrink();

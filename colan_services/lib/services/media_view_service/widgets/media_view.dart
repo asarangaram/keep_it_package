@@ -185,10 +185,9 @@ class MediaView0 extends ConsumerWidget {
                                   throw UnimplementedError('errorBuilder');
                                   // ignore: dead_code
                                 },
-                                loadingBuilder: () {
-                                  throw UnimplementedError('loadingBuilder');
-                                  // ignore: dead_code
-                                },
+                                loadingBuilder: () => CLLoader.widget(
+                                  debugMessage: 'GetPreviewUri',
+                                ),
                                 id: media.id!,
                                 builder: (previewUri) {
                                   return ImageViewer.basic(
@@ -201,7 +200,9 @@ class MediaView0 extends ConsumerWidget {
                                 },
                               ),
                               errorBuilder: BrokenImage.show,
-                              loadingBuilder: GreyShimmer.show,
+                              loadingBuilder: () => CLLoader.widget(
+                                debugMessage: 'VideoPlayer',
+                              ),
                             ),
                           CLMediaType.text => const BrokenImage(),
                           CLMediaType.url => const BrokenImage(),

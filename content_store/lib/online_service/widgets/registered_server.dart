@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,10 +16,9 @@ class RegisterredServerView extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        return const SizedBox.shrink();
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetServer',
+      ),
       builder: (server) {
         if (server.identity == null) return const SizedBox.shrink();
         final map = <String, Widget>{

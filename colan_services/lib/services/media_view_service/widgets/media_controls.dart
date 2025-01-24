@@ -92,7 +92,10 @@ class MediaControls extends ConsumerWidget {
                       onPin: onPin,
                     );
                   },
-                  loadingBuilder: () {
+                  loadingBuilder: () => CLLoader.widget(
+                    debugMessage: 'GetVideoController',
+                  ),
+                  /* { // FIXME custom
                     return ControllerMenu(
                       media: media,
                       onEdit: onEdit,
@@ -101,7 +104,7 @@ class MediaControls extends ConsumerWidget {
                       onShare: onShare,
                       onPin: onPin,
                     );
-                  },
+                  }, */
                   builder: (
                     VideoControls controller,
                   ) {
@@ -184,16 +187,17 @@ class ControllerMenu extends StatelessWidget {
                     throw UnimplementedError('errorBuilder');
                     // ignore: dead_code
                   },
-                  loadingBuilder: () {
-                    throw UnimplementedError('loadingBuilder');
-                    // ignore: dead_code
-                  },
+                  loadingBuilder: () => CLLoader.widget(
+                    debugMessage: 'GetMediaUri',
+                  ),
                   id: media.id!,
                   builder: (uri) {
                     return VideoDefaultControls(
                       uri: uri!,
                       errorBuilder: (_, __) => Container(),
-                      loadingBuilder: Container.new,
+                      loadingBuilder: () => CLLoader.widget(
+                        debugMessage: 'VideoDefaultControls',
+                      ),
                     );
                   },
                 ),

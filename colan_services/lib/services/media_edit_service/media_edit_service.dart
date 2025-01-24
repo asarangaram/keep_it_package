@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,14 +20,15 @@ class MediaEditService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const loadingWidget = CLLoadingPage();
     return GetMedia(
       id: mediaId!,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () => loadingWidget,
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetMedia',
+      ),
       builder: (media) {
         if (media == null) {
           return BasicPageService.message(message: ' Media not found');
@@ -38,14 +40,18 @@ class MediaEditService extends ConsumerWidget {
             throw UnimplementedError('errorBuilder');
             // ignore: dead_code
           },
-          loadingBuilder: () => loadingWidget,
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetMediaUri',
+          ),
           builder: (mediaUri) {
             return GetStoreUpdater(
               errorBuilder: (_, __) {
                 throw UnimplementedError('errorBuilder');
                 // ignore: dead_code
               },
-              loadingBuilder: () => loadingWidget,
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'GetStoreUpdater',
+              ),
               builder: (theStore) {
                 return InvokeEditor(
                   mediaUri: mediaUri!,

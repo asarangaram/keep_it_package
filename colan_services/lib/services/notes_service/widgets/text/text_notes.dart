@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
@@ -20,10 +21,9 @@ class TextNotes extends StatelessWidget {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
       builder: (theStore) {
         final note = notes.firstOrNull;
         if (note == null) {
@@ -39,10 +39,9 @@ class TextNotes extends StatelessWidget {
             throw UnimplementedError('errorBuilder');
             // ignore: dead_code
           },
-          loadingBuilder: () {
-            throw UnimplementedError('loadingBuilder');
-            // ignore: dead_code
-          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetMediaText',
+          ),
           builder: (text) {
             return TextNote(
               media: media,

@@ -27,7 +27,7 @@ class MainViewPage extends ConsumerWidget {
     Widget errorBuilder(Object e, StackTrace st) => WhenError(
           errorMessage: e.toString(),
         );
-    const Widget loadingWidget = CLLoadingView();
+
     return AppTheme(
       child: Scaffold(
         body: OnSwipe(
@@ -40,17 +40,23 @@ class MainViewPage extends ConsumerWidget {
                     Expanded(
                       child: GetStore(
                         errorBuilder: errorBuilder,
-                        loadingBuilder: () => loadingWidget,
+                        loadingBuilder: () => CLLoader.widget(
+                          debugMessage: 'GetStore',
+                        ),
                         builder: (store) {
                           return RefreshIndicator(
                             onRefresh: /* isSelectionMode ? null : */
                                 () async => store.reloadStore(),
                             child: GetAvailableMediaByCollectionId(
-                              loadingBuilder: () => loadingWidget,
+                              loadingBuilder: () => CLLoader.widget(
+                                debugMessage: 'GetAvailableMediaByCollectionId',
+                              ),
                               errorBuilder: errorBuilder,
                               builder: (clmedias) => KeepItMainGrid(
                                 clmedias: clmedias,
-                                loadingBuilder: () => loadingWidget,
+                                loadingBuilder: () => CLLoader.widget(
+                                  debugMessage: 'KeepItMainGrid',
+                                ),
                                 errorBuilder: errorBuilder,
                               ),
                             ),

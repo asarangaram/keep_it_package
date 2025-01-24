@@ -39,9 +39,11 @@ class AppLoader extends ConsumerWidget {
             home: CLErrorView(errorMessage: err.toString()),
           );
         },
-        loading: () => const MaterialApp(
+        loading: () => MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: CLLoadingView(),
+          home: CLLoader.widget(
+            debugMessage: 'appInitAsync',
+          ),
         ),
       ),
     );

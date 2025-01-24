@@ -13,7 +13,7 @@ class PinnedMediaPage extends ConsumerWidget {
       builder: (theStore) {
         return GetPinnedMedia(
           errorBuilder: null,
-          loadingBuilder: null,
+          loadingBuilder: () => CLLoader.widget(debugMessage: ,),
           builder: (media) {
             return Column(
               children: [

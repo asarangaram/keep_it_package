@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_viewers/src/video_player/get_video_controller.dart';
@@ -33,9 +34,9 @@ class VideoDefaultControls extends ConsumerWidget {
       errorBuilder: (message, e) {
         return Container();
       },
-      loadingBuilder: () {
-        return Container();
-      },
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetVideoControllerWithState',
+      ),
     );
   }
 }
