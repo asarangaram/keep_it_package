@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_viewers/src/video_player/views/get_video_controller.dart';
 import 'package:video_player/video_player.dart';
 
-import '../models/video_player_state.dart';
 import '../builders/video_controls_view.dart';
+import '../models/video_player_state.dart';
 
 class VideoDefaultControls extends ConsumerWidget {
   const VideoDefaultControls({

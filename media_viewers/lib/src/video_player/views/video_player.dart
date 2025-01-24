@@ -4,8 +4,8 @@ import 'package:video_player/video_player.dart';
 
 import '../models/video_player_state.dart';
 import '../providers/video_player_state.dart';
-import 'video_layer.dart';
 import 'get_video_controller.dart';
+import 'video_layer.dart';
 
 enum PlayerServices { player, controlMenu, playStateBuilder }
 

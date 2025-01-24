@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import 'audio_control_builder.dart';
 import '../models/cl_icons.dart';
 import '../models/ext_duration.dart';
 import '../providers/video_player_state.dart';
+import 'audio_control_builder.dart';
 
 class VideoControlsView extends ConsumerStatefulWidget {
   const VideoControlsView({
