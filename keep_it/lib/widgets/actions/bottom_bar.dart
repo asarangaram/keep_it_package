@@ -21,7 +21,7 @@ class KeepItBottomBar extends ConsumerWidget {
       child: GetCollection(
         id: id,
         errorBuilder: (_, __) => const SizedBox.shrink(),
-        loadingBuilder: () => CLLoader.widget(
+        loadingBuilder: () => CLLoader.hide(
           debugMessage: 'GetCollection',
         ),
         builder: (collection) {

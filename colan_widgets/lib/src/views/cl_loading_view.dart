@@ -7,7 +7,7 @@ import 'package:shimmer/shimmer.dart';
 enum CLLoaderKind { hidden, widget, shimmer }
 
 class CLLoader extends StatelessWidget {
-  factory CLLoader.hidden({
+  factory CLLoader.hide({
     required String debugMessage,
     Key? key,
     String? message,

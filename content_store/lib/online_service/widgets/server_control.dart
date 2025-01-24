@@ -22,7 +22,7 @@ class ServerControlImpl extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetServer',
       ),
       builder: (server) {
@@ -31,7 +31,7 @@ class ServerControlImpl extends ConsumerWidget {
             return const SizedBox.shrink();
             // ignore: dead_code
           },
-          loadingBuilder: () => CLLoader.widget(
+          loadingBuilder: () => CLLoader.hide(
             debugMessage: 'GetDownloaderStatus',
           ),
           builder: (downloaderStatus) {
@@ -135,7 +135,7 @@ class ServerSpeedDialImpl extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetServer(
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetServer',
       ),
       errorBuilder: (_, __) => const SizedBox.shrink(),

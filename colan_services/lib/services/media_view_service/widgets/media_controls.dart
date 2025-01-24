@@ -92,10 +92,7 @@ class MediaControls extends ConsumerWidget {
                       onPin: onPin,
                     );
                   },
-                  loadingBuilder: () => CLLoader.widget(
-                    debugMessage: 'GetVideoController',
-                  ),
-                  /* { // FIXME custom
+                  loadingBuilder: () {
                     return ControllerMenu(
                       media: media,
                       onEdit: onEdit,
@@ -104,7 +101,7 @@ class MediaControls extends ConsumerWidget {
                       onShare: onShare,
                       onPin: onPin,
                     );
-                  }, */
+                  },
                   builder: (
                     VideoControls controller,
                   ) {

@@ -15,7 +15,7 @@ class DownloaderProgressbar extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetDownloaderStatus',
       ),
       builder: (downloaderStatus) {
@@ -58,7 +58,7 @@ class DownloaderProgressPie extends ConsumerWidget {
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
       },
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetDownloaderStatus',
       ),
       builder: (downloaderStatus) {
@@ -117,7 +117,7 @@ class ActiveDownloadIndicator extends ConsumerWidget {
         return const SizedBox.shrink();
         // ignore: dead_code
       },
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetDownloaderStatus',
       ),
       builder: (downloaderStatus) {

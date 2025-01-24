@@ -19,7 +19,7 @@ class KeepItTopBar extends ConsumerWidget {
     final identifier = ref.watch(mainPageIdentifierProvider);
     return GetCollection(
       id: collectionId,
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetCollection',
       ),
       errorBuilder: (p0, p1) => const SizedBox.shrink(),
