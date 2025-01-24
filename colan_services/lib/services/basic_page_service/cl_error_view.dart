@@ -51,3 +51,27 @@ class CLErrorView extends StatelessWidget {
     return parts.last;
   }
 }
+
+class CLErrorPage extends StatelessWidget {
+  const CLErrorPage({
+    required this.errorMessage,
+    super.key,
+    this.errorDetails,
+    this.onRecover,
+  });
+
+  final String errorMessage;
+  final String? errorDetails;
+  final CLMenuItem? onRecover;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CLErrorView(
+        errorMessage: errorMessage,
+        errorDetails: errorDetails,
+        onRecover: onRecover,
+      ),
+    );
+  }
+}

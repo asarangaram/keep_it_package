@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../basic_page_service/cl_loading_view.dart';
 import 'models/cl_shared_media.dart';
 
 class AnalysePage extends ConsumerWidget {
@@ -23,15 +24,14 @@ class AnalysePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const loadingWidget = CLLoadingView();
+
     return GetStoreUpdater(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => loadingWidget,
       builder: (theStore) {
         return Padding(
           padding: const EdgeInsets.all(8),

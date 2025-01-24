@@ -19,19 +19,14 @@ class MediaEditService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const loadingWidget = Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    const loadingWidget = CLLoadingPage();
     return GetMedia(
       id: mediaId!,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => loadingWidget,
       builder: (media) {
         if (media == null) {
           return BasicPageService.message(message: ' Media not found');

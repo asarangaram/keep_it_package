@@ -24,3 +24,19 @@ class CLLoadingView extends StatelessWidget {
     );
   }
 }
+
+class CLLoadingPage extends StatelessWidget {
+  const CLLoadingPage({
+    super.key,
+    this.message,
+  });
+
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    return CLLoadingView(
+      message: message,
+    );
+  }
+}

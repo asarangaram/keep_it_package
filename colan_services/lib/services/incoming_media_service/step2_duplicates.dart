@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../basic_page_service/cl_loading_view.dart';
 import '../basic_page_service/empty_state.dart';
 import '../media_view_service/media_view_service.dart';
 
@@ -62,6 +63,8 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
 
   @override
   Widget build(BuildContext context) {
+    const loadingWidget = CLLoadingView();
+
     if (currentMedia.isEmpty) {
       return const EmptyState();
     }
@@ -71,10 +74,7 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
         throw UnimplementedError('errorBuilder');
         // ignore: dead_code
       },
-      loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
-      },
+      loadingBuilder: () => loadingWidget,
       builder: (collections) {
         final newCollection = collections.entries
             .where((e) => e.id == widget.incomingMedia.collection?.id)
