@@ -63,11 +63,11 @@ class PageManager {
   final BuildContext context;
 
   void home() {
-    Navigator.of(context).popUntil(ModalRoute.withName('/'));
+    navigator.home(context);
   }
 
   void pop<T extends Object?>([T? result]) {
-    if (context.mounted && Navigator.canPop(context)) {
+    if (context.mounted && navigator.canPop(context)) {
       navigator.pop(context, result);
     }
   }
