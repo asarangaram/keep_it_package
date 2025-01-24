@@ -1,8 +1,9 @@
 import 'dart:math' as math;
+
+import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:media_viewers/media_viewers.dart';
 import 'package:store/store.dart';
 
 class MediaPreviewService extends StatelessWidget {

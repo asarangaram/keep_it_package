@@ -14,6 +14,9 @@ dependencies:
   camera: ^0.11.0+1
   cl_camera:
     path: ../cl_camera
+  cl_media_viewers_flutter:
+    git:
+      url: https://github.com/asarangaram/cl_media_viewers_flutter.git
   colan_widgets:
     path: ../colan_widgets 
   collection: ^1.18.0
@@ -46,8 +49,7 @@ dependencies:
 
   media_editors:
     path: ../media_editors
-  media_viewers:
-    path: ../media_viewers
+  
   meta: ^1.12.0
   mime: ^1.0.5
   multicast_dns: ^0.3.2+7
