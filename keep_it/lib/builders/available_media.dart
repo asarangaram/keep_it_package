@@ -31,7 +31,7 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
           available = CLMedias(
             items.entries
                 .where(
-                  (c) => !c.isCached,
+                  (c) => c.isCached,
                 )
                 .toList(),
           );
