@@ -4,7 +4,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../navigation/providers/active_collection.dart';
+import '../../providers/active_collection.dart';
 
 class KeepItBottomBar extends ConsumerWidget {
   const KeepItBottomBar({

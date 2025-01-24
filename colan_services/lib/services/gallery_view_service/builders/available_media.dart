@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../navigation/providers/active_collection.dart';
+import '../providers/active_collection.dart';
 
 class GetAvailableMediaByCollectionId extends ConsumerWidget {
   const GetAvailableMediaByCollectionId({

@@ -8,7 +8,10 @@ export 'services/basic_page_service/page_manager.dart'
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart'
     show DefaultCLCameraIcons;
-export 'services/gallery_view_service/gallery_view.dart' show GalleryView;
+export 'services/gallery_view_service/main_view_page.dart'
+    show GalleryViewService;
+export 'services/gallery_view_service/widgets/gallery_view.dart'
+    show GalleryView;
 export 'services/incoming_media_service/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
 export 'services/incoming_media_service/incoming_media_service.dart'
@@ -29,3 +32,4 @@ export 'services/notification_services/notification_service.dart'
     show NotificationService;
 export 'services/quick_menu_service/collection_menu.dart' show CollectionMenu;
 export 'services/quick_menu_service/media_menu.dart' show MediaMenu;
+export 'services/settings_service/settings_service.dart' show SettingsService;

@@ -12,14 +12,14 @@ class VideoEditor extends StatefulWidget {
   const VideoEditor({
     required this.uri,
     required this.onSave,
-    required this.onDone,
+    required this.onCancel,
     required this.onCreateNewFile,
     required this.canDuplicateMedia,
     super.key,
   });
   final Uri uri;
   final Future<void> Function(String outFile, {required bool overwrite}) onSave;
-  final Future<void> Function() onDone;
+  final Future<void> Function() onCancel;
   final bool canDuplicateMedia;
   final Future<String> Function() onCreateNewFile;
 
@@ -41,7 +41,7 @@ class _VideoEditorState extends State<VideoEditor> {
       File(currFile),
       key: key,
       onSave: widget.onSave,
-      onDone: widget.onDone,
+      onCancel: widget.onCancel,
       canDuplicateMedia: widget.canDuplicateMedia,
       isMuted: audioRemovedFile != null,
       onReset: () {
@@ -120,7 +120,6 @@ class _AudioMuterState extends State<AudioMuter> {
                           print(log.getMessage());
                         }
         
-                        
                       } */
                 }
 

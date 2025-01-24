@@ -10,16 +10,17 @@ class MediaEditService extends ConsumerWidget {
   const MediaEditService({
     required this.mediaId,
     required this.canDuplicateMedia,
-    required this.onDone,
     super.key,
   });
 
   final int? mediaId;
   final bool canDuplicateMedia;
-  final Future<void> Function({CLMedia? media}) onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (mediaId == null) {
+      return BasicPageService.nothingToShow(message: 'No Media Provided');
+    }
     return GetMedia(
       id: mediaId!,
       errorBuilder: (_, __) {
@@ -60,7 +61,9 @@ class MediaEditService extends ConsumerWidget {
                   onCreateNewFile: () async {
                     return theStore.createTempFile(ext: media.fExt);
                   },
-                  onCancel: onDone,
+                  onCancel: () async {
+                    PageManager.of(context, ref).pop(media);
+                  },
                   onSave: (file, {required overwrite}) async {
                     final CLMedia resultMedia;
                     if (overwrite) {
@@ -96,7 +99,7 @@ class MediaEditService extends ConsumerWidget {
                     }
 
                     if (context.mounted) {
-                      await onDone(media: resultMedia);
+                      PageManager.of(context, ref).pop(resultMedia);
                     }
                   },
                 );
@@ -141,7 +144,7 @@ class InvokeEditor extends ConsumerWidget {
           return VideoEditor(
             uri: mediaUri,
             onSave: onSave,
-            onDone: onCancel,
+            onCancel: onCancel,
             onCreateNewFile: onCreateNewFile,
             canDuplicateMedia: canDuplicateMedia,
           );

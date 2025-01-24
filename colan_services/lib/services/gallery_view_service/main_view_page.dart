@@ -1,26 +1,26 @@
-import 'package:app_loader/app_loader.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it/widgets/when_empty.dart';
+
 import 'package:store/store.dart';
 
-import '../builders/available_media.dart';
-import '../navigation/providers/active_collection.dart';
+import 'builders/available_media.dart';
+import 'providers/active_collection.dart';
 
-import '../navigation/providers/grouper.dart';
-import '../navigation/providers/selection_mode.dart';
-import '../widgets/actions/bottom_bar.dart';
-import '../widgets/actions/top_bar.dart';
+import 'providers/grouper.dart';
+import 'providers/selection_mode.dart';
 
-import '../widgets/folders_and_files/collection_as_folder.dart';
-import '../widgets/folders_and_files/media_as_file.dart';
-import '../widgets/when_error.dart';
+import 'widgets/actions/bottom_bar.dart';
+import 'widgets/actions/top_bar.dart';
+import 'widgets/folders_and_files/collection_as_folder.dart';
+import 'widgets/folders_and_files/media_as_file.dart';
+import 'widgets/when_empty.dart';
+import 'widgets/when_error.dart';
 
-class MainViewPage extends ConsumerWidget {
-  const MainViewPage({super.key});
+class GalleryViewService extends ConsumerWidget {
+  const GalleryViewService({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

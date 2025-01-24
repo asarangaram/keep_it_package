@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../../media_view_service/media_view_service1.dart';
+
 class MediaAsFile extends ConsumerWidget {
   const MediaAsFile({
     required this.media,
@@ -68,7 +70,7 @@ class MediaAsFile extends ConsumerWidget {
                   child: Column(
                     children: [
                       Expanded(
-                        child: MediaViewService.preview(
+                        child: MediaViewService1.preview(
                           media0,
                           parentIdentifier: parentIdentifier,
                         ),

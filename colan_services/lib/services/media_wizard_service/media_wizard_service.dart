@@ -68,35 +68,41 @@ class MediaWizardService extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (type == UniversalMediaSource.deleted) {
-      return RecycleBinService(
-        type: type,
-      );
-    }
-    final media = ref.watch(universalMediaProvider(type));
-    if (media.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        PageManager.of(context, ref).pop();
-      });
-      return const SizedBox.expand();
-    }
-    final galleryMap = ref.watch(groupedItemsProvider(media.entries));
-
-    return GetStoreUpdater(
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
-      },
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetStoreUpdater',
-      ),
-      builder: (theStore) {
-        return SelectAndKeepMedia(
-          media: media,
+      return CLPopScreen.onSwipe(
+        child: RecycleBinService(
           type: type,
-          galleryMap: galleryMap,
+        ),
+      );
+    } else {
+      final media = ref.watch(universalMediaProvider(type));
+      if (media.isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          PageManager.of(context, ref).pop();
+        });
+        return const SizedBox.expand();
+      } else {
+        final galleryMap = ref.watch(groupedItemsProvider(media.entries));
+
+        return CLPopScreen.onSwipe(
+          child: GetStoreUpdater(
+            errorBuilder: (_, __) {
+              throw UnimplementedError('errorBuilder');
+              // ignore: dead_code
+            },
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'GetStoreUpdater',
+            ),
+            builder: (theStore) {
+              return SelectAndKeepMedia(
+                media: media,
+                type: type,
+                galleryMap: galleryMap,
+              );
+            },
+          ),
         );
-      },
-    );
+      }
+    }
   }
 }
 

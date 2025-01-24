@@ -1,8 +1,8 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../media_view_service/media_view_service1.dart';
 import '../providers/captured_media.dart';
 
 class PreviewCapturedMedia extends ConsumerWidget {
@@ -26,7 +26,7 @@ class PreviewCapturedMedia extends ConsumerWidget {
               sendMedia(capturedMediaCopy);
             },
             child: CapturedMediaDecorator(
-              child: MediaViewService.preview(
+              child: MediaViewService1.preview(
                 capturedMedia.last,
                 parentIdentifier: parentIdentifier,
               ),

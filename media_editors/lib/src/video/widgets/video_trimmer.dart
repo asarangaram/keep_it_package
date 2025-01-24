@@ -10,7 +10,7 @@ class VideoTrimmerView extends StatefulWidget {
   const VideoTrimmerView(
     this.file, {
     required this.onSave,
-    required this.onDone,
+    required this.onCancel,
     required this.canDuplicateMedia,
     required this.audioMuter,
     required this.onReset,
@@ -19,7 +19,7 @@ class VideoTrimmerView extends StatefulWidget {
   });
   final File file;
   final Future<void> Function(String outFile, {required bool overwrite}) onSave;
-  final Future<void> Function() onDone;
+  final Future<void> Function() onCancel;
   final bool canDuplicateMedia;
   final Widget audioMuter;
   final bool isMuted;
@@ -64,7 +64,7 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
           _progressVisibility = true;
         });
         await widget.onSave(widget.file.path, overwrite: overwrite);
-        await widget.onDone();
+
         if (mounted) {
           setState(() {
             _progressVisibility = false;
@@ -94,8 +94,6 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
             _progressVisibility = false;
           });
         }
-        debugPrint('OUTPUT PATH: $outputPath');
-        await widget.onDone();
       },
     );
   }
@@ -187,7 +185,7 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                   onSave: _saveVideo,
                   onDiscard: ({required done}) async {
                     if (done) {
-                      await widget.onDone();
+                      await widget.onCancel();
                     } else {
                       widget.onReset();
                     }

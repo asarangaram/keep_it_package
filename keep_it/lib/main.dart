@@ -12,15 +12,6 @@ import 'package:fvp/fvp.dart' as fvp;
 
 import 'package:window_size/window_size.dart';
 
-import 'pages/camera_page.dart';
-import 'pages/main_view_page.dart';
-import 'pages/media_editor_page.dart';
-import 'pages/media_pageview_page.dart';
-import 'pages/media_wizard_page.dart';
-import 'pages/pinned_media_page.dart';
-import 'pages/server_page.dart';
-import 'pages/settings_main_page.dart';
-
 class KeepItApp implements AppDescriptor {
   @override
   String get title => 'Keep It';
@@ -34,15 +25,11 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const MainViewPage(),
-        ),
-        CLRouteDescriptor(
-          name: 'Pinned',
-          builder: (context, parameters) => const PinnedMediaPage(),
+          builder: (context, parameters) => const GalleryViewService(),
         ),
         CLRouteDescriptor(
           name: 'settings',
-          builder: (context, parameters) => const SettingsMainPage(),
+          builder: (context, parameters) => const SettingsService(),
         ),
         CLRouteDescriptor(
           name: 'camera',
@@ -55,7 +42,7 @@ class KeepItApp implements AppDescriptor {
             }
             return FullscreenLayout(
               useSafeArea: false,
-              child: CameraPage(collectionId: collectionId),
+              child: CLCameraService(collectionId: collectionId),
             );
           },
         ),
@@ -77,7 +64,7 @@ class KeepItApp implements AppDescriptor {
 
             return FullscreenLayout(
               backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-              child: MediaEditorPage(
+              child: MediaEditService(
                 mediaId: mediaId,
                 canDuplicateMedia: canDuplicateMedia,
               ),
@@ -103,7 +90,7 @@ class KeepItApp implements AppDescriptor {
 
             return FullscreenLayout(
               useSafeArea: false,
-              child: MediaPageViewPage(
+              child: MediaViewService(
                 collectionId: collectionId,
                 id: int.parse(parameters['id']!),
                 parentIdentifier: parentIdentifier,
@@ -123,19 +110,13 @@ class KeepItApp implements AppDescriptor {
               type = UniversalMediaSource.unclassified;
             }
             return FullscreenLayout(
-              child: MediaWizardPage(type: type),
+              child: MediaWizardService(type: type),
             );
           },
         ),
         CLRouteDescriptor(
-          name: 'servers',
-          builder: (context, parameters) {
-            return const FullscreenLayout(child: ServersPage());
-          },
-        ),
-        CLRouteDescriptor(
           name: 'collections',
-          builder: (context, parameters) => const MainViewPage(),
+          builder: (context, parameters) => const GalleryViewService(),
         ),
         /* CLRouteDescriptor(
           name: 'items_by_collection',

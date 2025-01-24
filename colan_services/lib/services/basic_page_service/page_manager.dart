@@ -38,7 +38,7 @@ class PageManager extends Navigator {
   Future<bool?> openCamera({
     int? collectionId,
   }) async {
-    await CLCameraService.invokeWithSufficientPermission(
+    await CLCameraService0.invokeWithSufficientPermission(
       context,
       () async {
         if (context.mounted) {

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../navigation/providers/active_collection.dart';
-import '../../navigation/providers/grouper.dart';
-import '../../navigation/providers/selection_mode.dart';
+import '../../providers/active_collection.dart';
+import '../../providers/grouper.dart';
+import '../../providers/selection_mode.dart';
 
 class KeepItTopBar extends ConsumerWidget {
   const KeepItTopBar({super.key});

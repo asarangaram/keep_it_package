@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../basic_page_service/basic_page_service.dart';
-import '../media_view_service/media_view_service.dart';
+import '../media_view_service/media_view_service1.dart';
 
 import 'models/cl_shared_media.dart';
 
@@ -220,7 +220,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                           aspectRatio: 1,
                           child: Padding(
                             padding: const EdgeInsets.all(2),
-                            child: MediaViewService.preview(
+                            child: MediaViewService1.preview(
                               m,
                               parentIdentifier: parentIdentifier,
                             ),

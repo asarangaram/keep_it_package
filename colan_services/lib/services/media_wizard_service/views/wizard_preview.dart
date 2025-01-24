@@ -8,8 +8,8 @@ import '../../basic_page_service/cl_error_view.dart';
 
 import '../../basic_page_service/page_manager.dart';
 
-import '../../gallery_view_service/gallery_view.dart';
-import '../../media_view_service/media_view_service.dart';
+import '../../gallery_view_service/widgets/gallery_view.dart';
+import '../../media_view_service/media_view_service1.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -100,7 +100,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               }, */
               child: Padding(
                 padding: const EdgeInsets.all(4),
-                child: MediaViewService.preview(
+                child: MediaViewService1.preview(
                   item as CLMedia,
                   parentIdentifier: type.identifier,
                 ),

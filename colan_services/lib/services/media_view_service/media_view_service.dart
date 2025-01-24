@@ -1,220 +1,87 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
-import '../notes_service/notes_service.dart';
+import 'media_view_service1.dart';
 
-import 'providers/show_controls.dart';
-import 'widgets/media_page_view.dart';
-import 'widgets/media_view.dart';
-
-class MediaViewService extends StatelessWidget {
-  factory MediaViewService({
-    required CLMedia media,
-    required String parentIdentifier,
-    required Widget Function(Object, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
-    Key? key,
-  }) {
-    return MediaViewService._(
-      initialMediaIndex: 0,
-      media: [media],
-      parentIdentifier: parentIdentifier,
-      key: key,
-      isPreview: false,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-    );
-  }
-  factory MediaViewService.preview(
-    CLMedia media, {
-    required String parentIdentifier,
-    Key? key,
-  }) {
-    return MediaViewService._(
-      initialMediaIndex: 0,
-      media: [media],
-      parentIdentifier: parentIdentifier,
-      key: key,
-      isPreview: true,
-    );
-  }
-  factory MediaViewService.pageView({
-    required int initialMediaIndex,
-    required List<CLMedia> media,
-    required String parentIdentifier,
-    required Widget Function(Object, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
-    Key? key,
-  }) {
-    return MediaViewService._(
-      initialMediaIndex: initialMediaIndex,
-      media: media,
-      parentIdentifier: parentIdentifier,
-      key: key,
-      isPreview: false,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-    );
-  }
-  const MediaViewService._({
-    required this.initialMediaIndex,
-    required this.media,
+class MediaViewService extends ConsumerWidget {
+  const MediaViewService({
+    required this.id,
+    required this.collectionId,
     required this.parentIdentifier,
-    required this.isPreview,
     super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
   });
-
-  final List<CLMedia> media;
-  final int initialMediaIndex;
+  final int? collectionId;
+  final int id;
   final String parentIdentifier;
-  final bool isPreview;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
+
   @override
-  Widget build(BuildContext context) {
-    if (isPreview) {
-      return CLAspectRationDecorated(
-        //hasBorder: true,
-        //borderRadius: const BorderRadius.all(Radius.circular(16)),
-        child: MediaView.preview(
-          media[0],
-          parentIdentifier: parentIdentifier,
+  Widget build(BuildContext context, WidgetRef ref) {
+    Widget errorBuilder(Object e, StackTrace st) => CLErrorPage(
+          errorMessage: e.toString(),
+        );
+
+    if (collectionId == null) {
+      return CLPopScreen.onSwipe(
+        child: GetMedia(
+          id: id,
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetMedia',
+          ),
+          builder: (media) {
+            if (media == null) {
+              return BasicPageService.nothingToShow(message: 'no media found');
+            }
+            return MediaViewService1(
+              media: media,
+              parentIdentifier: parentIdentifier,
+              errorBuilder: errorBuilder,
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'MediaViewService',
+              ),
+            );
+          },
         ),
       );
-    }
-    if (errorBuilder == null || loadingBuilder == null) {
-      throw Error();
-    }
-    if (media.length == 1) {
-      return MediaViewService0._(
-        initialMediaIndex: 0,
-        media: media,
-        parentIdentifier: parentIdentifier,
-        key: key,
-        errorBuilder: errorBuilder!,
-        loadingBuilder: loadingBuilder!,
-      );
-    }
-
-    return MediaViewService0._(
-      initialMediaIndex: initialMediaIndex,
-      media: media,
-      parentIdentifier: parentIdentifier,
-      key: key,
-      errorBuilder: errorBuilder!,
-      loadingBuilder: loadingBuilder!,
-    );
-  }
-}
-
-class MediaViewService0 extends ConsumerStatefulWidget {
-  const MediaViewService0._({
-    required this.initialMediaIndex,
-    required this.media,
-    required this.parentIdentifier,
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    super.key,
-  });
-
-  final List<CLMedia> media;
-  final int initialMediaIndex;
-  final String parentIdentifier;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      MediaViewService0State();
-}
-
-class MediaViewService0State extends ConsumerState<MediaViewService0> {
-  bool lockPage = false;
-  @override
-  void dispose() {
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: SystemUiOverlay.values,
-    );
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    final showControl = ref.watch(showControlsProvider);
-    if (!showControl.showStatusBar) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     } else {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.manual,
-        overlays: SystemUiOverlay.values,
+      return GetMediaByCollectionId(
+        collectionId: collectionId,
+        errorBuilder: (_, __) {
+          throw UnimplementedError('errorBuilder');
+          // ignore: dead_code
+        },
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'GetMediaByCollectionId',
+        ),
+        builder: (items) {
+          if (items.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              PageManager.of(context, ref).pop();
+            });
+            return BasicPageService.nothingToShow(message: 'No Media');
+          }
+          final initialMedia =
+              items.entries.where((e) => e.id == id).firstOrNull;
+          final initialMediaIndex =
+              initialMedia == null ? 0 : items.entries.indexOf(initialMedia);
+
+          return MediaViewService1.pageView(
+            media: items.entries,
+            parentIdentifier: parentIdentifier,
+            initialMediaIndex: initialMediaIndex,
+            errorBuilder: errorBuilder,
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'MediaViewService.pageView',
+            ),
+          );
+        },
       );
     }
-
-    return (widget.media.length == 1)
-        ? Column(
-            children: [
-              Expanded(
-                child: MediaView(
-                  media: widget.media[0],
-                  parentIdentifier: widget.parentIdentifier,
-                  isLocked: lockPage,
-                  onLockPage: onLockPage,
-                  autoStart: true,
-                  autoPlay: true,
-                  errorBuilder: widget.errorBuilder,
-                  loadingBuilder: widget.loadingBuilder,
-                ),
-              ),
-              if (showControl.showNotes && !lockPage)
-                GestureDetector(
-                  onVerticalDragEnd: (DragEndDetails details) {
-                    if (details.primaryVelocity == null) return;
-                    // pop on Swipe
-                    if (details.primaryVelocity! > 0) {
-                      ref.read(showControlsProvider.notifier).hideNotes();
-                    }
-                  },
-                  child: NotesService(
-                    media: widget.media[0],
-                  ),
-                ),
-            ],
-          )
-        : MediaPageView(
-            items: widget.media,
-            startIndex: widget.initialMediaIndex,
-            parentIdentifier: widget.parentIdentifier,
-            isLocked: lockPage,
-            onLockPage: onLockPage,
-            errorBuilder: widget.errorBuilder,
-            loadingBuilder: widget.loadingBuilder,
-          );
-  }
-
-  void onLockPage({required bool lock}) {
-    setState(() {
-      lockPage = lock;
-      if (lock) {
-        ref.read(showControlsProvider.notifier).hideControls();
-      } else {
-        ref.read(showControlsProvider.notifier).showControls();
-      }
-    });
   }
 }

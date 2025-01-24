@@ -3,9 +3,9 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
-import '../../internal/selection_control/selection_control.dart';
-import 'widgets/cl_entity_grid_view.dart';
-import 'widgets/grouper.dart';
+import '../../../internal/selection_control/selection_control.dart';
+import 'cl_entity_grid_view.dart';
+import 'grouper.dart';
 
 class GalleryView extends StatelessWidget {
   const GalleryView({
