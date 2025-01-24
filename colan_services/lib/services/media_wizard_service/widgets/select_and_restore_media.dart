@@ -1,36 +1,13 @@
 import 'package:colan_services/colan_services.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'providers/universal_media.dart';
-import 'views/wizard_preview.dart';
-
-class RecycleBinService extends ConsumerWidget {
-  const RecycleBinService({
-    required this.type,
-    super.key,
-  });
-  final UniversalMediaSource type;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final media = ref.watch(universalMediaProvider(type));
-    if (media.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        PageManager.of(context).pop();
-      });
-      return const SizedBox.expand();
-    }
-
-    return SelectAndRestoreMedia(
-      media: media,
-      type: type,
-    );
-  }
-}
+import '../providers/universal_media.dart';
+import 'wizard_preview.dart';
 
 class SelectAndRestoreMedia extends ConsumerStatefulWidget {
   const SelectAndRestoreMedia({

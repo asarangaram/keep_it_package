@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'basic_page_service.dart';
+import '../basic_page_service.dart';
 
 class CLErrorView extends StatelessWidget {
   const CLErrorView({

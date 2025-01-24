@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:store/store.dart';
 
-import '../basic_page_service/page_manager.dart';
+import '../basic_page_service/widgets/page_manager.dart';
 import '../incoming_media_service/models/cl_shared_media.dart';
 import '../media_view_service/models/action_control.dart';
 import '../media_wizard_service/media_wizard_service.dart';

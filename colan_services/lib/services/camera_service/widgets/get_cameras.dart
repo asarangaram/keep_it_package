@@ -4,7 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../basic_page_service/cl_error_view.dart';
+import '../../basic_page_service/widgets/cl_error_view.dart';
 
 import '../providers/camera_provider.dart';
 

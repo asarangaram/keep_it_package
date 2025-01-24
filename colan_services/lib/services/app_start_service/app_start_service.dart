@@ -40,59 +40,59 @@ class _AppLoader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appInitAsync = ref.watch(appInitProvider(appDescriptor));
-    return CLTheme(
-      colors: const DefaultCLColors(),
-      noteTheme: const DefaultNotesTheme(),
-      child: appInitAsync.when(
-        data: (success) {
-          final app = appDescriptor;
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: app.title,
-            initialRoute: '/',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            darkTheme: ThemeData(
-              primarySwatch: Colors.blue,
-              brightness: Brightness.dark,
-            ),
-            themeMode: ThemeMode.light,
-            onGenerateRoute: (settings) {
-              final uri = Uri.parse(settings.name ?? '');
+    return appInitAsync.when(
+      data: (success) {
+        final app = appDescriptor;
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: app.title,
+          initialRoute: '/',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          darkTheme: ThemeData(
+            primarySwatch: Colors.blue,
+            brightness: Brightness.dark,
+          ),
+          themeMode: ThemeMode.light,
+          onGenerateRoute: (settings) {
+            final uri = Uri.parse(settings.name ?? '');
 
-              final screen = app.screens
-                  .where((s) => s.name == uri.path.replaceFirst('/', ''))
-                  .firstOrNull;
-              if (screen == null) {
-                return MaterialPageRoute(
-                  builder: (context) => const Scaffold(
-                    body: Center(
-                      child: Text('404: Page not found'),
-                    ),
-                  ),
-                );
-              }
+            final screen = app.screens
+                .where((s) => s.name == uri.path.replaceFirst('/', ''))
+                .firstOrNull;
+            if (screen == null) {
               return MaterialPageRoute(
-                builder: (context) => IncomingMediaMonitor(
+                builder: (context) => const Scaffold(
+                  body: Center(
+                    child: Text('404: Page not found'),
+                  ),
+                ),
+              );
+            }
+            return MaterialPageRoute(
+              builder: (context) => CLTheme(
+                colors: const DefaultCLColors(),
+                noteTheme: const DefaultNotesTheme(),
+                child: IncomingMediaMonitor(
                   onMedia: app.incomingMediaViewBuilder,
                   child: screen.builder(context, uri.queryParameters),
                 ),
-              );
-            },
-          );
-        },
-        error: (err, _) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: CLErrorView(errorMessage: err.toString()),
-          );
-        },
-        loading: () => MaterialApp(
+              ),
+            );
+          },
+        );
+      },
+      error: (err, _) {
+        return MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: CLLoader.widget(
-            debugMessage: 'appInitAsync',
-          ),
+          home: CLErrorView(errorMessage: err.toString()),
+        );
+      },
+      loading: () => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: CLLoader.widget(
+          debugMessage: 'appInitAsync',
         ),
       ),
     );

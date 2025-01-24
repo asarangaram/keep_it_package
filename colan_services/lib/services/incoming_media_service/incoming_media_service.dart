@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../internal/fullscreen_layout.dart';
-import '../basic_page_service/cl_error_view.dart';
+import '../basic_page_service/widgets/cl_error_view.dart';
 import '../media_wizard_service/media_wizard_service.dart';
 import 'models/cl_shared_media.dart';
-import 'step1_analyse.dart';
-import 'step2_duplicates.dart';
+import 'widgets/step1_analyse.dart';
+import 'widgets/step2_duplicates.dart';
 
 class IncomingMediaService extends StatelessWidget {
   const IncomingMediaService({

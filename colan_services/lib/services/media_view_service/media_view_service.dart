@@ -1,5 +1,5 @@
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_services/services/basic_page_service/cl_pop_screen.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -28,32 +28,30 @@ class MediaViewService extends ConsumerWidget {
     if (collectionId == null) {
       return FullscreenLayout(
         useSafeArea: false,
-        child: CLPopScreen.onSwipe(
-          child: GetMedia(
-            id: id,
-            errorBuilder: (_, __) {
-              throw UnimplementedError('errorBuilder');
-              // ignore: dead_code
-            },
-            loadingBuilder: () => CLLoader.widget(
-              debugMessage: 'GetMedia',
-            ),
-            builder: (media) {
-              if (media == null) {
-                return BasicPageService.nothingToShow(
-                  message: 'no media found',
-                );
-              }
-              return MediaViewService1(
-                media: media,
-                parentIdentifier: parentIdentifier,
-                errorBuilder: errorBuilder,
-                loadingBuilder: () => CLLoader.widget(
-                  debugMessage: 'MediaViewService',
-                ),
-              );
-            },
+        child: GetMedia(
+          id: id,
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetMedia',
           ),
+          builder: (media) {
+            if (media == null) {
+              return BasicPageService.nothingToShow(
+                message: 'no media found',
+              );
+            }
+            return MediaViewService1(
+              media: media,
+              parentIdentifier: parentIdentifier,
+              errorBuilder: errorBuilder,
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'MediaViewService',
+              ),
+            );
+          },
         ),
       );
     } else {

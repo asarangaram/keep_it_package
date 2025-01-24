@@ -1,3 +1,4 @@
+export 'services/app_start_service/app_start_service.dart' show AppStartService;
 export 'services/app_start_service/models/app_descriptor.dart'
     show
         AppDescriptor,
@@ -7,15 +8,14 @@ export 'services/app_start_service/models/app_descriptor.dart'
         IncomingMediaViewBuilder;
 export 'services/app_start_service/models/cl_route_descriptor.dart'
     show CLRouteDescriptor;
-export 'services/app_start_service/app_start_service.dart' show AppStartService;
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
-export 'services/basic_page_service/cl_error_view.dart'
+export 'services/basic_page_service/widgets/cl_error_view.dart'
     show CLErrorPage, CLErrorView;
-export 'services/basic_page_service/dialogs.dart' show DialogService;
-export 'services/basic_page_service/page_manager.dart' show PageManager;
+export 'services/basic_page_service/widgets/dialogs.dart' show DialogService;
+export 'services/basic_page_service/widgets/page_manager.dart' show PageManager;
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
-export 'services/camera_service/theme/default_theme.dart'
+export 'services/camera_service/models/default_theme.dart'
     show DefaultCLCameraIcons;
 export 'services/gallery_view_service/main_view_page.dart'
     show GalleryViewService;

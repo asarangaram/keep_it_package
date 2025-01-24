@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../basic_page_service/cl_error_view.dart';
+import '../../basic_page_service/widgets/cl_error_view.dart';
 
-import '../../basic_page_service/page_manager.dart';
+import '../../basic_page_service/widgets/page_manager.dart';
 
 import '../../gallery_view_service/widgets/gallery_view.dart';
 import '../../media_view_service/media_view_service1.dart';

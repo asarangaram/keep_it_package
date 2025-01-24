@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../basic_page_service/basic_page_service.dart';
-import '../media_view_service/media_view_service1.dart';
+import '../../basic_page_service/basic_page_service.dart';
+import '../../media_view_service/media_view_service1.dart';
 
-import 'models/cl_shared_media.dart';
+import '../models/cl_shared_media.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({

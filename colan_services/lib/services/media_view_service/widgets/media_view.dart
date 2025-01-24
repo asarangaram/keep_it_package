@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../basic_page_service/dialogs.dart';
-import '../../basic_page_service/page_manager.dart';
+import '../../basic_page_service/widgets/dialogs.dart';
+import '../../basic_page_service/widgets/page_manager.dart';
 import '../../incoming_media_service/models/cl_shared_media.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 import '../models/action_control.dart';

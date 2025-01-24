@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'models/cl_shared_media.dart';
+import '../models/cl_shared_media.dart';
 
 class AnalysePage extends ConsumerWidget {
   const AnalysePage({

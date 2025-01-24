@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../model/notification.dart';
+import '../models/notification.dart';
 
 class NotificationMessageNotifier
     extends StateNotifier<List<NotificationMessage>> {

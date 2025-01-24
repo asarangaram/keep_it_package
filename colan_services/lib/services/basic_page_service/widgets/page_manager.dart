@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
-import '../camera_service/cl_camera_service.dart';
-import '../camera_service/theme/default_theme.dart';
+import '../../camera_service/cl_camera_service.dart';
+import '../../camera_service/models/default_theme.dart';
 
 abstract class NavigatorAPI {
   void home(BuildContext context);
