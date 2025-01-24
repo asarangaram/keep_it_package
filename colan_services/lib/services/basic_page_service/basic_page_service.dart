@@ -32,6 +32,16 @@ class BasicPageService extends ConsumerWidget {
       key: ValueKey('$message ${false}'),
     );
   }
+  factory BasicPageService.nothingToShow({
+    dynamic message = 'Empty',
+    List<CLMenuItem>? menuItems,
+  }) {
+    return BasicPageService._(
+      message: message,
+      menuItems: menuItems,
+      key: ValueKey('$message ${false}'),
+    );
+  }
   final dynamic message;
 
   final List<CLMenuItem>? menuItems;

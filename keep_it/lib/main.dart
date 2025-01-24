@@ -111,7 +111,6 @@ class KeepItApp implements AppDescriptor {
             );
           },
         ),
-
         CLRouteDescriptor(
           name: 'media_wizard',
           builder: (context, parameters) {
@@ -132,20 +131,6 @@ class KeepItApp implements AppDescriptor {
           name: 'servers',
           builder: (context, parameters) {
             return const FullscreenLayout(child: ServersPage());
-          },
-        ),
-
-        // For Testing
-        CLRouteDescriptor(
-          name: 'empty_state_page',
-          builder: (context, parameters) {
-            return const EmptyState();
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'empty_state_view',
-          builder: (context, parameters) {
-            return const FullscreenLayout(child: EmptyState());
           },
         ),
         CLRouteDescriptor(

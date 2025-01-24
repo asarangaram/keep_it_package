@@ -24,30 +24,30 @@ class MediaPageViewPage extends ConsumerWidget {
         );
 
     if (collectionId == null) {
-      return GetMedia(
-        id: id,
-        errorBuilder: (_, __) {
-          throw UnimplementedError('errorBuilder');
-          // ignore: dead_code
-        },
-        loadingBuilder: () => CLLoader.widget(
-          debugMessage: 'GetMedia',
-        ),
-        builder: (media) {
-          if (media == null) {
-            return const EmptyState();
-          }
-          return CLPopScreen.onSwipe(
-            child: MediaViewService(
+      return CLPopScreen.onSwipe(
+        child: GetMedia(
+          id: id,
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+            // ignore: dead_code
+          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetMedia',
+          ),
+          builder: (media) {
+            if (media == null) {
+              return BasicPageService.nothingToShow(message: 'no media found');
+            }
+            return MediaViewService(
               media: media,
               parentIdentifier: parentIdentifier,
               errorBuilder: errorBuilder,
               loadingBuilder: () => CLLoader.widget(
                 debugMessage: 'MediaViewService',
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       );
     } else {
       return GetMediaByCollectionId(
@@ -64,7 +64,7 @@ class MediaPageViewPage extends ConsumerWidget {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               PageManager.of(context, ref).pop();
             });
-            return const EmptyState(message: 'No Media');
+            return BasicPageService.nothingToShow(message: 'No Media');
           }
           final initialMedia =
               items.entries.where((e) => e.id == id).firstOrNull;

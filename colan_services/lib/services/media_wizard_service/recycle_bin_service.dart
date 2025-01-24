@@ -25,11 +25,9 @@ class RecycleBinService extends ConsumerWidget {
       return const SizedBox.expand();
     }
 
-    return CLPopScreen.onSwipe(
-      child: SelectAndRestoreMedia(
-        media: media,
-        type: type,
-      ),
+    return SelectAndRestoreMedia(
+      media: media,
+      type: type,
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'empty_state.dart';
+import 'basic_page_service.dart';
 
 class CLErrorView extends StatelessWidget {
   const CLErrorView({
@@ -17,7 +17,7 @@ class CLErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return EmptyState(
+    return BasicPageService.nothingToShow(
       menuItems: [
         if (onRecover != null) onRecover!,
       ],

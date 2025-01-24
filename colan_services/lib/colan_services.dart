@@ -3,7 +3,6 @@ export 'services/basic_page_service/basic_page_service.dart'
 export 'services/basic_page_service/cl_error_view.dart'
     show CLErrorPage, CLErrorView;
 export 'services/basic_page_service/dialogs.dart' show ConfirmAction;
-export 'services/basic_page_service/empty_state.dart' show EmptyState;
 export 'services/basic_page_service/page_manager.dart'
     show CLPopScreen, PageManager;
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
