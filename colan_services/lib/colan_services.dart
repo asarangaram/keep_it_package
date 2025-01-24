@@ -1,3 +1,5 @@
+import 'package:colan_services/services/basic_page_service/c_l_pop_screen.dart';
+
 export 'services/app_init_service/models/app_descriptor.dart'
     show
         AppDescriptor,

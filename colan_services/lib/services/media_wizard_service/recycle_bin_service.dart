@@ -20,7 +20,7 @@ class RecycleBinService extends ConsumerWidget {
     final media = ref.watch(universalMediaProvider(type));
     if (media.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        PageManager.of(context, ref).pop();
+        PageManager.of(context).pop();
       });
       return const SizedBox.expand();
     }
@@ -93,7 +93,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
       builder: (theStore) {
         return WizardLayout(
           title: widget.type.label,
-          onCancel: () => PageManager.of(context, ref).pop(),
+          onCancel: () => PageManager.of(context).pop(),
           actions: [
             if (canSelect)
               CLButtonText.small(

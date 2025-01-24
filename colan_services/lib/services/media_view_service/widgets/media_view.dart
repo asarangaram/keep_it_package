@@ -242,7 +242,7 @@ class MediaView0 extends ConsumerWidget {
                     onEdit: ac.onEdit(
                       () async {
                         final updatedMedia =
-                            await PageManager.of(context, ref).openEditor(
+                            await PageManager.of(context).openEditor(
                           media,
                           canDuplicateMedia: ac.canDuplicateMedia,
                         );

@@ -40,7 +40,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     final media0 = ref.watch(universalMediaProvider(type));
     if (media0.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        PageManager.of(context, ref).pop();
+        PageManager.of(context).pop();
       });
       return const SizedBox.expand();
     }
@@ -76,7 +76,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           itemBuilder: (context, item, {required String parentIdentifier}) {
             return GestureDetector(
               /* onTap: () async {
-                await PageManager.of(context, ref).openEditor(
+                await PageManager.of(context).openEditor(
                   item,
                   canDuplicateMedia: false,
                 );

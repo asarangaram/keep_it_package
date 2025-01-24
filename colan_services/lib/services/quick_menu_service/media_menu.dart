@@ -78,7 +78,7 @@ class MediaMenu extends ConsumerWidget {
           this.onEdit != null
               ? this.onEdit!()
               : () async {
-                  await PageManager.of(context, ref).openEditor(media);
+                  await PageManager.of(context).openEditor(media);
                   return true;
                 },
         );

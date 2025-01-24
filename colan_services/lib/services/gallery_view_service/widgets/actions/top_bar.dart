@@ -141,7 +141,7 @@ class ExtraActions extends ConsumerWidget {
         titleBuilder: (context, ref) => const Text('Settings'),
         iconBuilder: (context, ref) => Icon(clIcons.navigateSettings),
         onTap: () {
-          PageManager.of(context, ref).openSettings();
+          PageManager.of(context).openSettings();
         },
       ),
     ];

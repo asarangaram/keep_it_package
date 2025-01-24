@@ -63,7 +63,7 @@ class MediaControls extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.only(right: 8, top: 8),
                 child: GestureDetector(
-                  onTap: PageManager.of(context, ref).pop,
+                  onTap: PageManager.of(context).pop,
                   child: CircledIcon(
                     clIcons.closeFullscreen,
                   ),

@@ -17,7 +17,7 @@ class SettingsService extends ConsumerWidget {
         padding: const EdgeInsets.only(right: 16),
         child: CLButtonIcon.small(
           clIcons.pagePop,
-          onTap: () => PageManager.of(context, ref).pop(),
+          onTap: () => PageManager.of(context).pop(),
         ),
       ),
       popupActionItems: const [],

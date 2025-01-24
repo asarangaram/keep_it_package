@@ -50,7 +50,7 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
   Widget build(BuildContext context) {
     if (currIndex >= widget.items.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        PageManager.of(context, ref).pop();
+        PageManager.of(context).pop();
       });
       return BasicPageService.withNavBar(message: 'Media seems deleted');
     }

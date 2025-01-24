@@ -47,7 +47,7 @@ class CLCameraService extends ConsumerWidget {
             builder: (collection) {
               return CLCameraService0(
                 parentIdentifier: 'CLCameraService',
-                onCancel: () => PageManager.of(context, ref).pop(),
+                onCancel: () => PageManager.of(context).pop(),
                 onNewMedia: (path, {required isVideo}) async {
                   return theStore.mediaUpdater.create(
                     path,
@@ -67,7 +67,7 @@ class CLCameraService extends ConsumerWidget {
                   );
 
                   if (context.mounted) {
-                    PageManager.of(context, ref).pop();
+                    PageManager.of(context).pop();
                   }
                 },
               );

@@ -149,9 +149,9 @@ class CollectionEditor extends ConsumerWidget {
         builder: (BuildContext context) => CollectionEditor.dialog(
           collectionId: collection.id!,
           onSubmit: (collection) {
-            PageManager.of(context, ref).pop(collection);
+            PageManager.of(context).pop(collection);
           },
-          onCancel: () => PageManager.of(context, ref).pop(),
+          onCancel: () => PageManager.of(context).pop(),
         ),
       );
 }

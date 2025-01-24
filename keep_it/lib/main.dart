@@ -25,10 +25,6 @@ class KeepItApp implements AppDescriptor {
           builder: (context, parameters) => const GalleryViewService(),
         ),
         CLRouteDescriptor(
-          name: 'collections',
-          builder: (context, parameters) => const GalleryViewService(),
-        ),
-        CLRouteDescriptor(
           name: 'settings',
           builder: (context, parameters) => const SettingsService(),
         ),
@@ -159,7 +155,7 @@ class KeepItApp implements AppDescriptor {
   @override
   CLRedirector get redirector => (String location) async {
         const redirectTo = '';
-        //'/collections/storage_preference';
+
         if (redirectTo.isNotEmpty) {
           if (location != redirectTo) return redirectTo;
         }

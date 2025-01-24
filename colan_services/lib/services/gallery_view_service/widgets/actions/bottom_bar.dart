@@ -90,7 +90,7 @@ class KeepItBottomBar extends ConsumerWidget {
                                       .withAlpha(200),
                                   child: GestureDetector(
                                     onTap: () {
-                                      PageManager.of(context, ref).openCamera(
+                                      PageManager.of(context).openCamera(
                                         collectionId: collection?.id,
                                       );
                                     },

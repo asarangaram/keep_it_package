@@ -190,7 +190,7 @@ class KeepItMainGrid extends ConsumerWidget {
                 media: item as CLMedia,
                 parentIdentifier: parentIdentifier,
                 onTap: () async {
-                  await PageManager.of(context, ref).openMedia(
+                  await PageManager.of(context).openMedia(
                     item.id!,
                     collectionId: item.collectionId,
                     parentIdentifier: parentIdentifier,

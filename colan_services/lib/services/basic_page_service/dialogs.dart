@@ -25,13 +25,13 @@ class DialogService {
               children: [
                 ElevatedButton(
                   onPressed: () async =>
-                      PageManager.of(context, ref).closeDialog(false),
+                      PageManager.of(context).closeDialog(false),
                   child: const Text('No'),
                 ),
                 ElevatedButton(
                   child: const Text('Yes'),
                   onPressed: () async =>
-                      PageManager.of(context, ref).closeDialog(true),
+                      PageManager.of(context).closeDialog(true),
                 ),
               ],
             ),

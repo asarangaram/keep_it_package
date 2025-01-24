@@ -66,7 +66,7 @@ class MediaEditService extends ConsumerWidget {
                       return theStore.createTempFile(ext: media.fExt);
                     },
                     onCancel: () async {
-                      PageManager.of(context, ref).pop(media);
+                      PageManager.of(context).pop(media);
                     },
                     onSave: (file, {required overwrite}) async {
                       final CLMedia resultMedia;
@@ -103,7 +103,7 @@ class MediaEditService extends ConsumerWidget {
                       }
 
                       if (context.mounted) {
-                        PageManager.of(context, ref).pop(resultMedia);
+                        PageManager.of(context).pop(resultMedia);
                       }
                     },
                   );
@@ -155,7 +155,7 @@ class InvokeEditor extends ConsumerWidget {
           );
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          PageManager.of(context, ref).pop();
+          PageManager.of(context).pop();
         });
         return Container();
       case CLMediaType.text:
@@ -163,7 +163,7 @@ class InvokeEditor extends ConsumerWidget {
       case CLMediaType.audio:
       case CLMediaType.file:
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          PageManager.of(context, ref).pop();
+          PageManager.of(context).pop();
         });
         return Container();
     }

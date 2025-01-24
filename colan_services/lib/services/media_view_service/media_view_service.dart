@@ -1,4 +1,5 @@
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_services/services/basic_page_service/c_l_pop_screen.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,8 @@ class MediaViewService extends ConsumerWidget {
             builder: (media) {
               if (media == null) {
                 return BasicPageService.nothingToShow(
-                    message: 'no media found',);
+                  message: 'no media found',
+                );
               }
               return MediaViewService1(
                 media: media,
@@ -69,7 +71,7 @@ class MediaViewService extends ConsumerWidget {
           builder: (items) {
             if (items.isEmpty) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                PageManager.of(context, ref).pop();
+                PageManager.of(context).pop();
               });
               return BasicPageService.nothingToShow(message: 'No Media');
             }

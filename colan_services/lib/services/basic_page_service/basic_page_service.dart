@@ -78,16 +78,16 @@ class BasicPageService extends ConsumerWidget {
                       );
                     })
                   else ...[
-                    if (PageManager.of(context, ref).canPop())
+                    if (PageManager.of(context).canPop())
                       CLButtonIcon.large(
                         clIcons.pagePop,
                         color: Theme.of(context).colorScheme.primary,
-                        onTap: PageManager.of(context, ref).pop,
+                        onTap: PageManager.of(context).pop,
                       ),
                     CLButtonIcon.large(
                       clIcons.navigateHome,
                       color: Theme.of(context).colorScheme.primary,
-                      onTap: () => PageManager.of(context, ref).home(),
+                      onTap: () => PageManager.of(context).home(),
                     ),
                   ],
                 ].map((e) => Expanded(child: Center(child: e))).toList(),

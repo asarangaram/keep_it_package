@@ -1,3 +1,4 @@
+import 'package:colan_services/services/basic_page_service/c_l_pop_screen.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class MediaWizardService extends ConsumerWidget {
       media: sharedMedia,
     );
     if (context.mounted) {
-      await PageManager.of(context, ref).openWizard(sharedMedia.type!);
+      await PageManager.of(context).openWizard(sharedMedia.type!);
     }
 
     return true;
@@ -80,7 +81,7 @@ class MediaWizardService extends ConsumerWidget {
       final media = ref.watch(universalMediaProvider(type));
       if (media.isEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          PageManager.of(context, ref).pop();
+          PageManager.of(context).pop();
         });
         return const FullscreenLayout(child: SizedBox.expand());
       } else {
@@ -182,7 +183,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       builder: (theStore) {
         return WizardLayout(
           title: widget.type.label,
-          onCancel: () => PageManager.of(context, ref).pop(),
+          onCancel: () => PageManager.of(context).pop(),
           actions: [
             if (canSelect)
               CLButtonText.small(
