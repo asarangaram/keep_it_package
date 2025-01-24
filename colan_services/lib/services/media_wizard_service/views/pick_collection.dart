@@ -24,8 +24,7 @@ class PickCollection extends StatelessWidget {
         // ignore: dead_code
       },
       loadingBuilder: () {
-        throw UnimplementedError('loadingBuilder');
-        // ignore: dead_code
+        return const GreyShimmerExpandable();
       },
       query: DBQueries.collectionsVisible,
       builder: (collections) {
@@ -67,6 +66,54 @@ class PickCollection extends StatelessWidget {
             onDone(collection);
           },
         );
+      },
+    );
+  }
+}
+
+class PickCollectionWizard extends StatelessWidget {
+  const PickCollectionWizard({
+    required this.collection,
+    required this.onDone,
+    super.key,
+  });
+
+  final Collection? collection;
+  final void Function(Collection p1) onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    return CLWizardFormField(
+      actionMenu: (context, onTap) => CLMenuItem(
+        icon: clIcons.next,
+        title: 'Next',
+        onTap: onTap,
+      ),
+      descriptor: CLFormSelectSingleDescriptors(
+        title: 'Collection',
+        label: 'Select Collection',
+        labelBuilder: (e) =>
+            '${(e as Collection).label} ${e.hasServerUID ? '*' : ''}',
+        descriptionBuilder: (e) => (e as Collection).description,
+        suggestionsAvailable: const [],
+        initialValues: collection,
+        onSelectSuggestion: (item) async => item,
+        onCreateByLabel: (label) async => Collection.byLabel(label),
+        onValidate: (value) {
+          if (value == null) {
+            return "can't be empty";
+          }
+          /* if ((value as Collection).label.length > 20) {
+              return "length can't exceed 20 characters";
+            } */
+          return null;
+        },
+      ),
+      onSubmit: (CLFormFieldResult result) async {
+        final collection =
+            (result as CLFormSelectSingleResult).selectedEntitry as Collection;
+
+        onDone(collection);
       },
     );
   }
