@@ -1,5 +1,3 @@
-import 'package:colan_services/services/basic_page_service/c_l_pop_screen.dart';
-
 export 'services/app_init_service/models/app_descriptor.dart'
     show
         AppDescriptor,
@@ -15,8 +13,7 @@ export 'services/basic_page_service/basic_page_service.dart'
 export 'services/basic_page_service/cl_error_view.dart'
     show CLErrorPage, CLErrorView;
 export 'services/basic_page_service/dialogs.dart' show DialogService;
-export 'services/basic_page_service/page_manager.dart'
-    show CLPopScreen, PageManager;
+export 'services/basic_page_service/page_manager.dart' show PageManager;
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/theme/default_theme.dart'
     show DefaultCLCameraIcons;
