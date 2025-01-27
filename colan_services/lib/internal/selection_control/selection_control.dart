@@ -2,17 +2,18 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
+import '../../builders/get_selection_control.dart';
 import '../draggable_menu/widgets/actions_draggable_menu.dart';
 
 import 'widgets/selectable_item.dart';
 import 'widgets/selectable_label.dart';
 import 'widgets/selection_count.dart';
 
-class SelectionControl extends ConsumerWidget {
+class SelectionControl extends StatelessWidget {
   const SelectionControl({
     required this.incoming,
     required this.builder,
@@ -55,7 +56,7 @@ class SelectionControl extends ConsumerWidget {
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (!selectionMode) {
       return builder(
         items: incoming,
@@ -64,35 +65,38 @@ class SelectionControl extends ConsumerWidget {
         bannersBuilder: bannersBuilder,
       );
     }
-    return ProviderScope(
-      overrides: [
-        selectorProvider.overrideWith((ref) => SelectorNotifier(incoming)),
-        menuControlNotifierProvider
-            .overrideWith((ref) => MenuControlNotifier()),
-      ],
-      child: SelectionContol0(
-        builder: builder,
-        itemBuilder: itemBuilder,
-        labelBuilder: labelBuilder,
-        onChangeSelectionMode: onChangeSelectionMode,
-        selectionActionsBuilder: selectionActionsBuilder,
-        onSelectionChanged: onSelectionChanged,
-      ),
+    return GetSelectionControl(
+      incoming: incoming,
+      onSelectionChanged: onSelectionChanged,
+      builder: (selector, {required onUpdateSelection}) {
+        return SelectionContol0(
+          selector: selector,
+          builder: builder,
+          itemBuilder: itemBuilder,
+          labelBuilder: labelBuilder,
+          onChangeSelectionMode: onChangeSelectionMode,
+          selectionActionsBuilder: selectionActionsBuilder,
+          onSelectionChanged: onSelectionChanged,
+          onUpdateSelection: onUpdateSelection,
+        );
+      },
     );
   }
 }
 
-class SelectionContol0 extends ConsumerStatefulWidget {
+class SelectionContol0 extends StatefulWidget {
   const SelectionContol0({
+    required this.selector,
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
     required this.onChangeSelectionMode,
     required this.selectionActionsBuilder,
     required this.onSelectionChanged,
+    required this.onUpdateSelection,
     super.key,
   });
-
+  final CLSelector selector;
   final Widget Function(BuildContext, CLEntity) itemBuilder;
   final Widget? Function(
     BuildContext context,
@@ -116,22 +120,19 @@ class SelectionContol0 extends ConsumerStatefulWidget {
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
+  final void Function(List<CLEntity>? candidates, {bool? deselect})
+      onUpdateSelection;
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SelectionContol0State();
+  State<StatefulWidget> createState() => _SelectionContol0State();
 }
 
-class _SelectionContol0State extends ConsumerState<SelectionContol0> {
+class _SelectionContol0State extends State<SelectionContol0> {
   final GlobalKey parentKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    final selector = ref.watch(selectorProvider);
+    final incoming = widget.selector.entities;
 
-    final incoming = selector.entities;
-    ref.listen(selectorProvider, (prev, curr) {
-      widget.onSelectionChanged?.call(curr.items.toList());
-    });
     return Stack(
       key: parentKey,
       children: [
@@ -144,10 +145,10 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
             );
 
             return SelectableItem(
-              isSelected:
-                  selector.isSelected([item]) != SelectionStatus.selectedNone,
+              isSelected: widget.selector.isSelected([item]) !=
+                  SelectionStatus.selectedNone,
               onTap: () {
-                ref.read(selectorProvider.notifier).toggle([item]);
+                widget.onUpdateSelection([item]);
               },
               child: itemWidget,
             );
@@ -159,24 +160,29 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
             final candidates =
                 galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList();
             return SelectableLabel(
-              selectionStatus: selector.isSelected(
+              selectionStatus: widget.selector.isSelected(
                 candidates,
               ),
               onSelect: () {
-                ref.read(selectorProvider.notifier).toggle(
-                      candidates,
-                    );
+                widget.onUpdateSelection(
+                  candidates,
+                );
               },
               child: labelWidget,
             );
           },
           bannersBuilder: (context, galleryMap) {
             return [
-              SelectionBanner(galleryMap: galleryMap),
+              SelectionBanner(
+                selector: widget.selector,
+                galleryMap: galleryMap,
+                onUpdateSelection: widget.onUpdateSelection,
+              ),
             ];
           },
         ),
-        if (selector.items.isNotEmpty && widget.selectionActionsBuilder != null)
+        if (widget.selector.items.isNotEmpty &&
+            widget.selectionActionsBuilder != null)
           GetStoreUpdater(
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');
@@ -186,7 +192,7 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
             ),
             builder: (theStore) {
               return ActionsDraggableMenu<CLEntity>(
-                items: selector.items.toList(),
+                items: widget.selector.items.toList(),
                 tagPrefix: 'Selection',
                 onDone: () {
                   widget.onChangeSelectionMode(enable: false);
@@ -201,36 +207,34 @@ class _SelectionContol0State extends ConsumerState<SelectionContol0> {
   }
 }
 
-class SelectionBanner extends ConsumerWidget {
-  const SelectionBanner({super.key, this.galleryMap = const []});
+class SelectionBanner extends StatelessWidget {
+  const SelectionBanner({
+    required this.onUpdateSelection,
+    required this.selector,
+    super.key,
+    this.galleryMap = const [],
+  });
+  final CLSelector selector;
   final List<GalleryGroupCLEntity> galleryMap;
+  final void Function(List<CLEntity>? candidates, {bool? deselect})
+      onUpdateSelection;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selector = ref.watch(selectorProvider);
-
+  Widget build(BuildContext context) {
     final allCount = selector.entities.length;
     final selectedInAllCount = selector.count;
     final currentItems = galleryMap.getEntities.toList();
 
     final selectionStatusOnVisible =
-        selector.isSelected(currentItems) == SelectionStatus.selectedAll;
+        selector.isSelected(currentItems) == SelectionStatus.selectedNone;
     final visibleCount = currentItems.length;
     final selectedInVisible = selector.selectedItems(currentItems);
     final selectedInVisibleCount = selectedInVisible.length;
 
     return SelectionCountView(
-      buttonLabel: selectionStatusOnVisible ? 'Select None' : 'Select All',
+      buttonLabel: selectionStatusOnVisible ? 'Select All' : 'Select None',
       onPressed: () {
-        if (selectionStatusOnVisible) {
-          ref
-              .read(selectorProvider.notifier)
-              .deselect(galleryMap.getEntities.toList());
-        } else {
-          ref
-              .read(selectorProvider.notifier)
-              .select(galleryMap.getEntities.toList());
-        }
+        onUpdateSelection(currentItems);
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -254,9 +258,7 @@ class SelectionBanner extends ConsumerWidget {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          ref
-                              .read(selectorProvider.notifier)
-                              .deselect(selectedInVisible);
+                          onUpdateSelection(selectedInVisible, deselect: true);
                         },
                     ),
                   ],
@@ -277,9 +279,7 @@ class SelectionBanner extends ConsumerWidget {
                         decoration: TextDecoration.underline,
                       ),
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          ref.read(selectorProvider.notifier).clear();
-                        },
+                        ..onTap = () => onUpdateSelection(null),
                     ),
                   ],
                 ),

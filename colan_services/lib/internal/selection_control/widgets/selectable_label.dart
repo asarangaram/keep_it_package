@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 
-class SelectableLabel extends ConsumerWidget {
+class SelectableLabel extends StatelessWidget {
   const SelectableLabel({
     required this.child,
     required this.selectionStatus,
@@ -15,7 +15,7 @@ class SelectableLabel extends ConsumerWidget {
   final void Function()? onSelect;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(

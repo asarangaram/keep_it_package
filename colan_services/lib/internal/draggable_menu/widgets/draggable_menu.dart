@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+import 'package:flutter/material.dart';
 
-class DraggableMenu extends ConsumerWidget {
+import '../../../builders/get_menu_position.dart';
+
+class DraggableMenu extends StatelessWidget {
   const DraggableMenu({
     required GlobalKey<State<StatefulWidget>> parentKey,
     required this.child,
@@ -13,22 +13,21 @@ class DraggableMenu extends ConsumerWidget {
   final GlobalKey<State<StatefulWidget>> _parentKey;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final menuPosition = ref.watch(
-      menuControlNotifierProvider.select((value) => value.menuPosition),
-    );
-    return _DraggableMenu(
-      parentKey: _parentKey,
-      offset: menuPosition,
-      onUpdateOffset: (offset) {
-        ref.read(menuControlNotifierProvider.notifier).setMenuPosition(offset);
+  Widget build(BuildContext context) {
+    return GetMenuPosition(
+      builder: (menuPosition, {required onUpdateMenuPosition}) {
+        return _DraggableMenu(
+          parentKey: _parentKey,
+          offset: menuPosition,
+          onUpdateOffset: onUpdateMenuPosition,
+          child: child,
+        );
       },
-      child: child,
     );
   }
 }
 
-class _DraggableMenu extends ConsumerStatefulWidget {
+class _DraggableMenu extends StatefulWidget {
   const _DraggableMenu({
     required this.parentKey,
     required this.child,
@@ -41,10 +40,10 @@ class _DraggableMenu extends ConsumerStatefulWidget {
   final void Function(Offset offset) onUpdateOffset;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => DraggableMenuState();
+  State<StatefulWidget> createState() => DraggableMenuState();
 }
 
-class DraggableMenuState extends ConsumerState<_DraggableMenu> {
+class DraggableMenuState extends State<_DraggableMenu> {
   final GlobalKey _key = GlobalKey();
 
   bool _isDragging = false;
@@ -82,7 +81,7 @@ class DraggableMenuState extends ConsumerState<_DraggableMenu> {
 
   void _updatePosition(PointerMoveEvent pointerMoveEvent, Offset currOffset) {
     final offset = currOffset;
-    ref.read(menuControlNotifierProvider.select((value) => value.menuPosition));
+    //ref.read(menuControlNotifierProvider.select((value) => value.menuPosition));
     var newOffsetX = offset.dx + pointerMoveEvent.delta.dx;
     var newOffsetY = offset.dy + pointerMoveEvent.delta.dy;
 
@@ -102,9 +101,7 @@ class DraggableMenuState extends ConsumerState<_DraggableMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final offset = ref.watch(
-      menuControlNotifierProvider.select((value) => value.menuPosition),
-    );
+    final offset = widget.offset;
 
     return Positioned(
       left: offset.dx,
