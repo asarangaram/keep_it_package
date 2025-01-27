@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../editor_finalizer.dart';
 import 'models/aspect_ratio.dart' as aratio;
@@ -188,7 +187,7 @@ class _ImageEditorState extends State<ImageEditor> {
   }
 }
 
-class EditableImageView extends ConsumerStatefulWidget {
+class EditableImageView extends StatefulWidget {
   const EditableImageView(
     this.file, {
     required this.controller,
@@ -204,10 +203,10 @@ class EditableImageView extends ConsumerStatefulWidget {
   final void Function(EditActionDetails) editActionDetailsIsChanged;
 
   @override
-  ConsumerState<EditableImageView> createState() => _EditableImageViewState();
+  State<EditableImageView> createState() => _EditableImageViewState();
 }
 
-class _EditableImageViewState extends ConsumerState<EditableImageView> {
+class _EditableImageViewState extends State<EditableImageView> {
   void restoreState() {
     if (widget.controller.currentState?.editAction?.rotateDegrees !=
         widget.rotateAngle) {

@@ -1,12 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/aspect_ratio.dart' as aratio;
+
 import '../models/aspect_ratio.dart';
 import 'crop_orientation_control.dart';
 
-class CropperControls extends ConsumerWidget {
+class CropperControls extends StatelessWidget {
   const CropperControls({
     required this.rotateAngle,
     required this.aspectRatio,
@@ -21,13 +21,7 @@ class CropperControls extends ConsumerWidget {
   final Widget? saveWidget;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final availableAspectRatioAsync = ref.watch(supportedAspectRatiosProvider);
-    final availableAspectRatio = availableAspectRatioAsync
-            .whenOrNull(data: (value) => value)
-            ?.aspectRatios ??
-        [];
-
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: CLTheme.of(context)
@@ -99,7 +93,8 @@ class CropperControls extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        for (final ratio in availableAspectRatio)
+                        for (final ratio in const SupportedAspectRatiosDefault()
+                            .aspectRatios)
                           Padding(
                             padding: const EdgeInsets.only(
                               right: 16,
