@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../basics/cl_button.dart';
 import '../../extensions/ext_color.dart';
 import '../../theme/models/cl_icons.dart';
 
-class CLFullscreenBox extends ConsumerStatefulWidget {
+class CLFullscreenBox extends StatefulWidget {
   const CLFullscreenBox({
     required this.child,
     super.key,
@@ -27,11 +26,10 @@ class CLFullscreenBox extends ConsumerStatefulWidget {
   final PreferredSizeWidget? appBar;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CLFullscreenBoxState();
+  State<StatefulWidget> createState() => _CLFullscreenBoxState();
 }
 
-class _CLFullscreenBoxState extends ConsumerState<CLFullscreenBox> {
+class _CLFullscreenBoxState extends State<CLFullscreenBox> {
   // Create an overlay entry
 
   @override

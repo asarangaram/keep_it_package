@@ -2,7 +2,6 @@ import 'package:colan_widgets/src/basics/cl_icon.dart';
 import 'package:colan_widgets/src/basics/cl_text.dart';
 import 'package:colan_widgets/src/models/cl_scale_type.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class _CLButton extends StatelessWidget {
   const _CLButton({
@@ -63,7 +62,7 @@ class _CLButton extends StatelessWidget {
   }
 }
 
-class ButtonBackground extends ConsumerWidget {
+class ButtonBackground extends StatelessWidget {
   const ButtonBackground({
     required this.child,
     super.key,
@@ -73,7 +72,7 @@ class ButtonBackground extends ConsumerWidget {
   final BoxDecoration? boxDecoration;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (boxDecoration == null) {
       return child;
     }
