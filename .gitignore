@@ -11,3 +11,4 @@ keep_it/integration_test/ApplicationSupportPath/backgroundDownloaderDatabase/**
 .fvmrc
 
 experiment/**
+colan_services/devtools_options.yaml

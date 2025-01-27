@@ -1,7 +1,6 @@
 name: keep_it_state
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
 
 environment:
   sdk: ^3.6.0
@@ -10,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.5.1
 
 dev_dependencies:
   flutter_test:
@@ -21,6 +21,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  uses-material-design: true
 
   # To add assets to your package, add an assets section, like this:
   # assets:

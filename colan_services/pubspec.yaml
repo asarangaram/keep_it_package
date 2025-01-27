@@ -40,7 +40,8 @@ dependencies:
   http_parser: ^4.0.2
   image: ^4.1.7
   image_picker: ^1.1.2
-  
+  keep_it_state: 
+    path: ../keep_it_state
   local_store:
     path: ../local_store
   logger: ^2.4.0
