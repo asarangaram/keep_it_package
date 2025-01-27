@@ -13,7 +13,6 @@ class DownloaderProgressbar extends ConsumerWidget {
     return GetDownloaderStatus(
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetDownloaderStatus',
@@ -115,7 +114,6 @@ class ActiveDownloadIndicator extends ConsumerWidget {
     return GetDownloaderStatus(
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetDownloaderStatus',

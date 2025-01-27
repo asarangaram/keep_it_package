@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -28,6 +27,28 @@ class Collections {
   const Collections(
     this.entries,
   );
+
+  factory Collections.fromMap(Map<String, dynamic> map) {
+    return Collections(
+      List<Collection>.from(
+        (map['entries'] as List<int>).map<Collection>(
+          (x) => Collection.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
+  factory Collections.fromList(List<dynamic> map) {
+    return Collections(
+      List<Collection>.from(
+        map.map<Collection>(
+          (x) => Collection.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
+
+  factory Collections.fromJson(String source) =>
+      Collections.fromList(json.decode(source) as List<dynamic>);
   final List<Collection> entries;
 
   Collections copyWith({
@@ -62,28 +83,6 @@ class Collections {
     return entries.map((x) => x.toMap()).toList();
   }
 
-  factory Collections.fromMap(Map<String, dynamic> map) {
-    return Collections(
-      List<Collection>.from(
-        (map['entries'] as List<int>).map<Collection>(
-          (x) => Collection.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-    );
-  }
-  factory Collections.fromList(List<dynamic> map) {
-    return Collections(
-      List<Collection>.from(
-        map.map<Collection>(
-          (x) => Collection.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-    );
-  }
-
   String toJson() => json.encode(toMap());
   String toJsonList() => json.encode(toList());
-
-  factory Collections.fromJson(String source) =>
-      Collections.fromList(json.decode(source) as List<dynamic>);
 }

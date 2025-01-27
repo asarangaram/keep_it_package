@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -8,12 +7,12 @@ enum ItemViewModes { fullView, menu }
 
 @immutable
 class ShowWhat {
-  final ItemViewModes itemViewMode;
-  final bool showNotes;
   const ShowWhat({
     this.itemViewMode = ItemViewModes.fullView,
     this.showNotes = false,
   });
+  final ItemViewModes itemViewMode;
+  final bool showNotes;
 
   ShowWhat copyWith({
     ItemViewModes? itemViewMode,

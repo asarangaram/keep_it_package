@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -10,6 +9,28 @@ class CLMedias {
   const CLMedias(
     this.entries,
   );
+
+  factory CLMedias.fromMap(Map<String, dynamic> map) {
+    return CLMedias(
+      List<CLMedia>.from(
+        (map['entries'] as List<int>).map<CLMedia>(
+          (x) => CLMedia.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
+  factory CLMedias.fromList(List<dynamic> map) {
+    return CLMedias(
+      List<CLMedia>.from(
+        map.map<CLMedia>(
+          (x) => CLMedia.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
+
+  factory CLMedias.fromJson(String source) =>
+      CLMedias.fromList(json.decode(source) as List<dynamic>);
   final List<CLMedia> entries;
 
   CLMedias copyWith({
@@ -44,28 +65,6 @@ class CLMedias {
     return entries.map((x) => x.toMap()).toList();
   }
 
-  factory CLMedias.fromMap(Map<String, dynamic> map) {
-    return CLMedias(
-      List<CLMedia>.from(
-        (map['entries'] as List<int>).map<CLMedia>(
-          (x) => CLMedia.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-    );
-  }
-  factory CLMedias.fromList(List<dynamic> map) {
-    return CLMedias(
-      List<CLMedia>.from(
-        map.map<CLMedia>(
-          (x) => CLMedia.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-    );
-  }
-
   String toJson() => json.encode(toMap());
   String toJsonList() => json.encode(toList());
-
-  factory CLMedias.fromJson(String source) =>
-      CLMedias.fromList(json.decode(source) as List<dynamic>);
 }

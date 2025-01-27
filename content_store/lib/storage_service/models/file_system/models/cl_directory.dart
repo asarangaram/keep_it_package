@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -43,7 +42,6 @@ class CLDirectory {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'CLDirectory(label: $label, name: $name, baseDir: $baseDir, description0: $description0, isStore: $isStore)';
   }
 

@@ -1,9 +1,34 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 @immutable
 class CLCameraThemeData {
+  const CLCameraThemeData({
+    required this.iconCamera,
+    required this.iconMicrophone,
+    required this.iconLocation,
+    required this.imageCapture,
+    required this.videoRecordingStart,
+    required this.videoRecordingPause,
+    required this.videoRecordingResume,
+    required this.videoRecordingStop,
+    required this.flashModeOff,
+    required this.flashModeAuto,
+    required this.flashModeAlways,
+    required this.flashModeTorch,
+    required this.recordingAudioOn,
+    required this.recordingAudioOff,
+    required this.switchCamera,
+    required this.exitCamera,
+    required this.invokeCamera,
+    required this.popMenuAnchor,
+    required this.popMenuSelectedItem,
+    required this.pagePop,
+    required this.displayTextStyle,
+    required this.displayIconSize,
+    required this.textStyle,
+    required this.cameraSettings,
+  });
   final IconData iconCamera;
   final IconData iconMicrophone;
   final IconData iconLocation;
@@ -34,33 +59,6 @@ class CLCameraThemeData {
   final TextStyle displayTextStyle;
   final double displayIconSize;
   final TextStyle textStyle;
-
-  const CLCameraThemeData({
-    required this.iconCamera,
-    required this.iconMicrophone,
-    required this.iconLocation,
-    required this.imageCapture,
-    required this.videoRecordingStart,
-    required this.videoRecordingPause,
-    required this.videoRecordingResume,
-    required this.videoRecordingStop,
-    required this.flashModeOff,
-    required this.flashModeAuto,
-    required this.flashModeAlways,
-    required this.flashModeTorch,
-    required this.recordingAudioOn,
-    required this.recordingAudioOff,
-    required this.switchCamera,
-    required this.exitCamera,
-    required this.invokeCamera,
-    required this.popMenuAnchor,
-    required this.popMenuSelectedItem,
-    required this.pagePop,
-    required this.displayTextStyle,
-    required this.displayIconSize,
-    required this.textStyle,
-    required this.cameraSettings,
-  });
 
   CLCameraThemeData copyWith({
     IconData? iconCamera,
@@ -118,7 +116,6 @@ class CLCameraThemeData {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'CLCameraThemeData(iconCamera: $iconCamera, iconMicrophone: $iconMicrophone, iconLocation: $iconLocation, imageCapture: $imageCapture, videoRecordingStart: $videoRecordingStart, videoRecordingPause: $videoRecordingPause, videoRecordingResume: $videoRecordingResume, videoRecordingStop: $videoRecordingStop, flashModeOff: $flashModeOff, flashModeAuto: $flashModeAuto, flashModeAlways: $flashModeAlways, flashModeTorch: $flashModeTorch, recordingAudioOn: $recordingAudioOn, recordingAudioOff: $recordingAudioOff, switchCamera: $switchCamera, exitCamera: $exitCamera, invokeCamera: $invokeCamera, popMenuAnchor: $popMenuAnchor, popMenuSelectedItem: $popMenuSelectedItem, pagePop: $pagePop, cameraSettings: $cameraSettings, displayTextStyle: $displayTextStyle, displayIconSize: $displayIconSize, textStyle: $textStyle)';
   }
 

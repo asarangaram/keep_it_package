@@ -57,7 +57,6 @@ class CollectionEditor extends ConsumerWidget {
         id: collectionId,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
-          // ignore: dead_code
         },
         loadingBuilder: () => CLLoader.widget(
           debugMessage: 'GetCollection',
@@ -67,7 +66,6 @@ class CollectionEditor extends ConsumerWidget {
             query: DBQueries.collections,
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');
-              // ignore: dead_code
             },
             loadingBuilder: () => CLLoader.widget(
               debugMessage: 'GetCollectionMultiple',

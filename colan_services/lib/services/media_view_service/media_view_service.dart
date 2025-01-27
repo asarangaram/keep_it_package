@@ -32,7 +32,6 @@ class MediaViewService extends ConsumerWidget {
           id: id,
           errorBuilder: (_, __) {
             throw UnimplementedError('errorBuilder');
-            // ignore: dead_code
           },
           loadingBuilder: () => CLLoader.widget(
             debugMessage: 'GetMedia',
@@ -61,7 +60,6 @@ class MediaViewService extends ConsumerWidget {
           collectionId: collectionId,
           errorBuilder: (_, __) {
             throw UnimplementedError('errorBuilder');
-            // ignore: dead_code
           },
           loadingBuilder: () => CLLoader.widget(
             debugMessage: 'GetMediaByCollectionId',

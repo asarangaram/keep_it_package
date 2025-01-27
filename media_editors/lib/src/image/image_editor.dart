@@ -67,7 +67,7 @@ class _ImageEditorState extends State<ImageEditor> {
                     aspectRatio: aspectRatio?.aspectRatio,
                     editActionDetailsIsChanged: (actions) {
                       setState(() {
-                        rotateAngle = actions.rotateAngle;
+                        rotateAngle = actions.rotateDegrees;
                         editActionDetailsIsChanged = true;
                       });
 
@@ -109,7 +109,7 @@ class _ImageEditorState extends State<ImageEditor> {
                         CLButtonIcon.small(
                           clIcons.imageEditRotateLeft,
                           onTap: () {
-                            controller.currentState?.rotate(right: false);
+                            controller.currentState?.rotate(degree: -90);
                           },
                         ),
                       ],
@@ -146,8 +146,8 @@ class _ImageEditorState extends State<ImageEditor> {
                   cropRect:
                       editActionDetails.needCrop ? state.getCropRect() : null,
                   needFlip: editActionDetails.needFlip,
-                  rotateAngle: editActionDetails.hasRotateAngle
-                      ? editActionDetails.rotateAngle
+                  rotateAngle: editActionDetails.hasRotateDegrees
+                      ? editActionDetails.rotateDegrees
                       : null,
                   overwrite: overwrite,
                   onSave: widget.onSave,
@@ -209,7 +209,7 @@ class EditableImageView extends ConsumerStatefulWidget {
 
 class _EditableImageViewState extends ConsumerState<EditableImageView> {
   void restoreState() {
-    if (widget.controller.currentState?.editAction?.rotateAngle !=
+    if (widget.controller.currentState?.editAction?.rotateDegrees !=
         widget.rotateAngle) {
       for (var i = 0; i < (widget.rotateAngle / 90); i++) {
         widget.controller.currentState?.rotate();

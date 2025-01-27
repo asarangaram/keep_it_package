@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:camera/camera.dart';
@@ -23,6 +22,20 @@ class CameraConfig {
     this.defaultFrontCameraIndex = 0,
     this.defaultBackCameraIndex = 0,
   });
+
+  factory CameraConfig.fromMap(Map<String, dynamic> map) {
+    return CameraConfig(
+      resolutionPreset: ExtResolutionPreset.fromString(
+        map['resolutionPreset'] as String,
+      ),
+      enableAudio: map['enableAudio'] as bool,
+      defaultFrontCameraIndex: map['defaultFrontCameraIndex'] as int,
+      defaultBackCameraIndex: map['defaultBackCameraIndex'] as int,
+    );
+  }
+
+  factory CameraConfig.fromJson(String source) =>
+      CameraConfig.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final ResolutionPreset resolutionPreset;
   final bool enableAudio;
@@ -80,21 +93,7 @@ class CameraConfig {
     };
   }
 
-  factory CameraConfig.fromMap(Map<String, dynamic> map) {
-    return CameraConfig(
-      resolutionPreset: ExtResolutionPreset.fromString(
-        map['resolutionPreset'] as String,
-      ),
-      enableAudio: map['enableAudio'] as bool,
-      defaultFrontCameraIndex: map['defaultFrontCameraIndex'] as int,
-      defaultBackCameraIndex: map['defaultBackCameraIndex'] as int,
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory CameraConfig.fromJson(String source) =>
-      CameraConfig.fromMap(json.decode(source) as Map<String, dynamic>);
 
   static Future<CameraConfig> loadConfig() async {
     final prefs = await SharedPreferences.getInstance();

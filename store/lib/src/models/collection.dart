@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, lines_longer_than_80_chars
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
@@ -8,6 +7,28 @@ import 'cl_media_base.dart';
 
 @immutable
 class Collection implements CLEntity {
+  factory Collection.fromMap(Map<String, dynamic> map) {
+    final timeNow = DateTime.now();
+    return Collection._(
+      id: map['id'] != null ? map['id'] as int : null,
+      label: map['label'] as String,
+      description:
+          map['description'] != null ? map['description'] as String : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
+          : timeNow,
+      updatedDate: map['updatedDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
+          : timeNow,
+      haveItOffline: (map['haveItOffline'] as int?) != 0,
+      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
+      isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
+      isEdited: ((map['isEdited'] as int?) ?? false) != 0,
+    );
+  }
+
+  factory Collection.fromJson(String source) =>
+      Collection.fromMap(json.decode(source) as Map<String, dynamic>);
   const Collection._({
     required this.label,
     required this.haveItOffline,
@@ -72,29 +93,6 @@ class Collection implements CLEntity {
   final int? serverUID;
   final bool isDeleted;
   final bool isEdited;
-
-  factory Collection.fromMap(Map<String, dynamic> map) {
-    final timeNow = DateTime.now();
-    return Collection._(
-      id: map['id'] != null ? map['id'] as int : null,
-      label: map['label'] as String,
-      description:
-          map['description'] != null ? map['description'] as String : null,
-      createdDate: map['createdDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
-          : timeNow,
-      updatedDate: map['updatedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
-          : timeNow,
-      haveItOffline: (map['haveItOffline'] as int?) != 0,
-      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
-      isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
-      isEdited: ((map['isEdited'] as int?) ?? false) != 0,
-    );
-  }
-
-  factory Collection.fromJson(String source) =>
-      Collection.fromMap(json.decode(source) as Map<String, dynamic>);
 
   Collection copyWith({
     String? label,

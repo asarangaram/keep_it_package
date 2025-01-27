@@ -28,7 +28,6 @@ class MediaEditService extends ConsumerWidget {
               id: mediaId!,
               errorBuilder: (_, __) {
                 throw UnimplementedError('errorBuilder');
-                // ignore: dead_code
               },
               loadingBuilder: () => CLLoader.widget(
                 debugMessage: 'GetMedia',
@@ -42,7 +41,6 @@ class MediaEditService extends ConsumerWidget {
                   id: media.id!,
                   errorBuilder: (_, __) {
                     throw UnimplementedError('errorBuilder');
-                    // ignore: dead_code
                   },
                   loadingBuilder: () => CLLoader.widget(
                     debugMessage: 'GetMediaUri',
@@ -51,7 +49,6 @@ class MediaEditService extends ConsumerWidget {
                     return GetStoreUpdater(
                       errorBuilder: (_, __) {
                         throw UnimplementedError('errorBuilder');
-                        // ignore: dead_code
                       },
                       loadingBuilder: () => CLLoader.widget(
                         debugMessage: 'GetStoreUpdater',

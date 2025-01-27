@@ -1,5 +1,5 @@
 /// Content Store.
-library content_store;
+library;
 
 export 'adapters/widgets/server_ui_adapter.dart';
 export 'db_service/builders/get_db_reader.dart';

@@ -21,7 +21,6 @@ class PickCollection extends StatelessWidget {
     return GetCollectionMultiple(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetCollectionMultiple',

@@ -71,7 +71,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner> {
       log('Rescan Request:  ');
       await searchForServers();
     } else {
-      // ignore: lines_longer_than_80_chars
+     
       log('Rescan Request:  ignored, as the device not connected to any network');
     }
   }

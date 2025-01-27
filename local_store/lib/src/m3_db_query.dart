@@ -70,7 +70,6 @@ class DBQuery<T> extends StoreQuery<T> {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'DBQuery(sql: $sql, triggerOnTables: $triggerOnTables, parameters: $parameters, fromMap: $fromMap, dbPath: $dbPath)';
   }
 
@@ -198,7 +197,7 @@ class DBQuery<T> extends StoreQuery<T> {
 
 const _filePrefix = 'DB Read (internal): ';
 bool _disableInfoLogger = true;
-// ignore: unused_element
+
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i('$_filePrefix$msg');

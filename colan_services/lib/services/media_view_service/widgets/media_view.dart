@@ -181,7 +181,6 @@ class MediaView0 extends ConsumerWidget {
                               placeHolder: GetPreviewUri(
                                 errorBuilder: (_, __) {
                                   throw UnimplementedError('errorBuilder');
-                                  // ignore: dead_code
                                 },
                                 loadingBuilder: () => CLLoader.widget(
                                   debugMessage: 'GetPreviewUri',

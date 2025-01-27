@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,6 +12,20 @@ class ActionControl {
     this.allowPin = false,
     this.canDuplicateMedia = false,
   });
+
+  factory ActionControl.fromMap(Map<String, dynamic> map) {
+    return ActionControl(
+      allowEdit: map['allowEdit'] as bool,
+      allowDelete: map['allowDelete'] as bool,
+      allowMove: map['allowMove'] as bool,
+      allowShare: map['allowShare'] as bool,
+      allowPin: map['allowPin'] as bool,
+      canDuplicateMedia: map['canDuplicateMedia'] as bool,
+    );
+  }
+
+  factory ActionControl.fromJson(String source) =>
+      ActionControl.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final bool allowEdit;
   final bool allowDelete;
@@ -41,7 +54,6 @@ class ActionControl {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'ActionControl(allowEdit: $allowEdit, allowDelete: $allowDelete, allowMove: $allowMove, allowShare: $allowShare, allowPin: $allowPin, canDuplicateMedia: $canDuplicateMedia)';
   }
 
@@ -89,19 +101,5 @@ class ActionControl {
     };
   }
 
-  factory ActionControl.fromMap(Map<String, dynamic> map) {
-    return ActionControl(
-      allowEdit: map['allowEdit'] as bool,
-      allowDelete: map['allowDelete'] as bool,
-      allowMove: map['allowMove'] as bool,
-      allowShare: map['allowShare'] as bool,
-      allowPin: map['allowPin'] as bool,
-      canDuplicateMedia: map['canDuplicateMedia'] as bool,
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory ActionControl.fromJson(String source) =>
-      ActionControl.fromMap(json.decode(source) as Map<String, dynamic>);
 }

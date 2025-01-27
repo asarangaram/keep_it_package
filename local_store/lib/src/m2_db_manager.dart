@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
 import 'package:meta/meta.dart';
@@ -181,7 +180,6 @@ class DBManager extends Store {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'DBManager(db: $db, dbWriter: $dbWriter, onReload: $onReload)';
   }
 

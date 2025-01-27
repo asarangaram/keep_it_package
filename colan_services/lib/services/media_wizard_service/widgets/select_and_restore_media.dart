@@ -62,7 +62,6 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
     return GetStoreUpdater(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetStoreUpdater',

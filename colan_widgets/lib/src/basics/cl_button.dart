@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:colan_widgets/src/basics/cl_icon.dart';
 import 'package:colan_widgets/src/basics/cl_text.dart';
 import 'package:colan_widgets/src/models/cl_scale_type.dart';
@@ -6,14 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class _CLButton extends StatelessWidget {
-  final IconData? iconData;
-  final String? label;
-  final Color? color;
-  final Color? disabledColor;
-  final CLScaleType scaleType;
-  final void Function()? onTap;
-  final BoxDecoration? boxDecoration;
-
   const _CLButton({
     required this.iconData,
     required this.label,
@@ -24,6 +15,13 @@ class _CLButton extends StatelessWidget {
     this.onTap,
     this.boxDecoration,
   }) : disabledColor = disabledColor ?? color;
+  final IconData? iconData;
+  final String? label;
+  final Color? color;
+  final Color? disabledColor;
+  final CLScaleType scaleType;
+  final void Function()? onTap;
+  final BoxDecoration? boxDecoration;
 
   Color? get color_ => onTap == null ? disabledColor : color;
   @override

@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -11,6 +10,18 @@ class DownloaderStatus {
     this.completed = 0,
     this.unknown = 0,
   });
+
+  factory DownloaderStatus.fromMap(Map<String, dynamic> map) {
+    return DownloaderStatus(
+      running: (map['running'] as double).toInt(),
+      waiting: (map['waiting'] as double).toInt(),
+      completed: (map['completed'] as double).toInt(),
+      unknown: (map['unknown'] as double).toInt(),
+    );
+  }
+
+  factory DownloaderStatus.fromJson(String source) =>
+      DownloaderStatus.fromMap(json.decode(source) as Map<String, dynamic>);
   final int running;
   final int waiting;
   final int completed;
@@ -53,7 +64,6 @@ class DownloaderStatus {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'DownloaderStatus(running: $running, waiting: $waiting, completed: $completed, unknown: $unknown)';
   }
 
@@ -73,17 +83,5 @@ class DownloaderStatus {
         'unknown': Colors.black,
       };
 
-  factory DownloaderStatus.fromMap(Map<String, dynamic> map) {
-    return DownloaderStatus(
-      running: (map['running'] as double).toInt(),
-      waiting: (map['waiting'] as double).toInt(),
-      completed: (map['completed'] as double).toInt(),
-      unknown: (map['unknown'] as double).toInt(),
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory DownloaderStatus.fromJson(String source) =>
-      DownloaderStatus.fromMap(json.decode(source) as Map<String, dynamic>);
 }

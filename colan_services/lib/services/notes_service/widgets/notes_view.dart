@@ -61,7 +61,6 @@ class _NotesViewState extends State<NotesView> {
               child: GetNotesByMediaId(
                 errorBuilder: (_, __) {
                   throw UnimplementedError('errorBuilder');
-                  // ignore: dead_code
                 },
                 loadingBuilder: () => CLLoader.widget(
                   debugMessage: 'GetNotesByMediaId',

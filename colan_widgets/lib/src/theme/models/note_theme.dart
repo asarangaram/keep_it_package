@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 
@@ -55,7 +54,6 @@ class NotesTheme {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'NotesTheme(backgroundColor: $backgroundColor, foregroundColor: $foregroundColor, borderColor: $borderColor, borderRadius: $borderRadius, margin: $margin, padding: $padding, borderStyle: $borderStyle, textStyle: $textStyle, playerWaveStyle: $playerWaveStyle, continuousWaveform: $continuousWaveform)';
   }
 

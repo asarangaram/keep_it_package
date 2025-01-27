@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -72,7 +72,7 @@ class CLServer {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
+   
     return 'CLServer(address: $address, port: $port, name: $name, id: $id, status: $status)';
   }
 

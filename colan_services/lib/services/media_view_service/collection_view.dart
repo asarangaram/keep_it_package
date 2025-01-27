@@ -50,7 +50,7 @@ class CollectionView extends ConsumerWidget {
               ),
             ),
           );
-          // ignore: dead_code
+          
         } else {
           return CLAspectRationDecorated(
             hasBorder: true,

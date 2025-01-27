@@ -15,7 +15,6 @@ class ViewNotes extends StatelessWidget {
     return GetStoreUpdater(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetStoreUpdater',
@@ -37,7 +36,6 @@ class ViewNotes extends StatelessWidget {
                   id: note.id!,
                   errorBuilder: (_, __) {
                     throw UnimplementedError('errorBuilder');
-                    // ignore: dead_code
                   },
                   loadingBuilder: () => CLLoader.widget(
                     debugMessage: 'GetMediaText',

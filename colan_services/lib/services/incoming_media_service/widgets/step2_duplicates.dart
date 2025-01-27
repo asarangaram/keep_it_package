@@ -71,7 +71,6 @@ class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
       query: DBQueries.collectionsVisible,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetCollectionMultiple',

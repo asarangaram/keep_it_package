@@ -29,7 +29,6 @@ class CLCameraService extends ConsumerWidget {
       child: GetStoreUpdater(
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
-          // ignore: dead_code
         },
         loadingBuilder: () => CLLoader.widget(
           debugMessage: 'GetStoreUpdater',
@@ -39,7 +38,6 @@ class CLCameraService extends ConsumerWidget {
             id: collectionId,
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');
-              // ignore: dead_code
             },
             loadingBuilder: () => CLLoader.widget(
               debugMessage: 'GetCollection',

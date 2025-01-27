@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -169,12 +168,12 @@ class ExtraActions extends ConsumerWidget {
 }
 
 class PopupMenuEntryBuilder {
-  Widget? Function(BuildContext context, WidgetRef ref) titleBuilder;
-  Widget? Function(BuildContext context, WidgetRef ref) iconBuilder;
-  void Function() onTap;
   PopupMenuEntryBuilder({
     required this.titleBuilder,
     required this.iconBuilder,
     required this.onTap,
   });
+  Widget? Function(BuildContext context, WidgetRef ref) titleBuilder;
+  Widget? Function(BuildContext context, WidgetRef ref) iconBuilder;
+  void Function() onTap;
 }

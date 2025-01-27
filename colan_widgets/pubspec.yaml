@@ -10,14 +10,13 @@ dependencies:
   collection: ^1.18.0
   crypto: ^3.0.3
   event_bus: ^2.0.0
-  extended_image: ^8.2.1
+  extended_image: ^9.1.0
   flutter:
     sdk: flutter
   flutter_riverpod: 2.5.1
 
   http: ^1.2.0
   http_parser: ^4.0.2
-  intl: ^0.18.1
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   material_symbols_icons: ^4.2785.1
@@ -31,11 +30,11 @@ dependencies:
   # scrollable_positioned_list: ^0.3.8
   # watcher: ^1.1.0
   
-  
 dev_dependencies:
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^6.0.0
+  very_good_analysis: ^7.0.0
   
 flutter:
+  uses-material-design: true

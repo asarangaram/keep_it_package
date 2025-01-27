@@ -1,4 +1,4 @@
 /// Implementation using sqlite async
-library local_store;
+library;
 
 export 'src/create.dart' show createStoreInstance;

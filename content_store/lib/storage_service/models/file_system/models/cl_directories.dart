@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,10 +6,6 @@ import 'cl_directory.dart';
 
 @immutable
 class CLDirectories {
-  final Directory persistent;
-  final Directory temporary;
-  final Directory systemTemp;
-
   factory CLDirectories({
     required Directory persistent,
     required Directory temporary,
@@ -33,6 +28,9 @@ class CLDirectories {
     required this.temporary,
     required this.systemTemp,
   });
+  final Directory persistent;
+  final Directory temporary;
+  final Directory systemTemp;
 
   CLDirectories copyWith({
     Directory? persistent,
@@ -48,7 +46,6 @@ class CLDirectories {
 
   @override
   String toString() =>
-      // ignore: lines_longer_than_80_chars
       'CLDirectories(persistent: $persistent, temporary: $temporary, systemTemp: $systemTemp)';
 
   @override
@@ -123,8 +120,6 @@ class CLDirectories {
   List<CLDirectory> get cacheDirs =>
       directories.values.where((e) => e.isStore == false).toList();
 }
-
-
 
 /**
   mediaPersistent => ,

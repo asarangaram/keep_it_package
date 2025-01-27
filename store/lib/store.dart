@@ -1,7 +1,7 @@
 /// Store Implemented using riverpod
 /// This has only abstract, you must provide the actual implementation
 /// for the store class as specified in store.dart'
-library store;
+library;
 
 export 'app_logger.dart';
 export 'extensions.dart';

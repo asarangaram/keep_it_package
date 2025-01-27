@@ -14,7 +14,6 @@ class RegisterredServerView extends ConsumerWidget {
     return GetServer(
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetServer',

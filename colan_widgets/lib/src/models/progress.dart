@@ -13,7 +13,6 @@ class Progress {
 
   @override
   String toString() =>
-      // ignore: lines_longer_than_80_chars
       'Progress(fractCompleted: ${fractCompleted.toStringAsFixed(2)}, currentItem: $currentItem, isDone: $isDone)';
 
   double get percentage => fractCompleted * 100;

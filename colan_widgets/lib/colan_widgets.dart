@@ -1,5 +1,5 @@
 /// Colan Widgets
-library colon_widgets;
+library;
 
 export 'src/basics/cl_blink.dart' show CLBlink;
 export 'src/basics/cl_button.dart'

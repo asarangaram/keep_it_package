@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -13,6 +12,9 @@ class AspectRatio {
     this.ratio,
     this.isLandscape = false,
   });
+
+  factory AspectRatio.fromJson(String source) =>
+      AspectRatio.fromMap(json.decode(source) as Map<String, dynamic>);
 
   factory AspectRatio.fromMap(Map<String, dynamic> map) {
     return AspectRatio(
@@ -70,9 +72,6 @@ class AspectRatio {
           : (1 / ratio!);
 
   String toJson() => json.encode(toMap());
-
-  factory AspectRatio.fromJson(String source) =>
-      AspectRatio.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 @immutable
@@ -80,6 +79,19 @@ class SupportedAspectRatio {
   const SupportedAspectRatio({
     required this.aspectRatios,
   });
+
+  factory SupportedAspectRatio.fromMap(Map<String, dynamic> map) {
+    return SupportedAspectRatio(
+      aspectRatios: List<AspectRatio>.from(
+        (map['aspectRatios'] as List<dynamic>).map<AspectRatio>(
+          (x) => AspectRatio.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
+
+  factory SupportedAspectRatio.fromJson(String source) =>
+      SupportedAspectRatio.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final List<AspectRatio> aspectRatios;
 
@@ -111,20 +123,7 @@ class SupportedAspectRatio {
     };
   }
 
-  factory SupportedAspectRatio.fromMap(Map<String, dynamic> map) {
-    return SupportedAspectRatio(
-      aspectRatios: List<AspectRatio>.from(
-        (map['aspectRatios'] as List<dynamic>).map<AspectRatio>(
-          (x) => AspectRatio.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory SupportedAspectRatio.fromJson(String source) =>
-      SupportedAspectRatio.fromMap(json.decode(source) as Map<String, dynamic>);
 
   static Future<SupportedAspectRatio> load() async {
     final prefs = await SharedPreferences.getInstance();

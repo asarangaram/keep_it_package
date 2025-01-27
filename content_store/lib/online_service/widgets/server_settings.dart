@@ -17,7 +17,6 @@ class ServerSettingsImpl extends ConsumerWidget {
     return GetNetworkScanner(
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
-        // ignore: dead_code
       },
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetNetworkScanner',
@@ -26,7 +25,6 @@ class ServerSettingsImpl extends ConsumerWidget {
         return GetServer(
           errorBuilder: (_, __) {
             return const SizedBox.shrink();
-            // ignore: dead_code
           },
           loadingBuilder: () => CLLoader.widget(
             debugMessage: 'GetServer',
@@ -150,7 +148,6 @@ class ServerSettingsImpl extends ConsumerWidget {
                                 children: [
                                   TextSpan(
                                     text: '${candidate.identifier} '
-                                        // ignore: lines_longer_than_80_chars
                                         '[${candidate.address}:${candidate.port}]'
                                         ' \u00A0\u00A0\u00A0\u00A0',
                                   ),

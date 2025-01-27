@@ -15,8 +15,7 @@ dependencies:
   cl_camera:
     path: ../cl_camera
   cl_media_viewers_flutter:
-    git:
-      url: https://github.com/asarangaram/cl_media_viewers_flutter.git
+    path: ../cl_media_viewers_flutter
   colan_widgets:
     path: ../colan_widgets 
   collection: ^1.18.0
@@ -27,7 +26,7 @@ dependencies:
   dio: ^5.7.0
   event_bus: ^2.0.0
   exif: ^3.3.0
-  extended_image: ^8.2.1
+  extended_image: ^9.1.0
   ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
@@ -42,7 +41,6 @@ dependencies:
   image: ^4.1.7
   image_picker: ^1.1.2
   
-  intl: ^0.18.1
   local_store:
     path: ../local_store
   logger: ^2.4.0
@@ -62,6 +60,7 @@ dependencies:
   pie_chart: ^5.4.0
   progress_indicators: ^1.0.0
   pull_down_button: ^0.10.2
+  
   share_handler: ^0.0.21
   share_plus: ^10.0.0
   shared_preferences: ^2.2.3
@@ -73,18 +72,15 @@ dependencies:
   uuid: ^4.4.0
   video_player: ^2.8.7
   video_thumbnail: ^0.5.3
-  video_trimmer: ^3.0.1
+  video_trimmer: ^4.0.0
   watcher: ^1.1.0
 
 dev_dependencies:
-  flutter_lints: ^4.0.0
-  flutter_test:
-    sdk: flutter
-  integration_test:
-    sdk: flutter
+  flutter_lints: ^5.0.0
+ 
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
-  very_good_analysis: ^6.0.0
+  very_good_analysis: ^7.0.0
 
 flutter:
   uses-material-design: true

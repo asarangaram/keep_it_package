@@ -38,15 +38,14 @@ class CLFormState extends State<CLForm> {
     state = widget.descriptors.map(
       (key, desc) => MapEntry(
         key,
-        switch (desc.runtimeType) {
-          const (CLFormTextFieldDescriptor) => CLFormTextFieldState(
+        switch (desc) {
+          CLFormTextFieldDescriptor _ => CLFormTextFieldState(
               controller: TextEditingController(
-                text: (desc as CLFormTextFieldDescriptor).initialValue,
+                text: (desc).initialValue,
               ),
             ),
-          const (CLFormSelectMultipleDescriptors) => CLFormSelectMultipleState(
-              selectedEntities: List.from(
-                  (desc as CLFormSelectMultipleDescriptors).initialValues),
+          CLFormSelectMultipleDescriptors _ => CLFormSelectMultipleState(
+              selectedEntities: List.from((desc).initialValues),
               scrollController: ScrollController(),
               searchController: SearchController(),
               wrapKey: GlobalKey(),
@@ -109,9 +108,8 @@ class CLFormState extends State<CLForm> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: switch (entry.value.runtimeType) {
-                  const (CLFormSelectMultipleDescriptors) =>
-                    CLFormSelectMultiple(
+                child: switch (entry.value) {
+                  CLFormSelectMultipleDescriptors _ => CLFormSelectMultiple(
                       descriptors:
                           entry.value as CLFormSelectMultipleDescriptors,
                       state: state[entry.key]! as CLFormSelectMultipleState,
@@ -119,7 +117,7 @@ class CLFormState extends State<CLForm> {
                         setState(() {});
                       },
                     ),
-                  const (CLFormTextFieldDescriptor) => CLFormTextField(
+                  CLFormTextFieldDescriptor _ => CLFormTextField(
                       descriptors: entry.value as CLFormTextFieldDescriptor,
                       state: state[entry.key]! as CLFormTextFieldState,
                       onRefresh: () {

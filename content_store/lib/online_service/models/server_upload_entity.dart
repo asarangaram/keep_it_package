@@ -126,7 +126,7 @@ class ServerUploadEntity {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
+   
     return 'ServerMedia(path: $path, name: $name, collectionLabel: $collectionLabel, createdDate: $createdDate, updatedDate: $updatedDate, isDeleted: $isDeleted, originalDate: $originalDate, ref: $ref, notes: $notes, serverUID: $serverUID)';
   }
 

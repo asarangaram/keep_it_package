@@ -773,7 +773,6 @@ class CLCameraCoreState extends State<CLCameraCore>
 
     try {
       await controller!.setExposureMode(mode);
-      // ignore: unused_catch_clause
     } on CameraException catch (e) {
       widget.onError?.call('setExposureMode failed.', error: e);
     }

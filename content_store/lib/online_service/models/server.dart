@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -15,13 +13,6 @@ import 'server_upload_entity.dart';
 
 @immutable
 class Server {
-  final CLServer? identity;
-  final bool isOffline;
-  final bool workingOffline;
-  final bool canSync;
-  final bool isRegistered;
-  final bool isSyncing;
-  final CLServer? previousIdentity;
   const Server({
     this.previousIdentity,
     this.identity,
@@ -31,6 +22,13 @@ class Server {
   })  : canSync = !workingOffline && !isOffline && identity != null,
         isRegistered = identity != null,
         isOffline = isOffline || identity == null;
+  final CLServer? identity;
+  final bool isOffline;
+  final bool workingOffline;
+  final bool canSync;
+  final bool isRegistered;
+  final bool isSyncing;
+  final CLServer? previousIdentity;
 
   Server copyWith({
     ValueGetter<CLServer?>? identity,
@@ -52,7 +50,6 @@ class Server {
 
   @override
   String toString() {
-    // ignore: lines_longer_than_80_chars
     return 'Server(identity: $identity, isOffline: $isOffline, workingOffline: $workingOffline, canSync: $canSync, isRegistered: $isRegistered, isSyncing: $isSyncing, previousIdentity: $previousIdentity)';
   }
 

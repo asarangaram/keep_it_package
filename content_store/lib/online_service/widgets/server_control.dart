@@ -15,12 +15,12 @@ class ServerControlImpl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ignore: unused_local_variable
+   
 
     return GetServer(
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
-        // ignore: dead_code
+       
       },
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetServer',
@@ -29,7 +29,7 @@ class ServerControlImpl extends ConsumerWidget {
         return GetDownloaderStatus(
           errorBuilder: (_, __) {
             return const SizedBox.shrink();
-            // ignore: dead_code
+            
           },
           loadingBuilder: () => CLLoader.hide(
             debugMessage: 'GetDownloaderStatus',

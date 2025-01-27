@@ -175,9 +175,9 @@ class KeepItMainGrid extends ConsumerWidget {
             item, {
             required parentIdentifier,
           }) =>
-              switch (item.runtimeType) {
-            Collection => CollectionAsFolder(
-                collection: item as Collection,
+              switch (item) {
+            Collection _ => CollectionAsFolder(
+                collection: item,
                 onTap: () {
                   ref
                       .read(
@@ -186,8 +186,8 @@ class KeepItMainGrid extends ConsumerWidget {
                       .state = item.id;
                 },
               ),
-            CLMedia => MediaAsFile(
-                media: item as CLMedia,
+            CLMedia _ => MediaAsFile(
+                media: item,
                 parentIdentifier: parentIdentifier,
                 onTap: () async {
                   await PageManager.of(context).openMedia(

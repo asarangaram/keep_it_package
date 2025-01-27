@@ -1,14 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 import '../models/cl_scale_type.dart';
 
 class _CLText extends StatelessWidget {
-  final String text;
-  final CLScaleType scaleType;
-  final Color? color;
-  final bool isLabel;
-  final TextAlign? textAlign;
   const _CLText(
     this.text, {
     required this.scaleType,
@@ -17,6 +11,11 @@ class _CLText extends StatelessWidget {
     super.key,
     this.color,
   });
+  final String text;
+  final CLScaleType scaleType;
+  final Color? color;
+  final bool isLabel;
+  final TextAlign? textAlign;
 
   @override
   Widget build(BuildContext context) {
