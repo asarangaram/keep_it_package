@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../services/gallery_view_service/models/selector.dart';
+import '../models/selector.dart';
 
 class SelectorNotifier extends StateNotifier<CLSelector> {
   SelectorNotifier(List<CLEntity> entities)

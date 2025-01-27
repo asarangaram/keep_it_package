@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:form_factory/src/views/cl_form_select_single.dart';
 import 'package:form_factory/src/views/cl_form_textfield.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
 import '../models/cl_form_field_state.dart';
 import 'cl_form_select_multiple.dart';
@@ -19,7 +20,7 @@ class CLWizardFormField extends StatefulWidget {
   final void Function(CLFormFieldResult result) onSubmit;
 
   final CLFormFieldDescriptors descriptor;
-  final cl.CLMenuItem Function(
+  final CLMenuItem Function(
     BuildContext context,
     Future<bool?> Function() onTap,
   )? actionMenu;

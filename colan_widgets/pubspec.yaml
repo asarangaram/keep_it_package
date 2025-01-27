@@ -1,7 +1,7 @@
 name: colan_widgets
 description: "Widgets for Colan Projects"
 version: 0.0.1
-
+publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
@@ -16,6 +16,8 @@ dependencies:
   
   http: ^1.2.0
   http_parser: ^4.0.2
+  keep_it_state: 
+    path: ../keep_it_state
   logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   material_symbols_icons: ^4.2785.1

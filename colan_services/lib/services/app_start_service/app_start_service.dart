@@ -1,20 +1,9 @@
-/// Run the application with ProviderScope
-/// Implement a FutureProvider that invokes all initialization
-/// routies as well trigger loading other providers
-/// Watch this FutureProvider and once it gets results, draw the app
-/// we can handle  errors if needed
-/// replacing the FutureProvider by StreamProvider, we may also
-/// show the progress
-///
-library;
-
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-import 'providers/app_init.dart';
 
 class AppStartService extends StatelessWidget {
   const AppStartService({

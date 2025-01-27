@@ -5,8 +5,6 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:store/store.dart';
 
-import 'providers/incoming_media.dart';
-
 class IncomingMediaMonitor extends ConsumerWidget {
   const IncomingMediaMonitor({
     required this.child,

@@ -3,6 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:media_editors/media_editors.dart';
 import 'package:store/store.dart';
 
@@ -142,7 +143,7 @@ class InvokeEditor extends ConsumerWidget {
           canDuplicateMedia: canDuplicateMedia,
         );
       case CLMediaType.video:
-        if (VideoEditor.isSupported) {
+        if (ColanPlatformSupport.isMobilePlatform) {
           return VideoEditor(
             uri: mediaUri,
             onSave: onSave,

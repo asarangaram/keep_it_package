@@ -12,14 +12,6 @@ export 'src/basics/cl_matrix.dart' show Matrix2D;
 export 'src/basics/cl_text.dart' show CLLabel, CLText;
 export 'src/basics/overlay_icon.dart' show OverlayIcon;
 export 'src/basics/progress_bar.dart' show ProgressBar;
-export 'src/extensions/ext_cl_menu_item.dart' show Ext1DCLMenuItem;
-
-export 'src/extensions/ext_list.dart' show ExtDimension, ExtExclude;
-export 'src/models/action_control.dart' show ActionControl;
-export 'src/models/cl_dimension.dart' show CLDimension;
-export 'src/models/cl_menu_item.dart' show CLMenuItem;
-export 'src/models/cl_scale_type.dart' show CLScaleType;
-export 'src/models/progress.dart' show Progress;
 
 export 'src/theme/models/cl_colors.dart' show DefaultCLColors;
 export 'src/theme/models/cl_icons.dart' show CLIcons, clIcons;
@@ -28,7 +20,7 @@ export 'src/theme/models/note_theme.dart'
 export 'src/theme/state/app_theme.dart' show AppTheme;
 export 'src/theme/state/cl_theme.dart' show CLTheme;
 export 'src/utils/key_listener.dart' show CLKeyListener;
-export 'src/utils/platform_support.dart' show ColanPlatformSupport;
+
 export 'src/views/appearance/cl_fullscreen_box.dart'
     show CLDialogWrapper, CLFullscreenBox;
 export 'src/views/appearance/keep_it_main_view.dart' show KeepItMainView;

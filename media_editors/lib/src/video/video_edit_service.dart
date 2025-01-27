@@ -23,8 +23,6 @@ class VideoEditor extends StatefulWidget {
   final bool canDuplicateMedia;
   final Future<String> Function() onCreateNewFile;
 
-  static bool get isSupported => ColanPlatformSupport.isMobilePlatform;
-
   @override
   State<VideoEditor> createState() => _VideoEditorState();
 }

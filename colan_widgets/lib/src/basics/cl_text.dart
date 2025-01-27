@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/cl_scale_type.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
 class _CLText extends StatelessWidget {
   const _CLText(

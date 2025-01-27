@@ -11,7 +11,7 @@ import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import '../../internal/fullscreen_layout.dart';
-import 'providers/captured_media.dart';
+
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';
 

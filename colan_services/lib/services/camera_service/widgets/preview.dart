@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../../media_view_service/media_view_service1.dart';
-import '../providers/captured_media.dart';
 
 class PreviewCapturedMedia extends ConsumerWidget {
   const PreviewCapturedMedia({

@@ -23,6 +23,8 @@ dependencies:
   http: ^1.2.2
   http_parser: ^4.0.2
   image: ^4.2.0
+  keep_it_state: 
+    path: ../keep_it_state
   local_store:
     path: ../local_store
   meta: ^1.12.0

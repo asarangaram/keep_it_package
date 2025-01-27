@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   colan_widgets:
     path: ../colan_widgets
+  keep_it_state: 
+    path: ../keep_it_state
 
 dev_dependencies:
   flutter_test:

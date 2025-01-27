@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
 import '../builders/get_server.dart';
 import '../providers/server.dart';
@@ -133,7 +134,6 @@ class OfflinePreference extends ConsumerWidget {
     return GetServer(
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
-
       },
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetServer',

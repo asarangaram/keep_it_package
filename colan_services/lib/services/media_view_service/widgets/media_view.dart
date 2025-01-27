@@ -10,7 +10,6 @@ import 'package:store/store.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
-import '../models/action_control.dart';
 
 import 'media_background.dart';
 import 'media_controls.dart';
@@ -134,7 +133,7 @@ class MediaView0 extends ConsumerWidget {
   final Widget Function() loadingBuilder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ac = AccessControlExt.onGetMediaActionControl(media);
+    final ac = ActionControl.onGetMediaActionControl(media);
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
       errorBuilder: errorBuilder,

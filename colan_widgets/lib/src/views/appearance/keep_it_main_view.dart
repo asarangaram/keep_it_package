@@ -1,5 +1,8 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it_state/keep_it_state.dart';
+
+import '../../basics/cl_text.dart';
+import 'cl_fullscreen_box.dart';
 
 class KeepItMainView extends StatelessWidget {
   const KeepItMainView({

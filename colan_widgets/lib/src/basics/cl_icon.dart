@@ -1,7 +1,7 @@
 import 'package:colan_widgets/src/basics/cl_text.dart';
 import 'package:flutter/material.dart';
 
-import '../models/cl_scale_type.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
 class _CLIcon extends StatelessWidget {
   const _CLIcon(
