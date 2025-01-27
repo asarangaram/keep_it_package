@@ -5,7 +5,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   animated_icon: ^0.0.9
@@ -61,6 +61,8 @@ dependencies:
   progress_indicators: ^1.0.0
   pull_down_button: ^0.10.2
   
+  shadcn_ui: 
+    path: /Users/anandasarangaram/Work/flutter-shadcn-ui
   share_handler: ^0.0.21
   share_plus: ^10.0.0
   shared_preferences: ^2.2.3
@@ -72,7 +74,7 @@ dependencies:
   uuid: ^4.4.0
   video_player: ^2.8.7
   video_thumbnail: ^0.5.3
-  video_trimmer: ^4.0.0
+  
   watcher: ^1.1.0
 
 dev_dependencies:

@@ -12,6 +12,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'providers/app_init.dart';
 
@@ -40,16 +41,27 @@ class _AppLoader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final app = appDescriptor;
-    return MaterialApp(
+    return ShadApp(
       debugShowCheckedModeBanner: false,
       title: app.title,
       initialRoute: '/',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ShadThemeData(
+        brightness: Brightness.light,
+        colorScheme: const ShadZincColorScheme.light(),
+        // Example with google fonts
+        // textTheme: ShadTextTheme.fromGoogleFont(GoogleFonts.poppins),
+
+        // Example of custom font family
+        // textTheme: ShadTextTheme(family: 'UbuntuMono'),
+
+        // Example to disable the secondary border
+        // disableSecondaryBorder: true,
       ),
-      darkTheme: ThemeData(
-        primarySwatch: Colors.blue,
+      darkTheme: ShadThemeData(
         brightness: Brightness.dark,
+        colorScheme: const ShadZincColorScheme.dark(),
+        // Example of custom font family
+        // textTheme: ShadTextTheme(family: 'UbuntuMono'),
       ),
       themeMode: ThemeMode.light,
       onGenerateRoute: (settings) {

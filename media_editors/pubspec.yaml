@@ -5,8 +5,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   colan_widgets:
@@ -19,7 +18,8 @@ dependencies:
   flutter_riverpod: 2.5.1
   image: ^4.2.0
   shared_preferences: ^2.3.2
-  video_trimmer: ^4.0.0
+  video_trimmer: 
+    path: /Users/anandasarangaram/Work/video_trimmer 
 
 dev_dependencies:
   flutter_lints: ^5.0.0
