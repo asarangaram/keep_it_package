@@ -20,7 +20,7 @@ export 'src/models/cl_dimension.dart' show CLDimension;
 export 'src/models/cl_menu_item.dart' show CLMenuItem;
 export 'src/models/cl_scale_type.dart' show CLScaleType;
 export 'src/models/progress.dart' show Progress;
-export 'src/models/universal_media_source.dart' show UniversalMediaSource;
+
 export 'src/theme/models/cl_colors.dart' show DefaultCLColors;
 export 'src/theme/models/cl_icons.dart' show CLIcons, clIcons;
 export 'src/theme/models/note_theme.dart'

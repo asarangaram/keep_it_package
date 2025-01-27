@@ -25,8 +25,7 @@ export 'services/incoming_media_service/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
 export 'services/incoming_media_service/incoming_media_service.dart'
     show IncomingMediaService;
-export 'services/incoming_media_service/models/cl_shared_media.dart'
-    show CLMediaFileGroup, CLSharedMedia;
+
 export 'services/media_edit_service/media_edit_service.dart'
     show MediaEditService;
 export 'services/media_view_service/collection_view.dart' show CollectionView;

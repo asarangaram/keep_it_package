@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:fvp/fvp.dart' as fvp;
-
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:window_size/window_size.dart';
 
 class KeepItApp implements AppDescriptor {

@@ -37,4 +37,34 @@ extension Filter on List<CLMedia> {
 
     return filterredMedia;
   }
+
+  List<GalleryGroupCLEntity<CLMedia>> groupByDate() {
+    final galleryGroups = <GalleryGroupCLEntity<CLMedia>>[];
+    for (final entry in filterByDate().entries) {
+      if (entry.value.length > 20) {
+        final groups = entry.value.convertTo2D(20);
+
+        for (final (index, group) in groups.indexed) {
+          galleryGroups.add(
+            GalleryGroupCLEntity(
+              group,
+              label: (index == 0) ? entry.key : null,
+              groupIdentifier: entry.key,
+              chunkIdentifier: '${entry.key} $index',
+            ),
+          );
+        }
+      } else {
+        galleryGroups.add(
+          GalleryGroupCLEntity(
+            entry.value,
+            label: entry.key,
+            groupIdentifier: entry.key,
+            chunkIdentifier: entry.key,
+          ),
+        );
+      }
+    }
+    return galleryGroups;
+  }
 }

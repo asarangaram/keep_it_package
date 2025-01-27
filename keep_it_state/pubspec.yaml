@@ -1,7 +1,7 @@
 name: keep_it_state
 description: "A new Flutter package project."
 version: 0.0.1
-
+publish_to: none
 environment:
   sdk: ^3.6.0
   flutter: ">=1.17.0"
@@ -10,6 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
+  collection: ^1.19.0
+  store: 
+    path: ../store
 
 dev_dependencies:
   flutter_test:

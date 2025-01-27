@@ -2,12 +2,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../../basic_page_service/basic_page_service.dart';
 import '../../media_view_service/media_view_service1.dart';
-
-import '../models/cl_shared_media.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({

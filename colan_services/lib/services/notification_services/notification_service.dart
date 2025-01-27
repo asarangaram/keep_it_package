@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'models/notification.dart';
-import 'providers/notify.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
 class NotificationService extends ConsumerStatefulWidget {
   const NotificationService({required this.child, super.key});

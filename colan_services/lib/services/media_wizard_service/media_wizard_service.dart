@@ -1,14 +1,11 @@
+import 'package:colan_services/internal/extensions/list.dart';
 import 'package:colan_services/services/media_wizard_service/widgets/select_and_keep_media.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
 import '../../internal/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
-import '../incoming_media_service/models/cl_shared_media.dart';
-import '../media_view_service/providers/group_view.dart';
-import '../notification_services/providers/notify.dart';
-import 'providers/universal_media.dart';
 import 'widgets/select_and_restore_media.dart';
 
 class MediaWizardService extends ConsumerWidget {
@@ -77,7 +74,7 @@ class MediaWizardService extends ConsumerWidget {
         ),
       );
     } else {
-      final galleryMap = ref.watch(groupedItemsProvider(media.entries));
+      final galleryMap = media.entries.groupByDate();
       return FullscreenLayout(
         child: SelectAndKeepMedia(
           media: media,

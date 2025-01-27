@@ -16,6 +16,8 @@ dependencies:
   flutter:
     sdk: flutter
   fvp: ^0.29.0
+  keep_it_state:
+    path: ../keep_it_state
   window_size: ^0.1.0
   
 dev_dependencies:

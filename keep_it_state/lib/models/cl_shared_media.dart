@@ -1,7 +1,9 @@
-import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
+
+import 'universal_media_source.dart';
 
 @immutable
 class CLMediaFileGroup {

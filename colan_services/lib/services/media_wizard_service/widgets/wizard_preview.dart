@@ -2,15 +2,13 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/cl_error_view.dart';
-
 import '../../basic_page_service/widgets/page_manager.dart';
-
 import '../../gallery_view_service/widgets/gallery_view.dart';
 import '../../media_view_service/media_view_service1.dart';
-import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({

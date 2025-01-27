@@ -9,9 +9,6 @@ import 'package:store/store.dart';
 
 import 'builders/available_media.dart';
 
-import 'providers/grouper.dart';
-import 'providers/selection_mode.dart';
-
 import 'widgets/actions/bottom_bar.dart';
 import 'widgets/actions/top_bar.dart';
 import 'widgets/folders_and_files/collection_as_folder.dart';

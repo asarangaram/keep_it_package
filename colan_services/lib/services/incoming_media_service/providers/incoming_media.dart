@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:path/path.dart' as path_handler;
 import 'package:share_handler/share_handler.dart';
 import 'package:store/store.dart';
-
-import '../models/cl_shared_media.dart';
 
 class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
   IncomingMediaNotifier()

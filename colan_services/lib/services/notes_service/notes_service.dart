@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-import '../media_view_service/providers/show_controls.dart';
 import 'widgets/notes_view.dart';
 
 class NotesService extends ConsumerWidget {
