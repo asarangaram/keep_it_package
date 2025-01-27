@@ -7,7 +7,7 @@ environment:
 
 dependencies:
   audio_waveforms: ^1.0.5 
-  collection: ^1.18.0
+  collection: ^1.19.0
   crypto: ^3.0.3
   event_bus: ^2.0.0
   extended_image: ^9.1.0

@@ -10,7 +10,7 @@ environment:
 dependencies:
   animated_icon: ^0.0.9
   audio_waveforms: 1.0.5 # Upgrade has issues!
-  background_downloader: ^8.5.5
+  background_downloader: ^8.9.4
   camera: ^0.11.0+1
   cl_camera:
     path: ../cl_camera
@@ -18,7 +18,7 @@ dependencies:
     path: ../cl_media_viewers_flutter
   colan_widgets:
     path: ../colan_widgets 
-  collection: ^1.18.0
+  collection: ^1.19.0
   
   connectivity_plus: ^6.0.5
   content_store:
@@ -49,7 +49,7 @@ dependencies:
     path: ../media_editors
   
   meta: ^1.12.0
-  mime: ^1.0.5
+  mime: ^2.0.0
   multicast_dns: ^0.3.2+7
   mutex: ^3.1.0
   nsd: ^3.0.0
