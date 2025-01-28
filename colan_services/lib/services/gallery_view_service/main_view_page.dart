@@ -161,12 +161,12 @@ class KeepItMainGrid extends ConsumerWidget {
           onGroupItems: (
             entities, {
             required method,
-            required id,
+            required groupAsCollection,
           }) =>
               getGrouped(
             entities,
             method: method,
-            id: id,
+            groupAsCollection: groupAsCollection,
             store: theStore.store,
           ),
           itemBuilder: (
@@ -207,15 +207,16 @@ class KeepItMainGrid extends ConsumerWidget {
     );
   }
 
-  Future<List<GalleryGroupCLEntity<CLEntity>>> getGrouped(
+  Future<Map<String, List<GalleryGroupCLEntity<CLEntity>>>> getGrouped(
     List<CLEntity> entities, {
     required GroupTypes method,
-    required int? id,
     required Store store,
+    required bool groupAsCollection,
   }) async {
     final reader = store.reader;
     const columns = 3;
-    if (id == null) {
+    final result = <String, List<GalleryGroupCLEntity<CLEntity>>>{};
+    if (groupAsCollection) {
       final ids = entities
           .map((e) => (e as CLMedia).collectionId)
           .where((e) => e != null)
@@ -223,18 +224,18 @@ class KeepItMainGrid extends ConsumerWidget {
           .toSet()
           .toList();
       final collections = await reader.getCollectionsByIDList(ids);
-      final grouped = switch (method) {
-        GroupTypes.none => collections.group(columns),
-        GroupTypes.byOriginalDate => collections.groupByTime(columns),
-      };
-      return grouped;
-    } else {
-      final grouped = switch (method) {
+      final grouped = collections.group(columns);
+      result['Collections'] = grouped;
+    }
+    {
+      final mediaGrouped = switch (method) {
         GroupTypes.none => entities.group(columns),
         GroupTypes.byOriginalDate => entities.groupByTime(columns),
       };
-      return grouped;
+      result['Media'] = mediaGrouped;
     }
+
+    return result;
   }
 }
 

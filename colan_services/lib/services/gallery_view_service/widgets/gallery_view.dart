@@ -1,7 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
 import '../../../internal/selection_control/selection_control.dart';
@@ -32,10 +34,10 @@ class GalleryView extends StatelessWidget {
     CLEntity,
   ) itemBuilder;
   final int numColumns;
-  final Future<List<GalleryGroupCLEntity<CLEntity>>> Function(
+  final Future<Map<String, List<GalleryGroupCLEntity<CLEntity>>>> Function(
     List<CLEntity> entities, {
     required GroupTypes method,
-    required int? id,
+    required bool groupAsCollection,
   }) onGroupItems;
   final bool selectionMode;
   final void Function({required bool enable}) onChangeSelectionMode;
@@ -101,12 +103,17 @@ class GalleryView extends StatelessWidget {
                       columns: numColumns,
                       getGrouped: onGroupItems,
                       builder: (galleryMap /* numColumns */) {
-                        return CLEntityGridView(
+                        return CLEntityGridViewBuilder(
                           galleryMap: galleryMap,
-                          bannersBuilder: bannersBuilder,
-                          labelBuilder: labelBuilder,
-                          itemBuilder: itemBuilder,
-                          columns: numColumns,
+                          builder: (galleryMapL) {
+                            return CLEntityGridView(
+                              galleryMap: galleryMapL,
+                              bannersBuilder: bannersBuilder,
+                              labelBuilder: labelBuilder,
+                              itemBuilder: itemBuilder,
+                              columns: numColumns,
+                            );
+                          },
                         );
                       },
                     );
@@ -114,6 +121,57 @@ class GalleryView extends StatelessWidget {
                 );
               },
             ),
+    );
+  }
+}
+
+class CLEntityGridViewBuilder extends StatefulWidget {
+  const CLEntityGridViewBuilder({
+    required this.builder,
+    required this.galleryMap,
+    super.key,
+  });
+  final Map<String, List<GalleryGroupCLEntity<CLEntity>>> galleryMap;
+  final Widget Function(List<GalleryGroupCLEntity<CLEntity>> items) builder;
+  @override
+  State<CLEntityGridViewBuilder> createState() =>
+      _CLEntityGridViewBuilderState();
+}
+
+class _CLEntityGridViewBuilderState extends State<CLEntityGridViewBuilder> {
+  late String currTap;
+  @override
+  void initState() {
+    currTap = widget.galleryMap.keys.first;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.galleryMap.entries.length == 1) {
+      return widget.builder(widget.galleryMap.values.first);
+    }
+    return Column(
+      children: [
+        ShadTabs(
+          value: currTap,
+          // tabBarConstraints: BoxConstraints(maxWidth: 400),
+          //contentConstraints: BoxConstraints(maxWidth: 400),
+          onChanged: (val) {
+            setState(() {
+              currTap = val;
+            });
+          },
+          tabs: [
+            for (final k in widget.galleryMap.keys)
+              ShadTab(
+                value: k,
+                child: Text(k),
+              ),
+          ],
+        ),
+        Expanded(child: widget.builder(widget.galleryMap[currTap]!)),
+      ],
     );
   }
 }
