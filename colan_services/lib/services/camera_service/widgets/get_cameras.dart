@@ -6,24 +6,19 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import '../../basic_page_service/widgets/cl_error_view.dart';
 
-class GetCameras extends ConsumerStatefulWidget {
+class GetCameras extends ConsumerWidget {
   const GetCameras({required this.builder, super.key});
   final Widget Function({
     required List<CameraDescription> cameras,
   }) builder;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _GetCamerasState();
-}
-
-class _GetCamerasState extends ConsumerState<GetCameras> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final camerasAsync = ref.watch(camerasProvider);
 
     return camerasAsync.when(
       data: (cameras) {
-        return widget.builder(cameras: cameras);
+        return builder(cameras: cameras);
       },
       error: (e, st) => CLErrorView(errorMessage: e.toString()),
       loading: () => CLLoader.widget(

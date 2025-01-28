@@ -32,7 +32,7 @@ class DuplicatePage extends StatelessWidget {
   }
 }
 
-class DuplicatePageStateful extends ConsumerStatefulWidget {
+class DuplicatePageStateful extends StatefulWidget {
   const DuplicatePageStateful({
     required this.incomingMedia,
     required this.parentIdentifier,
@@ -46,11 +46,10 @@ class DuplicatePageStateful extends ConsumerStatefulWidget {
   final void Function() onCancel;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _DuplicatePageStatefulState();
+  State<StatefulWidget> createState() => _DuplicatePageStatefulState();
 }
 
-class _DuplicatePageStatefulState extends ConsumerState<DuplicatePageStateful> {
+class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
   late CLSharedMedia currentMedia;
 
   @override

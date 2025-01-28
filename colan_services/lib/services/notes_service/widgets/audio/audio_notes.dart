@@ -1,14 +1,13 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import 'audio_note.dart';
 import 'audio_recorder.dart';
 
-class AudioNotes extends ConsumerStatefulWidget {
+class AudioNotes extends StatefulWidget {
   const AudioNotes({
     required this.media,
     required this.notes,
@@ -18,10 +17,10 @@ class AudioNotes extends ConsumerStatefulWidget {
   final List<CLMedia> notes;
 
   @override
-  ConsumerState<AudioNotes> createState() => _AudioNotesState();
+  State<AudioNotes> createState() => _AudioNotesState();
 }
 
-class _AudioNotesState extends ConsumerState<AudioNotes> {
+class _AudioNotesState extends State<AudioNotes> {
   late bool editMode;
 
   @override

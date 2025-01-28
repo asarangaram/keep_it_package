@@ -53,7 +53,7 @@ class TextNote extends StatelessWidget {
   }
 }
 
-class TextNote0 extends ConsumerStatefulWidget {
+class TextNote0 extends StatefulWidget {
   const TextNote0({
     required this.media,
     required this.theStore,
@@ -67,10 +67,10 @@ class TextNote0 extends ConsumerStatefulWidget {
   final String textOriginal;
 
   @override
-  ConsumerState<TextNote0> createState() => _TextNote0State();
+  State<TextNote0> createState() => _TextNote0State();
 }
 
-class _TextNote0State extends ConsumerState<TextNote0> {
+class _TextNote0State extends State<TextNote0> {
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
   late bool isEditing;
