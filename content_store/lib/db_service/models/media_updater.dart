@@ -882,9 +882,6 @@ class MediaUpdater {
     BuildContext context,
     List<CLMedia> media,
   ) {
-    // For now, lets only focus on locally cached.
-    // FIXME: If the media is from server, we need to find a way
-    // to download and share
     final files = media
         .map(directories.getMediaAbsolutePath)
         .where((e) => File(e).existsSync());
@@ -943,7 +940,7 @@ class MediaUpdater {
       final file = fileAbsolutePath(media);
       await File(file).deleteIfExists();
     }
-    // FIXME store.reloadStore();
+
     return m != null;
   }
 }

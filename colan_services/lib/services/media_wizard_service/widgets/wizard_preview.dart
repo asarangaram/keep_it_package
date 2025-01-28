@@ -63,7 +63,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           ),
           errorBuilder: errorBuilder,
           onGroupItems: (entities) async => entities.group(3),
-          selectionMode: onSelectionChanged != null, // FIXME
+          selectionMode: onSelectionChanged != null,
           onChangeSelectionMode: ({required bool enable}) {},
           selectionActionsBuilder: null,
           onSelectionChanged: onSelectionChanged == null

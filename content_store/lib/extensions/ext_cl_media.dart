@@ -19,7 +19,6 @@ extension StoreExtCLMedia on CLMedia {
     CLMedia? mediaInDB,
     Map<String, dynamic> map,
   ) {
-    /// FIXME: Handle Pin
     /* /// if the media is pinned already,
     ///   we can't proceed here as the pin need to be updated.
     ///   we can't update pin on mobile devices without user action

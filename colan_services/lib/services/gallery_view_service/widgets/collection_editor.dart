@@ -62,6 +62,9 @@ class CollectionEditor extends ConsumerWidget {
           debugMessage: 'GetCollection',
         ),
         builder: (collection) {
+          if (collection == null) {
+            throw Exception('Collection with id $collectionId not found');
+          }
           return GetCollectionMultiple(
             query: DBQueries.collections,
             errorBuilder: (_, __) {
@@ -71,8 +74,6 @@ class CollectionEditor extends ConsumerWidget {
               debugMessage: 'GetCollectionMultiple',
             ),
             builder: (collections) {
-              if (collection == null) return Container(); // FIXME
-
               return CLForm(
                 explicitScrollDownOption: !isDialog,
                 descriptors: {

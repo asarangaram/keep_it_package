@@ -57,8 +57,13 @@ class _AudioNotesState extends ConsumerState<AudioNotes> {
                           ),
                           id: note.id!,
                           builder: (uri) {
+                            if (uri != null && uri.scheme != 'file') {
+                              throw UnimplementedError(
+                                'Audio notes not implemented for server items',
+                              );
+                            }
                             return AudioChip(
-                              uri!.path, // FIXME won't work for http(s)
+                              uri!.path,
                               label: note.name,
                               editMode: editMode && widget.notes.isNotEmpty,
                               onEditMode: () {

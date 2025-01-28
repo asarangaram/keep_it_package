@@ -68,7 +68,7 @@ class StoreUpdater {
   }
 
   String createTempFile({required String ext}) {
-    final dir = directories.download.path; // FIXME temp Directory
+    final dir = directories.download.path;
     final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
     final absolutePath = '${dir.path}/$fileBasename.$ext';
 

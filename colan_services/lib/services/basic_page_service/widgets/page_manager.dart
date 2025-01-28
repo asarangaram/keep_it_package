@@ -111,10 +111,6 @@ class PageManager {
     bool canDuplicateMedia = true,
   }) async {
     if (media.pin != null) {
-      // FIXME Disabling notification
-      /* await ref.read(notificationMessageProvider.notifier).push(
-            "Unpin to edit.\n Pinned items can't be edited",
-          ); */
       return media;
     } else {
       final edittedMedia = await navigator.pushNamed(

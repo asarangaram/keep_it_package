@@ -32,9 +32,6 @@ class GetMediaText extends ConsumerWidget {
   }
 
   String getText(Uri uri) {
-    // FIXME: block non text files
-    // if (media?.type != CLMediaType.text) return '';
-
     if (uri.scheme == 'file') {
       final path = uri.toFilePath();
 
