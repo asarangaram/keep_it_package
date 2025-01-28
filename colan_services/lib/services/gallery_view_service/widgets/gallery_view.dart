@@ -1,11 +1,12 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
+import 'package:store/store.dart'
+    show CLEntity, GalleryGroupCLEntity, StoreExtensionOnString;
 
+import '../../../builders/get_collection_id.dart';
 import '../../../internal/selection_control/selection_control.dart';
 import 'cl_entity_grid_view.dart';
 import 'grouper.dart';
@@ -104,7 +105,10 @@ class GalleryView extends StatelessWidget {
                       getGrouped: onGroupItems,
                       builder: (galleryMap /* numColumns */) {
                         return CLEntityGridViewBuilder(
+                          key: ValueKey(galleryMap),
                           galleryMap: galleryMap,
+                          loadingBuilder: loadingBuilder,
+                          errorBuilder: errorBuilder,
                           builder: (galleryMapL) {
                             return CLEntityGridView(
                               galleryMap: galleryMapL,
@@ -129,9 +133,13 @@ class CLEntityGridViewBuilder extends StatefulWidget {
   const CLEntityGridViewBuilder({
     required this.builder,
     required this.galleryMap,
+    required this.loadingBuilder,
+    required this.errorBuilder,
     super.key,
   });
   final Map<String, List<GalleryGroupCLEntity<CLEntity>>> galleryMap;
+  final Widget Function() loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function(List<GalleryGroupCLEntity<CLEntity>> items) builder;
   @override
   State<CLEntityGridViewBuilder> createState() =>
@@ -142,8 +150,13 @@ class _CLEntityGridViewBuilderState extends State<CLEntityGridViewBuilder> {
   late String currTap;
   @override
   void initState() {
-    currTap = widget.galleryMap.keys.first;
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    currTap = widget.galleryMap.keys.first;
+    super.didChangeDependencies();
   }
 
   @override
@@ -151,27 +164,39 @@ class _CLEntityGridViewBuilderState extends State<CLEntityGridViewBuilder> {
     if (widget.galleryMap.entries.length == 1) {
       return widget.builder(widget.galleryMap.values.first);
     }
-    return Column(
-      children: [
-        ShadTabs(
-          value: currTap,
-          // tabBarConstraints: BoxConstraints(maxWidth: 400),
-          //contentConstraints: BoxConstraints(maxWidth: 400),
-          onChanged: (val) {
-            setState(() {
-              currTap = val;
-            });
+    return GetActiveCollectionId(
+      builder: (collectionId) {
+        return GetCollection(
+          loadingBuilder: widget.loadingBuilder,
+          errorBuilder: widget.errorBuilder,
+          id: collectionId,
+          builder: (collection) {
+            return Column(
+              children: [
+                ShadTabs(
+                  padding: EdgeInsets.zero,
+                  value: currTap,
+                  // tabBarConstraints: BoxConstraints(maxWidth: 400),
+                  //contentConstraints: BoxConstraints(maxWidth: 400),
+                  onChanged: (val) {
+                    setState(() {
+                      currTap = val;
+                    });
+                  },
+                  tabs: [
+                    for (final k in widget.galleryMap.keys)
+                      ShadTab(
+                        value: k,
+                        child: Text(k),
+                      ),
+                  ],
+                ),
+                Expanded(child: widget.builder(widget.galleryMap[currTap]!)),
+              ],
+            );
           },
-          tabs: [
-            for (final k in widget.galleryMap.keys)
-              ShadTab(
-                value: k,
-                child: Text(k),
-              ),
-          ],
-        ),
-        Expanded(child: widget.builder(widget.galleryMap[currTap]!)),
-      ],
+        );
+      },
     );
   }
 }

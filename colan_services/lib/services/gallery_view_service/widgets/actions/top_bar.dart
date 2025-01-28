@@ -47,19 +47,19 @@ class KeepItTopBar extends ConsumerWidget {
                       padding: const EdgeInsets.only(left: 8),
                       child: Text(
                         collection?.label.capitalizeFirstLetter() ??
-                            'Collections',
+                            'Collection',
                         style: Theme.of(context).textTheme.headlineLarge,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
                 ),
+                const FilterIcon(),
                 const ExtraActions(),
                 const SizedBox(width: 8),
               ],
             ),
             const SearchOptions(),
-            const SizedBox(height: 8),
           ],
         );
       },
