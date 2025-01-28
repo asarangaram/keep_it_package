@@ -51,13 +51,6 @@ class ChangeTracker {
     }
 
     if (current == null) {
-      /* 
-      we still need to have the deleted items in dB, but won't download.
-
-      // If server item is markedDeleted, ignore it.
-      if (update!.isMarkedDeleted) {
-        return ActionType.none;
-      } */
       return ActionType.download;
     }
     if (update == null) {
@@ -68,20 +61,14 @@ class ChangeTracker {
         return ActionType.deleteLocal;
       }
       return ActionType.none;
-    }
-    if (!(current!).isMarkedEditted) {
-      return ActionType.updateLocal;
-    }
-    // If the changes in local is new,
-    /* if (isLocalLatest) 
-   FIXME:  for now, always assume the local is forced */
-    {
+    } else {
       if ((current!).isMarkedDeleted) {
         return ActionType.deleteOnServer;
       }
-
-      return ActionType.updateOnServer;
+      if ((current!).isMarkedEditted) {
+        return ActionType.updateOnServer;
+      }
+      return ActionType.updateLocal;
     }
-    /* return ActionType.markConflict; */
   }
 }

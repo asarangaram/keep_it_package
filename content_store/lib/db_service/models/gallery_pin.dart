@@ -8,7 +8,6 @@ class AlbumManager {
   });
   String albumName;
 
-  // TODO(anandas): How to make this reactive??
   Future<bool> isPinBroken(String? pin) async {
     if (pin != null) {
       final asset = await AssetEntity.fromId(pin);
@@ -51,9 +50,6 @@ class AlbumManager {
     final auth = await checkRequest();
     if (!auth) return null;
 
-    /// Unfortunately, it is not possible to keep inside a FOLDER OR ALBUM
-    /// with this approach. Lets investigate later
-    // TODO(anandas): How to create album in Android
     final AssetEntity? assetEntity;
     if (isImage) {
       assetEntity = await PhotoManager.editor.saveImageWithPath(

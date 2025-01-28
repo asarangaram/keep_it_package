@@ -469,10 +469,10 @@ class MediaSyncModule extends SyncModule<CLMedia> {
         await updateServerResponse(media, resMap);
       }
     } catch (e) {
-      /** FIXME, when server fails */
       if (kDebugMode) {
         print(e);
       }
+      throw Error(); // TEST_REQUIRED_TO_FIX
     }
   }
 }
