@@ -4,6 +4,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class KeepItBottomBar extends ConsumerWidget {
   const KeepItBottomBar({
@@ -17,103 +18,81 @@ class KeepItBottomBar extends ConsumerWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      child: GetCollection(
-        id: id,
-        errorBuilder: (_, __) => const SizedBox.shrink(),
-        loadingBuilder: () => CLLoader.hide(
-          debugMessage: 'GetCollection',
-        ),
-        builder: (collection) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: ColanPlatformSupport.isMobilePlatform ? 0 : 8,
-            ),
-            child: Stack(
-              alignment: AlignmentDirectional.bottomCenter,
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 8),
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: ServerSpeedDial(),
+      child: SafeArea(
+        child: GetCollection(
+          id: id,
+          errorBuilder: (_, __) => const SizedBox.shrink(),
+          loadingBuilder: () => CLLoader.hide(
+            debugMessage: 'GetCollection',
+          ),
+          builder: (collection) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: ColanPlatformSupport.isMobilePlatform ? 0 : 8,
+              ),
+              child: Stack(
+                alignment: AlignmentDirectional.bottomCenter,
+                children: [
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: ServerSpeedDial(),
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Transform.translate(
-                              offset: (ColanPlatformSupport.cameraSupported)
-                                  ? const Offset(-10, -20)
-                                  : const Offset(0, -20),
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer
-                                    .withAlpha(200),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    IncomingMediaMonitor.onPickFiles(
-                                      context,
-                                      ref,
-                                      collection: collection,
+                        const Expanded(
+                          child: SizedBox.shrink(),
+                        ),
+                        Expanded(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ShadButton(
+                                icon: Icon(
+                                  clIcons.insertItem,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  IncomingMediaMonitor.onPickFiles(
+                                    context,
+                                    ref,
+                                    collection: collection,
+                                  );
+                                },
+                              ),
+                              if (ColanPlatformSupport.cameraSupported)
+                                ShadButton(
+                                  icon: Icon(
+                                    clIcons.camera,
+                                    size: 30,
+                                  ),
+                                  onPressed: () {
+                                    PageManager.of(context).openCamera(
+                                      collectionId: collection?.id,
                                     );
                                   },
-                                  child: Icon(
-                                    clIcons.insertItem,
-                                    size: 48,
-                                  ),
                                 ),
-                              ),
-                            ),
-                            if (ColanPlatformSupport.cameraSupported)
-                              Transform.translate(
-                                offset: (ColanPlatformSupport.cameraSupported)
-                                    ? const Offset(10, -20)
-                                    : Offset.zero,
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                      .withAlpha(200),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      PageManager.of(context).openCamera(
-                                        collectionId: collection?.id,
-                                      );
-                                    },
-                                    child: Icon(
-                                      clIcons.camera,
-                                      size: 48,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const Expanded(
-                        child: SizedBox.shrink(),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                if (id == null) const StaleMediaIndicatorService(),
-              ],
-            ),
-          );
-        },
+                  if (id == null) const StaleMediaIndicatorService(),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

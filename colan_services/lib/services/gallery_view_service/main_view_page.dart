@@ -66,7 +66,7 @@ class GalleryViewService extends StatelessWidget {
                   ],
                 ),
                 if (MediaQuery.of(context).viewInsets.bottom == 0)
-                  const SafeArea(child: KeepItBottomBar()),
+                  const KeepItBottomBar(),
               ],
             ),
           ),

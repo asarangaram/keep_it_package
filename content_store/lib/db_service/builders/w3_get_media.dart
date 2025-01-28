@@ -52,7 +52,7 @@ class GetMedia extends ConsumerWidget {
           loadingBuilder: loadingBuilder,
           builder: (data) {
             final media = data.where((e) => e.id == id).firstOrNull;
-            _log(media?.md5String, name: 'GetMedia');
+            //_log(media?.md5String, name: 'GetMedia');
             return builder(media);
           },
         );

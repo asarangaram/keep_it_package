@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../builders/get_downloader.dart';
 import '../builders/get_server.dart';
@@ -15,12 +16,9 @@ class ServerControlImpl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-   
-
     return GetServer(
       errorBuilder: (_, __) {
         return const SizedBox.shrink();
-       
       },
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetServer',
@@ -29,7 +27,6 @@ class ServerControlImpl extends ConsumerWidget {
         return GetDownloaderStatus(
           errorBuilder: (_, __) {
             return const SizedBox.shrink();
-            
           },
           loadingBuilder: () => CLLoader.hide(
             debugMessage: 'GetDownloaderStatus',
@@ -147,8 +144,13 @@ class ServerSpeedDialImpl extends ConsumerWidget {
               overlayOpacity: 0,
               elevation: 0,
               //buttonSize: const Size(40, 40),
-              backgroundColor:
-                  Theme.of(context).colorScheme.primaryContainer.withAlpha(200),
+              backgroundColor: ShadTheme.of(context)
+                  .colorScheme
+                  .background
+                  .withValues(alpha: 0.5),
+              //Theme.of(context).colorScheme.primaryContainer.withAlpha(200),
+              foregroundColor: ShadTheme.of(context).colorScheme.foreground,
+
               children: [
                 if (!server.isOffline)
                   if (!server.workingOffline)
@@ -178,20 +180,11 @@ class ServerSpeedDialImpl extends ConsumerWidget {
                   ),
               ],
               switchLabelPosition: true,
-              activeIcon: clIcons.closeFullscreen,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        'assets/icon/cloud_on_lan_128px_color.png',
-                      ),
-                    ],
-                  ),
-                ),
+              activeChild: ShadAvatar(
+                clIcons.closeFullscreen,
+              ),
+              child: const ShadAvatar(
+                'assets/icon/cloud_on_lan_128px_color.png',
               ),
             ),
             if (server.isSyncing)

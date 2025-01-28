@@ -71,7 +71,7 @@ class CLIcons {
   final SyncIcons syncIcons = SyncIcons();
   final placeHolder = Icons.device_unknown_outlined;
   final filter = Symbols.filter_list_sharp;
-  final camera = MdiIcons.camera;
+  final camera = LucideIcons.camera;
   final microphone = MdiIcons.microphone;
   final location = MdiIcons.mapMarker;
   final imageCapture = MdiIcons.camera;
