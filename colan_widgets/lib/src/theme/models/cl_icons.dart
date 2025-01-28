@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 extension IconOnIconData on IconData {
   Widget iconFormatted({
@@ -103,12 +104,12 @@ class CLIcons {
   final imageMoveAll = MdiIcons.imageMove;
   final imageShare = MdiIcons.share;
   final imageShareAll = MdiIcons.shareAll;
-  final pinned = MdiIcons.pin;
-  final notPinned = MdiIcons.pinOutline;
-  final pin = MdiIcons.pin;
-  final pinAll = MdiIcons.pin;
-  final unPin = MdiIcons.pinOffOutline;
-  final unPinAll = MdiIcons.pinOffOutline;
+  final pinned = LucideIcons.pin;
+  final notPinned = LucideIcons.pinOff;
+  final pin = LucideIcons.pin;
+  final pinAll = LucideIcons.pin;
+  final unPin = LucideIcons.pinOff;
+  final unPinAll = LucideIcons.pinOff;
   final brokenPin = MdiIcons.pinOffOutline;
   final editCollectionLabel = MdiIcons.pencil;
   final next = MdiIcons.arrowRight;

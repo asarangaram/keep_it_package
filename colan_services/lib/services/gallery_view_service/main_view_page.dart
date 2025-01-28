@@ -30,6 +30,7 @@ class GalleryViewService extends StatelessWidget {
       child: Scaffold(
         body: OnSwipe(
           child: SafeArea(
+            bottom: false,
             child: Stack(
               children: [
                 Column(
@@ -65,7 +66,7 @@ class GalleryViewService extends StatelessWidget {
                   ],
                 ),
                 if (MediaQuery.of(context).viewInsets.bottom == 0)
-                  const KeepItBottomBar(),
+                  const SafeArea(child: KeepItBottomBar()),
               ],
             ),
           ),

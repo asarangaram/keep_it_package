@@ -69,7 +69,6 @@ class SearchOptionsState extends ConsumerState<SearchOptions> {
 
     final hide = !isExpanded && !hasFilter;
 
-    final unusedFilters = filters.unusedFilters;
     final defaultTextSearchFilter = filters.defaultTextSearchFilter;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {

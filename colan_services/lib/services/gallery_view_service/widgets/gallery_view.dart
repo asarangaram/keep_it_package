@@ -3,8 +3,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart'
-    show CLEntity, GalleryGroupCLEntity, StoreExtensionOnString;
+import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
 import '../../../builders/get_collection_id.dart';
 import '../../../internal/selection_control/selection_control.dart';
@@ -110,12 +109,15 @@ class GalleryView extends StatelessWidget {
                           loadingBuilder: loadingBuilder,
                           errorBuilder: errorBuilder,
                           builder: (galleryMapL) {
-                            return CLEntityGridView(
-                              galleryMap: galleryMapL,
-                              bannersBuilder: bannersBuilder,
-                              labelBuilder: labelBuilder,
-                              itemBuilder: itemBuilder,
-                              columns: numColumns,
+                            return Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: CLEntityGridView(
+                                galleryMap: galleryMapL,
+                                bannersBuilder: bannersBuilder,
+                                labelBuilder: labelBuilder,
+                                itemBuilder: itemBuilder,
+                                columns: numColumns,
+                              ),
                             );
                           },
                         );

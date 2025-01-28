@@ -4,6 +4,7 @@ import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 class MediaPreviewService extends StatelessWidget {
@@ -53,9 +54,18 @@ class MediaPreviewService extends StatelessWidget {
                 isLocked: isLocked,
                 fit: BoxFit.cover,
                 overlays: [
+                  if (media.serverUID != null)
+                    OverlayWidgets(
+                      alignment: Alignment.bottomRight,
+                      sizeFactor: 0.2,
+                      child: const ShadAvatar(
+                        'assets/icon/cloud_on_lan_128px_color.png',
+                      ),
+                    ),
                   if (media.pin != null)
                     OverlayWidgets(
                       alignment: Alignment.bottomRight,
+                      sizeFactor: 0.2,
                       child: FutureBuilder(
                         future: theStore.albumManager.isPinBroken(media.pin),
                         builder: (context, snapshot) {
@@ -67,7 +77,7 @@ class MediaPreviewService extends StatelessWidget {
                                   : clIcons.pinned,
                               color: snapshot.data ?? false
                                   ? Colors.red
-                                  : Colors.blue,
+                                  : const Color.fromARGB(255, 33, 243, 47),
                             ),
                           );
                         },
