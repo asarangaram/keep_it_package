@@ -57,7 +57,7 @@ class MediaPreviewService extends StatelessWidget {
                   if (media.serverUID != null)
                     OverlayWidgets(
                       alignment: Alignment.bottomRight,
-                      sizeFactor: 0.2,
+                      sizeFactor: 0.15,
                       child: const ShadAvatar(
                         'assets/icon/cloud_on_lan_128px_color.png',
                       ),
@@ -65,7 +65,7 @@ class MediaPreviewService extends StatelessWidget {
                   if (media.pin != null)
                     OverlayWidgets(
                       alignment: Alignment.bottomRight,
-                      sizeFactor: 0.2,
+                      sizeFactor: 0.15,
                       child: FutureBuilder(
                         future: theStore.albumManager.isPinBroken(media.pin),
                         builder: (context, snapshot) {

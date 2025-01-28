@@ -117,7 +117,7 @@ class MediaAsFile extends StatelessWidget {
                       else if (isMediaWaitingForDownload)
                         OverlayWidgets(
                           alignment: Alignment.topLeft,
-                          sizeFactor: 0.2,
+                          sizeFactor: 0.15,
                           child: const CircularProgressIndicator(
                             color: Colors.blue,
                           ),
