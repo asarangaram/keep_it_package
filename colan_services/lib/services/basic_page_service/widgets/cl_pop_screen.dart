@@ -1,12 +1,11 @@
 import 'package:colan_services/services/basic_page_service/widgets/page_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 
 enum CLScreenPopGesture { swipeLeft, onTap }
 
-class CLPopScreen extends ConsumerWidget {
+class CLPopScreen extends StatelessWidget {
   const CLPopScreen._({
     required this.child,
     required this.popGesture,
@@ -44,7 +43,7 @@ class CLPopScreen extends ConsumerWidget {
   final bool? result;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return CLKeyListener(
       onEsc: (popGesture == CLScreenPopGesture.swipeLeft) &&
               !ColanPlatformSupport.isMobilePlatform

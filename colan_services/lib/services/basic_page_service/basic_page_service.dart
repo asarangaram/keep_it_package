@@ -1,11 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 
 import 'widgets/page_manager.dart';
 
-class BasicPageService extends ConsumerWidget {
+class BasicPageService extends StatelessWidget {
   const BasicPageService._({
     required this.message,
     required this.menuItems,
@@ -47,7 +46,7 @@ class BasicPageService extends ConsumerWidget {
 
   final List<CLMenuItem>? menuItems;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8),
