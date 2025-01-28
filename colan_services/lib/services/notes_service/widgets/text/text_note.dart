@@ -132,7 +132,6 @@ class _TextNote0State extends ConsumerState<TextNote0> {
                 onTap: () async {
                   final confirmed = await DialogService.deleteNote(
                         context,
-                        ref,
                         note: widget.note!,
                       ) ??
                       false;

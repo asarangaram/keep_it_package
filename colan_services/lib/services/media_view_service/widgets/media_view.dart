@@ -222,7 +222,6 @@ class MediaView0 extends ConsumerWidget {
                     onDelete: ac.onDelete(() async {
                       final confirmed = await DialogService.deleteMediaMultiple(
                             context,
-                            ref,
                             media: [media],
                           ) ??
                           false;

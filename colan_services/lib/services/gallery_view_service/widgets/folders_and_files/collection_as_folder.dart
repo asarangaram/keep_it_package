@@ -142,7 +142,6 @@ class CollectionAsFolder extends ConsumerWidget {
   ) async {
     final confirmed = await DialogService.deleteCollection(
           context,
-          ref,
           collection: collection,
         ) ??
         false;

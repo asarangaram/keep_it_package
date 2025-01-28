@@ -87,7 +87,6 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                       final confirmed =
                           await DialogService.restoreMediaMultiple(
                                 context,
-                                ref,
                                 media: currMedia,
                               ) ??
                               false;
@@ -124,7 +123,6 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                             final confirmed = await DialogService
                                     .permanentlyDeleteMediaMultiple(
                                   context,
-                                  ref,
                                   media: currMedia,
                                 ) ??
                                 false;

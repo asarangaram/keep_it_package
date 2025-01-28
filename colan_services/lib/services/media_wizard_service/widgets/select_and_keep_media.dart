@@ -164,7 +164,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                   final confirmed =
                                       await DialogService.deleteMediaMultiple(
                                             context,
-                                            ref,
                                             media: currMedia,
                                           ) ??
                                           false;
