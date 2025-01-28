@@ -14,90 +14,83 @@ class KeepItBottomBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = ref.watch(activeCollectionProvider);
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: SafeArea(
-        child: GetCollection(
-          id: id,
-          errorBuilder: (_, __) => const SizedBox.shrink(),
-          loadingBuilder: () => CLLoader.hide(
-            debugMessage: 'GetCollection',
-          ),
-          builder: (collection) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: ColanPlatformSupport.isMobilePlatform ? 0 : 8,
-              ),
-              child: Stack(
-                alignment: AlignmentDirectional.bottomCenter,
-                children: [
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8),
-                            child: Align(
-                              alignment: Alignment.bottomLeft,
-                              child: ServerSpeedDial(),
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                          child: SizedBox.shrink(),
-                        ),
-                        Expanded(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ShadButton(
-                                icon: Icon(
-                                  clIcons.insertItem,
-                                  size: 30,
-                                ),
-                                onPressed: () {
-                                  IncomingMediaMonitor.onPickFiles(
-                                    context,
-                                    ref,
-                                    collection: collection,
-                                  );
-                                },
-                              ),
-                              if (ColanPlatformSupport.cameraSupported)
-                                ShadButton(
-                                  icon: Icon(
-                                    clIcons.camera,
-                                    size: 30,
-                                  ),
-                                  onPressed: () {
-                                    PageManager.of(context).openCamera(
-                                      collectionId: collection?.id,
-                                    );
-                                  },
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (id == null) const StaleMediaIndicatorService(),
-                ],
-              ),
-            );
-          },
-        ),
+
+    return GetCollection(
+      id: id,
+      errorBuilder: (_, __) => const SizedBox.shrink(),
+      loadingBuilder: () => CLLoader.hide(
+        debugMessage: 'GetCollection',
       ),
+      builder: (collection) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: (ColanPlatformSupport.isMobilePlatform ? 0 : 8) +
+                MediaQuery.of(context).padding.bottom,
+            top: 4,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: ServerSpeedDial(),
+                  ),
+                ),
+              ),
+              const Expanded(
+                child: SizedBox.shrink(),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ShadButton(
+                      icon: Icon(
+                        clIcons.insertItem,
+                        size: 30,
+                      ),
+                      onPressed: () {
+                        IncomingMediaMonitor.onPickFiles(
+                          context,
+                          ref,
+                          collection: collection,
+                        );
+                      },
+                    ),
+                    if (ColanPlatformSupport.cameraSupported)
+                      ShadButton(
+                        icon: Icon(
+                          clIcons.camera,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          PageManager.of(context).openCamera(
+                            collectionId: collection?.id,
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
+
 /**
+ * 
+ *  if (id == null) const StaleMediaIndicatorService(),
+ * 
+ * 
+ * 
  * 
 const Expanded(
                     child: Align(

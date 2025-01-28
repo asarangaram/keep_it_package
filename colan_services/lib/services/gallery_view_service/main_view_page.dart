@@ -31,39 +31,35 @@ class GalleryViewService extends StatelessWidget {
         body: OnSwipe(
           child: SafeArea(
             bottom: false,
-            child: Stack(
+            child: Column(
               children: [
-                Column(
-                  children: [
-                    const KeepItTopBar(),
-                    Expanded(
-                      child: GetStore(
-                        errorBuilder: errorBuilder,
-                        loadingBuilder: () => CLLoader.widget(
-                          debugMessage: 'GetStore',
-                        ),
-                        builder: (store) {
-                          return RefreshIndicator(
-                            onRefresh: /* isSelectionMode ? null : */
-                                () async => store.reloadStore(),
-                            child: GetAvailableMediaByCollectionId(
-                              loadingBuilder: () => CLLoader.widget(
-                                debugMessage: 'GetAvailableMediaByCollectionId',
-                              ),
-                              errorBuilder: errorBuilder,
-                              builder: (clmedias) => KeepItMainGrid(
-                                clmedias: clmedias,
-                                loadingBuilder: () => CLLoader.widget(
-                                  debugMessage: 'KeepItMainGrid',
-                                ),
-                                errorBuilder: errorBuilder,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                const KeepItTopBar(),
+                Expanded(
+                  child: GetStore(
+                    errorBuilder: errorBuilder,
+                    loadingBuilder: () => CLLoader.widget(
+                      debugMessage: 'GetStore',
                     ),
-                  ],
+                    builder: (store) {
+                      return RefreshIndicator(
+                        onRefresh: /* isSelectionMode ? null : */
+                            () async => store.reloadStore(),
+                        child: GetAvailableMediaByCollectionId(
+                          loadingBuilder: () => CLLoader.widget(
+                            debugMessage: 'GetAvailableMediaByCollectionId',
+                          ),
+                          errorBuilder: errorBuilder,
+                          builder: (clmedias) => KeepItMainGrid(
+                            clmedias: clmedias,
+                            loadingBuilder: () => CLLoader.widget(
+                              debugMessage: 'KeepItMainGrid',
+                            ),
+                            errorBuilder: errorBuilder,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 if (MediaQuery.of(context).viewInsets.bottom == 0)
                   const KeepItBottomBar(),
