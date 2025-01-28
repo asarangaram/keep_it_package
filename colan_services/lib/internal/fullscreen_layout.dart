@@ -1,4 +1,3 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -40,11 +39,9 @@ class FullscreenLayout extends StatelessWidget {
       backgroundBrightness: backgroundBrightness,
       bottomNavigationBar: bottomNavigationBar,
       useSafeArea: useSafeArea,
-      child: NotificationService(
-        child: ValidateLayout(
-          validLayout: true,
-          child: CLPopScreen.onSwipe(child: child),
-        ),
+      child: ValidateLayout(
+        validLayout: true,
+        child: CLPopScreen.onSwipe(child: child),
       ),
     );
   }

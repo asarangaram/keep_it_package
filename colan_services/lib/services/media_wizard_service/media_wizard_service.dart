@@ -24,9 +24,6 @@ class MediaWizardService extends ConsumerWidget {
       return false;
     }
     if (sharedMedia.entries.isEmpty) {
-      await ref
-          .read(notificationMessageProvider.notifier)
-          .push('Nothing to do.');
       return true;
     }
 

@@ -28,8 +28,7 @@ export 'services/media_view_service/widgets/stale_media_indicator_service.dart'
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
 export 'services/notes_service/notes_service.dart' show NotesService;
-export 'services/notification_services/notification_service.dart'
-    show NotificationService;
+
 export 'services/quick_menu_service/collection_menu.dart' show CollectionMenu;
 export 'services/quick_menu_service/media_menu.dart' show MediaMenu;
 export 'services/settings_service/settings_service.dart' show SettingsService;
