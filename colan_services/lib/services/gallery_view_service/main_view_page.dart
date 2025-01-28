@@ -116,7 +116,6 @@ class KeepItMainGrid extends ConsumerWidget {
                 onTap: () async {
                   final confirmed = await DialogService.deleteMediaMultiple(
                         context,
-                        ref,
                         media: items,
                       ) ??
                       false;
