@@ -9,7 +9,7 @@ import 'package:store/store.dart';
 
 import '../../../media_view_service/media_view_service1.dart';
 
-class MediaAsFile extends ConsumerWidget {
+class MediaAsFile extends StatelessWidget {
   const MediaAsFile({
     required this.media,
     required this.parentIdentifier,
@@ -23,7 +23,7 @@ class MediaAsFile extends ConsumerWidget {
   final bool canDuplicateMedia;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return GetMedia(
       id: media.id!,
       loadingBuilder: () => CLLoader.widget(

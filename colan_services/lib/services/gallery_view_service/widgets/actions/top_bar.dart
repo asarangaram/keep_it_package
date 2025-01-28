@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-
 class KeepItTopBar extends ConsumerWidget {
   const KeepItTopBar({super.key});
 
@@ -69,30 +68,6 @@ class KeepItTopBar extends ConsumerWidget {
     );
   }
 }
-
-/* class GroupAction extends ConsumerWidget {
-  const GroupAction({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      child: ShaderMask(
-        shaderCallback: (Rect bounds) {
-          return LinearGradient(
-            colors: switch (method) {
-              GroupTypes.byOriginalDate => [Colors.black, Colors.black],
-              GroupTypes.none => [Colors.grey, Colors.grey],
-            },
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds);
-        },
-        blendMode: BlendMode.srcATop,
-        child: Icon(MdiIcons.fileTree, color: Colors.white),
-      ),
-    );
-  }
-} */
 
 class ExtraActions extends ConsumerWidget {
   const ExtraActions({super.key});

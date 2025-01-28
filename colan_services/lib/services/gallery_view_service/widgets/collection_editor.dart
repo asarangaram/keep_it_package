@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_factory/form_factory.dart';
 import 'package:store/store.dart';
 
-class CollectionEditor extends ConsumerWidget {
+class CollectionEditor extends StatelessWidget {
   factory CollectionEditor({
     required int collectionId,
     required void Function(Collection collection) onSubmit,
@@ -50,7 +50,7 @@ class CollectionEditor extends ConsumerWidget {
   final bool isDialog;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return CLDialogWrapper(
       onCancel: isDialog ? onCancel : null,
       child: GetCollection(

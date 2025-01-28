@@ -2,11 +2,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-class AnalysePage extends ConsumerWidget {
+class AnalysePage extends StatelessWidget {
   const AnalysePage({
     required this.incomingMedia,
     required this.onDone,
@@ -21,7 +20,7 @@ class AnalysePage extends ConsumerWidget {
   final void Function() onCancel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return GetStoreUpdater(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');

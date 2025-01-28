@@ -12,7 +12,7 @@ import 'edit_notes.dart';
 import 'text_controls.dart';
 import 'view_notes.dart';
 
-class TextNote extends ConsumerWidget {
+class TextNote extends StatelessWidget {
   const TextNote({
     required this.media,
     required this.theStore,
@@ -24,7 +24,7 @@ class TextNote extends ConsumerWidget {
   final StoreUpdater theStore;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (note == null) {
       return TextNote0(
         media: media,

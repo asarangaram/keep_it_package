@@ -113,7 +113,7 @@ class MediaEditService extends ConsumerWidget {
   }
 }
 
-class InvokeEditor extends ConsumerWidget {
+class InvokeEditor extends StatelessWidget {
   const InvokeEditor({
     required this.mediaUri,
     required this.mediaType,
@@ -130,7 +130,7 @@ class InvokeEditor extends ConsumerWidget {
   final Future<void> Function() onCancel;
   final bool canDuplicateMedia;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     switch (mediaType) {
       case CLMediaType.image:
         return ImageEditor(

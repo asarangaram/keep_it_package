@@ -16,11 +16,11 @@ import 'widgets/folders_and_files/media_as_file.dart';
 import 'widgets/when_empty.dart';
 import 'widgets/when_error.dart';
 
-class GalleryViewService extends ConsumerWidget {
+class GalleryViewService extends StatelessWidget {
   const GalleryViewService({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     Widget errorBuilder(Object e, StackTrace st) => WhenError(
           errorMessage: e.toString(),
         );
