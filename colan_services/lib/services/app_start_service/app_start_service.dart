@@ -1,9 +1,11 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../builders/on_init_done.dart';
+import '../../builders/state_provider_scope.dart';
 
 class AppStartService extends StatelessWidget {
   const AppStartService({
@@ -11,115 +13,64 @@ class AppStartService extends StatelessWidget {
     super.key,
   });
   final AppDescriptor appDescriptor;
-
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      child: _AppLoader(
-        appDescriptor: appDescriptor,
-      ),
-    );
-  }
-}
-
-class _AppLoader extends ConsumerWidget {
-  const _AppLoader({
-    required this.appDescriptor,
-  });
-  final AppDescriptor appDescriptor;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
     final app = appDescriptor;
-    return ShadApp(
-      debugShowCheckedModeBanner: false,
-      title: app.title,
-      initialRoute: '/',
-      theme: ShadThemeData(
-        brightness: Brightness.light,
-        colorScheme: const ShadZincColorScheme.light(),
-        // Example with google fonts
-        // textTheme: ShadTextTheme.fromGoogleFont(GoogleFonts.poppins),
+    return StateProviderScope(
+      child: ShadApp(
+        debugShowCheckedModeBanner: false,
+        title: app.title,
+        initialRoute: '/',
+        theme: ShadThemeData(
+          brightness: Brightness.light,
+          colorScheme: const ShadZincColorScheme.light(),
+          // Example with google fonts
+          // textTheme: ShadTextTheme.fromGoogleFont(GoogleFonts.poppins),
 
-        // Example of custom font family
-        // textTheme: ShadTextTheme(family: 'UbuntuMono'),
+          // Example of custom font family
+          // textTheme: ShadTextTheme(family: 'UbuntuMono'),
 
-        // Example to disable the secondary border
-        // disableSecondaryBorder: true,
-      ),
-      darkTheme: ShadThemeData(
-        brightness: Brightness.dark,
-        colorScheme: const ShadZincColorScheme.dark(),
-        // Example of custom font family
-        // textTheme: ShadTextTheme(family: 'UbuntuMono'),
-      ),
-      themeMode: ThemeMode.light,
-      onGenerateRoute: (settings) {
-        final uri = Uri.parse(settings.name ?? '');
+          // Example to disable the secondary border
+          // disableSecondaryBorder: true,
+        ),
+        darkTheme: ShadThemeData(
+          brightness: Brightness.dark,
+          colorScheme: const ShadZincColorScheme.dark(),
+          // Example of custom font family
+          // textTheme: ShadTextTheme(family: 'UbuntuMono'),
+        ),
+        themeMode: ThemeMode.light,
+        onGenerateRoute: (settings) {
+          final uri = Uri.parse(settings.name ?? '');
 
-        return MaterialPageRoute(
-          builder: (context) => CLTheme(
-            colors: const DefaultCLColors(),
-            noteTheme: const DefaultNotesTheme(),
-            child: BuildScreen(app: app, uri: uri),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class BuildScreen extends ConsumerWidget {
-  const BuildScreen({
-    required this.app,
-    required this.uri,
-    super.key,
-  });
-
-  final AppDescriptor app;
-
-  final Uri uri;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final appInitAsync = ref.watch(appInitProvider(app));
-    return appInitAsync.when(
-      data: (success) {
-        final screen = app.screens
-            .where((s) => s.name == uri.path.replaceFirst('/', ''))
-            .firstOrNull;
-        if (screen == null) {
-          return const Scaffold(
-            body: Center(
-              child: Text('404: Page not found'),
+          return MaterialPageRoute(
+            builder: (context) => CLTheme(
+              colors: const DefaultCLColors(),
+              noteTheme: const DefaultNotesTheme(),
+              child: OnInitDone(
+                app: app,
+                uri: uri,
+                builder: () {
+                  final screen = app.screens
+                      .where((s) => s.name == uri.path.replaceFirst('/', ''))
+                      .firstOrNull;
+                  if (screen == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('404: Page not found'),
+                      ),
+                    );
+                  }
+                  return IncomingMediaMonitor(
+                    onMedia: app.incomingMediaViewBuilder,
+                    child: screen.builder(context, uri.queryParameters),
+                  );
+                },
+              ),
             ),
           );
-        }
-        return IncomingMediaMonitor(
-          onMedia: app.incomingMediaViewBuilder,
-          child: screen.builder(context, uri.queryParameters),
-        );
-      },
-      error: (err, _) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: CLErrorView(errorMessage: err.toString()),
-        );
-      },
-      loading: () {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: CLLoader.widget(
-            debugMessage: 'appInitAsync',
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }
-
-/* bool _disableInfoLogger = true;
-void _infoLogger(String msg) {
-  if (!_disableInfoLogger) {
-    logger.i(msg);
-  }
-} */
