@@ -43,8 +43,8 @@ class AppStartService extends StatelessWidget {
         onGenerateRoute: (settings) {
           final uri = Uri.parse(settings.name ?? '');
 
-          return MaterialPageRoute(
-            builder: (context) => CLTheme(
+          return PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => CLTheme(
               colors: const DefaultCLColors(),
               noteTheme: const DefaultNotesTheme(),
               child: OnInitDone(

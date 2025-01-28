@@ -6,7 +6,7 @@ import 'core/cl_grid.dart';
 
 class CLEntityGridView extends StatelessWidget {
   const CLEntityGridView({
-    required this.identifier,
+    
     required this.itemBuilder,
     required this.galleryMap,
     required this.columns,
@@ -14,7 +14,7 @@ class CLEntityGridView extends StatelessWidget {
     required this.bannersBuilder,
     super.key,
   });
-  final String identifier;
+ 
   final List<GalleryGroupCLEntity<CLEntity>> galleryMap;
   final Widget Function(BuildContext context, CLEntity item) itemBuilder;
   final int columns;

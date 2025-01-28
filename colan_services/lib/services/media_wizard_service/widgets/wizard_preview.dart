@@ -54,7 +54,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       ),
       builder: (dbReader) {
         return GalleryView(
-          parentIdentifier: type.name,
           emptyWidget: const CLText.large('Nothing to show here'),
           entities: media0.entries,
           numColumns: 3,
@@ -62,7 +61,12 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             debugMessage: 'GalleryView',
           ),
           errorBuilder: errorBuilder,
-          onGroupItems: (entities) async => entities.group(3),
+          onGroupItems: (
+            entities, {
+            required GroupTypes method,
+            required int? id,
+          }) async =>
+              entities.group(3),
           selectionMode: onSelectionChanged != null,
           onChangeSelectionMode: ({required bool enable}) {},
           selectionActionsBuilder: null,
@@ -70,7 +74,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               ? null
               : (items) => onSelectionChanged
                   ?.call(items.map((e) => e as CLMedia).toList()),
-          itemBuilder: (context, item, {required String parentIdentifier}) {
+          itemBuilder: (context, item) {
             return GestureDetector(
               /* onTap: () async {
                 await PageManager.of(context).openEditor(

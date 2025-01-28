@@ -7,6 +7,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import 'package:store/store.dart';
 
+import '../../builders/get_parent_identifier.dart';
 import 'builders/available_media.dart';
 
 import 'widgets/actions/bottom_bar.dart';
@@ -88,8 +89,6 @@ class KeepItMainGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
-    final method = ref.watch(groupMethodProvider);
     final identifier = ref.watch(mainPageIdentifierProvider);
     final selectionMode = ref.watch(selectModeProvider(identifier));
     return GetStoreUpdater(
@@ -100,7 +99,6 @@ class KeepItMainGrid extends ConsumerWidget {
           entities: clmedias.entries,
           loadingBuilder: loadingBuilder,
           errorBuilder: errorBuilder,
-          parentIdentifier: identifier,
           numColumns: 3,
           selectionMode: selectionMode,
           emptyWidget: const WhenEmpty(),
@@ -160,17 +158,21 @@ class KeepItMainGrid extends ConsumerWidget {
                 ),
             ];
           },
-          onGroupItems: (entities) => getGrouped(
+          onGroupItems: (
+            entities, {
+            required method,
+            required id,
+          }) =>
+              getGrouped(
             entities,
             method: method,
-            id: collectionId,
+            id: id,
             store: theStore.store,
           ),
           itemBuilder: (
             context,
-            item, {
-            required parentIdentifier,
-          }) =>
+            item,
+          ) =>
               switch (item) {
             Collection _ => CollectionAsFolder(
                 collection: item,
@@ -182,16 +184,20 @@ class KeepItMainGrid extends ConsumerWidget {
                       .state = item.id;
                 },
               ),
-            CLMedia _ => MediaAsFile(
-                media: item,
-                parentIdentifier: parentIdentifier,
-                onTap: () async {
-                  await PageManager.of(context).openMedia(
-                    item.id!,
-                    collectionId: item.collectionId,
+            CLMedia _ => GetParentIdentifier(
+                builder: (parentIdentifier) {
+                  return MediaAsFile(
+                    media: item,
                     parentIdentifier: parentIdentifier,
+                    onTap: () async {
+                      await PageManager.of(context).openMedia(
+                        item.id!,
+                        collectionId: item.collectionId,
+                        parentIdentifier: parentIdentifier,
+                      );
+                      return true;
+                    },
                   );
-                  return true;
                 },
               ),
             _ => throw UnimplementedError(),

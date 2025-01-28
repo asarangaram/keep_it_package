@@ -10,7 +10,6 @@ import 'grouper.dart';
 
 class GalleryView extends StatelessWidget {
   const GalleryView({
-    required this.parentIdentifier,
     required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
@@ -30,14 +29,14 @@ class GalleryView extends StatelessWidget {
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function(
     BuildContext,
-    CLEntity, {
-    required String parentIdentifier,
-  }) itemBuilder;
-  final String parentIdentifier;
+    CLEntity,
+  ) itemBuilder;
   final int numColumns;
   final Future<List<GalleryGroupCLEntity<CLEntity>>> Function(
-    List<CLEntity> entities,
-  ) onGroupItems;
+    List<CLEntity> entities, {
+    required GroupTypes method,
+    required int? id,
+  }) onGroupItems;
   final bool selectionMode;
   final void Function({required bool enable}) onChangeSelectionMode;
   final Widget emptyWidget;
@@ -64,11 +63,7 @@ class GalleryView extends StatelessWidget {
               selectionActionsBuilder: selectionActionsBuilder,
               onSelectionChanged: onSelectionChanged,
               incoming: entities,
-              itemBuilder: (context, item) => itemBuilder(
-                context,
-                item,
-                parentIdentifier: parentIdentifier,
-              ),
+              itemBuilder: itemBuilder,
               labelBuilder: (context, galleryMap, gallery) {
                 return gallery.label == null
                     ? null
@@ -107,7 +102,6 @@ class GalleryView extends StatelessWidget {
                       getGrouped: onGroupItems,
                       builder: (galleryMap /* numColumns */) {
                         return CLEntityGridView(
-                          identifier: parentIdentifier,
                           galleryMap: galleryMap,
                           bannersBuilder: bannersBuilder,
                           labelBuilder: labelBuilder,

@@ -54,8 +54,6 @@ class KeepItTopBar extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SearchIcon(),
-                const SizedBox(width: 8),
                 const ExtraActions(),
                 const SizedBox(width: 8),
               ],
@@ -135,7 +133,10 @@ class ExtraActions extends ConsumerWidget {
           ],
         ];
       },
-      child: const Icon(Icons.more_vert),
+      child: const Icon(
+        Icons.more_vert,
+        size: 25,
+      ),
     );
   }
 }
