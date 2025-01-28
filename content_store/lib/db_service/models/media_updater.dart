@@ -451,7 +451,12 @@ class MediaUpdater {
       computedMD5String = await File(path).checksum;
       final pathExt = p.extension(path);
       if (pathExt.replaceAll('.', '').isEmpty) {
-        fExt0 = '.unk'; // FIXME: Use MIME to determine
+        final mime = lookupMimeType(path);
+        if (mime == null) {
+          fExt0 = '.unk';
+        } else {
+          fExt0 = extensionFromMime(mime) ?? '.unk';
+        }
       } else {
         fExt0 = fExt != null ? fExt() : p.extension(path);
       }
