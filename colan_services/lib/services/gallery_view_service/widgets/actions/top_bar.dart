@@ -4,7 +4,10 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+
+import '../popover_menu.dart';
 
 class KeepItTopBar extends ConsumerWidget {
   const KeepItTopBar({required this.parentIdentifier, super.key});
@@ -55,11 +58,10 @@ class KeepItTopBar extends ConsumerWidget {
                     ),
                   ),
                 ),
+                const SelectionControl(),
                 PopOverMenu(
                   parentIdentifier: parentIdentifier,
                 ),
-                const ExtraActions(),
-                const SizedBox(width: 8),
               ],
             ),
             TextFilterBox(
@@ -72,18 +74,36 @@ class KeepItTopBar extends ConsumerWidget {
   }
 }
 
+class SelectionControl extends ConsumerWidget {
+  const SelectionControl({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final identifier = ref.watch(mainPageIdentifierProvider);
+    final selectionMode = ref.watch(selectModeProvider(identifier));
+
+    return ShadButton.ghost(
+      padding: const EdgeInsets.only(right: 8),
+      onPressed: () {
+        ref.watch(selectModeProvider(identifier).notifier).state =
+            !selectionMode;
+      },
+      child: const Icon(LucideIcons.listChecks),
+    );
+  }
+}
+
 class ExtraActions extends ConsumerWidget {
   const ExtraActions({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
     final identifier = ref.watch(mainPageIdentifierProvider);
 
     final selectionMode = ref.watch(selectModeProvider(identifier));
 
     final popupActionItems = [
-      if (collectionId != null) ...[
+      ...[
         PopupMenuEntryBuilder(
           titleBuilder: (context, ref) => const Text('Select'),
           iconBuilder: (context, ref) => switch (selectionMode) {
@@ -96,13 +116,6 @@ class ExtraActions extends ConsumerWidget {
           },
         ),
       ],
-      PopupMenuEntryBuilder(
-        titleBuilder: (context, ref) => const Text('Settings'),
-        iconBuilder: (context, ref) => Icon(clIcons.navigateSettings),
-        onTap: () {
-          PageManager.of(context).openSettings();
-        },
-      ),
     ];
     return PopupMenuButton<PopupMenuEntryBuilder>(
       onSelected: (PopupMenuEntryBuilder item) {

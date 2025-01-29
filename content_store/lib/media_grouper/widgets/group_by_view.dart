@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/grouper.dart';
+import '../models/media_grouper.dart';
 import '../providers/media_grouper.dart';
 
 class GroupByView extends ConsumerWidget {
