@@ -45,33 +45,37 @@ class FiltersViewState extends ConsumerState<FiltersView> {
     final filters = widget.filters;
     final hasFilter = filters != null && filters.isNotEmpty;
     final textTheme = ShadTheme.of(context).textTheme;
-    return ShadAccordion<String>(
+    if (!hasFilter) {
+      return const SizedBox.shrink();
+    }
+    return ShadAccordion<String>.multiple(
+      maintainState: true,
+      initialValue: filters.map((e) => e.name).toList(),
       children: [
-        if (hasFilter)
-          for (final filter in filters)
-            ShadAccordionItem<String>(
-              title: Badge(
-                isLabelVisible: filter.isActive,
-                child: Text(filter.name, style: textTheme.lead),
-              ),
-              value: filter.name,
-              child: switch (filter.filterType) {
-                FilterType.stringFilter => TextFilterView(
-                    parentIdentifier: widget.parentIdentifier,
-                    filter: filter,
-                  ),
-                FilterType.booleanFilter => throw UnimplementedError(),
-                FilterType.dateFilter => throw UnimplementedError(),
-                FilterType.ddmmyyyyFilter => DDMMYYYYFilterViewRow(
-                    filter: filter,
-                    identifier: widget.parentIdentifier,
-                  ),
-                FilterType.enumFilter => EnumFilterViewRow(
-                    filter: filter,
-                    identifier: widget.parentIdentifier,
-                  ),
-              },
+        for (final filter in filters)
+          ShadAccordionItem<String>(
+            title: Badge(
+              isLabelVisible: filter.isActive,
+              child: Text(filter.name, style: textTheme.lead),
             ),
+            value: filter.name,
+            child: switch (filter.filterType) {
+              FilterType.stringFilter => TextFilterView(
+                  parentIdentifier: widget.parentIdentifier,
+                  filter: filter,
+                ),
+              FilterType.booleanFilter => throw UnimplementedError(),
+              FilterType.dateFilter => throw UnimplementedError(),
+              FilterType.ddmmyyyyFilter => DDMMYYYYFilterViewRow(
+                  filter: filter,
+                  identifier: widget.parentIdentifier,
+                ),
+              FilterType.enumFilter => EnumFilterViewRow(
+                  filter: filter,
+                  identifier: widget.parentIdentifier,
+                ),
+            },
+          ),
       ],
     );
   }

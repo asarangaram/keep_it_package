@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../media_grouper/providers/media_grouper.dart';
 import '../../search_filters/providers/media_filters.dart';
 import '../models/view_modifier.dart';
 import '../models/view_modifiers.dart';
@@ -19,15 +20,9 @@ final popOverMenuProvider = StateNotifierProvider.family<
     PopOverMenuItemsNotifier, PopOverMenuItems, String>((ref, identifier) {
   final items = [
     ref.watch(mediaFiltersProvider(identifier)),
-    GroupBy(),
+    ref.watch(
+      groupMethodProvider(identifier),
+    ),
   ];
   return PopOverMenuItemsNotifier(items);
 });
-
-class GroupBy implements ViewModifier {
-  @override
-  bool get isActive => false;
-
-  @override
-  String get name => 'Group By';
-}

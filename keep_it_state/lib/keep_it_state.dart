@@ -2,11 +2,9 @@ library;
 
 export 'providers/misc_providers.dart'
     show
-        GroupTypes,
         activeCollectionProvider,
         mainPageIdentifierProvider,
-        selectModeProvider,
-        groupMethodProvider;
+        selectModeProvider;
 
 export 'providers/show_controls.dart';
 export 'models/cl_shared_media.dart';

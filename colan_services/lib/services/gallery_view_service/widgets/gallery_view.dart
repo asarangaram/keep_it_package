@@ -8,7 +8,6 @@ import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
 import '../../../internal/selection_control/selection_control.dart';
 import 'cl_entity_grid_view.dart';
-import 'grouper.dart';
 
 class GalleryView extends StatelessWidget {
   const GalleryView({
@@ -18,7 +17,6 @@ class GalleryView extends StatelessWidget {
     required this.errorBuilder,
     required this.itemBuilder,
     required this.numColumns,
-    required this.onGroupItems,
     required this.selectionMode,
     required this.onChangeSelectionMode,
     required this.emptyWidget,
@@ -36,11 +34,7 @@ class GalleryView extends StatelessWidget {
     CLEntity,
   ) itemBuilder;
   final int numColumns;
-  final Future<Map<String, List<GalleryGroupCLEntity<CLEntity>>>> Function(
-    List<CLEntity> entities, {
-    required GroupTypes method,
-    required bool groupAsCollection,
-  }) onGroupItems;
+
   final bool selectionMode;
   final void Function({required bool enable}) onChangeSelectionMode;
   final Widget emptyWidget;
@@ -100,11 +94,11 @@ class GalleryView extends StatelessWidget {
                     ) bannersBuilder,
                   }) {
                     return GetGroupedMedia(
+                      parentIdentifier: parentIdentifier, 
                       errorBuilder: errorBuilder,
                       loadingBuilder: loadingBuilder,
                       incoming: filterred,
                       columns: numColumns,
-                      getGrouped: onGroupItems,
                       builder: (galleryMap /* numColumns */) {
                         return CLEntityGridViewBuilder(
                           key: ValueKey(galleryMap),

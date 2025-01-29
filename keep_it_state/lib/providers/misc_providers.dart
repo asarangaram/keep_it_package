@@ -12,8 +12,4 @@ final selectModeProvider =
   return false;
 });
 
-enum GroupTypes { none, byOriginalDate }
 
-final groupMethodProvider = StateProvider<GroupTypes>((ref) {
-  return GroupTypes.none;
-});

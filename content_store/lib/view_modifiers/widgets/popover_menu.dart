@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../view_modifiers/providers/view_modifiers.dart';
-import '../models/filters.dart';
-import 'filters_view.dart';
+import '../../media_grouper/models/grouper.dart';
+import '../../media_grouper/widgets/group_by_view.dart';
+import '../../search_filters/models/filters.dart';
+import '../../search_filters/widgets/filters_view.dart';
+import '../providers/view_modifiers.dart';
 
 class PopOverMenu extends ConsumerStatefulWidget {
   const PopOverMenu({required this.parentIdentifier, super.key});
@@ -81,8 +83,10 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                           (popOverMenuItems.currItem! as SearchFilters<CLMedia>)
                               .filters,
                     ),
-                  GroupBy _ =>
-                    Text(popOverMenuItems.currItem?.name ?? 'unknown'),
+                  GroupBy _ => GroupByView(
+                      parentIdentifier: widget.parentIdentifier,
+                      groupBy: popOverMenuItems.currItem! as GroupBy,
+                    ),
                   _ => throw UnimplementedError(),
                 },
               ),

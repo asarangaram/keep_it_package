@@ -77,8 +77,6 @@ class ExtraActions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final method = ref.watch(groupMethodProvider);
-
     final collectionId = ref.watch(activeCollectionProvider);
     final identifier = ref.watch(mainPageIdentifierProvider);
 
@@ -86,20 +84,6 @@ class ExtraActions extends ConsumerWidget {
 
     final popupActionItems = [
       if (collectionId != null) ...[
-        PopupMenuEntryBuilder(
-          titleBuilder: (context, ref) => const Text('Group By Date'),
-          iconBuilder: (context, ref) => switch (method) {
-            GroupTypes.byOriginalDate => const Icon(Icons.check),
-            _ => null
-          },
-          onTap: () {
-            final updatedMethod = switch (method) {
-              GroupTypes.byOriginalDate => GroupTypes.none,
-              GroupTypes.none => GroupTypes.byOriginalDate,
-            };
-            ref.read(groupMethodProvider.notifier).state = updatedMethod;
-          },
-        ),
         PopupMenuEntryBuilder(
           titleBuilder: (context, ref) => const Text('Select'),
           iconBuilder: (context, ref) => switch (selectionMode) {

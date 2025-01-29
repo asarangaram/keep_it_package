@@ -64,12 +64,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             debugMessage: 'GalleryView',
           ),
           errorBuilder: errorBuilder,
-          onGroupItems: (
-            entities, {
-            required GroupTypes method,
-            required groupAsCollection,
-          }) async =>
-              {'Media': entities.group(3)},
           selectionMode: onSelectionChanged != null,
           onChangeSelectionMode: ({required bool enable}) {},
           selectionActionsBuilder: null,
