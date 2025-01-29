@@ -10,12 +10,14 @@ import 'wizard_preview.dart';
 
 class SelectAndRestoreMedia extends ConsumerStatefulWidget {
   const SelectAndRestoreMedia({
+    required this.parentIdentifier,
     required this.media,
     required this.type,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
+  final String parentIdentifier;
 
   @override
   ConsumerState<SelectAndRestoreMedia> createState() =>
@@ -157,6 +159,7 @@ class SelectAndRestoreMediaState extends ConsumerState<SelectAndRestoreMedia> {
                 : null,
           ),
           child: WizardPreview(
+            parentIdentifier: widget.parentIdentifier,
             type: widget.type,
             onSelectionChanged: isSelectionMode
                 ? (List<CLMedia> items) {

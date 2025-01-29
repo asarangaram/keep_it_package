@@ -6,11 +6,16 @@ import 'package:store/store.dart';
 
 import '../models/filter/base_filter.dart';
 import '../models/filter/string_filter.dart';
-import '../providers/filters.dart';
+import '../providers/media_filters.dart';
 
 class TextFilterView extends ConsumerStatefulWidget {
-  const TextFilterView({required this.filter, super.key});
+  const TextFilterView({
+    required this.filter,
+    required this.parentIdentifier,
+    super.key,
+  });
   final CLFilter<CLMedia> filter;
+  final String parentIdentifier;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TextFilterViewState();
@@ -32,7 +37,9 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
   }
 
   void updateFilter() {
-    ref.read(filtersProvider.notifier).updateDefautTextSearchFilter(
+    ref
+        .read(mediaFiltersProvider(widget.parentIdentifier).notifier)
+        .updateDefautTextSearchFilter(
           controller.text,
         );
   }

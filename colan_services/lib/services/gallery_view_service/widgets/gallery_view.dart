@@ -1,17 +1,18 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
-import '../../../builders/get_collection_id.dart';
 import '../../../internal/selection_control/selection_control.dart';
 import 'cl_entity_grid_view.dart';
 import 'grouper.dart';
 
 class GalleryView extends StatelessWidget {
   const GalleryView({
+    required this.parentIdentifier,
     required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
@@ -26,6 +27,7 @@ class GalleryView extends StatelessWidget {
     this.filterDisabled = false,
     this.onSelectionChanged,
   });
+  final String parentIdentifier;
   final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
@@ -84,6 +86,7 @@ class GalleryView extends StatelessWidget {
                 required bannersBuilder,
               }) {
                 return GetFilterredMedia(
+                  parentIdentifier: parentIdentifier,
                   errorBuilder: errorBuilder,
                   loadingBuilder: loadingBuilder,
                   incoming: entities,
@@ -149,56 +152,62 @@ class CLEntityGridViewBuilder extends StatefulWidget {
 }
 
 class _CLEntityGridViewBuilderState extends State<CLEntityGridViewBuilder> {
-  late String currTap;
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    currTap = widget.galleryMap.keys.first;
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     if (widget.galleryMap.entries.length == 1) {
       return widget.builder(widget.galleryMap.values.first);
     }
-    return GetActiveCollectionId(
-      builder: (collectionId) {
-        return GetCollection(
-          loadingBuilder: widget.loadingBuilder,
-          errorBuilder: widget.errorBuilder,
-          id: collectionId,
-          builder: (collection) {
-            return Column(
-              children: [
-                ShadTabs(
-                  padding: EdgeInsets.zero,
-                  value: currTap,
-                  // tabBarConstraints: BoxConstraints(maxWidth: 400),
-                  //contentConstraints: BoxConstraints(maxWidth: 400),
-                  onChanged: (val) {
-                    setState(() {
-                      currTap = val;
-                    });
-                  },
-                  tabs: [
-                    for (final k in widget.galleryMap.keys)
-                      ShadTab(
-                        value: k,
-                        child: Text(k),
-                      ),
-                  ],
-                ),
-                Expanded(child: widget.builder(widget.galleryMap[currTap]!)),
+
+    return GetCurrenViewIdentifiers(
+      builder: (viewIdentifier, {required onChangeView}) {
+        final String identifier;
+        if (widget.galleryMap.keys.contains(viewIdentifier)) {
+          identifier = viewIdentifier;
+        } else {
+          identifier = widget.galleryMap.keys.first;
+        }
+        return Column(
+          children: [
+            ShadTabs(
+              padding: EdgeInsets.zero,
+              value: identifier,
+              // tabBarConstraints: BoxConstraints(maxWidth: 400),
+              //contentConstraints: BoxConstraints(maxWidth: 400),
+              onChanged: onChangeView,
+              tabs: [
+                for (final k in widget.galleryMap.keys)
+                  ShadTab(
+                    value: k,
+                    child: Text(k),
+                  ),
               ],
-            );
-          },
+            ),
+            Expanded(child: widget.builder(widget.galleryMap[viewIdentifier]!)),
+          ],
         );
       },
+    );
+  }
+}
+
+final currenViewIdentifiersProvider = StateProvider<String>((ref) {
+  return 'Media';
+});
+
+class GetCurrenViewIdentifiers extends ConsumerWidget {
+  const GetCurrenViewIdentifiers({required this.builder, super.key});
+  final Widget Function(
+    String currenViewIdentifier, {
+    required void Function(String value) onChangeView,
+  }) builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final idString = ref.watch(currenViewIdentifiersProvider);
+    return builder(
+      idString,
+      onChangeView: (val) =>
+          ref.read(currenViewIdentifiersProvider.notifier).state = val,
     );
   }
 }

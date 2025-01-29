@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:store/store.dart';
 
 import '../../view_modifiers/models/view_modifier.dart';
 import 'filter/base_filter.dart';
@@ -9,17 +8,17 @@ import 'filter/string_filter.dart';
 enum MediaAvailability { local, coLan, synced }
 
 @immutable
-class SearchFilters implements ViewModifier {
+class SearchFilters<T> implements ViewModifier {
   const SearchFilters({
     required this.defaultTextSearchFilter,
     this.filters,
     this.editing = false,
   });
-  final List<CLFilter<CLMedia>>? filters;
-  final StringFilter<CLMedia> defaultTextSearchFilter;
+  final List<CLFilter<T>>? filters;
+  final StringFilter<T> defaultTextSearchFilter;
   final bool editing;
   @override
-  bool operator ==(covariant SearchFilters other) {
+  bool operator ==(covariant SearchFilters<T> other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
@@ -32,9 +31,9 @@ class SearchFilters implements ViewModifier {
   int get hashCode =>
       filters.hashCode ^ defaultTextSearchFilter.hashCode ^ editing.hashCode;
 
-  SearchFilters copyWith({
-    StringFilter<CLMedia>? defaultTextSearchFilter,
-    ValueGetter<List<CLFilter<CLMedia>>?>? filters,
+  SearchFilters<T> copyWith({
+    StringFilter<T>? defaultTextSearchFilter,
+    ValueGetter<List<CLFilter<T>>?>? filters,
     bool? editing,
   }) {
     return SearchFilters(
@@ -45,7 +44,7 @@ class SearchFilters implements ViewModifier {
     );
   }
 
-  SearchFilters addFilter(CLFilter<CLMedia> filter) {
+  SearchFilters<T> addFilter(CLFilter<T> filter) {
     /// No filter with same name can be added twice.
     /// First we check if the filter already exists.
     if (filters != null && filters!.map((e) => e.name).contains(filter.name)) {
@@ -56,14 +55,14 @@ class SearchFilters implements ViewModifier {
     return copyWith(filters: () => updated);
   }
 
-  SearchFilters removeFilter(String filterName) {
+  SearchFilters<T> removeFilter(String filterName) {
     if (filters == null) return this;
     return copyWith(
       filters: () => filters!.where((e) => e.name != filterName).toList(),
     );
   }
 
-  SearchFilters updateFilter(
+  SearchFilters<T> updateFilter(
     String filterName,
     String key,
     dynamic value,
@@ -77,7 +76,7 @@ class SearchFilters implements ViewModifier {
     );
   }
 
-  SearchFilters updateDefautTextSearchFilter(
+  SearchFilters<T> updateDefautTextSearchFilter(
     String query,
   ) {
     return copyWith(
@@ -85,19 +84,18 @@ class SearchFilters implements ViewModifier {
     );
   }
 
-  SearchFilters clearFilters() {
+  SearchFilters<T> clearFilters() {
     return copyWith(filters: () => null);
   }
 
-  List<CLFilter<CLMedia>> call() =>
-      filters?.where((e) => e.enabled).toList() ?? [];
+  List<CLFilter<T>> call() => filters?.where((e) => e.enabled).toList() ?? [];
 
-  SearchFilters toggleEdit() => editing ? disableEdit() : enableEdit();
-  SearchFilters enableEdit() => copyWith(
+  SearchFilters<T> toggleEdit() => editing ? disableEdit() : enableEdit();
+  SearchFilters<T> enableEdit() => copyWith(
         editing: true,
         filters: () => filters?.map((e) => e.update('enable', true)).toList(),
       );
-  SearchFilters disableEdit() => copyWith(
+  SearchFilters<T> disableEdit() => copyWith(
         editing: false,
         filters: () => filters?.map((e) => e.update('enable', false)).toList(),
       );
@@ -107,4 +105,16 @@ class SearchFilters implements ViewModifier {
 
   @override
   String get name => 'Filters';
+
+  List<T> apply(List<T> incoming) {
+    var filterred = defaultTextSearchFilter.apply(incoming);
+    if (filters != null) {
+      for (final filter in filters!) {
+        if (filter.enabled) {
+          filterred = filter.apply(filterred);
+        }
+      }
+    }
+    return filterred;
+  }
 }

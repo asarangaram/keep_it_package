@@ -12,6 +12,7 @@ import '../../media_view_service/media_view_service1.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
+    required this.parentIdentifier,
     required this.type,
     required this.onSelectionChanged,
     required this.freezeView,
@@ -20,6 +21,7 @@ class WizardPreview extends ConsumerStatefulWidget {
   final UniversalMediaSource type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
+  final String parentIdentifier;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -54,6 +56,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       ),
       builder: (dbReader) {
         return GalleryView(
+          parentIdentifier: widget.parentIdentifier,
           emptyWidget: const CLText.large('Nothing to show here'),
           entities: media0.entries,
           numColumns: 3,

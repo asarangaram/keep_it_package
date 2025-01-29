@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:store/store.dart';
 
 import '../../view_modifiers/providers/view_modifiers.dart';
 import '../models/filters.dart';
-import '../providers/filters.dart';
 import 'filters_view.dart';
 
 class PopOverMenu extends ConsumerStatefulWidget {
-  const PopOverMenu({super.key, this.parentIdentifier = 'default'});
+  const PopOverMenu({required this.parentIdentifier, super.key});
   final String parentIdentifier;
 
   @override
@@ -26,7 +26,6 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final filters = ref.watch(filtersProvider);
     final popOverMenuItems =
         ref.watch(popOverMenuProvider(widget.parentIdentifier));
     return ShadPopover(
@@ -76,8 +75,11 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
               ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 100),
                 child: switch (popOverMenuItems.currItem) {
-                  SearchFilters _ => FiltersView(
-                      filters: filters.filters,
+                  SearchFilters<CLMedia> _ => FiltersView(
+                      parentIdentifier: widget.parentIdentifier,
+                      filters:
+                          (popOverMenuItems.currItem! as SearchFilters<CLMedia>)
+                              .filters,
                     ),
                   GroupBy _ =>
                     Text(popOverMenuItems.currItem?.name ?? 'unknown'),
@@ -88,10 +90,13 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
           ),
         ),
       ),
-      child: ShadButton.outline(
+      child: ShadButton.ghost(
         onPressed: popoverController.toggle,
-        child: const Badge(
-          child: Icon(LucideIcons.menu),
+        child: Icon(
+          LucideIcons.menu,
+          color: popOverMenuItems.items.any((e) => e.isActive)
+              ? ShadTheme.of(context).colorScheme.destructive
+              : null,
         ),
       ),
     );

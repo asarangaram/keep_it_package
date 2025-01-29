@@ -6,11 +6,16 @@ import 'package:yet_another_date_picker/yet_another_date_picker.dart';
 
 import '../models/filter/base_filter.dart';
 import '../models/filter/ddmmyyyy_filter.dart';
-import '../providers/filters.dart';
+import '../providers/media_filters.dart';
 
 class DDMMYYYYFilterViewRow extends ConsumerWidget {
-  const DDMMYYYYFilterViewRow({required this.filter, super.key});
+  const DDMMYYYYFilterViewRow({
+    required this.filter,
+    required this.identifier,
+    super.key,
+  });
   final CLFilter<CLMedia> filter;
+  final String identifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,7 +25,9 @@ class DDMMYYYYFilterViewRow extends ConsumerWidget {
     return ShadCheckbox(
       value: filter.enabled,
       onChanged: (v) {
-        ref.read(filtersProvider.notifier).updateFilter(filter, 'enable', v);
+        ref
+            .read(mediaFiltersProvider(identifier).notifier)
+            .updateFilter(filter, 'enable', v);
       },
       label: Stack(
         children: [
@@ -33,11 +40,11 @@ class DDMMYYYYFilterViewRow extends ConsumerWidget {
             date: filter.ddmmyyyy ?? DDMMYYYY.fromDateTime(defaultDate),
             onDateChanged: (ddmmyyyy) async {
               ref
-                  .read(filtersProvider.notifier)
+                  .read(mediaFiltersProvider(identifier).notifier)
                   .updateFilter(filter, 'ddmmyyyy', ddmmyyyy);
             },
             onReset: () {
-              ref.read(filtersProvider.notifier).updateFilter(
+              ref.read(mediaFiltersProvider(identifier).notifier).updateFilter(
                     filter,
                     'ddmmyyyy',
                     DDMMYYYY.fromDateTime(defaultDate),

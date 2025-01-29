@@ -7,7 +7,8 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 class KeepItTopBar extends ConsumerWidget {
-  const KeepItTopBar({super.key});
+  const KeepItTopBar({required this.parentIdentifier, super.key});
+  final String parentIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,12 +55,16 @@ class KeepItTopBar extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const PopOverMenu(),
+                PopOverMenu(
+                  parentIdentifier: parentIdentifier,
+                ),
                 const ExtraActions(),
                 const SizedBox(width: 8),
               ],
             ),
-            const TextFilterBox(),
+            TextFilterBox(
+              parentIdentifier: parentIdentifier,
+            ),
           ],
         );
       },

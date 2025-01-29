@@ -12,6 +12,7 @@ import 'wizard_preview.dart';
 
 class SelectAndKeepMedia extends ConsumerStatefulWidget {
   const SelectAndKeepMedia({
+    required this.parentIdentifier,
     required this.media,
     required this.type,
     required this.galleryMap,
@@ -19,6 +20,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
+  final String parentIdentifier;
 
   final List<GalleryGroupCLEntity<CLMedia>> galleryMap;
 
@@ -196,6 +198,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       : null,
                 ),
           child: WizardPreview(
+            parentIdentifier: widget.parentIdentifier,
             type: widget.type,
             onSelectionChanged: isSelectionMode
                 ? (List<CLMedia> items) {

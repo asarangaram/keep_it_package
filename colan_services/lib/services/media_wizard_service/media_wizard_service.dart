@@ -66,6 +66,7 @@ class MediaWizardService extends ConsumerWidget {
     if (type == UniversalMediaSource.deleted) {
       return FullscreenLayout(
         child: SelectAndRestoreMedia(
+          parentIdentifier: 'Wizard ${type.name}',
           media: media,
           type: type,
         ),
@@ -74,6 +75,7 @@ class MediaWizardService extends ConsumerWidget {
       final galleryMap = media.entries.groupByDate();
       return FullscreenLayout(
         child: SelectAndKeepMedia(
+          parentIdentifier: 'Wizard ${type.name}',
           media: media,
           type: type,
           galleryMap: galleryMap,

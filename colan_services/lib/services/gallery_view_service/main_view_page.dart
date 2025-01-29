@@ -18,8 +18,11 @@ import 'widgets/when_empty.dart';
 import 'widgets/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
-  const GalleryViewService({super.key});
-
+  const GalleryViewService({
+    super.key,
+    this.parentIdentifier = 'MainView',
+  });
+  final String parentIdentifier;
   @override
   Widget build(BuildContext context) {
     Widget errorBuilder(Object e, StackTrace st) => WhenError(
@@ -33,7 +36,9 @@ class GalleryViewService extends StatelessWidget {
             bottom: false,
             child: Column(
               children: [
-                const KeepItTopBar(),
+                KeepItTopBar(
+                  parentIdentifier: parentIdentifier,
+                ),
                 Expanded(
                   child: GetStore(
                     errorBuilder: errorBuilder,
@@ -50,6 +55,7 @@ class GalleryViewService extends StatelessWidget {
                           ),
                           errorBuilder: errorBuilder,
                           builder: (clmedias) => KeepItMainGrid(
+                            parentIdentifier: parentIdentifier,
                             clmedias: clmedias,
                             loadingBuilder: () => CLLoader.widget(
                               debugMessage: 'KeepItMainGrid',
@@ -75,11 +81,13 @@ class GalleryViewService extends StatelessWidget {
 
 class KeepItMainGrid extends ConsumerWidget {
   const KeepItMainGrid({
+    required this.parentIdentifier,
     required this.clmedias,
     required this.loadingBuilder,
     required this.errorBuilder,
     super.key,
   });
+  final String parentIdentifier;
   final CLMedias clmedias;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
@@ -93,6 +101,7 @@ class KeepItMainGrid extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (theStore) {
         return GalleryView(
+          parentIdentifier: parentIdentifier,
           entities: clmedias.entries,
           loadingBuilder: loadingBuilder,
           errorBuilder: errorBuilder,
