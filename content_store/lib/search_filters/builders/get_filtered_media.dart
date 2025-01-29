@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../providers/media_filters.dart';
@@ -49,14 +50,9 @@ class GetFilterredMedia extends ConsumerWidget {
           : null;
       final banners = [
         if (topMsg != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: ColoredBox(
-              color: Theme.of(context).colorScheme.onSurface,
-              child: CLText.tiny(
-                topMsg,
-                color: Theme.of(context).colorScheme.surfaceBright,
-              ),
+          ShadBadge(
+            child: Text(
+              topMsg,
             ),
           ),
       ];

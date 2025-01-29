@@ -9,7 +9,7 @@ import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 import '../../../internal/selection_control/selection_control.dart';
 import 'cl_entity_grid_view.dart';
 
-class GalleryView extends StatelessWidget {
+class GalleryView extends ConsumerWidget {
   const GalleryView({
     required this.parentIdentifier,
     required this.entities,
@@ -21,6 +21,7 @@ class GalleryView extends StatelessWidget {
     required this.onChangeSelectionMode,
     required this.emptyWidget,
     required this.selectionActionsBuilder,
+    required this.onClose,
     super.key,
     this.filterDisabled = false,
     this.onSelectionChanged,
@@ -42,8 +43,9 @@ class GalleryView extends StatelessWidget {
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filterDisabled;
+  final VoidCallback? onClose;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       switchInCurve: Curves.easeInOut,
@@ -56,6 +58,7 @@ class GalleryView extends StatelessWidget {
       child: entities.isEmpty
           ? emptyWidget
           : SelectionControl(
+              onClose: onClose,
               selectionMode: selectionMode,
               onChangeSelectionMode: onChangeSelectionMode,
               selectionActionsBuilder: selectionActionsBuilder,
@@ -94,7 +97,7 @@ class GalleryView extends StatelessWidget {
                     ) bannersBuilder,
                   }) {
                     return GetGroupedMedia(
-                      parentIdentifier: parentIdentifier, 
+                      parentIdentifier: parentIdentifier,
                       errorBuilder: errorBuilder,
                       loadingBuilder: loadingBuilder,
                       incoming: filterred,
@@ -148,10 +151,6 @@ class CLEntityGridViewBuilder extends StatefulWidget {
 class _CLEntityGridViewBuilderState extends State<CLEntityGridViewBuilder> {
   @override
   Widget build(BuildContext context) {
-    if (widget.galleryMap.entries.length == 1) {
-      return widget.builder(widget.galleryMap.values.first);
-    }
-
     return GetCurrenViewIdentifiers(
       builder: (viewIdentifier, {required onChangeView}) {
         final String identifier;
@@ -159,24 +158,29 @@ class _CLEntityGridViewBuilderState extends State<CLEntityGridViewBuilder> {
           identifier = viewIdentifier;
         } else {
           identifier = widget.galleryMap.keys.first;
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            onChangeView(identifier);
+          });
         }
+
         return Column(
           children: [
-            ShadTabs(
-              padding: EdgeInsets.zero,
-              value: identifier,
-              // tabBarConstraints: BoxConstraints(maxWidth: 400),
-              //contentConstraints: BoxConstraints(maxWidth: 400),
-              onChanged: onChangeView,
-              tabs: [
-                for (final k in widget.galleryMap.keys)
-                  ShadTab(
-                    value: k,
-                    child: Text(k),
-                  ),
-              ],
-            ),
-            Expanded(child: widget.builder(widget.galleryMap[viewIdentifier]!)),
+            if (widget.galleryMap.entries.length > 1)
+              ShadTabs(
+                padding: EdgeInsets.zero,
+                value: identifier,
+                // tabBarConstraints: BoxConstraints(maxWidth: 400),
+                //contentConstraints: BoxConstraints(maxWidth: 400),
+                onChanged: onChangeView,
+                tabs: [
+                  for (final k in widget.galleryMap.keys)
+                    ShadTab(
+                      value: k,
+                      child: Text(k),
+                    ),
+                ],
+              ),
+            Expanded(child: widget.builder(widget.galleryMap[identifier]!)),
           ],
         );
       },

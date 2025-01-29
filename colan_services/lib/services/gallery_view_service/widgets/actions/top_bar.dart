@@ -7,6 +7,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import '../gallery_view.dart';
 import '../popover_menu.dart';
 
 class KeepItTopBar extends ConsumerWidget {
@@ -82,13 +83,21 @@ class SelectionControl extends ConsumerWidget {
     final identifier = ref.watch(mainPageIdentifierProvider);
     final selectionMode = ref.watch(selectModeProvider(identifier));
 
-    return ShadButton.ghost(
-      padding: const EdgeInsets.only(right: 8),
-      onPressed: () {
-        ref.watch(selectModeProvider(identifier).notifier).state =
-            !selectionMode;
+    return GetCurrenViewIdentifiers(
+      builder: (viewIdentifier, {required onChangeView}) {
+        if (viewIdentifier != 'Media') {
+          return const SizedBox.shrink();
+        } else {
+          return ShadButton.ghost(
+            padding: const EdgeInsets.only(right: 8),
+            onPressed: () {
+              ref.read(selectModeProvider(identifier).notifier).state =
+                  !selectionMode;
+            },
+            child: const Icon(LucideIcons.listChecks),
+          );
+        }
       },
-      child: const Icon(LucideIcons.listChecks),
     );
   }
 }

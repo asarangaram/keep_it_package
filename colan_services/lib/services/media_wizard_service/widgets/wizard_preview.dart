@@ -65,6 +65,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           ),
           errorBuilder: errorBuilder,
           selectionMode: onSelectionChanged != null,
+          onClose: null,
           onChangeSelectionMode: ({required bool enable}) {},
           selectionActionsBuilder: null,
           onSelectionChanged: onSelectionChanged == null

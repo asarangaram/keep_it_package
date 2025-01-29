@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../builders/get_selection_control.dart';
@@ -24,6 +25,7 @@ class SelectionControl extends StatelessWidget {
     required this.onChangeSelectionMode,
     required this.selectionActionsBuilder,
     required this.onSelectionChanged,
+    required this.onClose,
     super.key,
   });
   final List<CLEntity> incoming;
@@ -55,6 +57,7 @@ class SelectionControl extends StatelessWidget {
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
+  final VoidCallback? onClose;
   @override
   Widget build(BuildContext context) {
     if (!selectionMode) {
@@ -78,6 +81,7 @@ class SelectionControl extends StatelessWidget {
           selectionActionsBuilder: selectionActionsBuilder,
           onSelectionChanged: onSelectionChanged,
           onUpdateSelection: onUpdateSelection,
+          onClose: onClose,
         );
       },
     );
@@ -94,6 +98,7 @@ class SelectionContol0 extends StatefulWidget {
     required this.selectionActionsBuilder,
     required this.onSelectionChanged,
     required this.onUpdateSelection,
+    required this.onClose,
     super.key,
   });
   final CLSelector selector;
@@ -122,6 +127,7 @@ class SelectionContol0 extends StatefulWidget {
   final void Function(List<CLEntity>)? onSelectionChanged;
   final void Function(List<CLEntity>? candidates, {bool? deselect})
       onUpdateSelection;
+  final VoidCallback? onClose;
   @override
   State<StatefulWidget> createState() => _SelectionContol0State();
 }
@@ -174,6 +180,7 @@ class _SelectionContol0State extends State<SelectionContol0> {
           bannersBuilder: (context, galleryMap) {
             return [
               SelectionBanner(
+                onClose: widget.onClose,
                 selector: widget.selector,
                 galleryMap: galleryMap,
                 onUpdateSelection: widget.onUpdateSelection,
@@ -211,6 +218,7 @@ class SelectionBanner extends StatelessWidget {
   const SelectionBanner({
     required this.onUpdateSelection,
     required this.selector,
+    required this.onClose,
     super.key,
     this.galleryMap = const [],
   });
@@ -218,6 +226,7 @@ class SelectionBanner extends StatelessWidget {
   final List<GalleryGroupCLEntity> galleryMap;
   final void Function(List<CLEntity>? candidates, {bool? deselect})
       onUpdateSelection;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +293,13 @@ class SelectionBanner extends StatelessWidget {
                   ],
                 ),
               ),
-          ],
+          ] else if (onClose != null)
+            ShadButton.secondary(
+              onPressed: onClose,
+              child: const CLText.small(
+                'Done',
+              ),
+            ),
         ],
       ),
     );

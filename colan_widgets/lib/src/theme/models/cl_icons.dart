@@ -130,9 +130,11 @@ class CLIcons {
   final imageDelete = Icons.delete_rounded;
   final audioMuted = MdiIcons.volumeOff;
   final audioUnmuted = MdiIcons.volumeHigh;
-  final itemSelected = Icons.check;
+  final itemSelected = LucideIcons.squareCheckBig;
+  final itemSelected2 = LucideIcons.check;
+  final itemNotSelected = Icons.square_outlined;
   final itemPartiallySelected = Icons.indeterminate_check_box_outlined;
-  final itemNotSelected = Icons.check_box_outline_blank;
+
   final error = Icons.warning;
   final insertItem = Icons.add;
   final deleteItem = Icons.delete;

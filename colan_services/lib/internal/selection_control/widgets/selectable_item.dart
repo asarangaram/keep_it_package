@@ -32,7 +32,7 @@ class SelectableItem extends StatelessWidget {
               child: Container(
                 decoration: decoration,
                 child: isSelected
-                    ? Center(child: OverlayIcon(clIcons.itemSelected))
+                    ? Center(child: OverlayIcon(clIcons.itemSelected2))
                     : null,
               ),
             ),

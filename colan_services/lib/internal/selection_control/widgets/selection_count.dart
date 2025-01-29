@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SelectionCountView extends StatelessWidget {
   const SelectionCountView({
@@ -23,7 +24,7 @@ class SelectionCountView extends StatelessWidget {
             child: child,
           ),
           if (buttonLabel != null)
-            ElevatedButton(
+            ShadButton.secondary(
               onPressed: onPressed,
               child: CLText.small(
                 buttonLabel!,
