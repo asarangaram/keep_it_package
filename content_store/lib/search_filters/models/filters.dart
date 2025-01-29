@@ -2,15 +2,14 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
+import '../../view_modifiers/models/view_modifier.dart';
 import 'filter/base_filter.dart';
-import 'filter/ddmmyyyy_filter.dart';
-import 'filter/enum_filter.dart';
 import 'filter/string_filter.dart';
 
 enum MediaAvailability { local, coLan, synced }
 
 @immutable
-class SearchFilters {
+class SearchFilters implements ViewModifier {
   const SearchFilters({
     required this.defaultTextSearchFilter,
     this.filters,
@@ -90,10 +89,6 @@ class SearchFilters {
     return copyWith(filters: () => null);
   }
 
-  List<String> get availableFilters {
-    return filters?.map((e) => e.name).toList() ?? [];
-  }
-
   List<CLFilter<CLMedia>> call() =>
       filters?.where((e) => e.enabled).toList() ?? [];
 
@@ -107,59 +102,9 @@ class SearchFilters {
         filters: () => filters?.map((e) => e.update('enable', false)).toList(),
       );
 
-  static final List<CLFilter<CLMedia>> allFilters = [
-    EnumFilter<CLMedia, CLMediaType>(
-      name: 'Search By MediaType',
-      labels: {
-        for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
-      },
-      fieldSelector: (media) => media.type,
-      enabled: true,
-    ),
-    EnumFilter<CLMedia, MediaAvailability>(
-      name: 'Search By Location',
-      labels: {
-        for (var e in MediaAvailability.values) e: e.name,
-      },
-      fieldSelector: (media) {
-        if (media.hasServerUID && media.isMediaCached) {
-          return MediaAvailability.synced;
-        } else if (media.hasServerUID) {
-          return MediaAvailability.coLan;
-        }
-        return MediaAvailability.local;
-      },
-      enabled: true,
-    ),
-    DDMMYYYYFilter(
-      name: 'Search by Date',
-      fieldSelector: (media) => media.createdDate,
-      enabled: true,
-    ),
-    // Consider to add Collection name, notes and tags
-    /* StringFilter(
-      name: 'TextSearch',
-      fieldSelector: (media) => [media.name, media.ref].join(' '),
-      query: '',
-      enabled: true,
-    ), */
-  ];
-  static StringFilter<CLMedia> textSearchFilter = StringFilter(
-    name: 'TextSearch',
-    fieldSelector: (media) => [media.name, media.ref].join(' ').toLowerCase(),
-    query: '',
-    enabled: true,
-  );
+  @override
+  bool get isActive => filters?.any((e) => e.isActive) ?? false;
 
-  Map<String, CLFilter<CLMedia>> get allFiltersMap =>
-      {for (final e in allFilters) e.name: e};
-
-  Map<String, CLFilter<CLMedia>> get unusedFiltersMap => Map.fromEntries(
-        allFiltersMap.entries
-            .where((entry) => !availableFilters.contains(entry.key)),
-      );
-
-  List<CLFilter<CLMedia>> get unusedFilters => List.from(
-        allFilters.where((e) => !availableFilters.contains(e.name)),
-      );
+  @override
+  String get name => 'Filters';
 }

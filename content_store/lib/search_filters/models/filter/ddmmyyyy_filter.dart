@@ -15,6 +15,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
   @override
   List<T> apply(List<T> items) {
     if (!enabled) return items;
+    if (ddmmyyyy == null) return items;
     final filterred = items.where((item) {
       final date = fieldSelector(item);
       if (ddmmyyyy == null) {
@@ -43,7 +44,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
       final ddmmyyyy = value as DDMMYYYY;
       updated = DDMMYYYYFilter<T>(
         fieldSelector: fieldSelector,
-        enabled: enabled,
+        enabled: true,
         name: name,
         ddmmyyyy: ddmmyyyy,
       );
@@ -56,7 +57,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
           fieldSelector: fieldSelector,
           enabled: enable,
           name: name,
-          ddmmyyyy: ddmmyyyy ?? DDMMYYYY.fromDateTime(DateTime(2024, 11, 27)),
+          ddmmyyyy: ddmmyyyy ?? DDMMYYYY.fromDateTime(DateTime.now()),
         );
       }
     } else {
@@ -82,4 +83,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
         if (enabled) '$ddmmyyyy',
         '[$hashCode]',
       ].join(' ');
+
+  @override
+  bool get isActive => enabled && ddmmyyyy != null;
 }

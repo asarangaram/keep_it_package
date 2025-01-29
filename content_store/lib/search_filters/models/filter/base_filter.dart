@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 
 enum FilterType {
@@ -33,6 +32,8 @@ abstract class CLFilter<T> {
 
   @override
   int get hashCode => name.hashCode ^ filterType.hashCode ^ enabled.hashCode;
+
+  bool get isActive;
 }
 
 @immutable

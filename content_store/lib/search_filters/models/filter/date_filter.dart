@@ -42,4 +42,7 @@ class DateFilter<T> extends BaseFilter<T, DateTime> {
 
   @override
   int get hashCode => startDate.hashCode ^ endDate.hashCode ^ super.hashCode;
+
+  @override
+  bool get isActive => throw UnimplementedError();
 }

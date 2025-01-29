@@ -1,4 +1,4 @@
-import 'dart:developer' as dev;
+/* import 'dart:developer' as dev; */
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +8,7 @@ import '../../search_filters/builders/get_filtered_media.dart';
 import 'get_db_reader.dart';
 import 'w3_get_from_store.dart';
 
-void _log(
+/* void _log(
   dynamic message, {
   int level = 0,
   Object? error,
@@ -22,7 +22,7 @@ void _log(
     stackTrace: stackTrace,
     name: name ?? 'Media Builder',
   );
-}
+} */
 
 class GetMedia extends ConsumerWidget {
   const GetMedia({

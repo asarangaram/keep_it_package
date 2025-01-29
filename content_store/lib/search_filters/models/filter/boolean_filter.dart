@@ -35,4 +35,7 @@ class BooleanFilter<T> extends BaseFilter<T, bool> {
 
   @override
   int get hashCode => value.hashCode ^ super.hashCode;
+
+  @override
+  bool get isActive => throw UnimplementedError();
 }

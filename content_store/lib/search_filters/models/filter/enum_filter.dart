@@ -123,4 +123,7 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
 
   @override
   String toString() => 'EnumFilter(selectedValues: $selectedValues)';
+
+  @override
+  bool get isActive => enabled && selectedValues.isNotEmpty;
 }

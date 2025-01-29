@@ -60,4 +60,7 @@ class StringFilter<T> extends BaseFilter<T, String> {
 
   @override
   int get hashCode => query.hashCode ^ super.hashCode;
+
+  @override
+  bool get isActive => enabled && query.isNotEmpty;
 }
