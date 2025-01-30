@@ -87,10 +87,6 @@ class MediaView extends StatelessWidget {
       return MediaPreviewService(
         media: media,
         parentIdentifier: parentIdentifier,
-        autoStart: autoStart,
-        autoPlay: autoPlay,
-        onLockPage: onLockPage,
-        isLocked: isLocked,
       );
     }
     if (errorBuilder == null || loadingBuilder == null) {
@@ -166,8 +162,6 @@ class MediaView0 extends ConsumerWidget {
                         child: switch (media.type) {
                           CLMediaType.image => ImageViewer.guesture(
                               uri: mediaUri!,
-                              autoStart: autoStart,
-                              autoPlay: autoPlay,
                               onLockPage: onLockPage,
                               isLocked: isLocked,
                             ),
@@ -188,10 +182,6 @@ class MediaView0 extends ConsumerWidget {
                                 builder: (previewUri) {
                                   return ImageViewer.basic(
                                     uri: previewUri,
-                                    autoStart: autoStart,
-                                    autoPlay: autoPlay,
-                                    onLockPage: onLockPage,
-                                    isLocked: isLocked,
                                   );
                                 },
                               ),

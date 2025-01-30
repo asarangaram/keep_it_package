@@ -10,238 +10,255 @@ import 'package:store/store.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 import '../media_wizard_service/media_wizard_service.dart';
 
+@immutable
+class ContextMenuItems {
+  const ContextMenuItems({
+    required this.onEdit,
+    required this.onMove,
+    required this.onShare,
+    required this.onPin,
+    required this.onDelete,
+    required this.onDeleteLocalCopy,
+    required this.onKeepOffline,
+    required this.onUpload,
+    required this.onDeleteServerCopy,
+  });
+  factory ContextMenuItems.ofMedia(
+    BuildContext context,
+    WidgetRef ref, {
+    required CLMedia media,
+    required Collection parentCollection,
+    required bool hasOnlineService,
+    required StoreUpdater theStore,
+    ValueGetter<Future<bool?> Function()?>? onEdit,
+    ValueGetter<Future<bool?> Function()?>? onMove,
+    ValueGetter<Future<bool?> Function()?>? onShare,
+    ValueGetter<Future<bool?> Function()?>? onPin,
+    ValueGetter<Future<bool?> Function()?>? onDelete,
+    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
+    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
+    ValueGetter<Future<bool?> Function()?>? onUpload,
+    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
+  }) {
+    final ac = ActionControl.onGetMediaActionControl(media);
+
+    final onMove0 = ac.onMove(
+      onMove != null
+          ? onMove()
+          : () => MediaWizardService.openWizard(
+                context,
+                ref,
+                CLSharedMedia(
+                  entries: [media],
+                  type: UniversalMediaSource.move,
+                ),
+              ),
+    );
+
+    final onEdit0 = ac.onEdit(
+      onEdit != null
+          ? onEdit()
+          : () async {
+              await PageManager.of(context).openEditor(media);
+              return true;
+            },
+    );
+
+    final onShare0 = ac.onShare(
+      onShare != null
+          ? onShare()
+          : () => theStore.mediaUpdater.share(context, [media]),
+    );
+    final onDelete0 = ac.onDelete(
+      onDelete != null
+          ? onDelete()
+          : () async => theStore.mediaUpdater.delete(media.id!),
+    );
+    final onPin0 = ac.onPin(
+      onPin != null
+          ? onPin()
+          : media.isMediaLocallyAvailable
+              ? () async => theStore.mediaUpdater.pinToggleMultiple(
+                    {media.id},
+                    onGetPath: (media) {
+                      if (media.isMediaLocallyAvailable) {
+                        return theStore.directories.getMediaAbsolutePath(media);
+                      }
+
+                      return null;
+                    },
+                  )
+              : null,
+    );
+    final canSync = hasOnlineService;
+    final canDeleteLocalCopy = canSync &&
+        parentCollection.haveItOffline &&
+        media.hasServerUID &&
+        media.isMediaCached;
+    final haveItOffline = switch (media.haveItOffline) {
+      null => parentCollection.haveItOffline,
+      true => true,
+      false => false
+    };
+    final canDownload =
+        canSync && media.hasServerUID && !media.isMediaCached && haveItOffline;
+
+    final onDeleteLocalCopy0 = canDeleteLocalCopy
+        ? onDeleteLocalCopy != null
+            ? onDeleteLocalCopy()
+            : () async =>
+                ref.read(serverProvider.notifier).onDeleteMediaLocalCopy(media)
+        : null;
+    final onKeepOffline0 = canDownload
+        ? onKeepOffline != null
+            ? onKeepOffline()
+            : () async =>
+                ref.read(serverProvider.notifier).onKeepMediaOffline(media)
+        : null;
+
+    final onUpload0 = onUpload != null ? onUpload() : null;
+    final onDeleteServerCopy0 =
+        onDeleteServerCopy != null ? onDeleteServerCopy() : null;
+
+    return ContextMenuItems(
+      onEdit:
+          CLMenuItem(title: 'Edit', icon: clIcons.imageEdit, onTap: onEdit0),
+      onMove:
+          CLMenuItem(title: 'Move', icon: clIcons.imageMove, onTap: onMove0),
+      onShare:
+          CLMenuItem(title: 'Share', icon: clIcons.imageShare, onTap: onShare0),
+      onPin: CLMenuItem(
+        title: media.pin != null ? 'Remove Pin' : 'Pin',
+        icon: media.pin != null ? clIcons.unPin : clIcons.pin,
+        onTap: onPin0,
+      ),
+      onDelete: CLMenuItem(
+        title: 'Delete',
+        icon: clIcons.imageDelete,
+        onTap: onDelete0,
+      ),
+      onDeleteLocalCopy: CLMenuItem(
+        title: 'Remove downloads',
+        icon: Icons.download_done_sharp,
+        onTap: onDeleteLocalCopy0,
+      ),
+      onKeepOffline: CLMenuItem(
+        title: 'Download',
+        icon: Icons.download_sharp,
+        onTap: onKeepOffline0,
+      ),
+      onUpload:
+          CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload0),
+      onDeleteServerCopy: CLMenuItem(
+        title: 'Permanently Delete',
+        icon: Icons.remove,
+        onTap: onDeleteServerCopy0,
+      ),
+    );
+  }
+  final CLMenuItem onEdit;
+  final CLMenuItem onMove;
+  final CLMenuItem onShare;
+  final CLMenuItem onPin;
+  final CLMenuItem onDelete;
+  final CLMenuItem onDeleteLocalCopy;
+  final CLMenuItem onKeepOffline;
+  final CLMenuItem onUpload;
+  final CLMenuItem onDeleteServerCopy;
+}
+
+extension MenuItemToUI on CLMenuItem {
+  PullDownMenuItem get pullDownMenuItem {
+    return PullDownMenuItem(
+      onTap: onTap,
+      enabled: onTap != null,
+      title: title,
+      icon: icon,
+      //iconColor: Colors.red,
+      //isDestructive: true,
+    );
+  }
+}
+
 class MediaMenu extends ConsumerWidget {
   const MediaMenu({
     required this.child,
     required this.media,
+    required this.parentCollection,
     super.key,
-    this.onDelete,
-    this.onEdit,
-    this.onMove,
-    this.onShare,
     this.onTap,
-    this.onPin,
-    this.onUpload,
-    this.onKeepOffline,
-    this.onDeleteLocalCopy,
-    this.onDeleteServerCopy,
-    this.downloadStatusWidget,
+    this.contextMenu,
   });
   final CLMedia media;
-
+  final Collection parentCollection;
   final Widget child;
-  final ValueGetter<Future<bool?> Function()?>? onEdit;
-  final Widget? downloadStatusWidget;
+  final ContextMenuItems? contextMenu;
 
-  final ValueGetter<Future<bool?> Function()?>? onMove;
-  final ValueGetter<Future<bool?> Function()?>? onShare;
   final Future<bool?> Function()? onTap;
-  final ValueGetter<Future<bool?> Function()?>? onPin;
-
-  final ValueGetter<Future<bool?> Function()?>? onDelete;
-  final ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy;
-  final ValueGetter<Future<bool?> Function()?>? onKeepOffline;
-
-  final ValueGetter<Future<bool?> Function()?>? onUpload;
-  final ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStoreUpdater(
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-      },
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetStoreUpdater',
-      ),
-      builder: (theStore) {
-        final canSync =
-            ref.watch(serverProvider.select((server) => server.canSync));
-        final ac = ActionControl.onGetMediaActionControl(media);
-
-        final onMove = ac.onMove(
-          this.onMove != null
-              ? this.onMove!()
-              : () => MediaWizardService.openWizard(
-                    context,
-                    ref,
-                    CLSharedMedia(
-                      entries: [media],
-                      type: UniversalMediaSource.move,
-                    ),
-                  ),
-        );
-
-        final onEdit = ac.onEdit(
-          this.onEdit != null
-              ? this.onEdit!()
-              : () async {
-                  await PageManager.of(context).openEditor(media);
-                  return true;
-                },
-        );
-
-        final onShare = ac.onShare(
-          this.onShare != null
-              ? this.onShare!()
-              : () => theStore.mediaUpdater.share(context, [media]),
-        );
-        final onDelete = ac.onDelete(
-          this.onDelete != null
-              ? this.onDelete!()
-              : () async => theStore.mediaUpdater.delete(media.id!),
-        );
-        final onPin = ac.onPin(
-          this.onPin != null
-              ? this.onPin!()
-              : media.isMediaLocallyAvailable
-                  ? () async => theStore.mediaUpdater.pinToggleMultiple(
-                        {media.id},
-                        onGetPath: (media) {
-                          if (media.isMediaLocallyAvailable) {
-                            return theStore.directories
-                                .getMediaAbsolutePath(media);
-                          }
-
-                          return null;
-                        },
-                      )
-                  : null,
-        );
-
-        return GetCollection(
-          id: media.collectionId,
-          loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GetCollection',
+    if (contextMenu == null) {
+      return GestureDetector(
+        onTap: onTap,
+        child: child,
+      );
+    } else {
+      final menu = contextMenu!;
+      return PullDownButton(
+        itemBuilder: (context) => [
+          PullDownMenuHeader(
+            title: media.name,
+            leadingBuilder: (context, constraints) {
+              return SizedBox.square(
+                dimension: 24,
+                child: media.serverUID == null
+                    ? Image.asset('assets/icon/not_on_server.png')
+                    : Image.asset(
+                        'assets/icon/cloud_on_lan_128px_color.png',
+                      ),
+              );
+            },
           ),
-          errorBuilder: (e, st) => Text(e.toString()),
-          builder: (collection0) {
-            final collection = collection0!;
-
-            final canDeleteLocalCopy = canSync &&
-                collection.haveItOffline &&
-                media.hasServerUID &&
-                media.isMediaCached;
-            final haveItOffline = switch (media.haveItOffline) {
-              null => collection.haveItOffline,
-              true => true,
-              false => false
-            };
-            final canDownload = canSync &&
-                media.hasServerUID &&
-                !media.isMediaCached &&
-                haveItOffline;
-
-            final onDeleteLocalCopy = canDeleteLocalCopy
-                ? this.onDeleteLocalCopy != null
-                    ? this.onDeleteLocalCopy!()
-                    : () async => ref
-                        .read(serverProvider.notifier)
-                        .onDeleteMediaLocalCopy(media)
-                : null;
-            final onKeepOffline = canDownload
-                ? this.onKeepOffline != null
-                    ? this.onKeepOffline!()
-                    : () async => ref
-                        .read(serverProvider.notifier)
-                        .onKeepMediaOffline(media)
-                : null;
-            return PullDownButton(
-              itemBuilder: (context) => [
-                PullDownMenuHeader(
-                  title: media.name,
-                  leadingBuilder: (context, constraints) {
-                    return SizedBox.square(
-                      dimension: 24,
-                      child: media.serverUID == null
-                          ? Image.asset('assets/icon/not_on_server.png')
-                          : Image.asset(
-                              'assets/icon/cloud_on_lan_128px_color.png',
-                            ),
-                    );
-                  },
-                ),
-
-                //if (downloadStatusWidget != null)
-
-                PullDownMenuActionsRow.medium(
-                  items: [
-                    PullDownMenuItem(
-                      onTap: onDelete,
-                      enabled: onDelete != null,
-                      title: 'Delete',
-                      icon: clIcons.imageDelete,
-                      //iconColor: Colors.red,
-                      isDestructive: true,
-                    ),
-                    PullDownMenuItem(
-                      onTap: onMove,
-                      enabled: onMove != null,
-                      title: 'Move',
-                      icon: clIcons.imageMove,
-                    ),
-                  ],
-                ),
-                if (onEdit != null || onPin != null || onShare != null)
-                  PullDownMenuActionsRow.small(
-                    items: [
-                      PullDownMenuItem(
-                        onTap: onEdit,
-                        enabled: onEdit != null,
-                        title: 'Edit',
-                        icon: clIcons.imageEdit,
-                      ),
-                      PullDownMenuItem(
-                        onTap: onPin,
-                        enabled: onPin != null,
-                        title: 'Pin',
-                        icon: media.pin != null ? clIcons.unPin : clIcons.pin,
-                      ),
-                      PullDownMenuItem(
-                        onTap: onShare,
-                        enabled: onShare != null,
-                        title: 'Share',
-                        icon: clIcons.imageShare,
-                      ),
-                    ],
-                  ),
-
-                if (canDeleteLocalCopy)
-                  PullDownMenuItem(
-                    onTap: onDeleteLocalCopy,
-                    title: 'Remove downloads',
-                    subtitle: 'Freeup space on this device',
-                    icon: Icons.download_done_sharp,
-                  ),
-                if (canDownload)
-                  PullDownMenuItem(
-                    onTap: onKeepOffline,
-                    title: 'Download',
-                    subtitle: 'To view offline',
-                    icon: Icons.download_sharp,
-                  ),
-
-                PullDownMenuTitle(
-                  title: MapInfo(
-                    media.toMapForDisplay(),
-                    title: 'Details',
-                  ),
-                ),
+          if (menu.onDelete.onTap != null || menu.onMove.onTap != null)
+            PullDownMenuActionsRow.medium(
+              items: [
+                menu.onDelete.pullDownMenuItem,
+                menu.onMove.pullDownMenuItem,
               ],
-              buttonAnchor: PullDownMenuAnchor.center,
-              buttonBuilder: (context, showMenu) {
-                return GestureDetector(
-                  onTap: onTap,
-                  onSecondaryTap: showMenu,
-                  onLongPress: showMenu,
-                  child: child,
-                );
-              },
-            );
-          },
-        );
-      },
-    );
+            ),
+          if (menu.onEdit.onTap != null ||
+              menu.onPin.onTap != null ||
+              menu.onShare.onTap != null)
+            PullDownMenuActionsRow.small(
+              items: [
+                menu.onEdit.pullDownMenuItem,
+                menu.onPin.pullDownMenuItem,
+                menu.onShare.pullDownMenuItem,
+              ],
+            ),
+          if (menu.onDeleteLocalCopy.onTap != null)
+            menu.onDeleteLocalCopy.pullDownMenuItem,
+          if (menu.onKeepOffline.onTap != null)
+            menu.onKeepOffline.pullDownMenuItem,
+          PullDownMenuTitle(
+            title: MapInfo(
+              media.toMapForDisplay(),
+              title: 'Details',
+            ),
+          ),
+        ],
+        buttonAnchor: PullDownMenuAnchor.center,
+        buttonBuilder: (context, showMenu) {
+          return GestureDetector(
+            onTap: onTap,
+            onSecondaryTap: showMenu,
+            onLongPress: showMenu,
+            child: child,
+          );
+        },
+      );
+    }
   }
 }
 

@@ -7,6 +7,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import 'package:store/store.dart';
 
+import '../quick_menu_service/media_menu.dart';
 import 'builders/available_media.dart';
 
 import 'providers/active_collection.dart';
@@ -185,16 +186,34 @@ class KeepItMainGrid extends ConsumerWidget {
                       .state = item.id;
                 },
               ),
-            CLMedia _ => MediaAsFile(
-                media: item,
-                parentIdentifier: viewIdentifier.toString(),
-                onTap: () async {
-                  await PageManager.of(context).openMedia(
-                    item.id!,
-                    collectionId: item.collectionId,
+            CLMedia _ => GetCollection(
+                id: item.collectionId,
+                loadingBuilder: () => CLLoader.widget(debugMessage: 'GetMedia'),
+                errorBuilder: (p0, p1) =>
+                    const Center(child: Text('getMedia Error')),
+                builder: (parentCollection) {
+                  final canSync = ref
+                      .watch(serverProvider.select((server) => server.canSync));
+                  return MediaPreview(
+                    media: item,
                     parentIdentifier: viewIdentifier.toString(),
+                    onTap: () async {
+                      await PageManager.of(context).openMedia(
+                        item.id!,
+                        collectionId: item.collectionId,
+                        parentIdentifier: viewIdentifier.toString(),
+                      );
+                      return true;
+                    },
+                    contextMenu: ContextMenuItems.ofMedia(
+                      context,
+                      ref,
+                      media: item,
+                      parentCollection: parentCollection!,
+                      hasOnlineService: canSync,
+                      theStore: theStore,
+                    ),
                   );
-                  return true;
                 },
               ),
             _ => throw UnimplementedError(),

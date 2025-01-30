@@ -11,19 +11,11 @@ class MediaPreviewService extends StatelessWidget {
   const MediaPreviewService({
     required this.media,
     required this.parentIdentifier,
-    required this.autoStart,
-    required this.autoPlay,
-    required this.onLockPage,
-    required this.isLocked,
     super.key,
   });
 
   final CLMedia media;
   final String parentIdentifier;
-  final bool autoStart;
-  final bool autoPlay;
-  final void Function({required bool lock})? onLockPage;
-  final bool isLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +40,6 @@ class MediaPreviewService extends StatelessWidget {
               tag: '$parentIdentifier /item/${media.id}',
               child: ImageViewer.basic(
                 uri: previewUri,
-                autoStart: autoStart,
-                autoPlay: autoPlay,
-                onLockPage: onLockPage,
-                isLocked: isLocked,
                 fit: BoxFit.cover,
                 overlays: [
                   if (media.serverUID != null)

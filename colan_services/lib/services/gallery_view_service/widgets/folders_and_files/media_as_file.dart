@@ -1,40 +1,37 @@
 import 'dart:async';
 
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../../media_view_service/media_view_service1.dart';
+import '../../../media_view_service/widgets/media_preview_service.dart';
+import '../../../quick_menu_service/media_menu.dart';
 
-class MediaAsFile extends StatelessWidget {
-  const MediaAsFile({
+class MediaPreview extends StatelessWidget {
+  const MediaPreview({
     required this.media,
     required this.parentIdentifier,
-    required this.onTap,
+    this.onTap,
+    this.contextMenu,
     super.key,
-    this.canDuplicateMedia = true,
   });
   final CLMedia media;
   final String parentIdentifier;
   final Future<bool?> Function()? onTap;
-  final bool canDuplicateMedia;
+
+  final ContextMenuItems? contextMenu;
 
   @override
   Widget build(BuildContext context) {
     return GetMedia(
       id: media.id!,
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetMedia',
-      ),
+      loadingBuilder: () => CLLoader.widget(debugMessage: 'GetMedia'),
       errorBuilder: (p0, p1) => const Center(child: Text('getMedia Error')),
       builder: (media0) {
-        if (media0 == null) {
-          return Container();
-        }
+        if (media0 == null) return const Center(child: Text('getMedia Error'));
 
         return GetCollection(
           id: media0.collectionId,
@@ -43,93 +40,100 @@ class MediaAsFile extends StatelessWidget {
           ),
           errorBuilder: (p0, p1) =>
               const Center(child: Text('GetCollection Error')),
-          builder: (collection0) {
-            final collection = collection0!;
+          builder: (collection) {
+            final parentCollection = collection!;
 
-            final haveItOffline = switch (media.type) {
-              CLMediaType.image => collection.haveItOffline,
-              _ => false
-            };
-
-            final isMediaWaitingForDownload = media0.hasServerUID &&
-                !media0.isMediaCached &&
-                media0.mediaLog == null &&
-                haveItOffline;
-
-            return GetStoreUpdater(
-              errorBuilder: (_, __) {
-                throw UnimplementedError('errorBuilder');
-              },
-              loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'GetStoreUpdater',
+            return MediaMenu(
+              onTap: onTap,
+              media: media0,
+              parentCollection: parentCollection,
+              contextMenu: contextMenu,
+              child: MediaPreview0(
+                media: media0,
+                parentCollection: parentCollection,
+                parentIdentifier: parentIdentifier,
               ),
-              builder: (theStore) {
-                return MediaMenu(
-                  onTap: onTap,
-                  media: media0,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: MediaViewService1.preview(
-                          media0,
-                          parentIdentifier: parentIdentifier,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: FractionallySizedBox(
-                            heightFactor: 0.2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: Text(
-                                media0.name,
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: ShadTheme.of(context)
-                                    .textTheme
-                                    .small
-                                    .copyWith(
-                                      backgroundColor: ShadTheme.of(context)
-                                          .colorScheme
-                                          .foreground
-                                          .withValues(alpha: 0.5),
-                                      color: ShadTheme.of(context)
-                                          .colorScheme
-                                          .background,
-                                    ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (media.isMediaCached && media.hasServerUID)
-                        OverlayWidgets(
-                          alignment: Alignment.topLeft,
-                          sizeFactor: 0.15,
-                          child: const CLIcon.standard(
-                            Icons.check_circle,
-                            color: Colors.blue,
-                          ),
-                        )
-                      else if (isMediaWaitingForDownload)
-                        OverlayWidgets(
-                          alignment: Alignment.topLeft,
-                          sizeFactor: 0.15,
-                          child: const CircularProgressIndicator(
-                            color: Colors.blue,
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              },
             );
           },
         );
       },
+    );
+  }
+}
+
+class MediaPreview0 extends StatelessWidget {
+  const MediaPreview0({
+    required this.parentIdentifier,
+    required this.media,
+    required this.parentCollection,
+    super.key,
+  });
+  final CLMedia media;
+  final Collection parentCollection;
+  final String parentIdentifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final haveItOffline = switch (media.type) {
+      CLMediaType.image => parentCollection.haveItOffline,
+      _ => false
+    };
+    final isMediaWaitingForDownload = media.hasServerUID &&
+        !media.isMediaCached &&
+        media.mediaLog == null &&
+        haveItOffline;
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: MediaPreviewService(
+            media: media,
+            parentIdentifier: parentIdentifier,
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: FractionallySizedBox(
+              heightFactor: 0.2,
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Text(
+                  media.name,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: ShadTheme.of(context).textTheme.small.copyWith(
+                        backgroundColor: ShadTheme.of(context)
+                            .colorScheme
+                            .foreground
+                            .withValues(alpha: 0.5),
+                        color: ShadTheme.of(context).colorScheme.background,
+                      ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (media.isMediaCached && media.hasServerUID)
+          OverlayWidgets(
+            alignment: Alignment.topLeft,
+            sizeFactor: 0.15,
+            child: const CLIcon.standard(
+              Icons.check_circle,
+              color: Colors.blue,
+            ),
+          )
+        else if (isMediaWaitingForDownload)
+          OverlayWidgets(
+            alignment: Alignment.topLeft,
+            sizeFactor: 0.15,
+            child: const CircularProgressIndicator(
+              color: Colors.blue,
+            ),
+          ),
+      ],
     );
   }
 }
