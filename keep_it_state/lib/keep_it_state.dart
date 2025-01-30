@@ -1,11 +1,5 @@
 library;
 
-export 'providers/misc_providers.dart'
-    show
-        activeCollectionProvider,
-        mainPageIdentifierProvider,
-        selectModeProvider;
-
 export 'providers/show_controls.dart';
 export 'models/cl_shared_media.dart';
 export 'models/universal_media_source.dart';
@@ -37,3 +31,5 @@ export 'extensions/ext_color.dart';
 export 'extensions/ext_cl_menu_item.dart';
 export 'models/platform_support.dart';
 export 'extensions/ext_list.dart';
+
+export 'models/tab_identifier.dart';

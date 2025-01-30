@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../providers/active_collection.dart';
+
 class KeepItBottomBar extends ConsumerWidget {
   const KeepItBottomBar({
     super.key,

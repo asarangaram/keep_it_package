@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 
+import '../providers/active_collection.dart';
+
 class WhenEmpty extends ConsumerWidget {
   const WhenEmpty({
     super.key,

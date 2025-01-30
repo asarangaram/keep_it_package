@@ -11,22 +11,19 @@ import 'widgets/selection_control/selection_control.dart';
 
 class CLEntityGalleryView extends ConsumerWidget {
   const CLEntityGalleryView({
-    required this.parentIdentifier,
+    required this.viewIdentifier,
     required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
     required this.itemBuilder,
     required this.numColumns,
-    required this.selectionMode,
-    required this.onChangeSelectionMode,
     required this.emptyWidget,
     required this.selectionActionsBuilder,
-    required this.onClose,
     super.key,
     this.filterDisabled = false,
     this.onSelectionChanged,
   });
-  final String parentIdentifier;
+  final ViewIdentifier viewIdentifier;
   final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
@@ -36,14 +33,12 @@ class CLEntityGalleryView extends ConsumerWidget {
   ) itemBuilder;
   final int numColumns;
 
-  final bool selectionMode;
-  final void Function({required bool enable}) onChangeSelectionMode;
   final Widget emptyWidget;
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filterDisabled;
-  final VoidCallback? onClose;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AnimatedSwitcher(
@@ -58,9 +53,7 @@ class CLEntityGalleryView extends ConsumerWidget {
       child: entities.isEmpty
           ? emptyWidget
           : SelectionControl(
-              onClose: onClose,
-              selectionMode: selectionMode,
-              onChangeSelectionMode: onChangeSelectionMode,
+              viewIdentifier: viewIdentifier,
               selectionActionsBuilder: selectionActionsBuilder,
               onSelectionChanged: onSelectionChanged,
               incoming: entities,
@@ -83,7 +76,7 @@ class CLEntityGalleryView extends ConsumerWidget {
                 required bannersBuilder,
               }) {
                 return GetFilterredMedia(
-                  parentIdentifier: parentIdentifier,
+                  viewIdentifier: viewIdentifier,
                   errorBuilder: errorBuilder,
                   loadingBuilder: loadingBuilder,
                   incoming: entities,
@@ -97,15 +90,15 @@ class CLEntityGalleryView extends ConsumerWidget {
                     ) bannersBuilder,
                   }) {
                     return GetGroupedMedia(
-                      parentIdentifier: parentIdentifier,
+                      viewIdentifier: viewIdentifier,
                       errorBuilder: errorBuilder,
                       loadingBuilder: loadingBuilder,
                       incoming: filterred,
                       columns: numColumns,
-                      builder: (galleryMap /* numColumns */) {
+                      builder: (tabs /* numColumns */) {
                         return RawCLEntityGalleryView(
-                          viewIdentifier: parentIdentifier,
-                          tabs: const [],
+                          viewIdentifier: viewIdentifier,
+                          tabs: tabs,
                           bannersBuilder: bannersBuilder,
                           labelBuilder: labelBuilder,
                           itemBuilder: itemBuilder,

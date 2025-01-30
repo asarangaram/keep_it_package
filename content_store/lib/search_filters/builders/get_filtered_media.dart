@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
@@ -12,7 +13,7 @@ class GetFilterredMedia extends ConsumerWidget {
     required this.loadingBuilder,
     required this.incoming,
     required this.bannersBuilder,
-    required this.parentIdentifier,
+    required this.viewIdentifier,
     super.key,
     this.disabled = false,
   });
@@ -31,7 +32,7 @@ class GetFilterredMedia extends ConsumerWidget {
     List<GalleryGroupCLEntity<CLEntity>>,
   ) bannersBuilder;
   final bool disabled;
-  final String parentIdentifier;
+  final ViewIdentifier viewIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,7 +41,7 @@ class GetFilterredMedia extends ConsumerWidget {
     }
     final medias = incoming.map((e) => e as CLMedia).toList();
     final filterred =
-        ref.watch(filterredMediaProvider(MapEntry(parentIdentifier, medias)));
+        ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, medias)));
 
     try {
       final topMsg = (filterred.length < incoming.length)
@@ -70,10 +71,3 @@ class GetFilterredMedia extends ConsumerWidget {
     }
   }
 }
-
-final filterredMediaProvider =
-    StateProvider.family<List<CLMedia>, MapEntry<String, List<CLMedia>>>(
-        (ref, mediaMap) {
-  final mediaFilters = ref.watch(mediaFiltersProvider(mediaMap.key));
-  return mediaFilters.apply(mediaMap.value);
-});

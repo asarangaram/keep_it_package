@@ -1,14 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final tabScrollPositionProvider =
-    StateProvider.family<double, String>((ref, tabIdentifier) {
-  return 0;
-});
-
-final currTabProvider =
-    StateProvider.family<String, String>((ref, viewIdentifier) {
-  return 'Media';
-});
+import 'package:keep_it_state/keep_it_state.dart';
 
 /* class Identifiers {
   static String tabIdentifier(String parent, String tabName) =>
@@ -25,3 +16,19 @@ final currTabIdProvider =
   return UniqueID.of([viewIdentifier, currTabName]);
 });
  */
+
+// State perView
+final currTabProvider =
+    StateProvider.family<String, ViewIdentifier>((ref, viewIdentifier) {
+  return 'Media';
+});
+
+// State per Tab
+final selectModeProvider =
+    StateProvider.family<bool, TabIdentifier>((ref, identifier) {
+  return false;
+});
+final tabScrollPositionProvider =
+    StateProvider.family<double, TabIdentifier>((ref, identifier) {
+  return 0;
+});

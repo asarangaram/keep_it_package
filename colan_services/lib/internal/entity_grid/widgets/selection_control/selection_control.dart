@@ -16,20 +16,19 @@ import 'widgets/selectable_item.dart';
 import 'widgets/selectable_label.dart';
 import 'widgets/selection_count.dart';
 
-class SelectionControl extends StatelessWidget {
+class SelectionControl extends ConsumerWidget {
   const SelectionControl({
+    required this.viewIdentifier,
     required this.incoming,
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
-    required this.selectionMode,
-    required this.onChangeSelectionMode,
     required this.selectionActionsBuilder,
     required this.onSelectionChanged,
-    required this.onClose,
     super.key,
   });
+  final ViewIdentifier viewIdentifier;
   final List<CLEntity> incoming;
   final Widget Function(BuildContext, CLEntity) itemBuilder;
   final Widget? Function(
@@ -54,14 +53,17 @@ class SelectionControl extends StatelessWidget {
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     ) bannersBuilder,
   }) builder;
-  final bool selectionMode;
-  final void Function({required bool enable}) onChangeSelectionMode;
+
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
-  final VoidCallback? onClose;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentTab = ref.watch(currTabProvider(viewIdentifier));
+    final tabIdentifier =
+        TabIdentifier(view: viewIdentifier, tabId: currentTab);
+    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
     if (!selectionMode) {
       return builder(
         items: incoming,
@@ -75,15 +77,17 @@ class SelectionControl extends StatelessWidget {
       onSelectionChanged: onSelectionChanged,
       builder: (selector, {required onUpdateSelection}) {
         return SelectionContol0(
+          tabIdentifier: tabIdentifier,
           selector: selector,
           builder: builder,
           itemBuilder: itemBuilder,
           labelBuilder: labelBuilder,
-          onChangeSelectionMode: onChangeSelectionMode,
           selectionActionsBuilder: selectionActionsBuilder,
           onSelectionChanged: onSelectionChanged,
           onUpdateSelection: onUpdateSelection,
-          onClose: onClose,
+          onDone: () {
+            ref.read(selectModeProvider(tabIdentifier).notifier).state = false;
+          },
         );
       },
     );
@@ -92,17 +96,18 @@ class SelectionControl extends StatelessWidget {
 
 class SelectionContol0 extends StatefulWidget {
   const SelectionContol0({
+    required this.tabIdentifier,
     required this.selector,
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
-    required this.onChangeSelectionMode,
     required this.selectionActionsBuilder,
     required this.onSelectionChanged,
     required this.onUpdateSelection,
-    required this.onClose,
+    required this.onDone,
     super.key,
   });
+  final TabIdentifier tabIdentifier;
   final CLSelector selector;
   final Widget Function(BuildContext, CLEntity) itemBuilder;
   final Widget? Function(
@@ -123,13 +128,14 @@ class SelectionContol0 extends StatefulWidget {
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     ) bannersBuilder,
   }) builder;
-  final void Function({required bool enable}) onChangeSelectionMode;
+
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final void Function(List<CLEntity>? candidates, {bool? deselect})
       onUpdateSelection;
-  final VoidCallback? onClose;
+  final void Function() onDone;
+
   @override
   State<StatefulWidget> createState() => _SelectionContol0State();
 }
@@ -182,7 +188,7 @@ class _SelectionContol0State extends State<SelectionContol0> {
           bannersBuilder: (context, galleryMap) {
             return [
               SelectionBanner(
-                onClose: widget.onClose,
+                onClose: widget.onDone,
                 selector: widget.selector,
                 galleryMap: galleryMap,
                 onUpdateSelection: widget.onUpdateSelection,
@@ -203,9 +209,7 @@ class _SelectionContol0State extends State<SelectionContol0> {
               return ActionsDraggableMenu<CLEntity>(
                 items: widget.selector.items.toList(),
                 tagPrefix: 'Selection',
-                onDone: () {
-                  widget.onChangeSelectionMode(enable: false);
-                },
+                onDone: widget.onDone,
                 selectionActionsBuilder: widget.selectionActionsBuilder,
                 parentKey: parentKey,
               );
@@ -309,15 +313,18 @@ class SelectionBanner extends StatelessWidget {
 }
 
 class SelectionControlIcon extends ConsumerWidget {
-  const SelectionControlIcon({required this.parentIdentifier, super.key});
-  final String parentIdentifier;
+  const SelectionControlIcon({required this.viewIdentifier, super.key});
+
+  final ViewIdentifier viewIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final currentTab = ref.watch(currTabProvider(viewIdentifier));
     final tabIdentifier =
-        [parentIdentifier, ref.watch(currTabProvider(parentIdentifier))].toID();
+        TabIdentifier(view: viewIdentifier, tabId: currentTab);
     final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
-    if (tabIdentifier != 'Media') {
+
+    if (tabIdentifier.tabId != 'Media') {
       return const SizedBox.shrink();
     } else {
       return ShadButton.ghost(
@@ -329,5 +336,31 @@ class SelectionControlIcon extends ConsumerWidget {
         child: const Icon(LucideIcons.listChecks),
       );
     }
+  }
+}
+
+class GetSelectionMode extends ConsumerWidget {
+  const GetSelectionMode({
+    required this.viewIdentifier,
+    required this.builder,
+    super.key,
+  });
+  final ViewIdentifier viewIdentifier;
+  final Widget Function({
+    required bool selectionMode,
+    required void Function({required bool enable}) onUpdateSelectionmode,
+  }) builder;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentTab = ref.watch(currTabProvider(viewIdentifier));
+    final tabIdentifier =
+        TabIdentifier(view: viewIdentifier, tabId: currentTab);
+    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    return builder(
+      selectionMode: selectionMode,
+      onUpdateSelectionmode: ({required enable}) {
+        ref.read(selectModeProvider(tabIdentifier).notifier).state = enable;
+      },
+    );
   }
 }

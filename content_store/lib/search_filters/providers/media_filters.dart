@@ -1,5 +1,6 @@
 import 'package:content_store/search_filters/models/filters.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../models/filter/base_filter.dart';
@@ -98,3 +99,9 @@ final StringFilter<CLMedia> textSearchFilter = StringFilter(
   query: '',
   enabled: true,
 );
+
+final filterredMediaProvider = StateProvider.family<List<CLMedia>,
+    MapEntry<ViewIdentifier, List<CLMedia>>>((ref, mediaMap) {
+  final mediaFilters = ref.watch(mediaFiltersProvider(mediaMap.key.parentID));
+  return mediaFilters.apply(mediaMap.value);
+});

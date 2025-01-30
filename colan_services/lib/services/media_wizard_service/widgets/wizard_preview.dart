@@ -56,7 +56,10 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       ),
       builder: (dbReader) {
         return CLEntityGalleryView(
-          parentIdentifier: widget.parentIdentifier,
+          viewIdentifier: ViewIdentifier(
+            parentID: widget.parentIdentifier,
+            viewId: type.name,
+          ),
           emptyWidget: const CLText.large('Nothing to show here'),
           entities: media0.entries,
           numColumns: 3,
@@ -64,9 +67,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             debugMessage: 'GalleryView',
           ),
           errorBuilder: errorBuilder,
-          selectionMode: onSelectionChanged != null,
-          onClose: null,
-          onChangeSelectionMode: ({required bool enable}) {},
           selectionActionsBuilder: null,
           onSelectionChanged: onSelectionChanged == null
               ? null

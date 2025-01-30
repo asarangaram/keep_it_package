@@ -6,6 +6,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../../../../internal/entity_grid/widgets/selection_control/selection_control.dart';
+import '../../providers/active_collection.dart';
 import '../popover_menu.dart';
 
 class KeepItTopBar extends ConsumerWidget {
@@ -15,7 +16,10 @@ class KeepItTopBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionId = ref.watch(activeCollectionProvider);
-    final identifier = ref.watch(mainPageIdentifierProvider);
+    final viewIdentifier = ViewIdentifier(
+      parentID: parentIdentifier,
+      viewId: collectionId.toString(),
+    );
     return GetCollection(
       id: collectionId,
       loadingBuilder: () => CLLoader.hide(
@@ -37,8 +41,6 @@ class KeepItTopBar extends ConsumerWidget {
                   CLButtonIcon.small(
                     clIcons.pagePop,
                     onTap: () {
-                      ref.read(selectModeProvider(identifier).notifier).state =
-                          false;
                       ref.read(activeCollectionProvider.notifier).state = null;
                     },
                   ),
@@ -58,7 +60,7 @@ class KeepItTopBar extends ConsumerWidget {
                   ),
                 ),
                 SelectionControlIcon(
-                  parentIdentifier: parentIdentifier,
+                  viewIdentifier: viewIdentifier,
                 ),
                 PopOverMenu(
                   parentIdentifier: parentIdentifier,

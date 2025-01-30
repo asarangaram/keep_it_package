@@ -1,6 +1,7 @@
 import 'package:content_store/content_store.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../providers/tap_state.dart';
@@ -16,7 +17,7 @@ class CLEntityGalleryTab extends ConsumerStatefulWidget {
     required this.columns,
     super.key,
   });
-  final String tabIdentifier;
+  final TabIdentifier tabIdentifier;
   final LabelledEntityGroups tab;
   final int columns;
   final Widget Function(BuildContext context, CLEntity item) itemBuilder;

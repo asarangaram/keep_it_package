@@ -7,9 +7,9 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import 'package:store/store.dart';
 
-import '../../builders/get_parent_identifier.dart';
 import 'builders/available_media.dart';
 
+import 'providers/active_collection.dart';
 import 'widgets/actions/bottom_bar.dart';
 import 'widgets/actions/top_bar.dart';
 import 'widgets/folders_and_files/collection_as_folder.dart';
@@ -20,14 +20,14 @@ import 'widgets/when_error.dart';
 class GalleryViewService extends StatelessWidget {
   const GalleryViewService({
     super.key,
-    this.parentIdentifier = 'MainView',
   });
-  final String parentIdentifier;
+
   @override
   Widget build(BuildContext context) {
     Widget errorBuilder(Object e, StackTrace st) => WhenError(
           errorMessage: e.toString(),
         );
+    const parentIdentifier = 'KeepItMainGrid';
 
     return AppTheme(
       child: Scaffold(
@@ -36,7 +36,7 @@ class GalleryViewService extends StatelessWidget {
             bottom: false,
             child: Column(
               children: [
-                KeepItTopBar(
+                const KeepItTopBar(
                   parentIdentifier: parentIdentifier,
                 ),
                 Expanded(
@@ -94,27 +94,22 @@ class KeepItMainGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final identifier = ref.watch(mainPageIdentifierProvider);
-    final selectionMode = ref.watch(selectModeProvider(identifier));
+    final collectionId = ref.watch(activeCollectionProvider);
+    final viewIdentifier = ViewIdentifier(
+      parentID: parentIdentifier,
+      viewId: collectionId.toString(),
+    );
     return GetStoreUpdater(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       builder: (theStore) {
         return CLEntityGalleryView(
-          onClose: () {
-            ref.read(selectModeProvider(identifier).notifier).state =
-                !selectionMode;
-          },
-          parentIdentifier: parentIdentifier,
+          viewIdentifier: viewIdentifier,
           entities: clmedias.entries,
           loadingBuilder: loadingBuilder,
           errorBuilder: errorBuilder,
           numColumns: 3,
-          selectionMode: selectionMode,
           emptyWidget: const WhenEmpty(),
-          onChangeSelectionMode: ({required enable}) {
-            ref.read(selectModeProvider(identifier).notifier).state = enable;
-          },
           selectionActionsBuilder: (context, entities) {
             final items = entities.map((e) => e as CLMedia).toList();
             return [
@@ -183,20 +178,16 @@ class KeepItMainGrid extends ConsumerWidget {
                       .state = item.id;
                 },
               ),
-            CLMedia _ => GetParentIdentifier(
-                builder: (parentIdentifier) {
-                  return MediaAsFile(
-                    media: item,
-                    parentIdentifier: parentIdentifier,
-                    onTap: () async {
-                      await PageManager.of(context).openMedia(
-                        item.id!,
-                        collectionId: item.collectionId,
-                        parentIdentifier: parentIdentifier,
-                      );
-                      return true;
-                    },
+            CLMedia _ => MediaAsFile(
+                media: item,
+                parentIdentifier: viewIdentifier.toString(),
+                onTap: () async {
+                  await PageManager.of(context).openMedia(
+                    item.id!,
+                    collectionId: item.collectionId,
+                    parentIdentifier: viewIdentifier.toString(),
                   );
+                  return true;
                 },
               ),
             _ => throw UnimplementedError(),

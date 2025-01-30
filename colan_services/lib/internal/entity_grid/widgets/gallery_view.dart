@@ -2,6 +2,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
@@ -19,7 +20,7 @@ class RawCLEntityGalleryView extends ConsumerWidget {
     required this.numColumns,
     super.key,
   });
-  final String viewIdentifier;
+  final ViewIdentifier viewIdentifier;
   final List<LabelledEntityGroups> tabs;
 
   final Widget Function(BuildContext context, CLEntity item) itemBuilder;
@@ -39,7 +40,8 @@ class RawCLEntityGalleryView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (tabs.length == 1) {
       CLEntityGalleryTab(
-        tabIdentifier: [viewIdentifier, tabs.first.name].toID(),
+        tabIdentifier:
+            TabIdentifier(view: viewIdentifier, tabId: tabs.first.name),
         tab: tabs.first,
         itemBuilder: itemBuilder,
         labelBuilder: labelBuilder,
@@ -79,13 +81,16 @@ class RawCLEntityGalleryView extends ConsumerWidget {
               ),
           ],
         ),
-        CLEntityGalleryTab(
-          tabIdentifier: [viewIdentifier, currTab.name].toID(),
-          tab: currTab,
-          itemBuilder: itemBuilder,
-          labelBuilder: labelBuilder,
-          bannersBuilder: bannersBuilder,
-          columns: numColumns,
+        Flexible(
+          child: CLEntityGalleryTab(
+            tabIdentifier:
+                TabIdentifier(view: viewIdentifier, tabId: currTab.name),
+            tab: currTab,
+            itemBuilder: itemBuilder,
+            labelBuilder: labelBuilder,
+            bannersBuilder: bannersBuilder,
+            columns: numColumns,
+          ),
         ),
       ],
     );

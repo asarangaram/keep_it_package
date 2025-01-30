@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart' show CLEntity, CLMedia, GalleryGroupCLEntity;
 
 import '../../db_service/builders/w3_get_collection.dart';
@@ -9,7 +10,7 @@ import '../providers/media_grouper.dart';
 
 class GetGroupedMedia extends ConsumerWidget {
   const GetGroupedMedia({
-    required this.parentIdentifier,
+    required this.viewIdentifier,
     required this.builder,
     required this.incoming,
     required this.columns,
@@ -17,7 +18,7 @@ class GetGroupedMedia extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final String parentIdentifier;
+  final ViewIdentifier viewIdentifier;
   final int columns;
   final List<CLEntity> incoming;
 
@@ -49,7 +50,10 @@ class GetGroupedMedia extends ConsumerWidget {
               name: 'Collections',
               galleryGroups: ref.watch(
                 groupedMediaProvider(
-                  MapEntry('$parentIdentifier/Collection', collections),
+                  MapEntry(
+                    TabIdentifier(view: viewIdentifier, tabId: 'Collection'),
+                    collections,
+                  ),
                 ),
               ),
             ),
@@ -60,7 +64,10 @@ class GetGroupedMedia extends ConsumerWidget {
             name: 'Media',
             galleryGroups: ref.watch(
               groupedMediaProvider(
-                MapEntry('$parentIdentifier/Media', incoming),
+                MapEntry(
+                  TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+                  incoming,
+                ),
               ),
             ),
           ),
@@ -74,8 +81,8 @@ class GetGroupedMedia extends ConsumerWidget {
 
 final groupedMediaProvider = StateProvider.family<
     List<GalleryGroupCLEntity<CLEntity>>,
-    MapEntry<String, List<CLEntity>>>((ref, mapEntry) {
-  final groupBy = ref.watch(groupMethodProvider(mapEntry.key));
+    MapEntry<TabIdentifier, List<CLEntity>>>((ref, mapEntry) {
+  final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
 
   return groupBy.getGrouped(mapEntry.value);
 });

@@ -75,7 +75,7 @@ class MediaWizardService extends ConsumerWidget {
       final galleryMap = media.entries.groupByDate();
       return FullscreenLayout(
         child: SelectAndKeepMedia(
-          parentIdentifier: 'Wizard ${type.name}',
+          parentIdentifier: 'MediaWizardService ${type.name}',
           media: media,
           type: type,
           galleryMap: galleryMap,
