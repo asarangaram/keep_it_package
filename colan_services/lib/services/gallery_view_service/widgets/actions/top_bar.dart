@@ -38,10 +38,19 @@ class KeepItTopBar extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (collectionId != null)
-                  CLButtonIcon.small(
-                    clIcons.pagePop,
-                    onTap: () {
-                      ref.read(activeCollectionProvider.notifier).state = null;
+                  GetSelectionMode(
+                    viewIdentifier: viewIdentifier,
+                    builder: ({
+                      required onUpdateSelectionmode,
+                      required selectionMode,
+                    }) {
+                      return CLButtonIcon.small(
+                        clIcons.pagePop,
+                        onTap: () {
+                          onUpdateSelectionmode(enable: false);
+                           ref.read(activeCollectionProvider.notifier).state = null;
+                        },
+                      );
                     },
                   ),
                 Flexible(
