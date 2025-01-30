@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import '../../../context_menu_service/models/context_menu_items.dart';
 import '../../../media_view_service/widgets/media_preview_service.dart';
-import '../../../quick_menu_service/media_menu.dart';
+import '../../../context_menu_service/widgets/media_menu.dart';
 
 class MediaPreview extends StatelessWidget {
   const MediaPreview({

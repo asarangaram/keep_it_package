@@ -7,7 +7,8 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import 'package:store/store.dart';
 
-import '../quick_menu_service/media_menu.dart';
+import '../context_menu_service/models/context_menu_items.dart';
+
 import 'builders/available_media.dart';
 
 import 'providers/active_collection.dart';
