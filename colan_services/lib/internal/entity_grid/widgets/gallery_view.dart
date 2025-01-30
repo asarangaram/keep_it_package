@@ -39,7 +39,7 @@ class RawCLEntityGalleryView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (tabs.length == 1) {
-      CLEntityGalleryTab(
+      return CLEntityGalleryTab(
         tabIdentifier:
             TabIdentifier(view: viewIdentifier, tabId: tabs.first.name),
         tab: tabs.first,
