@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
+import '../../../../internal/entity_grid/builders/get_selection_mode.dart';
 import '../../../../internal/entity_grid/widgets/selection_control/selection_control.dart';
 import '../../providers/active_collection.dart';
 import '../popover_menu.dart';
@@ -42,13 +43,15 @@ class KeepItTopBar extends ConsumerWidget {
                     viewIdentifier: viewIdentifier,
                     builder: ({
                       required onUpdateSelectionmode,
+                      required tabIdentifier,
                       required selectionMode,
                     }) {
                       return CLButtonIcon.small(
                         clIcons.pagePop,
                         onTap: () {
                           onUpdateSelectionmode(enable: false);
-                           ref.read(activeCollectionProvider.notifier).state = null;
+                          ref.read(activeCollectionProvider.notifier).state =
+                              null;
                         },
                       );
                     },
@@ -85,66 +88,3 @@ class KeepItTopBar extends ConsumerWidget {
     );
   }
 }
-
-/* 
-class ExtraActions extends ConsumerWidget {
-  const ExtraActions({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final identifier = ref.watch(mainPageIdentifierProvider);
-
-    final selectionMode = ref.watch(selectModeProvider(identifier));
-
-    final popupActionItems = [
-      ...[
-        PopupMenuEntryBuilder(
-          titleBuilder: (context, ref) => const Text('Select'),
-          iconBuilder: (context, ref) => switch (selectionMode) {
-            true => const Icon(Icons.check),
-            false => null
-          },
-          onTap: () {
-            ref.watch(selectModeProvider(identifier).notifier).state =
-                !selectionMode;
-          },
-        ),
-      ],
-    ];
-    return PopupMenuButton<PopupMenuEntryBuilder>(
-      onSelected: (PopupMenuEntryBuilder item) {
-        item.onTap.call();
-      },
-      itemBuilder: (BuildContext context) {
-        return <PopupMenuEntry<PopupMenuEntryBuilder>>[
-          for (final item in popupActionItems) ...[
-            PopupMenuItem<PopupMenuEntryBuilder>(
-              value: item,
-              child: ListTile(
-                leading:
-                    item.iconBuilder(context, ref) ?? const SizedBox.shrink(),
-                title: item.titleBuilder(context, ref),
-              ),
-            ),
-          ],
-        ];
-      },
-      child: const Icon(
-        Icons.more_vert,
-        size: 25,
-      ),
-    );
-  }
-}
-
-class PopupMenuEntryBuilder {
-  PopupMenuEntryBuilder({
-    required this.titleBuilder,
-    required this.iconBuilder,
-    required this.onTap,
-  });
-  Widget? Function(BuildContext context, WidgetRef ref) titleBuilder;
-  Widget? Function(BuildContext context, WidgetRef ref) iconBuilder;
-  void Function() onTap;
-}
- */

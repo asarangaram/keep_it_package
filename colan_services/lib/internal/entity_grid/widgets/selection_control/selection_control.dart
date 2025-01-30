@@ -1,5 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +10,7 @@ import 'package:store/store.dart';
 import '../../../../builders/get_selection_control.dart';
 import '../../../draggable_menu/widgets/actions_draggable_menu.dart';
 
-import '../../providers/tap_state.dart';
+import '../../builders/get_selection_mode.dart';
 import 'widgets/selectable_item.dart';
 import 'widgets/selectable_label.dart';
 import 'widgets/selection_count.dart';
@@ -60,33 +59,38 @@ class SelectionControl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentTab = ref.watch(currTabProvider(viewIdentifier));
-    final tabIdentifier =
-        TabIdentifier(view: viewIdentifier, tabId: currentTab);
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
-    if (!selectionMode) {
-      return builder(
-        items: incoming,
-        itemBuilder: itemBuilder,
-        labelBuilder: labelBuilder,
-        bannersBuilder: bannersBuilder,
-      );
-    }
-    return GetSelectionControl(
-      incoming: incoming,
-      onSelectionChanged: onSelectionChanged,
-      builder: (selector, {required onUpdateSelection}) {
-        return SelectionContol0(
-          tabIdentifier: tabIdentifier,
-          selector: selector,
-          builder: builder,
-          itemBuilder: itemBuilder,
-          labelBuilder: labelBuilder,
-          selectionActionsBuilder: selectionActionsBuilder,
+    return GetSelectionMode(
+      viewIdentifier: viewIdentifier,
+      builder: ({
+        required onUpdateSelectionmode,
+        required tabIdentifier,
+        required selectionMode,
+      }) {
+        if (!selectionMode) {
+          return builder(
+            items: incoming,
+            itemBuilder: itemBuilder,
+            labelBuilder: labelBuilder,
+            bannersBuilder: bannersBuilder,
+          );
+        }
+        return GetSelectionControl(
+          incoming: incoming,
           onSelectionChanged: onSelectionChanged,
-          onUpdateSelection: onUpdateSelection,
-          onDone: () {
-            ref.read(selectModeProvider(tabIdentifier).notifier).state = false;
+          builder: (selector, {required onUpdateSelection}) {
+            return SelectionContol0(
+              tabIdentifier: tabIdentifier,
+              selector: selector,
+              builder: builder,
+              itemBuilder: itemBuilder,
+              labelBuilder: labelBuilder,
+              selectionActionsBuilder: selectionActionsBuilder,
+              onSelectionChanged: onSelectionChanged,
+              onUpdateSelection: onUpdateSelection,
+              onDone: () {
+                onUpdateSelectionmode(enable: !selectionMode);
+              },
+            );
           },
         );
       },
@@ -198,22 +202,12 @@ class _SelectionContol0State extends State<SelectionContol0> {
         ),
         if (widget.selector.items.isNotEmpty &&
             widget.selectionActionsBuilder != null)
-          GetStoreUpdater(
-            errorBuilder: (_, __) {
-              throw UnimplementedError('errorBuilder');
-            },
-            loadingBuilder: () => CLLoader.widget(
-              debugMessage: 'GetStoreUpdater',
-            ),
-            builder: (theStore) {
-              return ActionsDraggableMenu<CLEntity>(
-                items: widget.selector.items.toList(),
-                tagPrefix: 'Selection',
-                onDone: widget.onDone,
-                selectionActionsBuilder: widget.selectionActionsBuilder,
-                parentKey: parentKey,
-              );
-            },
+          ActionsDraggableMenu<CLEntity>(
+            items: widget.selector.items.toList(),
+            tagPrefix: 'Selection',
+            onDone: widget.onDone,
+            selectionActionsBuilder: widget.selectionActionsBuilder,
+            parentKey: parentKey,
           ),
       ],
     );
@@ -319,47 +313,24 @@ class SelectionControlIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentTab = ref.watch(currTabProvider(viewIdentifier));
-    final tabIdentifier =
-        TabIdentifier(view: viewIdentifier, tabId: currentTab);
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
-
-    if (tabIdentifier.tabId != 'Media') {
-      return const SizedBox.shrink();
-    } else {
-      return ShadButton.ghost(
-        padding: const EdgeInsets.only(right: 8),
-        onPressed: () {
-          ref.read(selectModeProvider(tabIdentifier).notifier).state =
-              !selectionMode;
-        },
-        child: const Icon(LucideIcons.listChecks),
-      );
-    }
-  }
-}
-
-class GetSelectionMode extends ConsumerWidget {
-  const GetSelectionMode({
-    required this.viewIdentifier,
-    required this.builder,
-    super.key,
-  });
-  final ViewIdentifier viewIdentifier;
-  final Widget Function({
-    required bool selectionMode,
-    required void Function({required bool enable}) onUpdateSelectionmode,
-  }) builder;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final currentTab = ref.watch(currTabProvider(viewIdentifier));
-    final tabIdentifier =
-        TabIdentifier(view: viewIdentifier, tabId: currentTab);
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
-    return builder(
-      selectionMode: selectionMode,
-      onUpdateSelectionmode: ({required enable}) {
-        ref.read(selectModeProvider(tabIdentifier).notifier).state = enable;
+    return GetSelectionMode(
+      viewIdentifier: viewIdentifier,
+      builder: ({
+        required onUpdateSelectionmode,
+        required tabIdentifier,
+        required selectionMode,
+      }) {
+        if (tabIdentifier.tabId != 'Media') {
+          return const SizedBox.shrink();
+        } else {
+          return ShadButton.ghost(
+            padding: const EdgeInsets.only(right: 8),
+            onPressed: () {
+              onUpdateSelectionmode(enable: !selectionMode);
+            },
+            child: const Icon(LucideIcons.listChecks),
+          );
+        }
       },
     );
   }
