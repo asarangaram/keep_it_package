@@ -36,9 +36,6 @@ class GalleryViewService extends StatelessWidget {
             bottom: false,
             child: Column(
               children: [
-                const KeepItTopBar(
-                  parentIdentifier: parentIdentifier,
-                ),
                 Expanded(
                   child: GetStore(
                     errorBuilder: errorBuilder,
@@ -54,21 +51,30 @@ class GalleryViewService extends StatelessWidget {
                             debugMessage: 'GetAvailableMediaByCollectionId',
                           ),
                           errorBuilder: errorBuilder,
-                          builder: (clmedias) => KeepItMainGrid(
-                            parentIdentifier: parentIdentifier,
-                            clmedias: clmedias,
-                            loadingBuilder: () => CLLoader.widget(
-                              debugMessage: 'KeepItMainGrid',
-                            ),
-                            errorBuilder: errorBuilder,
+                          builder: (clmedias) => Column(
+                            children: [
+                              const KeepItTopBar(
+                                parentIdentifier: parentIdentifier,
+                              ),
+                              Expanded(
+                                child: KeepItMainGrid(
+                                  parentIdentifier: parentIdentifier,
+                                  clmedias: clmedias,
+                                  loadingBuilder: () => CLLoader.widget(
+                                    debugMessage: 'KeepItMainGrid',
+                                  ),
+                                  errorBuilder: errorBuilder,
+                                ),
+                              ),
+                              if (MediaQuery.of(context).viewInsets.bottom == 0)
+                                const KeepItBottomBar(),
+                            ],
                           ),
                         ),
                       );
                     },
                   ),
                 ),
-                if (MediaQuery.of(context).viewInsets.bottom == 0)
-                  const KeepItBottomBar(),
               ],
             ),
           ),

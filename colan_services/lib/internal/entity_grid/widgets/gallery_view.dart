@@ -9,8 +9,7 @@ import 'package:store/store.dart';
 import '../providers/tap_state.dart';
 import 'gallery_tab.dart';
 
-/// GalleryView has one or more tabs.
-class RawCLEntityGalleryView extends ConsumerWidget {
+class RawCLEntityGalleryView extends ConsumerStatefulWidget {
   const RawCLEntityGalleryView({
     required this.viewIdentifier,
     required this.tabs,
@@ -19,6 +18,7 @@ class RawCLEntityGalleryView extends ConsumerWidget {
     required this.bannersBuilder,
     required this.numColumns,
     super.key,
+    this.draggableMenuBuilder,
   });
   final ViewIdentifier viewIdentifier;
   final List<LabelledEntityGroups> tabs;
@@ -35,9 +35,28 @@ class RawCLEntityGalleryView extends ConsumerWidget {
     List<GalleryGroupCLEntity<CLEntity>>,
   ) bannersBuilder;
   final int numColumns;
+  final Widget Function(
+    BuildContext context, {
+    required GlobalKey<State<StatefulWidget>> parentKey,
+  })? draggableMenuBuilder;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _RawCLEntityGalleryViewState();
+}
+
+class _RawCLEntityGalleryViewState
+    extends ConsumerState<RawCLEntityGalleryView> {
+  final GlobalKey parentKey = GlobalKey();
+  @override
+  Widget build(BuildContext context) {
+    final tabs = widget.tabs;
+    final viewIdentifier = widget.viewIdentifier;
+    final itemBuilder = widget.itemBuilder;
+    final labelBuilder = widget.labelBuilder;
+    final bannersBuilder = widget.bannersBuilder;
+    final numColumns = widget.numColumns;
+    final draggableMenuBuilder = widget.draggableMenuBuilder;
     if (tabs.length == 1) {
       return CLEntityGalleryTab(
         tabIdentifier:
@@ -63,35 +82,43 @@ class RawCLEntityGalleryView extends ConsumerWidget {
       currTab = tempCurrTab;
     }
 
-    return Column(
+    return Stack(
+      key: parentKey,
       children: [
-        ShadTabs(
-          padding: EdgeInsets.zero,
-          value: currTab.name,
-          // tabBarConstraints: BoxConstraints(maxWidth: 400),
-          //contentConstraints: BoxConstraints(maxWidth: 400),
-          onChanged: (value) {
-            ref.read(currTabProvider(viewIdentifier).notifier).state = value;
-          },
-          tabs: [
-            for (final k in tabs)
-              ShadTab(
-                value: k.name,
-                child: Text(k.name),
+        Column(
+          children: [
+            ShadTabs(
+              padding: EdgeInsets.zero,
+              value: currTab.name,
+              // tabBarConstraints: BoxConstraints(maxWidth: 400),
+              //contentConstraints: BoxConstraints(maxWidth: 400),
+              onChanged: (value) {
+                ref.read(currTabProvider(viewIdentifier).notifier).state =
+                    value;
+              },
+              tabs: [
+                for (final k in tabs)
+                  ShadTab(
+                    value: k.name,
+                    child: Text(k.name),
+                  ),
+              ],
+            ),
+            Flexible(
+              child: CLEntityGalleryTab(
+                tabIdentifier:
+                    TabIdentifier(view: viewIdentifier, tabId: currTab.name),
+                tab: currTab,
+                itemBuilder: itemBuilder,
+                labelBuilder: labelBuilder,
+                bannersBuilder: bannersBuilder,
+                columns: numColumns,
               ),
+            ),
           ],
         ),
-        Flexible(
-          child: CLEntityGalleryTab(
-            tabIdentifier:
-                TabIdentifier(view: viewIdentifier, tabId: currTab.name),
-            tab: currTab,
-            itemBuilder: itemBuilder,
-            labelBuilder: labelBuilder,
-            bannersBuilder: bannersBuilder,
-            columns: numColumns,
-          ),
-        ),
+        if (draggableMenuBuilder != null)
+          draggableMenuBuilder(context, parentKey: parentKey),
       ],
     );
   }

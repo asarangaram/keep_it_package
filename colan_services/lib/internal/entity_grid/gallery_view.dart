@@ -54,7 +54,7 @@ class CLEntityGalleryView extends ConsumerWidget {
           ? emptyWidget
           : SelectionControl(
               viewIdentifier: viewIdentifier,
-              selectionActionsBuilder: selectionActionsBuilder,
+              draggableMenuItemsBuilder: selectionActionsBuilder,
               onSelectionChanged: onSelectionChanged,
               incoming: entities,
               itemBuilder: itemBuilder,
@@ -74,6 +74,7 @@ class CLEntityGalleryView extends ConsumerWidget {
                 required itemBuilder,
                 required labelBuilder,
                 required bannersBuilder,
+                draggableMenuBuilder,
               }) {
                 return GetFilterredMedia(
                   viewIdentifier: viewIdentifier,
@@ -103,6 +104,7 @@ class CLEntityGalleryView extends ConsumerWidget {
                           labelBuilder: labelBuilder,
                           itemBuilder: itemBuilder,
                           numColumns: numColumns,
+                          draggableMenuBuilder: draggableMenuBuilder,
                         );
                       },
                     );

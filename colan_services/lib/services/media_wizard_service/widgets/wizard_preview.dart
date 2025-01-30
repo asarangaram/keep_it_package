@@ -47,34 +47,26 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
 
     Widget errorBuilder(Object e, StackTrace st) =>
         CLErrorView(errorMessage: e.toString());
-    return GetDBReader(
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-      },
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetDBReader',
+    return CLEntityGalleryView(
+      viewIdentifier: ViewIdentifier(
+        parentID: widget.parentIdentifier,
+        viewId: type.name,
       ),
-      builder: (dbReader) {
-        return CLEntityGalleryView(
-          viewIdentifier: ViewIdentifier(
-            parentID: widget.parentIdentifier,
-            viewId: type.name,
-          ),
-          emptyWidget: const CLText.large('Nothing to show here'),
-          entities: media0.entries,
-          numColumns: 3,
-          loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GalleryView',
-          ),
-          errorBuilder: errorBuilder,
-          selectionActionsBuilder: null,
-          onSelectionChanged: onSelectionChanged == null
-              ? null
-              : (items) => onSelectionChanged
-                  ?.call(items.map((e) => e as CLMedia).toList()),
-          itemBuilder: (context, item) {
-            return GestureDetector(
-              /* onTap: () async {
+      emptyWidget: const CLText.large('Nothing to show here'),
+      entities: media0.entries,
+      numColumns: 3,
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GalleryView',
+      ),
+      errorBuilder: errorBuilder,
+      selectionActionsBuilder: null,
+      onSelectionChanged: onSelectionChanged == null
+          ? null
+          : (items) =>
+              onSelectionChanged?.call(items.map((e) => e as CLMedia).toList()),
+      itemBuilder: (context, item) {
+        return GestureDetector(
+          /* onTap: () async {
                 await PageManager.of(context).openEditor(
                   item,
                   canDuplicateMedia: false,
@@ -97,15 +89,13 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                   );
                 }
               }, */
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: MediaViewService1.preview(
-                  item as CLMedia,
-                  parentIdentifier: type.identifier,
-                ),
-              ),
-            );
-          },
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: MediaViewService1.preview(
+              item as CLMedia,
+              parentIdentifier: type.identifier,
+            ),
+          ),
         );
       },
     );

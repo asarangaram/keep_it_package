@@ -23,7 +23,7 @@ class SelectionControl extends ConsumerWidget {
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
-    required this.selectionActionsBuilder,
+    required this.draggableMenuItemsBuilder,
     required this.onSelectionChanged,
     super.key,
   });
@@ -51,10 +51,14 @@ class SelectionControl extends ConsumerWidget {
       BuildContext context,
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     ) bannersBuilder,
+    Widget Function(
+      BuildContext, {
+      required GlobalKey<State<StatefulWidget>> parentKey,
+    })? draggableMenuBuilder,
   }) builder;
 
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
-      selectionActionsBuilder;
+      draggableMenuItemsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
 
   @override
@@ -84,7 +88,7 @@ class SelectionControl extends ConsumerWidget {
               builder: builder,
               itemBuilder: itemBuilder,
               labelBuilder: labelBuilder,
-              selectionActionsBuilder: selectionActionsBuilder,
+              draggableMenuItemsBuilder: draggableMenuItemsBuilder,
               onSelectionChanged: onSelectionChanged,
               onUpdateSelection: onUpdateSelection,
               onDone: () {
@@ -98,14 +102,14 @@ class SelectionControl extends ConsumerWidget {
   }
 }
 
-class SelectionContol0 extends StatefulWidget {
+class SelectionContol0 extends StatelessWidget {
   const SelectionContol0({
     required this.tabIdentifier,
     required this.selector,
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
-    required this.selectionActionsBuilder,
+    required this.draggableMenuItemsBuilder,
     required this.onSelectionChanged,
     required this.onUpdateSelection,
     required this.onDone,
@@ -131,85 +135,79 @@ class SelectionContol0 extends StatefulWidget {
       BuildContext context,
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     ) bannersBuilder,
+    Widget Function(
+      BuildContext, {
+      required GlobalKey<State<StatefulWidget>> parentKey,
+    })? draggableMenuBuilder,
   }) builder;
 
   final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
-      selectionActionsBuilder;
+      draggableMenuItemsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final void Function(List<CLEntity>? candidates, {bool? deselect})
       onUpdateSelection;
   final void Function() onDone;
 
   @override
-  State<StatefulWidget> createState() => _SelectionContol0State();
-}
-
-class _SelectionContol0State extends State<SelectionContol0> {
-  final GlobalKey parentKey = GlobalKey();
-
-  @override
   Widget build(BuildContext context) {
-    final incoming = widget.selector.entities;
+    final incoming = selector.entities;
 
-    return Stack(
-      key: parentKey,
-      children: [
-        widget.builder(
-          items: incoming,
-          itemBuilder: (context, item) {
-            final itemWidget = widget.itemBuilder(
-              context,
-              item,
-            );
+    return builder(
+      items: incoming,
+      itemBuilder: (context, item) {
+        final itemWidget = itemBuilder(
+          context,
+          item,
+        );
 
-            return SelectableItem(
-              isSelected: widget.selector.isSelected([item]) !=
-                  SelectionStatus.selectedNone,
-              onTap: () {
-                widget.onUpdateSelection([item]);
-              },
-              child: itemWidget,
-            );
+        return SelectableItem(
+          isSelected:
+              selector.isSelected([item]) != SelectionStatus.selectedNone,
+          onTap: () {
+            onUpdateSelection([item]);
           },
-          labelBuilder: (context, galleryMap, gallery) {
-            final labelWidget =
-                widget.labelBuilder(context, galleryMap, gallery);
-            if (labelWidget == null) return const SizedBox.shrink();
-            final candidates =
-                galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList();
-            return SelectableLabel(
-              selectionStatus: widget.selector.isSelected(
-                candidates,
-              ),
-              onSelect: () {
-                widget.onUpdateSelection(
-                  candidates,
-                );
-              },
-              child: labelWidget,
-            );
-          },
-          bannersBuilder: (context, galleryMap) {
-            return [
-              SelectionBanner(
-                onClose: widget.onDone,
-                selector: widget.selector,
-                galleryMap: galleryMap,
-                onUpdateSelection: widget.onUpdateSelection,
-              ),
-            ];
-          },
-        ),
-        if (widget.selector.items.isNotEmpty &&
-            widget.selectionActionsBuilder != null)
-          ActionsDraggableMenu<CLEntity>(
-            items: widget.selector.items.toList(),
-            tagPrefix: 'Selection',
-            onDone: widget.onDone,
-            selectionActionsBuilder: widget.selectionActionsBuilder,
-            parentKey: parentKey,
+          child: itemWidget,
+        );
+      },
+      labelBuilder: (context, galleryMap, gallery) {
+        final labelWidget = labelBuilder(context, galleryMap, gallery);
+        if (labelWidget == null) return const SizedBox.shrink();
+        final candidates =
+            galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList();
+        return SelectableLabel(
+          selectionStatus: selector.isSelected(
+            candidates,
           ),
-      ],
+          onSelect: () {
+            onUpdateSelection(
+              candidates,
+            );
+          },
+          child: labelWidget,
+        );
+      },
+      bannersBuilder: (context, galleryMap) {
+        return [
+          SelectionBanner(
+            onClose: onDone,
+            selector: selector,
+            galleryMap: galleryMap,
+            onUpdateSelection: onUpdateSelection,
+          ),
+        ];
+      },
+      draggableMenuBuilder:
+          (selector.items.isNotEmpty && draggableMenuItemsBuilder != null)
+              ? (p0, {required parentKey}) {
+                  return ActionsDraggableMenu<CLEntity>(
+                    items: selector.items.toList(),
+                    tagPrefix: 'Selection',
+                    onDone: onDone,
+                    selectionActionsBuilder: draggableMenuItemsBuilder,
+                    parentKey: parentKey,
+                  );
+                }
+              : null,
     );
   }
 }
