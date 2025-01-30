@@ -7,6 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../../../internal/entity_grid/providers/tap_state.dart';
+import '../../../../internal/entity_grid/widgets/selection_control/selection_control.dart';
 import '../popover_menu.dart';
 
 class KeepItTopBar extends ConsumerWidget {
@@ -58,7 +59,7 @@ class KeepItTopBar extends ConsumerWidget {
                     ),
                   ),
                 ),
-                SelectionControl(
+                SelectionControlIcon(
                   parentIdentifier: parentIdentifier,
                 ),
                 PopOverMenu(
@@ -76,30 +77,7 @@ class KeepItTopBar extends ConsumerWidget {
   }
 }
 
-class SelectionControl extends ConsumerWidget {
-  const SelectionControl({required this.parentIdentifier, super.key});
-  final String parentIdentifier;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tabIdentifier =
-        [parentIdentifier, ref.watch(currTabProvider(parentIdentifier))].toID();
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
-    if (tabIdentifier != 'Media') {
-      return const SizedBox.shrink();
-    } else {
-      return ShadButton.ghost(
-        padding: const EdgeInsets.only(right: 8),
-        onPressed: () {
-          ref.read(selectModeProvider(tabIdentifier).notifier).state =
-              !selectionMode;
-        },
-        child: const Icon(LucideIcons.listChecks),
-      );
-    }
-  }
-}
-
+/* 
 class ExtraActions extends ConsumerWidget {
   const ExtraActions({super.key});
 
@@ -160,3 +138,4 @@ class PopupMenuEntryBuilder {
   Widget? Function(BuildContext context, WidgetRef ref) iconBuilder;
   void Function() onTap;
 }
+ */

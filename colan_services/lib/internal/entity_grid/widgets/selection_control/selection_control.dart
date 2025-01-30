@@ -2,6 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -10,6 +11,7 @@ import 'package:store/store.dart';
 import '../../../../builders/get_selection_control.dart';
 import '../../../draggable_menu/widgets/actions_draggable_menu.dart';
 
+import '../../providers/tap_state.dart';
 import 'widgets/selectable_item.dart';
 import 'widgets/selectable_label.dart';
 import 'widgets/selection_count.dart';
@@ -303,5 +305,29 @@ class SelectionBanner extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class SelectionControlIcon extends ConsumerWidget {
+  const SelectionControlIcon({required this.parentIdentifier, super.key});
+  final String parentIdentifier;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tabIdentifier =
+        [parentIdentifier, ref.watch(currTabProvider(parentIdentifier))].toID();
+    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    if (tabIdentifier != 'Media') {
+      return const SizedBox.shrink();
+    } else {
+      return ShadButton.ghost(
+        padding: const EdgeInsets.only(right: 8),
+        onPressed: () {
+          ref.read(selectModeProvider(tabIdentifier).notifier).state =
+              !selectionMode;
+        },
+        child: const Icon(LucideIcons.listChecks),
+      );
+    }
   }
 }
