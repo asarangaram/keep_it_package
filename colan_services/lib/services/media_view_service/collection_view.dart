@@ -1,6 +1,8 @@
+import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 class CollectionView extends ConsumerWidget {
@@ -19,10 +21,50 @@ class CollectionView extends ConsumerWidget {
       hasBorder: true,
       borderRadius: const BorderRadius.all(Radius.circular(16)),
       borderColor: borderColor,
-      child: Center(
-        child: CLText.veryLarge(
-          collection.label.characters.first,
-        ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Center(
+              child: CLText.veryLarge(
+                collection.label.characters.first,
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: FractionallySizedBox(
+                heightFactor: 0.2,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Text(
+                    collection.label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: ShadTheme.of(context).textTheme.small.copyWith(
+                          backgroundColor: ShadTheme.of(context)
+                              .colorScheme
+                              .foreground
+                              .withValues(alpha: 0.5),
+                          color: ShadTheme.of(context).colorScheme.background,
+                        ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          OverlayWidgets(
+            alignment: Alignment.bottomRight,
+            sizeFactor: 0.15,
+            child: ShadAvatar(
+              (collection.serverUID == null)
+                  ? 'assets/icon/not_on_server.png'
+                  : 'assets/icon/cloud_on_lan_128px_color.png',
+            ),
+          ),
+        ],
       ),
     );
     /* 

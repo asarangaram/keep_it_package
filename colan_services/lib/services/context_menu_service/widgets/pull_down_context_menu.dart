@@ -1,41 +1,22 @@
+import 'package:colan_services/extensions/cl_menu_item.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:store/store.dart';
 
 import '../models/context_menu_items.dart';
 
-extension MenuItemToUI on CLMenuItem {
-  PullDownMenuItem get pullDownMenuItem {
-    return PullDownMenuItem(
-      onTap: onTap,
-      enabled: onTap != null,
-      title: title,
-      icon: icon,
-      //iconColor: Colors.red,
-      //isDestructive: true,
-    );
-  }
-}
-
-class MediaMenu extends ConsumerWidget {
-  const MediaMenu({
+class PullDownContextMenu extends ConsumerWidget {
+  const PullDownContextMenu({
     required this.child,
-    required this.media,
-    required this.parentCollection,
     super.key,
     this.onTap,
     this.contextMenu,
   });
-  final CLMedia media;
-  final Collection parentCollection;
-  final Widget child;
-  final ContextMenuItems? contextMenu;
 
+  final Widget child;
   final Future<bool?> Function()? onTap;
+  final ContextMenuItems? contextMenu;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,15 +30,11 @@ class MediaMenu extends ConsumerWidget {
       return PullDownButton(
         itemBuilder: (context) => [
           PullDownMenuHeader(
-            title: media.name,
+            title: menu.name,
             leadingBuilder: (context, constraints) {
               return SizedBox.square(
                 dimension: 24,
-                child: media.serverUID == null
-                    ? Image.asset('assets/icon/not_on_server.png')
-                    : Image.asset(
-                        'assets/icon/cloud_on_lan_128px_color.png',
-                      ),
+                child: Image.asset(menu.assetPath),
               );
             },
           ),
@@ -84,7 +61,7 @@ class MediaMenu extends ConsumerWidget {
             menu.onKeepOffline.pullDownMenuItem,
           PullDownMenuTitle(
             title: MapInfo(
-              media.toMapForDisplay(),
+              menu.infoMap,
               title: 'Details',
             ),
           ),

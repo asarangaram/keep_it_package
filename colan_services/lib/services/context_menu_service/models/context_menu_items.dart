@@ -7,12 +7,16 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import 'package:store/store.dart';
 
+import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
+import '../../gallery_view_service/widgets/collection_editor.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 
 @immutable
 class ContextMenuItems {
   const ContextMenuItems({
+    required this.name,
+    required this.assetPath,
     required this.onEdit,
     required this.onMove,
     required this.onShare,
@@ -22,7 +26,152 @@ class ContextMenuItems {
     required this.onKeepOffline,
     required this.onUpload,
     required this.onDeleteServerCopy,
+    required this.infoMap,
   });
+  factory ContextMenuItems.ofCollection(
+    BuildContext context,
+    WidgetRef ref, {
+    required Collection collection,
+    required bool hasOnlineService,
+    required StoreUpdater theStore,
+    ValueGetter<Future<bool?> Function()?>? onEdit,
+    ValueGetter<Future<bool?> Function()?>? onMove,
+    ValueGetter<Future<bool?> Function()?>? onShare,
+    ValueGetter<Future<bool?> Function()?>? onDelete,
+    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
+    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
+    ValueGetter<Future<bool?> Function()?>? onUpload,
+    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
+  }) {
+    final onEdit0 = onEdit != null
+        ? onEdit()
+        : () async {
+            final updated = await CollectionEditor.popupDialog(
+              context,
+              ref,
+              collection: collection,
+            );
+            if (updated != null && context.mounted) {
+              await theStore.collectionUpdater.update(updated, isEdited: true);
+            }
+
+            return true;
+          };
+    final onMove0 = onMove?.call();
+    final onShare0 = onShare?.call();
+
+    final onDelete0 = onDelete != null
+        ? onDelete()
+        : () async {
+            final confirmed = await DialogService.deleteCollection(
+                  context,
+                  collection: collection,
+                ) ??
+                false;
+            if (!confirmed) return confirmed;
+            if (context.mounted) {
+              return theStore.collectionUpdater.delete(collection.id!);
+            }
+            return false;
+          };
+    final onDeleteLocalCopy0 = onDeleteLocalCopy != null
+        ? onDeleteLocalCopy()
+        : () async {
+            if (collection.haveItOffline && collection.hasServerUID) {
+              final serverNotifier = ref.read(serverProvider.notifier);
+              final updater = await serverNotifier.storeUpdater;
+
+              await updater.collectionUpdater
+                  .upsert(collection.copyWith(haveItOffline: false));
+              final media = await updater.store.reader
+                  .getMediaByCollectionId(collection.id!);
+              for (final m in media) {
+                await theStore.mediaUpdater
+                    .deleteLocalCopy(m, haveItOffline: () => null);
+              }
+              serverNotifier.instantSync();
+            }
+            return true;
+          };
+    final onKeepOffline0 = hasOnlineService
+        ? onKeepOffline != null
+            ? onKeepOffline()
+            : () async {
+                if (!collection.haveItOffline && collection.hasServerUID) {
+                  final serverNotifier = ref.read(serverProvider.notifier);
+                  final updater = await serverNotifier.storeUpdater;
+
+                  await updater.collectionUpdater
+                      .upsert(collection.copyWith(haveItOffline: true));
+                  final media = await updater.store.reader
+                      .getMediaByCollectionId(collection.id!);
+                  for (final m in media) {
+                    await updater.mediaUpdater.update(
+                      m,
+                      haveItOffline: () => null,
+                      isEdited: false,
+                    );
+                  }
+                  updater.store.reloadStore();
+                  serverNotifier.instantSync();
+                }
+                return true;
+              }
+        : null;
+    final onUpload0 = hasOnlineService
+        ? onUpload != null
+            ? onUpload()
+            : () async {
+                await theStore.collectionUpdater.upsert(
+                  collection.copyWith(serverUID: () => -1, isEdited: true),
+                );
+                ref.read(serverProvider.notifier).instantSync();
+
+                return true;
+              }
+        : null;
+    final onDeleteServerCopy0 = onDeleteServerCopy?.call();
+
+    return ContextMenuItems(
+      name: collection.label,
+      assetPath: collection.serverUID == null
+          ? 'assets/icon/not_on_server.png'
+          : 'assets/icon/cloud_on_lan_128px_color.png',
+      onEdit:
+          CLMenuItem(title: 'Edit', icon: clIcons.imageEdit, onTap: onEdit0),
+      onMove:
+          CLMenuItem(title: 'Move', icon: clIcons.imageMove, onTap: onMove0),
+      onShare:
+          CLMenuItem(title: 'Share', icon: clIcons.imageShare, onTap: onShare0),
+      onPin: CLMenuItem(
+        title: 'Pin',
+        icon: clIcons.pin,
+      ),
+      onDelete: CLMenuItem(
+        title: 'Delete',
+        icon: clIcons.imageDelete,
+        onTap: onDelete0,
+      ),
+      onDeleteLocalCopy: CLMenuItem(
+        title: 'Remove downloads',
+        icon: Icons.download_done_sharp,
+        onTap: onDeleteLocalCopy0,
+      ),
+      onKeepOffline: CLMenuItem(
+        title: 'Download',
+        icon: Icons.download_sharp,
+        onTap: onKeepOffline0,
+      ),
+      onUpload:
+          CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload0),
+      onDeleteServerCopy: CLMenuItem(
+        title: 'Permanently Delete',
+        icon: Icons.remove,
+        onTap: onDeleteServerCopy0,
+      ),
+      infoMap: collection.toMapForDisplay(),
+    );
+  }
   factory ContextMenuItems.ofMedia(
     BuildContext context,
     WidgetRef ref, {
@@ -121,6 +270,10 @@ class ContextMenuItems {
         onDeleteServerCopy != null ? onDeleteServerCopy() : null;
 
     return ContextMenuItems(
+      name: media.name,
+      assetPath: media.serverUID == null
+          ? 'assets/icon/not_on_server.png'
+          : 'assets/icon/cloud_on_lan_128px_color.png',
       onEdit:
           CLMenuItem(title: 'Edit', icon: clIcons.imageEdit, onTap: onEdit0),
       onMove:
@@ -154,8 +307,11 @@ class ContextMenuItems {
         icon: Icons.remove,
         onTap: onDeleteServerCopy0,
       ),
+      infoMap: media.toMapForDisplay(),
     );
   }
+  final String name;
+  final String assetPath;
   final CLMenuItem onEdit;
   final CLMenuItem onMove;
   final CLMenuItem onShare;
@@ -165,4 +321,5 @@ class ContextMenuItems {
   final CLMenuItem onKeepOffline;
   final CLMenuItem onUpload;
   final CLMenuItem onDeleteServerCopy;
+  final Map<String, dynamic> infoMap;
 }

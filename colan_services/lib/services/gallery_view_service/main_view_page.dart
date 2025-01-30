@@ -179,12 +179,13 @@ class KeepItMainGrid extends ConsumerWidget {
               switch (item) {
             Collection _ => CollectionAsFolder(
                 collection: item,
-                onTap: () {
+                onTap: () async {
                   ref
                       .read(
                         activeCollectionProvider.notifier,
                       )
                       .state = item.id;
+                  return null;
                 },
               ),
             CLMedia _ => GetCollection(

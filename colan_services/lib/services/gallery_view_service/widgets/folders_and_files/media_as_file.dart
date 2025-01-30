@@ -8,8 +8,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../../context_menu_service/models/context_menu_items.dart';
+import '../../../context_menu_service/widgets/pull_down_context_menu.dart';
 import '../../../media_view_service/widgets/media_preview_service.dart';
-import '../../../context_menu_service/widgets/media_menu.dart';
 
 class MediaPreview extends StatelessWidget {
   const MediaPreview({
@@ -44,10 +44,8 @@ class MediaPreview extends StatelessWidget {
           builder: (collection) {
             final parentCollection = collection!;
 
-            return MediaMenu(
+            return PullDownContextMenu(
               onTap: onTap,
-              media: media0,
-              parentCollection: parentCollection,
               contextMenu: contextMenu,
               child: MediaPreview0(
                 media: media0,
