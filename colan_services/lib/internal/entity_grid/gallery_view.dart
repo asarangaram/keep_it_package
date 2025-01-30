@@ -19,6 +19,7 @@ class CLEntityGalleryView extends ConsumerWidget {
     required this.numColumns,
     required this.emptyWidget,
     required this.selectionActionsBuilder,
+    required this.viewableAsCollection,
     super.key,
     this.filterDisabled = false,
     this.onSelectionChanged,
@@ -38,6 +39,7 @@ class CLEntityGalleryView extends ConsumerWidget {
       selectionActionsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filterDisabled;
+  final bool viewableAsCollection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -96,6 +98,7 @@ class CLEntityGalleryView extends ConsumerWidget {
                       loadingBuilder: loadingBuilder,
                       incoming: filterred,
                       columns: numColumns,
+                      viewableAsCollection: viewableAsCollection,
                       builder: (tabs /* numColumns */) {
                         return RawCLEntityGalleryView(
                           viewIdentifier: viewIdentifier,

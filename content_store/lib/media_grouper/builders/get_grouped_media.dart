@@ -16,6 +16,7 @@ class GetGroupedMedia extends ConsumerWidget {
     required this.columns,
     required this.errorBuilder,
     required this.loadingBuilder,
+    required this.viewableAsCollection,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
@@ -27,6 +28,7 @@ class GetGroupedMedia extends ConsumerWidget {
   final Widget Function(
     List<LabelledEntityGroups> galleryMap,
   ) builder;
+  final bool viewableAsCollection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +46,7 @@ class GetGroupedMedia extends ConsumerWidget {
       builder: (collections) {
         final result = <LabelledEntityGroups>[];
 
-        if (collections.length > 1) {
+        if (collections.length > 1 && viewableAsCollection) {
           result.add(
             LabelledEntityGroups(
               name: 'Collections',

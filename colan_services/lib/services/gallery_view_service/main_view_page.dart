@@ -115,6 +115,7 @@ class KeepItMainGrid extends ConsumerWidget {
           loadingBuilder: loadingBuilder,
           errorBuilder: errorBuilder,
           numColumns: 3,
+          viewableAsCollection: true,
           emptyWidget: const WhenEmpty(),
           selectionActionsBuilder: (context, entities) {
             final items = entities.map((e) => e as CLMedia).toList();

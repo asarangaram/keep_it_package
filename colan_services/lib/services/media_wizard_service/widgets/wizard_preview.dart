@@ -55,6 +55,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       emptyWidget: const CLText.large('Nothing to show here'),
       entities: media0.entries,
       numColumns: 3,
+      viewableAsCollection: false,
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GalleryView',
       ),

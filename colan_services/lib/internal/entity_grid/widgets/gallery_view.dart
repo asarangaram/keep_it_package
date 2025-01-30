@@ -57,8 +57,9 @@ class _RawCLEntityGalleryViewState
     final bannersBuilder = widget.bannersBuilder;
     final numColumns = widget.numColumns;
     final draggableMenuBuilder = widget.draggableMenuBuilder;
+    final Widget gallery;
     if (tabs.length == 1) {
-      return CLEntityGalleryTab(
+      gallery = CLEntityGalleryTab(
         tabIdentifier:
             TabIdentifier(view: viewIdentifier, tabId: tabs.first.name),
         tab: tabs.first,
@@ -67,56 +68,57 @@ class _RawCLEntityGalleryViewState
         bannersBuilder: bannersBuilder,
         columns: numColumns,
       );
-    }
-
-    final laskKnownTabName = ref.watch(currTabProvider(viewIdentifier));
-    final LabelledEntityGroups currTab;
-    final tempCurrTab =
-        tabs.where((e) => e.name == laskKnownTabName).firstOrNull;
-    if (tempCurrTab == null) {
-      currTab = tabs.first;
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        ref.read(currTabProvider(viewIdentifier).notifier).state = currTab.name;
-      });
     } else {
-      currTab = tempCurrTab;
+      final laskKnownTabName = ref.watch(currTabProvider(viewIdentifier));
+      final LabelledEntityGroups currTab;
+      final tempCurrTab =
+          tabs.where((e) => e.name == laskKnownTabName).firstOrNull;
+      if (tempCurrTab == null) {
+        currTab = tabs.first;
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          ref.read(currTabProvider(viewIdentifier).notifier).state =
+              currTab.name;
+        });
+      } else {
+        currTab = tempCurrTab;
+      }
+      gallery = Column(
+        children: [
+          ShadTabs(
+            padding: EdgeInsets.zero,
+            value: currTab.name,
+            // tabBarConstraints: BoxConstraints(maxWidth: 400),
+            //contentConstraints: BoxConstraints(maxWidth: 400),
+            onChanged: (value) {
+              ref.read(currTabProvider(viewIdentifier).notifier).state = value;
+            },
+            tabs: [
+              for (final k in tabs)
+                ShadTab(
+                  value: k.name,
+                  child: Text(k.name),
+                ),
+            ],
+          ),
+          Flexible(
+            child: CLEntityGalleryTab(
+              tabIdentifier:
+                  TabIdentifier(view: viewIdentifier, tabId: currTab.name),
+              tab: currTab,
+              itemBuilder: itemBuilder,
+              labelBuilder: labelBuilder,
+              bannersBuilder: bannersBuilder,
+              columns: numColumns,
+            ),
+          ),
+        ],
+      );
     }
 
     return Stack(
       key: parentKey,
       children: [
-        Column(
-          children: [
-            ShadTabs(
-              padding: EdgeInsets.zero,
-              value: currTab.name,
-              // tabBarConstraints: BoxConstraints(maxWidth: 400),
-              //contentConstraints: BoxConstraints(maxWidth: 400),
-              onChanged: (value) {
-                ref.read(currTabProvider(viewIdentifier).notifier).state =
-                    value;
-              },
-              tabs: [
-                for (final k in tabs)
-                  ShadTab(
-                    value: k.name,
-                    child: Text(k.name),
-                  ),
-              ],
-            ),
-            Flexible(
-              child: CLEntityGalleryTab(
-                tabIdentifier:
-                    TabIdentifier(view: viewIdentifier, tabId: currTab.name),
-                tab: currTab,
-                itemBuilder: itemBuilder,
-                labelBuilder: labelBuilder,
-                bannersBuilder: bannersBuilder,
-                columns: numColumns,
-              ),
-            ),
-          ],
-        ),
+        gallery,
         if (draggableMenuBuilder != null)
           draggableMenuBuilder(context, parentKey: parentKey),
       ],
