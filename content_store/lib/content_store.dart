@@ -16,6 +16,7 @@ export 'db_service/widgets/broken_image.dart';
 export 'db_service/widgets/shimmer.dart';
 export 'extensions/ext_cl_medias.dart';
 export 'media_grouper/builders/get_grouped_media.dart';
+export 'media_grouper/models/labeled_entity_groups.dart';
 export 'media_grouper/models/media_grouper.dart';
 export 'media_grouper/widgets/group_by_view.dart';
 export 'online_service/providers/server.dart';

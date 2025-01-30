@@ -100,7 +100,7 @@ class KeepItMainGrid extends ConsumerWidget {
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       builder: (theStore) {
-        return GalleryView(
+        return CLEntityGalleryView(
           onClose: () {
             ref.read(selectModeProvider(identifier).notifier).state =
                 !selectionMode;

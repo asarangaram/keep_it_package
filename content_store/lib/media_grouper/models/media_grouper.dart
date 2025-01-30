@@ -57,17 +57,3 @@ class GroupBy implements ViewModifier {
     };
   }
 }
-
-/* if (reader != null) {
-      final ids = entities
-          .map((e) => (e as CLMedia).collectionId)
-          .where((e) => e != null)
-          .map((e) => e!)
-          .toSet()
-          .toList();
-      if (ids.length > 1) {
-        final collections = await reader!.getCollectionsByIDList(ids);
-        final grouped = collections.group(columns);
-        result['Collections'] = grouped;
-      }
-    } */

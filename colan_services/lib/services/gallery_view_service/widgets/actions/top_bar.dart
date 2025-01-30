@@ -1,4 +1,3 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../gallery_view.dart';
+import '../../../../internal/entity_grid/providers/tap_state.dart';
 import '../popover_menu.dart';
 
 class KeepItTopBar extends ConsumerWidget {
@@ -59,7 +58,9 @@ class KeepItTopBar extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SelectionControl(),
+                SelectionControl(
+                  parentIdentifier: parentIdentifier,
+                ),
                 PopOverMenu(
                   parentIdentifier: parentIdentifier,
                 ),
@@ -76,29 +77,26 @@ class KeepItTopBar extends ConsumerWidget {
 }
 
 class SelectionControl extends ConsumerWidget {
-  const SelectionControl({super.key});
+  const SelectionControl({required this.parentIdentifier, super.key});
+  final String parentIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final identifier = ref.watch(mainPageIdentifierProvider);
-    final selectionMode = ref.watch(selectModeProvider(identifier));
-
-    return GetCurrenViewIdentifiers(
-      builder: (viewIdentifier, {required onChangeView}) {
-        if (viewIdentifier != 'Media') {
-          return const SizedBox.shrink();
-        } else {
-          return ShadButton.ghost(
-            padding: const EdgeInsets.only(right: 8),
-            onPressed: () {
-              ref.read(selectModeProvider(identifier).notifier).state =
-                  !selectionMode;
-            },
-            child: const Icon(LucideIcons.listChecks),
-          );
-        }
-      },
-    );
+    final tabIdentifier =
+        [parentIdentifier, ref.watch(currTabProvider(parentIdentifier))].toID();
+    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    if (tabIdentifier != 'Media') {
+      return const SizedBox.shrink();
+    } else {
+      return ShadButton.ghost(
+        padding: const EdgeInsets.only(right: 8),
+        onPressed: () {
+          ref.read(selectModeProvider(tabIdentifier).notifier).state =
+              !selectionMode;
+        },
+        child: const Icon(LucideIcons.listChecks),
+      );
+    }
   }
 }
 

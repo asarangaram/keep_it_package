@@ -1,23 +1,25 @@
-import 'package:flutter/material.dart';
+import 'package:content_store/content_store.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
+import '../providers/tap_state.dart';
+import 'cl_grid.dart';
 
-import 'core/cl_grid.dart';
-
-class CLEntityGridView extends ConsumerStatefulWidget {
-  const CLEntityGridView({
+class CLEntityGalleryTab extends ConsumerStatefulWidget {
+  const CLEntityGalleryTab({
+    required this.tabIdentifier,
+    required this.tab,
     required this.itemBuilder,
-    required this.galleryMap,
-    required this.columns,
     required this.labelBuilder,
     required this.bannersBuilder,
+    required this.columns,
     super.key,
   });
-
-  final List<GalleryGroupCLEntity<CLEntity>> galleryMap;
-  final Widget Function(BuildContext context, CLEntity item) itemBuilder;
+  final String tabIdentifier;
+  final LabelledEntityGroups tab;
   final int columns;
+  final Widget Function(BuildContext context, CLEntity item) itemBuilder;
 
   final Widget? Function(
     BuildContext context,
@@ -30,41 +32,44 @@ class CLEntityGridView extends ConsumerStatefulWidget {
   ) bannersBuilder;
 
   @override
-  ConsumerState<CLEntityGridView> createState() => _CLEntityGridViewState();
+  ConsumerState<CLEntityGalleryTab> createState() => CLEntityGalleryTabState();
 }
 
-class _CLEntityGridViewState extends ConsumerState<CLEntityGridView> {
+class CLEntityGalleryTabState extends ConsumerState<CLEntityGalleryTab> {
   late ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
-    _scrollController =
-        ScrollController(initialScrollOffset: ref.read(scrollPositionProvider));
+    _scrollController = ScrollController(
+      initialScrollOffset:
+          ref.read(tabScrollPositionProvider(widget.tabIdentifier)),
+    );
 
     // Listen for scroll changes
     _scrollController.addListener(() {
-      ref.read(scrollPositionProvider.notifier).state =
+      ref.read(tabScrollPositionProvider(widget.tabIdentifier).notifier).state =
           _scrollController.offset;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final galleryGroups = widget.tab.galleryGroups;
     return Column(
       children: [
-        ...widget.bannersBuilder(context, widget.galleryMap),
+        ...widget.bannersBuilder(context, galleryGroups),
         Flexible(
           child: ListView.builder(
             controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: widget.galleryMap.length + 1,
+            itemCount: galleryGroups.length + 1,
             itemBuilder: (BuildContext context, int groupIndex) {
-              if (groupIndex == widget.galleryMap.length) {
+              if (groupIndex == galleryGroups.length) {
                 return SizedBox(
                   height: MediaQuery.of(context).viewPadding.bottom + 80,
                 );
               }
-              final gallery = widget.galleryMap[groupIndex];
+              final gallery = galleryGroups[groupIndex];
               return CLGrid<CLEntity>(
                 itemCount: gallery.items.length,
                 columns: widget.columns,
@@ -76,8 +81,7 @@ class _CLEntityGridViewState extends ConsumerState<CLEntityGridView> {
 
                   return itemWidget;
                 },
-                header:
-                    widget.labelBuilder(context, widget.galleryMap, gallery),
+                header: widget.labelBuilder(context, galleryGroups, gallery),
               );
             },
           ),
@@ -86,7 +90,3 @@ class _CLEntityGridViewState extends ConsumerState<CLEntityGridView> {
     );
   }
 }
-
-final scrollPositionProvider = StateProvider<double>((ref) {
-  return 0;
-});

@@ -3,14 +3,14 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+
 import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
-import '../../../internal/selection_control/selection_control.dart';
-import 'cl_entity_grid_view.dart';
+import 'widgets/gallery_view.dart';
+import 'widgets/selection_control/selection_control.dart';
 
-class GalleryView extends ConsumerWidget {
-  const GalleryView({
+class CLEntityGalleryView extends ConsumerWidget {
+  const CLEntityGalleryView({
     required this.parentIdentifier,
     required this.entities,
     required this.loadingBuilder,
@@ -103,23 +103,13 @@ class GalleryView extends ConsumerWidget {
                       incoming: filterred,
                       columns: numColumns,
                       builder: (galleryMap /* numColumns */) {
-                        return CLEntityGridViewBuilder(
-                          key: ValueKey(galleryMap),
-                          galleryMap: galleryMap,
-                          loadingBuilder: loadingBuilder,
-                          errorBuilder: errorBuilder,
-                          builder: (galleryMapL) {
-                            return Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: CLEntityGridView(
-                                galleryMap: galleryMapL,
-                                bannersBuilder: bannersBuilder,
-                                labelBuilder: labelBuilder,
-                                itemBuilder: itemBuilder,
-                                columns: numColumns,
-                              ),
-                            );
-                          },
+                        return RawCLEntityGalleryView(
+                          viewIdentifier: parentIdentifier,
+                          tabs: const [],
+                          bannersBuilder: bannersBuilder,
+                          labelBuilder: labelBuilder,
+                          itemBuilder: itemBuilder,
+                          numColumns: numColumns,
                         );
                       },
                     );
@@ -127,85 +117,6 @@ class GalleryView extends ConsumerWidget {
                 );
               },
             ),
-    );
-  }
-}
-
-class CLEntityGridViewBuilder extends StatefulWidget {
-  const CLEntityGridViewBuilder({
-    required this.builder,
-    required this.galleryMap,
-    required this.loadingBuilder,
-    required this.errorBuilder,
-    super.key,
-  });
-  final Map<String, List<GalleryGroupCLEntity<CLEntity>>> galleryMap;
-  final Widget Function() loadingBuilder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function(List<GalleryGroupCLEntity<CLEntity>> items) builder;
-  @override
-  State<CLEntityGridViewBuilder> createState() =>
-      _CLEntityGridViewBuilderState();
-}
-
-class _CLEntityGridViewBuilderState extends State<CLEntityGridViewBuilder> {
-  @override
-  Widget build(BuildContext context) {
-    return GetCurrenViewIdentifiers(
-      builder: (viewIdentifier, {required onChangeView}) {
-        final String identifier;
-        if (widget.galleryMap.keys.contains(viewIdentifier)) {
-          identifier = viewIdentifier;
-        } else {
-          identifier = widget.galleryMap.keys.first;
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            onChangeView(identifier);
-          });
-        }
-
-        return Column(
-          children: [
-            if (widget.galleryMap.entries.length > 1)
-              ShadTabs(
-                padding: EdgeInsets.zero,
-                value: identifier,
-                // tabBarConstraints: BoxConstraints(maxWidth: 400),
-                //contentConstraints: BoxConstraints(maxWidth: 400),
-                onChanged: onChangeView,
-                tabs: [
-                  for (final k in widget.galleryMap.keys)
-                    ShadTab(
-                      value: k,
-                      child: Text(k),
-                    ),
-                ],
-              ),
-            Expanded(child: widget.builder(widget.galleryMap[identifier]!)),
-          ],
-        );
-      },
-    );
-  }
-}
-
-final currenViewIdentifiersProvider = StateProvider<String>((ref) {
-  return 'Media';
-});
-
-class GetCurrenViewIdentifiers extends ConsumerWidget {
-  const GetCurrenViewIdentifiers({required this.builder, super.key});
-  final Widget Function(
-    String currenViewIdentifier, {
-    required void Function(String value) onChangeView,
-  }) builder;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final idString = ref.watch(currenViewIdentifiersProvider);
-    return builder(
-      idString,
-      onChangeView: (val) =>
-          ref.read(currenViewIdentifiersProvider.notifier).state = val,
     );
   }
 }

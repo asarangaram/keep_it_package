@@ -1,10 +1,10 @@
-import 'dart:collection';
-
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart' show CLEntity, CLMedia, GalleryGroupCLEntity;
 
+import '../../db_service/builders/w3_get_collection.dart';
+
+import '../models/labeled_entity_groups.dart';
 import '../providers/media_grouper.dart';
 
 class GetGroupedMedia extends ConsumerWidget {
@@ -24,7 +24,7 @@ class GetGroupedMedia extends ConsumerWidget {
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final Widget Function(
-    Map<String, List<GalleryGroupCLEntity<CLEntity>>> galleryMap,
+    List<LabelledEntityGroups> galleryMap,
   ) builder;
 
   @override
@@ -41,19 +41,30 @@ class GetGroupedMedia extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       errorBuilder: errorBuilder,
       builder: (collections) {
-        final result = LinkedHashMap.of({
-          if (collections.length > 1)
-            'Collections': ref.watch(
-              groupedMediaProvider(
-                MapEntry('$parentIdentifier/Collection', collections),
+        final result = <LabelledEntityGroups>[];
+
+        if (collections.length > 1) {
+          result.add(
+            LabelledEntityGroups(
+              name: 'Collections',
+              galleryGroups: ref.watch(
+                groupedMediaProvider(
+                  MapEntry('$parentIdentifier/Collection', collections),
+                ),
               ),
             ),
-          'Media': ref.watch(
-            groupedMediaProvider(
-              MapEntry('$parentIdentifier/Media', incoming),
+          );
+        }
+        result.add(
+          LabelledEntityGroups(
+            name: 'Media',
+            galleryGroups: ref.watch(
+              groupedMediaProvider(
+                MapEntry('$parentIdentifier/Media', incoming),
+              ),
             ),
           ),
-        });
+        );
 
         return builder(result);
       },

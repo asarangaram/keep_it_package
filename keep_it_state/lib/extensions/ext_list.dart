@@ -1,6 +1,4 @@
 extension ExtDimension<T> on List<T> {
-  
-
   List<T> firstNItems(int n) {
     if (length <= n) {
       return this; // Return the list as it is
@@ -45,4 +43,8 @@ extension ExtExclude<T> on List<T> {
       (e) => labelBuilder(e) == label,
     ).firstOrNull;
   }
+}
+
+extension IDGenerator on List<String> {
+  String toID() => join(' ');
 }

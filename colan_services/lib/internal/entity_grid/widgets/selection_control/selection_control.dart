@@ -7,8 +7,8 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../builders/get_selection_control.dart';
-import '../draggable_menu/widgets/actions_draggable_menu.dart';
+import '../../../../builders/get_selection_control.dart';
+import '../../../draggable_menu/widgets/actions_draggable_menu.dart';
 
 import 'widgets/selectable_item.dart';
 import 'widgets/selectable_label.dart';

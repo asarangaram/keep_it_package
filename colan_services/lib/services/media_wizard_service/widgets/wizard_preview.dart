@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
+import '../../../internal/entity_grid/gallery_view.dart';
 import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../gallery_view_service/widgets/gallery_view.dart';
 import '../../media_view_service/media_view_service1.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -55,7 +55,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         debugMessage: 'GetDBReader',
       ),
       builder: (dbReader) {
-        return GalleryView(
+        return CLEntityGalleryView(
           parentIdentifier: widget.parentIdentifier,
           emptyWidget: const CLText.large('Nothing to show here'),
           entities: media0.entries,
