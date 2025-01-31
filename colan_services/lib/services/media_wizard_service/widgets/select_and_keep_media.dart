@@ -184,35 +184,56 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     required List<CLMedia> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) {
-    return StreamBuilder<Progress>(
-      stream: mediaUpdater.moveMultiple(
-        media: currMedia,
-        collection: targetCollection!.copyWith(
-          // mark to upload as atlease one media is from server
-          serverUID: (currMedia.any((e) => e.hasServerUID) &&
-                  !targetCollection!.hasServerUID)
-              ? () => -1
-              : null,
-        ),
-        onDone: ({
-          required List<CLMedia> mediaMultiple,
-        }) async {
-          await ref
-              .read(
-                universalMediaProvider(widget.type).notifier,
-              )
-              .remove(currMedia);
-          selectedMedia = const CLSharedMedia(entries: []);
-          actionConfirmed = false;
-          targetCollection = null;
-          onUpdateSelectionmode(enable: false);
-          setState(() {});
-          ref.read(serverProvider.notifier).instantSync();
-        },
+    return GetCollectionMultiple(
+      errorBuilder: (_, __) => throw UnimplementedError('errorBuilder'),
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
       ),
-      builder: (context, snapShot) => ProgressBar(
-        progress: snapShot.hasData ? snapShot.data?.fractCompleted : null,
-      ),
+      query: DBQueries.collections,
+      builder: (collections) {
+        final int? serverUIDNew;
+        if (currMedia.any((e) => e.hasServerUID) &&
+            !targetCollection!.hasServerUID) {
+          serverUIDNew = collections.entries
+                  .where((e) => e.serverUID != null)
+                  .map((e) => e.serverUID!)
+                  .reduce((current, next) => current < next ? current : next) -
+              1;
+        } else {
+          serverUIDNew = null;
+        }
+
+        return StreamBuilder<Progress>(
+          stream: mediaUpdater.moveMultiple(
+            media: currMedia,
+            collection: targetCollection!.copyWith(
+              // mark to upload as atlease one media is from server
+              serverUID: (currMedia.any((e) => e.hasServerUID) &&
+                      !targetCollection!.hasServerUID)
+                  ? () => serverUIDNew
+                  : null,
+            ),
+            onDone: ({
+              required List<CLMedia> mediaMultiple,
+            }) async {
+              await ref
+                  .read(
+                    universalMediaProvider(widget.type).notifier,
+                  )
+                  .remove(currMedia);
+              selectedMedia = const CLSharedMedia(entries: []);
+              actionConfirmed = false;
+              targetCollection = null;
+              onUpdateSelectionmode(enable: false);
+              setState(() {});
+              ref.read(serverProvider.notifier).instantSync();
+            },
+          ),
+          builder: (context, snapShot) => ProgressBar(
+            progress: snapShot.hasData ? snapShot.data?.fractCompleted : null,
+          ),
+        );
+      },
     );
   }
 
