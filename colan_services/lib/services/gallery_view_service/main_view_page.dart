@@ -107,6 +107,11 @@ class KeepItMainGrid extends ConsumerWidget {
       parentID: parentIdentifier,
       viewId: collectionId.toString(),
     );
+    if (clmedias.isEmpty && collectionId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(activeCollectionProvider.notifier).state = null;
+      });
+    }
     return GetStoreUpdater(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
