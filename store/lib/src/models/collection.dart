@@ -77,7 +77,7 @@ class Collection implements CLEntity {
       description: description,
       serverUID: serverUID,
       label: label,
-      haveItOffline: serverUID == null || serverUID == -1,
+      haveItOffline: serverUID == null || serverUID < 0,
       createdDate: createdDate,
       updatedDate: updatedDate,
       isDeleted: false,
@@ -223,7 +223,7 @@ class Collection implements CLEntity {
   bool get isMarkedEditted => isEdited;
 
   @override
-  bool get isMarkedForUpload => serverUID == -1;
+  bool get isMarkedForUpload => serverUID != null && serverUID! < 0;
 
   @override
   int? get entityId => id;
