@@ -179,64 +179,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     );
   }
 
-  Widget keepWithProgress({
-    required MediaUpdater mediaUpdater,
-    required List<CLMedia> currMedia,
-    required void Function({required bool enable}) onUpdateSelectionmode,
-  }) {
-    return GetCollectionMultiple(
-      errorBuilder: (_, __) => throw UnimplementedError('errorBuilder'),
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetStoreUpdater',
-      ),
-      query: DBQueries.collections,
-      builder: (collections) {
-        final int? serverUIDNew;
-        if (currMedia.any((e) => e.hasServerUID) &&
-            !targetCollection!.hasServerUID) {
-          serverUIDNew = collections.entries
-                  .where((e) => e.serverUID != null)
-                  .map((e) => e.serverUID!)
-                  .reduce((current, next) => current < next ? current : next) -
-              1;
-        } else {
-          serverUIDNew = null;
-        }
-
-        return StreamBuilder<Progress>(
-          stream: mediaUpdater.moveMultiple(
-            media: currMedia,
-            collection: targetCollection!.copyWith(
-              // mark to upload as atlease one media is from server
-              serverUID: (currMedia.any((e) => e.hasServerUID) &&
-                      !targetCollection!.hasServerUID)
-                  ? () => serverUIDNew
-                  : null,
-            ),
-            onDone: ({
-              required List<CLMedia> mediaMultiple,
-            }) async {
-              await ref
-                  .read(
-                    universalMediaProvider(widget.type).notifier,
-                  )
-                  .remove(currMedia);
-              selectedMedia = const CLSharedMedia(entries: []);
-              actionConfirmed = false;
-              targetCollection = null;
-              onUpdateSelectionmode(enable: false);
-              setState(() {});
-              ref.read(serverProvider.notifier).instantSync();
-            },
-          ),
-          builder: (context, snapShot) => ProgressBar(
-            progress: snapShot.hasData ? snapShot.data?.fractCompleted : null,
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return GetStoreUpdater(
@@ -299,10 +241,24 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                     (null, _) => getCollection(
                         currMedia: currMedia,
                       ),
-                    (_, true) => keepWithProgress(
+                    (_, true) => KeepWithProgress(
+                        targetCollection: targetCollection!,
                         mediaUpdater: theStore.mediaUpdater,
                         onUpdateSelectionmode: onUpdateSelectionmode,
                         currMedia: currMedia,
+                        onDone: () async {
+                          await ref
+                              .read(
+                                universalMediaProvider(widget.type).notifier,
+                              )
+                              .remove(currMedia);
+                          selectedMedia = const CLSharedMedia(entries: []);
+                          actionConfirmed = false;
+                          targetCollection = null;
+                          onUpdateSelectionmode(enable: false);
+                          setState(() {});
+                          ref.read(serverProvider.notifier).instantSync();
+                        },
                       ),
                     _ => null
                   }
@@ -355,6 +311,67 @@ class WizardView extends ConsumerWidget {
         onSelectionChanged: onSelectionChanged,
         freezeView: freezeView,
       ),
+    );
+  }
+}
+
+class KeepWithProgress extends StatelessWidget {
+  const KeepWithProgress({
+    required this.targetCollection,
+    required this.mediaUpdater,
+    required this.currMedia,
+    required this.onUpdateSelectionmode,
+    required this.onDone,
+    super.key,
+  });
+  final Collection targetCollection;
+  final MediaUpdater mediaUpdater;
+  final List<CLMedia> currMedia;
+  final void Function({required bool enable}) onUpdateSelectionmode;
+  final Future<void> Function() onDone;
+  @override
+  Widget build(BuildContext context) {
+    return GetCollectionMultiple(
+      errorBuilder: (_, __) => throw UnimplementedError('errorBuilder'),
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'GetStoreUpdater',
+      ),
+      query: DBQueries.collections,
+      builder: (collections) {
+        final int? serverUIDNew;
+        if (currMedia.any((e) => e.hasServerUID) &&
+            !targetCollection.hasServerUID) {
+          serverUIDNew = collections.entries
+                  .where((e) => e.serverUID != null)
+                  .map((e) => e.serverUID!)
+                  .reduce((current, next) => current < next ? current : next) -
+              1;
+        } else {
+          serverUIDNew = null;
+        }
+
+        return StreamBuilder<Progress>(
+          stream: mediaUpdater.moveMultiple(
+            media: currMedia,
+            collection: targetCollection.copyWith(
+              // mark to upload as atlease one media is from server
+              serverUID: (currMedia.any((e) => e.hasServerUID) &&
+                      !targetCollection.hasServerUID)
+                  ? () => serverUIDNew
+                  : null,
+            ),
+            onDone: ({
+              required List<CLMedia> mediaMultiple,
+            }) async =>
+                onDone(),
+          ),
+          builder: (context, snapShot) {
+            return ProgressBar(
+              progress: snapShot.hasData ? snapShot.data?.fractCompleted : null,
+            );
+          },
+        );
+      },
     );
   }
 }
