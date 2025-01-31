@@ -258,6 +258,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                           onUpdateSelectionmode(enable: false);
                           setState(() {});
                           ref.read(serverProvider.notifier).instantSync();
+                          theStore.store.reloadStore();
                         },
                       ),
                     _ => null
@@ -360,6 +361,7 @@ class KeepWithProgress extends StatelessWidget {
                   ? () => serverUIDNew
                   : null,
             ),
+            shouldRefresh: false,
             onDone: ({
               required List<CLMedia> mediaMultiple,
             }) async =>

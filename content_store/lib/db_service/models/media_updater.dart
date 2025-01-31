@@ -421,6 +421,7 @@ class MediaUpdater {
     ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
+    bool shouldRefresh = true,
   }) async {
     if (media.pin != null && path == null) {
       throw Exception('Remove pin before updating media');
@@ -516,7 +517,12 @@ class MediaUpdater {
                   : media.pin),
         );
 
-    return upsert(updated0, parents: parents, path: path);
+    return upsert(
+      updated0,
+      parents: parents,
+      path: path,
+      shouldRefresh: shouldRefresh,
+    );
   }
 
   Future<Collection> get _notesCollection async =>
@@ -737,6 +743,7 @@ class MediaUpdater {
           isHidden: () => false,
           collectionId: () => updatedCollection.id!,
           isEdited: true,
+          shouldRefresh: false,
         );
         if (updated != null) {
           updatedList.add(updated);
@@ -746,7 +753,7 @@ class MediaUpdater {
           fractCompleted: i / media.length,
           currentItem: m.name,
         );
-        await Future<void>.delayed(const Duration(microseconds: 10));
+        await Future<void>.delayed(const Duration(milliseconds: 1000));
       }
       if (shouldRefresh) {
         store.reloadStore();
