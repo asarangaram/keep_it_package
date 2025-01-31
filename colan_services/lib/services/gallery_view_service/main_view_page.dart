@@ -177,44 +177,73 @@ class KeepItMainGrid extends ConsumerWidget {
             item,
           ) =>
               switch (item) {
-            Collection _ => CollectionAsFolder(
-                collection: item,
-                onTap: () async {
-                  ref
-                      .read(
-                        activeCollectionProvider.notifier,
-                      )
-                      .state = item.id;
-                  return null;
-                },
-              ),
-            CLMedia _ => GetCollection(
-                id: item.collectionId,
-                loadingBuilder: () => CLLoader.widget(debugMessage: 'GetMedia'),
+            Collection _ => GetCollection(
+                id: item.id,
+                loadingBuilder: () =>
+                    CLLoader.widget(debugMessage: 'GetCollection'),
                 errorBuilder: (p0, p1) =>
-                    const Center(child: Text('getMedia Error')),
-                builder: (parentCollection) {
-                  final canSync = ref
-                      .watch(serverProvider.select((server) => server.canSync));
-                  return MediaPreview(
-                    media: item,
-                    parentIdentifier: viewIdentifier.toString(),
+                    const Center(child: Text('GetCollection Error')),
+                builder: (collection) {
+                  final canSync = ref.watch(
+                    serverProvider.select((server) => server.canSync),
+                  );
+                  return CollectionAsFolder(
+                    collection: item,
                     onTap: () async {
-                      await PageManager.of(context).openMedia(
-                        item.id!,
-                        collectionId: item.collectionId,
-                        parentIdentifier: viewIdentifier.toString(),
-                      );
-                      return true;
+                      ref
+                          .read(
+                            activeCollectionProvider.notifier,
+                          )
+                          .state = item.id;
+                      return null;
                     },
-                    contextMenu: ContextMenuItems.ofMedia(
+                    contextMenu: ContextMenuItems.ofCollection(
                       context,
                       ref,
-                      media: item,
-                      parentCollection: parentCollection!,
+                      collection: collection!,
                       hasOnlineService: canSync,
                       theStore: theStore,
                     ),
+                  );
+                },
+              ),
+            CLMedia _ => GetMedia(
+                loadingBuilder: () => CLLoader.widget(debugMessage: 'GetMedia'),
+                errorBuilder: (p0, p1) =>
+                    const Center(child: Text('getMedia Error')),
+                id: item.id!,
+                builder: (media) {
+                  return GetCollection(
+                    id: media!.collectionId,
+                    loadingBuilder: () =>
+                        CLLoader.widget(debugMessage: 'GetCollection'),
+                    errorBuilder: (p0, p1) =>
+                        const Center(child: Text('GetCollection Error')),
+                    builder: (parentCollection) {
+                      final canSync = ref.watch(
+                        serverProvider.select((server) => server.canSync),
+                      );
+                      return MediaPreview(
+                        media: media,
+                        parentIdentifier: viewIdentifier.toString(),
+                        onTap: () async {
+                          await PageManager.of(context).openMedia(
+                            media.id!,
+                            collectionId: media.collectionId,
+                            parentIdentifier: viewIdentifier.toString(),
+                          );
+                          return true;
+                        },
+                        contextMenu: ContextMenuItems.ofMedia(
+                          context,
+                          ref,
+                          media: media,
+                          parentCollection: parentCollection!,
+                          hasOnlineService: canSync,
+                          theStore: theStore,
+                        ),
+                      );
+                    },
                   );
                 },
               ),

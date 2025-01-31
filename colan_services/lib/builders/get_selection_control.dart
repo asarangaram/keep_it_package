@@ -28,6 +28,7 @@ class GetSelectionControl extends ConsumerWidget {
       ],
       child: GetSelection0(
         builder: builder,
+        onSelectionChanged: onSelectionChanged,
       ),
     );
   }

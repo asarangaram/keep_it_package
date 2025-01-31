@@ -11,7 +11,7 @@ import '../../gallery_view_service/widgets/folders_and_files/media_as_file.dart'
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
-    required this.parentIdentifier,
+    required this.viewIdentifier,
     required this.type,
     required this.onSelectionChanged,
     required this.freezeView,
@@ -20,8 +20,8 @@ class WizardPreview extends ConsumerStatefulWidget {
   final UniversalMediaSource type;
   final void Function(List<CLMedia>)? onSelectionChanged;
   final bool freezeView;
-  final String parentIdentifier;
 
+  final ViewIdentifier viewIdentifier;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
 }
@@ -47,10 +47,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     Widget errorBuilder(Object e, StackTrace st) =>
         CLErrorView(errorMessage: e.toString());
     return CLEntityGalleryView(
-      viewIdentifier: ViewIdentifier(
-        parentID: widget.parentIdentifier,
-        viewId: type.name,
-      ),
+      viewIdentifier: widget.viewIdentifier,
       emptyWidget: const CLText.large('Nothing to show here'),
       entities: media0.entries,
       numColumns: 3,
@@ -67,7 +64,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       itemBuilder: (context, item) {
         return MediaPreview(
           media: item as CLMedia,
-          parentIdentifier: type.identifier,
+          parentIdentifier: widget.viewIdentifier.toString(),
           /** onTap: () async {
             await PageManager.of(context).openEditor(
               item,

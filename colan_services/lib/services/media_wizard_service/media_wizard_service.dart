@@ -6,7 +6,6 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import '../../internal/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
-import 'widgets/select_and_restore_media.dart';
 
 class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({
@@ -63,24 +62,17 @@ class MediaWizardService extends ConsumerWidget {
       return const FullscreenLayout(child: SizedBox.expand());
     }
 
-    if (type == UniversalMediaSource.deleted) {
-      return FullscreenLayout(
-        child: SelectAndRestoreMedia(
-          parentIdentifier: 'Wizard ${type.name}',
-          media: media,
-          type: type,
+    final galleryMap = media.entries.groupByDate();
+    return FullscreenLayout(
+      child: SelectAndKeepMedia(
+        viewIdentifier: ViewIdentifier(
+          parentID: 'MediaWizardService',
+          viewId: type.name,
         ),
-      );
-    } else {
-      final galleryMap = media.entries.groupByDate();
-      return FullscreenLayout(
-        child: SelectAndKeepMedia(
-          parentIdentifier: 'MediaWizardService ${type.name}',
-          media: media,
-          type: type,
-          galleryMap: galleryMap,
-        ),
-      );
-    }
+        media: media,
+        type: type,
+        galleryMap: galleryMap,
+      ),
+    );
   }
 }
