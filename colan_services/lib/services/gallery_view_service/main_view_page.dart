@@ -82,7 +82,6 @@ class GalleryViewService extends StatelessWidget {
             ),
           ),
         ),
-        // Bottom Area with Three FABs
       ),
     );
   }
@@ -145,72 +144,17 @@ class KeepItMainGrid extends ConsumerWidget {
           },
           itemBuilder: (
             context,
-            item,
-          ) {
-            final canSync = ref.watch(
-              serverProvider.select((server) => server.canSync),
-            );
-
-            return switch (item) {
-              Collection _ => PullDownContextMenu(
-                  onTap: () async {
-                    ref
-                        .read(
-                          activeCollectionProvider.notifier,
-                        )
-                        .state = item.id;
-                    return null;
-                  },
-                  contextMenu: CLContextMenu.ofCollection(
-                    context,
-                    ref,
-                    collection: item,
-                    hasOnlineService: canSync,
-                    theStore: theStore,
-                  ),
-                  child: CollectionAsFolder(
-                    parentIdentifier: viewIdentifier.toString(),
-                    collection: item,
-                  ),
-                ),
-              CLMedia _ => GetCollection(
-                  id: item.collectionId,
-                  loadingBuilder: () =>
-                      CLLoader.widget(debugMessage: 'GetCollection'),
-                  errorBuilder: (p0, p1) =>
-                      const Center(child: Text('GetCollection Error')),
-                  builder: (parentCollection) {
-                    final canSync = ref.watch(
-                      serverProvider.select((server) => server.canSync),
-                    );
-                    return PullDownContextMenu(
-                      onTap: () async {
-                        await PageManager.of(context).openMedia(
-                          item.id!,
-                          collectionId: item.collectionId,
-                          parentIdentifier: viewIdentifier.toString(),
-                        );
-                        return true;
-                      },
-                      contextMenu: CLContextMenu.ofMedia(
-                        context,
-                        ref,
-                        media: item,
-                        parentCollection: parentCollection!,
-                        hasOnlineService: canSync,
-                        theStore: theStore,
-                      ),
-                      child: MediaPreviewWithOverlays(
-                        media: item,
-                        parentCollection: parentCollection,
-                        parentIdentifier: viewIdentifier.toString(),
-                      ),
-                    );
-                  },
-                ),
-              _ => throw UnimplementedError(),
-            };
-          },
+            item, {
+            required CLEntity? Function(CLEntity entity)? onGetParent,
+            required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+          }) =>
+              EntityBilder(
+            viewIdentifier: viewIdentifier,
+            item: item,
+            theStore: theStore,
+            onGetChildren: onGetChildren,
+            onGetParent: onGetParent,
+          ),
         );
       },
     );
@@ -236,5 +180,93 @@ class OnSwipe extends ConsumerWidget {
       },
       child: child,
     );
+  }
+}
+
+class EntityBilder extends ConsumerWidget {
+  const EntityBilder({
+    required this.viewIdentifier,
+    required this.item,
+    required this.theStore,
+    super.key,
+    this.onGetParent,
+    this.onGetChildren,
+  });
+  final ViewIdentifier viewIdentifier;
+  final CLEntity item;
+  final CLEntity? Function(CLEntity entity)? onGetParent;
+  final List<CLEntity>? Function(CLEntity entity)? onGetChildren;
+  final StoreUpdater theStore;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canSync = ref.watch(
+      serverProvider.select((server) => server.canSync),
+    );
+    final parent = onGetParent?.call(item);
+    final children = onGetChildren?.call(item);
+    switch (item) {
+      case final Collection c:
+        if (children == null) {
+          throw Exception(
+            'Failed to get media list of collection ${c.id}',
+          );
+        }
+      case final CLMedia m:
+        if (parent == null) {
+          throw Exception(
+            'Failed to get collection of media ${m.id}',
+          );
+        }
+    }
+
+    return switch (item) {
+      final Collection c => PullDownContextMenu(
+          onTap: () async {
+            ref
+                .read(
+                  activeCollectionProvider.notifier,
+                )
+                .state = c.id;
+            return null;
+          },
+          contextMenu: CLContextMenu.ofCollection(
+            context,
+            ref,
+            collection: c,
+            hasOnlineService: canSync,
+            theStore: theStore,
+          ),
+          child: CollectionAsFolder(
+            parentIdentifier: viewIdentifier.toString(),
+            collection: c,
+            children: children!.map((e) => e as CLMedia).toList(),
+          ),
+        ),
+      final CLMedia m => PullDownContextMenu(
+          onTap: () async {
+            await PageManager.of(context).openMedia(
+              m.id!,
+              collectionId: m.collectionId,
+              parentIdentifier: viewIdentifier.toString(),
+            );
+            return true;
+          },
+          contextMenu: CLContextMenu.ofMedia(
+            context,
+            ref,
+            media: m,
+            parentCollection: parent! as Collection,
+            hasOnlineService: canSync,
+            theStore: theStore,
+          ),
+          child: MediaPreviewWithOverlays(
+            media: m,
+            parentCollection: parent as Collection,
+            parentIdentifier: viewIdentifier.toString(),
+          ),
+        ),
+      _ => throw UnimplementedError(),
+    };
   }
 }

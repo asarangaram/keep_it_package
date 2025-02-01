@@ -28,8 +28,10 @@ class CLEntityGalleryView extends StatelessWidget {
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function(
     BuildContext,
-    CLEntity,
-  ) itemBuilder;
+    CLEntity, {
+    required CLEntity? Function(CLEntity entity)? onGetParent,
+    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+  }) itemBuilder;
   final int numColumns;
 
   final Widget emptyWidget;
@@ -110,7 +112,12 @@ class EntityGridView extends StatelessWidget {
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final Widget Function(BuildContext, CLEntity) itemBuilder;
+  final Widget Function(
+    BuildContext,
+    CLEntity, {
+    required CLEntity? Function(CLEntity entity)? onGetParent,
+    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+  }) itemBuilder;
   final Widget? Function(
     BuildContext context,
     List<GalleryGroupCLEntity<CLEntity>> galleryMap,
@@ -136,13 +143,24 @@ class EntityGridView extends StatelessWidget {
       incoming: incoming,
       columns: columns,
       viewableAsCollection: viewableAsCollection,
-      builder: (tabs /* numColumns */) {
+      builder: (
+        tabs /* numColumns */, {
+        required CLEntity? Function(CLEntity entity)? onGetParent,
+        required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+      }) {
         return RawCLEntityGalleryView(
           viewIdentifier: viewIdentifier,
           tabs: tabs,
           bannersBuilder: bannersBuilder,
           labelBuilder: labelBuilder,
-          itemBuilder: itemBuilder,
+          itemBuilder: (context, item) {
+            return itemBuilder(
+              context,
+              item,
+              onGetParent: onGetParent,
+              onGetChildren: onGetChildren,
+            );
+          },
           numColumns: columns,
           draggableMenuBuilder: draggableMenuBuilder,
         );

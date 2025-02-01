@@ -5,9 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import 'widgets/cl_media_collage.dart';
+import 'widgets/media_preview_service.dart';
+
 class CollectionView extends ConsumerWidget {
-  const CollectionView.preview(this.collection, {super.key});
+  const CollectionView.preview(
+    this.collection, {
+    required this.children,
+    super.key,
+  });
   final Collection collection;
+  final List<CLMedia> children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,9 +32,17 @@ class CollectionView extends ConsumerWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Center(
-              child: CLText.veryLarge(
-                collection.label.characters.first,
+            child: CLMediaCollage.byMatrixSize(
+              children.length,
+              hCount: 2,
+              vCount: 2,
+              itemBuilder: (context, index) => MediaThumbnail(
+                media: children[index],
+              ),
+              whenNopreview: Center(
+                child: CLText.veryLarge(
+                  collection.label.characters.first,
+                ),
               ),
             ),
           ),
@@ -68,6 +84,7 @@ class CollectionView extends ConsumerWidget {
       ),
     );
     /* 
+
     return GetMediaByCollectionId(
       collectionId: collection.id,
       errorBuilder: null,
@@ -98,20 +115,7 @@ class CollectionView extends ConsumerWidget {
             hasBorder: true,
             borderRadius: const BorderRadius.all(Radius.circular(16)),
             borderColor: borderColor,
-            child: CLMediaCollage.byMatrixSize(
-              mediaList.entries.length,
-              hCount: 2,
-              vCount: 2,
-              itemBuilder: (context, index) => MediaView.preview(
-                mediaList.entries[index],
-                parentIdentifier: 'TODO HERE',
-              ),
-              whenNopreview: Center(
-                child: CLText.veryLarge(
-                  collection.label.characters.first,
-                ),
-              ),
-            ),
+            child: ,
           );
         }
       },

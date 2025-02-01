@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart' show CLEntity, CLMedia, GalleryGroupCLEntity;
+import 'package:store/store.dart'
+    show CLEntity, CLMedia, Collection, GalleryGroupCLEntity;
 
 import '../../db_service/builders/w3_get_collection.dart';
 
@@ -26,8 +27,10 @@ class GetGroupedMedia extends ConsumerWidget {
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final Widget Function(
-    List<LabelledEntityGroups> galleryMap,
-  ) builder;
+    List<LabelledEntityGroups> galleryMap, {
+    required CLEntity? Function(CLEntity entity)? onGetParent,
+    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+  }) builder;
   final bool viewableAsCollection;
 
   @override
@@ -75,7 +78,20 @@ class GetGroupedMedia extends ConsumerWidget {
           ),
         );
 
-        return builder(result);
+        return builder(
+          result,
+          onGetParent: (entity) => switch (entity) {
+            CLMedia _ =>
+              collections.where((e) => e.id == entity.collectionId).first,
+            _ => null
+          },
+          onGetChildren: (entity) => switch (entity) {
+            Collection _ => incoming
+                .where((e) => (e as CLMedia).collectionId == entity.id)
+                .toList(),
+            _ => null
+          },
+        );
       },
     );
   }

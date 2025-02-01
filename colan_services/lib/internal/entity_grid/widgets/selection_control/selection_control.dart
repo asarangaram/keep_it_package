@@ -29,7 +29,12 @@ class SelectionControl extends ConsumerWidget {
   });
   final ViewIdentifier viewIdentifier;
   final List<CLEntity> incoming;
-  final Widget Function(BuildContext, CLEntity) itemBuilder;
+  final Widget Function(
+    BuildContext,
+    CLEntity, {
+    required CLEntity? Function(CLEntity entity)? onGetParent,
+    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+  }) itemBuilder;
   final Widget? Function(
     BuildContext context,
     List<GalleryGroupCLEntity<CLEntity>> galleryMap,
@@ -41,7 +46,12 @@ class SelectionControl extends ConsumerWidget {
   ) bannersBuilder;
   final Widget Function({
     required List<CLEntity> items,
-    required Widget Function(BuildContext, CLEntity) itemBuilder,
+    required Widget Function(
+      BuildContext,
+      CLEntity, {
+      required CLEntity? Function(CLEntity entity)? onGetParent,
+      required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    }) itemBuilder,
     required Widget? Function(
       BuildContext context,
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
@@ -116,7 +126,12 @@ class SelectionContol0 extends StatelessWidget {
   });
   final TabIdentifier tabIdentifier;
   final CLSelector selector;
-  final Widget Function(BuildContext, CLEntity) itemBuilder;
+  final Widget Function(
+    BuildContext,
+    CLEntity, {
+    required CLEntity? Function(CLEntity entity)? onGetParent,
+    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+  }) itemBuilder;
   final Widget? Function(
     BuildContext context,
     List<GalleryGroupCLEntity<CLEntity>> galleryMap,
@@ -124,7 +139,12 @@ class SelectionContol0 extends StatelessWidget {
   ) labelBuilder;
   final Widget Function({
     required List<CLEntity> items,
-    required Widget Function(BuildContext, CLEntity) itemBuilder,
+    required Widget Function(
+      BuildContext,
+      CLEntity, {
+      required CLEntity? Function(CLEntity entity)? onGetParent,
+      required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    }) itemBuilder,
     required Widget? Function(
       BuildContext context,
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
@@ -149,10 +169,17 @@ class SelectionContol0 extends StatelessWidget {
 
     return builder(
       items: incoming,
-      itemBuilder: (context, item) {
+      itemBuilder: (
+        context,
+        item, {
+        required CLEntity? Function(CLEntity entity)? onGetParent,
+        required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+      }) {
         final itemWidget = itemBuilder(
           context,
           item,
+          onGetChildren: onGetChildren,
+          onGetParent: onGetParent,
         );
 
         return SelectableItem(

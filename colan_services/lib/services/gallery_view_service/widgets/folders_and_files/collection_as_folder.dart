@@ -7,13 +7,18 @@ class CollectionAsFolder extends ConsumerWidget {
   const CollectionAsFolder({
     required this.collection,
     required this.parentIdentifier,
+    required this.children,
     super.key,
   });
   final Collection collection;
+  final List<CLMedia> children;
 
   final String parentIdentifier;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CollectionView.preview(collection);
+    return CollectionView.preview(
+      collection,
+      children: children,
+    );
   }
 }

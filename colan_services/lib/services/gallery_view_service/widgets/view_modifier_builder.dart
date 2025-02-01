@@ -27,8 +27,10 @@ class ViewModifierBuilder extends StatelessWidget {
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function(
     BuildContext,
-    CLEntity,
-  ) itemBuilder;
+    CLEntity, {
+    required CLEntity? Function(CLEntity entity)? onGetParent,
+    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+  }) itemBuilder;
   final int numColumns;
 
   final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
@@ -41,7 +43,12 @@ class ViewModifierBuilder extends StatelessWidget {
     required List<CLEntity> incoming,
     required Widget Function(Object, StackTrace) errorBuilder,
     required Widget Function() loadingBuilder,
-    required Widget Function(BuildContext, CLEntity) itemBuilder,
+    required Widget Function(
+      BuildContext,
+      CLEntity, {
+      required CLEntity? Function(CLEntity entity)? onGetParent,
+      required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    }) itemBuilder,
     required Widget? Function(
       BuildContext context,
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
