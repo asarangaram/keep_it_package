@@ -109,10 +109,6 @@ final groupedMediaProvider = StateProvider.family<
     List<GalleryGroupCLEntity<CLEntity>>,
     MapEntry<TabIdentifier, List<CLEntity>>>((ref, mapEntry) {
   final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
-  ref.listen(
-    groupMethodProvider(mapEntry.key.tabId),
-    (prev, curr) => print(curr.method),
-  );
 
   return groupBy.getGrouped(mapEntry.value);
 });
