@@ -172,9 +172,7 @@ class MediaView0 extends ConsumerWidget {
                               onLockPage: onLockPage,
                               isLocked: isLocked,
                               placeHolder: GetPreviewUri(
-                                errorBuilder: (_, __) {
-                                  throw UnimplementedError('errorBuilder');
-                                },
+                                errorBuilder: BrokenImage.show,
                                 loadingBuilder: () => CLLoader.widget(
                                   debugMessage: 'GetPreviewUri',
                                 ),
