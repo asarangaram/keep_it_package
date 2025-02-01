@@ -84,7 +84,7 @@ class MediaView extends StatelessWidget {
     ); */
 
     if (isPreview) {
-      return MediaPreviewService(
+      return MediaPreviewWithOverlays(
         media: media,
         parentIdentifier: parentIdentifier,
       );

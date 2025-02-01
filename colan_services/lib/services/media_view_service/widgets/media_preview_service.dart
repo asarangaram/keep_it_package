@@ -7,15 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-class MediaPreviewService extends StatelessWidget {
-  const MediaPreviewService({
+class MediaPreviewWithOverlays extends StatelessWidget {
+  const MediaPreviewWithOverlays({
     required this.media,
     required this.parentIdentifier,
+    this.isMediaWaitingForDownload = false,
     super.key,
   });
 
   final CLMedia media;
   final String parentIdentifier;
+  final bool isMediaWaitingForDownload;
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +32,42 @@ class MediaPreviewService extends StatelessWidget {
           child: MediaThumbnail(
             media: media,
             overlays: [
+              OverlayWidgets(
+                heightFactor: 0.2,
+                alignment: Alignment.bottomCenter,
+                fit: BoxFit.none,
+                child: Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  color: ShadTheme.of(context)
+                      .colorScheme
+                      .foreground
+                      .withValues(alpha: 0.5),
+                  child: Text(
+                    media.name,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: ShadTheme.of(context).textTheme.small.copyWith(
+                          color: ShadTheme.of(context).colorScheme.background,
+                        ),
+                  ),
+                ),
+              ),
               if (media.serverUID != null)
-                OverlayWidgets(
+                OverlayWidgets.dimension(
                   alignment: Alignment.bottomRight,
                   sizeFactor: 0.15,
-                  child: const ShadAvatar(
+                  child: ShadAvatar(
                     'assets/icon/cloud_on_lan_128px_color.png',
+                    backgroundColor: ShadTheme.of(context)
+                        .colorScheme
+                        .background
+                        .withValues(alpha: 0.7),
                   ),
                 ),
               if (media.pin != null)
-                OverlayWidgets(
+                OverlayWidgets.dimension(
                   alignment: Alignment.bottomRight,
                   sizeFactor: 0.15,
                   child: FutureBuilder(
@@ -60,7 +88,7 @@ class MediaPreviewService extends StatelessWidget {
                   ),
                 ),
               if (media.type == CLMediaType.video)
-                OverlayWidgets(
+                OverlayWidgets.dimension(
                   alignment: Alignment.center,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -73,6 +101,23 @@ class MediaPreviewService extends StatelessWidget {
                       clIcons.playerPlay,
                       color: CLTheme.of(context).colors.iconColorTransparent,
                     ),
+                  ),
+                ),
+              if (media.isMediaCached && media.hasServerUID)
+                OverlayWidgets.dimension(
+                  alignment: Alignment.topLeft,
+                  sizeFactor: 0.15,
+                  child: const CLIcon.standard(
+                    Icons.check_circle,
+                    color: Colors.blue,
+                  ),
+                )
+              else if (isMediaWaitingForDownload)
+                OverlayWidgets.dimension(
+                  alignment: Alignment.topLeft,
+                  sizeFactor: 0.15,
+                  child: const CircularProgressIndicator(
+                    color: Colors.blue,
                   ),
                 ),
             ],

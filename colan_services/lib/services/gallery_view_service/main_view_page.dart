@@ -10,13 +10,13 @@ import 'package:store/store.dart';
 import '../context_menu_service/models/context_menu_items.dart';
 
 import '../context_menu_service/widgets/pull_down_context_menu.dart';
+import '../media_view_service/widgets/media_preview_service.dart';
 import 'builders/available_media.dart';
 
 import 'providers/active_collection.dart';
 import 'widgets/actions/bottom_bar.dart';
 import 'widgets/actions/top_bar.dart';
-import 'widgets/folders_and_files/collection_as_folder.dart';
-import 'widgets/folders_and_files/media_as_file.dart';
+
 import 'widgets/when_empty.dart';
 import 'widgets/when_error.dart';
 
@@ -237,9 +237,8 @@ class EntityBilder extends ConsumerWidget {
             hasOnlineService: canSync,
             theStore: theStore,
           ),
-          child: CollectionAsFolder(
-            parentIdentifier: viewIdentifier.toString(),
-            collection: c,
+          child: CollectionView.preview(
+            c,
             children: children!.map((e) => e as CLMedia).toList(),
           ),
         ),
@@ -262,8 +261,9 @@ class EntityBilder extends ConsumerWidget {
           ),
           child: MediaPreviewWithOverlays(
             media: m,
-            parentCollection: parent as Collection,
             parentIdentifier: viewIdentifier.toString(),
+            isMediaWaitingForDownload:
+                m.isMediaWaitingForDownload(parent as Collection),
           ),
         ),
       _ => throw UnimplementedError(),

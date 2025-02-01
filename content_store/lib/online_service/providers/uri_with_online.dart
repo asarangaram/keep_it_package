@@ -69,7 +69,7 @@ class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {
                   ),
                 )
               : throw Exception('Server Not connected'),
-        (final CLMedia _) when m.isMediaWaitingForDownload =>
+        (final CLMedia _) when m.isMediaWaitingForDownloadINCORRECT =>
           const AsyncValue<Uri>.loading(),
         _ => throw UnimplementedError()
       };

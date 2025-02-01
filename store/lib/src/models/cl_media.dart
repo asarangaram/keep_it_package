@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'cl_entities.dart';
 import 'cl_media_base.dart';
 import 'cl_media_type.dart';
+import 'collection.dart';
 
 @immutable
 class CLMedia extends CLMediaBase implements CLEntity {
@@ -355,9 +356,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
   @override
   String toJson() => json.encode(toMap());
 
-  bool get isMediaWaitingForDownload =>
-      !isMediaCached && mediaLog == null && (haveItOffline ?? false);
-
   bool get isMediaDownloadFailed =>
       serverUID != null && !isMediaCached && mediaLog != null;
 
@@ -487,4 +485,17 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   bool get isCached =>
       !hasServerUID || (hasServerUID && (isPreviewCached && isMediaCached));
+
+  bool isMediaWaitingForDownload(Collection parentCollection) =>
+      hasServerUID &&
+      isMediaCached &&
+      mediaLog == null &&
+      switch (type) {
+            CLMediaType.image => parentCollection.haveItOffline,
+            _ => false
+          } |
+          (haveItOffline ?? false);
+
+  bool get isMediaWaitingForDownloadINCORRECT =>
+      !isMediaCached && mediaLog == null && (haveItOffline ?? false);
 }

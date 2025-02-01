@@ -1,3 +1,4 @@
+import 'package:colan_services/services/media_view_service/widgets/media_preview_service.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import '../../../internal/entity_grid/gallery_view.dart';
 import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../context_menu_service/models/context_menu_items.dart';
-import '../../gallery_view_service/widgets/folders_and_files/media_as_file.dart';
+
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
@@ -76,10 +77,9 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           errorBuilder: (p0, p1) =>
               const Center(child: Text('GetCollection Error')),
           builder: (parentCollection) {
-            return MediaPreviewWithOverlays(
+            return MediaThumbnail(
               media: item,
-              parentIdentifier: widget.viewIdentifier.toString(),
-              parentCollection: parentCollection!,
+
               /** onTap: () async {
                 await PageManager.of(context).openEditor(
                   item,
