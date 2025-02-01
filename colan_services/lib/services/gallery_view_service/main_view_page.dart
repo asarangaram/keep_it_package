@@ -9,6 +9,7 @@ import 'package:store/store.dart';
 
 import '../context_menu_service/models/context_menu_items.dart';
 
+import '../context_menu_service/widgets/pull_down_context_menu.dart';
 import 'builders/available_media.dart';
 
 import 'providers/active_collection.dart';
@@ -124,94 +125,91 @@ class KeepItMainGrid extends ConsumerWidget {
           numColumns: 3,
           viewableAsCollection: true,
           emptyWidget: const WhenEmpty(),
-          contextMenuOf: (context, entities) {
-            final items = entities.map((e) => e as CLMedia).toList();
-
-            final menu = CLContextMenu.ofMultipleMedia(
-              context,
-              ref,
-              items: items,
-              hasOnlineService: true,
-              theStore: theStore,
-            );
-            return menu;
+          contextMenuBuilder: (context, entities) {
+            return switch (entities) {
+              final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+                  return CLContextMenu.ofMultipleMedia(
+                    context,
+                    ref,
+                    items: e.map((e) => e as CLMedia).toList(),
+                    hasOnlineService: true,
+                    theStore: theStore,
+                  );
+                }(),
+              final List<CLEntity> e when e.every((e) => e is Collection) =>
+                () {
+                  return CLContextMenu.empty();
+                }(),
+              _ => throw UnimplementedError('Mix of items not supported yet')
+            };
           },
           itemBuilder: (
             context,
             item,
-          ) =>
-              switch (item) {
-            Collection _ => GetCollection(
-                id: item.id,
-                loadingBuilder: () =>
-                    CLLoader.widget(debugMessage: 'GetCollection'),
-                errorBuilder: (p0, p1) =>
-                    const Center(child: Text('GetCollection Error')),
-                builder: (collection) {
-                  final canSync = ref.watch(
-                    serverProvider.select((server) => server.canSync),
-                  );
-                  return CollectionAsFolder(
+          ) {
+            final canSync = ref.watch(
+              serverProvider.select((server) => server.canSync),
+            );
+
+            return switch (item) {
+              Collection _ => PullDownContextMenu(
+                  onTap: () async {
+                    ref
+                        .read(
+                          activeCollectionProvider.notifier,
+                        )
+                        .state = item.id;
+                    return null;
+                  },
+                  contextMenu: CLContextMenu.ofCollection(
+                    context,
+                    ref,
                     collection: item,
-                    onTap: () async {
-                      ref
-                          .read(
-                            activeCollectionProvider.notifier,
-                          )
-                          .state = item.id;
-                      return null;
-                    },
-                    contextMenu: CLContextMenu.ofCollection(
-                      context,
-                      ref,
-                      collection: collection!,
-                      hasOnlineService: canSync,
-                      theStore: theStore,
-                    ),
-                  );
-                },
-              ),
-            CLMedia _ => GetMedia(
-                loadingBuilder: () => CLLoader.widget(debugMessage: 'GetMedia'),
-                errorBuilder: (p0, p1) =>
-                    const Center(child: Text('getMedia Error')),
-                id: item.id!,
-                builder: (media) {
-                  return GetCollection(
-                    id: media!.collectionId,
-                    loadingBuilder: () =>
-                        CLLoader.widget(debugMessage: 'GetCollection'),
-                    errorBuilder: (p0, p1) =>
-                        const Center(child: Text('GetCollection Error')),
-                    builder: (parentCollection) {
-                      final canSync = ref.watch(
-                        serverProvider.select((server) => server.canSync),
-                      );
-                      return MediaPreview(
-                        media: media,
+                    hasOnlineService: canSync,
+                    theStore: theStore,
+                  ),
+                  child: CollectionAsFolder(
+                    parentIdentifier: viewIdentifier.toString(),
+                    collection: item,
+                  ),
+                ),
+              CLMedia _ => GetCollection(
+                  id: item.collectionId,
+                  loadingBuilder: () =>
+                      CLLoader.widget(debugMessage: 'GetCollection'),
+                  errorBuilder: (p0, p1) =>
+                      const Center(child: Text('GetCollection Error')),
+                  builder: (parentCollection) {
+                    final canSync = ref.watch(
+                      serverProvider.select((server) => server.canSync),
+                    );
+                    return PullDownContextMenu(
+                      onTap: () async {
+                        await PageManager.of(context).openMedia(
+                          item.id!,
+                          collectionId: item.collectionId,
+                          parentIdentifier: viewIdentifier.toString(),
+                        );
+                        return true;
+                      },
+                      contextMenu: CLContextMenu.ofMedia(
+                        context,
+                        ref,
+                        media: item,
+                        parentCollection: parentCollection!,
+                        hasOnlineService: canSync,
+                        theStore: theStore,
+                      ),
+                      child: MediaPreviewWithOverlays(
+                        media: item,
+                        parentCollection: parentCollection,
                         parentIdentifier: viewIdentifier.toString(),
-                        onTap: () async {
-                          await PageManager.of(context).openMedia(
-                            media.id!,
-                            collectionId: media.collectionId,
-                            parentIdentifier: viewIdentifier.toString(),
-                          );
-                          return true;
-                        },
-                        contextMenu: CLContextMenu.ofMedia(
-                          context,
-                          ref,
-                          media: media,
-                          parentCollection: parentCollection!,
-                          hasOnlineService: canSync,
-                          theStore: theStore,
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            _ => throw UnimplementedError(),
+                      ),
+                    );
+                  },
+                ),
+              _ => throw UnimplementedError(),
+            };
           },
         );
       },

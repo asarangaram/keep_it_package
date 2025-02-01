@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 
 @immutable
@@ -36,12 +35,4 @@ class WizardMenuItems {
   final UniversalMediaSource type;
   final CLMenuItem option1;
   final CLMenuItem option2;
-
-  Future<bool> deleteActionWrapper(
-    BuildContext context,
-    WidgetRef ref,
-    Future<bool> Function() keepAction,
-  ) async {
-    return keepAction();
-  }
 }

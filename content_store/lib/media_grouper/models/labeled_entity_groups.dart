@@ -10,6 +10,7 @@ class LabelledEntityGroups {
   });
   final String name;
   final List<GalleryGroupCLEntity<CLEntity>> galleryGroups;
+  
 
   LabelledEntityGroups copyWith({
     String? name,

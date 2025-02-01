@@ -16,7 +16,7 @@ class CLEntityGalleryView extends StatelessWidget {
     required this.itemBuilder,
     required this.numColumns,
     required this.emptyWidget,
-    required this.contextMenuOf,
+    required this.contextMenuBuilder,
     required this.viewableAsCollection,
     this.filterDisabled = false,
     this.onSelectionChanged,
@@ -33,7 +33,7 @@ class CLEntityGalleryView extends StatelessWidget {
   final int numColumns;
 
   final Widget emptyWidget;
-  final CLContextMenu Function(BuildContext, List<CLEntity>) contextMenuOf;
+  final CLContextMenu Function(BuildContext, List<CLEntity>) contextMenuBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filterDisabled;
   final bool viewableAsCollection;
@@ -58,7 +58,7 @@ class CLEntityGalleryView extends StatelessWidget {
               errorBuilder: errorBuilder,
               itemBuilder: itemBuilder,
               numColumns: numColumns,
-              contextMenuOf: contextMenuOf,
+              contextMenuOf: contextMenuBuilder,
               filtersOff: filterDisabled,
               onSelectionChanged: onSelectionChanged,
               builder: ({

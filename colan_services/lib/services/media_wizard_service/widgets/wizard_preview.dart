@@ -1,4 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -58,38 +59,47 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       ),
       errorBuilder: errorBuilder,
       // Wizard don't use context menu
-      contextMenuOf: (context, list) => CLContextMenu.empty(),
+      contextMenuBuilder: (context, list) => CLContextMenu.empty(),
       onSelectionChanged: onSelectionChanged == null
           ? null
           : (items) =>
               onSelectionChanged?.call(items.map((e) => e as CLMedia).toList()),
       itemBuilder: (context, item) {
-        return MediaPreview(
-          media: item as CLMedia,
-          parentIdentifier: widget.viewIdentifier.toString(),
-          /** onTap: () async {
-            await PageManager.of(context).openEditor(
-              item,
-              canDuplicateMedia: false,
+        return GetCollection(
+          id: (item as CLMedia).collectionId,
+          loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),
+          errorBuilder: (p0, p1) =>
+              const Center(child: Text('GetCollection Error')),
+          builder: (parentCollection) {
+            return MediaPreviewWithOverlays(
+              media: item,
+              parentIdentifier: widget.viewIdentifier.toString(),
+              parentCollection: parentCollection!,
+              /** onTap: () async {
+                await PageManager.of(context).openEditor(
+                  item,
+                  canDuplicateMedia: false,
+                );
+            
+                /// MEdia might have got updated, better reload and update the
+                ///  provider
+                if (context.mounted) {
+                  final refreshedMedia = CLMedias(
+                    await dbReader.getMediasByIDList(
+                      media0.entries
+                          .where((e) => e.id != null)
+                          .map((e) => e.id!)
+                          .toList(),
+                    ),
+                  );
+                  ref.read(universalMediaProvider(type).notifier).mediaGroup =
+                      media0.copyWith(
+                    entries: refreshedMedia.entries,
+                  );
+                }
+              }, */
             );
-        
-            /// MEdia might have got updated, better reload and update the
-            ///  provider
-            if (context.mounted) {
-              final refreshedMedia = CLMedias(
-                await dbReader.getMediasByIDList(
-                  media0.entries
-                      .where((e) => e.id != null)
-                      .map((e) => e.id!)
-                      .toList(),
-                ),
-              );
-              ref.read(universalMediaProvider(type).notifier).mediaGroup =
-                  media0.copyWith(
-                entries: refreshedMedia.entries,
-              );
-            }
-          }, */
+          },
         );
       },
     );
