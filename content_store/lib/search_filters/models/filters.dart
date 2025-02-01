@@ -101,7 +101,9 @@ class SearchFilters<T> implements ViewModifier {
       );
 
   @override
-  bool get isActive => filters?.any((e) => e.isActive) ?? false;
+  bool get isActive =>
+      (filters?.any((e) => e.isActive) ?? false) ||
+      defaultTextSearchFilter.isActive;
 
   @override
   String get name => 'Filters';

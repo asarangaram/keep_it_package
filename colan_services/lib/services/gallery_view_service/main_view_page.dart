@@ -49,7 +49,7 @@ class GalleryViewService extends StatelessWidget {
                       return RefreshIndicator(
                         onRefresh: /* isSelectionMode ? null : */
                             () async => store.reloadStore(),
-                        child: GetAvailableMediaByCollectionId(
+                        child: GetAvailableMediaByActiveCollectionId(
                           loadingBuilder: () => CLLoader.widget(
                             debugMessage: 'GetAvailableMediaByCollectionId',
                           ),
@@ -239,6 +239,7 @@ class EntityBilder extends ConsumerWidget {
           ),
           child: CollectionView.preview(
             c,
+            viewIdentifier: viewIdentifier,
             children: children!.map((e) => e as CLMedia).toList(),
           ),
         ),

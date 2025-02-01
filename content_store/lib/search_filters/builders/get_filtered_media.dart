@@ -46,13 +46,24 @@ class GetFilterredMedia extends ConsumerWidget {
     try {
       final topMsg = (filterred.length < incoming.length)
           ? ' ${filterred.length} out of '
-              '${incoming.length} is Shown.'
+              '${incoming.length} matches'
           : null;
       final banners = [
         if (topMsg != null)
-          ShadBadge(
-            child: Text(
-              topMsg,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Container(
+              color: ShadTheme.of(context).colorScheme.mutedForeground,
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Center(
+                child: Text(
+                  topMsg,
+                  style: ShadTheme.of(context)
+                      .textTheme
+                      .small
+                      .copyWith(color: ShadTheme.of(context).colorScheme.muted),
+                ),
+              ),
             ),
           ),
       ];

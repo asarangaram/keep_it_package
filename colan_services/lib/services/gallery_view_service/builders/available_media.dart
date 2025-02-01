@@ -11,14 +11,15 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
+    this.collectionId,
   });
+  final int? collectionId;
   final Widget Function(CLMedias items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
     final canSync =
         ref.watch(serverProvider.select((server) => server.canSync));
     return GetMediaByCollectionId(
@@ -40,6 +41,30 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
         }
         return builder(available);
       },
+    );
+  }
+}
+
+class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
+  const GetAvailableMediaByActiveCollectionId({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    super.key,
+  });
+  final Widget Function(CLMedias items) builder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final collectionId = ref.watch(activeCollectionProvider);
+
+    return GetAvailableMediaByCollectionId(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      collectionId: collectionId,
+      builder: builder,
     );
   }
 }
