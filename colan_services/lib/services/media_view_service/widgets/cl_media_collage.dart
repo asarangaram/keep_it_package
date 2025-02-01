@@ -174,7 +174,7 @@ class CLMediaCollage extends StatelessWidget {
       );
     }
     return CLAspectRationDecorated(
-      padding: const EdgeInsets.all(1),
+      // padding: const EdgeInsets.all(1),
       child: child,
     );
   }

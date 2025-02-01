@@ -42,13 +42,15 @@ class CollectionView extends ConsumerWidget {
               CLLoader.hide(debugMessage: 'GetMediaByCollectionId'),
           builder: (allMedia) {
             return Padding(
-              padding: const EdgeInsets.all(1),
+              padding: EdgeInsets.zero,
               child: Stack(
                 children: [
                   Positioned.fill(
                     child: Container(
+                      // margin: const EdgeInsets.symmetric(horizontal: 1),
                       decoration: BoxDecoration(
-                        border: Border.all(color: borderColor, width: 1.1),
+                        color: borderColor,
+                        // border: Border.all(color: borderColor),
                       ),
                       child: CLMediaCollage.byMatrixSize(
                         children.length,

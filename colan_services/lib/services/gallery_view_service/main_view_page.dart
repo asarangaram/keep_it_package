@@ -112,51 +112,54 @@ class KeepItMainGrid extends ConsumerWidget {
         ref.read(activeCollectionProvider.notifier).state = null;
       });
     }
-    return GetStoreUpdater(
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      builder: (theStore) {
-        return CLEntityGalleryView(
-          viewIdentifier: viewIdentifier,
-          entities: clmedias.entries,
-          loadingBuilder: loadingBuilder,
-          errorBuilder: errorBuilder,
-          numColumns: 3,
-          viewableAsCollection: true,
-          emptyWidget: const WhenEmpty(),
-          contextMenuBuilder: (context, entities) {
-            return switch (entities) {
-              final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
-                  return CLContextMenu.ofMultipleMedia(
-                    context,
-                    ref,
-                    items: e.map((e) => e as CLMedia).toList(),
-                    hasOnlineService: true,
-                    theStore: theStore,
-                  );
-                }(),
-              final List<CLEntity> e when e.every((e) => e is Collection) =>
-                () {
-                  return CLContextMenu.empty();
-                }(),
-              _ => throw UnimplementedError('Mix of items not supported yet')
-            };
-          },
-          itemBuilder: (
-            context,
-            item, {
-            required CLEntity? Function(CLEntity entity)? onGetParent,
-            required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-          }) =>
-              EntityBilder(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: GetStoreUpdater(
+        errorBuilder: errorBuilder,
+        loadingBuilder: loadingBuilder,
+        builder: (theStore) {
+          return CLEntityGalleryView(
             viewIdentifier: viewIdentifier,
-            item: item,
-            theStore: theStore,
-            onGetChildren: onGetChildren,
-            onGetParent: onGetParent,
-          ),
-        );
-      },
+            entities: clmedias.entries,
+            loadingBuilder: loadingBuilder,
+            errorBuilder: errorBuilder,
+            numColumns: 3,
+            viewableAsCollection: true,
+            emptyWidget: const WhenEmpty(),
+            contextMenuBuilder: (context, entities) {
+              return switch (entities) {
+                final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+                    return CLContextMenu.ofMultipleMedia(
+                      context,
+                      ref,
+                      items: e.map((e) => e as CLMedia).toList(),
+                      hasOnlineService: true,
+                      theStore: theStore,
+                    );
+                  }(),
+                final List<CLEntity> e when e.every((e) => e is Collection) =>
+                  () {
+                    return CLContextMenu.empty();
+                  }(),
+                _ => throw UnimplementedError('Mix of items not supported yet')
+              };
+            },
+            itemBuilder: (
+              context,
+              item, {
+              required CLEntity? Function(CLEntity entity)? onGetParent,
+              required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+            }) =>
+                EntityBilder(
+              viewIdentifier: viewIdentifier,
+              item: item,
+              theStore: theStore,
+              onGetChildren: onGetChildren,
+              onGetParent: onGetParent,
+            ),
+          );
+        },
+      ),
     );
   }
 }
