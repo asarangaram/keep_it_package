@@ -8,27 +8,21 @@ class ActionsDraggableMenu<T> extends StatelessWidget {
   const ActionsDraggableMenu({
     required this.tagPrefix,
     required this.parentKey,
-    required this.selectionActionsBuilder,
-    required this.items,
-    required this.onDone,
+    required this.menuItems,
     super.key,
   });
   final String tagPrefix;
   final GlobalKey parentKey;
-  final List<CLMenuItem> Function(BuildContext context, List<T> selectedItems)?
-      selectionActionsBuilder;
-  final VoidCallback onDone;
-  final List<T> items;
+
+  final List<CLMenuItem> menuItems;
+
   @override
   Widget build(BuildContext context) {
     return DraggableMenu(
       key: ValueKey('$tagPrefix DraggableMenu'),
       parentKey: parentKey,
       child: Menu(
-        menuItems: selectionActionsBuilder!(
-          context,
-          items,
-        ).insertOnDone(onDone),
+        menuItems: menuItems,
       ),
     );
   }

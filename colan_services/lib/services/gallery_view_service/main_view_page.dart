@@ -124,58 +124,17 @@ class KeepItMainGrid extends ConsumerWidget {
           numColumns: 3,
           viewableAsCollection: true,
           emptyWidget: const WhenEmpty(),
-          selectionActionsBuilder: (context, entities) {
+          contextMenuOf: (context, entities) {
             final items = entities.map((e) => e as CLMedia).toList();
-            return [
-              CLMenuItem(
-                title: 'Delete',
-                icon: clIcons.deleteItem,
-                onTap: () async {
-                  final confirmed = await DialogService.deleteMediaMultiple(
-                        context,
-                        media: items,
-                      ) ??
-                      false;
-                  if (!confirmed) return confirmed;
-                  if (context.mounted) {
-                    return theStore.mediaUpdater.deleteMultiple(
-                      {...items.map((e) => e.id!)},
-                    );
-                  }
-                  return null;
-                },
-              ),
-              CLMenuItem(
-                title: 'Move',
-                icon: clIcons.imageMoveAll,
-                onTap: () => MediaWizardService.openWizard(
-                  context,
-                  ref,
-                  CLSharedMedia(
-                    entries: items,
-                    type: UniversalMediaSource.move,
-                  ),
-                ),
-              ),
-              CLMenuItem(
-                title: 'Share',
-                icon: clIcons.imageShareAll,
-                onTap: () => theStore.mediaUpdater.share(context, items),
-              ),
-              if (ColanPlatformSupport.isMobilePlatform)
-                CLMenuItem(
-                  title: 'Pin',
-                  icon: clIcons.pinAll,
-                  onTap: () => theStore.mediaUpdater.pinToggleMultiple(
-                    items.map((e) => e.id).toSet(),
-                    onGetPath: (media) {
-                      throw UnimplementedError(
-                        'onGetPath not yet implemented',
-                      );
-                    },
-                  ),
-                ),
-            ];
+
+            final menu = CLContextMenu.ofMultipleMedia(
+              context,
+              ref,
+              items: items,
+              hasOnlineService: true,
+              theStore: theStore,
+            );
+            return menu;
           },
           itemBuilder: (
             context,
@@ -202,7 +161,7 @@ class KeepItMainGrid extends ConsumerWidget {
                           .state = item.id;
                       return null;
                     },
-                    contextMenu: ContextMenuItems.ofCollection(
+                    contextMenu: CLContextMenu.ofCollection(
                       context,
                       ref,
                       collection: collection!,
@@ -239,7 +198,7 @@ class KeepItMainGrid extends ConsumerWidget {
                           );
                           return true;
                         },
-                        contextMenu: ContextMenuItems.ofMedia(
+                        contextMenu: CLContextMenu.ofMedia(
                           context,
                           ref,
                           media: media,

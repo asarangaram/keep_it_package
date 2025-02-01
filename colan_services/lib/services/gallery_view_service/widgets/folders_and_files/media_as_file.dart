@@ -23,7 +23,7 @@ class MediaPreview extends StatelessWidget {
   final String parentIdentifier;
   final Future<bool?> Function()? onTap;
 
-  final ContextMenuItems? contextMenu;
+  final CLContextMenu? contextMenu;
 
   @override
   Widget build(BuildContext context) {

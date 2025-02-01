@@ -17,7 +17,7 @@ class CollectionAsFolder extends ConsumerWidget {
   });
   final Collection collection;
   final Future<bool?> Function()? onTap;
-  final ContextMenuItems? contextMenu;
+  final CLContextMenu? contextMenu;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return PullDownContextMenu(

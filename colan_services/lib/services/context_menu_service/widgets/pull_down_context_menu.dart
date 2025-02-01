@@ -16,7 +16,7 @@ class PullDownContextMenu extends ConsumerWidget {
 
   final Widget child;
   final Future<bool?> Function()? onTap;
-  final ContextMenuItems? contextMenu;
+  final CLContextMenu? contextMenu;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,7 +34,7 @@ class PullDownContextMenu extends ConsumerWidget {
             leadingBuilder: (context, constraints) {
               return SizedBox.square(
                 dimension: 24,
-                child: Image.asset(menu.assetPath),
+                child: Image.asset(menu.logoImageAsset),
               );
             },
           ),

@@ -7,16 +7,17 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 import 'package:store/store.dart';
 
+import '../../../internal/draggable_menu/widgets/actions_draggable_menu.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../gallery_view_service/widgets/collection_editor.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 
 @immutable
-class ContextMenuItems {
-  const ContextMenuItems({
+class CLContextMenu {
+  const CLContextMenu({
     required this.name,
-    required this.assetPath,
+    required this.logoImageAsset,
     required this.onEdit,
     required this.onMove,
     required this.onShare,
@@ -28,7 +29,76 @@ class ContextMenuItems {
     required this.onDeleteServerCopy,
     required this.infoMap,
   });
-  factory ContextMenuItems.ofCollection(
+  factory CLContextMenu.empty() {
+    return CLContextMenu.template(
+      name: 'No Context Menu',
+      logoImageAsset: '',
+      infoMap: const {},
+    );
+  }
+  factory CLContextMenu.template({
+    required String name,
+    required String logoImageAsset,
+    required Map<String, dynamic> infoMap,
+    Future<bool?> Function()? onEdit,
+    Future<bool?> Function()? onMove,
+    Future<bool?> Function()? onShare,
+    Future<bool?> Function()? onPin,
+    Future<bool?> Function()? onDelete,
+    Future<bool?> Function()? onDeleteLocalCopy,
+    Future<bool?> Function()? onKeepOffline,
+    Future<bool?> Function()? onUpload,
+    Future<bool?> Function()? onDeleteServerCopy,
+  }) {
+    return CLContextMenu(
+      name: name,
+      logoImageAsset: logoImageAsset,
+      onEdit: CLMenuItem(
+        title: 'Edit',
+        icon: clIcons.imageEdit,
+        onTap: onEdit,
+      ),
+      onMove: CLMenuItem(
+        title: 'Move',
+        icon: clIcons.imageMove,
+        onTap: onMove,
+      ),
+      onShare: CLMenuItem(
+        title: 'Share',
+        icon: clIcons.imageShare,
+        onTap: onShare,
+      ),
+      onPin: CLMenuItem(
+        title: 'Pin',
+        icon: clIcons.pin,
+        onTap: onPin,
+      ),
+      onDelete: CLMenuItem(
+        title: 'Delete',
+        icon: clIcons.imageDelete,
+        onTap: onDelete,
+      ),
+      onDeleteLocalCopy: CLMenuItem(
+        title: 'Remove downloads',
+        icon: Icons.download_done_sharp,
+        onTap: onDeleteLocalCopy,
+      ),
+      onKeepOffline: CLMenuItem(
+        title: 'Download',
+        icon: Icons.download_sharp,
+        onTap: onKeepOffline,
+      ),
+      onUpload:
+          CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload),
+      onDeleteServerCopy: CLMenuItem(
+        title: 'Permanently Delete',
+        icon: Icons.remove,
+        onTap: onDeleteServerCopy,
+      ),
+      infoMap: infoMap,
+    );
+  }
+  factory CLContextMenu.ofCollection(
     BuildContext context,
     WidgetRef ref, {
     required Collection collection,
@@ -37,6 +107,7 @@ class ContextMenuItems {
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
+    ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
     ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
     ValueGetter<Future<bool?> Function()?>? onKeepOffline,
@@ -59,6 +130,7 @@ class ContextMenuItems {
           };
     final onMove0 = onMove?.call();
     final onShare0 = onShare?.call();
+    final onPin0 = onPin?.call();
 
     final onDelete0 = onDelete != null
         ? onDelete()
@@ -132,47 +204,24 @@ class ContextMenuItems {
         : null;
     final onDeleteServerCopy0 = onDeleteServerCopy?.call();
 
-    return ContextMenuItems(
+    return CLContextMenu.template(
       name: collection.label,
-      assetPath: collection.serverUID == null
+      logoImageAsset: collection.serverUID == null
           ? 'assets/icon/not_on_server.png'
           : 'assets/icon/cloud_on_lan_128px_color.png',
-      onEdit:
-          CLMenuItem(title: 'Edit', icon: clIcons.imageEdit, onTap: onEdit0),
-      onMove:
-          CLMenuItem(title: 'Move', icon: clIcons.imageMove, onTap: onMove0),
-      onShare:
-          CLMenuItem(title: 'Share', icon: clIcons.imageShare, onTap: onShare0),
-      onPin: CLMenuItem(
-        title: 'Pin',
-        icon: clIcons.pin,
-      ),
-      onDelete: CLMenuItem(
-        title: 'Delete',
-        icon: clIcons.imageDelete,
-        onTap: onDelete0,
-      ),
-      onDeleteLocalCopy: CLMenuItem(
-        title: 'Remove downloads',
-        icon: Icons.download_done_sharp,
-        onTap: onDeleteLocalCopy0,
-      ),
-      onKeepOffline: CLMenuItem(
-        title: 'Download',
-        icon: Icons.download_sharp,
-        onTap: onKeepOffline0,
-      ),
-      onUpload:
-          CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload0),
-      onDeleteServerCopy: CLMenuItem(
-        title: 'Permanently Delete',
-        icon: Icons.remove,
-        onTap: onDeleteServerCopy0,
-      ),
+      onEdit: onEdit0,
+      onMove: onMove0,
+      onShare: onShare0,
+      onPin: onPin0,
+      onDelete: onDelete0,
+      onDeleteLocalCopy: onDeleteLocalCopy0,
+      onKeepOffline: onKeepOffline0,
+      onUpload: onUpload0,
+      onDeleteServerCopy: onDeleteServerCopy0,
       infoMap: collection.toMapForDisplay(),
     );
   }
-  factory ContextMenuItems.ofMedia(
+  factory CLContextMenu.ofMedia(
     BuildContext context,
     WidgetRef ref, {
     required CLMedia media,
@@ -268,50 +317,104 @@ class ContextMenuItems {
     final onUpload0 = onUpload != null ? onUpload() : null;
     final onDeleteServerCopy0 =
         onDeleteServerCopy != null ? onDeleteServerCopy() : null;
-
-    return ContextMenuItems(
+    return CLContextMenu.template(
       name: media.name,
-      assetPath: media.serverUID == null
+      logoImageAsset: media.serverUID == null
           ? 'assets/icon/not_on_server.png'
           : 'assets/icon/cloud_on_lan_128px_color.png',
-      onEdit:
-          CLMenuItem(title: 'Edit', icon: clIcons.imageEdit, onTap: onEdit0),
-      onMove:
-          CLMenuItem(title: 'Move', icon: clIcons.imageMove, onTap: onMove0),
-      onShare:
-          CLMenuItem(title: 'Share', icon: clIcons.imageShare, onTap: onShare0),
-      onPin: CLMenuItem(
-        title: media.pin != null ? 'Remove Pin' : 'Pin',
-        icon: media.pin != null ? clIcons.unPin : clIcons.pin,
-        onTap: onPin0,
-      ),
-      onDelete: CLMenuItem(
-        title: 'Delete',
-        icon: clIcons.imageDelete,
-        onTap: onDelete0,
-      ),
-      onDeleteLocalCopy: CLMenuItem(
-        title: 'Remove downloads',
-        icon: Icons.download_done_sharp,
-        onTap: onDeleteLocalCopy0,
-      ),
-      onKeepOffline: CLMenuItem(
-        title: 'Download',
-        icon: Icons.download_sharp,
-        onTap: onKeepOffline0,
-      ),
-      onUpload:
-          CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload0),
-      onDeleteServerCopy: CLMenuItem(
-        title: 'Permanently Delete',
-        icon: Icons.remove,
-        onTap: onDeleteServerCopy0,
-      ),
+      onEdit: onEdit0,
+      onMove: onMove0,
+      onShare: onShare0,
+      onPin: onPin0,
+      onDelete: onDelete0,
+      onDeleteLocalCopy: onDeleteLocalCopy0,
+      onKeepOffline: onKeepOffline0,
+      onUpload: onUpload0,
+      onDeleteServerCopy: onDeleteServerCopy0,
       infoMap: media.toMapForDisplay(),
     );
   }
+  factory CLContextMenu.ofMultipleMedia(
+    BuildContext context,
+    WidgetRef ref, {
+    required List<CLMedia> items,
+    // ignore: avoid_unused_constructor_parameters For now, not required
+    required bool hasOnlineService,
+    required StoreUpdater theStore,
+    ValueGetter<Future<bool?> Function()?>? onEdit,
+    ValueGetter<Future<bool?> Function()?>? onMove,
+    ValueGetter<Future<bool?> Function()?>? onShare,
+    ValueGetter<Future<bool?> Function()?>? onPin,
+    ValueGetter<Future<bool?> Function()?>? onDelete,
+    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
+    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
+    ValueGetter<Future<bool?> Function()?>? onUpload,
+    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
+  }) {
+    final onEdit0 = onEdit != null ? onEdit() : null;
+    final onMove0 = onMove != null
+        ? onMove()
+        : () => MediaWizardService.openWizard(
+              context,
+              ref,
+              CLSharedMedia(
+                entries: items,
+                type: UniversalMediaSource.move,
+              ),
+            );
+    final onShare0 = onShare != null
+        ? onShare()
+        : () => theStore.mediaUpdater.share(context, items);
+    final onPin0 = onPin != null
+        ? onPin()
+        : () => theStore.mediaUpdater.pinToggleMultiple(
+              items.map((e) => e.id).toSet(),
+              onGetPath: (media) {
+                throw UnimplementedError(
+                  'onGetPath not yet implemented',
+                );
+              },
+            );
+    final onDelete0 = onDelete != null
+        ? onDelete()
+        : () async {
+            final confirmed = await DialogService.deleteMediaMultiple(
+                  context,
+                  media: items,
+                ) ??
+                false;
+            if (!confirmed) return confirmed;
+            if (context.mounted) {
+              return theStore.mediaUpdater.deleteMultiple(
+                {...items.map((e) => e.id!)},
+              );
+            }
+            return null;
+          };
+    final onDeleteLocalCopy0 =
+        onDeleteLocalCopy != null ? onDeleteLocalCopy() : null;
+    final onKeepOffline0 = onKeepOffline != null ? onKeepOffline() : null;
+    final onUpload0 = onUpload != null ? onUpload() : null;
+    final onDeleteServerCopy0 =
+        onDeleteServerCopy != null ? onDeleteServerCopy() : null;
+
+    return CLContextMenu.template(
+      name: 'Multiple Media',
+      logoImageAsset: 'assets/icon/not_on_server.png',
+      onEdit: onEdit0,
+      onMove: onMove0,
+      onShare: onShare0,
+      onPin: onPin0,
+      onDelete: onDelete0,
+      onDeleteLocalCopy: onDeleteLocalCopy0,
+      onKeepOffline: onKeepOffline0,
+      onUpload: onUpload0,
+      onDeleteServerCopy: onDeleteServerCopy0,
+      infoMap: const {},
+    );
+  }
   final String name;
-  final String assetPath;
+  final String logoImageAsset;
   final CLMenuItem onEdit;
   final CLMenuItem onMove;
   final CLMenuItem onShare;
@@ -322,4 +425,38 @@ class ContextMenuItems {
   final CLMenuItem onUpload;
   final CLMenuItem onDeleteServerCopy;
   final Map<String, dynamic> infoMap;
+
+  List<CLMenuItem> get actions => [
+        onEdit,
+        onMove,
+        onShare,
+        onPin,
+        onDelete,
+        onDeleteLocalCopy,
+        onKeepOffline,
+        onUpload,
+        onDeleteServerCopy,
+      ].where((e) => e.onTap != null).toList();
+
+  DraggableMenuBuilderType? draggableMenuBuilder(
+    BuildContext context,
+    void Function() onDone,
+  ) {
+    if (actions.isNotEmpty) {
+      return (context, {required parentKey}) {
+        return ActionsDraggableMenu<CLEntity>(
+          parentKey: parentKey,
+          tagPrefix: 'Selection',
+          menuItems: actions.insertOnDone(onDone),
+        );
+      };
+    }
+
+    return null;
+  }
 }
+
+typedef DraggableMenuBuilderType = Widget Function(
+  BuildContext, {
+  required GlobalKey<State<StatefulWidget>> parentKey,
+});

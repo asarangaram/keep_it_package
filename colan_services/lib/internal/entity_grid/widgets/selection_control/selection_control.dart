@@ -8,7 +8,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../../../builders/get_selection_control.dart';
-import '../../../draggable_menu/widgets/actions_draggable_menu.dart';
+import '../../../../services/context_menu_service/models/context_menu_items.dart';
 
 import '../../builders/get_selection_mode.dart';
 import 'widgets/selectable_item.dart';
@@ -23,7 +23,7 @@ class SelectionControl extends ConsumerWidget {
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
-    required this.draggableMenuItemsBuilder,
+    required this.contextMenuOf,
     required this.onSelectionChanged,
     super.key,
   });
@@ -56,9 +56,8 @@ class SelectionControl extends ConsumerWidget {
       required GlobalKey<State<StatefulWidget>> parentKey,
     })? draggableMenuBuilder,
   }) builder;
+  final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
 
-  final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
-      draggableMenuItemsBuilder;
   final void Function(List<CLEntity>)? onSelectionChanged;
 
   @override
@@ -88,7 +87,7 @@ class SelectionControl extends ConsumerWidget {
               builder: builder,
               itemBuilder: itemBuilder,
               labelBuilder: labelBuilder,
-              draggableMenuItemsBuilder: draggableMenuItemsBuilder,
+              contextMenuOf: contextMenuOf,
               onSelectionChanged: onSelectionChanged,
               onUpdateSelection: onUpdateSelection,
               onDone: () {
@@ -109,7 +108,7 @@ class SelectionContol0 extends StatelessWidget {
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
-    required this.draggableMenuItemsBuilder,
+    required this.contextMenuOf,
     required this.onSelectionChanged,
     required this.onUpdateSelection,
     required this.onDone,
@@ -135,14 +134,10 @@ class SelectionContol0 extends StatelessWidget {
       BuildContext context,
       List<GalleryGroupCLEntity<CLEntity>> galleryMap,
     ) bannersBuilder,
-    Widget Function(
-      BuildContext, {
-      required GlobalKey<State<StatefulWidget>> parentKey,
-    })? draggableMenuBuilder,
+    DraggableMenuBuilderType? draggableMenuBuilder,
   }) builder;
 
-  final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
-      draggableMenuItemsBuilder;
+  final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final void Function(List<CLEntity>? candidates, {bool? deselect})
       onUpdateSelection;
@@ -196,18 +191,11 @@ class SelectionContol0 extends StatelessWidget {
           ),
         ];
       },
-      draggableMenuBuilder:
-          (selector.items.isNotEmpty && draggableMenuItemsBuilder != null)
-              ? (p0, {required parentKey}) {
-                  return ActionsDraggableMenu<CLEntity>(
-                    items: selector.items.toList(),
-                    tagPrefix: 'Selection',
-                    onDone: onDone,
-                    selectionActionsBuilder: draggableMenuItemsBuilder,
-                    parentKey: parentKey,
-                  );
-                }
-              : null,
+      draggableMenuBuilder: selector.items.isNotEmpty
+          ? contextMenuOf
+              ?.call(context, selector.items.toList())
+              .draggableMenuBuilder(context, onDone)
+          : null,
     );
   }
 }

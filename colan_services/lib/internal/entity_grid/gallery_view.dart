@@ -1,15 +1,13 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-
 import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
 
+import '../../services/context_menu_service/models/context_menu_items.dart';
+import '../../services/gallery_view_service/widgets/view_modifier_builder.dart';
 import 'widgets/gallery_view.dart';
-import 'widgets/selection_control/selection_control.dart';
 
-class CLEntityGalleryView extends ConsumerWidget {
+class CLEntityGalleryView extends StatelessWidget {
   const CLEntityGalleryView({
     required this.viewIdentifier,
     required this.entities,
@@ -18,11 +16,11 @@ class CLEntityGalleryView extends ConsumerWidget {
     required this.itemBuilder,
     required this.numColumns,
     required this.emptyWidget,
-    required this.selectionActionsBuilder,
+    required this.contextMenuOf,
     required this.viewableAsCollection,
-    super.key,
     this.filterDisabled = false,
     this.onSelectionChanged,
+    super.key,
   });
   final ViewIdentifier viewIdentifier;
   final List<CLEntity> entities;
@@ -35,14 +33,13 @@ class CLEntityGalleryView extends ConsumerWidget {
   final int numColumns;
 
   final Widget emptyWidget;
-  final List<CLMenuItem> Function(BuildContext, List<CLEntity>)?
-      selectionActionsBuilder;
+  final CLContextMenu Function(BuildContext, List<CLEntity>) contextMenuOf;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filterDisabled;
   final bool viewableAsCollection;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       switchInCurve: Curves.easeInOut,
@@ -54,67 +51,102 @@ class CLEntityGalleryView extends ConsumerWidget {
           FadeTransition(opacity: animation, child: child),
       child: entities.isEmpty
           ? emptyWidget
-          : SelectionControl(
+          : ViewModifierBuilder(
               viewIdentifier: viewIdentifier,
-              draggableMenuItemsBuilder: selectionActionsBuilder,
-              onSelectionChanged: onSelectionChanged,
-              incoming: entities,
+              entities: entities,
+              loadingBuilder: loadingBuilder,
+              errorBuilder: errorBuilder,
               itemBuilder: itemBuilder,
-              labelBuilder: (context, galleryMap, gallery) {
-                return gallery.label == null
-                    ? null
-                    : CLText.large(
-                        gallery.label!,
-                        textAlign: TextAlign.start,
-                      );
-              },
-              bannersBuilder: (context, galleryMap) {
-                return [];
-              },
+              numColumns: numColumns,
+              contextMenuOf: contextMenuOf,
+              filtersOff: filterDisabled,
+              onSelectionChanged: onSelectionChanged,
               builder: ({
-                required items,
+                required bannersBuilder,
+                required columns,
+                required draggableMenuBuilder,
+                required errorBuilder,
+                required incoming,
                 required itemBuilder,
                 required labelBuilder,
-                required bannersBuilder,
-                draggableMenuBuilder,
+                required loadingBuilder,
+                required viewIdentifier,
               }) {
-                return GetFilterredMedia(
+                return EntityGridView(
                   viewIdentifier: viewIdentifier,
                   errorBuilder: errorBuilder,
                   loadingBuilder: loadingBuilder,
-                  incoming: entities,
+                  incoming: incoming,
+                  columns: numColumns,
+                  viewableAsCollection: viewableAsCollection,
+                  itemBuilder: itemBuilder,
+                  labelBuilder: labelBuilder,
                   bannersBuilder: bannersBuilder,
-                  disabled: filterDisabled,
-                  builder: (
-                    List<CLEntity> filterred, {
-                    required List<Widget> Function(
-                      BuildContext,
-                      List<GalleryGroupCLEntity<CLEntity>>,
-                    ) bannersBuilder,
-                  }) {
-                    return GetGroupedMedia(
-                      viewIdentifier: viewIdentifier,
-                      errorBuilder: errorBuilder,
-                      loadingBuilder: loadingBuilder,
-                      incoming: filterred,
-                      columns: numColumns,
-                      viewableAsCollection: viewableAsCollection,
-                      builder: (tabs /* numColumns */) {
-                        return RawCLEntityGalleryView(
-                          viewIdentifier: viewIdentifier,
-                          tabs: tabs,
-                          bannersBuilder: bannersBuilder,
-                          labelBuilder: labelBuilder,
-                          itemBuilder: itemBuilder,
-                          numColumns: numColumns,
-                          draggableMenuBuilder: draggableMenuBuilder,
-                        );
-                      },
-                    );
-                  },
+                  draggableMenuBuilder: draggableMenuBuilder,
                 );
               },
             ),
+    );
+  }
+}
+
+class EntityGridView extends StatelessWidget {
+  const EntityGridView({
+    required this.viewIdentifier,
+    required this.columns,
+    required this.incoming,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    required this.viewableAsCollection,
+    required this.itemBuilder,
+    required this.labelBuilder,
+    required this.bannersBuilder,
+    super.key,
+    this.draggableMenuBuilder,
+  });
+  final ViewIdentifier viewIdentifier;
+  final int columns;
+  final List<CLEntity> incoming;
+
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
+  final Widget Function(BuildContext, CLEntity) itemBuilder;
+  final Widget? Function(
+    BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    GalleryGroupCLEntity<CLEntity> gallery,
+  ) labelBuilder;
+  final List<Widget> Function(
+    BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+  ) bannersBuilder;
+  final Widget Function(
+    BuildContext, {
+    required GlobalKey<State<StatefulWidget>> parentKey,
+  })? draggableMenuBuilder;
+
+  final bool viewableAsCollection;
+
+  @override
+  Widget build(BuildContext context) {
+    return GetGroupedMedia(
+      viewIdentifier: viewIdentifier,
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      incoming: incoming,
+      columns: columns,
+      viewableAsCollection: viewableAsCollection,
+      builder: (tabs /* numColumns */) {
+        return RawCLEntityGalleryView(
+          viewIdentifier: viewIdentifier,
+          tabs: tabs,
+          bannersBuilder: bannersBuilder,
+          labelBuilder: labelBuilder,
+          itemBuilder: itemBuilder,
+          numColumns: columns,
+          draggableMenuBuilder: draggableMenuBuilder,
+        );
+      },
     );
   }
 }
