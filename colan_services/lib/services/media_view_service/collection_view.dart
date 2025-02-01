@@ -29,7 +29,7 @@ class CollectionView extends ConsumerWidget {
         ? collection.haveItOffline
             ? Colors.blue
             : Colors.green
-        : null;
+        : ShadTheme.of(context).colorScheme.foreground;
 
     return GetFilters(
       identifier: viewIdentifier.parentID,
@@ -42,48 +42,41 @@ class CollectionView extends ConsumerWidget {
               CLLoader.hide(debugMessage: 'GetMediaByCollectionId'),
           builder: (allMedia) {
             return Padding(
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(1),
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: CLMediaCollage.byMatrixSize(
-                      children.length,
-                      hCount: 3,
-                      vCount: 3,
-                      itemBuilder: (context, index) => MediaThumbnail(
-                        media: children[index],
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: borderColor, width: 1.1),
                       ),
-                      whenNopreview: Center(
-                        child: CLText.veryLarge(
-                          collection.label.characters.first,
+                      child: CLMediaCollage.byMatrixSize(
+                        children.length,
+                        hCount: 3,
+                        vCount: 3,
+                        itemBuilder: (context, index) => MediaThumbnail(
+                          media: children[index],
+                        ),
+                        whenNopreview: Center(
+                          child: CLText.veryLarge(
+                            collection.label.characters.first,
+                          ),
                         ),
                       ),
                     ),
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: FractionallySizedBox(
-                        heightFactor: 0.2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Text(
-                            collection.label,
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style:
-                                ShadTheme.of(context).textTheme.small.copyWith(
-                                      backgroundColor: ShadTheme.of(context)
-                                          .colorScheme
-                                          .foreground
-                                          .withValues(alpha: 0.5),
-                                      color: ShadTheme.of(context)
-                                          .colorScheme
-                                          .background,
-                                    ),
-                          ),
+                    child: Container(
+                      margin: const EdgeInsets.all(4),
+                      alignment: Alignment.bottomCenter,
+                      child: ShadBadge(
+                        backgroundColor:
+                            ShadTheme.of(context).colorScheme.mutedForeground,
+                        child: Text(
+                          collection.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -101,7 +94,7 @@ class CollectionView extends ConsumerWidget {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: (filters.isActive)
+                    child: (filters.isActive || filters.isTextFilterActive)
                         ? AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             switchInCurve: Curves.easeInOut,

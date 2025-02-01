@@ -1,14 +1,16 @@
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import '../../../internal/entity_grid/providers/tap_state.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
 class PopOverMenu extends ConsumerStatefulWidget {
-  const PopOverMenu({required this.parentIdentifier, super.key});
-  final String parentIdentifier;
+  const PopOverMenu({required this.viewIdentifier, super.key});
+  final ViewIdentifier viewIdentifier;
 
   @override
   ConsumerState<PopOverMenu> createState() => _PopoverPageState();
@@ -25,8 +27,12 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
 
   @override
   Widget build(BuildContext context) {
+    final tabIdentifier = TabIdentifier(
+      view: widget.viewIdentifier,
+      tabId: ref.watch(currTabProvider(widget.viewIdentifier)),
+    );
     return GetPopOverMenuItems(
-      parentIdentifier: widget.parentIdentifier,
+      tabIdentifier: tabIdentifier,
       builder: (popOverMenuItems, {required updateCurr}) {
         return ShadPopover(
           controller: popoverController,
@@ -94,13 +100,13 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                         constraints: const BoxConstraints(minHeight: 100),
                         child: switch (popOverMenuItems.currItem) {
                           SearchFilters<CLMedia> _ => FiltersView(
-                              parentIdentifier: widget.parentIdentifier,
+                              parentIdentifier: widget.viewIdentifier.parentID,
                               filters: (popOverMenuItems.currItem!
                                       as SearchFilters<CLMedia>)
                                   .filters,
                             ),
                           GroupBy _ => GroupByView(
-                              parentIdentifier: widget.parentIdentifier,
+                              tabIdentifier: tabIdentifier,
                               groupBy: popOverMenuItems.currItem! as GroupBy,
                             ),
                           _ => throw UnimplementedError(),

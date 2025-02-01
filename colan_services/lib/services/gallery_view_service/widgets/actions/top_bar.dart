@@ -75,7 +75,7 @@ class KeepItTopBar extends ConsumerWidget {
                   viewIdentifier: viewIdentifier,
                 ),
                 PopOverMenu(
-                  parentIdentifier: parentIdentifier,
+                  viewIdentifier: viewIdentifier,
                 ),
               ],
             ),

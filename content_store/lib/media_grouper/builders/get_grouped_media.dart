@@ -35,6 +35,12 @@ class GetGroupedMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    incoming.sort(
+      (a, b) => (a as CLMedia)
+          .name
+          .toLowerCase()
+          .compareTo((b as CLMedia).name.toLowerCase()),
+    );
     final ids = incoming
         .map((e) => (e as CLMedia).collectionId)
         .where((e) => e != null)
@@ -48,7 +54,9 @@ class GetGroupedMedia extends ConsumerWidget {
       errorBuilder: errorBuilder,
       builder: (collections) {
         final result = <LabelledEntityGroups>[];
-
+        collections.sort(
+          (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
+        );
         if (collections.length > 1 && viewableAsCollection) {
           result.add(
             LabelledEntityGroups(
@@ -101,6 +109,10 @@ final groupedMediaProvider = StateProvider.family<
     List<GalleryGroupCLEntity<CLEntity>>,
     MapEntry<TabIdentifier, List<CLEntity>>>((ref, mapEntry) {
   final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
+  ref.listen(
+    groupMethodProvider(mapEntry.key.tabId),
+    (prev, curr) => print(curr.method),
+  );
 
   return groupBy.getGrouped(mapEntry.value);
 });

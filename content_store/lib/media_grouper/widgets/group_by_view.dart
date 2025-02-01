@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../models/media_grouper.dart';
@@ -7,11 +8,11 @@ import '../providers/media_grouper.dart';
 
 class GroupByView extends ConsumerWidget {
   const GroupByView({
-    required this.parentIdentifier,
+    required this.tabIdentifier,
     required this.groupBy,
     super.key,
   });
-  final String parentIdentifier;
+  final TabIdentifier tabIdentifier;
   final GroupBy groupBy;
 
   @override
@@ -19,7 +20,7 @@ class GroupByView extends ConsumerWidget {
     final currValue = {
       for (final type in ['Media', 'Collection'])
         type: ref.watch(
-          groupMethodProvider('$parentIdentifier/$type'),
+          groupMethodProvider(tabIdentifier.tabId),
         ),
     };
     final textTheme = ShadTheme.of(context).textTheme;
@@ -37,8 +38,7 @@ class GroupByView extends ConsumerWidget {
                 if (v != null) {
                   ref
                       .read(
-                        groupMethodProvider('$parentIdentifier/${type.key}')
-                            .notifier,
+                        groupMethodProvider(tabIdentifier.tabId).notifier,
                       )
                       .state = currValue[type.key]!.copyWith(method: v);
                 }

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
 import '../../media_grouper/providers/media_grouper.dart';
 import '../../search_filters/providers/media_filters.dart';
@@ -17,11 +18,13 @@ class PopOverMenuItemsNotifier extends StateNotifier<PopOverMenuItems> {
 }
 
 final popOverMenuProvider = StateNotifierProvider.family<
-    PopOverMenuItemsNotifier, PopOverMenuItems, String>((ref, identifier) {
+    PopOverMenuItemsNotifier,
+    PopOverMenuItems,
+    TabIdentifier>((ref, tabIdentifier) {
   final items = [
-    ref.watch(mediaFiltersProvider(identifier)),
+    ref.watch(mediaFiltersProvider(tabIdentifier.view.parentID)),
     ref.watch(
-      groupMethodProvider(identifier),
+      groupMethodProvider(tabIdentifier.tabId),
     ),
   ];
   return PopOverMenuItemsNotifier(items);
