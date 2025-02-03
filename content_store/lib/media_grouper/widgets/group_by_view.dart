@@ -20,7 +20,7 @@ class GroupByView extends ConsumerWidget {
     final currValue = {
       for (final type in ['Media', 'Collection'])
         type: ref.watch(
-          groupMethodProvider(tabIdentifier.tabId),
+          groupMethodProvider(type),
         ),
     };
     final textTheme = ShadTheme.of(context).textTheme;
@@ -38,7 +38,7 @@ class GroupByView extends ConsumerWidget {
                 if (v != null) {
                   ref
                       .read(
-                        groupMethodProvider(tabIdentifier.tabId).notifier,
+                        groupMethodProvider(type.key).notifier,
                       )
                       .state = currValue[type.key]!.copyWith(method: v);
                 }

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,7 @@ class PopOverMenu extends ConsumerStatefulWidget {
 
 class _PopoverPageState extends ConsumerState<PopOverMenu> {
   final popoverController = ShadPopoverController();
+  int currIndex = 0;
 
   @override
   void dispose() {
@@ -31,9 +33,10 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
       view: widget.viewIdentifier,
       tabId: ref.watch(currTabProvider(widget.viewIdentifier)),
     );
-    return GetPopOverMenuItems(
+
+    return GetViewModifiers(
       tabIdentifier: tabIdentifier,
-      builder: (popOverMenuItems, {required updateCurr}) {
+      builder: (items) {
         return ShadPopover(
           controller: popoverController,
           popover: (_) => SizedBox(
@@ -62,12 +65,14 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ShadTabs(
-                        value: popOverMenuItems.currItem?.name,
-                        onChanged: (value) => updateCurr(value),
-                        tabs: popOverMenuItems.items
-                            .map(
-                              (e) => ShadTab(
-                                value: e.name,
+                        value: currIndex,
+                        onChanged: (val) => setState(() {
+                          currIndex = val;
+                        }),
+                        tabs: items
+                            .mapIndexed(
+                              (i, e) => ShadTab(
+                                value: i,
                                 child: Text.rich(
                                   TextSpan(
                                     children: [
@@ -98,16 +103,15 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(minHeight: 100),
-                        child: switch (popOverMenuItems.currItem) {
-                          SearchFilters<CLMedia> _ => FiltersView(
+                        child: switch (currIndex) {
+                          0 => FiltersView(
                               parentIdentifier: widget.viewIdentifier.parentID,
-                              filters: (popOverMenuItems.currItem!
-                                      as SearchFilters<CLMedia>)
-                                  .filters,
+                              filters:
+                                  (items[0] as SearchFilters<CLMedia>).filters,
                             ),
-                          GroupBy _ => GroupByView(
+                          1 => GroupByView(
                               tabIdentifier: tabIdentifier,
-                              groupBy: popOverMenuItems.currItem! as GroupBy,
+                              groupBy: items[1] as GroupBy,
                             ),
                           _ => throw UnimplementedError(),
                         },
@@ -123,7 +127,7 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
             onPressed: popoverController.toggle,
             child: Icon(
               LucideIcons.menu,
-              color: popOverMenuItems.items.any((e) => e.isActive)
+              color: items.any((e) => e.isActive)
                   ? ShadTheme.of(context).colorScheme.destructive
                   : null,
             ),
