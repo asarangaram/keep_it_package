@@ -13,6 +13,7 @@ class ViewModifierBuilder extends StatelessWidget {
     required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
+    required this.bannersBuilder,
     required this.itemBuilder,
     required this.numColumns,
     required this.contextMenuOf,
@@ -36,7 +37,10 @@ class ViewModifierBuilder extends StatelessWidget {
   final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
   final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filtersOff;
-
+  final List<Widget> Function(
+    BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+  ) bannersBuilder;
   final Widget Function({
     required ViewIdentifier viewIdentifier,
     required int columns,
@@ -80,9 +84,7 @@ class ViewModifierBuilder extends StatelessWidget {
                 textAlign: TextAlign.start,
               );
       },
-      bannersBuilder: (context, galleryMap) {
-        return [];
-      },
+      bannersBuilder: bannersBuilder,
       builder: ({
         required items,
         required itemBuilder,

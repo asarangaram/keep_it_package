@@ -14,6 +14,7 @@ class CLEntityGalleryView extends StatelessWidget {
     required this.loadingBuilder,
     required this.errorBuilder,
     required this.itemBuilder,
+    required this.bannersBuilder,
     required this.numColumns,
     required this.emptyWidget,
     required this.contextMenuBuilder,
@@ -39,6 +40,10 @@ class CLEntityGalleryView extends StatelessWidget {
   final void Function(List<CLEntity>)? onSelectionChanged;
   final bool filterDisabled;
   final bool viewableAsCollection;
+  final List<Widget> Function(
+    BuildContext context,
+    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+  ) bannersBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +68,7 @@ class CLEntityGalleryView extends StatelessWidget {
               contextMenuOf: contextMenuBuilder,
               filtersOff: filterDisabled,
               onSelectionChanged: onSelectionChanged,
+              bannersBuilder: bannersBuilder,
               builder: ({
                 required bannersBuilder,
                 required columns,
@@ -74,6 +80,15 @@ class CLEntityGalleryView extends StatelessWidget {
                 required loadingBuilder,
                 required viewIdentifier,
               }) {
+                /* return MediaViewService1.pageView(
+                  media: incoming.map((e) => e as CLMedia).toList(),
+                  parentIdentifier: viewIdentifier.toString(),
+                  initialMediaIndex: 0,
+                  errorBuilder: errorBuilder,
+                  loadingBuilder: () => CLLoader.widget(
+                    debugMessage: 'MediaViewService.pageView',
+                  ),
+                ); */
                 return EntityGridView(
                   viewIdentifier: viewIdentifier,
                   errorBuilder: errorBuilder,

@@ -1,9 +1,9 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
 
-class CLStaleMediaIndicatorView extends StatelessWidget {
-  const CLStaleMediaIndicatorView({
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+class BannerView extends StatelessWidget {
+  const BannerView({
     required this.staleMediaCount,
     required this.onTap,
     super.key,
@@ -13,31 +13,27 @@ class CLStaleMediaIndicatorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          CLText.tiny(
-            'You have unclassified media. '
-            '($staleMediaCount)',
+    return GestureDetector(
+      onTap: onTap,
+      child: Center(
+        child: Container(
+          color: ShadTheme.of(context).colorScheme.mutedForeground,
+          padding: const EdgeInsets.only(
+            top: 8,
+            bottom: 8,
           ),
-          const SizedBox(
-            width: 8,
-          ),
-          GestureDetector(
-            onTap: onTap,
+          width: double.infinity,
+
+          // height: kMinInteractiveDimension,
+          child: Center(
             child: Text(
-              'Show Now',
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    fontSize: CLScaleType.small.fontSize,
-                    decoration: TextDecoration.underline,
-                    fontWeight: FontWeight.bold,
+              'You have $staleMediaCount unclassified media. Tap here to show',
+              style: ShadTheme.of(context).textTheme.small.copyWith(
+                    color: ShadTheme.of(context).colorScheme.muted,
                   ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

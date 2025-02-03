@@ -83,10 +83,12 @@ class _RawCLEntityGalleryViewState
         currTab = tempCurrTab;
       }
       gallery = Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           ShadTabs(
             padding: EdgeInsets.zero,
             value: currTab.name,
+            expandContent: false,
             // tabBarConstraints: BoxConstraints(maxWidth: 400),
             //contentConstraints: BoxConstraints(maxWidth: 400),
             onChanged: (value) {
@@ -96,6 +98,7 @@ class _RawCLEntityGalleryViewState
               for (final k in tabs)
                 ShadTab(
                   value: k.name,
+                  padding: EdgeInsets.zero,
                   child: Text(k.name),
                 ),
             ],

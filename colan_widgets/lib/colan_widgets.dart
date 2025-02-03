@@ -25,8 +25,7 @@ export 'src/views/appearance/cl_fullscreen_box.dart'
     show CLDialogWrapper, CLFullscreenBox;
 export 'src/views/appearance/keep_it_main_view.dart' show KeepItMainView;
 export 'src/views/cl_loading_view.dart' show CLLoader;
-export 'src/views/stale_media_indicator_view.dart'
-    show CLStaleMediaIndicatorView;
+export 'src/views/stale_media_indicator_view.dart' show BannerView;
 export 'src/views/stream_progress_view.dart' show StreamProgressView;
 export 'src/views/wizards/wizard_dialog.dart' show WizardDialog;
 export 'src/views/wizards/wizard_layout.dart' show WizardLayout;

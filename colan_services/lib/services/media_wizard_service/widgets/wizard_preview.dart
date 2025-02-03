@@ -11,7 +11,6 @@ import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../context_menu_service/models/context_menu_items.dart';
 
-
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
     required this.viewIdentifier,
@@ -59,6 +58,9 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         debugMessage: 'GalleryView',
       ),
       errorBuilder: errorBuilder,
+      bannersBuilder: (context, galleryMap) {
+        return [];
+      },
       // Wizard don't use context menu
       contextMenuBuilder: (context, list) => CLContextMenu.empty(),
       onSelectionChanged: onSelectionChanged == null
