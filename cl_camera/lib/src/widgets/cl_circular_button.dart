@@ -60,10 +60,12 @@ class CircularButton extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: size,
-                    color: foregroundColor ??
+                    color:
+                        foregroundColor /* ??
                         (hasDecoration
                             ? Theme.of(context).colorScheme.onSurface
-                            : Theme.of(context).colorScheme.surface),
+                            : Theme.of(context).colorScheme.surface) */
+                    ,
                   ),
                 ),
         ),

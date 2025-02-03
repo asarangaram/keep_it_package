@@ -45,6 +45,7 @@ class CameraSettingsHandler extends StatelessWidget {
       },
       child: CircularButton(
         icon: cameraThemeData.popMenuAnchor,
+        size: 32,
         hasDecoration: false,
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),

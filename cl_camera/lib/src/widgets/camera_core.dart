@@ -185,7 +185,7 @@ class CLCameraCoreState extends State<CLCameraCore>
             children: [
               if (widget.onCancel != null)
                 IconButton(
-                  icon: Icon(cameraThemeData.pagePop),
+                  icon: Icon(cameraThemeData.pagePop, size: 32),
                   onPressed: widget.onCancel,
                 ),
               Expanded(
@@ -304,7 +304,7 @@ class CLCameraCoreState extends State<CLCameraCore>
                                       quarterTurns: quarterTurns,
                                       onPressed: swapFrontBack,
                                       icon: cameraThemeData.switchCamera,
-                                      foregroundColor: Colors.white,
+                                      //foregroundColor: Colors.white,
                                       hasDecoration: false,
                                     ),
                             ),

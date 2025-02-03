@@ -1,9 +1,8 @@
-import 'package:cl_camera/src/state/camera_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../models/camera_mode.dart';
 
-class MenuCameraMode extends StatelessWidget {
+class MenuCameraMode extends StatefulWidget {
   const MenuCameraMode({
     required this.onUpdateMode,
     required this.currMode,
@@ -14,35 +13,42 @@ class MenuCameraMode extends StatelessWidget {
   final void Function(CameraMode type) onUpdateMode;
 
   @override
+  State<MenuCameraMode> createState() => _MenuCameraModeState();
+}
+
+class _MenuCameraModeState extends State<MenuCameraMode>
+    with SingleTickerProviderStateMixin {
+  late final TabController tabController;
+  @override
+  void initState() {
+    tabController =
+        TabController(length: CameraMode.values.length, vsync: this);
+    tabController.addListener(() {
+      widget.onUpdateMode(CameraMode.values[tabController.index]);
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ListView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          children: [
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: TabBar(
+          controller: tabController,
+          dividerColor: Colors.transparent,
+          tabs: [
             for (final type in CameraMode.values)
-              TextButton(
-                child: Text(
-                  type.capitalizedName,
-                  style: CameraTheme.of(context).themeData.textStyle.copyWith(
-                        color: type == currMode
-                            ? Colors.yellow.shade300
-                            : Colors.yellow.shade100,
-                      ),
-                ),
-                onPressed: () => onUpdateMode(type),
+              Tab(
+                child: Text(type.capitalizedName),
               ),
-          ]
-              .map(
-                (e) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: e,
-                ),
-              )
-              .toList(),
+          ],
         ),
       ),
     );
