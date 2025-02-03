@@ -87,7 +87,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
     }
-    targetCollection = widget.media.collection;
+    //targetCollection = widget.media.collection;
     actionConfirmed = true;
     setState(() {});
     onUpdateSelectionmode(enable: false);
@@ -237,32 +237,33 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               },
               dialog: switch (widget.type) {
                 UniversalMediaSource.deleted => null,
-                _ => switch ((targetCollection, actionConfirmed)) {
-                    (null, _) => getCollection(
-                        currMedia: currMedia,
-                      ),
-                    (_, true) => KeepWithProgress(
-                        targetCollection: targetCollection!,
-                        mediaUpdater: theStore.mediaUpdater,
-                        onUpdateSelectionmode: onUpdateSelectionmode,
-                        currMedia: currMedia,
-                        onDone: () async {
-                          await ref
-                              .read(
-                                universalMediaProvider(widget.type).notifier,
-                              )
-                              .remove(currMedia);
-                          selectedMedia = const CLSharedMedia(entries: []);
-                          actionConfirmed = false;
-                          targetCollection = null;
-                          onUpdateSelectionmode(enable: false);
-                          setState(() {});
-                          ref.read(serverProvider.notifier).instantSync();
-                          theStore.store.reloadStore();
-                        },
-                      ),
-                    _ => null
-                  }
+                _ => actionConfirmed
+                    ? (targetCollection == null)
+                        ? getCollection(
+                            currMedia: currMedia,
+                          )
+                        : KeepWithProgress(
+                            targetCollection: targetCollection!,
+                            mediaUpdater: theStore.mediaUpdater,
+                            onUpdateSelectionmode: onUpdateSelectionmode,
+                            currMedia: currMedia,
+                            onDone: () async {
+                              await ref
+                                  .read(
+                                    universalMediaProvider(widget.type)
+                                        .notifier,
+                                  )
+                                  .remove(currMedia);
+                              selectedMedia = const CLSharedMedia(entries: []);
+                              actionConfirmed = false;
+                              targetCollection = null;
+                              onUpdateSelectionmode(enable: false);
+                              setState(() {});
+                              ref.read(serverProvider.notifier).instantSync();
+                              theStore.store.reloadStore();
+                            },
+                          )
+                    : null
               },
             );
           },
