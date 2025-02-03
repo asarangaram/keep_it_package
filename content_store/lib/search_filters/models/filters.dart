@@ -85,7 +85,9 @@ class SearchFilters<T> implements ViewModifier {
   }
 
   SearchFilters<T> clearFilters() {
-    return copyWith(filters: () => null);
+    return copyWith(
+      filters: () => filters?.map((e) => e.update('clear', null)).toList(),
+    );
   }
 
   List<CLFilter<T>> call() => filters?.where((e) => e.enabled).toList() ?? [];

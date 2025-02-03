@@ -45,6 +45,7 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
       'enable' => _enable(value as bool),
       'select' => _select(value as E),
       'deselect' => _deselect(value as E),
+      'clear' => _clear(),
       _ => _toggle(value as E)
     };
   }
@@ -111,6 +112,17 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
       );
     }
     return this;
+  }
+
+  EnumFilter<T, E> _clear() {
+    return EnumFilter<T, E>._(
+      name: name,
+      fieldSelector: fieldSelector,
+      labels: labels,
+      referenceIndex: referenceIndex,
+      selectedValues: const [],
+      enabled: true,
+    );
   }
 
   EnumFilter<T, E> _toggle(E value) {

@@ -48,34 +48,48 @@ class FiltersViewState extends ConsumerState<FiltersView> {
     if (!hasFilter) {
       return const SizedBox.shrink();
     }
-    return ShadAccordion<String>.multiple(
-      maintainState: true,
-      initialValue: filters.map((e) => e.name).toList(),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        for (final filter in filters)
-          ShadAccordionItem<String>(
-            title: Badge(
-              isLabelVisible: filter.isActive,
-              child: Text(filter.name, style: textTheme.lead),
-            ),
-            value: filter.name,
-            child: switch (filter.filterType) {
-              FilterType.stringFilter => TextFilterView(
-                  parentIdentifier: widget.parentIdentifier,
-                  filter: filter,
+        ShadAccordion<String>.multiple(
+          maintainState: true,
+          initialValue: filters.map((e) => e.name).toList(),
+          children: [
+            for (final filter in filters)
+              ShadAccordionItem<String>(
+                title: Badge(
+                  isLabelVisible: filter.isActive,
+                  child: Text(filter.name, style: textTheme.lead),
                 ),
-              FilterType.booleanFilter => throw UnimplementedError(),
-              FilterType.dateFilter => throw UnimplementedError(),
-              FilterType.ddmmyyyyFilter => DDMMYYYYFilterViewRow(
-                  filter: filter,
-                  identifier: widget.parentIdentifier,
-                ),
-              FilterType.enumFilter => EnumFilterViewRow(
-                  filter: filter,
-                  identifier: widget.parentIdentifier,
-                ),
-            },
-          ),
+                value: filter.name,
+                child: switch (filter.filterType) {
+                  FilterType.stringFilter => TextFilterView(
+                      parentIdentifier: widget.parentIdentifier,
+                      filter: filter,
+                    ),
+                  FilterType.booleanFilter => throw UnimplementedError(),
+                  FilterType.dateFilter => throw UnimplementedError(),
+                  FilterType.ddmmyyyyFilter => DDMMYYYYFilterViewRow(
+                      filter: filter,
+                      identifier: widget.parentIdentifier,
+                    ),
+                  FilterType.enumFilter => EnumFilterViewRow(
+                      filter: filter,
+                      identifier: widget.parentIdentifier,
+                    ),
+                },
+              ),
+          ],
+        ),
+        ShadButton.ghost(
+          size: ShadButtonSize.sm,
+          child: const Text('Clear Filters'),
+          onPressed: () {
+            ref
+                .read(mediaFiltersProvider(widget.parentIdentifier).notifier)
+                .clearFilters();
+          },
+        ),
       ],
     );
   }

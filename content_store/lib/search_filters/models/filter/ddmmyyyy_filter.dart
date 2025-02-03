@@ -60,6 +60,12 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
           ddmmyyyy: ddmmyyyy ?? DDMMYYYY.fromDateTime(DateTime.now()),
         );
       }
+    } else if ('clear' == key) {
+      updated = DDMMYYYYFilter<T>(
+        fieldSelector: fieldSelector,
+        enabled: false,
+        name: name,
+      );
     } else {
       throw Exception('unsupported update');
     }

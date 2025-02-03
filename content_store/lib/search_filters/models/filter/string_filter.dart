@@ -29,6 +29,7 @@ class StringFilter<T> extends BaseFilter<T, String> {
     return switch (key) {
       'enable' => _enable(value as bool),
       'query' => _query(value as String),
+      'clear' => _query(''),
       _ => throw UnimplementedError(),
     };
   }

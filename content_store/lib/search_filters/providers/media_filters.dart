@@ -38,7 +38,7 @@ class MediaFiltersNotifier extends StateNotifier<SearchFilters<CLMedia>> {
 
   void removeFilter(CLFilter<CLMedia> filter) =>
       state = state.removeFilter(filter.name); */
-  /* void clearFilters() => state = state.clearFilters(); */
+  void clearFilters() => state = state.clearFilters();
 
   List<String> get availableFilters {
     return state.filters?.map((e) => e.name).toList() ?? [];
