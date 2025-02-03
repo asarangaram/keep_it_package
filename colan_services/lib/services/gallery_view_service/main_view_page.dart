@@ -124,7 +124,9 @@ class KeepItMainGrid extends ConsumerWidget {
             loadingBuilder: loadingBuilder,
             errorBuilder: errorBuilder,
             bannersBuilder: (context, _) {
-              return [const StaleMediaIndicatorService()];
+              return [
+                if (collectionId == null) const StaleMediaIndicatorService(),
+              ];
             },
             numColumns: 3,
             viewableAsCollection: true,
