@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:meta/meta.dart';
 
 import 'cl_entities.dart';
@@ -327,8 +328,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
       'id': id,
       'isPreviewCached': isPreviewCached,
       'isMediaCached': isMediaCached,
-      'previewLog': previewLog?.substring(0, 15),
-      'mediaLog': mediaLog?.substring(0, 15),
+      'previewLog': previewLog?.substring(0, min(15, previewLog?.length ?? 1)),
+      'mediaLog': mediaLog?.substring(0, min(15, mediaLog?.length ?? 1)),
       'isMediaOriginal': isMediaOriginal,
       'serverUID': serverUID,
       'isEdited': isEdited,

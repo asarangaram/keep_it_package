@@ -237,6 +237,7 @@ class EntityBilder extends ConsumerWidget {
             children: [
               Flexible(
                 child: CLBasicContextMenu(
+                  viewIdentifier: viewIdentifier,
                   onTap: () async {
                     ref
                         .read(
@@ -288,6 +289,7 @@ class EntityBilder extends ConsumerWidget {
           ),
         ),
       final CLMedia m => CLBasicContextMenu(
+          viewIdentifier: viewIdentifier,
           onTap: () async {
             await PageManager.of(context).openMedia(
               m.id!,

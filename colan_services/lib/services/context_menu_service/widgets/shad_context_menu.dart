@@ -1,17 +1,20 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../internal/entity_grid/builders/get_selection_mode.dart';
 import '../models/context_menu_items.dart';
 
 class CLBasicContextMenu extends StatelessWidget {
   const CLBasicContextMenu({
+    required this.viewIdentifier,
     required this.child,
     super.key,
     this.onTap,
     this.contextMenu,
   });
-
+  final ViewIdentifier viewIdentifier;
   final Widget child;
   final Future<bool?> Function()? onTap;
   final CLContextMenu? contextMenu;
@@ -44,6 +47,31 @@ class CLBasicContextMenu extends StatelessWidget {
             ),
             child: Text(item.title),
           ),
+        const Divider(
+          height: 8,
+        ),
+        GetSelectionMode(
+          viewIdentifier: viewIdentifier,
+          builder: ({
+            required onUpdateSelectionmode,
+            required tabIdentifier,
+            required selectionMode,
+          }) {
+            return ShadContextMenuItem(
+              leading: SizedBox.square(
+                dimension: 16,
+                child: Center(
+                  child: Icon(
+                    selectionMode ? clIcons.selected : clIcons.deselected,
+                  ),
+                ),
+              ),
+              enabled: !selectionMode,
+              onPressed: () => onUpdateSelectionmode(enable: true),
+              child: const Text('Select'),
+            );
+          },
+        ),
         if (contextMenu!.onlineActions.any((e) => e.onTap != null)) ...[
           const Divider(height: 8),
           for (final item in contextMenu!.onlineActions)
@@ -63,6 +91,9 @@ class CLBasicContextMenu extends StatelessWidget {
                 child: Text(item.title),
               ),
         ],
+        const Divider(
+          height: 8,
+        ),
         ShadContextMenuItem(
           leading: SizedBox.square(
             dimension: 16,

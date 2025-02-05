@@ -71,9 +71,9 @@ class KeepItTopBar extends ConsumerWidget {
                     ),
                   ),
                 ),
-                SelectionControlIcon(
+                /* SelectionControlIcon(
                   viewIdentifier: viewIdentifier,
-                ),
+                ), */
                 PopOverMenu(
                   viewIdentifier: viewIdentifier,
                 ),
