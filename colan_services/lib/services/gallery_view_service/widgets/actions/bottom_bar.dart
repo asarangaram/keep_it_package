@@ -60,28 +60,27 @@ class KeepItBottomBar extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (ColanPlatformSupport.cameraSupported)
-                Expanded(
-                  child: (ColanPlatformSupport.cameraSupported)
-                      ? Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: ShadButton.secondary(
-                              icon: Icon(
-                                clIcons.camera,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                PageManager.of(context).openCamera(
-                                  collectionId: collection?.id,
-                                );
-                              },
+              Expanded(
+                child: (ColanPlatformSupport.cameraSupported)
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: ShadButton.secondary(
+                            icon: Icon(
+                              clIcons.camera,
+                              size: 30,
                             ),
+                            onPressed: () {
+                              PageManager.of(context).openCamera(
+                                collectionId: collection?.id,
+                              );
+                            },
                           ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
             ],
           ),
         );
@@ -89,37 +88,3 @@ class KeepItBottomBar extends ConsumerWidget {
     );
   }
 }
-
-/**
- * 
- *  if (id == null) const StaleMediaIndicatorService(),
- * 
- * 
- * 
- * 
-const Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: ,
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: ,
-                    ),
-                  ),
-                  if (ColanPlatformSupport.cameraSupported) ...[
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    // Right FAB
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: ,
-                      ),
-                    ),
-                  ],
-                  const SizedBox.square(),
- */
