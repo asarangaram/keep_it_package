@@ -158,7 +158,7 @@ class ActionControl {
         allowShare: false,
         allowPin: false,
         allowDuplicateMedia: false,
-        allowDeleteLocalCopy: true,
+        allowDeleteLocalCopy: collection.hasServerUID,
         allowDownload: canDownload,
         allowUpload: canUpload,
         allowDeleteServerCopy: canDownload);

@@ -248,7 +248,7 @@ class EntityBilder extends ConsumerWidget {
           child: CollectionView.preview(
             c,
             viewIdentifier: viewIdentifier,
-            children: children!.map((e) => e as CLMedia).toList(),
+            containingMedia: children!.map((e) => e as CLMedia).toList(),
           ),
         ),
       final CLMedia m => ShadContextMenu(
