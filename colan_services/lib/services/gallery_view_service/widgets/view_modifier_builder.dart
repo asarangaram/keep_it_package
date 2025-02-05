@@ -15,9 +15,8 @@ class ViewModifierBuilder extends StatelessWidget {
     required this.errorBuilder,
     required this.bannersBuilder,
     required this.itemBuilder,
-    required this.columns,
     required this.contextMenuOf,
-    required this.filtersOff,
+    required this.filtersDisabled,
     required this.onSelectionChanged,
     required this.builder,
     super.key,
@@ -32,18 +31,16 @@ class ViewModifierBuilder extends StatelessWidget {
     required CLEntity? Function(CLEntity entity)? onGetParent,
     required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) itemBuilder;
-  final int columns;
 
   final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
   final void Function(List<CLEntity>)? onSelectionChanged;
-  final bool filtersOff;
+  final bool filtersDisabled;
   final List<Widget> Function(
     BuildContext context,
     List<GalleryGroupCLEntity<CLEntity>> galleryMap,
   ) bannersBuilder;
   final Widget Function({
     required ViewIdentifier viewIdentifier,
-    required int columns,
     required List<CLEntity> incoming,
     required Widget Function(Object, StackTrace) errorBuilder,
     required Widget Function() loadingBuilder,
@@ -98,7 +95,7 @@ class ViewModifierBuilder extends StatelessWidget {
           loadingBuilder: loadingBuilder,
           incoming: entities,
           bannersBuilder: bannersBuilder,
-          disabled: filtersOff,
+          disabled: filtersDisabled,
           builder: (
             List<CLEntity> filterred, {
             required List<Widget> Function(
@@ -111,7 +108,6 @@ class ViewModifierBuilder extends StatelessWidget {
               errorBuilder: errorBuilder,
               loadingBuilder: loadingBuilder,
               incoming: filterred,
-              columns: columns,
               itemBuilder: itemBuilder,
               labelBuilder: labelBuilder,
               bannersBuilder: bannersBuilder,
