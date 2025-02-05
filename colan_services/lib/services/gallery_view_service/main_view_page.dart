@@ -62,8 +62,9 @@ class CLMainScaffold extends StatelessWidget {
                   builder: (clmedias) => Column(
                     children: [
                       KeepItTopBar(
-                          parentIdentifier: parentIdentifier,
-                          clmedias: clmedias),
+                        parentIdentifier: parentIdentifier,
+                        clmedias: clmedias,
+                      ),
                       Expanded(
                         child: RefreshIndicator(
                           onRefresh: /* isSelectionMode ? null : */
