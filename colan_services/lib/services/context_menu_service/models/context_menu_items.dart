@@ -268,7 +268,19 @@ class CLContextMenu {
         : () => theStore.mediaUpdater.share(context, [media]);
     final onDelete0 = onDelete != null
         ? onDelete()
-        : () async => theStore.mediaUpdater.delete(media.id!);
+        : () async {
+            final confirmed = await DialogService.deleteMedia(
+                  context,
+                  media: media,
+                ) ??
+                false;
+            if (!confirmed) return confirmed;
+            if (context.mounted) {
+              return theStore.mediaUpdater.delete(media.id!);
+            }
+            return null;
+          };
+
     final onPin0 = onPin != null
         ? onPin()
         : () async => theStore.mediaUpdater.pinToggleMultiple(
