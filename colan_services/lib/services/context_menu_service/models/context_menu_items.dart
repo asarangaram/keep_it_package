@@ -74,7 +74,7 @@ class CLContextMenu {
         onTap: onPin,
       ),
       onDelete: CLMenuItem(
-        title: 'Delete',
+        title: 'Move to Bin',
         icon: clIcons.imageDelete,
         onTap: onDelete,
       ),
@@ -91,7 +91,7 @@ class CLContextMenu {
       onUpload:
           CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload),
       onDeleteServerCopy: CLMenuItem(
-        title: 'Permanently Delete',
+        title: 'Remove From Server',
         icon: Icons.remove,
         onTap: onDeleteServerCopy,
       ),
@@ -114,6 +114,7 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onUpload,
     ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
+    /// Basic Actions
     final onEdit0 = onEdit != null
         ? onEdit()
         : () async {
@@ -132,6 +133,7 @@ class CLContextMenu {
     final onShare0 = onShare?.call();
     final onPin0 = onPin?.call();
 
+    // Destructive Actions
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
@@ -165,59 +167,59 @@ class CLContextMenu {
             }
             return true;
           };
-    final onKeepOffline0 = hasOnlineService
-        ? onKeepOffline != null
-            ? onKeepOffline()
-            : () async {
-                if (!collection.haveItOffline && collection.hasServerUID) {
-                  final serverNotifier = ref.read(serverProvider.notifier);
-                  final updater = await serverNotifier.storeUpdater;
+    // Online Actions
+    final onKeepOffline0 = onKeepOffline != null
+        ? onKeepOffline()
+        : () async {
+            if (!collection.haveItOffline && collection.hasServerUID) {
+              final serverNotifier = ref.read(serverProvider.notifier);
+              final updater = await serverNotifier.storeUpdater;
 
-                  await updater.collectionUpdater
-                      .upsert(collection.copyWith(haveItOffline: true));
-                  final media = await updater.store.reader
-                      .getMediaByCollectionId(collection.id!);
-                  for (final m in media) {
-                    await updater.mediaUpdater.update(
-                      m,
-                      haveItOffline: () => null,
-                      isEdited: false,
-                    );
-                  }
-                  updater.store.reloadStore();
-                  serverNotifier.instantSync();
-                }
-                return true;
-              }
-        : null;
-    final onUpload0 = hasOnlineService
-        ? onUpload != null
-            ? onUpload()
-            : () async {
-                await theStore.collectionUpdater.upsert(
-                  collection.copyWith(serverUID: () => -1, isEdited: true),
+              await updater.collectionUpdater
+                  .upsert(collection.copyWith(haveItOffline: true));
+              final media = await updater.store.reader
+                  .getMediaByCollectionId(collection.id!);
+              for (final m in media) {
+                await updater.mediaUpdater.update(
+                  m,
+                  haveItOffline: () => null,
+                  isEdited: false,
                 );
-                ref.read(serverProvider.notifier).instantSync();
-
-                return true;
               }
-        : null;
-    final onDeleteServerCopy0 = onDeleteServerCopy?.call();
+              updater.store.reloadStore();
+              serverNotifier.instantSync();
+            }
+            return true;
+          };
+    final onUpload0 = onUpload != null
+        ? onUpload()
+        : () async {
+            await theStore.collectionUpdater.upsert(
+              collection.copyWith(serverUID: () => -1, isEdited: true),
+            );
+            ref.read(serverProvider.notifier).instantSync();
 
+            return true;
+          };
+    final onDeleteServerCopy0 = onDeleteServerCopy?.call();
+    final ac = ActionControl.onGetCollectionActionControl(
+      collection,
+      hasOnlineService,
+    );
     return CLContextMenu.template(
       name: collection.label,
       logoImageAsset: collection.serverUID == null
           ? 'assets/icon/not_on_server.png'
           : 'assets/icon/cloud_on_lan_128px_color.png',
-      onEdit: onEdit0,
-      onMove: onMove0,
-      onShare: onShare0,
-      onPin: onPin0,
-      onDelete: onDelete0,
-      onDeleteLocalCopy: onDeleteLocalCopy0,
-      onKeepOffline: onKeepOffline0,
-      onUpload: onUpload0,
-      onDeleteServerCopy: onDeleteServerCopy0,
+      onEdit: ac.onEdit(onEdit0),
+      onMove: ac.onMove(onMove0),
+      onShare: ac.onShare(onShare0),
+      onPin: ac.onPin(onPin0),
+      onKeepOffline: ac.onKeepOffline(onKeepOffline0),
+      onUpload: ac.onUpload(onUpload0),
+      onDelete: ac.onDelete(onDelete0),
+      onDeleteLocalCopy: ac.onDeleteLocalCopy(onDeleteLocalCopy0),
+      onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
       infoMap: collection.toMapForDisplay(),
     );
   }
@@ -413,6 +415,24 @@ class CLContextMenu {
         onUpload,
         onDeleteServerCopy,
       ].where((e) => e.onTap != null).toList();
+
+  List<CLMenuItem> get basicActions => [
+        onEdit,
+        onMove,
+        onShare,
+        onPin,
+      ];
+
+  List<CLMenuItem> get onlineActions => [
+        onKeepOffline,
+        onUpload,
+      ];
+
+  List<CLMenuItem> get destructiveActions => [
+        onDelete,
+        onDeleteLocalCopy,
+        onDeleteServerCopy,
+      ];
 
   DraggableMenuBuilderType? draggableMenuBuilder(
     BuildContext context,

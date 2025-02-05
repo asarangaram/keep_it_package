@@ -10,6 +10,7 @@ import 'package:store/store.dart';
 import '../context_menu_service/models/context_menu_items.dart';
 
 import '../context_menu_service/widgets/pull_down_context_menu.dart';
+import '../context_menu_service/widgets/shad_context_menu.dart';
 import '../media_view_service/widgets/media_preview_service.dart';
 import 'builders/available_media.dart';
 
@@ -229,7 +230,7 @@ class EntityBilder extends ConsumerWidget {
     }
 
     return switch (item) {
-      final Collection c => PullDownContextMenu(
+      final Collection c => ShadContextMenu(
           onTap: () async {
             ref
                 .read(
@@ -251,7 +252,7 @@ class EntityBilder extends ConsumerWidget {
             children: children!.map((e) => e as CLMedia).toList(),
           ),
         ),
-      final CLMedia m => PullDownContextMenu(
+      final CLMedia m => ShadContextMenu(
           onTap: () async {
             await PageManager.of(context).openMedia(
               m.id!,
