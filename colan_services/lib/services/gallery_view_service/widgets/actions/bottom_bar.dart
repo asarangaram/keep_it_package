@@ -34,48 +34,54 @@ class KeepItBottomBar extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 8),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                  child: ServerSpeedDial(),
+              const Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: ServerSpeedDial(),
+                  ),
                 ),
               ),
-              Center(
-                child: ShadButton.secondary(
-                  icon: Icon(
-                    clIcons.insertItem,
-                    size: 30,
+              Expanded(
+                child: Center(
+                  child: ShadButton.secondary(
+                    icon: Icon(
+                      clIcons.insertItem,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      IncomingMediaMonitor.onPickFiles(
+                        context,
+                        ref,
+                        collection: collection,
+                      );
+                    },
                   ),
-                  onPressed: () {
-                    IncomingMediaMonitor.onPickFiles(
-                      context,
-                      ref,
-                      collection: collection,
-                    );
-                  },
                 ),
               ),
               if (ColanPlatformSupport.cameraSupported)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ShadButton.secondary(
-                      icon: Icon(
-                        clIcons.camera,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        PageManager.of(context).openCamera(
-                          collectionId: collection?.id,
-                        );
-                      },
-                    ),
-                  ),
-                )
-              else
-                const SizedBox.shrink(),
+                Expanded(
+                  child: (ColanPlatformSupport.cameraSupported)
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: ShadButton.secondary(
+                              icon: Icon(
+                                clIcons.camera,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                PageManager.of(context).openCamera(
+                                  collectionId: collection?.id,
+                                );
+                              },
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
             ],
           ),
         );

@@ -23,7 +23,16 @@ import 'widgets/when_empty.dart';
 import 'widgets/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
-  const GalleryViewService({
+  const GalleryViewService({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const CLMainScaffold();
+  }
+}
+
+class CLMainScaffold extends StatelessWidget {
+  const CLMainScaffold({
     super.key,
   });
 
@@ -39,48 +48,42 @@ class GalleryViewService extends StatelessWidget {
         body: OnSwipe(
           child: SafeArea(
             bottom: false,
-            child: Column(
-              children: [
-                Expanded(
-                  child: GetStore(
-                    errorBuilder: errorBuilder,
-                    loadingBuilder: () => CLLoader.widget(
-                      debugMessage: 'GetStore',
-                    ),
-                    builder: (store) {
-                      return GetAvailableMediaByActiveCollectionId(
-                        loadingBuilder: () => CLLoader.widget(
-                          debugMessage: 'GetAvailableMediaByCollectionId',
-                        ),
-                        errorBuilder: errorBuilder,
-                        builder: (clmedias) => Column(
-                          children: [
-                            const KeepItTopBar(
-                              parentIdentifier: parentIdentifier,
-                            ),
-                            Expanded(
-                              child: RefreshIndicator(
-                                onRefresh: /* isSelectionMode ? null : */
-                                    () async => store.reloadStore(),
-                                child: KeepItMainGrid(
-                                  parentIdentifier: parentIdentifier,
-                                  clmedias: clmedias,
-                                  loadingBuilder: () => CLLoader.widget(
-                                    debugMessage: 'KeepItMainGrid',
-                                  ),
-                                  errorBuilder: errorBuilder,
-                                ),
-                              ),
-                            ),
-                            if (MediaQuery.of(context).viewInsets.bottom == 0)
-                              const KeepItBottomBar(),
-                          ],
-                        ),
-                      );
-                    },
+            child: GetStoreUpdater(
+              errorBuilder: errorBuilder,
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'GetStore',
+              ),
+              builder: (theStore) {
+                return GetAvailableMediaByActiveCollectionId(
+                  loadingBuilder: () => CLLoader.widget(
+                    debugMessage: 'GetAvailableMediaByCollectionId',
                   ),
-                ),
-              ],
+                  errorBuilder: errorBuilder,
+                  builder: (clmedias) => Column(
+                    children: [
+                      const KeepItTopBar(
+                        parentIdentifier: parentIdentifier,
+                      ),
+                      Expanded(
+                        child: RefreshIndicator(
+                          onRefresh: /* isSelectionMode ? null : */
+                              () async => theStore.store.reloadStore(),
+                          child: KeepItMainGrid(
+                            parentIdentifier: parentIdentifier,
+                            clmedias: clmedias,
+                            loadingBuilder: () => CLLoader.widget(
+                              debugMessage: 'KeepItMainGrid',
+                            ),
+                            errorBuilder: errorBuilder,
+                          ),
+                        ),
+                      ),
+                      if (MediaQuery.of(context).viewInsets.bottom == 0)
+                        const KeepItBottomBar(),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),

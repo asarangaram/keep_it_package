@@ -137,6 +137,9 @@ class ServerSpeedDialImpl extends ConsumerWidget {
       ),
       errorBuilder: (_, __) => const SizedBox.shrink(),
       builder: (server) {
+        if (server.identity == null) {
+          return const SizedBox.shrink();
+        }
         return Stack(
           alignment: AlignmentDirectional.center,
           children: [
