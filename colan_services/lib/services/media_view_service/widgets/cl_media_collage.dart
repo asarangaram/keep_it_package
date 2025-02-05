@@ -85,15 +85,10 @@ class CLMediaCollage extends StatelessWidget {
           if (vCount != null) {
             final totalCount = hCount! * vCount!;
             if (itemCount < totalCount) {
-              if (itemCount < hCount!) {
-                x = itemCount;
-                y = 1;
-              } else {
-                final lower = sqrt(itemCount).floor();
-                x = y = lower;
-                /* x = hCount!;
-                y = (itemCount + hCount! - 1) ~/ hCount!; */
-              }
+              /// Here is an assumption that hCount and vCount are same !!
+              /// Fix later
+
+              x = y = sqrt(itemCount).ceil();
             } else {
               x = hCount!;
               y = vCount;
