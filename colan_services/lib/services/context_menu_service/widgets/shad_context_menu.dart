@@ -4,8 +4,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../models/context_menu_items.dart';
 
-class ShadContextMenu extends StatelessWidget {
-  const ShadContextMenu({
+class CLBasicContextMenu extends StatelessWidget {
+  const CLBasicContextMenu({
     required this.child,
     super.key,
     this.onTap,
@@ -38,8 +38,10 @@ class ShadContextMenu extends StatelessWidget {
             enabled: item.onTap != null,
             onPressed: item.onTap,
             textStyle: textStyle.copyWith(
-                    color: item.isDestructive? ShadTheme.of(context).colorScheme.destructive: null,
-                  ),
+              color: item.isDestructive
+                  ? ShadTheme.of(context).colorScheme.destructive
+                  : null,
+            ),
             child: Text(item.title),
           ),
         if (contextMenu!.onlineActions.any((e) => e.onTap != null)) ...[
@@ -52,8 +54,10 @@ class ShadContextMenu extends StatelessWidget {
                   child: Center(child: Icon(item.icon)),
                 ),
                 textStyle: textStyle.copyWith(
-                    color: item.isDestructive? ShadTheme.of(context).colorScheme.destructive: null,
-                  ),
+                  color: item.isDestructive
+                      ? ShadTheme.of(context).colorScheme.destructive
+                      : null,
+                ),
                 enabled: item.onTap != null,
                 onPressed: item.onTap,
                 child: Text(item.title),
@@ -79,7 +83,9 @@ class ShadContextMenu extends StatelessWidget {
                     ),
                   ),
                   textStyle: textStyle.copyWith(
-                    color: item.isDestructive? ShadTheme.of(context).colorScheme.destructive: null,
+                    color: item.isDestructive
+                        ? ShadTheme.of(context).colorScheme.destructive
+                        : null,
                   ),
                   enabled: item.onTap != null,
                   onPressed: item.onTap,

@@ -114,52 +114,43 @@ class FolderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                LayoutBuilder(
-                  builder: (context, constrain) {
-                    return LinuxFolderWidget(
-                      width: constrain.maxWidth,
-                      height: constrain.maxHeight,
-                      borderColor: borderColor,
-                      child: child,
-                    );
-                  },
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        LayoutBuilder(
+          builder: (context, constrain) {
+            return LinuxFolderWidget(
+              width: constrain.maxWidth,
+              height: constrain.maxHeight,
+              borderColor: borderColor,
+              child: child,
+            );
+          },
+        ),
+        if (counter != null)
+          Positioned(
+            bottom: 8,
+            left: 0,
+            right: 0,
+            child: counter!,
+          ),
+        if (avatarAsset != null)
+          Positioned.fill(
+            bottom: 6,
+            right: 6,
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: FractionallySizedBox(
+                widthFactor: 0.15,
+                heightFactor: 0.15,
+                child: ShadAvatar(
+                  avatarAsset,
+                  // size: const Size.fromRadius(20),
                 ),
-                if (counter != null)
-                  Positioned(
-                    bottom: 8,
-                    left: 0,
-                    right: 0,
-                    child: counter!,
-                  ),
-                if (avatarAsset != null)
-                  Positioned(
-                    bottom: 6,
-                    right: 6,
-                    child: ShadAvatar(
-                      avatarAsset,
-                      size: const Size.fromRadius(20),
-                    ),
-                  ),
-              ],
+              ),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            name,
-            style: const TextStyle(fontSize: 14),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
+      ],
     );
   }
 }

@@ -4,11 +4,13 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
 import '../context_menu_service/models/context_menu_items.dart';
 
+import '../context_menu_service/widgets/pull_down_context_menu.dart';
 import '../context_menu_service/widgets/shad_context_menu.dart';
 import '../media_view_service/widgets/media_preview_service.dart';
 import 'builders/available_media.dart';
@@ -229,29 +231,63 @@ class EntityBilder extends ConsumerWidget {
     }
 
     return switch (item) {
-      final Collection c => ShadContextMenu(
-          onTap: () async {
-            ref
-                .read(
-                  activeCollectionProvider.notifier,
-                )
-                .state = c.id;
-            return null;
-          },
-          contextMenu: CLContextMenu.ofCollection(
-            context,
-            ref,
-            collection: c,
-            hasOnlineService: canSync,
-            theStore: theStore,
-          ),
-          child: CollectionView.preview(
-            c,
-            viewIdentifier: viewIdentifier,
-            containingMedia: children!.map((e) => e as CLMedia).toList(),
+      final Collection c => Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Flexible(
+                child: CLBasicContextMenu(
+                  onTap: () async {
+                    ref
+                        .read(
+                          activeCollectionProvider.notifier,
+                        )
+                        .state = c.id;
+                    return null;
+                  },
+                  contextMenu: CLContextMenu.ofCollection(
+                    context,
+                    ref,
+                    collection: c,
+                    hasOnlineService: canSync,
+                    theStore: theStore,
+                  ),
+                  child: CollectionView.preview(
+                    c,
+                    viewIdentifier: viewIdentifier,
+                    containingMedia:
+                        children!.map((e) => e as CLMedia).toList(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        c.label.capitalizeFirstLetter(),
+                        style: const TextStyle(fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  EntityMetaData(
+                    contextMenu: CLContextMenu.ofCollection(
+                      context,
+                      ref,
+                      collection: c,
+                      hasOnlineService: canSync,
+                      theStore: theStore,
+                    ),
+                    child: const Icon(LucideIcons.ellipsis),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      final CLMedia m => ShadContextMenu(
+      final CLMedia m => CLBasicContextMenu(
           onTap: () async {
             await PageManager.of(context).openMedia(
               m.id!,

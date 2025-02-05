@@ -20,7 +20,6 @@ class PullDownContextMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
     if (contextMenu == null) {
       return GestureDetector(
         onTap: onTap,
@@ -336,6 +335,53 @@ class UnsyncMenuOption extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class EntityMetaData extends ConsumerWidget {
+  const EntityMetaData({
+    required this.child,
+    super.key,
+    this.contextMenu,
+  });
+
+  final Widget child;
+
+  final CLContextMenu? contextMenu;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (contextMenu?.infoMap == null) {
+      return const SizedBox.shrink();
+    }
+    final menu = contextMenu!;
+
+    return PullDownButton(
+      itemBuilder: (context) => [
+        PullDownMenuHeader(
+          title: menu.name,
+          leadingBuilder: (context, constraints) {
+            return SizedBox.square(
+              dimension: 24,
+              child: Image.asset(menu.logoImageAsset),
+            );
+          },
+        ),
+        PullDownMenuTitle(
+          title: MapInfo(
+            menu.infoMap,
+            title: 'Details',
+          ),
+        ),
+      ],
+      buttonAnchor: PullDownMenuAnchor.center,
+      buttonBuilder: (context, showMenu) {
+        return GestureDetector(
+          onTap: showMenu,
+          child: child,
+        );
+      },
     );
   }
 }

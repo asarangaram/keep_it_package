@@ -89,13 +89,16 @@ class CLMediaCollage extends StatelessWidget {
                 x = itemCount;
                 y = 1;
               } else {
-                x = hCount!;
-                y = (itemCount + hCount! - 1) ~/ hCount!;
+                final lower = sqrt(itemCount).floor();
+                x = y = lower;
+                /* x = hCount!;
+                y = (itemCount + hCount! - 1) ~/ hCount!; */
               }
             } else {
               x = hCount!;
               y = vCount;
             }
+            print('$hCount,  $vCount $itemCount $x $y');
           } else {
             x = hCount!;
             y = vCount;
