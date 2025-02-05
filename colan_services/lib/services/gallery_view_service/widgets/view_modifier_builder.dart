@@ -42,8 +42,6 @@ class ViewModifierBuilder extends StatelessWidget {
   final Widget Function({
     required ViewIdentifier viewIdentifier,
     required List<CLEntity> incoming,
-    required Widget Function(Object, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
     required Widget Function(
       BuildContext,
       CLEntity, {
@@ -105,8 +103,6 @@ class ViewModifierBuilder extends StatelessWidget {
           }) {
             return builder(
               viewIdentifier: viewIdentifier,
-              errorBuilder: errorBuilder,
-              loadingBuilder: loadingBuilder,
               incoming: filterred,
               itemBuilder: itemBuilder,
               labelBuilder: labelBuilder,

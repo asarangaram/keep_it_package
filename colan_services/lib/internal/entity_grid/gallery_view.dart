@@ -69,14 +69,12 @@ class CLEntityGalleryView extends StatelessWidget {
               onSelectionChanged: onSelectionChanged,
               bannersBuilder: bannersBuilder,
               builder: ({
-                required bannersBuilder,
-                required draggableMenuBuilder,
-                required errorBuilder,
                 required incoming,
                 required itemBuilder,
                 required labelBuilder,
-                required loadingBuilder,
                 required viewIdentifier,
+                required bannersBuilder,
+                required draggableMenuBuilder,
               }) {
                 /* return MediaViewService1.pageView(
                   media: incoming.map((e) => e as CLMedia).toList(),
