@@ -102,7 +102,7 @@ class DialogService {
       );
     } else {
       final String msg;
-      print('media.length ${media.length}');
+    
       msg = 'Are you sure you want to delete ${media.length} items?';
       return template(
         context,
