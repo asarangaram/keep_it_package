@@ -61,8 +61,9 @@ class CLMainScaffold extends StatelessWidget {
                   errorBuilder: errorBuilder,
                   builder: (clmedias) => Column(
                     children: [
-                      const KeepItTopBar(
+                       KeepItTopBar(
                         parentIdentifier: parentIdentifier,
+                        clmedias:clmedias
                       ),
                       Expanded(
                         child: RefreshIndicator(

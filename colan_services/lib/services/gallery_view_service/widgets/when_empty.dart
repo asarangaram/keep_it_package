@@ -26,9 +26,11 @@ class WhenEmpty extends ConsumerWidget {
           );
 
     return CLErrorView(
-      errorMessage: 'Empty',
-      errorDetails: 'Go Online to view collections '
-          'in the server',
+      errorMessage: 'Nothing to show',
+      errorDetails:
+          'Import Photos and Videos from the Gallery or using Camera. '
+          'Connect to server to view your home collections '
+          "using 'Cloud on LAN' service.",
       onRecover: onRecover,
     );
   }

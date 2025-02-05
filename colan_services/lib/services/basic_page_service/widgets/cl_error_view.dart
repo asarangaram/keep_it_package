@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../basic_page_service.dart';
 
@@ -27,18 +28,19 @@ class CLErrorView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CLIcon.veryLarge(
-              clIcons.error,
+              LucideIcons.folder,
               color: Theme.of(context).colorScheme.error,
             ),
             CLText.large(trim(errorMessage)),
-            /* if (!isAllAvailable)  */ ...[
+            ...[
               const SizedBox(
                 height: 32,
               ),
               if (errorDetails != null)
-                CLText.standard(
+                Text(
                   errorDetails!,
-                  color: Colors.grey,
+                  textAlign: TextAlign.justify,
+                  style: ShadTheme.of(context).textTheme.muted,
                 ),
             ],
           ],
