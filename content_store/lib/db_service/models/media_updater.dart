@@ -836,10 +836,7 @@ class MediaUpdater {
         item1,
         deviceDirectories: directories,
       );
-      if (!item.type.isFile) {
-        // Skip for now
-      }
-      if (item.type.isFile) {
+      if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
         final file = File(item.name);
         if (file.existsSync()) {
           final md5String = await file.checksum;
@@ -860,6 +857,8 @@ class MediaUpdater {
         } else {
           /* Missing file? ignoring */
         }
+      } else {
+        // Skip for now
       }
 
       await Future<void>.delayed(const Duration(milliseconds: 1));
