@@ -34,12 +34,14 @@ class CLContextMenu {
       name: 'No Context Menu',
       logoImageAsset: '',
       infoMap: const {},
+      isPinned: false,
     );
   }
   factory CLContextMenu.template({
     required String name,
     required String logoImageAsset,
     required Map<String, dynamic> infoMap,
+    required bool isPinned,
     Future<bool?> Function()? onEdit,
     Future<bool?> Function()? onMove,
     Future<bool?> Function()? onShare,
@@ -69,8 +71,8 @@ class CLContextMenu {
         onTap: onShare,
       ),
       onPin: CLMenuItem(
-        title: 'Pin',
-        icon: clIcons.pin,
+        title: isPinned ? 'Remove Pin' : 'Pin',
+        icon: isPinned ? clIcons.pin : clIcons.unPin,
         onTap: onPin,
       ),
       onDelete: CLMenuItem(
@@ -226,6 +228,7 @@ class CLContextMenu {
       onDeleteLocalCopy: ac.onDeleteLocalCopy(onDeleteLocalCopy0),
       onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
       infoMap: collection.toMapForDisplay(),
+      isPinned: false,
     );
   }
   factory CLContextMenu.ofMedia(
@@ -327,6 +330,7 @@ class CLContextMenu {
       onUpload: ac.onUpload(onUpload0),
       onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
       infoMap: media.toMapForDisplay(),
+      isPinned: media.pin != null,
     );
   }
   factory CLContextMenu.ofMultipleMedia(
@@ -406,6 +410,7 @@ class CLContextMenu {
       onUpload: onUpload0,
       onDeleteServerCopy: onDeleteServerCopy0,
       infoMap: const {},
+      isPinned: items.any((media) => media.pin != null),
     );
   }
   final String name;
