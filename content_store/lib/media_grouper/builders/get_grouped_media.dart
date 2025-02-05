@@ -57,7 +57,7 @@ class GetGroupedMedia extends ConsumerWidget {
         collections.sort(
           (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
         );
-        if (collections.length > 1 && viewableAsCollection) {
+        if (viewableAsCollection) {
           result.add(
             LabelledEntityGroups(
               name: 'Collections',
