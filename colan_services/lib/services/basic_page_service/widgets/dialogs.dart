@@ -2,20 +2,46 @@ import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
+import '../../media_view_service/widgets/cl_media_collage.dart';
+import '../../media_view_service/widgets/media_preview_service.dart';
+
 class DialogService {
   static Future<bool?> template(
     BuildContext context, {
     required String title,
     required String message,
+    List<CLEntity>? entity,
   }) async =>
       showDialog<bool?>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           alignment: Alignment.center,
           title: Text(title),
-          content: SizedBox.square(
-            dimension: 200,
-            child: Text(message),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (entity != null && entity.isNotEmpty)
+                switch (entity.first) {
+                  final CLMedia _ => SizedBox.square(
+                      dimension: 100,
+                      child: CLMediaCollage.byMatrixSize(
+                        entity.length,
+                        hCount: 3,
+                        vCount: 3,
+                        itemBuilder: (context, index) {
+                          return MediaThumbnail(
+                            media: entity[index] as CLMedia,
+                          );
+                        },
+                        whenNopreview: const Center(),
+                      ),
+                    ),
+                  _ => throw UnimplementedError()
+                },
+              Text(
+                message,
+              ),
+            ],
           ),
           actions: [
             OverflowBar(
@@ -46,6 +72,7 @@ class DialogService {
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete '
             '"${collection.label}" and its content?',
+        entity: [collection],
       );
 
   static Future<bool?> deleteMedia(
@@ -57,6 +84,7 @@ class DialogService {
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete '
             'this ${media.type.name}?',
+        entity: [media],
       );
 
   static Future<bool?> deleteMediaMultiple(
@@ -66,21 +94,23 @@ class DialogService {
     if (media.isEmpty) {
       return false;
     }
-    final String msg;
+
     if (media.length == 1) {
       return DialogService.deleteMedia(
         context,
         media: media[0],
       );
     } else {
+      final String msg;
+      print('media.length ${media.length}');
       msg = 'Are you sure you want to delete ${media.length} items?';
+      return template(
+        context,
+        title: 'Confirm Delete',
+        message: msg,
+        entity: media,
+      );
     }
-
-    return template(
-      context,
-      title: 'Confirm Delete',
-      message: msg,
-    );
   }
 
   static Future<bool?> permanentlyDeleteMedia(
