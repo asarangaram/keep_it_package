@@ -129,7 +129,6 @@ class MediaView0 extends ConsumerWidget {
   final Widget Function() loadingBuilder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ac = ActionControl.onGetMediaActionControl(media);
     final showControl = ref.watch(showControlsProvider);
     return GetStoreUpdater(
       errorBuilder: errorBuilder,
@@ -197,73 +196,6 @@ class MediaView0 extends ConsumerWidget {
                     ),
                   ),
                   MediaControls(
-                    onMove: ac.onMove(
-                      () => MediaWizardService.openWizard(
-                        context,
-                        ref,
-                        CLSharedMedia(
-                          entries: [media],
-                          type: UniversalMediaSource.move,
-                        ),
-                      ),
-                    ),
-                    onDelete: ac.onDelete(() async {
-                      final confirmed = await DialogService.deleteMediaMultiple(
-                            context,
-                            media: [media],
-                          ) ??
-                          false;
-                      if (!confirmed) return confirmed;
-                      if (context.mounted) {
-                        return theStore.mediaUpdater.delete(media.id!);
-                      }
-                      return false;
-                    }),
-                    onShare: ac.onShare(
-                      () => theStore.mediaUpdater.share(context, [media]),
-                    ),
-                    onEdit: ac.onEdit(
-                      () async {
-                        final updatedMedia =
-                            await PageManager.of(context).openEditor(
-                          media,
-                          canDuplicateMedia: ac.canDuplicateMedia,
-                        );
-                        if (updatedMedia != media && context.mounted) {
-                          // If id is same, refresh, and still
-                          // global refresh may overwrite.
-                          /* if (updatedMedia?.id == media.id) {
-                            setState(() {
-                              media = updatedMedia;
-                            });
-                          } */
-                        }
-
-                        return true;
-                      },
-                    ),
-                    onPin: media.isMediaLocallyAvailable
-                        ? ac.onPin(
-                            () async {
-                              final res =
-                                  await theStore.mediaUpdater.pinToggleMultiple(
-                                {media.id},
-                                onGetPath: (media) {
-                                  if (media.isMediaLocallyAvailable) {
-                                    return theStore.directories
-                                        .getMediaAbsolutePath(media);
-                                  }
-
-                                  return null;
-                                },
-                              );
-                              if (res) {
-                                /*  setState(() {}); */
-                              }
-                              return res;
-                            },
-                          )
-                        : null,
                     media: media,
                   ),
                 ],

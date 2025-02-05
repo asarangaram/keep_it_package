@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,7 +14,11 @@ class ActionControl {
     this.allowMove = false,
     this.allowShare = false,
     this.allowPin = false,
-    this.canDuplicateMedia = false,
+    this.allowDuplicateMedia = false,
+    this.allowDeleteLocalCopy = false,
+    this.allowDownload = false,
+    this.allowUpload = false,
+    this.allowDeleteServerCopy = false,
   });
 
   factory ActionControl.fromMap(Map<String, dynamic> map) {
@@ -23,7 +28,7 @@ class ActionControl {
       allowMove: map['allowMove'] as bool,
       allowShare: map['allowShare'] as bool,
       allowPin: map['allowPin'] as bool,
-      canDuplicateMedia: map['canDuplicateMedia'] as bool,
+      allowDuplicateMedia: map['canDuplicateMedia'] as bool,
     );
   }
 
@@ -35,7 +40,11 @@ class ActionControl {
   final bool allowMove;
   final bool allowShare;
   final bool allowPin;
-  final bool canDuplicateMedia;
+  final bool allowDuplicateMedia;
+  final bool allowDeleteLocalCopy;
+  final bool allowDownload;
+  final bool allowUpload;
+  final bool allowDeleteServerCopy;
 
   ActionControl copyWith({
     bool? allowEdit,
@@ -43,7 +52,11 @@ class ActionControl {
     bool? allowMove,
     bool? allowShare,
     bool? allowPin,
-    bool? canDuplicateMedia,
+    bool? allowDuplicateMedia,
+    bool? allowDeleteLocalCopy,
+    bool? allowDownload,
+    bool? allowUpload,
+    bool? allowDeleteServerCopy,
   }) {
     return ActionControl(
       allowEdit: allowEdit ?? this.allowEdit,
@@ -51,13 +64,18 @@ class ActionControl {
       allowMove: allowMove ?? this.allowMove,
       allowShare: allowShare ?? this.allowShare,
       allowPin: allowPin ?? this.allowPin,
-      canDuplicateMedia: canDuplicateMedia ?? this.canDuplicateMedia,
+      allowDuplicateMedia: allowDuplicateMedia ?? this.allowDuplicateMedia,
+      allowDeleteLocalCopy: allowDeleteLocalCopy ?? this.allowDeleteLocalCopy,
+      allowDownload: allowDownload ?? this.allowDownload,
+      allowUpload: allowUpload ?? this.allowUpload,
+      allowDeleteServerCopy:
+          allowDeleteServerCopy ?? this.allowDeleteServerCopy,
     );
   }
 
   @override
   String toString() {
-    return 'ActionControl(allowEdit: $allowEdit, allowDelete: $allowDelete, allowMove: $allowMove, allowShare: $allowShare, allowPin: $allowPin, canDuplicateMedia: $canDuplicateMedia)';
+    return 'ActionControl(allowEdit: $allowEdit, allowDelete: $allowDelete, allowMove: $allowMove, allowShare: $allowShare, allowPin: $allowPin, canDuplicateMedia: $allowDuplicateMedia, canDeleteLocalCopy: $allowDeleteLocalCopy, canKeepOffline: $allowDownload, cabUpload: $allowUpload, canDeleteServerCopy: $allowDeleteServerCopy)';
   }
 
   @override
@@ -69,7 +87,11 @@ class ActionControl {
         other.allowMove == allowMove &&
         other.allowShare == allowShare &&
         other.allowPin == allowPin &&
-        other.canDuplicateMedia == canDuplicateMedia;
+        other.allowDuplicateMedia == allowDuplicateMedia &&
+        other.allowDeleteLocalCopy == allowDeleteLocalCopy &&
+        other.allowDownload == allowDownload &&
+        other.allowUpload == allowUpload &&
+        other.allowDeleteServerCopy == allowDeleteServerCopy;
   }
 
   @override
@@ -79,7 +101,11 @@ class ActionControl {
         allowMove.hashCode ^
         allowShare.hashCode ^
         allowPin.hashCode ^
-        canDuplicateMedia.hashCode;
+        allowDuplicateMedia.hashCode ^
+        allowDeleteLocalCopy.hashCode ^
+        allowDownload.hashCode ^
+        allowUpload.hashCode ^
+        allowDeleteServerCopy.hashCode;
   }
 
   Future<bool?> Function()? onEdit(Future<bool?> Function()? cb) =>
@@ -92,6 +118,14 @@ class ActionControl {
       allowShare ? cb : null;
   Future<bool?> Function()? onPin(Future<bool?> Function()? cb) =>
       allowPin ? cb : null;
+  Future<bool?> Function()? onDeleteLocalCopy(Future<bool?> Function()? cb) =>
+      allowDeleteLocalCopy ? cb : null;
+  Future<bool?> Function()? onKeepOffline(Future<bool?> Function()? cb) =>
+      allowDownload ? cb : null;
+  Future<bool?> Function()? onUpload(Future<bool?> Function()? cb) =>
+      allowUpload ? cb : null;
+  Future<bool?> Function()? onDeleteServerCopy(Future<bool?> Function()? cb) =>
+      allowDeleteServerCopy ? cb : null;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -100,7 +134,7 @@ class ActionControl {
       'allowMove': allowMove,
       'allowShare': allowShare,
       'allowPin': allowPin,
-      'canDuplicateMedia': canDuplicateMedia,
+      'canDuplicateMedia': allowDuplicateMedia,
     };
   }
 
@@ -110,7 +144,41 @@ class ActionControl {
     return const ActionControl();
   }
 
-  static ActionControl onGetMediaActionControl(CLMedia media) {
+  static ActionControl onGetCollectionActionControl(
+      Collection collection, bool hasOnlineService) {
+    final canSync = hasOnlineService;
+    final haveItOffline = collection.haveItOffline;
+
+    final canDownload = canSync && collection.hasServerUID && haveItOffline;
+    final canUpload = canSync && !collection.hasServerUID;
+    return ActionControl(
+        allowEdit: true,
+        allowDelete: true,
+        allowMove: false,
+        allowShare: false,
+        allowPin: false,
+        allowDuplicateMedia: false,
+        allowDeleteLocalCopy: true,
+        allowDownload: canDownload,
+        allowUpload: canUpload,
+        allowDeleteServerCopy: canDownload);
+  }
+
+  static ActionControl onGetMediaActionControl(
+      CLMedia media, Collection parentCollection, bool hasOnlineService) {
+    final canSync = hasOnlineService;
+    final canDeleteLocalCopy = canSync &&
+        parentCollection.haveItOffline &&
+        media.hasServerUID &&
+        media.isMediaCached;
+    final haveItOffline = switch (media.haveItOffline) {
+      null => parentCollection.haveItOffline,
+      true => true,
+      false => false
+    };
+    final canDownload =
+        canSync && media.hasServerUID && !media.isMediaCached && haveItOffline;
+
     final editSupported = switch (media.type) {
       CLMediaType.text => false,
       CLMediaType.image => true,
@@ -119,15 +187,18 @@ class ActionControl {
       CLMediaType.audio => false,
       CLMediaType.file => false,
     };
-    final isAFile = media.isMediaCached;
 
     return ActionControl(
-      allowEdit: editSupported && isAFile,
-      allowDelete: true,
-      allowMove: true,
-      allowShare: isAFile,
-      allowPin: ColanPlatformSupport.isMobilePlatform,
-      canDuplicateMedia: true,
-    );
+        allowEdit: editSupported && media.isMediaLocallyAvailable,
+        allowDelete: true,
+        allowMove: true,
+        allowShare: media.isMediaLocallyAvailable,
+        allowPin: ColanPlatformSupport.isMobilePlatform &&
+            media.isMediaLocallyAvailable,
+        allowDuplicateMedia: true,
+        allowDeleteLocalCopy: canDeleteLocalCopy,
+        allowDownload: canDownload,
+        allowUpload: canSync,
+        allowDeleteServerCopy: canSync && media.hasServerUID);
   }
 }

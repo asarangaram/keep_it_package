@@ -238,99 +238,75 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onUpload,
     ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
-    final ac = ActionControl.onGetMediaActionControl(media);
-
-    final onMove0 = ac.onMove(
-      onMove != null
-          ? onMove()
-          : () => MediaWizardService.openWizard(
-                context,
-                ref,
-                CLSharedMedia(
-                  entries: [media],
-                  type: UniversalMediaSource.move,
-                ),
+    final onMove0 = onMove != null
+        ? onMove()
+        : () => MediaWizardService.openWizard(
+              context,
+              ref,
+              CLSharedMedia(
+                entries: [media],
+                type: UniversalMediaSource.move,
               ),
-    );
+            );
 
-    final onEdit0 = ac.onEdit(
-      onEdit != null
-          ? onEdit()
-          : () async {
-              await PageManager.of(context).openEditor(media);
-              return true;
-            },
-    );
+    final onEdit0 = onEdit != null
+        ? onEdit()
+        : () async {
+            await PageManager.of(context).openEditor(media);
+            return true;
+          };
 
-    final onShare0 = ac.onShare(
-      onShare != null
-          ? onShare()
-          : () => theStore.mediaUpdater.share(context, [media]),
-    );
-    final onDelete0 = ac.onDelete(
-      onDelete != null
-          ? onDelete()
-          : () async => theStore.mediaUpdater.delete(media.id!),
-    );
-    final onPin0 = ac.onPin(
-      onPin != null
-          ? onPin()
-          : media.isMediaLocallyAvailable
-              ? () async => theStore.mediaUpdater.pinToggleMultiple(
-                    {media.id},
-                    onGetPath: (media) {
-                      if (media.isMediaLocallyAvailable) {
-                        return theStore.directories.getMediaAbsolutePath(media);
-                      }
+    final onShare0 = onShare != null
+        ? onShare()
+        : () => theStore.mediaUpdater.share(context, [media]);
+    final onDelete0 = onDelete != null
+        ? onDelete()
+        : () async => theStore.mediaUpdater.delete(media.id!);
+    final onPin0 = onPin != null
+        ? onPin()
+        : () async => theStore.mediaUpdater.pinToggleMultiple(
+              {media.id},
+              onGetPath: (media) {
+                if (media.isMediaLocallyAvailable) {
+                  return theStore.directories.getMediaAbsolutePath(media);
+                }
 
-                      return null;
-                    },
-                  )
-              : null,
-    );
-    final canSync = hasOnlineService;
-    final canDeleteLocalCopy = canSync &&
-        parentCollection.haveItOffline &&
-        media.hasServerUID &&
-        media.isMediaCached;
-    final haveItOffline = switch (media.haveItOffline) {
-      null => parentCollection.haveItOffline,
-      true => true,
-      false => false
-    };
-    final canDownload =
-        canSync && media.hasServerUID && !media.isMediaCached && haveItOffline;
+                return null;
+              },
+            );
 
-    final onDeleteLocalCopy0 = canDeleteLocalCopy
-        ? onDeleteLocalCopy != null
-            ? onDeleteLocalCopy()
-            : () async =>
-                ref.read(serverProvider.notifier).onDeleteMediaLocalCopy(media)
-        : null;
-    final onKeepOffline0 = canDownload
-        ? onKeepOffline != null
-            ? onKeepOffline()
-            : () async =>
-                ref.read(serverProvider.notifier).onKeepMediaOffline(media)
-        : null;
+    final onDeleteLocalCopy0 = onDeleteLocalCopy != null
+        ? onDeleteLocalCopy()
+        : () async =>
+            ref.read(serverProvider.notifier).onDeleteMediaLocalCopy(media);
+    final onKeepOffline0 = onKeepOffline != null
+        ? onKeepOffline()
+        : () async =>
+            ref.read(serverProvider.notifier).onKeepMediaOffline(media);
 
     final onUpload0 = onUpload != null ? onUpload() : null;
     final onDeleteServerCopy0 =
         onDeleteServerCopy != null ? onDeleteServerCopy() : null;
+
+    final ac = ActionControl.onGetMediaActionControl(
+      media,
+      parentCollection,
+      hasOnlineService,
+    );
     return CLContextMenu.template(
       name: media.name,
       logoImageAsset: media.serverUID == null
           ? 'assets/icon/not_on_server.png'
           : 'assets/icon/cloud_on_lan_128px_color.png',
-      onEdit: onEdit0,
-      onMove: onMove0,
-      onShare: onShare0,
-      onPin: onPin0,
-      onDelete: onDelete0,
-      onDeleteLocalCopy: onDeleteLocalCopy0,
-      onKeepOffline: onKeepOffline0,
-      onUpload: onUpload0,
-      onDeleteServerCopy: onDeleteServerCopy0,
+      onEdit: ac.onEdit(onEdit0),
+      onMove: ac.onMove(onMove0),
+      onShare: ac.onShare(onShare0),
+      onPin: ac.onPin(onPin0),
+      onDelete: ac.onDelete(onDelete0),
+      onDeleteLocalCopy: ac.onDeleteLocalCopy(onDeleteLocalCopy0),
+      onKeepOffline: ac.onKeepOffline(onKeepOffline0),
+      onUpload: ac.onUpload(onUpload0),
+      onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
       infoMap: media.toMapForDisplay(),
     );
   }
