@@ -98,7 +98,6 @@ class CLMediaCollage extends StatelessWidget {
               x = hCount!;
               y = vCount;
             }
-            print('$hCount,  $vCount $itemCount $x $y');
           } else {
             x = hCount!;
             y = vCount;

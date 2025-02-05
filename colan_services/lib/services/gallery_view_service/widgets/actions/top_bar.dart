@@ -6,7 +6,6 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../../../../internal/entity_grid/builders/get_selection_mode.dart';
-import '../../../../internal/entity_grid/widgets/selection_control/selection_control.dart';
 import '../../providers/active_collection.dart';
 import '../popover_menu.dart';
 
