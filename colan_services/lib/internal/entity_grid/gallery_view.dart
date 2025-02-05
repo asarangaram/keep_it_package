@@ -15,7 +15,7 @@ class CLEntityGalleryView extends StatelessWidget {
     required this.errorBuilder,
     required this.itemBuilder,
     required this.bannersBuilder,
-    required this.numColumns,
+    required this.columns,
     required this.emptyWidget,
     required this.contextMenuBuilder,
     required this.viewableAsCollection,
@@ -33,7 +33,7 @@ class CLEntityGalleryView extends StatelessWidget {
     required CLEntity? Function(CLEntity entity)? onGetParent,
     required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) itemBuilder;
-  final int numColumns;
+  final int columns;
 
   final Widget emptyWidget;
   final CLContextMenu Function(BuildContext, List<CLEntity>) contextMenuBuilder;
@@ -64,7 +64,7 @@ class CLEntityGalleryView extends StatelessWidget {
               loadingBuilder: loadingBuilder,
               errorBuilder: errorBuilder,
               itemBuilder: itemBuilder,
-              numColumns: numColumns,
+              columns: columns,
               contextMenuOf: contextMenuBuilder,
               filtersOff: filterDisabled,
               onSelectionChanged: onSelectionChanged,
@@ -94,7 +94,7 @@ class CLEntityGalleryView extends StatelessWidget {
                   errorBuilder: errorBuilder,
                   loadingBuilder: loadingBuilder,
                   incoming: incoming,
-                  columns: numColumns,
+                  columns: columns,
                   viewableAsCollection: viewableAsCollection,
                   itemBuilder: itemBuilder,
                   labelBuilder: labelBuilder,
@@ -159,7 +159,7 @@ class EntityGridView extends StatelessWidget {
       columns: columns,
       viewableAsCollection: viewableAsCollection,
       builder: (
-        tabs /* numColumns */, {
+        tabs /* columns */, {
         required CLEntity? Function(CLEntity entity)? onGetParent,
         required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
       }) {
@@ -176,7 +176,7 @@ class EntityGridView extends StatelessWidget {
               onGetChildren: onGetChildren,
             );
           },
-          numColumns: columns,
+          columns: columns,
           draggableMenuBuilder: draggableMenuBuilder,
         );
       },

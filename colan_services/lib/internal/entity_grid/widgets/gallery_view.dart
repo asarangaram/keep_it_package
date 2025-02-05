@@ -16,7 +16,7 @@ class RawCLEntityGalleryView extends ConsumerStatefulWidget {
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
-    required this.numColumns,
+    required this.columns,
     super.key,
     this.draggableMenuBuilder,
   });
@@ -34,7 +34,7 @@ class RawCLEntityGalleryView extends ConsumerStatefulWidget {
     BuildContext,
     List<GalleryGroupCLEntity<CLEntity>>,
   ) bannersBuilder;
-  final int numColumns;
+  final int columns;
   final Widget Function(
     BuildContext context, {
     required GlobalKey<State<StatefulWidget>> parentKey,
@@ -55,7 +55,7 @@ class _RawCLEntityGalleryViewState
     final itemBuilder = widget.itemBuilder;
     final labelBuilder = widget.labelBuilder;
     final bannersBuilder = widget.bannersBuilder;
-    final numColumns = widget.numColumns;
+    final columns = widget.columns;
     final draggableMenuBuilder = widget.draggableMenuBuilder;
     final Widget gallery;
     if (tabs.length == 1) {
@@ -66,7 +66,7 @@ class _RawCLEntityGalleryViewState
         itemBuilder: itemBuilder,
         labelBuilder: labelBuilder,
         bannersBuilder: bannersBuilder,
-        columns: numColumns,
+        columns: columns,
       );
     } else {
       final laskKnownTabName = ref.watch(currTabProvider(viewIdentifier));
@@ -111,7 +111,7 @@ class _RawCLEntityGalleryViewState
               itemBuilder: itemBuilder,
               labelBuilder: labelBuilder,
               bannersBuilder: bannersBuilder,
-              columns: numColumns,
+              columns: columns,
             ),
           ),
         ],

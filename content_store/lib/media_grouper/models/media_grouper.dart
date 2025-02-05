@@ -15,34 +15,34 @@ enum GroupTypes {
 class GroupBy implements ViewModifier {
   const GroupBy({
     this.method = GroupTypes.none,
-    this.numColumns = 3,
+    this.columns = 3,
   });
 
   final GroupTypes method;
-  final int numColumns;
+  final int columns;
 
   GroupBy copyWith({
     GroupTypes? method,
-    int? numColumns,
+    int? columns,
   }) {
     return GroupBy(
       method: method ?? this.method,
-      numColumns: numColumns ?? this.numColumns,
+      columns: columns ?? this.columns,
     );
   }
 
   @override
-  String toString() => 'GroupBy(method: $method, numColumns: $numColumns)';
+  String toString() => 'GroupBy(method: $method, columns: $columns)';
 
   @override
   bool operator ==(covariant GroupBy other) {
     if (identical(this, other)) return true;
 
-    return other.method == method && other.numColumns == numColumns;
+    return other.method == method && other.columns == columns;
   }
 
   @override
-  int get hashCode => method.hashCode ^ numColumns.hashCode;
+  int get hashCode => method.hashCode ^ columns.hashCode;
 
   @override
   bool get isActive => false;
@@ -52,8 +52,8 @@ class GroupBy implements ViewModifier {
 
   List<GalleryGroupCLEntity<CLEntity>> getGrouped(List<CLEntity> entities) {
     return switch (method) {
-      GroupTypes.none => entities.group(numColumns),
-      GroupTypes.byOriginalDate => entities.groupByTime(numColumns),
+      GroupTypes.none => entities.group(columns),
+      GroupTypes.byOriginalDate => entities.groupByTime(columns),
     };
   }
 }

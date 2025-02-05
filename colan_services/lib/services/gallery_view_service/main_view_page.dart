@@ -61,10 +61,9 @@ class CLMainScaffold extends StatelessWidget {
                   errorBuilder: errorBuilder,
                   builder: (clmedias) => Column(
                     children: [
-                       KeepItTopBar(
-                        parentIdentifier: parentIdentifier,
-                        clmedias:clmedias
-                      ),
+                      KeepItTopBar(
+                          parentIdentifier: parentIdentifier,
+                          clmedias: clmedias),
                       Expanded(
                         child: RefreshIndicator(
                           onRefresh: /* isSelectionMode ? null : */
@@ -134,7 +133,7 @@ class KeepItMainGrid extends ConsumerWidget {
                 if (collectionId == null) const StaleMediaIndicatorService(),
               ];
             },
-            numColumns: 3,
+            columns: 3,
             viewableAsCollection: true,
             emptyWidget: const WhenEmpty(),
             contextMenuBuilder: (context, entities) {

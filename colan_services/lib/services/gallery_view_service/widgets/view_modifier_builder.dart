@@ -15,7 +15,7 @@ class ViewModifierBuilder extends StatelessWidget {
     required this.errorBuilder,
     required this.bannersBuilder,
     required this.itemBuilder,
-    required this.numColumns,
+    required this.columns,
     required this.contextMenuOf,
     required this.filtersOff,
     required this.onSelectionChanged,
@@ -32,7 +32,7 @@ class ViewModifierBuilder extends StatelessWidget {
     required CLEntity? Function(CLEntity entity)? onGetParent,
     required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) itemBuilder;
-  final int numColumns;
+  final int columns;
 
   final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
   final void Function(List<CLEntity>)? onSelectionChanged;
@@ -111,7 +111,7 @@ class ViewModifierBuilder extends StatelessWidget {
               errorBuilder: errorBuilder,
               loadingBuilder: loadingBuilder,
               incoming: filterred,
-              columns: numColumns,
+              columns: columns,
               itemBuilder: itemBuilder,
               labelBuilder: labelBuilder,
               bannersBuilder: bannersBuilder,
