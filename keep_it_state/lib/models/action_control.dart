@@ -145,11 +145,15 @@ class ActionControl {
   }
 
   static ActionControl onGetCollectionActionControl(
-      Collection collection, bool hasOnlineService) {
+    Collection collection,
+    bool hasOnlineService, {
+    List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+  }) {
+    final media = onGetChildren?.call(collection) ?? [];
     final canSync = hasOnlineService;
     final haveItOffline = collection.haveItOffline;
 
-    final canDownload = canSync && collection.hasServerUID && haveItOffline;
+    final canDownload = canSync && collection.hasServerUID && !haveItOffline;
     final canUpload = canSync && !collection.hasServerUID;
     return ActionControl(
         allowEdit: true,
@@ -158,10 +162,13 @@ class ActionControl {
         allowShare: false,
         allowPin: false,
         allowDuplicateMedia: false,
-        allowDeleteLocalCopy: collection.hasServerUID,
+        allowDeleteLocalCopy: canSync &&
+            collection.hasServerUID &&
+            haveItOffline &&
+            (media.any((e) => (e as CLMedia).isMediaCached)),
         allowDownload: canDownload,
         allowUpload: canUpload,
-        allowDeleteServerCopy: canDownload);
+        allowDeleteServerCopy: canSync && collection.hasServerUID);
   }
 
   static ActionControl onGetMediaActionControl(
@@ -174,7 +181,7 @@ class ActionControl {
     final haveItOffline = switch (media.haveItOffline) {
       null => parentCollection.haveItOffline,
       true => true,
-      false => false
+      false => parentCollection.haveItOffline
     };
     final canDownload =
         canSync && media.hasServerUID && !media.isMediaCached && haveItOffline;

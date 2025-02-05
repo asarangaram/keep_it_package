@@ -120,6 +120,7 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onKeepOffline,
     ValueGetter<Future<bool?> Function()?>? onUpload,
     ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
+    List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) {
     /// Basic Actions
     final onEdit0 = onEdit != null
@@ -160,17 +161,18 @@ class CLContextMenu {
         : () async {
             if (collection.haveItOffline && collection.hasServerUID) {
               final serverNotifier = ref.read(serverProvider.notifier);
-              final updater = await serverNotifier.storeUpdater;
+              final theStore = await serverNotifier.storeUpdater;
 
-              await updater.collectionUpdater
+              await theStore.collectionUpdater
                   .upsert(collection.copyWith(haveItOffline: false));
-              final media = await updater.store.reader
+              final media = await theStore.store.reader
                   .getMediaByCollectionId(collection.id!);
               for (final m in media) {
                 await theStore.mediaUpdater
                     .deleteLocalCopy(m, haveItOffline: () => null);
               }
               serverNotifier.instantSync();
+              theStore.store.reloadStore();
             }
             return true;
           };
@@ -212,6 +214,7 @@ class CLContextMenu {
     final ac = ActionControl.onGetCollectionActionControl(
       collection,
       hasOnlineService,
+      onGetChildren: onGetChildren,
     );
     return CLContextMenu.template(
       name: collection.label,
