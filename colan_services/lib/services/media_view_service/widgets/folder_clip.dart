@@ -87,7 +87,7 @@ class LinuxFolderWidget extends StatelessWidget {
     super.key,
     this.folderColor = const Color(0xFFE6B65C),
     this.borderColor = const Color(0xFFE6B65C),
-    this.borderWidth = 6.0,
+    this.borderWidth = 1.0,
     this.width = 200,
     this.height = 150,
   });
