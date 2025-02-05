@@ -77,6 +77,8 @@ class CLContextMenu {
         title: 'Move to Bin',
         icon: clIcons.imageDelete,
         onTap: onDelete,
+        isDestructive: true,
+        tooltip: 'Moves to Recycle bin. Can recover as per Recycle Policy',
       ),
       onDeleteLocalCopy: CLMenuItem(
         title: 'Remove downloads',
@@ -94,6 +96,9 @@ class CLContextMenu {
         title: 'Remove From Server',
         icon: Icons.remove,
         onTap: onDeleteServerCopy,
+        isDestructive: true,
+        tooltip:
+            'Delete from Server. Local copy is retained. Use if this is accidentally uploaded',
       ),
       infoMap: infoMap,
     );

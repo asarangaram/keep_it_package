@@ -33,13 +33,13 @@ class ShadContextMenu extends StatelessWidget {
           ShadContextMenuItem(
             leading: SizedBox.square(
               dimension: 16,
-              child: Center(
-                child: Center(child: Icon(item.icon)),
-              ),
+              child: Center(child: Icon(item.icon)),
             ),
             enabled: item.onTap != null,
             onPressed: item.onTap,
-            textStyle: textStyle,
+            textStyle: textStyle.copyWith(
+                    color: item.isDestructive? ShadTheme.of(context).colorScheme.destructive: null,
+                  ),
             child: Text(item.title),
           ),
         if (contextMenu!.onlineActions.any((e) => e.onTap != null)) ...[
@@ -49,37 +49,45 @@ class ShadContextMenu extends StatelessWidget {
               ShadContextMenuItem(
                 leading: SizedBox.square(
                   dimension: 16,
-                  child: Center(
-                    child: Center(child: Icon(item.icon)),
-                  ),
+                  child: Center(child: Icon(item.icon)),
                 ),
-                textStyle: textStyle,
+                textStyle: textStyle.copyWith(
+                    color: item.isDestructive? ShadTheme.of(context).colorScheme.destructive: null,
+                  ),
                 enabled: item.onTap != null,
                 onPressed: item.onTap,
                 child: Text(item.title),
               ),
         ],
-        for (final item in contextMenu!.destructiveActions)
-          if (item.onTap != null)
-            ShadContextMenuItem(
-              leading: SizedBox.square(
-                dimension: 16,
-                child: Center(
-                  child: Center(
-                    child: Icon(
-                      item.icon,
-                      color: ShadTheme.of(context).colorScheme.destructive,
+        ShadContextMenuItem(
+          leading: SizedBox.square(
+            dimension: 16,
+            child: Center(child: Icon(clIcons.recycleBin)),
+          ),
+          trailing: const Icon(LucideIcons.chevronRight),
+          items: [
+            for (final item in contextMenu!.destructiveActions)
+              if (item.onTap != null)
+                ShadContextMenuItem(
+                  leading: SizedBox.square(
+                    dimension: 16,
+                    child: Center(
+                      child: Icon(
+                        item.icon,
+                        color: ShadTheme.of(context).colorScheme.destructive,
+                      ),
                     ),
                   ),
+                  textStyle: textStyle.copyWith(
+                    color: item.isDestructive? ShadTheme.of(context).colorScheme.destructive: null,
+                  ),
+                  enabled: item.onTap != null,
+                  onPressed: item.onTap,
+                  child: Text(item.title),
                 ),
-              ),
-              textStyle: textStyle.copyWith(
-                color: ShadTheme.of(context).colorScheme.destructive,
-              ),
-              enabled: item.onTap != null,
-              onPressed: item.onTap,
-              child: Text(item.title),
-            ),
+          ],
+          child: const Text('Remove'),
+        ),
       ],
       child: GestureDetector(
         onTap: onTap,
