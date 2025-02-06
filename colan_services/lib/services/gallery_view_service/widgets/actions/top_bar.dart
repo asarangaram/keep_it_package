@@ -15,10 +15,12 @@ class KeepItTopBar extends ConsumerWidget {
   const KeepItTopBar({
     required this.parentIdentifier,
     required this.clmedias,
+    required this.theStore,
     super.key,
   });
   final String parentIdentifier;
   final CLMedias clmedias;
+  final StoreUpdater theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,6 +81,11 @@ class KeepItTopBar extends ConsumerWidget {
                 /* SelectionControlIcon(
                   viewIdentifier: viewIdentifier,
                 ), */
+                if (!ColanPlatformSupport.isMobilePlatform)
+                  ShadButton.ghost(
+                    onPressed: theStore.store.reloadStore,
+                    child: const Icon(LucideIcons.refreshCcw, size: 25),
+                  ),
                 if (clmedias.isNotEmpty)
                   PopOverMenu(
                     viewIdentifier: viewIdentifier,

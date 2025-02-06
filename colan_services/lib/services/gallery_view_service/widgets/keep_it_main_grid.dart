@@ -46,6 +46,7 @@ class KeepItMainGrid extends ConsumerWidget {
         KeepItTopBar(
           parentIdentifier: parentIdentifier,
           clmedias: clmedias,
+          theStore: theStore,
         ),
         Expanded(
           child: RefreshIndicator(
