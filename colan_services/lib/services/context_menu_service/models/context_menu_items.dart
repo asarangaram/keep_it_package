@@ -12,6 +12,7 @@ import '../../../internal/draggable_menu/widgets/actions_draggable_menu.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../gallery_view_service/widgets/collection_editor.dart';
+import '../../gallery_view_service/widgets/media_editor.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 
 @immutable
@@ -135,7 +136,7 @@ class CLContextMenu {
     final onEditInfo0 = onEditInfo != null
         ? onEditInfo()
         : () async {
-            final updated = await CollectionEditor.popupDialog(
+            final updated = await CollectionEditor.openSheet(
               context,
               ref,
               collection: collection,
@@ -264,6 +265,26 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onUpload,
     ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
+    final onEdit0 = onEdit != null
+        ? onEdit()
+        : () async {
+            await PageManager.of(context).openEditor(media);
+            return true;
+          };
+    final onEditInfo0 = onEditInfo != null
+        ? onEditInfo()
+        : () async {
+            final updated = await MediaMetadataEditor.openSheet(
+              context,
+              ref,
+              media: media,
+            );
+            if (updated != null && context.mounted) {
+              await theStore.mediaUpdater.update(updated, isEdited: true);
+            }
+
+            return true;
+          };
     final onMove0 = onMove != null
         ? onMove()
         : () => MediaWizardService.openWizard(
@@ -275,13 +296,6 @@ class CLContextMenu {
               ),
             );
 
-    final onEdit0 = onEdit != null
-        ? onEdit()
-        : () async {
-            await PageManager.of(context).openEditor(media);
-            return true;
-          };
-    final onEditInfo0 = onEditInfo?.call();
     final onShare0 = onShare != null
         ? onShare()
         : () => theStore.mediaUpdater.share(context, [media]);

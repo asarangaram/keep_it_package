@@ -55,7 +55,7 @@ class CollectionEditor extends StatefulWidget {
   @override
   State<CollectionEditor> createState() => _CollectionEditorState();
 
-  static Future<Collection?> popupDialog(
+  static Future<Collection?> openSheet(
     BuildContext context,
     WidgetRef ref, {
     required Collection collection,
