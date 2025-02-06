@@ -132,7 +132,6 @@ class _CollectionEditorState extends State<CollectionEditor> {
                     ShadButton(
                       child: const Text('Save changes'),
                       onPressed: () {
-                        print('submitted');
                         if (formKey.currentState!.saveAndValidate()) {
                           formValue = formKey.currentState!.value;
                           final label = formValue['label'] as String;
@@ -146,8 +145,6 @@ class _CollectionEditorState extends State<CollectionEditor> {
                                     : desc,
                           );
                           widget.onSubmit(updated);
-                        } else {
-                          print('validation failed');
                         }
                       },
                     ),

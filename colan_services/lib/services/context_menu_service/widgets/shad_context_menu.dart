@@ -33,20 +33,21 @@ class CLBasicContextMenu extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 100),
       items: [
         for (final item in contextMenu!.basicActions)
-          ShadContextMenuItem(
-            leading: SizedBox.square(
-              dimension: 16,
-              child: Center(child: Icon(item.icon)),
+          if (item.onTap != null)
+            ShadContextMenuItem(
+              leading: SizedBox.square(
+                dimension: 16,
+                child: Center(child: Icon(item.icon)),
+              ),
+              enabled: item.onTap != null,
+              onPressed: item.onTap,
+              textStyle: textStyle.copyWith(
+                color: item.isDestructive
+                    ? ShadTheme.of(context).colorScheme.destructive
+                    : null,
+              ),
+              child: Text(item.title),
             ),
-            enabled: item.onTap != null,
-            onPressed: item.onTap,
-            textStyle: textStyle.copyWith(
-              color: item.isDestructive
-                  ? ShadTheme.of(context).colorScheme.destructive
-                  : null,
-            ),
-            child: Text(item.title),
-          ),
         const Divider(
           height: 8,
         ),

@@ -4,6 +4,7 @@ import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
@@ -19,6 +20,7 @@ class CLContextMenu {
     required this.name,
     required this.logoImageAsset,
     required this.onEdit,
+    required this.onEditInfo,
     required this.onMove,
     required this.onShare,
     required this.onPin,
@@ -43,6 +45,7 @@ class CLContextMenu {
     required Map<String, dynamic> infoMap,
     required bool isPinned,
     Future<bool?> Function()? onEdit,
+    Future<bool?> Function()? onEditInfo,
     Future<bool?> Function()? onMove,
     Future<bool?> Function()? onShare,
     Future<bool?> Function()? onPin,
@@ -59,6 +62,11 @@ class CLContextMenu {
         title: 'Edit',
         icon: clIcons.imageEdit,
         onTap: onEdit,
+      ),
+      onEditInfo: CLMenuItem(
+        title: 'Info',
+        icon: LucideIcons.info,
+        onTap: onEditInfo,
       ),
       onMove: CLMenuItem(
         title: 'Move',
@@ -112,6 +120,7 @@ class CLContextMenu {
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
+    ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
@@ -123,8 +132,8 @@ class CLContextMenu {
     List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) {
     /// Basic Actions
-    final onEdit0 = onEdit != null
-        ? onEdit()
+    final onEditInfo0 = onEditInfo != null
+        ? onEditInfo()
         : () async {
             final updated = await CollectionEditor.popupDialog(
               context,
@@ -137,6 +146,8 @@ class CLContextMenu {
 
             return true;
           };
+
+    final onEdit0 = onEdit?.call();
     final onMove0 = onMove?.call();
     final onShare0 = onShare?.call();
     final onPin0 = onPin?.call();
@@ -222,6 +233,7 @@ class CLContextMenu {
           ? 'assets/icon/not_on_server.png'
           : 'assets/icon/cloud_on_lan_128px_color.png',
       onEdit: ac.onEdit(onEdit0),
+      onEditInfo: ac.onEdit(onEditInfo0),
       onMove: ac.onMove(onMove0),
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
@@ -242,6 +254,7 @@ class CLContextMenu {
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
+    ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
@@ -268,7 +281,7 @@ class CLContextMenu {
             await PageManager.of(context).openEditor(media);
             return true;
           };
-
+    final onEditInfo0 = onEditInfo?.call();
     final onShare0 = onShare != null
         ? onShare()
         : () => theStore.mediaUpdater.share(context, [media]);
@@ -324,6 +337,7 @@ class CLContextMenu {
           ? 'assets/icon/not_on_server.png'
           : 'assets/icon/cloud_on_lan_128px_color.png',
       onEdit: ac.onEdit(onEdit0),
+      onEditInfo: ac.onEdit(onEditInfo0),
       onMove: ac.onMove(onMove0),
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
@@ -344,6 +358,7 @@ class CLContextMenu {
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
+    ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
@@ -353,7 +368,8 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onUpload,
     ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
-    final onEdit0 = onEdit != null ? onEdit() : null;
+    final onEdit0 = onEdit?.call();
+    final onEditInfo0 = onEditInfo?.call();
     final onMove0 = onMove != null
         ? onMove()
         : () => MediaWizardService.openWizard(
@@ -404,6 +420,7 @@ class CLContextMenu {
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: onEdit0,
+      onEditInfo: onEditInfo0,
       onMove: onMove0,
       onShare: onShare0,
       onPin: onPin0,
@@ -419,6 +436,7 @@ class CLContextMenu {
   final String name;
   final String logoImageAsset;
   final CLMenuItem onEdit;
+  final CLMenuItem onEditInfo;
   final CLMenuItem onMove;
   final CLMenuItem onShare;
   final CLMenuItem onPin;
@@ -431,6 +449,7 @@ class CLContextMenu {
 
   List<CLMenuItem> get actions => [
         onEdit,
+        onEditInfo,
         onMove,
         onShare,
         onPin,
@@ -443,6 +462,7 @@ class CLContextMenu {
 
   List<CLMenuItem> get basicActions => [
         onEdit,
+        onEditInfo,
         onMove,
         onShare,
         onPin,
