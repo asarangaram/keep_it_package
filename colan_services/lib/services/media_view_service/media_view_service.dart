@@ -39,31 +39,27 @@ class MediaViewService extends StatelessWidget {
                 debugMessage: 'GetAvailableMediaByCollectionId',
               ),
               errorBuilder: errorBuilder,
-              builder: (clmedias) => RefreshIndicator(
-                onRefresh: /* isSelectionMode ? null : */
-                    () async => theStore.store.reloadStore(),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  switchInCurve: Curves.easeInOut,
-                  switchOutCurve: Curves.easeInOut,
-                  transitionBuilder: (
-                    Widget child,
-                    Animation<double> animation,
-                  ) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: clmedias.isEmpty
-                      ? const WhenEmpty()
-                      : KeepItMediaCorouselView(
-                          parentIdentifier: parentIdentifier,
-                          clmedias: clmedias,
-                          initialMediaIndex: id,
-                          theStore: theStore,
-                          loadingBuilder: () => CLLoader.widget(
-                            debugMessage: 'KeepItMainGrid',
-                          ),
-                          errorBuilder: errorBuilder,
+              builder: (clmedias) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                switchInCurve: Curves.easeInOut,
+                switchOutCurve: Curves.easeInOut,
+                transitionBuilder: (
+                  Widget child,
+                  Animation<double> animation,
+                ) =>
+                    FadeTransition(opacity: animation, child: child),
+                child: clmedias.isEmpty
+                    ? const WhenEmpty()
+                    : KeepItMediaCorouselView(
+                        parentIdentifier: parentIdentifier,
+                        clmedias: clmedias,
+                        initialMediaIndex: id,
+                        theStore: theStore,
+                        loadingBuilder: () => CLLoader.widget(
+                          debugMessage: 'KeepItMainGrid',
                         ),
-                ),
+                        errorBuilder: errorBuilder,
+                      ),
               ),
             );
           },
