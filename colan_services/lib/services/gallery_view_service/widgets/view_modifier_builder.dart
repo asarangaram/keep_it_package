@@ -11,8 +11,6 @@ class ViewModifierBuilder extends StatelessWidget {
   const ViewModifierBuilder({
     required this.viewIdentifier,
     required this.entities,
-    required this.loadingBuilder,
-    required this.errorBuilder,
     required this.bannersBuilder,
     required this.itemBuilder,
     required this.contextMenuOf,
@@ -23,8 +21,7 @@ class ViewModifierBuilder extends StatelessWidget {
   });
   final ViewIdentifier viewIdentifier;
   final List<CLEntity> entities;
-  final Widget Function() loadingBuilder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+
   final Widget Function(
     BuildContext,
     CLEntity, {
@@ -89,8 +86,6 @@ class ViewModifierBuilder extends StatelessWidget {
       }) {
         return GetFilterredMedia(
           viewIdentifier: viewIdentifier,
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
           incoming: entities,
           bannersBuilder: bannersBuilder,
           disabled: filtersDisabled,

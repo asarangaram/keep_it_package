@@ -61,8 +61,6 @@ class CLEntityGalleryView extends StatelessWidget {
           : ViewModifierBuilder(
               viewIdentifier: viewIdentifier,
               entities: entities,
-              loadingBuilder: loadingBuilder,
-              errorBuilder: errorBuilder,
               itemBuilder: itemBuilder,
               contextMenuOf: contextMenuBuilder,
               filtersDisabled: filterDisabled,

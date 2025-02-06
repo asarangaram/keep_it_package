@@ -9,8 +9,6 @@ import '../providers/media_filters.dart';
 class GetFilterredMedia extends ConsumerWidget {
   const GetFilterredMedia({
     required this.builder,
-    required this.errorBuilder,
-    required this.loadingBuilder,
     required this.incoming,
     required this.bannersBuilder,
     required this.viewIdentifier,
@@ -24,8 +22,7 @@ class GetFilterredMedia extends ConsumerWidget {
       List<GalleryGroupCLEntity<CLEntity>>,
     ) bannersBuilder,
   }) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+
   final List<CLEntity> incoming;
   final List<Widget> Function(
     BuildContext,
@@ -43,42 +40,38 @@ class GetFilterredMedia extends ConsumerWidget {
     final filterred =
         ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, medias)));
 
-    try {
-      final topMsg = (filterred.length < incoming.length)
-          ? ' ${filterred.length} out of '
-              '${incoming.length} matches'
-          : null;
-      final banners = [
-        if (topMsg != null)
-          Padding(
+    final topMsg = (filterred.length < incoming.length)
+        ? ' ${filterred.length} out of '
+            '${incoming.length} matches'
+        : null;
+    final banners = [
+      if (topMsg != null)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Container(
+            color: ShadTheme.of(context).colorScheme.mutedForeground,
             padding: const EdgeInsets.symmetric(vertical: 2),
-            child: Container(
-              color: ShadTheme.of(context).colorScheme.mutedForeground,
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Center(
-                child: Text(
-                  topMsg,
-                  style: ShadTheme.of(context)
-                      .textTheme
-                      .small
-                      .copyWith(color: ShadTheme.of(context).colorScheme.muted),
-                ),
+            child: Center(
+              child: Text(
+                topMsg,
+                style: ShadTheme.of(context)
+                    .textTheme
+                    .small
+                    .copyWith(color: ShadTheme.of(context).colorScheme.muted),
               ),
             ),
           ),
-      ];
+        ),
+    ];
 
-      return builder(
-        filterred,
-        bannersBuilder: (context, galleryMap) {
-          return [
-            ...banners,
-            ...bannersBuilder(context, galleryMap),
-          ];
-        },
-      );
-    } catch (e, st) {
-      return errorBuilder(e, st);
-    }
+    return builder(
+      filterred,
+      bannersBuilder: (context, galleryMap) {
+        return [
+          ...banners,
+          ...bannersBuilder(context, galleryMap),
+        ];
+      },
+    );
   }
 }

@@ -72,6 +72,7 @@ class CLMainScaffold extends StatelessWidget {
                           child: KeepItMainGrid(
                             parentIdentifier: parentIdentifier,
                             clmedias: clmedias,
+                            theStore: theStore,
                             loadingBuilder: () => CLLoader.widget(
                               debugMessage: 'KeepItMainGrid',
                             ),
@@ -97,6 +98,7 @@ class KeepItMainGrid extends ConsumerWidget {
   const KeepItMainGrid({
     required this.parentIdentifier,
     required this.clmedias,
+    required this.theStore,
     required this.loadingBuilder,
     required this.errorBuilder,
     super.key,
@@ -105,6 +107,7 @@ class KeepItMainGrid extends ConsumerWidget {
   final CLMedias clmedias;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
+  final StoreUpdater theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -118,58 +121,48 @@ class KeepItMainGrid extends ConsumerWidget {
         ref.read(activeCollectionProvider.notifier).state = null;
       });
     }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
-      child: GetStoreUpdater(
-        errorBuilder: errorBuilder,
-        loadingBuilder: loadingBuilder,
-        builder: (theStore) {
-          return CLEntityGalleryView(
-            viewIdentifier: viewIdentifier,
-            entities: clmedias.entries,
-            loadingBuilder: loadingBuilder,
-            errorBuilder: errorBuilder,
-            bannersBuilder: (context, _) {
-              return [
-                if (collectionId == null) const StaleMediaIndicatorService(),
-              ];
-            },
-            columns: 3,
-            viewableAsCollection: true,
-            emptyWidget: const WhenEmpty(),
-            contextMenuBuilder: (context, entities) {
-              return switch (entities) {
-                final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
-                    return CLContextMenu.ofMultipleMedia(
-                      context,
-                      ref,
-                      items: e.map((e) => e as CLMedia).toList(),
-                      hasOnlineService: true,
-                      theStore: theStore,
-                    );
-                  }(),
-                final List<CLEntity> e when e.every((e) => e is Collection) =>
-                  () {
-                    return CLContextMenu.empty();
-                  }(),
-                _ => throw UnimplementedError('Mix of items not supported yet')
-              };
-            },
-            itemBuilder: (
-              context,
-              item, {
-              required CLEntity? Function(CLEntity entity)? onGetParent,
-              required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-            }) =>
-                EntityBilder(
-              viewIdentifier: viewIdentifier,
-              item: item,
-              theStore: theStore,
-              onGetChildren: onGetChildren,
-              onGetParent: onGetParent,
-            ),
-          );
-        },
+    return CLEntityGalleryView(
+      viewIdentifier: viewIdentifier,
+      entities: clmedias.entries,
+      loadingBuilder: loadingBuilder,
+      errorBuilder: errorBuilder,
+      bannersBuilder: (context, _) {
+        return [
+          if (collectionId == null) const StaleMediaIndicatorService(),
+        ];
+      },
+      columns: 3,
+      viewableAsCollection: collectionId == null,
+      emptyWidget: const WhenEmpty(),
+      contextMenuBuilder: (context, entities) {
+        return switch (entities) {
+          final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+              return CLContextMenu.ofMultipleMedia(
+                context,
+                ref,
+                items: e.map((e) => e as CLMedia).toList(),
+                hasOnlineService: true,
+                theStore: theStore,
+              );
+            }(),
+          final List<CLEntity> e when e.every((e) => e is Collection) => () {
+              return CLContextMenu.empty();
+            }(),
+          _ => throw UnimplementedError('Mix of items not supported yet')
+        };
+      },
+      itemBuilder: (
+        context,
+        item, {
+        required CLEntity? Function(CLEntity entity)? onGetParent,
+        required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+      }) =>
+          EntityThumbnailBilder(
+        viewIdentifier: viewIdentifier,
+        item: item,
+        theStore: theStore,
+        onGetChildren: onGetChildren,
+        onGetParent: onGetParent,
       ),
     );
   }
@@ -197,8 +190,8 @@ class OnSwipe extends ConsumerWidget {
   }
 }
 
-class EntityBilder extends ConsumerWidget {
-  const EntityBilder({
+class EntityThumbnailBilder extends ConsumerWidget {
+  const EntityThumbnailBilder({
     required this.viewIdentifier,
     required this.item,
     required this.theStore,
