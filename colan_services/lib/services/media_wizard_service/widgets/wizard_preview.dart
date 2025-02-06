@@ -1,4 +1,4 @@
-import 'package:colan_services/services/media_view_service/widgets/media_preview_service.dart';
+import 'package:colan_services/services/media_view_service/preview/media_preview_service.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';

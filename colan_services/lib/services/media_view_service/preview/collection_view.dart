@@ -6,10 +6,10 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../gallery_view_service/builders/available_media.dart';
-import 'widgets/cl_media_collage.dart';
-import 'widgets/folder_clip.dart';
-import 'widgets/media_preview_service.dart';
+import '../../gallery_view_service/builders/available_media.dart';
+import '../widgets/cl_media_collage.dart';
+import '../widgets/folder_clip.dart';
+import 'media_preview_service.dart';
 
 class CollectionView extends ConsumerWidget {
   const CollectionView.preview(

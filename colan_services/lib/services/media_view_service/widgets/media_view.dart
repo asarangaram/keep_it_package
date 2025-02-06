@@ -9,7 +9,7 @@ import 'package:store/store.dart';
 
 import 'media_background.dart';
 import 'media_controls.dart';
-import 'media_preview_service.dart';
+import '../preview/media_preview_service.dart';
 
 class MediaView extends StatelessWidget {
   factory MediaView({

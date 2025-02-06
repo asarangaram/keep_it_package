@@ -17,7 +17,7 @@ export 'services/incoming_media_service/incoming_media_service.dart'
     show IncomingMediaService;
 export 'services/media_edit_service/media_edit_service.dart'
     show MediaEditService;
-export 'services/media_view_service/collection_view.dart' show CollectionView;
+export 'services/media_view_service/preview/collection_view.dart' show CollectionView;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_view_service/widgets/stale_media_indicator_service.dart'

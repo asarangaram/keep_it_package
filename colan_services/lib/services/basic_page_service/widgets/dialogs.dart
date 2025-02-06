@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import '../../media_view_service/widgets/cl_media_collage.dart';
-import '../../media_view_service/widgets/media_preview_service.dart';
+import '../../media_view_service/preview/media_preview_service.dart';
 
 class DialogService {
   static Future<bool?> template(
