@@ -3,27 +3,15 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
-
 import 'builders/available_media.dart';
 
 import 'providers/active_collection.dart';
 
 import 'widgets/keep_it_main_grid.dart';
-import 'widgets/when_empty.dart';
 import 'widgets/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
-  const GalleryViewService({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const CLMainScaffold();
-  }
-}
-
-class CLMainScaffold extends StatelessWidget {
-  const CLMainScaffold({
+  const GalleryViewService({
     super.key,
   });
 
@@ -62,17 +50,15 @@ class CLMainScaffold extends StatelessWidget {
                         Animation<double> animation,
                       ) =>
                           FadeTransition(opacity: animation, child: child),
-                      child: clmedias.isEmpty
-                          ? const WhenEmpty()
-                          : KeepItMainGrid(
-                              parentIdentifier: parentIdentifier,
-                              clmedias: clmedias,
-                              theStore: theStore,
-                              loadingBuilder: () => CLLoader.widget(
-                                debugMessage: 'KeepItMainGrid',
-                              ),
-                              errorBuilder: errorBuilder,
-                            ),
+                      child: KeepItMainGrid(
+                        parentIdentifier: parentIdentifier,
+                        clmedias: clmedias,
+                        theStore: theStore,
+                        loadingBuilder: () => CLLoader.widget(
+                          debugMessage: 'KeepItMainGrid',
+                        ),
+                        errorBuilder: errorBuilder,
+                      ),
                     ),
                   ),
                 );

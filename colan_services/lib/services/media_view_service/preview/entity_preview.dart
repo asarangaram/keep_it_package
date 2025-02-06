@@ -114,7 +114,7 @@ class EntityPreview extends ConsumerWidget {
             await PageManager.of(context).openMedia(
               m.id!,
               collectionId: m.collectionId,
-              parentIdentifier: viewIdentifier.toString(),
+              parentIdentifier: viewIdentifier.parentID,
             );
             return true;
           },

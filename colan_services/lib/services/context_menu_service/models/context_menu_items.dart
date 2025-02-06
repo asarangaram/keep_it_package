@@ -476,7 +476,7 @@ class CLContextMenu {
     return null;
   }
 
-  static CLContextMenu entityContextMenuBuilder(
+  static CLContextMenu entitiesContextMenuBuilder(
     BuildContext context,
     WidgetRef ref,
     List<CLEntity> entities,

@@ -141,12 +141,13 @@ class PageManager {
     int? collectionId,
   }) async {
     final queryMap = [
-      'parentIdentifier="$parentIdentifier"',
+      'id=$mediaId',
+      'parentIdentifier=$parentIdentifier',
       if (collectionId != null) 'collectionId=$collectionId',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
 
-    await navigator.pushNamed(context, '/media?id=$mediaId&$query');
+    await navigator.pushNamed(context, '/media$query');
     return null;
   }
 

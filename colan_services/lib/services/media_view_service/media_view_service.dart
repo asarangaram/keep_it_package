@@ -1,11 +1,13 @@
-import 'package:colan_services/colan_services.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
 import '../../internal/fullscreen_layout.dart';
-import 'media_view_service1.dart';
+import '../gallery_view_service/builders/available_media.dart';
+import '../gallery_view_service/widgets/when_empty.dart';
+import '../gallery_view_service/widgets/when_error.dart';
+
+import 'widgets/keep_it_media_carousel_view.dart';
 
 class MediaViewService extends StatelessWidget {
   const MediaViewService({
@@ -20,73 +22,53 @@ class MediaViewService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget errorBuilder(Object e, StackTrace st) => CLErrorPage(
+    Widget errorBuilder(Object e, StackTrace st) => WhenError(
           errorMessage: e.toString(),
         );
 
-    if (collectionId == null) {
-      return FullscreenLayout(
-        useSafeArea: false,
-        child: GetMedia(
-          id: id,
-          errorBuilder: (_, __) {
-            throw UnimplementedError('errorBuilder');
-          },
+    return AppTheme(
+      child: FullscreenLayout(
+        child: GetStoreUpdater(
+          errorBuilder: errorBuilder,
           loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GetMedia',
+            debugMessage: 'GetStore',
           ),
-          builder: (media) {
-            if (media == null) {
-              return BasicPageService.nothingToShow(
-                message: 'no media found',
-              );
-            }
-            return MediaViewService1(
-              media: media,
-              parentIdentifier: parentIdentifier,
-              errorBuilder: errorBuilder,
+          builder: (theStore) {
+            return GetAvailableMediaByActiveCollectionId(
               loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'MediaViewService',
+                debugMessage: 'GetAvailableMediaByCollectionId',
+              ),
+              errorBuilder: errorBuilder,
+              builder: (clmedias) => RefreshIndicator(
+                onRefresh: /* isSelectionMode ? null : */
+                    () async => theStore.store.reloadStore(),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  switchInCurve: Curves.easeInOut,
+                  switchOutCurve: Curves.easeInOut,
+                  transitionBuilder: (
+                    Widget child,
+                    Animation<double> animation,
+                  ) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: clmedias.isEmpty
+                      ? const WhenEmpty()
+                      : KeepItMediaCorouselView(
+                          parentIdentifier: parentIdentifier,
+                          clmedias: clmedias,
+                          initialMediaIndex: id,
+                          theStore: theStore,
+                          loadingBuilder: () => CLLoader.widget(
+                            debugMessage: 'KeepItMainGrid',
+                          ),
+                          errorBuilder: errorBuilder,
+                        ),
+                ),
               ),
             );
           },
         ),
-      );
-    } else {
-      return FullscreenLayout(
-        useSafeArea: false,
-        child: GetMediaByCollectionId(
-          collectionId: collectionId,
-          errorBuilder: (_, __) {
-            throw UnimplementedError('errorBuilder');
-          },
-          loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GetMediaByCollectionId',
-          ),
-          builder: (items) {
-            if (items.isEmpty) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                PageManager.of(context).pop();
-              });
-              return BasicPageService.nothingToShow(message: 'No Media');
-            }
-            final initialMedia =
-                items.entries.where((e) => e.id == id).firstOrNull;
-            final initialMediaIndex =
-                initialMedia == null ? 0 : items.entries.indexOf(initialMedia);
-
-            return MediaViewService1.pageView(
-              media: items.entries,
-              parentIdentifier: parentIdentifier,
-              initialMediaIndex: initialMediaIndex,
-              errorBuilder: errorBuilder,
-              loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'MediaViewService.pageView',
-              ),
-            );
-          },
-        ),
-      );
-    }
+      ),
+    );
   }
 }

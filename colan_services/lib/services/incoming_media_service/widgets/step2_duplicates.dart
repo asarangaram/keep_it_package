@@ -5,7 +5,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../../basic_page_service/basic_page_service.dart';
-import '../../media_view_service/media_view_service1.dart';
+import '../../media_view_service/preview/media_preview_service.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
@@ -216,9 +216,8 @@ class ExistInDifferentCollection extends StatelessWidget {
                           aspectRatio: 1,
                           child: Padding(
                             padding: const EdgeInsets.all(2),
-                            child: MediaViewService1.preview(
-                              m,
-                              parentIdentifier: parentIdentifier,
+                            child: MediaThumbnail(
+                              media: m,
                             ),
                           ),
                         ),

@@ -28,19 +28,7 @@ class MediaViewService1 extends StatelessWidget {
       loadingBuilder: loadingBuilder,
     );
   }
-  factory MediaViewService1.preview(
-    CLMedia media, {
-    required String parentIdentifier,
-    Key? key,
-  }) {
-    return MediaViewService1._(
-      initialMediaIndex: 0,
-      media: [media],
-      parentIdentifier: parentIdentifier,
-      key: key,
-      isPreview: true,
-    );
-  }
+  
   factory MediaViewService1.pageView({
     required int initialMediaIndex,
     required List<CLMedia> media,
