@@ -475,6 +475,29 @@ class CLContextMenu {
 
     return null;
   }
+
+  static CLContextMenu entityContextMenuBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    List<CLEntity> entities,
+    StoreUpdater theStore,
+  ) {
+    return switch (entities) {
+      final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+          return CLContextMenu.ofMultipleMedia(
+            context,
+            ref,
+            items: e.map((e) => e as CLMedia).toList(),
+            hasOnlineService: true,
+            theStore: theStore,
+          );
+        }(),
+      final List<CLEntity> e when e.every((e) => e is Collection) => () {
+          return CLContextMenu.empty();
+        }(),
+      _ => throw UnimplementedError('Mix of items not supported yet')
+    };
+  }
 }
 
 typedef DraggableMenuBuilderType = Widget Function(

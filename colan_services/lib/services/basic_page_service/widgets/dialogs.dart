@@ -2,8 +2,8 @@ import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../media_view_service/widgets/cl_media_collage.dart';
 import '../../media_view_service/preview/media_preview_service.dart';
+import '../../media_view_service/widgets/cl_media_collage.dart';
 
 class DialogService {
   static Future<bool?> template(

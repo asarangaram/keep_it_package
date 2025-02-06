@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-import '../../../internal/entity_grid/gallery_view.dart';
 import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../context_menu_service/models/context_menu_items.dart';
+import 'wizard_grid_view.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
