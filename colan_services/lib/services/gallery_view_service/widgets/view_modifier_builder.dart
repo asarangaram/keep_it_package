@@ -62,47 +62,52 @@ class ViewModifierBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SelectionControl(
-      viewIdentifier: viewIdentifier,
-      contextMenuOf: contextMenuOf,
-      onSelectionChanged: onSelectionChanged,
-      incoming: entities,
-      itemBuilder: itemBuilder,
-      labelBuilder: (context, galleryMap, gallery) {
-        return gallery.label == null
-            ? null
-            : CLText.large(
-                gallery.label!,
-                textAlign: TextAlign.start,
-              );
-      },
-      bannersBuilder: bannersBuilder,
-      builder: ({
-        required items,
-        required itemBuilder,
-        required labelBuilder,
-        required bannersBuilder,
-        draggableMenuBuilder,
-      }) {
-        return GetFilterredMedia(
+    return GetSortedEntity(
+      entities: entities,
+      builder: (sorted) {
+        return SelectionControl(
           viewIdentifier: viewIdentifier,
-          incoming: entities,
+          contextMenuOf: contextMenuOf,
+          onSelectionChanged: onSelectionChanged,
+          incoming: sorted,
+          itemBuilder: itemBuilder,
+          labelBuilder: (context, galleryMap, gallery) {
+            return gallery.label == null
+                ? null
+                : CLText.large(
+                    gallery.label!,
+                    textAlign: TextAlign.start,
+                  );
+          },
           bannersBuilder: bannersBuilder,
-          disabled: filtersDisabled,
-          builder: (
-            List<CLEntity> filterred, {
-            required List<Widget> Function(
-              BuildContext,
-              List<GalleryGroupCLEntity<CLEntity>>,
-            ) bannersBuilder,
+          builder: ({
+            required items,
+            required itemBuilder,
+            required labelBuilder,
+            required bannersBuilder,
+            draggableMenuBuilder,
           }) {
-            return builder(
+            return GetFilterredMedia(
               viewIdentifier: viewIdentifier,
-              incoming: filterred,
-              itemBuilder: itemBuilder,
-              labelBuilder: labelBuilder,
+              incoming: entities,
               bannersBuilder: bannersBuilder,
-              draggableMenuBuilder: draggableMenuBuilder,
+              disabled: filtersDisabled,
+              builder: (
+                List<CLEntity> filterred, {
+                required List<Widget> Function(
+                  BuildContext,
+                  List<GalleryGroupCLEntity<CLEntity>>,
+                ) bannersBuilder,
+              }) {
+                return builder(
+                  viewIdentifier: viewIdentifier,
+                  incoming: filterred,
+                  itemBuilder: itemBuilder,
+                  labelBuilder: labelBuilder,
+                  bannersBuilder: bannersBuilder,
+                  draggableMenuBuilder: draggableMenuBuilder,
+                );
+              },
             );
           },
         );

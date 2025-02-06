@@ -92,12 +92,6 @@ class GetMediaByCollectionId extends ConsumerWidget {
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
           builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              return bDate.compareTo(aDate);
-            });
             /* log(
               media.map((e) => e.md5String).join(','),
               name: 'GetMediaByCollectionId',
@@ -139,12 +133,6 @@ class GetMediaMultipleByIds extends ConsumerWidget {
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
           builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              return bDate.compareTo(aDate);
-            });
             return builder(CLMedias(media));
           },
         );
@@ -178,12 +166,6 @@ class GetPinnedMedia extends ConsumerWidget {
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
           builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              return bDate.compareTo(aDate);
-            });
             return builder(CLMedias(media));
           },
         );
@@ -217,12 +199,6 @@ class GetStaleMedia extends ConsumerWidget {
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
           builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              return bDate.compareTo(aDate);
-            });
             return builder(CLMedias(media));
           },
         );
@@ -256,12 +232,6 @@ class GetDeletedMedia extends ConsumerWidget {
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
           builder: (media) {
-            media.sort((a, b) {
-              final aDate = a.originalDate ?? a.createdDate;
-              final bDate = b.originalDate ?? b.createdDate;
-
-              return bDate.compareTo(aDate);
-            });
             return builder(CLMedias(media));
           },
         );

@@ -8,6 +8,7 @@ import '../../db_service/builders/w3_get_collection.dart';
 
 import '../models/labeled_entity_groups.dart';
 import '../providers/media_grouper.dart';
+import 'get_sorted_entities.dart';
 
 class GetGroupedMedia extends ConsumerWidget {
   const GetGroupedMedia({
@@ -53,51 +54,57 @@ class GetGroupedMedia extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       errorBuilder: errorBuilder,
       builder: (collections) {
-        final result = <LabelledEntityGroups>[];
-        collections.sort(
-          (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
-        );
-        if (viewableAsCollection) {
-          result.add(
-            LabelledEntityGroups(
-              name: 'Collections',
-              galleryGroups: ref.watch(
-                groupedMediaProvider(
-                  MapEntry(
-                    TabIdentifier(view: viewIdentifier, tabId: 'Collection'),
-                    collections,
+        return GetSortedEntity(
+          entities: collections,
+          builder: (sortedCollections) {
+            final result = <LabelledEntityGroups>[];
+
+            if (viewableAsCollection) {
+              result.add(
+                LabelledEntityGroups(
+                  name: 'Collections',
+                  galleryGroups: ref.watch(
+                    groupedMediaProvider(
+                      MapEntry(
+                        TabIdentifier(
+                          view: viewIdentifier,
+                          tabId: 'Collection',
+                        ),
+                        sortedCollections,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+            result.add(
+              LabelledEntityGroups(
+                name: 'Media',
+                galleryGroups: ref.watch(
+                  groupedMediaProvider(
+                    MapEntry(
+                      TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+                      incoming,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }
-        result.add(
-          LabelledEntityGroups(
-            name: 'Media',
-            galleryGroups: ref.watch(
-              groupedMediaProvider(
-                MapEntry(
-                  TabIdentifier(view: viewIdentifier, tabId: 'Media'),
-                  incoming,
-                ),
-              ),
-            ),
-          ),
-        );
+            );
 
-        return builder(
-          result,
-          onGetParent: (entity) => switch (entity) {
-            CLMedia _ =>
-              collections.where((e) => e.id == entity.collectionId).first,
-            _ => null
-          },
-          onGetChildren: (entity) => switch (entity) {
-            Collection _ => incoming
-                .where((e) => (e as CLMedia).collectionId == entity.id)
-                .toList(),
-            _ => null
+            return builder(
+              result,
+              onGetParent: (entity) => switch (entity) {
+                CLMedia _ =>
+                  collections.where((e) => e.id == entity.collectionId).first,
+                _ => null
+              },
+              onGetChildren: (entity) => switch (entity) {
+                Collection _ => incoming
+                    .where((e) => (e as CLMedia).collectionId == entity.id)
+                    .toList(),
+                _ => null
+              },
+            );
           },
         );
       },

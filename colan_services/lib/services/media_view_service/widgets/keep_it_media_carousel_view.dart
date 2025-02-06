@@ -42,26 +42,31 @@ class KeepItMediaCorouselView extends ConsumerWidget {
     }
     return clmedias.isEmpty
         ? const WhenEmpty()
-        : GetFilterredMedia(
-            viewIdentifier: viewIdentifier,
-            incoming: clmedias.entries,
-            bannersBuilder: (context, _) => [],
-            builder: (
-              List<CLEntity> filterred, {
-              required List<Widget> Function(
-                BuildContext,
-                List<GalleryGroupCLEntity<CLEntity>>,
-              ) bannersBuilder,
-            }) {
-              return MediaViewService1.pageView(
-                media: filterred.map((e) => e as CLMedia).toList(),
-                parentIdentifier: viewIdentifier.toString(),
-                initialMediaIndex: filterred
-                    .indexWhere((e) => e.entityId == initialMediaIndex),
-                errorBuilder: errorBuilder,
-                loadingBuilder: () => CLLoader.widget(
-                  debugMessage: 'MediaViewService.pageView',
-                ),
+        : GetSortedEntity(
+            entities: clmedias.entries,
+            builder: (sorted) {
+              return GetFilterredMedia(
+                viewIdentifier: viewIdentifier,
+                incoming: sorted,
+                bannersBuilder: (context, _) => [],
+                builder: (
+                  List<CLEntity> filterred, {
+                  required List<Widget> Function(
+                    BuildContext,
+                    List<GalleryGroupCLEntity<CLEntity>>,
+                  ) bannersBuilder,
+                }) {
+                  return MediaViewService1.pageView(
+                    media: filterred.map((e) => e as CLMedia).toList(),
+                    parentIdentifier: viewIdentifier.toString(),
+                    initialMediaIndex: filterred
+                        .indexWhere((e) => e.entityId == initialMediaIndex),
+                    errorBuilder: errorBuilder,
+                    loadingBuilder: () => CLLoader.widget(
+                      debugMessage: 'MediaViewService.pageView',
+                    ),
+                  );
+                },
               );
             },
           );
