@@ -1,12 +1,15 @@
+import 'dart:convert';
+
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_factory/form_factory.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-class CollectionEditor extends StatelessWidget {
+class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
     required int collectionId,
     required void Function(Collection collection) onSubmit,
@@ -50,65 +53,156 @@ class CollectionEditor extends StatelessWidget {
   final bool isDialog;
 
   @override
-  Widget build(BuildContext context) {
-    return CLDialogWrapper(
-      onCancel: isDialog ? onCancel : null,
-      child: GetCollection(
-        id: collectionId,
-        errorBuilder: (_, __) {
-          throw UnimplementedError('errorBuilder');
+  State<CollectionEditor> createState() => _CollectionEditorState();
+
+  static Future<Collection?> popupDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    required Collection collection,
+  }) async {
+    return showShadSheet<Collection>(
+      context: context,
+      builder: (BuildContext context) => CollectionEditor.dialog(
+        collectionId: collection.id!,
+        onSubmit: (collection) {
+          PageManager.of(context).pop(collection);
         },
-        loadingBuilder: () => CLLoader.widget(
-          debugMessage: 'GetCollection',
+        onCancel: () => PageManager.of(context).pop(),
+      ),
+    );
+  }
+}
+
+class _CollectionEditorState extends State<CollectionEditor> {
+  final formKey = GlobalKey<ShadFormState>();
+  Map<Object, dynamic> formValue = {};
+
+  Widget loading(String debugMessage) => ShadSheet(
+        title: const Text('Loading'),
+        description: const Text(
+          'Loading Collection ',
         ),
+        child: SizedBox(
+          height: 100,
+          child: CLLoader.widget(
+            debugMessage: debugMessage,
+          ),
+        ),
+      );
+  Widget errorBuilder(Object e, StackTrace st) {
+    throw UnimplementedError('errorBuilder');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: GetCollection(
+        id: widget.collectionId,
+        errorBuilder: errorBuilder,
+        loadingBuilder: () => loading('GetCollection'),
         builder: (collection) {
           if (collection == null) {
-            throw Exception('Collection with id $collectionId not found');
+            try {
+              throw Exception("Collection can't be null");
+            } catch (e, st) {
+              return errorBuilder(e, st);
+            }
           }
           return GetCollectionMultiple(
             query: DBQueries.collections,
-            errorBuilder: (_, __) {
-              throw UnimplementedError('errorBuilder');
-            },
-            loadingBuilder: () => CLLoader.widget(
-              debugMessage: 'GetCollectionMultiple',
-            ),
+            errorBuilder: errorBuilder,
+            loadingBuilder: () => loading('GetCollectionMultiple'),
             builder: (collections) {
-              return CLForm(
-                explicitScrollDownOption: !isDialog,
-                descriptors: {
-                  'label': CLFormTextFieldDescriptor(
-                    title: 'Name',
-                    label: 'Collection Name',
-                    initialValue: collection.label,
-                    onValidate: (value) => validateName(
-                      newLabel: value,
-                      existingLabel: collection.label,
-                      collections: collections.entries,
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: ShadSheet(
+                  draggable: true,
+                  title: Text(
+                    'Edit Collection "${collection.label.capitalizeFirstLetter()}"',
+                  ),
+                  description: const Text(
+                    'Change the label and add/update description here',
+                  ),
+                  actions: [
+                    ShadButton(
+                      child: const Text('Save changes'),
+                      onPressed: () {
+                        print('submitted');
+                        if (formKey.currentState!.saveAndValidate()) {
+                          formValue = formKey.currentState!.value;
+                          final label = formValue['label'] as String;
+                          final desc = formValue['description'] as String?;
+                          final updated = collection.copyWith(
+                            label: label,
+                            description: () => desc == null
+                                ? null
+                                : desc.isEmpty
+                                    ? null
+                                    : desc,
+                          );
+                          widget.onSubmit(updated);
+                        } else {
+                          print('validation failed');
+                        }
+                      },
+                    ),
+                  ],
+                  child: ShadForm(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ShadInputFormField(
+                          id: 'label',
+                          // prefix: const Icon(LucideIcons.tag),
+                          label: const Text(' Collection Name'),
+                          initialValue: collection.label,
+                          placeholder: const Text('Enter collection name'),
+                          validator: (value) => validateName(
+                            newLabel: value,
+                            existingLabel: collection.label,
+                            collections: collections.entries,
+                          ),
+                          showCursor: true,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\n')),
+                          ],
+                        ),
+                        ShadInputFormField(
+                          id: 'description',
+                          // prefix: const Icon(LucideIcons.tag),
+                          label: const Text(' About'),
+                          initialValue: collection.description,
+                          placeholder:
+                              const Text('Describe about this collection'),
+                          maxLines: 4,
+                        ),
+                        if (formValue.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 24, left: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('FormValue', style: theme.textTheme.p),
+                                const SizedBox(height: 4),
+                                SelectableText(
+                                  const JsonEncoder.withIndent('    ')
+                                      .convert(formValue),
+                                  style: theme.textTheme.small,
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  'description': CLFormTextFieldDescriptor(
-                    title: 'About',
-                    label: 'Describe about this collection',
-                    initialValue: collection.description ?? '',
-                    onValidate: (_) => null,
-                    maxLines: 4,
-                  ),
-                },
-                onSubmit: (result) async {
-                  final label =
-                      (result['label']! as CLFormTextFieldResult).value;
-                  final desc =
-                      (result['description']! as CLFormTextFieldResult).value;
-
-                  final updated = collection.copyWith(
-                    label: label,
-                    description: () => desc.isEmpty ? null : desc,
-                  );
-
-                  onSubmit(updated);
-                },
-                onCancel: isDialog ? null : onCancel,
+                ),
               );
             },
           );
@@ -142,20 +236,4 @@ class CollectionEditor extends StatelessWidget {
     }
     return null;
   }
-
-  static Future<Collection?> popupDialog(
-    BuildContext context,
-    WidgetRef ref, {
-    required Collection collection,
-  }) async =>
-      showDialog<Collection>(
-        context: context,
-        builder: (BuildContext context) => CollectionEditor.dialog(
-          collectionId: collection.id!,
-          onSubmit: (collection) {
-            PageManager.of(context).pop(collection);
-          },
-          onCancel: () => PageManager.of(context).pop(),
-        ),
-      );
 }
