@@ -124,16 +124,21 @@ class CollectionEditor extends StatelessWidget {
   }) {
     final newLabel0 = newLabel?.trim();
 
-    if (newLabel0?.isEmpty ?? true) {
+    if (newLabel0 == null) {
       return "Name can't be empty";
-    }
-
-    if (existingLabel?.trim() == newLabel0) {
-      // Nothing changed.
-      return null;
-    }
-    if (collections.map((e) => e.label.trim()).contains(newLabel0)) {
-      return '$newLabel0 already exists';
+    } else {
+      if (newLabel0.isEmpty) {
+        return "Name can't be empty";
+      }
+      if (existingLabel?.trim().toLowerCase() == newLabel0.toLowerCase()) {
+        // Nothing changed.
+        return null;
+      }
+      if (collections
+          .map((e) => e.label.trim().toLowerCase())
+          .contains(newLabel0.toLowerCase())) {
+        return '$newLabel0 already exists';
+      }
     }
     return null;
   }
