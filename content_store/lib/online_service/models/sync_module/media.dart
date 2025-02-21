@@ -57,24 +57,28 @@ class MediaSyncModule extends SyncModule<CLMedia> {
     log('items in local: ${itemsOnDevice.length}');
     log('items in Server: ${itemsOnServerMap.length}');
     for (final serverEntry in itemsOnServerMap) {
-      final localEntry = itemsOnDevice
-          .where(
-            (e) =>
-                e.serverUID == serverEntry['serverUID'] ||
-                e.md5String == serverEntry['md5String'],
-          )
-          .firstOrNull;
+      try {
+        final localEntry = itemsOnDevice
+            .where(
+              (e) =>
+                  e.serverUID == serverEntry['serverUID'] ||
+                  e.md5String == serverEntry['md5String'],
+            )
+            .firstOrNull;
 
-      final tracker = ChangeTracker(
-        current: localEntry,
-        update: StoreExtCLMedia.mediaFromServerMap(localEntry, serverEntry),
-      );
+        final tracker = ChangeTracker(
+          current: localEntry,
+          update: StoreExtCLMedia.mediaFromServerMap(localEntry, serverEntry),
+        );
 
-      if (!tracker.isActionNone) {
-        trackers.add(tracker);
-      }
-      if (localEntry != null) {
-        itemsOnDevice.remove(localEntry);
+        if (!tracker.isActionNone) {
+          trackers.add(tracker);
+        }
+        if (localEntry != null) {
+          itemsOnDevice.remove(localEntry);
+        }
+      } catch (e) {
+        print('skipping as error occured $e');
       }
     }
     // For remaining items
@@ -92,6 +96,8 @@ class MediaSyncModule extends SyncModule<CLMedia> {
   Future<void> sync() async {
     final itemsOnServerMap = await mediaOnServerMap;
     final itemsOnDevice = await updater.store.reader.mediaOnDevice;
+    print(itemsOnServerMap);
+    print(itemsOnDevice);
 
     final trackers = await analyse(itemsOnServerMap, itemsOnDevice);
     log(' ${trackers.length} items need sync');
