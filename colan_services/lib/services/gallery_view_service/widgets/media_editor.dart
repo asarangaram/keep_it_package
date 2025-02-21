@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import '../../context_menu_service/widgets/pull_down_context_menu.dart';
 import '../../media_view_service/preview/media_preview_service.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
@@ -250,6 +252,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                         child: const Icon(LucideIcons.delete),
                       ),
                     ),
+                    if (kDebugMode) MapInfo(widget.media.toMapForDisplay()),
                     if (formValue.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 24, left: 12),
