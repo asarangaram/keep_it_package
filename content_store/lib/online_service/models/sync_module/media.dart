@@ -78,7 +78,9 @@ class MediaSyncModule extends SyncModule<CLMedia> {
           itemsOnDevice.remove(localEntry);
         }
       } catch (e) {
-        print('skipping as error occured $e');
+        if (kDebugMode) {
+          print('skipping as error occured $e');
+        }
       }
     }
     // For remaining items
@@ -96,8 +98,8 @@ class MediaSyncModule extends SyncModule<CLMedia> {
   Future<void> sync() async {
     final itemsOnServerMap = await mediaOnServerMap;
     final itemsOnDevice = await updater.store.reader.mediaOnDevice;
-    print(itemsOnServerMap);
-    print(itemsOnDevice);
+    //print(itemsOnServerMap);
+    //print(itemsOnDevice);
 
     final trackers = await analyse(itemsOnServerMap, itemsOnDevice);
     log(' ${trackers.length} items need sync');
