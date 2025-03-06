@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:server_test/server_media.dart';
+import 'package:server_test/providers/server_media.dart';
 
 class MediaListScreen extends ConsumerStatefulWidget {
   const MediaListScreen({super.key});
