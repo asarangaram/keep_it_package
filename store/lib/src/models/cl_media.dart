@@ -91,7 +91,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
     return CLMedia.strict(
       name: map['name'] as String,
       type: CLMediaType.values.asNameMap()[map['type'] as String]!,
-      fExt: map['fExt'] as String,
+      fExt: map['fExt'] as String? ?? '.unk',
       ref: map['ref'] != null ? map['ref'] as String : null,
       originalDate: map['originalDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['originalDate'] as int)
@@ -101,25 +101,25 @@ class CLMedia extends CLMediaBase implements CLEntity {
       updatedDate:
           DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int),
       md5String: map['md5String'] != null ? map['md5String'] as String : null,
-      isDeleted: (map['isDeleted'] as int) != 0,
+      isDeleted: (map['isDeleted'] as int? ?? 0) != 0,
       isHidden: (map['isHidden'] as int? ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
       collectionId:
           map['collectionId'] != null ? map['collectionId'] as int : null,
       isAux: (map['isAux'] as int? ?? 0) != 0,
       id: map['id'] != null ? map['id'] as int : null,
-      isPreviewCached: (map['isPreviewCached'] as int) != 0,
-      isMediaCached: (map['isMediaCached'] as int) != 0,
+      isPreviewCached: (map['isPreviewCached'] as int? ?? 0) != 0,
+      isMediaCached: (map['isMediaCached'] as int? ?? 0) != 0,
       previewLog:
           map['previewLog'] != null ? map['previewLog'] as String : null,
       mediaLog: map['mediaLog'] != null ? map['mediaLog'] as String : null,
-      isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
+      isMediaOriginal: (map['isMediaOriginal'] as int? ?? 0) != 0,
       serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isEdited: map['isEdited'] == null ? null : (map['isEdited'] as int) != 0,
       haveItOffline: map['haveItOffline'] == null
           ? null
           : (map['haveItOffline'] as int) != 0,
-      mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
+      mustDownloadOriginal: (map['mustDownloadOriginal'] as int? ?? 0) != 0,
     );
   }
 
