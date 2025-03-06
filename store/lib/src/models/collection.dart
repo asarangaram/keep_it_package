@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
 
+import 'cl_entities.dart';
+import 'cl_media.dart';
 import 'cl_media_base.dart';
 
 @immutable

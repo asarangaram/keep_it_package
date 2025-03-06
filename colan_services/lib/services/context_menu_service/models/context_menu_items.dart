@@ -6,9 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'package:store/store.dart';
+import 'package:store/store.dart' as store;
 
 import '../../../internal/draggable_menu/widgets/actions_draggable_menu.dart';
+import '../../../internal/share_files.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../gallery_view_service/widgets/collection_editor.dart';
@@ -117,7 +118,7 @@ class CLContextMenu {
   factory CLContextMenu.ofCollection(
     BuildContext context,
     WidgetRef ref, {
-    required Collection collection,
+    required store.Collection collection,
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
@@ -130,7 +131,7 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onKeepOffline,
     ValueGetter<Future<bool?> Function()?>? onUpload,
     ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
-    List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    List<store.CLEntity>? Function(store.CLEntity entity)? onGetChildren,
   }) {
     /// Basic Actions
     final onEditInfo0 = onEditInfo != null
@@ -250,8 +251,8 @@ class CLContextMenu {
   factory CLContextMenu.ofMedia(
     BuildContext context,
     WidgetRef ref, {
-    required CLMedia media,
-    required Collection parentCollection,
+    required store.CLMedia media,
+    required store.Collection parentCollection,
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
@@ -298,7 +299,7 @@ class CLContextMenu {
 
     final onShare0 = onShare != null
         ? onShare()
-        : () => theStore.mediaUpdater.share(context, [media]);
+        : () => share(context, theStore.mediaUpdater, [media]);
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
@@ -367,7 +368,7 @@ class CLContextMenu {
   factory CLContextMenu.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
-    required List<CLMedia> items,
+    required List<store.CLMedia> items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
     required StoreUpdater theStore,
@@ -396,7 +397,7 @@ class CLContextMenu {
             );
     final onShare0 = onShare != null
         ? onShare()
-        : () => theStore.mediaUpdater.share(context, items);
+        : () => share(context, theStore.mediaUpdater, items);
     final onPin0 = onPin != null
         ? onPin()
         : () => theStore.mediaUpdater.pinToggleMultiple(
@@ -499,7 +500,7 @@ class CLContextMenu {
   ) {
     if (actions.isNotEmpty) {
       return (context, {required parentKey}) {
-        return ActionsDraggableMenu<CLEntity>(
+        return ActionsDraggableMenu<store.CLEntity>(
           parentKey: parentKey,
           tagPrefix: 'Selection',
           menuItems: actions.insertOnDone(onDone),
@@ -513,24 +514,40 @@ class CLContextMenu {
   static CLContextMenu entitiesContextMenuBuilder(
     BuildContext context,
     WidgetRef ref,
-    List<CLEntity> entities,
+    List<store.CLEntity> entities,
     StoreUpdater theStore,
   ) {
     return switch (entities) {
-      final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+      final List<store.CLEntity> e when e.every((e) => e is store.CLMedia) =>
+        () {
           return CLContextMenu.ofMultipleMedia(
             context,
             ref,
-            items: e.map((e) => e as CLMedia).toList(),
+            items: e.map((e) => e as store.CLMedia).toList(),
             hasOnlineService: true,
             theStore: theStore,
           );
         }(),
-      final List<CLEntity> e when e.every((e) => e is Collection) => () {
+      final List<store.CLEntity> e when e.every((e) => e is store.Collection) =>
+        () {
           return CLContextMenu.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')
     };
+  }
+
+  static Future<bool?> share(
+    BuildContext context,
+    MediaUpdater mediaUpdater,
+    List<store.CLMedia> media,
+  ) async {
+    final files = mediaUpdater.getMediaFiles(media);
+    final box = context.findRenderObject() as RenderBox?;
+    return ShareManager.onShareFiles(
+      context,
+      files.toList(),
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
   }
 }
 

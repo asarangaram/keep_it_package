@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:server/server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/store.dart';
 
 import '../../db_service/models/store_updater.dart';
 import '../../db_service/providers/store_updater.dart';
-import '../models/cl_server.dart';
 import '../models/server.dart';
 import '../models/sync_module/collection.dart';
 import '../models/sync_module/media.dart';
@@ -113,19 +113,19 @@ class ServerNotifier extends StateNotifier<Server> {
   void autoSync({bool isServerChange = false}) {
     log('autoSync requested');
     if (!isServerChange) {
-      coreSync();
+      //   coreSync();
     }
     // Future.delayed(const Duration(milliseconds: 300), coreSync);
   }
 
   void manualSync() {
     log('manualSync requested');
-    coreSync();
+    // coreSync();
   }
 
   void instantSync() {
     log('instantSync requested');
-    coreSync();
+    //coreSync();
   }
 
   void coreSync() {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
+import 'package:store/store.dart';
 
 @immutable
 class ServerTimeStamps {

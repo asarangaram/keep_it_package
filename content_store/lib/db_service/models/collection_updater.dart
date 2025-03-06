@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
 class CollectionUpdater {

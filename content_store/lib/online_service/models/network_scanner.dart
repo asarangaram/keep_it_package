@@ -1,8 +1,6 @@
-
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-
-import 'cl_server.dart';
+import 'package:server/server.dart';
 
 @immutable
 class NetworkScanner {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:content_store/content_store.dart';
 import 'package:content_store/extensions/ext_cl_media.dart';
@@ -9,8 +10,7 @@ import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+
 import 'package:heif_converter/heif_converter.dart';
 import 'package:image/image.dart' as img;
 import 'package:keep_it_state/keep_it_state.dart';
@@ -21,7 +21,6 @@ import 'package:store/store.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
 
 import 'gallery_pin.dart';
-import 'share_files.dart';
 
 import 'url_handler.dart';
 
@@ -883,20 +882,15 @@ class MediaUpdater {
     );
   }
 
-  // This should not be in this way.
-  Future<bool?> share(
-    BuildContext context,
-    List<CLMedia> media,
-  ) {
+  // Modify to provide only the files and not to share directly
+
+  List<String> getMediaFiles(List<CLMedia> media) {
     final files = media
         .map(directories.getMediaAbsolutePath)
-        .where((e) => File(e).existsSync());
-    final box = context.findRenderObject() as RenderBox?;
-    return ShareManager.onShareFiles(
-      context,
-      files.toList(),
-      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    );
+        .where((e) => File(e).existsSync())
+        .toList();
+    return files;
+    /* */
   }
 
   String fileRelativePath(CLMedia media) => p.join(
