@@ -30,6 +30,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/colan_services/test/test_backup_files.dart",
             "console": "terminal"
+        },
+        {
+            "name": "server_test",
+            "cwd": "server_test",
+            "request": "launch",
+            "type": "dart"
         }
     ]
 }
