@@ -1,0 +1,28 @@
+name: server_test
+description: "A new Flutter project."
+
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  store:
+    path: ../store
+  cupertino_icons: ^1.0.8
+  signals: ^6.0.2
+  http: ^1.3.0
+  flutter_riverpod: ^2.6.1
+  collection: ^1.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
