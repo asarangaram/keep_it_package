@@ -4,10 +4,10 @@ import 'dart:developer' as dev;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
-import 'package:server/server.dart';
 
 import '../../extensions/list_ext.dart';
 
+import '../models/cl_server.dart';
 import '../models/network_scanner.dart';
 
 extension ServiceExtDiscovery on Discovery {

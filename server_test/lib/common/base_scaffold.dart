@@ -4,26 +4,27 @@ import 'package:multi_split_view/multi_split_view.dart';
 import 'app_bar.dart';
 
 class BaseScaffold extends StatefulWidget {
-  const BaseScaffold({
-    super.key,
-    required this.children,
-    required this.appBarTitle,
-    this.editable,
-    this.crossAxisAlignment = CrossAxisAlignment.center,
-    this.wrapChildrenInScrollable = true,
-    this.wrapSingleChildInColumn = true,
-    this.alignment,
-    this.gap = 8,
-  });
+  const BaseScaffold(
+      {super.key,
+      required this.children,
+      this.appBarTitle,
+      this.editable,
+      this.crossAxisAlignment = CrossAxisAlignment.center,
+      this.wrapChildrenInScrollable = true,
+      this.wrapSingleChildInColumn = true,
+      this.alignment,
+      this.gap = 8,
+      this.appBarTitleWidget});
 
   final List<Widget> children;
-  final String appBarTitle;
+  final String? appBarTitle;
   final List<Widget>? editable;
   final CrossAxisAlignment crossAxisAlignment;
   final bool wrapChildrenInScrollable;
   final bool wrapSingleChildInColumn;
   final Alignment? alignment;
   final double gap;
+  final Widget? appBarTitleWidget;
 
   @override
   State<BaseScaffold> createState() => _BaseScaffoldState();
@@ -85,7 +86,10 @@ class _BaseScaffoldState extends State<BaseScaffold> {
           );
 
     return Scaffold(
-      appBar: MyAppBar(title: widget.appBarTitle),
+      appBar: MyAppBar(
+        title: widget.appBarTitle,
+        titleWidget: widget.appBarTitleWidget,
+      ),
       body: right != null
           ? MultiSplitViewTheme(
               data: MultiSplitViewThemeData(

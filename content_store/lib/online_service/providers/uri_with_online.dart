@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:server/server.dart';
+
 import 'package:store/store.dart';
 
 import '../../db_service/models/uri.dart';
 import '../../extensions/ext_cl_media.dart';
 import '../../extensions/ext_cldirectories.dart';
 import '../../storage_service/models/file_system/models/cl_directories.dart';
+import '../models/cl_server.dart';
 
 @immutable
 class MediaPathDeterminerWithOnlineSupport extends MediaPathDeterminer {

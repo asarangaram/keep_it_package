@@ -1,10 +1,11 @@
 import 'dart:developer' as dev;
 import 'package:flutter/foundation.dart';
-import 'package:server/server.dart';
+
 import 'package:store/store.dart';
 
 import '../../../db_service/models/store_updater.dart';
 import '../../providers/downloader.dart';
+import '../cl_server.dart';
 
 @immutable
 abstract class SyncModule<T> {

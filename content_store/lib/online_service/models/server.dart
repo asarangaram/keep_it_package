@@ -6,9 +6,10 @@ import 'package:content_store/online_service/providers/downloader.dart';
 import 'package:meta/meta.dart';
 
 import 'package:path/path.dart' as p;
-import 'package:server/server.dart';
+
 import 'package:store/store.dart';
 
+import 'cl_server.dart';
 import 'server_upload_entity.dart';
 
 @immutable

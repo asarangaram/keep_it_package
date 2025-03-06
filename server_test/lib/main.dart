@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+
 import 'package:flutter_solidart/flutter_solidart.dart';
-import 'package:server_test/media_list_screen.dart';
+import 'package:server/server.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'views/registerred_server_view.dart';
+import 'views/server_selector_view.dart';
 
 void main() {
   runApp(Solid(
@@ -17,22 +21,27 @@ void main() {
           theme: ShadThemeData(
             brightness: Brightness.light,
             colorScheme: const ShadZincColorScheme.light(),
-            // Example with google fonts
-            // textTheme: ShadTextTheme.fromGoogleFont(GoogleFonts.poppins),
-
-            // Example of custom font family
-            // textTheme: ShadTextTheme(family: 'UbuntuMono'),
-
-            // Example to disable the secondary border
-            // disableSecondaryBorder: true,
           ),
           darkTheme: ShadThemeData(
             brightness: Brightness.dark,
             colorScheme: const ShadZincColorScheme.dark(),
-            // Example of custom font family
-            // textTheme: ShadTextTheme(family: 'UbuntuMono'),
           ),
-          home: riverpod.ProviderScope(child: MediaListScreen()),
+          home: riverpod.ProviderScope(child: MainApp()),
         );
       }));
+}
+
+class MainApp extends riverpod.ConsumerWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
+    final server = ref.watch(serverProvider);
+
+    if ((server.isRegistered)) {
+      return const RegisterredServerView();
+    } else {
+      return ServerSelectorView();
+    }
+  }
 }

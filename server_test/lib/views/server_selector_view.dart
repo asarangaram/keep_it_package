@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:server/server.dart';
-import 'package:server_test/providers/server.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'common/base_scaffold.dart';
-import 'providers/scanner.dart';
-import 'scan_for_server.dart';
-import 'widgets/server_selection_form.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../common/base_scaffold.dart';
 
 class ServerSelectorView extends ConsumerStatefulWidget {
   const ServerSelectorView({super.key});
@@ -37,13 +33,17 @@ class _ServerSelectorViewState extends ConsumerState<ServerSelectorView> {
     final textTheme = ShadTheme.of(context).textTheme;
     final scanner = ref.watch(networkScannerProvider);
     return BaseScaffold(
-      appBarTitle: 'KeepIt Media Viewer',
+      appBarTitleWidget: ListTile(
+        leading: SizedBox.shrink(),
+        title: Text('KeepIt Media Viewer'),
+        titleTextStyle: textTheme.h4,
+      ),
       children: [
         if (!scanner.lanStatus)
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
             child: ShadAlert.destructive(
-              iconData: serverIcons.noNetwork,
+              iconData: Icons.network_check, // network off !!
               title: Text('Offline'),
               description: Text(
                   'You are not connected to any Home Network. Check your connection and try again.'),

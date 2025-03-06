@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:server/server.dart';
-import 'package:server_test/providers/scanner.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+
+import '../models/cl_server.dart';
+import '../providers/scanner.dart';
 
 class ServerSelectionForm extends ConsumerStatefulWidget {
   const ServerSelectionForm(

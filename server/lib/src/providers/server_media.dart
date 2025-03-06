@@ -1,7 +1,8 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/server.dart';
 import '../models/server_media.dart';
+import 'server.dart';
 
 class ServerMediaNotifier extends StateNotifier<ServerMedia> {
   ServerMediaNotifier(this.server, {int perPage = 5})
@@ -50,3 +51,9 @@ class ServerMediaNotifier extends StateNotifier<ServerMedia> {
     }
   }
 }
+
+final serverMediaProvider =
+    StateNotifierProvider<ServerMediaNotifier, ServerMedia>((ref) {
+  final server = ref.watch(serverProvider);
+  return ServerMediaNotifier(server);
+});
