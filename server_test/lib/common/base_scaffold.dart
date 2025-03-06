@@ -38,7 +38,7 @@ class _BaseScaffoldState extends State<BaseScaffold> {
       for (final child in widget.children)
         Area(builder: (context, area) => child),
     ]);
-    // TODO: implement initState
+
     super.initState();
   }
 

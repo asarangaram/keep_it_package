@@ -1,16 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:server_test/providers/scanner.dart';
 import 'package:server_test/providers/server_media.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'popover.dart';
+import 'registerred_server_view.dart';
+import 'server_selector_view.dart';
 import 'providers/server.dart';
-import 'scan_for_server.dart';
 
 class MediaListScreen extends ConsumerStatefulWidget {
   const MediaListScreen({super.key});
