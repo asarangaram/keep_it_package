@@ -1,8 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:server_test/providers/scanner.dart';
 import 'package:server_test/providers/server_media.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'popover.dart';
+import 'providers/server.dart';
+import 'scan_for_server.dart';
 
 class MediaListScreen extends ConsumerStatefulWidget {
   const MediaListScreen({super.key});
@@ -13,6 +21,12 @@ class MediaListScreen extends ConsumerStatefulWidget {
 
 class _MediaListScreenState extends ConsumerState<MediaListScreen> {
   late final ScrollController _scrollController;
+
+  bool enabled = true;
+  var autovalidateMode = ShadAutovalidateMode.alwaysAfterFirstValidation;
+
+  Map<Object, dynamic> formValue = {};
+  final formKey = GlobalKey<ShadFormState>();
 
   @override
   void initState() {
@@ -37,50 +51,55 @@ class _MediaListScreenState extends ConsumerState<MediaListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final serverMedia = ref.watch(serverMediaProvider);
-    if (serverMedia == null) {
-      return SizedBox(); // Fixme
+    final server = ref.watch(serverProvider);
+
+    if ((server.isRegistered)) {
+      return const RegisterredServerView();
+    } else {
+      return ServerSelectorView();
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paginated List'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: ref.read(serverMediaProvider.notifier).refresh,
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: ref.read(serverMediaProvider.notifier).refresh,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: serverMedia.items.length + 1,
-          itemBuilder: (context, index) {
-            if (index == serverMedia.items.length) {
-              if (serverMedia.isLoading) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              } else if (serverMedia.metaInfo.pagination.hasNext) {
-                return TextButton(
-                    onPressed:
-                        ref.read(serverMediaProvider.notifier).fetchNextPage,
-                    child: const Text('Load More'));
-              } else {
-                return const Center(child: Text('No more data on Server'));
-              }
-            }
-            return ListTile(
-              title: Text(serverMedia.items[index].name),
-              subtitle: Text('ID: ${serverMedia.items[index].serverUID ?? ''}'),
-            );
-          },
-        ),
-      ),
-    );
   }
 }
+
+/**
+ * dd
+ * 
+ RefreshIndicator(
+        onRefresh: ref.read(serverMediaProvider.notifier).refresh,
+ ScanForServer(),
+            Text(scanner.toString()),
+            Text(server.toString()),
+            if (server.canSync)
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: serverMedia.items.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == serverMedia.items.length) {
+                      if (serverMedia.isLoading) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      } else if (serverMedia.metaInfo.pagination.hasNext) {
+                        return TextButton(
+                            onPressed: ref
+                                .read(serverMediaProvider.notifier)
+                                .fetchNextPage,
+                            child: const Text('Load More'));
+                      } else {
+                        return const Center(
+                            child: Text('No more data on Server'));
+                      }
+                    }
+                    return ListTile(
+                      title: Text(serverMedia.items[index].name),
+                      subtitle: Text(
+                          'ID: ${serverMedia.items[index].serverUID ?? ''}'),
+                    );
+                  },
+                ),
+              ),
+ */

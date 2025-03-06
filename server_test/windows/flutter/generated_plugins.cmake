@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  connectivity_plus
+  nsd_windows
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

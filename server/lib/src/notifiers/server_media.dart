@@ -1,6 +1,6 @@
 import 'package:riverpod/riverpod.dart';
 
-import '../models/cl_server.dart';
+import '../models/server.dart';
 import '../models/server_media.dart';
 
 class ServerMediaNotifier extends StateNotifier<ServerMedia> {
@@ -8,23 +8,23 @@ class ServerMediaNotifier extends StateNotifier<ServerMedia> {
       : super(ServerMedia.reset(perPage)) {
     initialize();
   }
-  final CLServer? server;
+  final ServerBasic server;
 
   Future<void> initialize() async {
-    if (server != null) {
+    if (server.canSync) {
       state = state.copyWith(isLoading: true);
-      final map =
-          await server!.fetchMediaPage(perPage: 5, page: 1, types: ['image']);
+      final map = await server.identity!
+          .fetchMediaPage(perPage: 5, page: 1, types: ['image']);
       state = ServerMedia.fromMap(map);
     }
   }
 
   Future<void> fetchNextPage() async {
-    if (server != null &&
+    if (server.canSync &&
         state.metaInfo.pagination.hasNext &&
         !state.isLoading) {
       state = state.copyWith(isLoading: true);
-      final map = await server!.fetchMediaPage(
+      final map = await server.identity!.fetchMediaPage(
           perPage: state.metaInfo.pagination.perPage,
           page: state.metaInfo.pagination.currentPage + 1,
           currentVersion: state.metaInfo.currentVersion,
@@ -40,8 +40,8 @@ class ServerMediaNotifier extends StateNotifier<ServerMedia> {
   }
 
   Future<void> refresh() async {
-    if (server != null && !state.isLoading) {
-      final map = await server!.fetchMediaPage(
+    if (server.canSync && !state.isLoading) {
+      final map = await server.identity!.fetchMediaPage(
           perPage: 5,
           page: 1,
           types: ['image'],

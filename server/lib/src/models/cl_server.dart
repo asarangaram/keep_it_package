@@ -8,7 +8,7 @@ import 'cl_server_status.dart';
 import 'rest_api.dart';
 
 @immutable
-class CLServer {
+class CLServer implements Comparable<CLServer> {
   const CLServer({
     required this.address,
     required this.port,
@@ -252,4 +252,12 @@ class CLServer {
   }
 
   String get baseURL => 'http://$address:$port';
+
+  @override
+  int compareTo(CLServer other) {
+    if (id != null && other.id != null) {
+      return id!.compareTo(other.id!);
+    }
+    return baseURL.compareTo(other.baseURL);
+  }
 }

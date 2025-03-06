@@ -2,9 +2,10 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:server/server.dart';
+import 'package:server_test/providers/server.dart';
 
 final serverMediaProvider =
     StateNotifierProvider<ServerMediaNotifier, ServerMedia?>((ref) {
-  CLServer server = CLServer(address: '192.168.1.6', port: 5000);
+  final server = ref.watch(serverProvider);
   return ServerMediaNotifier(server);
 });
