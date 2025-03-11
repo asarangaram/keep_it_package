@@ -63,7 +63,8 @@ class _ServerSelectorViewState extends ConsumerState<ServerSelectorView> {
               popover: (_) => SizedBox(
                   width: 288,
                   child: ServerSelectionForm(
-                    onRefresh: scanner.search,
+                    onRefresh:
+                        ref.watch(networkScannerProvider.notifier).search,
                     onDone: (selectedServer) {
                       ref
                           .read(serverProvider.notifier)

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:server/server.dart';
+
+import '../models/cl_server.dart';
 
 @immutable
 class NetworkScanner2 {
@@ -45,13 +46,4 @@ class NetworkScanner2 {
 
   bool get isEmpty => servers?.isEmpty ?? true;
   bool get isNotEmpty => servers?.isNotEmpty ?? false;
-
-  NetworkScanner2 clearServers() {
-    return NetworkScanner2(
-      lanStatus: lanStatus,
-      servers: null,
-    );
-  }
-
-  void search() {}
 }
