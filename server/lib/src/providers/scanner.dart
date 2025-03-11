@@ -18,7 +18,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner2> {
     _initialize();
   }
 
-  void log(
+  static void log(
     String message, {
     int level = 0,
     Object? error,

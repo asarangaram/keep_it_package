@@ -3,6 +3,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:server/server.dart';
+import 'package:server_test/models/cl_icons.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store_revised/store_revised.dart';
@@ -48,6 +49,7 @@ class _RegisterredServerViewState extends ConsumerState<RegisterredServerView> {
       body: ServerMediaList(),
     ); */
     final textTheme = ShadTheme.of(context).textTheme;
+
     return BaseScaffold(
         appBarTitleWidget: RefreshIndicator(
           onRefresh: ref.read(serverMediaProvider.notifier).refresh,
@@ -60,13 +62,26 @@ class _RegisterredServerViewState extends ConsumerState<RegisterredServerView> {
               '${server.identity!.identifier}@${server.identity!.address}:${server.identity!.port}',
               style: textTheme.small,
             ),
-            trailing: ShadButton.secondary(
-              onPressed: () => ref.read(serverProvider.notifier).deregister(),
-              backgroundColor: textTheme.blockquote.backgroundColor,
-              child: Text("Deregister"),
-            ),
           ),
         ),
+        appBarActions: [
+          Tooltip(
+            message: "Reload latest",
+            child: ShadButton.ghost(
+              onPressed: () => ref.read(serverMediaProvider.notifier).refresh(),
+              backgroundColor: textTheme.blockquote.backgroundColor,
+              child: Icon(clIcons.syncIcons.refreshIndicator),
+            ),
+          ),
+          Tooltip(
+            message: "Disconnect from server",
+            child: ShadButton.ghost(
+              onPressed: () => ref.read(serverProvider.notifier).deregister(),
+              backgroundColor: textTheme.blockquote.backgroundColor,
+              child: clIcons.syncIcons.disconnect,
+            ),
+          )
+        ],
         wrapChildrenInScrollable: false,
         wrapSingleChildInColumn: false,
         children: [ServerMediaList()]);
@@ -85,7 +100,18 @@ class ServerMediaList extends ConsumerStatefulWidget {
 class _ServerMediaListState extends ConsumerState<ServerMediaList> {
   @override
   Widget build(BuildContext context) {
+    final scanner = ref.watch(networkScannerProvider);
+    final server = ref.watch(serverProvider);
     final serverMedia = ref.watch(serverMediaProvider);
+    if (!server.canSync) {
+      if (server.workingOffline) {
+        return Text('Working offline, go online to view');
+      } else if (!scanner.lanStatus) {
+        return Text('check network connection');
+      } else {
+        return Text('server not reachable');
+      }
+    }
     if (serverMedia.items.isEmpty) {
       return Text('Nothing to show');
     }

@@ -47,15 +47,16 @@ class NodeNavigateIcons {}
 @immutable
 class SyncIcons {
   final disconnectIconData = MdiIcons.lanDisconnect;
-  final connectIconData = MdiIcons.lanDisconnect;
+  final connectIconData = MdiIcons.lanConnect;
   final syncIconData = MdiIcons.syncCircle;
   final attachIconData = MdiIcons.plusCircle;
   final detachIconData = MdiIcons.minusCircle;
   final syncOptionsIconData = Symbols.format_list_bulleted_add;
+  final refreshIndicator = Symbols.refresh_sharp;
 
   final Widget inSync = Center(
     child: Symbols.cloud_done_sharp.iconFormatted(
-      size: CLScaleType.veryLarge.iconSize,
+      //size: CLScaleType.veryLarge.iconSize,
       weight: 700,
       grade: 100,
       color: const Color.fromARGB(
@@ -64,6 +65,14 @@ class SyncIcons {
         0xFF,
         0xEC,
       ),
+    ),
+  );
+  final Widget disconnect = Center(
+    child: MdiIcons.lanDisconnect.iconFormatted(
+      //size: CLScaleType.veryLarge.iconSize,
+      weight: 700,
+      grade: 100,
+      color: const Color.fromARGB(255, 242, 51, 64),
     ),
   );
 }

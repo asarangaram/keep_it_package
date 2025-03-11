@@ -3,15 +3,13 @@ import 'package:flutter_solidart/flutter_solidart.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const MyAppBar({
-    super.key,
-    this.title,
-    this.titleWidget,
-  }) : assert((title != null) ^ (titleWidget != null),
+  const MyAppBar({super.key, this.title, this.titleWidget, this.actions})
+      : assert((title != null) ^ (titleWidget != null),
             'Must provide either title or titleWidget');
 
   final String? title;
   final Widget? titleWidget;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +38,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
+        ...(actions?.map((e) => e) ?? [])
       ],
     );
   }

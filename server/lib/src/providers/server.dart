@@ -129,7 +129,10 @@ class ServerNotifier extends StateNotifier<ServerBasic> {
 final serverProvider =
     StateNotifierProvider<ServerNotifier, ServerBasic>((ref) {
   final notifier = ServerNotifier();
-
+  // ignore: deprecated_member_use
+  ref.listenSelf((prev, curr) {
+    ServerNotifier.log(curr.toString());
+  });
   ref.listen(networkScannerProvider, (prev, curr) {
     if (prev?.lanStatus != curr.lanStatus) {
       notifier.updateStatus();

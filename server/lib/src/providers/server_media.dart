@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/server.dart';
@@ -50,10 +52,29 @@ class ServerMediaNotifier extends StateNotifier<ServerMedia> {
       state = ServerMedia.fromMap(map);
     }
   }
+
+  static void log(
+    String message, {
+    int level = 0,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    dev.log(
+      message,
+      level: level,
+      error: error,
+      stackTrace: stackTrace,
+      name: 'Online Service: Network Scanner',
+    );
+  }
 }
 
 final serverMediaProvider =
     StateNotifierProvider<ServerMediaNotifier, ServerMedia>((ref) {
   final server = ref.watch(serverProvider);
+  // ignore: deprecated_member_use
+  ref.listenSelf((prev, curr) {
+    ServerMediaNotifier.log(curr.items.length.toString());
+  });
   return ServerMediaNotifier(server);
 });
