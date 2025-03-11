@@ -85,7 +85,7 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
   Widget build(BuildContext context) {
     final serverMedia = ref.watch(serverMediaProvider);
     if (serverMedia.items.isEmpty) {
-      return Text('No more data on Server');
+      return Text('Nothing to show');
     }
     return SizedBox(
       child: CLEntityGridView(
