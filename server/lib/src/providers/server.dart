@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:server/server.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/cl_server.dart';
+import '../models/server.dart';
 import 'scanner.dart';
 
 class ServerNotifier extends StateNotifier<ServerBasic> {
