@@ -17,28 +17,29 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: titleWidget ?? Text(title!),
       centerTitle: true,
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: ShadButton.ghost(
-            onPressed: () {
-              context.update<ThemeMode>(
-                (value) =>
-                    value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
+        ...(actions ?? []),
+        ShadButton.ghost(
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            context.update<ThemeMode>(
+              (value) =>
+                  value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
+            );
+          },
+          icon: SignalBuilder(
+            signal: context.get<Signal<ThemeMode>>(),
+            builder: (context, themeMode, child) {
+              return Icon(
+                themeMode == ThemeMode.light
+                    ? Icons.light_mode
+                    : Icons.dark_mode,
               );
             },
-            icon: SignalBuilder(
-              signal: context.get<Signal<ThemeMode>>(),
-              builder: (context, themeMode, child) {
-                return Icon(
-                  themeMode == ThemeMode.light
-                      ? Icons.light_mode
-                      : Icons.dark_mode,
-                );
-              },
-            ),
           ),
         ),
-        ...(actions?.map((e) => e) ?? [])
+        SizedBox(
+          width: 8,
+        )
       ],
     );
   }

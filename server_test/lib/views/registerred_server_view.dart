@@ -56,11 +56,11 @@ class _RegisterredServerViewState extends ConsumerState<RegisterredServerView> {
           child: ListTile(
             leading: SizedBox.shrink(),
             title: Text('KeepIt Media Viewer'),
-            titleTextStyle: textTheme.h4,
+            titleTextStyle: textTheme.lead,
             isThreeLine: true,
             subtitle: Text(
               '${server.identity!.identifier}@${server.identity!.address}:${server.identity!.port}',
-              style: textTheme.small,
+              style: textTheme.lead,
             ),
           ),
         ),
@@ -68,23 +68,31 @@ class _RegisterredServerViewState extends ConsumerState<RegisterredServerView> {
           Tooltip(
             message: "Reload latest",
             child: ShadButton.ghost(
+              padding: EdgeInsets.symmetric(horizontal: 4),
               onPressed: () => ref.read(serverMediaProvider.notifier).refresh(),
               backgroundColor: textTheme.blockquote.backgroundColor,
-              child: Icon(clIcons.syncIcons.refreshIndicator),
+              child: SizedBox.square(
+                  child: Icon(clIcons.syncIcons.refreshIndicator)),
             ),
           ),
           Tooltip(
             message: "Disconnect from server",
             child: ShadButton.ghost(
+              padding: EdgeInsets.symmetric(horizontal: 4),
               onPressed: () => ref.read(serverProvider.notifier).deregister(),
               backgroundColor: textTheme.blockquote.backgroundColor,
-              child: clIcons.syncIcons.disconnect,
+              child: SizedBox.square(child: clIcons.syncIcons.disconnect),
             ),
           )
         ],
         wrapChildrenInScrollable: false,
         wrapSingleChildInColumn: false,
-        children: [ServerMediaList()]);
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: ServerMediaList(),
+          )
+        ]);
   }
 }
 
@@ -147,12 +155,19 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
                 ),
               )
             else if (serverMedia.metaInfo.pagination.hasNext)
-              TextButton(
+              ShadButton.link(
                   onPressed:
                       ref.read(serverMediaProvider.notifier).fetchNextPage,
-                  child: const Text('Load More'))
+                  child: Text(
+                    'Load More',
+                    style: ShadTheme.of(context).textTheme.lead,
+                  ))
             else
-              const Center(child: Text('No more data on Server'))
+              Center(
+                  child: Text(
+                'No more data on Server',
+                style: ShadTheme.of(context).textTheme.lead,
+              ))
           ];
         },
       ),
