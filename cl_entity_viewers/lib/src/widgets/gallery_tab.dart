@@ -14,7 +14,8 @@ class CLEntityGalleryTab extends ConsumerStatefulWidget {
     required this.tab,
     required this.itemBuilder,
     required this.labelBuilder,
-    required this.bannersBuilder,
+    required this.headerWidgetsBuilder,
+    required this.footerWidgetsBuilder,
     required this.columns,
     super.key,
   });
@@ -31,7 +32,11 @@ class CLEntityGalleryTab extends ConsumerStatefulWidget {
   final List<Widget> Function(
     BuildContext,
     List<GalleryGroupCLEntity<CLEntity>>,
-  ) bannersBuilder;
+  ) headerWidgetsBuilder;
+  final List<Widget> Function(
+    BuildContext,
+    List<GalleryGroupCLEntity<CLEntity>>,
+  ) footerWidgetsBuilder;
 
   @override
   ConsumerState<CLEntityGalleryTab> createState() => CLEntityGalleryTabState();
@@ -68,7 +73,7 @@ class CLEntityGalleryTabState extends ConsumerState<CLEntityGalleryTab> {
     final galleryGroups = widget.tab.galleryGroups;
     return Column(
       children: [
-        ...widget.bannersBuilder(context, galleryGroups),
+        ...widget.headerWidgetsBuilder(context, galleryGroups),
         Flexible(
           child: ListView.builder(
             controller: _scrollController,
@@ -97,6 +102,7 @@ class CLEntityGalleryTabState extends ConsumerState<CLEntityGalleryTab> {
             },
           ),
         ),
+        ...widget.footerWidgetsBuilder(context, galleryGroups),
       ],
     );
   }

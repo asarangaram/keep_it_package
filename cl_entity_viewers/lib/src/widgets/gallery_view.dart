@@ -16,7 +16,8 @@ class RawCLEntityGalleryView extends ConsumerStatefulWidget {
     required this.tabs,
     required this.itemBuilder,
     required this.labelBuilder,
-    required this.bannersBuilder,
+    required this.headerWidgetsBuilder,
+    required this.footerWidgetsBuilder,
     required this.columns,
     super.key,
     this.draggableMenuBuilder,
@@ -34,7 +35,11 @@ class RawCLEntityGalleryView extends ConsumerStatefulWidget {
   final List<Widget> Function(
     BuildContext,
     List<GalleryGroupCLEntity<CLEntity>>,
-  ) bannersBuilder;
+  ) headerWidgetsBuilder;
+  final List<Widget> Function(
+    BuildContext,
+    List<GalleryGroupCLEntity<CLEntity>>,
+  ) footerWidgetsBuilder;
   final int columns;
   final Widget Function(
     BuildContext context, {
@@ -55,7 +60,8 @@ class _RawCLEntityGalleryViewState
     final viewIdentifier = widget.viewIdentifier;
     final itemBuilder = widget.itemBuilder;
     final labelBuilder = widget.labelBuilder;
-    final bannersBuilder = widget.bannersBuilder;
+    final headerWidgetsBuilder = widget.headerWidgetsBuilder;
+    final footerWidgetsBuilder = widget.footerWidgetsBuilder;
     final columns = widget.columns;
     final draggableMenuBuilder = widget.draggableMenuBuilder;
     final Widget gallery;
@@ -66,7 +72,8 @@ class _RawCLEntityGalleryViewState
         tab: tabs.first,
         itemBuilder: itemBuilder,
         labelBuilder: labelBuilder,
-        bannersBuilder: bannersBuilder,
+        headerWidgetsBuilder: headerWidgetsBuilder,
+        footerWidgetsBuilder: footerWidgetsBuilder,
         columns: columns,
       );
     } else {
@@ -111,7 +118,8 @@ class _RawCLEntityGalleryViewState
               tab: currTab,
               itemBuilder: itemBuilder,
               labelBuilder: labelBuilder,
-              bannersBuilder: bannersBuilder,
+              headerWidgetsBuilder: headerWidgetsBuilder,
+              footerWidgetsBuilder: footerWidgetsBuilder,
               columns: columns,
             ),
           ),

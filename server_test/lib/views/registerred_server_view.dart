@@ -90,19 +90,38 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
     return SizedBox(
       child: CLEntityGridView(
         viewIdentifier: ViewIdentifier(parentID: "server", viewId: "mediaview"),
-        numColumns: 3,
+        numColumns: 5,
         entities: serverMedia.items,
         itemBuilder: (BuildContext context, CLEntity entity) {
-          return Text("entity");
+          return Center(child: Text("entity"));
         },
         labelBuilder: (BuildContext context,
             List<GalleryGroupCLEntity<CLEntity>> galleryMap,
             GalleryGroupCLEntity<CLEntity> gallery) {
           return null;
         },
-        bannersBuilder: (BuildContext context,
+        headerWidgetsBuilder: (BuildContext context,
             List<GalleryGroupCLEntity<CLEntity>> galleryMap) {
           return [];
+        },
+        footerWidgetsBuilder: (BuildContext context,
+            List<GalleryGroupCLEntity<CLEntity>> galleryMap) {
+          return [
+            if (serverMedia.isLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (serverMedia.metaInfo.pagination.hasNext)
+              TextButton(
+                  onPressed:
+                      ref.read(serverMediaProvider.notifier).fetchNextPage,
+                  child: const Text('Load More'))
+            else
+              const Center(child: Text('No more data on Server'))
+          ];
         },
       ),
     );

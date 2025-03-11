@@ -14,7 +14,8 @@ class CLEntityGridView extends StatelessWidget {
       required List<CLEntity> entities,
       required this.itemBuilder,
       required this.labelBuilder,
-      required this.bannersBuilder,
+      required this.headerWidgetsBuilder,
+      required this.footerWidgetsBuilder,
       this.draggableMenuBuilder,
       super.key,
       GroupMethod groupMethod = GroupMethod.none})
@@ -28,7 +29,8 @@ class CLEntityGridView extends StatelessWidget {
     required this.tabs,
     required this.itemBuilder,
     required this.labelBuilder,
-    required this.bannersBuilder,
+    required this.headerWidgetsBuilder,
+    required this.footerWidgetsBuilder,
     this.draggableMenuBuilder,
     super.key,
   });
@@ -44,7 +46,11 @@ class CLEntityGridView extends StatelessWidget {
   final List<Widget> Function(
     BuildContext context,
     List<GalleryGroupCLEntity<CLEntity>> galleryMap,
-  ) bannersBuilder;
+  ) headerWidgetsBuilder;
+  final List<Widget> Function(
+    BuildContext,
+    List<GalleryGroupCLEntity<CLEntity>>,
+  ) footerWidgetsBuilder;
   final Widget Function(
     BuildContext, {
     required GlobalKey<State<StatefulWidget>> parentKey,
@@ -60,7 +66,8 @@ class CLEntityGridView extends StatelessWidget {
           LabelledEntityGroups(
               name: entry.key, galleryGroups: entry.value.getGrouped)
       ],
-      bannersBuilder: bannersBuilder,
+      headerWidgetsBuilder: headerWidgetsBuilder,
+      footerWidgetsBuilder: footerWidgetsBuilder,
       labelBuilder: labelBuilder,
       itemBuilder: (context, item) {
         return itemBuilder(context, item);
