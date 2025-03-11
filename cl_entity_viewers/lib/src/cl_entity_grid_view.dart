@@ -10,28 +10,19 @@ import 'widgets/gallery_view.dart';
 class CLEntityGridView extends StatelessWidget {
   const CLEntityGridView({
     required this.viewIdentifier,
-    required this.columns,
-    required this.incoming,
-    required this.errorBuilder,
-    required this.loadingBuilder,
+    required this.numColumns,
+    required this.entities,
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
-    super.key,
     this.draggableMenuBuilder,
+    super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final int columns;
-  final List<CLEntity> incoming;
+  final int numColumns;
+  final List<CLEntity> entities;
 
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
-  final Widget Function(
-    BuildContext,
-    CLEntity, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-  }) itemBuilder;
+  final Widget Function(BuildContext, CLEntity) itemBuilder;
   final Widget? Function(
     BuildContext context,
     List<GalleryGroupCLEntity<CLEntity>> galleryMap,
@@ -55,21 +46,16 @@ class CLEntityGridView extends StatelessWidget {
             name: 'Media',
             galleryGroups: EntityGrouper(
                     method: GroupMethod.none,
-                    columns: columns,
-                    entities: incoming)
+                    columns: numColumns,
+                    entities: entities)
                 .getGrouped)
       ],
       bannersBuilder: bannersBuilder,
       labelBuilder: labelBuilder,
       itemBuilder: (context, item) {
-        return itemBuilder(
-          context,
-          item,
-          onGetParent: null,
-          onGetChildren: null,
-        );
+        return itemBuilder(context, item);
       },
-      columns: columns,
+      columns: numColumns,
       draggableMenuBuilder: draggableMenuBuilder,
     );
   }
