@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:server/server.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:store_revised/store_revised.dart';
 
 import '../common/base_scaffold.dart';
+import '../widgets/media_preview_service.dart';
 
 class RegisterredServerView extends ConsumerStatefulWidget {
   const RegisterredServerView({super.key});
@@ -93,7 +95,11 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
         numColumns: 5,
         entities: serverMedia.items,
         itemBuilder: (BuildContext context, CLEntity entity) {
-          return Center(child: Text("entity"));
+          // identifier should be passed from caller FIXTHIS
+          return MediaPreviewWithOverlays(
+            media: entity as CLMedia,
+            parentIdentifier: "server",
+          );
         },
         labelBuilder: (BuildContext context,
             List<GalleryGroupCLEntity<CLEntity>> galleryMap,
