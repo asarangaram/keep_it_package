@@ -8,12 +8,14 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
+  cl_entity_viewers:
+    path: ../cl_entity_viewers
   flutter:
     sdk: flutter
   server:
     path: ../server
-  store:
-    path: ../store
+  store_revised:
+    path: ../store_revised
   cupertino_icons: ^1.0.8
   signals: ^6.0.2
   http: ^1.3.0

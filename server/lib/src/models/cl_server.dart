@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
+import 'package:store_revised/store_revised.dart';
 
 import 'cl_server_status.dart';
 import 'rest_api.dart';

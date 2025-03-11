@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
+import 'package:store_revised/store_revised.dart';
 
 @immutable
 class ServerTimeStamps {

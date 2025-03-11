@@ -8,10 +8,24 @@ import 'models/tab_identifier.dart';
 import 'widgets/gallery_view.dart';
 
 class CLEntityGridView extends StatelessWidget {
-  const CLEntityGridView({
+  CLEntityGridView(
+      {required this.viewIdentifier,
+      required this.numColumns,
+      required List<CLEntity> entities,
+      required this.itemBuilder,
+      required this.labelBuilder,
+      required this.bannersBuilder,
+      this.draggableMenuBuilder,
+      super.key,
+      GroupMethod groupMethod = GroupMethod.none})
+      : tabs = {
+          'singleTap': EntityGrouper(
+              method: groupMethod, columns: numColumns, entities: entities)
+        };
+  const CLEntityGridView.tabs({
     required this.viewIdentifier,
     required this.numColumns,
-    required this.entities,
+    required this.tabs,
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
@@ -20,7 +34,6 @@ class CLEntityGridView extends StatelessWidget {
   });
   final ViewIdentifier viewIdentifier;
   final int numColumns;
-  final List<CLEntity> entities;
 
   final Widget Function(BuildContext, CLEntity) itemBuilder;
   final Widget? Function(
@@ -36,19 +49,16 @@ class CLEntityGridView extends StatelessWidget {
     BuildContext, {
     required GlobalKey<State<StatefulWidget>> parentKey,
   })? draggableMenuBuilder;
+  final Map<String, EntityGrouper> tabs;
 
   @override
   Widget build(BuildContext context) {
     return RawCLEntityGalleryView(
       viewIdentifier: viewIdentifier,
       tabs: [
-        LabelledEntityGroups(
-            name: 'Media',
-            galleryGroups: EntityGrouper(
-                    method: GroupMethod.none,
-                    columns: numColumns,
-                    entities: entities)
-                .getGrouped)
+        for (final entry in tabs.entries)
+          LabelledEntityGroups(
+              name: entry.key, galleryGroups: entry.value.getGrouped)
       ],
       bannersBuilder: bannersBuilder,
       labelBuilder: labelBuilder,

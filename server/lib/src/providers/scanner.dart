@@ -5,7 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 import 'package:server/server.dart';
-import 'package:store/store.dart';
+import 'package:store_revised/store_revised.dart';
 
 extension ServiceExtDiscovery on Discovery {
   Future<void> stop() async => stopDiscovery(this);

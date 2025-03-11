@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 import 'package:server/server.dart';
-import 'package:store/store.dart';
+import 'package:store_revised/store_revised.dart';
 
 @immutable
 class ServerBasic {

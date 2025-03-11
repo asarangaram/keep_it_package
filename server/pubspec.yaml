@@ -15,11 +15,12 @@ dependencies:
   http: ^1.3.0
   meta: ^1.15.0
   flutter_riverpod: ^2.5.1
-  store:
-    path: ../store
+  store_revised:
+    path: ../store_revised
   connectivity_plus: ^6.1.3
   nsd: ^4.0.3
-  shadcn_ui: ^0.22.1
+  shadcn_ui:
+    path: /Users/anandasarangaram/Work/flutter-shadcn-ui
   shared_preferences: ^2.5.2
 
 dev_dependencies:

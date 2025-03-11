@@ -1,3 +1,5 @@
+import 'package:cl_entity_viewers/cl_entity_models.dart';
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:server/server.dart';
@@ -86,7 +88,32 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
       return Text('No more data on Server');
     }
     return SizedBox(
-      child: ListView.builder(
+      child: CLEntityGridView(
+        viewIdentifier: ViewIdentifier(parentID: "server", viewId: "mediaview"),
+        numColumns: 3,
+        entities: serverMedia.items,
+        itemBuilder: (BuildContext context, CLEntity entity) {
+          return Text("entity");
+        },
+        labelBuilder: (BuildContext context,
+            List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+            GalleryGroupCLEntity<CLEntity> gallery) {
+          return null;
+        },
+        bannersBuilder: (BuildContext context,
+            List<GalleryGroupCLEntity<CLEntity>> galleryMap) {
+          return [];
+        },
+      ),
+    );
+  }
+}
+
+
+
+/**
+ * 
+ListView.builder(
         itemCount: serverMedia.items.length + 1,
         itemBuilder: (context, index) {
           if (index == serverMedia.items.length) {
@@ -111,7 +138,5 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
             subtitle: Text('ID: ${serverMedia.items[index].serverUID ?? ''}'),
           );
         },
-      ),
-    );
-  }
-}
+      )
+ */
