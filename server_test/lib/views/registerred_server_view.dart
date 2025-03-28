@@ -3,7 +3,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:server/server.dart';
-import 'package:server_test/models/cl_icons.dart';
+import 'package:server_test/common/models/cl_icons.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store_revised/store_revised.dart';
@@ -128,6 +128,7 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
         viewIdentifier: ViewIdentifier(parentID: "server", viewId: "mediaview"),
         numColumns: 5,
         entities: serverMedia.items,
+        groupMethod: GroupMethod.byOriginalDate,
         itemBuilder: (BuildContext context, CLEntity entity) {
           // identifier should be passed from caller FIXTHIS
           return MediaPreviewWithOverlays(
@@ -138,7 +139,13 @@ class _ServerMediaListState extends ConsumerState<ServerMediaList> {
         labelBuilder: (BuildContext context,
             List<GalleryGroupCLEntity<CLEntity>> galleryMap,
             GalleryGroupCLEntity<CLEntity> gallery) {
-          return null;
+          return gallery.label == null
+              ? null
+              : Text(
+                  gallery.label!,
+                  textAlign: TextAlign.start,
+                  style: ShadTheme.of(context).textTheme.lead,
+                );
         },
         headerWidgetsBuilder: (BuildContext context,
             List<GalleryGroupCLEntity<CLEntity>> galleryMap) {

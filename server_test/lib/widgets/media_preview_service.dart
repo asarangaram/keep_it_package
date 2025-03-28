@@ -3,12 +3,12 @@ import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:server/server.dart';
-import 'package:server_test/models/ext_color.dart';
+import 'package:server_test/common/models/ext_color.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store_revised/store_revised.dart';
 
-import '../models/cl_colors.dart';
-import '../models/cl_icons.dart';
+import '../common/models/cl_colors.dart';
+import '../common/models/cl_icons.dart';
 
 class MediaPreviewWithOverlays extends StatelessWidget {
   const MediaPreviewWithOverlays({
