@@ -13,7 +13,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
     required super.type,
     required super.fExt,
     required super.collectionId,
-    required this.isEdited,
     required this.createdDate,
     required this.updatedDate,
     super.ref,
@@ -38,7 +37,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
     required int? collectionId,
     required bool isAux,
     required int? id,
-    required bool? isEdited,
     DateTime? createdDate,
     DateTime? updatedDate,
   }) {
@@ -48,7 +46,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
       type: type,
       fExt: fExt,
       collectionId: collectionId,
-      isEdited: isEdited,
       ref: ref,
       md5String: md5String,
       isDeleted: isDeleted,
@@ -83,7 +80,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
           map['collectionId'] != null ? map['collectionId'] as int : null,
       isAux: (map['isAux'] as int? ?? 0) != 0,
       id: map['id'] != null ? map['id'] as int : null,
-      isEdited: map['isEdited'] == null ? null : (map['isEdited'] as int) != 0,
     );
   }
 
@@ -92,8 +88,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
       );
 
   final int? id;
-
-  final bool? isEdited;
   final DateTime createdDate;
   final DateTime updatedDate;
 
@@ -112,14 +106,12 @@ class CLMedia extends CLMediaBase implements CLEntity {
     ValueGetter<int?>? collectionId,
     ValueGetter<bool>? isAux,
     ValueGetter<int?>? id,
-    ValueGetter<bool?>? isEdited,
   }) {
     return CLMedia.strict(
       name: name != null ? name() : this.name,
       type: type != null ? type() : this.type,
       fExt: fExt != null ? fExt() : this.fExt,
       collectionId: collectionId != null ? collectionId() : this.collectionId,
-      isEdited: isEdited != null ? isEdited() : this.isEdited,
       ref: ref != null ? ref() : this.ref,
       originalDate: originalDate != null ? originalDate() : this.originalDate,
       createdDate: createdDate != null ? createdDate() : this.createdDate,
@@ -135,7 +127,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   String toString() {
-    return 'CLMedia(id: $id, isEdited: $isEdited, createdDate: $createdDate, updatedDate: $updatedDate)';
+    return 'CLMedia(id: $id, createdDate: $createdDate, updatedDate: $updatedDate)';
   }
 
   @override
@@ -143,38 +135,13 @@ class CLMedia extends CLMediaBase implements CLEntity {
     if (identical(this, other)) return true;
 
     return other.id == id &&
-        other.isEdited == isEdited &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate;
   }
 
   @override
-  bool isContentSame(covariant CLMedia other) {
-    final isSame = other.name == name &&
-        other.type == type &&
-        other.fExt == fExt &&
-        other.ref == ref &&
-        other.originalDate == originalDate &&
-        other.createdDate == createdDate &&
-        other.updatedDate == updatedDate &&
-        other.md5String == md5String &&
-        other.isDeleted == isDeleted &&
-        other.collectionId == collectionId &&
-        other.isAux == isAux &&
-        other.isEdited == isEdited;
-
-    if (!isSame) {
-      // print(MapDiff.log(other.toMapForDisplay(), toMapForDisplay()));
-    }
-    return isSame;
-  }
-
-  @override
   int get hashCode {
-    return id.hashCode ^
-        isEdited.hashCode ^
-        createdDate.hashCode ^
-        updatedDate.hashCode;
+    return id.hashCode ^ createdDate.hashCode ^ updatedDate.hashCode;
   }
 
   @override
@@ -194,7 +161,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
       'collectionId': collectionId,
       'isAux': isAux ? 1 : 0,
       'id': id,
-      'isEdited': isEdited == null ? null : (isEdited! ? 1 : 0),
     };
   }
 
@@ -214,7 +180,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
       'collectionId': collectionId,
       'isAux': isAux,
       'id': id,
-      'isEdited': isEdited,
     };
   }
 
@@ -260,7 +225,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
   /// if  createdDate is missing (is null), it will be updated with updatedDate
   ///
   CLMedia updateContent({
-    required bool isEdited,
     ValueGetter<String>? name,
     ValueGetter<CLMediaType>? type,
     ValueGetter<String>? fExt,
@@ -284,7 +248,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
       isAux: isAux,
       id: id,
       updatedDate: () => time,
-      isEdited: () => isEdited,
     );
   }
 
@@ -318,14 +281,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
   }
 
   @override
-  bool isChangedAfter(CLEntity other) =>
-      updatedDate.isAfter((other as CLMedia).updatedDate);
-
-  @override
   bool get isMarkedDeleted => isDeleted ?? false;
-
-  @override
-  bool get isMarkedEditted => isEdited ?? false;
 
   @override
   int? get entityId => id;

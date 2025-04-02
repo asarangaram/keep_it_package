@@ -21,7 +21,6 @@ class Collection implements CLEntity {
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : timeNow,
       isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
-      isEdited: ((map['isEdited'] as int?) ?? false) != 0,
     );
   }
 
@@ -32,7 +31,6 @@ class Collection implements CLEntity {
     required this.createdDate,
     required this.updatedDate,
     required this.isDeleted,
-    required this.isEdited,
     this.id,
     this.description,
   });
@@ -40,7 +38,6 @@ class Collection implements CLEntity {
   factory Collection.strict({
     required String label,
     required bool isDeleted,
-    required bool isEdited,
     required int? id,
     required String? description,
     DateTime? createdDate,
@@ -54,7 +51,6 @@ class Collection implements CLEntity {
       createdDate: createdDate ?? time,
       updatedDate: updatedDate ?? time,
       isDeleted: isDeleted,
-      isEdited: isEdited,
     );
   }
   factory Collection.byLabel(
@@ -70,7 +66,6 @@ class Collection implements CLEntity {
       createdDate: createdDate,
       updatedDate: updatedDate,
       isDeleted: false,
-      isEdited: false,
     );
   }
   final String label;
@@ -80,7 +75,6 @@ class Collection implements CLEntity {
   final int? id;
 
   final bool isDeleted;
-  final bool isEdited;
 
   Collection copyWith({
     String? label,
@@ -98,13 +92,12 @@ class Collection implements CLEntity {
       updatedDate: updatedDate ?? this.updatedDate,
       id: id != null ? id.call() : this.id,
       isDeleted: isDeleted ?? this.isDeleted,
-      isEdited: isEdited ?? this.isEdited,
     );
   }
 
   @override
   String toString() {
-    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, isDeleted: $isDeleted, isEdited: $isEdited)';
+    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, isDeleted: $isDeleted)';
   }
 
   @override
@@ -116,8 +109,7 @@ class Collection implements CLEntity {
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
         other.id == id &&
-        other.isDeleted == isDeleted &&
-        other.isEdited == isEdited;
+        other.isDeleted == isDeleted;
   }
 
   @override
@@ -127,8 +119,7 @@ class Collection implements CLEntity {
         createdDate.hashCode ^
         updatedDate.hashCode ^
         id.hashCode ^
-        isDeleted.hashCode ^
-        isEdited.hashCode;
+        isDeleted.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -139,7 +130,6 @@ class Collection implements CLEntity {
       'createdDate': createdDate.millisecondsSinceEpoch,
       'updatedDate': updatedDate.millisecondsSinceEpoch,
       'isDeleted': isDeleted ? 1 : 0,
-      'isEdited': isEdited ? 1 : 0,
     };
   }
 
@@ -151,7 +141,6 @@ class Collection implements CLEntity {
       'createdDate': createdDate,
       'updatedDate': updatedDate,
       'isDeleted': isDeleted,
-      'isEdited': isEdited,
     };
   }
 
@@ -173,26 +162,7 @@ class Collection implements CLEntity {
   String toJson() => json.encode(toMap());
 
   @override
-  bool isChangedAfter(CLEntity other) =>
-      updatedDate.isAfter((other as CLMedia).updatedDate);
-
-  @override
-  bool isContentSame(covariant Collection other) {
-    if (identical(this, other)) return true;
-
-    return other.label == label &&
-        other.description == description &&
-        other.createdDate == createdDate &&
-        other.updatedDate == updatedDate &&
-        other.isDeleted == isDeleted &&
-        other.isEdited == isEdited;
-  }
-
-  @override
   bool get isMarkedDeleted => isDeleted;
-
-  @override
-  bool get isMarkedEditted => isEdited;
 
   @override
   int? get entityId => id;

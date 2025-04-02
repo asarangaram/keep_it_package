@@ -191,7 +191,6 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                 final name = formValue['name'] as String;
                 final ref = formValue['ref'] as String?;
                 final updated = widget.media.updateContent(
-                  isEdited: true,
                   name: () => name,
                   ref: () => ref == null
                       ? null

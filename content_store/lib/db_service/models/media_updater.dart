@@ -92,7 +92,6 @@ class MediaUpdater {
       (media.id != null)
           ? media
           : media.updateContent(
-              isEdited: media.isEdited ?? false,
               id: () => c?.id,
             ),
       parents: parents,
@@ -113,7 +112,6 @@ class MediaUpdater {
       await store.upsertMedia(
         m.updateContent(
           isDeleted: () => true,
-          isEdited: true,
         ),
       );
     }
@@ -170,7 +168,6 @@ class MediaUpdater {
       await store.upsertMedia(
         m.updateContent(
           isDeleted: () => true,
-          isEdited: true,
         ),
       );
     }
@@ -198,7 +195,6 @@ class MediaUpdater {
       await store.upsertMedia(
         m.updateContent(
           isDeleted: () => false,
-          isEdited: true,
         ),
       );
     }
@@ -359,7 +355,6 @@ class MediaUpdater {
       isHidden: isHidden0 ?? (isHidden != null ? isHidden() : false),
       fExt: fExt0,
       isAux: isAux0,
-      isEdited: isEdited?.call() ?? false,
       ref: ref != null ? ref() : null,
       originalDate: originalDate0 != null ? originalDate0() : null,
       isDeleted: isDeleted != null ? isDeleted() : false,
@@ -473,7 +468,7 @@ class MediaUpdater {
           ref: ref,
           originalDate: originalDate0,
           isDeleted: isDeleted,
-          isEdited: isEdited,
+
           // clear pin if new path provided
         )
         .updateStatus(

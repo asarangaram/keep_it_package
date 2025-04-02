@@ -1,4 +1,3 @@
-
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
@@ -62,7 +61,6 @@ class CLSharedMedia {
   CLSharedMedia mergeMismatch() {
     final items = entries.map(
       (e) => e.updateContent(
-        isEdited: true,
         isDeleted: () => false,
         collectionId: () => collection?.id,
       ),

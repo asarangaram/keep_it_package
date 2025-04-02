@@ -59,7 +59,6 @@ class CollectionUpdater {
         await store.upsertMedia(
           m.updateContent(
             isDeleted: () => true,
-            isEdited: true,
           ),
         );
       }
