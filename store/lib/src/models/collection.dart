@@ -197,9 +197,6 @@ class Collection implements CLEntity {
   String toJson() => json.encode(toMap());
 
   @override
-  bool get hasServerUID => serverUID != null;
-
-  @override
   bool isChangedAfter(CLEntity other) =>
       updatedDate.isAfter((other as CLMedia).updatedDate);
 

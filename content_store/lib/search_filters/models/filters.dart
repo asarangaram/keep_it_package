@@ -5,7 +5,7 @@ import '../../view_modifiers/models/view_modifier.dart';
 import 'filter/base_filter.dart';
 import 'filter/string_filter.dart';
 
-enum MediaAvailability { local, coLan, synced }
+enum MediaAvailability { local }
 
 @immutable
 class SearchFilters<T> implements ViewModifier {

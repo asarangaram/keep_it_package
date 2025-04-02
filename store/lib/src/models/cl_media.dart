@@ -468,9 +468,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
   @override
   bool get isMarkedEditted => isEdited ?? false;
 
-  @override
-  bool get hasServerUID => serverUID != null;
-
   // for local item, always mark this flag, it will be filterred out
   // by collection. [caution]
   @override
@@ -483,20 +480,4 @@ class CLMedia extends CLMediaBase implements CLEntity {
   DateTime? get entityOriginalDate => originalDate;
   @override
   DateTime get entityCreatedDate => createdDate;
-
-  bool get isCached =>
-      !hasServerUID || (hasServerUID && (isPreviewCached && isMediaCached));
-
-  bool isMediaWaitingForDownload(Collection parentCollection) =>
-      hasServerUID &&
-      isMediaCached &&
-      mediaLog == null &&
-      switch (type) {
-            CLMediaType.image => parentCollection.haveItOffline,
-            _ => false
-          } |
-          (haveItOffline ?? false);
-
-  bool get isMediaWaitingForDownloadINCORRECT =>
-      !isMediaCached && mediaLog == null && (haveItOffline ?? false);
 }

@@ -21,7 +21,7 @@ enum DBQueries {
   collectionsToSync,
 
   mediaById,
-  mediaByServerUID,
+
   mediaAll,
   mediaAllIncludingAux,
   mediaByCollectionId,
@@ -119,11 +119,6 @@ abstract class StoreReader {
   Future<List<CLMedia>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
 
   Future<List<CLMedia>> getNotesAll() async => getMultiple(DBQueries.notesAll);
-
-  Future<CLMedia?> getMediaByServerUID(int serverUID) async => get(
-        DBQueries.mediaByServerUID,
-        parameters: [serverUID],
-      );
 
   Future<CLMedia?> getMediaById(int id) async => get(
         DBQueries.mediaById,

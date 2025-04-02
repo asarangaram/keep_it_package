@@ -79,9 +79,6 @@ class MediaUpdater {
     if (media.id != null) {
       c = await store.reader.getMediaById(media.id!);
     }
-    if (c == null && media.serverUID != null) {
-      c ??= await store.reader.getMediaByServerUID(media.serverUID!);
-    }
     if (c == null && media.md5String != null) {
       c ??= await store.reader.getMediaByMD5String(media.md5String!);
     }

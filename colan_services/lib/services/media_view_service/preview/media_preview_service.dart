@@ -103,23 +103,6 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (media.isMediaCached && media.hasServerUID)
-                OverlayWidgets.dimension(
-                  alignment: Alignment.topLeft,
-                  sizeFactor: 0.15,
-                  child: const CLIcon.standard(
-                    Icons.check_circle,
-                    color: Colors.blue,
-                  ),
-                )
-              else if (isMediaWaitingForDownload)
-                OverlayWidgets.dimension(
-                  alignment: Alignment.topLeft,
-                  sizeFactor: 0.15,
-                  child: const CircularProgressIndicator(
-                    color: Colors.blue,
-                  ),
-                ),
             ],
           ),
         );

@@ -164,12 +164,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   Widget getCollection({required List<CLMedia> currMedia}) {
     return CreateCollectionWizard(
       isValidSuggestion: (collection) {
-        if (collection.isDeleted) return false;
-        if (currMedia.any((e) => e.hasServerUID)) {
-          return collection.id == null || collection.hasServerUID;
-        } else {
-          return true;
-        }
+        return !collection.isDeleted;
       },
       onDone: ({required collection}) => setState(() {
         targetCollection = collection;
@@ -338,28 +333,10 @@ class KeepWithProgress extends StatelessWidget {
       ),
       query: DBQueries.collections,
       builder: (collections) {
-        final int? serverUIDNew;
-        if (currMedia.any((e) => e.hasServerUID) &&
-            !targetCollection.hasServerUID) {
-          serverUIDNew = collections.entries
-                  .where((e) => e.serverUID != null)
-                  .map((e) => e.serverUID!)
-                  .reduce((current, next) => current < next ? current : next) -
-              1;
-        } else {
-          serverUIDNew = null;
-        }
-
         return StreamBuilder<Progress>(
           stream: mediaUpdater.moveMultiple(
             media: currMedia,
-            collection: targetCollection.copyWith(
-              // mark to upload as atlease one media is from server
-              serverUID: (currMedia.any((e) => e.hasServerUID) &&
-                      !targetCollection.hasServerUID)
-                  ? () => serverUIDNew
-                  : null,
-            ),
+            collection: targetCollection,
             shouldRefresh: false,
             onDone: ({
               required List<CLMedia> mediaMultiple,

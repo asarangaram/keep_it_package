@@ -25,11 +25,7 @@ class CollectionView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     MediaQuery.of(context);
-    final borderColor = collection.hasServerUID
-        ? collection.haveItOffline
-            ? Colors.blue
-            : Colors.green
-        : ShadTheme.of(context).colorScheme.foreground;
+    final borderColor = ShadTheme.of(context).colorScheme.foreground;
 
     return GetFilters(
       identifier: viewIdentifier.parentID,

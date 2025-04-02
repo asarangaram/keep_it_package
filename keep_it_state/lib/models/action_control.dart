@@ -153,8 +153,6 @@ class ActionControl {
     final canSync = hasOnlineService;
     final haveItOffline = collection.haveItOffline;
 
-    final canDownload = canSync && collection.hasServerUID && !haveItOffline;
-    final canUpload = canSync && !collection.hasServerUID;
     return ActionControl(
         allowEdit: true,
         allowDelete: true,
@@ -162,29 +160,15 @@ class ActionControl {
         allowShare: false,
         allowPin: false,
         allowDuplicateMedia: false,
-        allowDeleteLocalCopy: canSync &&
-            collection.hasServerUID &&
-            haveItOffline &&
-            (media.any((e) => (e as CLMedia).isMediaCached)),
-        allowDownload: canDownload,
-        allowUpload: canUpload,
-        allowDeleteServerCopy: canSync && collection.hasServerUID);
+        allowDeleteLocalCopy: true,
+        allowDownload: false,
+        allowUpload: false,
+        allowDeleteServerCopy: false);
   }
 
   static ActionControl onGetMediaActionControl(
       CLMedia media, Collection parentCollection, bool hasOnlineService) {
-    final canSync = hasOnlineService;
-    final canDeleteLocalCopy = canSync &&
-        parentCollection.haveItOffline &&
-        media.hasServerUID &&
-        media.isMediaCached;
-    final haveItOffline = switch (media.haveItOffline) {
-      null => parentCollection.haveItOffline,
-      true => true,
-      false => parentCollection.haveItOffline
-    };
-    final canDownload =
-        canSync && media.hasServerUID && !media.isMediaCached && haveItOffline;
+    final canDeleteLocalCopy = false;
 
     final editSupported = switch (media.type) {
       CLMediaType.text => false,
@@ -196,16 +180,17 @@ class ActionControl {
     };
 
     return ActionControl(
-        allowEdit: editSupported && media.isMediaLocallyAvailable,
-        allowDelete: true,
-        allowMove: true,
-        allowShare: media.isMediaLocallyAvailable,
-        allowPin: ColanPlatformSupport.isMobilePlatform &&
-            media.isMediaLocallyAvailable,
-        allowDuplicateMedia: true,
-        allowDeleteLocalCopy: canDeleteLocalCopy,
-        allowDownload: canDownload,
-        allowUpload: canSync,
-        allowDeleteServerCopy: canSync && media.hasServerUID);
+      allowEdit: editSupported && media.isMediaLocallyAvailable,
+      allowDelete: true,
+      allowMove: true,
+      allowShare: media.isMediaLocallyAvailable,
+      allowPin: ColanPlatformSupport.isMobilePlatform &&
+          media.isMediaLocallyAvailable,
+      allowDuplicateMedia: true,
+      allowDeleteLocalCopy: canDeleteLocalCopy,
+      allowDownload: false,
+      allowUpload: false,
+      allowDeleteServerCopy: false,
+    );
   }
 }

@@ -74,11 +74,6 @@ final List<CLFilter<CLMedia>> allFilters = List.unmodifiable([
       for (var e in MediaAvailability.values) e: e.name,
     },
     fieldSelector: (media) {
-      if (media.hasServerUID && media.isMediaCached) {
-        return MediaAvailability.synced;
-      } else if (media.hasServerUID) {
-        return MediaAvailability.coLan;
-      }
       return MediaAvailability.local;
     },
     enabled: true,

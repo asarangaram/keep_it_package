@@ -78,11 +78,6 @@ class Queries {
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.mediaByServerUID => DBQuery<CLMedia>.map(
-          sql: 'SELECT * FROM Media WHERE serverUID = ?',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
       DBQueries.mediaAllIncludingAux => DBQuery<CLMedia>.map(
           sql: 'SELECT * FROM Media WHERE isHidden = 0 AND isDeleted = 0',
           triggerOnTables: const {'Media'},
