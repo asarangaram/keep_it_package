@@ -38,12 +38,12 @@ class GetGroupedMedia extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     incoming.sort(
       (a, b) => (a as CLMedia)
-          .name
+          .label
           .toLowerCase()
-          .compareTo((b as CLMedia).name.toLowerCase()),
+          .compareTo((b as CLMedia).label.toLowerCase()),
     );
     final ids = incoming
-        .map((e) => (e as CLMedia).collectionId)
+        .map((e) => (e as CLMedia).parentId)
         .where((e) => e != null)
         .map((e) => e!)
         .toSet()
@@ -95,12 +95,12 @@ class GetGroupedMedia extends ConsumerWidget {
               result,
               onGetParent: (entity) => switch (entity) {
                 CLMedia _ =>
-                  collections.where((e) => e.id == entity.collectionId).first,
+                  collections.where((e) => e.id == entity.parentId).first,
                 _ => null
               },
               onGetChildren: (entity) => switch (entity) {
                 Collection _ => incoming
-                    .where((e) => (e as CLMedia).collectionId == entity.id)
+                    .where((e) => (e as CLMedia).parentId == entity.id)
                     .toList(),
                 _ => null
               },

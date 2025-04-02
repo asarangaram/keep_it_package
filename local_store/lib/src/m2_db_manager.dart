@@ -36,7 +36,7 @@ class DBManager extends Store {
       readBack: (tx, media) {
         return (Queries.getQuery(
           DBQueries.mediaByMD5,
-          parameters: [media.md5String],
+          parameters: [media.md5],
         ) as DBQuery<CLMedia>)
             .read(tx);
       },

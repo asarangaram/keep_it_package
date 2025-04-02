@@ -106,7 +106,7 @@ class MediaMetadataEditor extends StatelessWidget {
             }
           }
           return GetCollection(
-            id: media.collectionId,
+            id: media.parentId,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading(context, 'GetCollectionMultiple'),
             builder: (collection) {
@@ -150,8 +150,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
   void initState() {
     nameController = TextEditingController();
     refController = TextEditingController();
-    nameController.text = widget.media.name;
-    refController.text = widget.media.ref ?? '';
+    nameController.text = widget.media.label;
+    refController.text = widget.media.description ?? '';
     super.initState();
   }
 
@@ -177,7 +177,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
       child: ShadSheet(
         draggable: true,
         title: Text(
-          'Edit Media "${widget.media.name.capitalizeFirstLetter()}"',
+          'Edit Media "${widget.media.label.capitalizeFirstLetter()}"',
         ),
         description: const Text(
           'Change the label and add/update description here',
@@ -226,7 +226,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                       placeholder: const Text('Enter media name'),
                       validator: (value) => validateName(
                         newLabel: value,
-                        existingLabel: widget.media.name,
+                        existingLabel: widget.media.label,
                       ),
                       showCursor: true,
                       inputFormatters: [

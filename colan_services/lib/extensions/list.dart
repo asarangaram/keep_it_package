@@ -20,8 +20,8 @@ extension Filter on List<CLMedia> {
     final noDate = <CLMedia>[];
     for (final entry in this) {
       final String formattedDate;
-      if (entry.originalDate != null) {
-        formattedDate = entry.originalDate!.toDisplayFormat(dataOnly: true);
+      if (entry.createDate != null) {
+        formattedDate = entry.createDate!.toDisplayFormat(dataOnly: true);
       } else {
         formattedDate = '${entry.createdDate.toDisplayFormat(dataOnly: true)} '
             '(upload date)';

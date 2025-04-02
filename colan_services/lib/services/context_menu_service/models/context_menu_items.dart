@@ -233,7 +233,7 @@ class CLContextMenu {
       hasOnlineService,
     );
     return CLContextMenu.template(
-      name: media.name,
+      name: media.label,
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),

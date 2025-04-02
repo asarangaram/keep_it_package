@@ -17,9 +17,9 @@ class GetSortedEntity extends StatelessWidget {
       sorted = List<CLEntity>.from(entities)
         ..sort(
           (a, b) => (a as CLMedia)
-              .name
+              .label
               .toLowerCase()
-              .compareTo((b as CLMedia).name.toLowerCase()),
+              .compareTo((b as CLMedia).label.toLowerCase()),
         );
     } else if (entities.every((e) => e is Collection)) {
       sorted = List<CLEntity>.from(entities)

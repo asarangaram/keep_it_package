@@ -6,8 +6,8 @@ extension StoreExtCLMediaList on List<CLMedia> {
     final noDate = <CLMedia>[];
     for (final entry in this) {
       final String formattedDate;
-      if (entry.originalDate != null) {
-        formattedDate = entry.originalDate!.toDisplayFormat(dataOnly: true);
+      if (entry.createDate != null) {
+        formattedDate = entry.createDate!.toDisplayFormat(dataOnly: true);
         if (!filterredMedia.containsKey(formattedDate)) {
           filterredMedia[formattedDate] = [];
         }
@@ -30,6 +30,6 @@ extension StoreExtCLMediaList on List<CLMedia> {
 }
 
 extension FilenameExtOnCLMedia on CLMedia {
-  String get previewFileName => '${md5String}_tn.jpeg';
-  String get mediaFileName => '$md5String$fExt';
+  String get previewFileName => '${md5}_tn.jpeg';
+  String get mediaFileName => '$md5$extension';
 }

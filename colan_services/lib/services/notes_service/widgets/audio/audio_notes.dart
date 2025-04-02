@@ -63,7 +63,7 @@ class _AudioNotesState extends State<AudioNotes> {
                             }
                             return AudioChip(
                               uri!.path,
-                              label: note.name,
+                              label: note.label,
                               editMode: editMode && widget.notes.isNotEmpty,
                               onEditMode: () {
                                 setState(() {

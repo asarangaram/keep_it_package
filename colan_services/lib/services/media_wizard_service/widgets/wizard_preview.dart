@@ -74,7 +74,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
       }) {
         return GetCollection(
-          id: (item as CLMedia).collectionId,
+          id: (item as CLMedia).parentId,
           loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),
           errorBuilder: (p0, p1) =>
               const Center(child: Text('GetCollection Error')),

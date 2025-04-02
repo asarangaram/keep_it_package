@@ -51,7 +51,7 @@ class CLSharedMedia {
 
   Iterable<CLMedia> get _stored => entries.where((e) => e.id != null);
   Iterable<CLMedia> get _targetMismatch => _stored
-      .where((e) => e.collectionId != collection?.id && !(e.isHidden ?? false));
+      .where((e) => e.parentId != collection?.id && !(e.isHidden ?? false));
 
   List<CLMedia> get targetMismatch => _targetMismatch.toList();
   List<CLMedia> get stored => _stored.toList();
@@ -70,7 +70,7 @@ class CLSharedMedia {
 
   CLSharedMedia? removeMismatch() {
     final items = entries.where(
-      (e) => e.collectionId == collection?.id || (e.isHidden ?? false),
+      (e) => e.parentId == collection?.id || (e.isHidden ?? false),
     );
     if (items.isEmpty) return null;
 

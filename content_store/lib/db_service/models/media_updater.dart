@@ -78,8 +78,8 @@ class MediaUpdater {
     if (media.id != null) {
       c = await store.reader.getMediaById(media.id!);
     }
-    if (c == null && media.md5String != null) {
-      c ??= await store.reader.getMediaByMD5String(media.md5String!);
+    if (c == null && media.md5 != null) {
+      c ??= await store.reader.getMediaByMD5String(media.md5!);
     }
 
     if (c != null) {
@@ -257,7 +257,7 @@ class MediaUpdater {
         if (path != null) {
           final pin = await albumManager.addMedia(
             path,
-            title: media.name,
+            title: media.label,
             isImage: media.type == CLMediaType.image,
             isVideo: media.type == CLMediaType.video,
             desc: 'KeepIT',
@@ -404,7 +404,7 @@ class MediaUpdater {
 
     final isAux0 = isAux?.call() ?? media.isAux;
     final collectionId0 =
-        collectionId != null ? collectionId() : media.collectionId!;
+        collectionId != null ? collectionId() : media.parentId!;
     final int collectionId1;
     final bool? isHidden0;
     if (collectionId0 == null) {
@@ -436,7 +436,7 @@ class MediaUpdater {
       defaultName = name != null
           ? name()
           : id == null
-              ? media.name
+              ? media.label
               : p.basename(path);
       final metadata = switch (media.type) {
         CLMediaType.image => await File(path).getImageMetaData(),
@@ -446,9 +446,9 @@ class MediaUpdater {
       originalDate0 = originalDate ??
           (metadata == null ? null : () => metadata.originalDate);
     } else {
-      computedMD5String = media.md5String!;
-      fExt0 = media.fExt;
-      defaultName = name != null ? name() : media.name;
+      computedMD5String = media.md5!;
+      fExt0 = media.extension;
+      defaultName = name != null ? name() : media.label;
       originalDate0 = originalDate;
     }
     if (originalDate0 != null) {
@@ -668,9 +668,9 @@ class MediaUpdater {
     return (await create(
           path,
           type: media.type,
-          fExt: () => media.fExt,
-          originalDate: () => media.originalDate,
-          collectionId: () => media.collectionId,
+          fExt: () => media.extension,
+          originalDate: () => media.createDate,
+          collectionId: () => media.parentId,
           isAux: () => media.isAux,
         )) ??
         media;
@@ -720,7 +720,7 @@ class MediaUpdater {
 
         yield Progress(
           fractCompleted: i / media.length,
-          currentItem: m.name,
+          currentItem: m.label,
         );
         await Future<void>.delayed(const Duration(milliseconds: 1000));
       }
@@ -739,7 +739,7 @@ class MediaUpdater {
       return mediaFile;
     }
     final mimeType = await URLHandler.getMimeType(
-      mediaFile.name,
+      mediaFile.label,
     );
     if (![
       CLMediaType.image,
@@ -750,14 +750,14 @@ class MediaUpdater {
       return mediaFile;
     }
     final downloadedFile = await URLHandler.download(
-      mediaFile.name,
+      mediaFile.label,
       deviceDirectories.download.path,
     );
     if (downloadedFile == null) {
       return mediaFile;
     }
     return mediaFile.copyWith(
-      name: () => downloadedFile,
+      label: () => downloadedFile,
       type: () => mimeType!,
     );
   }
@@ -770,7 +770,7 @@ class MediaUpdater {
       return mediaFile;
     }
 
-    final mimeType = switch (lookupMimeType(mediaFile.name)) {
+    final mimeType = switch (lookupMimeType(mediaFile.label)) {
       (final String mime) when mime.startsWith('image') => CLMediaType.image,
       (final String mime) when mime.startsWith('video') => CLMediaType.video,
       _ => CLMediaType.file
@@ -793,7 +793,7 @@ class MediaUpdater {
     final newItems = <CLMedia>[];
     //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
-      currentItem: p.basename(mediaFiles[0].name),
+      currentItem: p.basename(mediaFiles[0].label),
       fractCompleted: 0,
     );
     for (final (i, item0) in mediaFiles.indexed) {
@@ -806,7 +806,7 @@ class MediaUpdater {
         deviceDirectories: directories,
       );
       if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
-        final file = File(item.name);
+        final file = File(item.label);
         if (file.existsSync()) {
           final md5String = await file.checksum;
           final duplicate = await store.reader.getMediaByMD5String(md5String);
@@ -818,7 +818,7 @@ class MediaUpdater {
             }
           } else {
             // avoid recomputing md5
-            final newItem = await create(item.name, type: item.type);
+            final newItem = await create(item.label, type: item.type);
             if (newItem != null) {
               newItems.add(newItem);
             }
@@ -836,7 +836,7 @@ class MediaUpdater {
         currentItem: (i + 1 == mediaFiles.length)
             ? ''
             : p.basename(
-                mediaFiles[i + 1].name,
+                mediaFiles[i + 1].label,
               ),
         fractCompleted: (i + 1) / mediaFiles.length,
       );

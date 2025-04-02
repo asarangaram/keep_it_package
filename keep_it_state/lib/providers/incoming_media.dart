@@ -63,17 +63,17 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
           ), */
       if (media.imageFilePath != null)
         CLMediaBase(
-          name: media.imageFilePath!,
+          label: media.imageFilePath!,
           type: CLMediaType.image,
-          fExt: path_handler.extension(media.imageFilePath!),
+          extension: path_handler.extension(media.imageFilePath!),
         ),
       if (media.attachments != null)
         ...media.attachments!.where((e) => e != null).map(
           (e) {
             return CLMediaBase(
-              name: e!.path,
+              label: e!.path,
               type: toCLMediaType(e.type),
-              fExt: path_handler.extension(e.path),
+              extension: path_handler.extension(e.path),
             );
           },
         ),

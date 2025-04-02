@@ -60,7 +60,9 @@ class MediaEditService extends ConsumerWidget {
                           mediaType: media.type,
                           canDuplicateMedia: canDuplicateMedia,
                           onCreateNewFile: () async {
-                            return theStore.createTempFile(ext: media.fExt);
+                            return theStore.createTempFile(
+                              ext: media.extension,
+                            );
                           },
                           onCancel: () async {
                             PageManager.of(context).pop(media);

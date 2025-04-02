@@ -9,15 +9,15 @@ import 'cl_media_type.dart';
 @immutable
 class CLMedia extends CLMediaBase implements CLEntity {
   const CLMedia._({
-    required super.name,
+    required super.label,
     required super.type,
-    required super.fExt,
-    required super.collectionId,
+    required super.extension,
+    required super.parentId,
     required this.createdDate,
     required this.updatedDate,
-    super.ref,
-    super.originalDate,
-    super.md5String,
+    super.description,
+    super.createDate,
+    super.md5,
     super.isDeleted,
     super.isHidden,
     super.pin,
@@ -42,18 +42,18 @@ class CLMedia extends CLMediaBase implements CLEntity {
   }) {
     final time = DateTime.now();
     return CLMedia._(
-      name: name,
+      label: name,
       type: type,
-      fExt: fExt,
-      collectionId: collectionId,
-      ref: ref,
-      md5String: md5String,
+      extension: fExt,
+      parentId: collectionId,
+      description: ref,
+      md5: md5String,
       isDeleted: isDeleted,
       isHidden: isHidden,
       isAux: isAux,
       id: id,
       pin: pin,
-      originalDate: originalDate,
+      createDate: originalDate,
       createdDate: createdDate ?? time,
       updatedDate: updatedDate ?? time,
     );
@@ -108,15 +108,15 @@ class CLMedia extends CLMediaBase implements CLEntity {
     ValueGetter<int?>? id,
   }) {
     return CLMedia.strict(
-      name: name != null ? name() : this.name,
+      name: name != null ? name() : label,
       type: type != null ? type() : this.type,
-      fExt: fExt != null ? fExt() : this.fExt,
-      collectionId: collectionId != null ? collectionId() : this.collectionId,
-      ref: ref != null ? ref() : this.ref,
-      originalDate: originalDate != null ? originalDate() : this.originalDate,
+      fExt: fExt != null ? fExt() : extension,
+      collectionId: collectionId != null ? collectionId() : parentId,
+      ref: ref != null ? ref() : description,
+      originalDate: originalDate != null ? originalDate() : createDate,
       createdDate: createdDate != null ? createdDate() : this.createdDate,
       updatedDate: updatedDate != null ? updatedDate() : this.updatedDate,
-      md5String: md5String != null ? md5String() : this.md5String,
+      md5String: md5String != null ? md5String() : md5,
       isDeleted: isDeleted != null ? isDeleted() : this.isDeleted,
       isHidden: isHidden != null ? isHidden() : this.isHidden,
       pin: pin != null ? pin() : this.pin,
@@ -147,18 +147,18 @@ class CLMedia extends CLMediaBase implements CLEntity {
   @override
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'name': name,
+      'name': label,
       'type': type.name,
-      'fExt': fExt,
-      'ref': ref,
-      'originalDate': originalDate?.millisecondsSinceEpoch,
+      'fExt': extension,
+      'ref': description,
+      'originalDate': createDate?.millisecondsSinceEpoch,
       'createdDate': createdDate.millisecondsSinceEpoch,
       'updatedDate': updatedDate.millisecondsSinceEpoch,
-      'md5String': md5String,
+      'md5String': md5,
       'isDeleted': (isDeleted ?? false) ? 1 : 0,
       'isHidden': (isHidden ?? false) ? 1 : 0,
       'pin': pin,
-      'collectionId': collectionId,
+      'collectionId': parentId,
       'isAux': isAux ? 1 : 0,
       'id': id,
     };
@@ -166,18 +166,18 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   Map<String, dynamic> toMapForDisplay() {
     return <String, dynamic>{
-      'name': name,
+      'name': label,
       'type': type.name,
-      'fExt': fExt,
-      'ref': ref,
-      'originalDate': originalDate,
+      'fExt': extension,
+      'ref': description,
+      'originalDate': createDate,
       'createdDate': createdDate,
       'updatedDate': updatedDate,
-      'md5String': md5String,
+      'md5String': md5,
       'isDeleted': isDeleted,
       'isHidden': isDeleted,
       'pin': pin,
-      'collectionId': collectionId,
+      'collectionId': parentId,
       'isAux': isAux,
       'id': id,
     };
@@ -253,18 +253,18 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   CLMedia copyWith({
-    ValueGetter<String>? name,
+    ValueGetter<String>? label,
     ValueGetter<CLMediaType>? type,
-    ValueGetter<String>? fExt,
-    ValueGetter<String?>? ref,
-    ValueGetter<DateTime?>? originalDate,
+    ValueGetter<String>? extension,
+    ValueGetter<String?>? description,
+    ValueGetter<DateTime?>? createDate,
     ValueGetter<DateTime?>? createdDate,
     ValueGetter<DateTime?>? updatedDate,
-    ValueGetter<String?>? md5String,
+    ValueGetter<String?>? md5,
     ValueGetter<bool?>? isDeleted,
     ValueGetter<bool?>? isHidden,
     ValueGetter<String?>? pin,
-    ValueGetter<int?>? collectionId,
+    ValueGetter<int?>? parentId,
     ValueGetter<bool>? isAux,
     ValueGetter<int?>? id,
     ValueGetter<bool>? isPreviewCached,
@@ -287,7 +287,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
   int? get entityId => id;
 
   @override
-  DateTime? get entityOriginalDate => originalDate;
+  DateTime? get entityOriginalDate => createDate;
   @override
   DateTime get entityCreatedDate => createdDate;
 }

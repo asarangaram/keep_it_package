@@ -90,7 +90,8 @@ Map<String, CLFilter<CLMedia>> get allFiltersMap =>
 
 final StringFilter<CLMedia> textSearchFilter = StringFilter(
   name: 'TextSearch',
-  fieldSelector: (media) => [media.name, media.ref].join(' ').toLowerCase(),
+  fieldSelector: (media) =>
+      [media.label, media.description].join(' ').toLowerCase(),
   query: '',
   enabled: true,
 );

@@ -183,9 +183,8 @@ class ExistInDifferentCollection extends StatelessWidget {
               itemCount: duplicates.length,
               itemBuilder: (BuildContext ctx, index) {
                 final m = duplicates[index];
-                final currCollection = collections
-                    .where((e) => e.id == m.collectionId)
-                    .firstOrNull;
+                final currCollection =
+                    collections.where((e) => e.id == m.parentId).firstOrNull;
                 final String currCollectionLabel;
 
                 if (m.isDeleted ?? false) {
@@ -198,7 +197,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                 return SizedBox(
                   height: 80,
                   child: Dismissible(
-                    key: Key(m.md5String!),
+                    key: Key(m.md5!),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
                       onRemove(m);

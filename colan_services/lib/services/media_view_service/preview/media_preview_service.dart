@@ -44,7 +44,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                       .foreground
                       .withValues(alpha: 0.5),
                   child: Text(
-                    media.name,
+                    media.label,
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

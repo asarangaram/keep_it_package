@@ -34,9 +34,9 @@ class IncomingMediaMonitor extends ConsumerWidget {
       final items = pickedFileList
           .map(
             (xfile) => CLMediaBase(
-              name: xfile.path,
+              label: xfile.path,
               type: CLMediaType.file,
-              fExt: path_handler.extension(xfile.path),
+              extension: path_handler.extension(xfile.path),
             ),
           )
           .toList();
