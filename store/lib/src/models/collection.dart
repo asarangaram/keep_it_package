@@ -20,8 +20,6 @@ class Collection implements CLEntity {
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
           : timeNow,
-      haveItOffline: (map['haveItOffline'] as int?) != 0,
-      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isDeleted: ((map['isDeleted'] as int?) ?? false) != 0,
       isEdited: ((map['isEdited'] as int?) ?? false) != 0,
     );
@@ -31,24 +29,20 @@ class Collection implements CLEntity {
       Collection.fromMap(json.decode(source) as Map<String, dynamic>);
   const Collection._({
     required this.label,
-    required this.haveItOffline,
     required this.createdDate,
     required this.updatedDate,
     required this.isDeleted,
     required this.isEdited,
     this.id,
     this.description,
-    this.serverUID,
   });
 
   factory Collection.strict({
     required String label,
-    required bool haveItOffline,
     required bool isDeleted,
     required bool isEdited,
     required int? id,
     required String? description,
-    required int? serverUID,
     DateTime? createdDate,
     DateTime? updatedDate,
   }) {
@@ -56,9 +50,7 @@ class Collection implements CLEntity {
     return Collection._(
       id: id,
       description: description,
-      serverUID: serverUID,
       label: label,
-      haveItOffline: haveItOffline,
       createdDate: createdDate ?? time,
       updatedDate: updatedDate ?? time,
       isDeleted: isDeleted,
@@ -69,15 +61,12 @@ class Collection implements CLEntity {
     String label, {
     DateTime? createdDate,
     DateTime? updatedDate,
-    int? serverUID,
     String? description,
   }) {
     return Collection.strict(
       id: null,
       description: description,
-      serverUID: serverUID,
       label: label,
-      haveItOffline: serverUID == null || serverUID < 0,
       createdDate: createdDate,
       updatedDate: updatedDate,
       isDeleted: false,
@@ -89,8 +78,7 @@ class Collection implements CLEntity {
   final DateTime createdDate;
   final DateTime updatedDate;
   final int? id;
-  final bool haveItOffline;
-  final int? serverUID;
+
   final bool isDeleted;
   final bool isEdited;
 
@@ -100,19 +88,15 @@ class Collection implements CLEntity {
     DateTime? createdDate,
     DateTime? updatedDate,
     ValueGetter<int?>? id,
-    bool? haveItOffline,
-    ValueGetter<int?>? serverUID,
     bool? isDeleted,
     bool? isEdited,
   }) {
-    return Collection.strict(
+    return Collection._(
       label: label ?? this.label,
       description: description != null ? description.call() : this.description,
       createdDate: createdDate ?? this.createdDate,
       updatedDate: updatedDate ?? this.updatedDate,
       id: id != null ? id.call() : this.id,
-      haveItOffline: haveItOffline ?? this.haveItOffline,
-      serverUID: serverUID != null ? serverUID.call() : this.serverUID,
       isDeleted: isDeleted ?? this.isDeleted,
       isEdited: isEdited ?? this.isEdited,
     );
@@ -120,7 +104,7 @@ class Collection implements CLEntity {
 
   @override
   String toString() {
-    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, haveItOffline: $haveItOffline, serverUID: $serverUID, isDeleted: $isDeleted, isEdited: $isEdited)';
+    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, isDeleted: $isDeleted, isEdited: $isEdited)';
   }
 
   @override
@@ -132,8 +116,6 @@ class Collection implements CLEntity {
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
         other.id == id &&
-        other.haveItOffline == haveItOffline &&
-        other.serverUID == serverUID &&
         other.isDeleted == isDeleted &&
         other.isEdited == isEdited;
   }
@@ -145,8 +127,6 @@ class Collection implements CLEntity {
         createdDate.hashCode ^
         updatedDate.hashCode ^
         id.hashCode ^
-        haveItOffline.hashCode ^
-        serverUID.hashCode ^
         isDeleted.hashCode ^
         isEdited.hashCode;
   }
@@ -158,8 +138,6 @@ class Collection implements CLEntity {
       'description': description,
       'createdDate': createdDate.millisecondsSinceEpoch,
       'updatedDate': updatedDate.millisecondsSinceEpoch,
-      'haveItOffline': haveItOffline ? 1 : 0,
-      'serverUID': serverUID,
       'isDeleted': isDeleted ? 1 : 0,
       'isEdited': isEdited ? 1 : 0,
     };
@@ -172,8 +150,6 @@ class Collection implements CLEntity {
       'description': description,
       'createdDate': createdDate,
       'updatedDate': updatedDate,
-      'haveItOffline': haveItOffline,
-      'serverUID': serverUID,
       'isDeleted': isDeleted,
       'isEdited': isEdited,
     };
@@ -208,7 +184,6 @@ class Collection implements CLEntity {
         other.description == description &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate &&
-        other.serverUID == serverUID &&
         other.isDeleted == isDeleted &&
         other.isEdited == isEdited;
   }
@@ -218,9 +193,6 @@ class Collection implements CLEntity {
 
   @override
   bool get isMarkedEditted => isEdited;
-
-  @override
-  bool get isMarkedForUpload => serverUID != null && serverUID! < 0;
 
   @override
   int? get entityId => id;

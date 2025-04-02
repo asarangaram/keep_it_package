@@ -18,7 +18,6 @@ enum DBQueries {
   collectionsEmpty,
   collectionByIdList,
   collectionOnDevice,
-  collectionsToSync,
 
   mediaById,
 
@@ -32,15 +31,13 @@ enum DBQueries {
   mediaDeleted,
   mediaByIdList,
   mediaByNoteID,
-  mediaDownloadPending,
-  previewDownloadPending,
 
   notesAll,
   notesByMediaId,
   notesOrphan,
 
   // Raw values
-  serverUIDAll,
+
   mediaOnDevice,
 
   localMediaAll,
@@ -67,9 +64,6 @@ abstract class StoreReader {
     final q = getQuery(query, parameters: parameters) as StoreQuery<T>;
     return (await readMultiple<T>(q)).nonNullableList;
   }
-
-  Future<List<Collection>> get collectionsToSync async =>
-      getMultiple(DBQueries.collectionsToSync);
 
   Future<List<Collection>> get collectionOnDevice async =>
       getMultiple(DBQueries.collectionOnDevice);

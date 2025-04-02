@@ -176,12 +176,11 @@ class ActionControl {
     };
 
     return ActionControl(
-      allowEdit: editSupported && media.isMediaLocallyAvailable,
+      allowEdit: editSupported,
       allowDelete: true,
       allowMove: true,
-      allowShare: media.isMediaLocallyAvailable,
-      allowPin: ColanPlatformSupport.isMobilePlatform &&
-          media.isMediaLocallyAvailable,
+      allowShare: true,
+      allowPin: ColanPlatformSupport.isMobilePlatform,
       allowDuplicateMedia: true,
       allowDeleteLocalCopy: canDeleteLocalCopy,
       allowDownload: false,

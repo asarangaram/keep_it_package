@@ -54,18 +54,6 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                   ),
                 ),
               ),
-              if (media.serverUID != null)
-                OverlayWidgets.dimension(
-                  alignment: Alignment.bottomRight,
-                  sizeFactor: 0.15,
-                  child: ShadAvatar(
-                    'assets/icon/cloud_on_lan_128px_color.png',
-                    backgroundColor: ShadTheme.of(context)
-                        .colorScheme
-                        .background
-                        .withValues(alpha: 0.7),
-                  ),
-                ),
               if (media.pin != null)
                 OverlayWidgets.dimension(
                   alignment: Alignment.bottomRight,

@@ -42,12 +42,6 @@ class Queries {
         ),
       DBQueries.collectionOnDevice => DBQuery<Collection>.map(
           sql: "SELECT * FROM Collection WHERE label NOT LIKE '***%'",
-          /** WHERE serverUID IS NOT NULL OR (serverUID IS NULL AND isDeleted != 1); */
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionsToSync => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection WHERE serverUID IS NOT NULL',
           triggerOnTables: const {'Collection'},
           fromMap: Collection.fromMap,
         ),
@@ -80,18 +74,6 @@ class Queries {
         ),
       DBQueries.mediaAllIncludingAux => DBQuery<CLMedia>.map(
           sql: 'SELECT * FROM Media WHERE isHidden = 0 AND isDeleted = 0',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.mediaDownloadPending => DBQuery<CLMedia>.map(
-          sql:
-              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isMediaCached = 0 AND mediaLog  IS NULL',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.previewDownloadPending => DBQuery<CLMedia>.map(
-          sql:
-              'SELECT * FROM Media WHERE serverUID IS NOT NULL AND isPreviewCached  = 0 AND previewLog IS NULL',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
@@ -160,11 +142,6 @@ class Queries {
       DBQueries.notesOrphan => DBQuery<CLMedia>.map(
           sql:
               'SELECT Media.* FROM Media WHERE isAux = 1 AND id NOT IN (SELECT noteId FROM MediaNote);',
-          triggerOnTables: const {'Media', 'MediaNote'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.serverUIDAll => DBQuery<CLMedia>.map(
-          sql: 'SELECT *  FROM Media  WHERE serverUID IS NOT NULL;',
           triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),

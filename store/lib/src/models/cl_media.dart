@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
+
 import 'package:meta/meta.dart';
 
 import 'cl_entities.dart';
@@ -13,15 +13,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
     required super.type,
     required super.fExt,
     required super.collectionId,
-    required this.isPreviewCached,
-    required this.isMediaCached,
-    required this.isMediaOriginal,
     required this.isEdited,
-    required this.previewLog,
-    required this.mediaLog,
-    required this.serverUID,
-    required this.haveItOffline,
-    required this.mustDownloadOriginal,
     required this.createdDate,
     required this.updatedDate,
     super.ref,
@@ -46,15 +38,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
     required int? collectionId,
     required bool isAux,
     required int? id,
-    required bool isPreviewCached,
-    required bool isMediaCached,
-    required String? previewLog,
-    required String? mediaLog,
-    required bool isMediaOriginal,
-    required int? serverUID,
     required bool? isEdited,
-    required bool? haveItOffline,
-    required bool mustDownloadOriginal,
     DateTime? createdDate,
     DateTime? updatedDate,
   }) {
@@ -64,15 +48,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
       type: type,
       fExt: fExt,
       collectionId: collectionId,
-      isPreviewCached: isPreviewCached,
-      isMediaCached: isMediaCached,
-      isMediaOriginal: isMediaOriginal,
       isEdited: isEdited,
-      previewLog: previewLog,
-      mediaLog: mediaLog,
-      serverUID: serverUID,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
       ref: ref,
       md5String: md5String,
       isDeleted: isDeleted,
@@ -107,18 +83,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
           map['collectionId'] != null ? map['collectionId'] as int : null,
       isAux: (map['isAux'] as int? ?? 0) != 0,
       id: map['id'] != null ? map['id'] as int : null,
-      isPreviewCached: (map['isPreviewCached'] as int) != 0,
-      isMediaCached: (map['isMediaCached'] as int) != 0,
-      previewLog:
-          map['previewLog'] != null ? map['previewLog'] as String : null,
-      mediaLog: map['mediaLog'] != null ? map['mediaLog'] as String : null,
-      isMediaOriginal: (map['isMediaOriginal'] as int) != 0,
-      serverUID: map['serverUID'] != null ? map['serverUID'] as int : null,
       isEdited: map['isEdited'] == null ? null : (map['isEdited'] as int) != 0,
-      haveItOffline: map['haveItOffline'] == null
-          ? null
-          : (map['haveItOffline'] as int) != 0,
-      mustDownloadOriginal: (map['mustDownloadOriginal'] as int) != 0,
     );
   }
 
@@ -127,15 +92,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
       );
 
   final int? id;
-  final bool isPreviewCached;
-  final bool isMediaCached;
-  final String? previewLog;
-  final String? mediaLog;
-  final bool isMediaOriginal;
-  final int? serverUID;
+
   final bool? isEdited;
-  final bool? haveItOffline;
-  final bool mustDownloadOriginal;
   final DateTime createdDate;
   final DateTime updatedDate;
 
@@ -154,36 +112,14 @@ class CLMedia extends CLMediaBase implements CLEntity {
     ValueGetter<int?>? collectionId,
     ValueGetter<bool>? isAux,
     ValueGetter<int?>? id,
-    ValueGetter<bool>? isPreviewCached,
-    ValueGetter<bool>? isMediaCached,
-    ValueGetter<String?>? previewLog,
-    ValueGetter<String?>? mediaLog,
-    ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<int?>? serverUID,
     ValueGetter<bool?>? isEdited,
-    ValueGetter<bool?>? haveItOffline,
-    ValueGetter<bool>? mustDownloadOriginal,
   }) {
     return CLMedia.strict(
       name: name != null ? name() : this.name,
       type: type != null ? type() : this.type,
       fExt: fExt != null ? fExt() : this.fExt,
       collectionId: collectionId != null ? collectionId() : this.collectionId,
-      isPreviewCached:
-          isPreviewCached != null ? isPreviewCached() : this.isPreviewCached,
-      isMediaCached:
-          isMediaCached != null ? isMediaCached() : this.isMediaCached,
-      isMediaOriginal:
-          isMediaOriginal != null ? isMediaOriginal() : this.isMediaOriginal,
       isEdited: isEdited != null ? isEdited() : this.isEdited,
-      previewLog: previewLog != null ? previewLog() : this.previewLog,
-      mediaLog: mediaLog != null ? mediaLog() : this.mediaLog,
-      serverUID: serverUID != null ? serverUID() : this.serverUID,
-      haveItOffline:
-          haveItOffline != null ? haveItOffline() : this.haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal != null
-          ? mustDownloadOriginal()
-          : this.mustDownloadOriginal,
       ref: ref != null ? ref() : this.ref,
       originalDate: originalDate != null ? originalDate() : this.originalDate,
       createdDate: createdDate != null ? createdDate() : this.createdDate,
@@ -199,36 +135,17 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   String toString() {
-    return 'CLMedia(id: $id, name: $name, type: $type, fExt: $fExt, ref: $ref, originalDate: $originalDate, createdDate: $createdDate, updatedDate: $updatedDate, md5String: $md5String, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, collectionId: $collectionId, isAux: $isAux, isPreviewCached: $isPreviewCached, isMediaCached: $isMediaCached, previewLog: $previewLog, mediaLog: $mediaLog, isMediaOriginal: $isMediaOriginal, serverUID: $serverUID, isEdited: $isEdited, haveItOffline: $haveItOffline, mustDownloadOriginal: $mustDownloadOriginal)';
+    return 'CLMedia(id: $id, isEdited: $isEdited, createdDate: $createdDate, updatedDate: $updatedDate)';
   }
 
   @override
   bool operator ==(covariant CLMedia other) {
     if (identical(this, other)) return true;
 
-    return other.name == name &&
-        other.type == type &&
-        other.fExt == fExt &&
-        other.ref == ref &&
-        other.originalDate == originalDate &&
-        other.createdDate == createdDate &&
-        other.updatedDate == updatedDate &&
-        other.md5String == md5String &&
-        other.isDeleted == isDeleted &&
-        other.isHidden == isHidden &&
-        other.pin == pin &&
-        other.collectionId == collectionId &&
-        other.isAux == isAux &&
-        other.id == id &&
-        other.isPreviewCached == isPreviewCached &&
-        other.isMediaCached == isMediaCached &&
-        other.previewLog == previewLog &&
-        other.mediaLog == mediaLog &&
-        other.isMediaOriginal == isMediaOriginal &&
-        other.serverUID == serverUID &&
+    return other.id == id &&
         other.isEdited == isEdited &&
-        other.haveItOffline == haveItOffline &&
-        other.mustDownloadOriginal == mustDownloadOriginal;
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate;
   }
 
   @override
@@ -244,9 +161,8 @@ class CLMedia extends CLMediaBase implements CLEntity {
         other.isDeleted == isDeleted &&
         other.collectionId == collectionId &&
         other.isAux == isAux &&
-        other.serverUID == serverUID &&
-        other.isEdited == isEdited &&
-        other.haveItOffline == haveItOffline;
+        other.isEdited == isEdited;
+
     if (!isSame) {
       // print(MapDiff.log(other.toMapForDisplay(), toMapForDisplay()));
     }
@@ -255,29 +171,10 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   int get hashCode {
-    return name.hashCode ^
-        type.hashCode ^
-        fExt.hashCode ^
-        ref.hashCode ^
-        originalDate.hashCode ^
-        createdDate.hashCode ^
-        updatedDate.hashCode ^
-        md5String.hashCode ^
-        isDeleted.hashCode ^
-        isHidden.hashCode ^
-        pin.hashCode ^
-        collectionId.hashCode ^
-        isAux.hashCode ^
-        id.hashCode ^
-        isPreviewCached.hashCode ^
-        isMediaCached.hashCode ^
-        previewLog.hashCode ^
-        mediaLog.hashCode ^
-        isMediaOriginal.hashCode ^
-        serverUID.hashCode ^
+    return id.hashCode ^
         isEdited.hashCode ^
-        haveItOffline.hashCode ^
-        mustDownloadOriginal.hashCode;
+        createdDate.hashCode ^
+        updatedDate.hashCode;
   }
 
   @override
@@ -297,15 +194,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
       'collectionId': collectionId,
       'isAux': isAux ? 1 : 0,
       'id': id,
-      'isPreviewCached': isPreviewCached ? 1 : 0,
-      'isMediaCached': isMediaCached ? 1 : 0,
-      'previewLog': previewLog,
-      'mediaLog': mediaLog,
-      'isMediaOriginal': isMediaOriginal ? 1 : 0,
-      'serverUID': serverUID,
       'isEdited': isEdited == null ? null : (isEdited! ? 1 : 0),
-      'haveItOffline': haveItOffline == null ? null : (haveItOffline! ? 1 : 0),
-      'mustDownloadOriginal': mustDownloadOriginal ? 1 : 0,
     };
   }
 
@@ -325,15 +214,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
       'collectionId': collectionId,
       'isAux': isAux,
       'id': id,
-      'isPreviewCached': isPreviewCached,
-      'isMediaCached': isMediaCached,
-      'previewLog': previewLog?.substring(0, min(15, previewLog?.length ?? 1)),
-      'mediaLog': mediaLog?.substring(0, min(15, mediaLog?.length ?? 1)),
-      'isMediaOriginal': isMediaOriginal,
-      'serverUID': serverUID,
       'isEdited': isEdited,
-      'haveItOffline': haveItOffline,
-      'mustDownloadOriginal': mustDownloadOriginal,
     };
   }
 
@@ -356,18 +237,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
   @override
   String toJson() => json.encode(toMap());
 
-  bool get isMediaDownloadFailed =>
-      serverUID != null && !isMediaCached && mediaLog != null;
-
-  bool get isMediaLocallyAvailable => serverUID == null || isMediaCached;
-
-  bool get isPreviewWaitingForDownload =>
-      serverUID != null && !isPreviewCached && previewLog == null;
-
-  bool get isPreviewDownloadFailed => serverUID != null && previewLog != null;
-
-  bool get isPreviewLocallyAvailable => serverUID == null || isPreviewCached;
-
   /// Modifying any of these parameters won't modify the date.
   CLMedia updateStatus({
     ValueGetter<bool?>? isHidden,
@@ -383,13 +252,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
     return _copyWith(
       isHidden: isHidden,
       pin: pin,
-      isMediaCached: isMediaCached,
-      isPreviewCached: isPreviewCached,
-      previewLog: previewLog,
-      mediaLog: mediaLog,
-      isMediaOriginal: isMediaOriginal,
-      haveItOffline: haveItOffline,
-      mustDownloadOriginal: mustDownloadOriginal,
     );
   }
 
@@ -409,7 +271,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
     ValueGetter<int?>? collectionId,
     ValueGetter<bool>? isAux,
     ValueGetter<int?>? id,
-    ValueGetter<int?>? serverUID,
   }) {
     final time = DateTime.now();
     return _copyWith(
@@ -422,7 +283,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
       collectionId: collectionId,
       isAux: isAux,
       id: id,
-      serverUID: serverUID,
       updatedDate: () => time,
       isEdited: () => isEdited,
     );
@@ -466,11 +326,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   bool get isMarkedEditted => isEdited ?? false;
-
-  // for local item, always mark this flag, it will be filterred out
-  // by collection. [caution]
-  @override
-  bool get isMarkedForUpload => serverUID == null;
 
   @override
   int? get entityId => id;

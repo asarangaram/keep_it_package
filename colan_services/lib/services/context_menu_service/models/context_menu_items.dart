@@ -26,10 +26,6 @@ class CLContextMenu {
     required this.onShare,
     required this.onPin,
     required this.onDelete,
-    required this.onDeleteLocalCopy,
-    required this.onKeepOffline,
-    required this.onUpload,
-    required this.onDeleteServerCopy,
     required this.infoMap,
   });
   factory CLContextMenu.empty() {
@@ -51,10 +47,6 @@ class CLContextMenu {
     Future<bool?> Function()? onShare,
     Future<bool?> Function()? onPin,
     Future<bool?> Function()? onDelete,
-    Future<bool?> Function()? onDeleteLocalCopy,
-    Future<bool?> Function()? onKeepOffline,
-    Future<bool?> Function()? onUpload,
-    Future<bool?> Function()? onDeleteServerCopy,
   }) {
     return CLContextMenu(
       name: name,
@@ -91,26 +83,6 @@ class CLContextMenu {
         isDestructive: true,
         tooltip: 'Moves to Recycle bin. Can recover as per Recycle Policy',
       ),
-      onDeleteLocalCopy: CLMenuItem(
-        title: 'Remove downloads',
-        icon: Icons.download_done_sharp,
-        onTap: onDeleteLocalCopy,
-      ),
-      onKeepOffline: CLMenuItem(
-        title: 'Download',
-        icon: Icons.download_sharp,
-        onTap: onKeepOffline,
-      ),
-      onUpload:
-          CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload),
-      onDeleteServerCopy: CLMenuItem(
-        title: 'Remove From Server',
-        icon: Icons.remove,
-        onTap: onDeleteServerCopy,
-        isDestructive: true,
-        tooltip:
-            'Delete from Server. Local copy is retained. Use if this is accidentally uploaded',
-      ),
       infoMap: infoMap,
     );
   }
@@ -126,10 +98,6 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
-    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
-    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
-    ValueGetter<Future<bool?> Function()?>? onUpload,
-    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
     List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) {
     /// Basic Actions
@@ -168,13 +136,7 @@ class CLContextMenu {
             }
             return false;
           };
-    final onDeleteLocalCopy0 = onDeleteLocalCopy?.call();
 
-    // Online Actions
-    final onKeepOffline0 = onKeepOffline?.call();
-    final onUpload0 = onUpload?.call();
-
-    final onDeleteServerCopy0 = onDeleteServerCopy?.call();
     final ac = ActionControl.onGetCollectionActionControl(
       collection,
       hasOnlineService,
@@ -182,19 +144,13 @@ class CLContextMenu {
     );
     return CLContextMenu.template(
       name: collection.label,
-      logoImageAsset: collection.serverUID == null
-          ? 'assets/icon/not_on_server.png'
-          : 'assets/icon/cloud_on_lan_128px_color.png',
+      logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
       onMove: ac.onMove(onMove0),
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
-      onKeepOffline: ac.onKeepOffline(onKeepOffline0),
-      onUpload: ac.onUpload(onUpload0),
       onDelete: ac.onDelete(onDelete0),
-      onDeleteLocalCopy: ac.onDeleteLocalCopy(onDeleteLocalCopy0),
-      onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
       infoMap: collection.toMapForDisplay(),
       isPinned: false,
     );
@@ -212,10 +168,6 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
-    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
-    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
-    ValueGetter<Future<bool?> Function()?>? onUpload,
-    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
     final onEdit0 = onEdit != null
         ? onEdit()
@@ -271,19 +223,9 @@ class CLContextMenu {
         : () async => theStore.mediaUpdater.pinToggleMultiple(
               {media.id},
               onGetPath: (media) {
-                if (media.isMediaLocallyAvailable) {
-                  return theStore.directories.getMediaAbsolutePath(media);
-                }
-
-                return null;
+                return theStore.directories.getMediaAbsolutePath(media);
               },
             );
-
-    final onDeleteLocalCopy0 = onDeleteLocalCopy?.call();
-    final onKeepOffline0 = onKeepOffline?.call();
-    final onUpload0 = onUpload?.call();
-    final onDeleteServerCopy0 =
-        onDeleteServerCopy != null ? onDeleteServerCopy() : null;
 
     final ac = ActionControl.onGetMediaActionControl(
       media,
@@ -292,19 +234,13 @@ class CLContextMenu {
     );
     return CLContextMenu.template(
       name: media.name,
-      logoImageAsset: media.serverUID == null
-          ? 'assets/icon/not_on_server.png'
-          : 'assets/icon/cloud_on_lan_128px_color.png',
+      logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
       onMove: ac.onMove(onMove0),
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
       onDelete: ac.onDelete(onDelete0),
-      onDeleteLocalCopy: ac.onDeleteLocalCopy(onDeleteLocalCopy0),
-      onKeepOffline: ac.onKeepOffline(onKeepOffline0),
-      onUpload: ac.onUpload(onUpload0),
-      onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
       infoMap: media.toMapForDisplay(),
       isPinned: media.pin != null,
     );
@@ -322,10 +258,6 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
-    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
-    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
-    ValueGetter<Future<bool?> Function()?>? onUpload,
-    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
     final onEdit0 = onEdit?.call();
     final onEditInfo0 = onEditInfo?.call();
@@ -368,12 +300,6 @@ class CLContextMenu {
             }
             return null;
           };
-    final onDeleteLocalCopy0 =
-        onDeleteLocalCopy != null ? onDeleteLocalCopy() : null;
-    final onKeepOffline0 = onKeepOffline != null ? onKeepOffline() : null;
-    final onUpload0 = onUpload != null ? onUpload() : null;
-    final onDeleteServerCopy0 =
-        onDeleteServerCopy != null ? onDeleteServerCopy() : null;
 
     return CLContextMenu.template(
       name: 'Multiple Media',
@@ -384,10 +310,6 @@ class CLContextMenu {
       onShare: onShare0,
       onPin: onPin0,
       onDelete: onDelete0,
-      onDeleteLocalCopy: onDeleteLocalCopy0,
-      onKeepOffline: onKeepOffline0,
-      onUpload: onUpload0,
-      onDeleteServerCopy: onDeleteServerCopy0,
       infoMap: const {},
       isPinned: items.any((media) => media.pin != null),
     );
@@ -400,10 +322,7 @@ class CLContextMenu {
   final CLMenuItem onShare;
   final CLMenuItem onPin;
   final CLMenuItem onDelete;
-  final CLMenuItem onDeleteLocalCopy;
-  final CLMenuItem onKeepOffline;
-  final CLMenuItem onUpload;
-  final CLMenuItem onDeleteServerCopy;
+
   final Map<String, dynamic> infoMap;
 
   List<CLMenuItem> get actions => [
@@ -413,10 +332,6 @@ class CLContextMenu {
         onShare,
         onPin,
         onDelete,
-        onDeleteLocalCopy,
-        onKeepOffline,
-        onUpload,
-        onDeleteServerCopy,
       ].where((e) => e.onTap != null).toList();
 
   List<CLMenuItem> get basicActions => [
@@ -427,15 +342,8 @@ class CLContextMenu {
         onPin,
       ];
 
-  List<CLMenuItem> get onlineActions => [
-        onKeepOffline,
-        onUpload,
-      ];
-
   List<CLMenuItem> get destructiveActions => [
         onDelete,
-        onDeleteLocalCopy,
-        onDeleteServerCopy,
       ];
 
   DraggableMenuBuilderType? draggableMenuBuilder(

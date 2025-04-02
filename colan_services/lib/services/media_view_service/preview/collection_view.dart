@@ -40,9 +40,7 @@ class CollectionView extends ConsumerWidget {
             return FolderItem(
               name: collection.label,
               borderColor: borderColor,
-              avatarAsset: (collection.serverUID == null)
-                  ? 'assets/icon/not_on_server.png'
-                  : 'assets/icon/cloud_on_lan_128px_color.png',
+              avatarAsset: 'assets/icon/not_on_server.png',
               counter: (filters.isActive || filters.isTextFilterActive)
                   ? AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),

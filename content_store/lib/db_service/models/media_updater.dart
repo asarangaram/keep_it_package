@@ -37,7 +37,6 @@ class MediaUpdater {
     String label, {
     DateTime? createdDate,
     DateTime? updatedDate,
-    int? serverUID,
     bool shouldRefresh,
     bool restoreIfNeeded,
   }) getCollectionByLabel;
@@ -86,9 +85,6 @@ class MediaUpdater {
     if (c != null) {
       if (media.id != null && media.id != c.id) {
         throw Exception('Conflict in id');
-      }
-      if (media.serverUID != c.serverUID && c.serverUID != null) {
-        throw Exception('Conflict in serverUID');
       }
     }
 
@@ -317,7 +313,6 @@ class MediaUpdater {
     ValueGetter<String?>? previewLog,
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<int?>? serverUID,
     ValueGetter<bool?>? isEdited,
     ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
@@ -362,23 +357,12 @@ class MediaUpdater {
       type: type,
       collectionId: collectionId1,
       isHidden: isHidden0 ?? (isHidden != null ? isHidden() : false),
-
       fExt: fExt0,
       isAux: isAux0,
-      // Set defaults if not provided
-      isPreviewCached: isPreviewCached?.call() ?? false,
-      isMediaCached: isMediaCached?.call() ?? false,
-      isMediaOriginal: isMediaOriginal?.call() ?? false,
       isEdited: isEdited?.call() ?? false,
-      previewLog: previewLog != null ? previewLog() : null,
-      mediaLog: mediaLog != null ? mediaLog() : null,
-      serverUID: serverUID != null ? serverUID() : null,
-      haveItOffline: haveItOffline?.call(),
-      mustDownloadOriginal: mustDownloadOriginal?.call() ?? false,
       ref: ref != null ? ref() : null,
       originalDate: originalDate0 != null ? originalDate0() : null,
       isDeleted: isDeleted != null ? isDeleted() : false,
-
       pin: pin != null ? pin() : null,
     );
     return upsert(
@@ -411,7 +395,6 @@ class MediaUpdater {
     ValueGetter<String?>? previewLog,
     ValueGetter<String?>? mediaLog,
     ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<int?>? serverUID,
     ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
     List<CLMedia>? parents,
@@ -487,7 +470,6 @@ class MediaUpdater {
           fExt: () => fExt0,
           isAux: () => isAux0,
           // Set defaults if not provided
-          serverUID: () => serverUID != null ? serverUID() : media.serverUID,
           ref: ref,
           originalDate: originalDate0,
           isDeleted: isDeleted,
@@ -694,7 +676,6 @@ class MediaUpdater {
           fExt: () => media.fExt,
           originalDate: () => media.originalDate,
           collectionId: () => media.collectionId,
-          haveItOffline: () => media.haveItOffline,
           isAux: () => media.isAux,
         )) ??
         media;
@@ -714,7 +695,6 @@ class MediaUpdater {
       );
       updatedCollection = await getCollectionByLabel(
         collection.label,
-        serverUID: collection.serverUID,
         createdDate: collection.createdDate,
         updatedDate: collection.updatedDate,
         shouldRefresh: false,
@@ -872,8 +852,8 @@ class MediaUpdater {
       store.reloadStore();
     }
     onDone(
-      existingItems: existingItems.where((e) => e.mediaLog == null).toList(),
-      newItems: newItems.where((e) => e.mediaLog == null).toList(),
+      existingItems: existingItems,
+      newItems: newItems,
     );
   }
 

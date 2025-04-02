@@ -31,7 +31,6 @@ class CollectionUpdater {
     DateTime? createdDate,
     DateTime? updatedDate,
     bool? haveItOffline,
-    ValueGetter<int?>? serverUID,
     bool? isDeleted,
   }) {
     return upsert(
@@ -41,8 +40,6 @@ class CollectionUpdater {
         description: description,
         createdDate: createdDate,
         updatedDate: updatedDate,
-        haveItOffline: haveItOffline,
-        serverUID: serverUID,
         isDeleted: isDeleted,
       ),
       shouldRefresh: shouldRefresh,
@@ -133,7 +130,6 @@ class CollectionUpdater {
     String label, {
     DateTime? createdDate,
     DateTime? updatedDate,
-    int? serverUID,
     bool shouldRefresh = true,
     bool restoreIfNeeded = false,
   }) async {
@@ -147,7 +143,6 @@ class CollectionUpdater {
             label,
             createdDate: createdDate,
             updatedDate: updatedDate,
-            serverUID: serverUID,
           ),
           shouldRefresh: shouldRefresh,
         );

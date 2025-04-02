@@ -6,7 +6,6 @@ import 'gallery_group.dart';
 abstract class CLEntity {
   bool get isMarkedDeleted;
   bool get isMarkedEditted;
-  bool get isMarkedForUpload;
 
   bool isContentSame(covariant CLEntity other);
 

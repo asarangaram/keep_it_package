@@ -55,10 +55,6 @@ class PullDownContextMenu extends ConsumerWidget {
                 menu.onShare.pullDownMenuItem,
               ],
             ),
-          if (menu.onDeleteLocalCopy.onTap != null)
-            menu.onDeleteLocalCopy.pullDownMenuItem,
-          if (menu.onKeepOffline.onTap != null)
-            menu.onKeepOffline.pullDownMenuItem,
           PullDownMenuTitle(
             title: MapInfo(
               menu.infoMap,
