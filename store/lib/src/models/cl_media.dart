@@ -7,21 +7,21 @@ import 'cl_media_base.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLMedia extends CLMediaBase implements CLEntity {
+class CLMedia implements CLEntity {
   const CLMedia._({
-    required super.label,
-    required super.type,
-    required super.extension,
-    required super.parentId,
+    required this.label,
+    required this.type,
+    required this.extension,
+    required this.parentId,
     required this.createdDate,
     required this.updatedDate,
-    super.description,
-    super.createDate,
-    super.md5,
-    super.isDeleted,
-    super.isHidden,
-    super.pin,
-    super.isAux,
+    this.description,
+    this.createDate,
+    this.md5,
+    this.isDeleted,
+    this.isHidden,
+    this.pin,
+    this.isAux = false,
     this.id,
   });
   factory CLMedia.strict({
@@ -88,6 +88,18 @@ class CLMedia extends CLMediaBase implements CLEntity {
       );
 
   final int? id;
+  final String label;
+  final CLMediaType type;
+  final String extension;
+  final String? description;
+  final DateTime? createDate;
+
+  final String? md5;
+  final bool? isDeleted;
+  final bool? isHidden;
+  final String? pin;
+  final int? parentId;
+  final bool isAux;
   final DateTime createdDate;
   final DateTime updatedDate;
 
@@ -127,7 +139,7 @@ class CLMedia extends CLMediaBase implements CLEntity {
 
   @override
   String toString() {
-    return 'CLMedia(id: $id, createdDate: $createdDate, updatedDate: $updatedDate)';
+    return 'CLMedia(id: $id, label: $label, type: $type, extension: $extension, description: $description, createDate: $createDate, md5: $md5, isDeleted: $isDeleted, isHidden: $isHidden, pin: $pin, parentId: $parentId, isAux: $isAux, createdDate: $createdDate, updatedDate: $updatedDate)';
   }
 
   @override
@@ -135,16 +147,39 @@ class CLMedia extends CLMediaBase implements CLEntity {
     if (identical(this, other)) return true;
 
     return other.id == id &&
+        other.label == label &&
+        other.type == type &&
+        other.extension == extension &&
+        other.description == description &&
+        other.createDate == createDate &&
+        other.md5 == md5 &&
+        other.isDeleted == isDeleted &&
+        other.isHidden == isHidden &&
+        other.pin == pin &&
+        other.parentId == parentId &&
+        other.isAux == isAux &&
         other.createdDate == createdDate &&
         other.updatedDate == updatedDate;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ createdDate.hashCode ^ updatedDate.hashCode;
+    return id.hashCode ^
+        label.hashCode ^
+        type.hashCode ^
+        extension.hashCode ^
+        description.hashCode ^
+        createDate.hashCode ^
+        md5.hashCode ^
+        isDeleted.hashCode ^
+        isHidden.hashCode ^
+        pin.hashCode ^
+        parentId.hashCode ^
+        isAux.hashCode ^
+        createdDate.hashCode ^
+        updatedDate.hashCode;
   }
 
-  @override
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': label,
@@ -199,7 +234,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
     return map.map((key, value) => MapEntry(key, value.toString()));
   }
 
-  @override
   String toJson() => json.encode(toMap());
 
   /// Modifying any of these parameters won't modify the date.
@@ -251,7 +285,6 @@ class CLMedia extends CLMediaBase implements CLEntity {
     );
   }
 
-  @override
   CLMedia copyWith({
     ValueGetter<String>? label,
     ValueGetter<CLMediaType>? type,
