@@ -20,11 +20,7 @@ class GetPreviewUri extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final previewUri = ref.watch(previewUriProvider(id));
     return previewUri.when(
-      data: (uriAsync) => uriAsync.when(
-        data: builder,
-        error: errorBuilder,
-        loading: loadingBuilder,
-      ),
+      data: builder,
       error: errorBuilder,
       loading: loadingBuilder,
     );

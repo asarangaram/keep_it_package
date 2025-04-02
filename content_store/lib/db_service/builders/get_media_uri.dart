@@ -22,11 +22,7 @@ class GetMediaUri extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final previewUri = ref.watch(mediaUriProvider(id));
     return previewUri.when(
-      data: (uriAsync) => uriAsync.when(
-        data: builder,
-        error: errorBuilder,
-        loading: loadingBuilder,
-      ),
+      data: builder,
       error: nullOnError ? (_, __) => builder(null) : errorBuilder,
       loading: loadingBuilder,
     );

@@ -7,9 +7,8 @@ import '../../db_service/providers/store_updater.dart';
 
 import 'media_path.dart';
 
-final mediaUriProvider =
-    StreamProvider.family<AsyncValue<Uri>, int>((ref, id) async* {
-  final controller = StreamController<AsyncValue<Uri>>();
+final mediaUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
+  final controller = StreamController<Uri>();
   final theStore = await ref.watch(storeUpdaterProvider.future);
   final mediaPathDeterminer =
       await ref.watch(mediaPathDeterminerProvider.future);
@@ -23,7 +22,7 @@ final mediaUriProvider =
           name: 'mediaUriProvider',
         ); */
 
-        controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
+        controller.add(mediaPathDeterminer.getPreviewUri(media));
       }
     }
   });
@@ -35,13 +34,12 @@ final mediaUriProvider =
     'media : ${media.md5String}',
     name: 'mediaUriProvider',
   ); */
-  controller.add(mediaPathDeterminer.getMediaUriAsync(media));
+  controller.add(mediaPathDeterminer.getMediaUri(media));
   yield* controller.stream;
 });
 
-final previewUriProvider =
-    StreamProvider.family<AsyncValue<Uri>, int>((ref, id) async* {
-  final controller = StreamController<AsyncValue<Uri>>();
+final previewUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
+  final controller = StreamController<Uri>();
   final theStore = await ref.watch(storeUpdaterProvider.future);
   final mediaPathDeterminer =
       await ref.watch(mediaPathDeterminerProvider.future);
@@ -55,8 +53,8 @@ final previewUriProvider =
           name: 'previewUriProvider',
         ); */
 
-        controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
-      }
+        controller.add(mediaPathDeterminer.getPreviewUri(media));
+      } else {}
     }
   });
   final media = await theStore.store.reader.getMediaById(id);
@@ -67,6 +65,6 @@ final previewUriProvider =
     'media : ${media.md5String}',
     name: 'previewUriProvider',
   ); */
-  controller.add(mediaPathDeterminer.getPreviewUriAsync(media));
+  controller.add(mediaPathDeterminer.getPreviewUri(media));
   yield* controller.stream;
 });
