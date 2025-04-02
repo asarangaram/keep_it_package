@@ -168,60 +168,12 @@ class CLContextMenu {
             }
             return false;
           };
-    final onDeleteLocalCopy0 = onDeleteLocalCopy != null
-        ? onDeleteLocalCopy()
-        : () async {
-            if (collection.haveItOffline && collection.hasServerUID) {
-              final serverNotifier = ref.read(serverProvider.notifier);
-              final theStore = await serverNotifier.storeUpdater;
+    final onDeleteLocalCopy0 = onDeleteLocalCopy?.call();
 
-              await theStore.collectionUpdater
-                  .upsert(collection.copyWith(haveItOffline: false));
-              final media = await theStore.store.reader
-                  .getMediaByCollectionId(collection.id!);
-              for (final m in media) {
-                await theStore.mediaUpdater
-                    .deleteLocalCopy(m, haveItOffline: () => null);
-              }
-              serverNotifier.instantSync();
-              theStore.store.reloadStore();
-            }
-            return true;
-          };
     // Online Actions
-    final onKeepOffline0 = onKeepOffline != null
-        ? onKeepOffline()
-        : () async {
-            if (!collection.haveItOffline && collection.hasServerUID) {
-              final serverNotifier = ref.read(serverProvider.notifier);
-              final updater = await serverNotifier.storeUpdater;
+    final onKeepOffline0 = onKeepOffline?.call();
+    final onUpload0 = onUpload?.call();
 
-              await updater.collectionUpdater
-                  .upsert(collection.copyWith(haveItOffline: true));
-              final media = await updater.store.reader
-                  .getMediaByCollectionId(collection.id!);
-              for (final m in media) {
-                await updater.mediaUpdater.update(
-                  m,
-                  haveItOffline: () => null,
-                  isEdited: false,
-                );
-              }
-              updater.store.reloadStore();
-              serverNotifier.instantSync();
-            }
-            return true;
-          };
-    final onUpload0 = onUpload != null
-        ? onUpload()
-        : () async {
-            await theStore.collectionUpdater.upsert(
-              collection.copyWith(serverUID: () => -1, isEdited: true),
-            );
-            ref.read(serverProvider.notifier).instantSync();
-
-            return true;
-          };
     final onDeleteServerCopy0 = onDeleteServerCopy?.call();
     final ac = ActionControl.onGetCollectionActionControl(
       collection,
@@ -327,16 +279,9 @@ class CLContextMenu {
               },
             );
 
-    final onDeleteLocalCopy0 = onDeleteLocalCopy != null
-        ? onDeleteLocalCopy()
-        : () async =>
-            ref.read(serverProvider.notifier).onDeleteMediaLocalCopy(media);
-    final onKeepOffline0 = onKeepOffline != null
-        ? onKeepOffline()
-        : () async =>
-            ref.read(serverProvider.notifier).onKeepMediaOffline(media);
-
-    final onUpload0 = onUpload != null ? onUpload() : null;
+    final onDeleteLocalCopy0 = onDeleteLocalCopy?.call();
+    final onKeepOffline0 = onKeepOffline?.call();
+    final onUpload0 = onUpload?.call();
     final onDeleteServerCopy0 =
         onDeleteServerCopy != null ? onDeleteServerCopy() : null;
 

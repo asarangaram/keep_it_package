@@ -164,8 +164,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   Widget getCollection({required List<CLMedia> currMedia}) {
     return CreateCollectionWizard(
       isValidSuggestion: (collection) {
-        // ALLOW NEW COLLECTION OR SERVER COLLECTION
-        // IF ANY OF THE MEDIA IS FROM SERVER
         if (collection.isDeleted) return false;
         if (currMedia.any((e) => e.hasServerUID)) {
           return collection.id == null || collection.hasServerUID;
@@ -259,7 +257,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                               targetCollection = null;
                               onUpdateSelectionmode(enable: false);
                               setState(() {});
-                              ref.read(serverProvider.notifier).instantSync();
+
                               theStore.store.reloadStore();
                             },
                           )

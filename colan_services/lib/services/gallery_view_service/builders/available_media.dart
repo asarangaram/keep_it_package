@@ -20,27 +20,11 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canSync =
-        ref.watch(serverProvider.select((server) => server.canSync));
     return GetMediaByCollectionId(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       collectionId: collectionId,
-      builder: (items) {
-        CLMedias available;
-        if (!canSync) {
-          available = CLMedias(
-            items.entries
-                .where(
-                  (c) => c.isCached,
-                )
-                .toList(),
-          );
-        } else {
-          available = items;
-        }
-        return builder(available);
-      },
+      builder: builder,
     );
   }
 }

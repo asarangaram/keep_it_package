@@ -21,31 +21,14 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canSync =
-        ref.watch(serverProvider.select((server) => server.canSync));
-
     return GetCollectionMultiple(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       query: DBQueries.collectionsVisibleNotDeleted,
       builder: (collections) {
-        final Collections visibleCollections;
-        if (!canSync) {
-          visibleCollections = Collections(
-            collections.entries
-                .where(
-                  (c) => !c.hasServerUID || (c.hasServerUID && c.haveItOffline),
-                )
-                .toList(),
-          );
-        } else {
-          visibleCollections = collections;
-        }
-
         return builder(
           collections,
-          isAllAvailable:
-              visibleCollections.entries.length == collections.entries.length,
+          isAllAvailable: true,
         );
       },
     );

@@ -30,9 +30,6 @@ class EntityPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canSync = ref.watch(
-      serverProvider.select((server) => server.canSync),
-    );
     final parent = onGetParent?.call(item);
     final children = onGetChildren?.call(item);
     switch (item) {
@@ -70,7 +67,7 @@ class EntityPreview extends ConsumerWidget {
                     context,
                     ref,
                     collection: c,
-                    hasOnlineService: canSync,
+                    hasOnlineService: false,
                     theStore: theStore,
                   ),
                   child: CollectionView.preview(
@@ -98,7 +95,7 @@ class EntityPreview extends ConsumerWidget {
                       context,
                       ref,
                       collection: c,
-                      hasOnlineService: canSync,
+                      hasOnlineService: false,
                       theStore: theStore,
                     ),
                     child: const Icon(LucideIcons.ellipsis),
@@ -123,7 +120,7 @@ class EntityPreview extends ConsumerWidget {
             ref,
             media: m,
             parentCollection: parent! as Collection,
-            hasOnlineService: canSync,
+            hasOnlineService: false,
             theStore: theStore,
           ),
           child: MediaPreviewWithOverlays(
