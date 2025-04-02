@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 import 'cl_entities.dart';
 import 'cl_media_base.dart';
 import 'cl_media_type.dart';
-import 'collection.dart';
 
 @immutable
 class CLMedia extends CLMediaBase implements CLEntity {

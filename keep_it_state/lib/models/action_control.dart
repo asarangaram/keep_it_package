@@ -149,10 +149,6 @@ class ActionControl {
     bool hasOnlineService, {
     List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) {
-    final media = onGetChildren?.call(collection) ?? [];
-    final canSync = hasOnlineService;
-    final haveItOffline = collection.haveItOffline;
-
     return ActionControl(
         allowEdit: true,
         allowDelete: true,

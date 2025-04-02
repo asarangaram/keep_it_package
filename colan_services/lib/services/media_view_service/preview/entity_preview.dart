@@ -126,8 +126,6 @@ class EntityPreview extends ConsumerWidget {
           child: MediaPreviewWithOverlays(
             media: m,
             parentIdentifier: viewIdentifier.toString(),
-            isMediaWaitingForDownload:
-                m.isMediaWaitingForDownload(parent as Collection),
           ),
         ),
       _ => throw UnimplementedError(),
