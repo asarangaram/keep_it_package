@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:exif/exif.dart';
-import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 
 import 'media_metadata.dart';
 
@@ -25,7 +24,7 @@ extension ExtFileAnalysis on File {
   }
 
   Future<MediaMetaData?> getVideoMetaData() async {
-    final session = await FFprobeKit.getMediaInformation(path);
+    /* final session = await FFprobeKit.getMediaInformation(path);
     final properties = session.getMediaInformation()?.getAllProperties();
     if (properties != null) {
       try {
@@ -43,7 +42,7 @@ extension ExtFileAnalysis on File {
       } catch (e) {
         //ignore the error and continue without metadata
       }
-    }
+    } */
     return null;
   }
 

@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:content_store/content_store.dart';
 import 'package:content_store/extensions/ext_cl_media.dart';
 import 'package:content_store/extensions/ext_cldirectories.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:heif_converter/heif_converter.dart';
@@ -612,7 +609,7 @@ class MediaUpdater {
         return null;
 
       case CLMediaType.video:
-        await File(outputFile).deleteIfExists();
+      /* await File(outputFile).deleteIfExists();
         try {
           final double frameCount;
           final probleSession =
@@ -657,7 +654,7 @@ class MediaUpdater {
         } catch (e) {
           await File(outputFile).deleteIfExists();
           return 'previewError: FFmpegKit crashed $e';
-        }
+        } */
 
       case CLMediaType.text:
       case CLMediaType.url:
@@ -668,7 +665,7 @@ class MediaUpdater {
     }
   }
 
-  static int _computeTileSize(double frameCount) {
+  /* static int _computeTileSize(double frameCount) {
     if (frameCount >= 16) {
       return 4;
     } else if (frameCount >= 9) {
@@ -676,7 +673,7 @@ class MediaUpdater {
     } else {
       return 2;
     }
-  }
+  } */
 
   Future<CLMedia> replaceContent(
     String path, {

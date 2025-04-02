@@ -5,7 +5,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   animated_icon: ^0.0.9
@@ -17,9 +17,9 @@ dependencies:
   cl_media_viewers_flutter:
     path: ../cl_media_viewers_flutter
   colan_widgets:
-    path: ../colan_widgets 
+    path: ../colan_widgets
   collection: ^1.19.0
-  
+
   connectivity_plus: ^6.0.5
   content_store:
     path: ../content_store
@@ -27,7 +27,6 @@ dependencies:
   event_bus: ^2.0.0
   exif: ^3.3.0
   extended_image: ^9.1.0
-  ffmpeg_kit_flutter: ^6.0.3
   flutter:
     sdk: flutter
   flutter_riverpod: 2.5.1
@@ -40,7 +39,7 @@ dependencies:
   http_parser: ^4.0.2
   image: ^4.1.7
   image_picker: ^1.1.2
-  keep_it_state: 
+  keep_it_state:
     path: ../keep_it_state
   local_store:
     path: ../local_store
@@ -48,21 +47,21 @@ dependencies:
 
   media_editors:
     path: ../media_editors
-  
+
   meta: ^1.12.0
   mime: ^2.0.0
   multicast_dns: ^0.3.2+7
   mutex: ^3.1.0
   nsd: ^4.0.3
   path: ^1.9.0
-  
+
   path_provider: ^2.1.4
   photo_manager: ^3.2.3
   pie_chart: ^5.4.0
   progress_indicators: ^1.0.0
   pull_down_button: ^0.10.2
-  
-  shadcn_ui: 
+
+  shadcn_ui:
     path: /Users/anandasarangaram/Work/flutter-shadcn-ui
   share_handler: ^0.0.21
   share_plus: ^10.0.0
@@ -75,16 +74,15 @@ dependencies:
   uuid: ^4.4.0
   video_player: ^2.8.7
   video_thumbnail: ^0.5.3
-  
+
   watcher: ^1.1.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
- 
+
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
   very_good_analysis: ^7.0.0
 
 flutter:
   uses-material-design: true
- 
