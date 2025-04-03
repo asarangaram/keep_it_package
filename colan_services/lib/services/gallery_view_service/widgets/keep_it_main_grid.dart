@@ -76,11 +76,11 @@ class KeepItMainGrid extends ConsumerWidget {
                       context,
                       item, {
                       required ViewerEntityMixin? Function(
-                              ViewerEntityMixin entity)?
-                          onGetParent,
+                        ViewerEntityMixin entity,
+                      )? onGetParent,
                       required List<ViewerEntityMixin>? Function(
-                              ViewerEntityMixin entity)?
-                          onGetChildren,
+                        ViewerEntityMixin entity,
+                      )? onGetChildren,
                     }) =>
                         EntityPreview(
                       viewIdentifier: viewIdentifier,

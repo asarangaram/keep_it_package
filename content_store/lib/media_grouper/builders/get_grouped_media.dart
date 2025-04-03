@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart'
-    show ViewerEntityMixin, CLMedia, GalleryGroupCLEntity;
+    show CLMedia, GalleryGroupCLEntity, ViewerEntityMixin;
 
 import '../../db_service/builders/w3_get_collection.dart';
 
