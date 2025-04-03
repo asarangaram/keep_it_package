@@ -33,3 +33,5 @@ export 'models/platform_support.dart';
 export 'extensions/ext_list.dart';
 
 export 'models/tab_identifier.dart';
+
+export 'models/cl_media_candidate.dart';

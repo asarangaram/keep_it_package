@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
+import 'package:keep_it_state/keep_it_state.dart';
 
-import '../extensions/ext_file.dart';
-import 'data_types.dart';
+import 'package:store/store.dart';
 
 @immutable
 class CLMediaCandidate {
@@ -22,14 +22,6 @@ class CLMediaCandidate {
   CLMediaCandidate copyWith({
     ValueGetter<String>? path,
     ValueGetter<CLMediaType>? type,
-    ValueGetter<String?>? description,
-    ValueGetter<DateTime?>? createDateDELETE,
-    ValueGetter<String?>? md5,
-    ValueGetter<bool?>? isDeletedDELETE,
-    ValueGetter<bool?>? isHiddenDELETE,
-    ValueGetter<String?>? pinDELETE,
-    ValueGetter<int?>? parentId,
-    ValueGetter<bool>? isAuxDELETE,
   }) {
     return CLMediaCandidate(
       path: path != null ? path() : this.path,
@@ -49,4 +41,19 @@ class CLMediaCandidate {
 
   @override
   int get hashCode => path.hashCode ^ type.hashCode;
+}
+
+@immutable
+class CLMediaFileGroup {
+  const CLMediaFileGroup({
+    required this.entries,
+    required this.type,
+    this.collection,
+  });
+  final List<CLMediaCandidate> entries;
+  final CLMedia? collection;
+  final UniversalMediaSource? type;
+
+  bool get isEmpty => entries.isEmpty;
+  bool get isNotEmpty => entries.isNotEmpty;
 }

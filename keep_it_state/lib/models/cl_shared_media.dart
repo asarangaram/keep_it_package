@@ -5,21 +5,6 @@ import 'package:store/store.dart';
 import 'universal_media_source.dart';
 
 @immutable
-class CLMediaFileGroup {
-  const CLMediaFileGroup({
-    required this.entries,
-    required this.type,
-    this.collection,
-  });
-  final List<CLMediaCandidate> entries;
-  final CLMedia? collection;
-  final UniversalMediaSource? type;
-
-  bool get isEmpty => entries.isEmpty;
-  bool get isNotEmpty => entries.isNotEmpty;
-}
-
-@immutable
 class CLSharedMedia {
   const CLSharedMedia({
     required this.entries,

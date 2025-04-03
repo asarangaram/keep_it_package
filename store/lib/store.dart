@@ -8,7 +8,6 @@ export 'extensions.dart';
 export 'src/extensions/ext_list.dart';
 export 'src/extensions/map_operations.dart' show MapDiff;
 export 'src/models/cl_media.dart' show CLMedia;
-export 'src/models/cl_media_candidate.dart' show CLMediaCandidate;
 export 'src/models/cl_medias.dart' show CLMedias;
 export 'src/models/data_types.dart' show CLMediaType;
 export 'src/models/gallery_group.dart';
