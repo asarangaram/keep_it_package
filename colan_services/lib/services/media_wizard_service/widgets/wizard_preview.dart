@@ -20,7 +20,7 @@ class WizardPreview extends ConsumerStatefulWidget {
     super.key,
   });
   final UniversalMediaSource type;
-  final void Function(List<CLMedia>)? onSelectionChanged;
+  final void Function(List<CLEntity>)? onSelectionChanged;
   final bool freezeView;
 
   final ViewIdentifier viewIdentifier;
@@ -29,11 +29,11 @@ class WizardPreview extends ConsumerStatefulWidget {
 }
 
 class _WizardPreviewState extends ConsumerState<WizardPreview> {
-  CLMedia? previewItem;
+  CLEntity? previewItem;
 
   UniversalMediaSource get type => widget.type;
   bool get freezeView => widget.freezeView;
-  void Function(List<CLMedia>)? get onSelectionChanged =>
+  void Function(List<CLEntity>)? get onSelectionChanged =>
       widget.onSelectionChanged;
 
   @override
@@ -65,8 +65,8 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       contextMenuBuilder: (context, list) => CLContextMenu.empty(),
       onSelectionChanged: onSelectionChanged == null
           ? null
-          : (items) =>
-              onSelectionChanged?.call(items.map((e) => e as CLMedia).toList()),
+          : (items) => onSelectionChanged
+              ?.call(items.map((e) => e as CLEntity).toList()),
       itemBuilder: (
         context,
         item, {
@@ -76,7 +76,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
             onGetChildren,
       }) {
         return GetCollection(
-          id: (item as CLMedia).parentId,
+          id: (item as CLEntity).parentId,
           loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),
           errorBuilder: (p0, p1) =>
               const Center(child: Text('GetCollection Error')),

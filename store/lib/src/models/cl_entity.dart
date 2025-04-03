@@ -6,8 +6,8 @@ import 'data_types.dart';
 import 'viewer_entity_mixin.dart';
 
 @immutable
-class CLMedia implements ViewerEntityMixin {
-  const CLMedia({
+class CLEntity implements ViewerEntityMixin {
+  const CLEntity({
     required this.id,
     required this.label,
     required this.type,
@@ -24,7 +24,7 @@ class CLMedia implements ViewerEntityMixin {
     this.isAux = false,
     this.pin,
   });
-  const CLMedia.collection({
+  const CLEntity.collection({
     required this.id,
     required this.label,
     required this.addedDate,
@@ -42,8 +42,8 @@ class CLMedia implements ViewerEntityMixin {
     this.pin,
   });
 
-  factory CLMedia.fromMap(Map<String, dynamic> map) {
-    return CLMedia(
+  factory CLEntity.fromMap(Map<String, dynamic> map) {
+    return CLEntity(
       id: map['id'] as int,
       isCollection: map['isCollection'] as int != 0,
       label: map['label'] as String,
@@ -66,7 +66,7 @@ class CLMedia implements ViewerEntityMixin {
     );
   }
 
-  factory CLMedia.fromJson(String source) => CLMedia.fromMap(
+  factory CLEntity.fromJson(String source) => CLEntity.fromMap(
         json.decode(source) as Map<String, dynamic>,
       );
 
@@ -136,7 +136,7 @@ class CLMedia implements ViewerEntityMixin {
   @override
   DateTime get sortDate => createDate ?? updatedDate;
 
-  CLMedia copyWith({
+  CLEntity copyWith({
     ValueGetter<int?>? id,
     bool? isCollection,
     DateTime? addedDate,
@@ -153,7 +153,7 @@ class CLMedia implements ViewerEntityMixin {
     ValueGetter<String?>? pin,
     bool? isAux,
   }) {
-    return CLMedia(
+    return CLEntity(
       id: id != null ? id.call() : this.id,
       isCollection: isCollection ?? this.isCollection,
       addedDate: addedDate ?? this.addedDate,
@@ -178,7 +178,7 @@ class CLMedia implements ViewerEntityMixin {
   }
 
   @override
-  bool operator ==(covariant CLMedia other) {
+  bool operator ==(covariant CLEntity other) {
     if (identical(this, other)) return true;
 
     return other.id == id &&
@@ -221,7 +221,7 @@ class CLMedia implements ViewerEntityMixin {
   /// and the updatedDate is automatically updated.
   /// if  createdDate is missing (is null), it will be updated with updatedDate
   ///
-  CLMedia updateContent({
+  CLEntity updateContent({
     ValueGetter<String?>? label,
     ValueGetter<String?>? type,
     ValueGetter<String>? extension,
@@ -248,7 +248,7 @@ class CLMedia implements ViewerEntityMixin {
     );
   }
 
-  CLMedia updateStatus({
+  CLEntity updateStatus({
     ValueGetter<bool?>? isHidden,
     ValueGetter<String?>? pin,
   }) {

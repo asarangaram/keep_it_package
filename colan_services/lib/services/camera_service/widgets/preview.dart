@@ -11,7 +11,7 @@ class PreviewCapturedMedia extends ConsumerWidget {
     super.key,
   });
   final String parentIdentifier;
-  final Future<void> Function(List<CLMedia>) sendMedia;
+  final Future<void> Function(List<CLEntity>) sendMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

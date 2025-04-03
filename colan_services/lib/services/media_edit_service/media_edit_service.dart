@@ -68,7 +68,7 @@ class MediaEditService extends ConsumerWidget {
                             PageManager.of(context).pop(media);
                           },
                           onSave: (file, {required overwrite}) async {
-                            final CLMedia resultMedia;
+                            final CLEntity resultMedia;
                             if (overwrite) {
                               final confirmed =
                                   await DialogService.replaceMedia(

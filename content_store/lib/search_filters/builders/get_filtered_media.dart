@@ -33,10 +33,10 @@ class GetFilterredMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (incoming.first.runtimeType == CLMedia || disabled) {
+    if (incoming.first.runtimeType == CLEntity || disabled) {
       return builder(incoming, bannersBuilder: (context, galleryMap) => []);
     }
-    final medias = incoming.map((e) => e as CLMedia).toList();
+    final medias = incoming.map((e) => e as CLEntity).toList();
     final filterred =
         ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, medias)));
 

@@ -20,7 +20,7 @@ class MediaControls extends ConsumerWidget {
     this.onTap,
     this.onPin,
   });
-  final CLMedia media;
+  final CLEntity media;
 
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;
@@ -156,7 +156,7 @@ class ControllerMenu extends StatelessWidget {
     super.key,
   });
 
-  final CLMedia media;
+  final CLEntity media;
 
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;

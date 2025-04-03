@@ -16,7 +16,7 @@ import '../../media_view_service/preview/media_preview_service.dart';
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
     required int mediaId,
-    required void Function(CLMedia media) onSubmit,
+    required void Function(CLEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -30,7 +30,7 @@ class MediaMetadataEditor extends StatelessWidget {
   }
   factory MediaMetadataEditor.dialog({
     required int mediaId,
-    required void Function(CLMedia media) onSubmit,
+    required void Function(CLEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -52,16 +52,16 @@ class MediaMetadataEditor extends StatelessWidget {
 
   final int mediaId;
 
-  final void Function(CLMedia media) onSubmit;
+  final void Function(CLEntity media) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
-  static Future<CLMedia?> openSheet(
+  static Future<CLEntity?> openSheet(
     BuildContext context,
     WidgetRef ref, {
-    required CLMedia media,
+    required CLEntity media,
   }) async {
-    return showShadSheet<CLMedia>(
+    return showShadSheet<CLEntity>(
       context: context,
       builder: (BuildContext context) => MediaMetadataEditor.dialog(
         mediaId: media.id!,
@@ -131,9 +131,9 @@ class StatefulMediaEditor extends StatefulWidget {
     super.key,
   });
 
-  final CLMedia media;
+  final CLEntity media;
 
-  final void Function(CLMedia media) onSubmit;
+  final void Function(CLEntity media) onSubmit;
   final void Function() onCancel;
 
   @override

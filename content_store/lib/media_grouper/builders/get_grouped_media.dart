@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart'
-    show CLMedia, GalleryGroupCLEntity, ViewerEntityMixin;
+    show CLEntity, GalleryGroupCLEntity, ViewerEntityMixin;
 
 import '../../db_service/builders/w3_get_collection.dart';
 
@@ -38,11 +38,11 @@ class GetGroupedMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     incoming.sort(
-      (a, b) => ((a as CLMedia).label?.toLowerCase() ?? '')
-          .compareTo((b as CLMedia).label?.toLowerCase() ?? ''),
+      (a, b) => ((a as CLEntity).label?.toLowerCase() ?? '')
+          .compareTo((b as CLEntity).label?.toLowerCase() ?? ''),
     );
     final ids = incoming
-        .map((e) => (e as CLMedia).parentId)
+        .map((e) => (e as CLEntity).parentId)
         .where((e) => e != null)
         .map((e) => e!)
         .toSet()
@@ -93,13 +93,13 @@ class GetGroupedMedia extends ConsumerWidget {
             return builder(
               result,
               onGetParent: (entity) => switch (entity) {
-                CLMedia _ =>
+                CLEntity _ =>
                   collections.where((e) => e.id == entity.parentId).first,
                 _ => null
               },
               onGetChildren: (entity) => switch (entity) {
-                CLMedia _ => incoming
-                    .where((e) => (e as CLMedia).parentId == entity.id)
+                CLEntity _ => incoming
+                    .where((e) => (e as CLEntity).parentId == entity.id)
                     .toList(),
                 _ => null
               },

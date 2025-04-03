@@ -89,7 +89,7 @@ class CLContextMenu {
   factory CLContextMenu.ofCollection(
     BuildContext context,
     WidgetRef ref, {
-    required CLMedia collection,
+    required CLEntity collection,
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
@@ -158,8 +158,8 @@ class CLContextMenu {
   factory CLContextMenu.ofMedia(
     BuildContext context,
     WidgetRef ref, {
-    required CLMedia media,
-    required CLMedia parentCollection,
+    required CLEntity media,
+    required CLEntity parentCollection,
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
@@ -248,7 +248,7 @@ class CLContextMenu {
   factory CLContextMenu.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
-    required List<CLMedia> items,
+    required List<CLEntity> items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
     required StoreUpdater theStore,
@@ -371,16 +371,16 @@ class CLContextMenu {
   ) {
     // FIXME
     return switch (entities) {
-      final List<ViewerEntityMixin> e when e.every((e) => e is CLMedia) => () {
+      final List<ViewerEntityMixin> e when e.every((e) => e is CLEntity) => () {
           return CLContextMenu.ofMultipleMedia(
             context,
             ref,
-            items: e.map((e) => e as CLMedia).toList(),
+            items: e.map((e) => e as CLEntity).toList(),
             hasOnlineService: true,
             theStore: theStore,
           );
         }(),
-      final List<ViewerEntityMixin> e when e.every((e) => e is CLMedia) => () {
+      final List<ViewerEntityMixin> e when e.every((e) => e is CLEntity) => () {
           return CLContextMenu.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')

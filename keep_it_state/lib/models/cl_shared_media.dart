@@ -11,8 +11,8 @@ class CLSharedMedia {
     this.collection,
     this.type,
   });
-  final List<CLMedia> entries;
-  final CLMedia? collection;
+  final List<CLEntity> entries;
+  final CLEntity? collection;
   final UniversalMediaSource? type;
 
   bool get isEmpty => entries.isEmpty;
@@ -23,8 +23,8 @@ class CLSharedMedia {
       'CLSharedMedia(entries: $entries, collection: $collection, type: $type)';
 
   CLSharedMedia copyWith({
-    List<CLMedia>? entries,
-    CLMedia? collection,
+    List<CLEntity>? entries,
+    CLEntity? collection,
     UniversalMediaSource? type,
   }) {
     return CLSharedMedia(
@@ -34,12 +34,12 @@ class CLSharedMedia {
     );
   }
 
-  Iterable<CLMedia> get _stored => entries.where((e) => e.id != null);
-  Iterable<CLMedia> get _targetMismatch =>
+  Iterable<CLEntity> get _stored => entries.where((e) => e.id != null);
+  Iterable<CLEntity> get _targetMismatch =>
       _stored.where((e) => e.parentId != collection?.id && !(e.isHidden));
 
-  List<CLMedia> get targetMismatch => _targetMismatch.toList();
-  List<CLMedia> get stored => _stored.toList();
+  List<CLEntity> get targetMismatch => _targetMismatch.toList();
+  List<CLEntity> get stored => _stored.toList();
 
   bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
 
@@ -62,18 +62,18 @@ class CLSharedMedia {
     return copyWith(entries: items.toList());
   }
 
-  CLSharedMedia? remove(CLMedia itemToRemove) {
+  CLSharedMedia? remove(CLEntity itemToRemove) {
     final items = entries.where((e) => e != itemToRemove);
     if (items.isEmpty) return null;
 
     return copyWith(entries: items.toList());
   }
 
-  List<CLMedia> itemsByType(CLMediaType type) =>
+  List<CLEntity> itemsByType(CLMediaType type) =>
       entries.where((e) => e.mediaType == type).toList();
 
-  List<CLMedia> get videos => itemsByType(CLMediaType.video);
-  List<CLMedia> get images => itemsByType(CLMediaType.image);
+  List<CLEntity> get videos => itemsByType(CLMediaType.video);
+  List<CLEntity> get images => itemsByType(CLMediaType.image);
 
   List<CLMediaType> get contentTypes =>
       Set<CLMediaType>.from(entries.map((e) => e.type)).toList();

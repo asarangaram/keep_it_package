@@ -51,7 +51,7 @@ class CLMediaFileGroup {
     this.collection,
   });
   final List<CLMediaCandidate> entries;
-  final CLMedia? collection;
+  final CLEntity? collection;
   final UniversalMediaSource? type;
 
   bool get isEmpty => entries.isEmpty;

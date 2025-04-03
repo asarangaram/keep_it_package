@@ -1,9 +1,9 @@
 import 'package:store/store.dart';
 
-extension StoreExtCLMediaList on List<CLMedia> {
-  Map<String, List<CLMedia>> filterByDate() {
-    final filterredMedia = <String, List<CLMedia>>{};
-    final noDate = <CLMedia>[];
+extension StoreExtCLMediaList on List<CLEntity> {
+  Map<String, List<CLEntity>> filterByDate() {
+    final filterredMedia = <String, List<CLEntity>>{};
+    final noDate = <CLEntity>[];
     for (final entry in this) {
       final String formattedDate;
       if (entry.createDate != null) {
@@ -29,7 +29,7 @@ extension StoreExtCLMediaList on List<CLMedia> {
   }
 }
 
-extension FilenameExtOnCLMedia on CLMedia {
+extension FilenameExtOnCLMedia on CLEntity {
   String get previewFileName => '${md5}_tn.jpeg';
   String get mediaFileName => '$md5$extension';
 }

@@ -57,7 +57,7 @@ class KeepItMediaCorouselView extends ConsumerWidget {
                   ) bannersBuilder,
                 }) {
                   return MediaViewService1.pageView(
-                    media: filterred.map((e) => e as CLMedia).toList(),
+                    media: filterred.map((e) => e as CLEntity).toList(),
                     parentIdentifier: viewIdentifier.toString(),
                     initialMediaIndex: filterred
                         .indexWhere((e) => e.entityId == initialMediaIndex),

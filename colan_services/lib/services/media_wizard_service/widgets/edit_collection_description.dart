@@ -11,8 +11,8 @@ class EditCollectionDescription extends StatelessWidget {
     required this.onDone,
     super.key,
   });
-  final CLMedia collection;
-  final void Function(CLMedia collection) onDone;
+  final CLEntity collection;
+  final void Function(CLEntity collection) onDone;
 
   @override
   Widget build(BuildContext context) {

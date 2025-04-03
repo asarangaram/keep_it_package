@@ -8,11 +8,11 @@ import '../../storage_service/models/file_system/models/cl_directories.dart';
 class MediaPathDeterminer {
   const MediaPathDeterminer({required this.directories});
   final CLDirectories directories;
-  Uri getPreviewUri(CLMedia m) {
+  Uri getPreviewUri(CLEntity m) {
     return Uri.file(directories.getPreviewAbsolutePath(m));
   }
 
-  Uri getMediaUri(CLMedia m) {
+  Uri getMediaUri(CLEntity m) {
     return Uri.file(directories.getMediaAbsolutePath(m));
   }
 }

@@ -33,7 +33,7 @@ class MediaUpdater {
   Store store;
   CLDirectories directories;
   final AlbumManager albumManager;
-  final Future<CLMedia> Function(
+  final Future<CLEntity> Function(
     String label, {
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -43,13 +43,13 @@ class MediaUpdater {
   final String tempCollectionName;
 
   /// Method: upsert
-  Future<CLMedia?> upsert(
-    CLMedia media0, {
+  Future<CLEntity?> upsert(
+    CLEntity media0, {
     bool shouldRefresh = true,
     String? path,
-    List<CLMedia>? parents,
+    List<CLEntity>? parents,
   }) async {
-    final CLMedia? media;
+    final CLEntity? media;
     if (path != null) {
       final currentMediaPath = directories.getMediaAbsolutePath(media0);
       if (currentMediaPath != path) {
@@ -73,7 +73,7 @@ class MediaUpdater {
 
     if (media == null) return null;
 
-    CLMedia? c;
+    CLEntity? c;
     if (media.id != null) {
       c = await store.reader.getMediaById(media.id!);
     }
@@ -199,7 +199,7 @@ class MediaUpdater {
 
   Future<bool> pinToggleMultiple(
     Set<int?> ids2Delete, {
-    required String? Function(CLMedia media) onGetPath,
+    required String? Function(CLEntity media) onGetPath,
     bool shouldRefresh = true,
   }) async {
     final media =
@@ -217,7 +217,7 @@ class MediaUpdater {
   }
 
   Future<bool> pinRemoveMultiple(
-    List<CLMedia> mediaMultiple, {
+    List<CLEntity> mediaMultiple, {
     bool shouldRefresh = true,
   }) async {
     final pinnedMedia = mediaMultiple.where((e) => e.pin != null).toList();
@@ -236,14 +236,14 @@ class MediaUpdater {
   }
 
   Future<bool> pinCreateMultiple(
-    List<CLMedia> mediaMultiple, {
-    required String? Function(CLMedia media) onGetPath,
+    List<CLEntity> mediaMultiple, {
+    required String? Function(CLEntity media) onGetPath,
     bool shouldRefresh = true,
   }) async {
     if (mediaMultiple.isEmpty) {
       return true;
     }
-    final updatedMedia = <CLMedia>[];
+    final updatedMedia = <CLEntity>[];
     for (final media in mediaMultiple) {
       if (media.id != null) {
         final path = onGetPath(media);
@@ -281,7 +281,7 @@ class MediaUpdater {
     return res;
   } */
 
-  Future<CLMedia?> create(
+  Future<CLEntity?> create(
     String path, {
     required CLMediaType type,
     ValueGetter<String>? fExt,
@@ -305,7 +305,7 @@ class MediaUpdater {
     ValueGetter<bool?>? isEdited,
     ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
-    List<CLMedia>? parents,
+    List<CLEntity>? parents,
   }) async {
     final defaultName = name != null ? name() : p.basename(path);
     final computedMD5String = await File(path).checksum;
@@ -339,7 +339,7 @@ class MediaUpdater {
       fExt0 = fExt != null ? fExt() : p.extension(path);
     }
     final timeNow = DateTime.now();
-    final updated0 = CLMedia(
+    final updated0 = CLEntity(
       id: null,
       md5: computedMD5String,
       label: defaultName,
@@ -362,8 +362,8 @@ class MediaUpdater {
     );
   }
 
-  Future<CLMedia?> update(
-    CLMedia media, {
+  Future<CLEntity?> update(
+    CLEntity media, {
     required bool isEdited,
     String? path,
     CLMediaType? type,
@@ -387,7 +387,7 @@ class MediaUpdater {
     ValueGetter<bool>? isMediaOriginal,
     ValueGetter<bool?>? haveItOffline,
     ValueGetter<bool>? mustDownloadOriginal,
-    List<CLMedia>? parents,
+    List<CLEntity>? parents,
     bool shouldRefresh = true,
   }) async {
     if (media.pin != null && path == null) {
@@ -483,11 +483,11 @@ class MediaUpdater {
     );
   }
 
-  Future<CLMedia> get _defaultCollection async =>
+  Future<CLEntity> get _defaultCollection async =>
       getCollectionByLabel(tempCollectionName, restoreIfNeeded: true);
 
-  Future<CLMedia?> _generateMediaPreview({
-    required CLMedia media,
+  Future<CLEntity?> _generateMediaPreview({
+    required CLEntity media,
     int dimension = 256,
   }) async {
     final updateMedia = media;
@@ -627,9 +627,9 @@ class MediaUpdater {
     }
   } */
 
-  Future<CLMedia> replaceContent(
+  Future<CLEntity> replaceContent(
     String path, {
-    required CLMedia media,
+    required CLEntity media,
   }) async {
     return (await update(
           media,
@@ -639,9 +639,9 @@ class MediaUpdater {
         media;
   }
 
-  Future<CLMedia> updateCloneAndReplaceContent(
+  Future<CLEntity> updateCloneAndReplaceContent(
     String path, {
-    required CLMedia media,
+    required CLEntity media,
   }) async {
     return (await create(
           path,
@@ -655,12 +655,12 @@ class MediaUpdater {
   }
 
   Stream<Progress> moveMultiple({
-    required List<CLMedia> media,
-    required CLMedia collection,
-    Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
+    required List<CLEntity> media,
+    required CLEntity collection,
+    Future<void> Function({required List<CLEntity> mediaMultiple})? onDone,
     bool shouldRefresh = true,
   }) async* {
-    final CLMedia updatedCollection;
+    final CLEntity updatedCollection;
     if (collection.id == null) {
       yield const Progress(
         fractCompleted: 0,
@@ -682,7 +682,7 @@ class MediaUpdater {
     );
 
     if (media.isNotEmpty) {
-      final updatedList = <CLMedia>[];
+      final updatedList = <CLEntity>[];
 
       for (final (i, m) in media.indexed) {
         final updated = await update(
@@ -762,13 +762,13 @@ class MediaUpdater {
   Stream<Progress> analyseMultiple({
     required List<CLMediaCandidate> mediaFiles,
     required void Function({
-      required List<CLMedia> existingItems,
-      required List<CLMedia> newItems,
+      required List<CLEntity> existingItems,
+      required List<CLEntity> newItems,
     }) onDone,
     bool shouldRefresh = true,
   }) async* {
-    final existingItems = <CLMedia>[];
-    final newItems = <CLMedia>[];
+    final existingItems = <CLEntity>[];
+    final newItems = <CLEntity>[];
     //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
       currentItem: p.basename(mediaFiles[0].path),
@@ -833,7 +833,7 @@ class MediaUpdater {
   // This should not be in this way.
   Future<bool?> share(
     BuildContext context,
-    List<CLMedia> media,
+    List<CLEntity> media,
   ) {
     final files = media
         .map(directories.getMediaAbsolutePath)
@@ -846,20 +846,20 @@ class MediaUpdater {
     );
   }
 
-  String fileRelativePath(CLMedia media) => p.join(
+  String fileRelativePath(CLEntity media) => p.join(
         directories.media.relativePath,
         media.mediaFileName,
       );
-  String previewRelativePath(CLMedia media) => p.join(
+  String previewRelativePath(CLEntity media) => p.join(
         directories.thumbnail.relativePath,
         media.previewFileName,
       );
 
-  String fileAbsolutePath(CLMedia media) => p.join(
+  String fileAbsolutePath(CLEntity media) => p.join(
         directories.media.pathString,
         media.mediaFileName,
       );
-  String previewAbsolutePath(CLMedia media) => p.join(
+  String previewAbsolutePath(CLEntity media) => p.join(
         directories.thumbnail.pathString,
         media.previewFileName,
       );

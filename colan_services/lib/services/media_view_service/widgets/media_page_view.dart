@@ -16,7 +16,7 @@ class MediaPageView extends ConsumerStatefulWidget {
     this.onLockPage,
     super.key,
   });
-  final List<CLMedia> items;
+  final List<CLEntity> items;
 
   final String parentIdentifier;
 

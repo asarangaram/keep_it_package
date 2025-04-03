@@ -13,7 +13,7 @@ class GetCollection extends ConsumerWidget {
     this.id,
     super.key,
   });
-  final Widget Function(CLMedia? collections) builder;
+  final Widget Function(CLEntity? collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int? id;
@@ -28,8 +28,8 @@ class GetCollection extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(DBQueries.mediaById, parameters: [id])
-            as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
+            as StoreQuery<CLEntity>;
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -51,7 +51,7 @@ class GetCollectionsByIdList extends ConsumerWidget {
     required this.ids,
     super.key,
   });
-  final Widget Function(List<CLMedia> collections) builder;
+  final Widget Function(List<CLEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final List<int> ids;
@@ -68,8 +68,8 @@ class GetCollectionsByIdList extends ConsumerWidget {
         final q = dbReader.getQuery(
           DBQueries.mediaByIdList,
           parameters: ['(${ids.join(', ')})'],
-        ) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
+        ) as StoreQuery<CLEntity>;
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -100,9 +100,9 @@ class GetCollectionMultiple extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q =
-            dbReader.getQuery(query, parameters: []) as StoreQuery<CLMedia>;
+            dbReader.getQuery(query, parameters: []) as StoreQuery<CLEntity>;
 
-        return GetFromStore<CLMedia>(
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,

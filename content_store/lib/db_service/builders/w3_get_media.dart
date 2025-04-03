@@ -31,7 +31,7 @@ class GetMedia extends ConsumerWidget {
     required this.id,
     super.key,
   });
-  final Widget Function(CLMedia? media) builder;
+  final Widget Function(CLEntity? media) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int id;
@@ -43,9 +43,9 @@ class GetMedia extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(DBQueries.mediaById, parameters: [id])
-            as StoreQuery<CLMedia>;
+            as StoreQuery<CLEntity>;
 
-        return GetFromStore<CLMedia>(
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -86,8 +86,8 @@ class GetMediaByCollectionId extends ConsumerWidget {
         final q = dbReader.getQuery(
           qid,
           parameters: (collectionId == null) ? [] : [collectionId],
-        ) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
+        ) as StoreQuery<CLEntity>;
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -126,9 +126,9 @@ class GetMediaMultipleByIds extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(qid, parameters: ['(${idList.join(', ')})'])
-            as StoreQuery<CLMedia>;
+            as StoreQuery<CLEntity>;
 
-        return GetFromStore<CLMedia>(
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -160,8 +160,9 @@ class GetPinnedMedia extends ConsumerWidget {
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
-        final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
+        final q =
+            dbReader.getQuery(qid, parameters: []) as StoreQuery<CLEntity>;
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -193,8 +194,9 @@ class GetStaleMedia extends ConsumerWidget {
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
-        final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
+        final q =
+            dbReader.getQuery(qid, parameters: []) as StoreQuery<CLEntity>;
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -226,8 +228,9 @@ class GetDeletedMedia extends ConsumerWidget {
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
-        final q = dbReader.getQuery(qid, parameters: []) as StoreQuery<CLMedia>;
-        return GetFromStore<CLMedia>(
+        final q =
+            dbReader.getQuery(qid, parameters: []) as StoreQuery<CLEntity>;
+        return GetFromStore<CLEntity>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,

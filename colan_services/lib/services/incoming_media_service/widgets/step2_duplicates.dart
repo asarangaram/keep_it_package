@@ -151,8 +151,8 @@ class ExistInDifferentCollection extends StatelessWidget {
 
   final CLSharedMedia media;
   final String parentIdentifier;
-  final List<CLMedia> collections;
-  final void Function(CLMedia media) onRemove;
+  final List<CLEntity> collections;
+  final void Function(CLEntity media) onRemove;
 
   @override
   Widget build(BuildContext context) {

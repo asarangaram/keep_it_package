@@ -13,13 +13,13 @@ class DBWriter {
     required this.mediaTable,
   });
 
-  final DBExec<CLMedia> mediaTable;
+  final DBExec<CLEntity> mediaTable;
 
-  Future<CLMedia> upsertMedia(
+  Future<CLEntity> upsertMedia(
     SqliteWriteContext tx,
-    CLMedia media,
+    CLEntity media,
   ) async {
-    final CLMedia mediaInDB;
+    final CLEntity mediaInDB;
     if (media.isCollection) {
       mediaInDB = (await mediaTable.upsert(
         tx,
@@ -44,7 +44,7 @@ class DBWriter {
     return DBCommand.update(map, table: mediaTable.table).execute(tx);
   }
 
-  Future<void> deleteMedia(SqliteWriteContext tx, CLMedia media) async {
+  Future<void> deleteMedia(SqliteWriteContext tx, CLEntity media) async {
     await mediaTable.delete(tx, media);
   }
 
@@ -55,7 +55,7 @@ class DBWriter {
     final cs = medias.entries.where((e) => e.isCollection);
     final ms = medias.entries.where((e) => !e.isCollection);
 
-    final items = <CLMedia>[];
+    final items = <CLEntity>[];
 
     if (cs.isNotEmpty) {
       items.addAll(

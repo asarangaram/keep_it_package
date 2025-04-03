@@ -6,8 +6,8 @@ class CollectionUpdater {
   Store store;
 
   /// Method: upsert
-  Future<CLMedia> upsert(
-    CLMedia collection, {
+  Future<CLEntity> upsert(
+    CLEntity collection, {
     bool shouldRefresh = true,
   }) async {
     if (collection.id != null) {
@@ -22,8 +22,8 @@ class CollectionUpdater {
     return updated!;
   }
 
-  Future<CLMedia> update(
-    CLMedia collection, {
+  Future<CLEntity> update(
+    CLEntity collection, {
     required bool isEdited,
     bool shouldRefresh = true,
     String? label,
@@ -124,7 +124,7 @@ class CollectionUpdater {
     throw UnimplementedError();
   }
 
-  Future<CLMedia> getCollectionByLabel(
+  Future<CLEntity> getCollectionByLabel(
     String label, {
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -138,7 +138,7 @@ class CollectionUpdater {
     final timeNow = DateTime.now();
     return collectionInDB ??
         await upsert(
-          CLMedia.collection(
+          CLEntity.collection(
             id: null,
             label: label,
             addedDate: createdDate ?? timeNow,

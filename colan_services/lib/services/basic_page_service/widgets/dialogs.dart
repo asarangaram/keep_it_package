@@ -22,7 +22,7 @@ class DialogService {
             children: [
               if (entity != null && entity.isNotEmpty)
                 switch (entity.first) {
-                  final CLMedia _ => SizedBox.square(
+                  final CLEntity _ => SizedBox.square(
                       dimension: 100,
                       child: CLMediaCollage.byMatrixSize(
                         entity.length,
@@ -30,7 +30,7 @@ class DialogService {
                         vCount: 3,
                         itemBuilder: (context, index) {
                           return MediaThumbnail(
-                            media: entity[index] as CLMedia,
+                            media: entity[index] as CLEntity,
                           );
                         },
                         whenNopreview: const Center(),
@@ -65,7 +65,7 @@ class DialogService {
 
   static Future<bool?> deleteCollection(
     BuildContext context, {
-    required CLMedia collection,
+    required CLEntity collection,
   }) async =>
       template(
         context,
@@ -77,7 +77,7 @@ class DialogService {
 
   static Future<bool?> deleteMedia(
     BuildContext context, {
-    required CLMedia media,
+    required CLEntity media,
   }) async =>
       template(
         context,
@@ -89,7 +89,7 @@ class DialogService {
 
   static Future<bool?> deleteMediaMultiple(
     BuildContext context, {
-    required List<CLMedia> media,
+    required List<CLEntity> media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -115,7 +115,7 @@ class DialogService {
 
   static Future<bool?> permanentlyDeleteMedia(
     BuildContext context, {
-    required CLMedia media,
+    required CLEntity media,
   }) async =>
       template(
         context,
@@ -126,7 +126,7 @@ class DialogService {
 
   static Future<bool?> permanentlyDeleteMediaMultiple(
     BuildContext context, {
-    required List<CLMedia> media,
+    required List<CLEntity> media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -151,7 +151,7 @@ class DialogService {
 
   static Future<bool?> restoreMedia(
     BuildContext context, {
-    required CLMedia media,
+    required CLEntity media,
   }) async =>
       template(
         context,
@@ -162,7 +162,7 @@ class DialogService {
 
   static Future<bool?> restoreMediaMultiple(
     BuildContext context, {
-    required List<CLMedia> media,
+    required List<CLEntity> media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -182,7 +182,7 @@ class DialogService {
 
   static Future<bool?> replaceMedia(
     BuildContext context, {
-    required CLMedia media,
+    required CLEntity media,
   }) async =>
       template(
         context,
@@ -191,7 +191,7 @@ class DialogService {
       );
   static Future<bool?> cloneAndReplaceMedia(
     BuildContext context, {
-    required CLMedia media,
+    required CLEntity media,
   }) async =>
       template(
         context,
@@ -201,7 +201,7 @@ class DialogService {
       );
   static Future<bool?> deleteNote(
     BuildContext context, {
-    required CLMedia note,
+    required CLEntity note,
   }) async =>
       template(
         context,

@@ -37,18 +37,18 @@ class EntityPreview extends ConsumerWidget {
       case true: // What if empty collection?
         if (children == null) {
           throw Exception(
-            'Failed to get media list of collection ${(item as CLMedia).id}',
+            'Failed to get media list of collection ${(item as CLEntity).id}',
           );
         }
       case false:
         if (parent == null) {
           throw Exception(
-            'Failed to get collection of media ${(item as CLMedia).id}',
+            'Failed to get collection of media ${(item as CLEntity).id}',
           );
         }
     }
-    final c = item as CLMedia;
-    final m = item as CLMedia;
+    final c = item as CLEntity;
+    final m = item as CLEntity;
     return switch (item.isCollection) {
       true => Padding(
           padding: const EdgeInsets.all(8),
@@ -76,7 +76,7 @@ class EntityPreview extends ConsumerWidget {
                     c,
                     viewIdentifier: viewIdentifier,
                     containingMedia:
-                        children!.map((e) => e as CLMedia).toList(),
+                        children!.map((e) => e as CLEntity).toList(),
                   ),
                 ),
               ),
@@ -121,7 +121,7 @@ class EntityPreview extends ConsumerWidget {
             context,
             ref,
             media: m,
-            parentCollection: parent! as CLMedia,
+            parentCollection: parent! as CLEntity,
             hasOnlineService: false,
             theStore: theStore,
           ),

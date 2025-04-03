@@ -14,8 +14,8 @@ class AnalysePage extends StatelessWidget {
   });
   final CLMediaFileGroup incomingMedia;
   final void Function({
-    required List<CLMedia> existingItems,
-    required List<CLMedia> newItems,
+    required List<CLEntity> existingItems,
+    required List<CLEntity> newItems,
   }) onDone;
   final void Function() onCancel;
 

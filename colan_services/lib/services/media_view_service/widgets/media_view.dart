@@ -12,7 +12,7 @@ import 'media_controls.dart';
 
 class MediaView extends StatelessWidget {
   factory MediaView({
-    required CLMedia media,
+    required CLEntity media,
     required String parentIdentifier,
     required bool autoStart,
     required bool autoPlay,
@@ -36,7 +36,7 @@ class MediaView extends StatelessWidget {
     );
   }
   factory MediaView.preview(
-    CLMedia media, {
+    CLEntity media, {
     required String parentIdentifier,
   }) {
     return MediaView._(
@@ -60,7 +60,7 @@ class MediaView extends StatelessWidget {
     this.errorBuilder,
     this.loadingBuilder,
   });
-  final CLMedia media;
+  final CLEntity media;
 
   final String parentIdentifier;
 
@@ -112,7 +112,7 @@ class MediaView0 extends ConsumerWidget {
     this.onLockPage,
     super.key,
   });
-  final CLMedia media;
+  final CLEntity media;
 
   final String parentIdentifier;
 

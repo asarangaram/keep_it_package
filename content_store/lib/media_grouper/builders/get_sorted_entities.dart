@@ -13,11 +13,11 @@ class GetSortedEntity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<ViewerEntityMixin> sorted;
-    if (entities.every((e) => e is CLMedia)) {
+    if (entities.every((e) => e is CLEntity)) {
       sorted = List<ViewerEntityMixin>.from(entities)
         ..sort(
-          (a, b) => ((a as CLMedia).label?.toLowerCase() ?? '')
-              .compareTo((b as CLMedia).label?.toLowerCase() ?? ''),
+          (a, b) => ((a as CLEntity).label?.toLowerCase() ?? '')
+              .compareTo((b as CLEntity).label?.toLowerCase() ?? ''),
         );
     } else {
       throw UnimplementedError('unsupported entity type, mix not supported');

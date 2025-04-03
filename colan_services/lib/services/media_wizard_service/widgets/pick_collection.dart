@@ -13,9 +13,9 @@ class PickCollection extends StatelessWidget {
     super.key,
     this.isValidSuggestion,
   });
-  final CLMedia? collection;
-  final void Function(CLMedia) onDone;
-  final bool Function(CLMedia collection)? isValidSuggestion;
+  final CLEntity? collection;
+  final void Function(CLEntity) onDone;
+  final bool Function(CLEntity collection)? isValidSuggestion;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +37,8 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as CLMedia).label!,
-            descriptionBuilder: (e) => (e as CLMedia).description,
+            labelBuilder: (e) => (e as CLEntity).label!,
+            descriptionBuilder: (e) => (e as CLEntity).description,
             suggestionsAvailable: [
               if (isValidSuggestion != null)
                 ...collections.entries.where((e) => isValidSuggestion!(e))
@@ -49,7 +49,7 @@ class PickCollection extends StatelessWidget {
             onSelectSuggestion: (item) async => item,
             onCreateByLabel: (label) async {
               final timeNow = DateTime.now();
-              return CLMedia.collection(
+              return CLEntity.collection(
                 label: label,
                 id: null,
                 addedDate: timeNow,
@@ -67,8 +67,8 @@ class PickCollection extends StatelessWidget {
             },
           ),
           onSubmit: (CLFormFieldResult result) async {
-            final collection =
-                (result as CLFormSelectSingleResult).selectedEntitry as CLMedia;
+            final collection = (result as CLFormSelectSingleResult)
+                .selectedEntitry as CLEntity;
 
             onDone(collection);
           },
@@ -85,8 +85,8 @@ class PickCollectionWizard extends StatelessWidget {
     super.key,
   });
 
-  final CLMedia? collection;
-  final void Function(CLMedia p1) onDone;
+  final CLEntity? collection;
+  final void Function(CLEntity p1) onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -99,14 +99,14 @@ class PickCollectionWizard extends StatelessWidget {
       descriptor: CLFormSelectSingleDescriptors(
         title: 'Collection',
         label: 'Select Collection',
-        labelBuilder: (e) => (e as CLMedia).label!,
-        descriptionBuilder: (e) => (e as CLMedia).description,
+        labelBuilder: (e) => (e as CLEntity).label!,
+        descriptionBuilder: (e) => (e as CLEntity).description,
         suggestionsAvailable: const [],
         initialValues: collection,
         onSelectSuggestion: (item) async => item,
         onCreateByLabel: (label) async {
           final timeNow = DateTime.now();
-          return CLMedia.collection(
+          return CLEntity.collection(
             id: null,
             label: label,
             addedDate: timeNow,
@@ -125,7 +125,7 @@ class PickCollectionWizard extends StatelessWidget {
       ),
       onSubmit: (CLFormFieldResult result) async {
         final collection =
-            (result as CLFormSelectSingleResult).selectedEntitry as CLMedia;
+            (result as CLFormSelectSingleResult).selectedEntitry as CLEntity;
 
         onDone(collection);
       },

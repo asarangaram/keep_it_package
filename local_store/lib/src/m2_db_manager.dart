@@ -18,14 +18,14 @@ class DBManager extends Store {
     required SqliteDatabase db,
     required void Function() onReload,
   }) {
-    final mediaTable = DBExec<CLMedia>(
+    final mediaTable = DBExec<CLEntity>(
       table: 'Media',
-      toMap: (CLMedia obj) => obj.toMap(),
+      toMap: (CLEntity obj) => obj.toMap(),
       readBack: (tx, media) {
         return (Queries.getQuery(
           DBQueries.mediaByMD5,
           parameters: [media.md5],
-        ) as DBQuery<CLMedia>)
+        ) as DBQuery<CLEntity>)
             .read(tx);
       },
     );
@@ -73,22 +73,22 @@ class DBManager extends Store {
   }
 
   @override
-  Future<CLMedia> upsertMedia(
-    CLMedia media, {
-    List<CLMedia>? parents,
+  Future<CLEntity> upsertMedia(
+    CLEntity media, {
+    List<CLEntity>? parents,
   }) async =>
       db.writeTransaction((tx) async {
         return dbWriter.upsertMedia(tx, media);
       });
 
   @override
-  Future<CLMedia?> updateMediaFromMap(Map<String, dynamic> map) async =>
+  Future<CLEntity?> updateMediaFromMap(Map<String, dynamic> map) async =>
       db.writeTransaction((tx) async {
         if (await dbWriter.updateMediaFromMap(tx, map)) {
           final q = reader.getQuery(
             DBQueries.mediaById,
             parameters: [map['id'] as int],
-          ) as StoreQuery<CLMedia>;
+          ) as StoreQuery<CLEntity>;
 
           return DBReader(tx).read(q);
         }
@@ -96,7 +96,7 @@ class DBManager extends Store {
       });
 
   @override
-  Future<void> deleteMedia(CLMedia media) async =>
+  Future<void> deleteMedia(CLEntity media) async =>
       db.writeTransaction((tx) async {
         await dbWriter.deleteMedia(tx, media);
       });

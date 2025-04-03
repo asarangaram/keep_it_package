@@ -15,7 +15,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
     super.key,
   });
 
-  final CLMedia media;
+  final CLEntity media;
   final String parentIdentifier;
   final bool isMediaWaitingForDownload;
 
@@ -105,7 +105,7 @@ class MediaThumbnail extends StatelessWidget {
     this.overlays,
     super.key,
   });
-  final CLMedia media;
+  final CLEntity media;
   final List<OverlayWidgets>? overlays;
 
   @override

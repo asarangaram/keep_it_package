@@ -145,7 +145,7 @@ class ActionControl {
   }
 
   static ActionControl onGetCollectionActionControl(
-    CLMedia collection,
+    CLEntity collection,
     bool hasOnlineService, {
     List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
   }) {
@@ -163,7 +163,7 @@ class ActionControl {
   }
 
   static ActionControl onGetMediaActionControl(
-      CLMedia media, CLMedia parentCollection, bool hasOnlineService) {
+      CLEntity media, CLEntity parentCollection, bool hasOnlineService) {
     final canDeleteLocalCopy = false;
 
     final editSupported = switch (media.mediaType) {

@@ -12,7 +12,7 @@ import 'package:store/store.dart';
 class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
     required int collectionId,
-    required void Function(CLMedia collection) onSubmit,
+    required void Function(CLEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -26,7 +26,7 @@ class CollectionEditor extends StatefulWidget {
   }
   factory CollectionEditor.dialog({
     required int collectionId,
-    required void Function(CLMedia collection) onSubmit,
+    required void Function(CLEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -48,19 +48,19 @@ class CollectionEditor extends StatefulWidget {
 
   final int collectionId;
 
-  final void Function(CLMedia collection) onSubmit;
+  final void Function(CLEntity collection) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
   @override
   State<CollectionEditor> createState() => _CollectionEditorState();
 
-  static Future<CLMedia?> openSheet(
+  static Future<CLEntity?> openSheet(
     BuildContext context,
     WidgetRef ref, {
-    required CLMedia collection,
+    required CLEntity collection,
   }) async {
-    return showShadSheet<CLMedia>(
+    return showShadSheet<CLEntity>(
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
         collectionId: collection.id!,
@@ -211,7 +211,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
   String? validateName({
     required String? newLabel,
     required String? existingLabel,
-    required List<CLMedia> collections,
+    required List<CLEntity> collections,
   }) {
     final newLabel0 = newLabel?.trim();
 

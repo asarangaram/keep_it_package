@@ -51,7 +51,7 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
 
 class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   CLSharedMedia? duplicateCandidates;
-  List<CLMedia>? newCandidates;
+  List<CLEntity>? newCandidates;
 
   bool isSaving = false;
   @override
@@ -108,8 +108,8 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 
   Future<void> segretated({
-    required List<CLMedia> existingItems,
-    required List<CLMedia> newItems,
+    required List<CLEntity> existingItems,
+    required List<CLEntity> newItems,
   }) async {
     final duplicateCandidates0 = CLSharedMedia(
       entries: existingItems,

@@ -25,7 +25,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
   final UniversalMediaSource type;
   final ViewIdentifier viewIdentifier;
 
-  final List<GalleryGroupCLEntity<CLMedia>> galleryMap;
+  final List<GalleryGroupCLEntity<CLEntity>> galleryMap;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();
@@ -33,7 +33,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
 
 class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
-  late CLMedia? targetCollection;
+  late CLEntity? targetCollection;
   late bool actionConfirmed;
 
   @override
@@ -45,7 +45,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> actor({
-    required List<CLMedia> currMedia,
+    required List<CLEntity> currMedia,
     required Future<bool> Function() confirmAction,
     required Future<bool> Function() action,
     required void Function({required bool enable}) onUpdateSelectionmode,
@@ -77,7 +77,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   Future<bool> keep({
     required MediaUpdater mediaUpdater,
-    required List<CLMedia> currMedia,
+    required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
@@ -96,7 +96,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   Future<bool> restore({
     required MediaUpdater mediaUpdater,
-    required List<CLMedia> currMedia,
+    required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     return actor(
@@ -116,7 +116,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   Future<bool> permanentlyDelete({
     required MediaUpdater mediaUpdater,
-    required List<CLMedia> currMedia,
+    required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     return actor(
@@ -136,7 +136,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   Future<bool> delete({
     required MediaUpdater mediaUpdater,
-    required List<CLMedia> currMedia,
+    required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
@@ -161,7 +161,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     );
   }
 
-  Widget getCollection({required List<CLMedia> currMedia}) {
+  Widget getCollection({required List<CLEntity> currMedia}) {
     return CreateCollectionWizard(
       isValidSuggestion: (collection) {
         return !collection.isDeleted;
@@ -224,7 +224,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                         ),
               ),
               freezeView: actionConfirmed,
-              onSelectionChanged: (List<CLMedia> items) {
+              onSelectionChanged: (List<CLEntity> items) {
                 selectedMedia = selectedMedia.copyWith(entries: items);
                 setState(() {});
               },
@@ -280,7 +280,7 @@ class WizardView extends ConsumerWidget {
   final WizardMenuItems menu;
   final bool canSelect;
   final Widget? dialog;
-  final void Function(List<CLMedia>)? onSelectionChanged;
+  final void Function(List<CLEntity>)? onSelectionChanged;
   final bool freezeView; // Can this avoided?
 
   @override
@@ -319,9 +319,9 @@ class KeepWithProgress extends StatelessWidget {
     required this.onDone,
     super.key,
   });
-  final CLMedia targetCollection;
+  final CLEntity targetCollection;
   final MediaUpdater mediaUpdater;
-  final List<CLMedia> currMedia;
+  final List<CLEntity> currMedia;
   final void Function({required bool enable}) onUpdateSelectionmode;
   final Future<void> Function() onDone;
   @override
@@ -339,7 +339,7 @@ class KeepWithProgress extends StatelessWidget {
             collection: targetCollection,
             shouldRefresh: false,
             onDone: ({
-              required List<CLMedia> mediaMultiple,
+              required List<CLEntity> mediaMultiple,
             }) async =>
                 onDone(),
           ),

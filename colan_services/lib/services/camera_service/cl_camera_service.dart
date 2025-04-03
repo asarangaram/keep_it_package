@@ -89,8 +89,8 @@ class CLCameraService0 extends ConsumerWidget {
   });
   final String parentIdentifier;
   final VoidCallback? onCancel;
-  final Future<void> Function(List<CLMedia> mediaList) onDone;
-  final Future<CLMedia?> Function(String, {required bool isVideo}) onNewMedia;
+  final Future<void> Function(List<CLEntity> mediaList) onDone;
+  final Future<CLEntity?> Function(String, {required bool isVideo}) onNewMedia;
 
   final void Function(String message, {required dynamic error})? onError;
   static Future<bool> invokeWithSufficientPermission(

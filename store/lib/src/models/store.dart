@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../extensions/ext_list.dart';
-import 'cl_media.dart';
+import 'cl_entity.dart';
 
 enum DBQueries {
   // Fetch the complete table!
@@ -50,32 +50,32 @@ abstract class StoreReader {
     return (await readMultiple<T>(q)).nonNullableList;
   }
 
-  Future<List<CLMedia>> get mediaOnDevice async =>
+  Future<List<CLEntity>> get mediaOnDevice async =>
       getMultiple(DBQueries.mediaOnDevice);
 
-  Future<CLMedia?> getMediaById(int id) async =>
+  Future<CLEntity?> getMediaById(int id) async =>
       get(DBQueries.mediaById, parameters: [id]);
 
-  Future<List<CLMedia>> getMediasByIDList(List<int> idList) async =>
+  Future<List<CLEntity>> getMediasByIDList(List<int> idList) async =>
       getMultiple(
         DBQueries.mediaByIdList,
         parameters: ['(${idList.join(', ')})'],
       );
 
-  Future<List<CLMedia>> getMediaByCollectionId(int collectionId) async =>
+  Future<List<CLEntity>> getMediaByCollectionId(int collectionId) async =>
       getMultiple(
         DBQueries.mediaByCollectionId,
         parameters: [collectionId],
       );
 
-  Future<List<CLMedia>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
+  Future<List<CLEntity>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
 
-  Future<CLMedia?> getMediaByMD5String(String md5String) async => get(
+  Future<CLEntity?> getMediaByMD5String(String md5String) async => get(
         DBQueries.mediaByMD5,
         parameters: [md5String],
       );
 
-  Future<CLMedia?> getCollectionByLabel(String label) {
+  Future<CLEntity?> getCollectionByLabel(String label) {
     return get(DBQueries.mediaByLabel, parameters: [label]);
   }
 }
@@ -85,14 +85,14 @@ abstract class Store {
   const Store(this.reader);
   final StoreReader reader;
 
-  Future<CLMedia?> upsertMedia(CLMedia media, {List<CLMedia>? parents});
+  Future<CLEntity?> upsertMedia(CLEntity media, {List<CLEntity>? parents});
   //Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
 
-  Future<CLMedia?> updateMediaFromMap(
+  Future<CLEntity?> updateMediaFromMap(
     Map<String, dynamic> map,
   );
 
-  Future<void> deleteMedia(CLMedia media);
+  Future<void> deleteMedia(CLEntity media);
 
   void reloadStore();
 

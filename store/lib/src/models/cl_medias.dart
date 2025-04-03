@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:store/src/models/cl_media.dart';
+import 'package:store/src/models/cl_entity.dart';
 
 @immutable
 class CLMedias {
@@ -12,18 +12,18 @@ class CLMedias {
 
   factory CLMedias.fromMap(Map<String, dynamic> map) {
     return CLMedias(
-      List<CLMedia>.from(
-        (map['entries'] as List<int>).map<CLMedia>(
-          (x) => CLMedia.fromMap(x as Map<String, dynamic>),
+      List<CLEntity>.from(
+        (map['entries'] as List<int>).map<CLEntity>(
+          (x) => CLEntity.fromMap(x as Map<String, dynamic>),
         ),
       ),
     );
   }
   factory CLMedias.fromList(List<dynamic> map) {
     return CLMedias(
-      List<CLMedia>.from(
-        map.map<CLMedia>(
-          (x) => CLMedia.fromMap(x as Map<String, dynamic>),
+      List<CLEntity>.from(
+        map.map<CLEntity>(
+          (x) => CLEntity.fromMap(x as Map<String, dynamic>),
         ),
       ),
     );
@@ -31,10 +31,10 @@ class CLMedias {
 
   factory CLMedias.fromJson(String source) =>
       CLMedias.fromList(json.decode(source) as List<dynamic>);
-  final List<CLMedia> entries;
+  final List<CLEntity> entries;
 
   CLMedias copyWith({
-    List<CLMedia>? entries,
+    List<CLEntity>? entries,
   }) {
     return CLMedias(
       entries ?? this.entries,

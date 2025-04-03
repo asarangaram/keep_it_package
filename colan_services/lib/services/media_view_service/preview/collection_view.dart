@@ -19,8 +19,8 @@ class CollectionView extends ConsumerWidget {
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final CLMedia collection;
-  final List<CLMedia> containingMedia;
+  final CLEntity collection;
+  final List<CLEntity> containingMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
