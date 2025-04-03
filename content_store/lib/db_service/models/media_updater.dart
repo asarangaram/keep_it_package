@@ -739,7 +739,7 @@ class MediaUpdater {
       return mediaFile;
     }
     final mimeType = await URLHandler.getMimeType(
-      mediaFile.label,
+      mediaFile.path,
     );
     if (![
       CLMediaType.image,
@@ -750,14 +750,14 @@ class MediaUpdater {
       return mediaFile;
     }
     final downloadedFile = await URLHandler.download(
-      mediaFile.label,
+      mediaFile.path,
       deviceDirectories.download.path,
     );
     if (downloadedFile == null) {
       return mediaFile;
     }
     return mediaFile.copyWith(
-      label: () => downloadedFile,
+      path: () => downloadedFile,
       type: () => mimeType!,
     );
   }
@@ -770,7 +770,7 @@ class MediaUpdater {
       return mediaFile;
     }
 
-    final mimeType = switch (lookupMimeType(mediaFile.label)) {
+    final mimeType = switch (lookupMimeType(mediaFile.path)) {
       (final String mime) when mime.startsWith('image') => CLMediaType.image,
       (final String mime) when mime.startsWith('video') => CLMediaType.video,
       _ => CLMediaType.file
@@ -793,7 +793,7 @@ class MediaUpdater {
     final newItems = <CLMedia>[];
     //await Future<void>.delayed(const Duration(seconds: 3));
     yield Progress(
-      currentItem: p.basename(mediaFiles[0].label),
+      currentItem: p.basename(mediaFiles[0].path),
       fractCompleted: 0,
     );
     for (final (i, item0) in mediaFiles.indexed) {
@@ -806,7 +806,7 @@ class MediaUpdater {
         deviceDirectories: directories,
       );
       if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
-        final file = File(item.label);
+        final file = File(item.path);
         if (file.existsSync()) {
           final md5String = await file.checksum;
           final duplicate = await store.reader.getMediaByMD5String(md5String);
@@ -818,7 +818,7 @@ class MediaUpdater {
             }
           } else {
             // avoid recomputing md5
-            final newItem = await create(item.label, type: item.type);
+            final newItem = await create(item.path, type: item.type);
             if (newItem != null) {
               newItems.add(newItem);
             }
@@ -836,7 +836,7 @@ class MediaUpdater {
         currentItem: (i + 1 == mediaFiles.length)
             ? ''
             : p.basename(
-                mediaFiles[i + 1].label,
+                mediaFiles[i + 1].path,
               ),
         fractCompleted: (i + 1) / mediaFiles.length,
       );
