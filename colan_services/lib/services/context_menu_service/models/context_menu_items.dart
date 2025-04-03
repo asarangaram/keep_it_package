@@ -98,7 +98,7 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
-    List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
   }) {
     /// Basic Actions
     final onEditInfo0 = onEditInfo != null
@@ -352,7 +352,7 @@ class CLContextMenu {
   ) {
     if (actions.isNotEmpty) {
       return (context, {required parentKey}) {
-        return ActionsDraggableMenu<CLEntity>(
+        return ActionsDraggableMenu<ViewerEntityMixin>(
           parentKey: parentKey,
           tagPrefix: 'Selection',
           menuItems: actions.insertOnDone(onDone),
@@ -366,12 +366,12 @@ class CLContextMenu {
   static CLContextMenu entitiesContextMenuBuilder(
     BuildContext context,
     WidgetRef ref,
-    List<CLEntity> entities,
+    List<ViewerEntityMixin> entities,
     StoreUpdater theStore,
   ) {
     // FIXME
     return switch (entities) {
-      final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+      final List<ViewerEntityMixin> e when e.every((e) => e is CLMedia) => () {
           return CLContextMenu.ofMultipleMedia(
             context,
             ref,
@@ -380,7 +380,7 @@ class CLContextMenu {
             theStore: theStore,
           );
         }(),
-      final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+      final List<ViewerEntityMixin> e when e.every((e) => e is CLMedia) => () {
           return CLContextMenu.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')

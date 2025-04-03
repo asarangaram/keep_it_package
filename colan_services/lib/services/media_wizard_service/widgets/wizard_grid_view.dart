@@ -23,25 +23,27 @@ class CLEntityGalleryView extends StatelessWidget {
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final List<CLEntity> entities;
+  final List<ViewerEntityMixin> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function(
     BuildContext,
-    CLEntity, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    ViewerEntityMixin, {
+    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
+    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+        onGetChildren,
   }) itemBuilder;
   final int columns;
 
   final Widget emptyWidget;
-  final CLContextMenu Function(BuildContext, List<CLEntity>) contextMenuBuilder;
-  final void Function(List<CLEntity>)? onSelectionChanged;
+  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)
+      contextMenuBuilder;
+  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filterDisabled;
   final bool viewableAsCollection;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
 
   @override

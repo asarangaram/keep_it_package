@@ -3,16 +3,16 @@ import 'package:store/src/extensions/ext_list.dart';
 
 import 'gallery_group.dart';
 
-abstract class CLEntity {
+abstract class ViewerEntityMixin {
   int? get entityId;
   bool get isCollection;
   DateTime get sortDate;
 }
 
-extension Filter on List<CLEntity> {
-  Map<String, List<CLEntity>> filterByDate() {
-    final filterredMedia = <String, List<CLEntity>>{};
-    final noDate = <CLEntity>[];
+extension Filter on List<ViewerEntityMixin> {
+  Map<String, List<ViewerEntityMixin>> filterByDate() {
+    final filterredMedia = <String, List<ViewerEntityMixin>>{};
+    final noDate = <ViewerEntityMixin>[];
     for (final entry in this) {
       final String formattedDate;
 
@@ -31,8 +31,8 @@ extension Filter on List<CLEntity> {
     return filterredMedia;
   }
 
-  List<GalleryGroupCLEntity<CLEntity>> groupByTime(int columns) {
-    final galleryGroups = <GalleryGroupCLEntity<CLEntity>>[];
+  List<GalleryGroupCLEntity<ViewerEntityMixin>> groupByTime(int columns) {
+    final galleryGroups = <GalleryGroupCLEntity<ViewerEntityMixin>>[];
 
     for (final entry in filterByDate().entries) {
       if (entry.value.length > columns) {
@@ -62,8 +62,8 @@ extension Filter on List<CLEntity> {
     return galleryGroups;
   }
 
-  List<GalleryGroupCLEntity<CLEntity>> group(int columns) {
-    final galleryGroups = <GalleryGroupCLEntity<CLEntity>>[];
+  List<GalleryGroupCLEntity<ViewerEntityMixin>> group(int columns) {
+    final galleryGroups = <GalleryGroupCLEntity<ViewerEntityMixin>>[];
 
     for (final rows in convertTo2D(columns)) {
       galleryGroups.add(

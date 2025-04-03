@@ -75,8 +75,11 @@ class KeepItMainGrid extends ConsumerWidget {
                     itemBuilder: (
                       context,
                       item, {
-                      required CLEntity? Function(CLEntity entity)? onGetParent,
-                      required List<CLEntity>? Function(CLEntity entity)?
+                      required ViewerEntityMixin? Function(
+                              ViewerEntityMixin entity)?
+                          onGetParent,
+                      required List<ViewerEntityMixin>? Function(
+                              ViewerEntityMixin entity)?
                           onGetChildren,
                     }) =>
                         EntityPreview(

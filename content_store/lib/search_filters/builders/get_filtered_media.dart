@@ -16,17 +16,17 @@ class GetFilterredMedia extends ConsumerWidget {
     this.disabled = false,
   });
   final Widget Function(
-    List<CLEntity> filterred, {
+    List<ViewerEntityMixin> filterred, {
     required List<Widget> Function(
       BuildContext,
-      List<GalleryGroupCLEntity<CLEntity>>,
+      List<GalleryGroupCLEntity<ViewerEntityMixin>>,
     ) bannersBuilder,
   }) builder;
 
-  final List<CLEntity> incoming;
+  final List<ViewerEntityMixin> incoming;
   final List<Widget> Function(
     BuildContext,
-    List<GalleryGroupCLEntity<CLEntity>>,
+    List<GalleryGroupCLEntity<ViewerEntityMixin>>,
   ) bannersBuilder;
   final bool disabled;
   final ViewIdentifier viewIdentifier;

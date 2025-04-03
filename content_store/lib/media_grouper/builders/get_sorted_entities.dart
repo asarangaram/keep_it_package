@@ -7,20 +7,20 @@ class GetSortedEntity extends StatelessWidget {
     required this.builder,
     super.key,
   });
-  final List<CLEntity> entities;
-  final Widget Function(List<CLEntity> sorted) builder;
+  final List<ViewerEntityMixin> entities;
+  final Widget Function(List<ViewerEntityMixin> sorted) builder;
 
   @override
   Widget build(BuildContext context) {
-    final List<CLEntity> sorted;
+    final List<ViewerEntityMixin> sorted;
     if (entities.every((e) => e is CLMedia)) {
-      sorted = List<CLEntity>.from(entities)
+      sorted = List<ViewerEntityMixin>.from(entities)
         ..sort(
           (a, b) => ((a as CLMedia).label?.toLowerCase() ?? '')
               .compareTo((b as CLMedia).label?.toLowerCase() ?? ''),
         );
     } else if (entities.every((e) => e is CLMedia)) {
-      sorted = List<CLEntity>.from(entities)
+      sorted = List<ViewerEntityMixin>.from(entities)
         ..sort(
           (a, b) => ((a as CLMedia).label?.toLowerCase() ?? '')
               .compareTo((b as CLMedia).label?.toLowerCase() ?? ''),

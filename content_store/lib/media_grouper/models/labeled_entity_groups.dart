@@ -9,12 +9,11 @@ class LabelledEntityGroups {
     required this.galleryGroups,
   });
   final String name;
-  final List<GalleryGroupCLEntity<CLEntity>> galleryGroups;
-  
+  final List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryGroups;
 
   LabelledEntityGroups copyWith({
     String? name,
-    List<GalleryGroupCLEntity<CLEntity>>? galleryGroups,
+    List<GalleryGroupCLEntity<ViewerEntityMixin>>? galleryGroups,
   }) {
     return LabelledEntityGroups(
       name: name ?? this.name,

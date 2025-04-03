@@ -12,11 +12,12 @@ class GetSelectionControl extends ConsumerWidget {
   });
   final Widget Function(
     CLSelector selector, {
-    required void Function(List<CLEntity>? candidates, {bool? deselect})
+    required void Function(List<ViewerEntityMixin>? candidates,
+            {bool? deselect})
         onUpdateSelection,
   }) builder;
-  final List<CLEntity> incoming;
-  final void Function(List<CLEntity>)? onSelectionChanged;
+  final List<ViewerEntityMixin> incoming;
+  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,10 +43,11 @@ class GetSelection0 extends ConsumerWidget {
   });
   final Widget Function(
     CLSelector selector, {
-    required void Function(List<CLEntity>? candidates, {bool? deselect})
+    required void Function(List<ViewerEntityMixin>? candidates,
+            {bool? deselect})
         onUpdateSelection,
   }) builder;
-  final void Function(List<CLEntity>)? onSelectionChanged;
+  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

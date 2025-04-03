@@ -147,7 +147,7 @@ class ActionControl {
   static ActionControl onGetCollectionActionControl(
     CLMedia collection,
     bool hasOnlineService, {
-    List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
   }) {
     return ActionControl(
         allowEdit: true,

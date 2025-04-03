@@ -23,9 +23,10 @@ class EntityPreview extends ConsumerWidget {
     this.onGetChildren,
   });
   final ViewIdentifier viewIdentifier;
-  final CLEntity item;
-  final CLEntity? Function(CLEntity entity)? onGetParent;
-  final List<CLEntity>? Function(CLEntity entity)? onGetChildren;
+  final ViewerEntityMixin item;
+  final ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent;
+  final List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+      onGetChildren;
   final StoreUpdater theStore;
 
   @override

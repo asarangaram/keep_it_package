@@ -50,10 +50,10 @@ class KeepItMediaCorouselView extends ConsumerWidget {
                 incoming: sorted,
                 bannersBuilder: (context, _) => [],
                 builder: (
-                  List<CLEntity> filterred, {
+                  List<ViewerEntityMixin> filterred, {
                   required List<Widget> Function(
                     BuildContext,
-                    List<GalleryGroupCLEntity<CLEntity>>,
+                    List<GalleryGroupCLEntity<ViewerEntityMixin>>,
                   ) bannersBuilder,
                 }) {
                   return MediaViewService1.pageView(

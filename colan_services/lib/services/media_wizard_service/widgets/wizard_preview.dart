@@ -70,8 +70,10 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       itemBuilder: (
         context,
         item, {
-        required CLEntity? Function(CLEntity entity)? onGetParent,
-        required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+        required ViewerEntityMixin? Function(ViewerEntityMixin entity)?
+            onGetParent,
+        required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+            onGetChildren,
       }) {
         return GetCollection(
           id: (item as CLMedia).parentId,

@@ -7,7 +7,7 @@ import 'cl_media_base.dart';
 import 'cl_media_type.dart';
 
 @immutable
-class CLMedia implements CLEntity {
+class CLMedia implements ViewerEntityMixin {
   const CLMedia({
     required this.id,
     required this.label,

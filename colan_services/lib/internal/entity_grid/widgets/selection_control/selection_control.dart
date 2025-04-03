@@ -28,47 +28,51 @@ class SelectionControl extends ConsumerWidget {
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final List<CLEntity> incoming;
+  final List<ViewerEntityMixin> incoming;
   final Widget Function(
     BuildContext,
-    CLEntity, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    ViewerEntityMixin, {
+    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
+    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+        onGetChildren,
   }) itemBuilder;
   final Widget? Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
-    GalleryGroupCLEntity<CLEntity> gallery,
+    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+    GalleryGroupCLEntity<ViewerEntityMixin> gallery,
   ) labelBuilder;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
   final Widget Function({
-    required List<CLEntity> items,
+    required List<ViewerEntityMixin> items,
     required Widget Function(
       BuildContext,
-      CLEntity, {
-      required CLEntity? Function(CLEntity entity)? onGetParent,
-      required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+      ViewerEntityMixin, {
+      required ViewerEntityMixin? Function(ViewerEntityMixin entity)?
+          onGetParent,
+      required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+          onGetChildren,
     }) itemBuilder,
     required Widget? Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
-      GalleryGroupCLEntity<CLEntity> gallery,
+      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+      GalleryGroupCLEntity<ViewerEntityMixin> gallery,
     ) labelBuilder,
     required List<Widget> Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
     ) bannersBuilder,
     Widget Function(
       BuildContext, {
       required GlobalKey<State<StatefulWidget>> parentKey,
     })? draggableMenuBuilder,
   }) builder;
-  final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
+  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
+      contextMenuOf;
 
-  final void Function(List<CLEntity>)? onSelectionChanged;
+  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -128,38 +132,42 @@ class SelectionContol0 extends StatelessWidget {
   final CLSelector selector;
   final Widget Function(
     BuildContext,
-    CLEntity, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    ViewerEntityMixin, {
+    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
+    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+        onGetChildren,
   }) itemBuilder;
   final Widget? Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
-    GalleryGroupCLEntity<CLEntity> gallery,
+    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+    GalleryGroupCLEntity<ViewerEntityMixin> gallery,
   ) labelBuilder;
   final Widget Function({
-    required List<CLEntity> items,
+    required List<ViewerEntityMixin> items,
     required Widget Function(
       BuildContext,
-      CLEntity, {
-      required CLEntity? Function(CLEntity entity)? onGetParent,
-      required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+      ViewerEntityMixin, {
+      required ViewerEntityMixin? Function(ViewerEntityMixin entity)?
+          onGetParent,
+      required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+          onGetChildren,
     }) itemBuilder,
     required Widget? Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
-      GalleryGroupCLEntity<CLEntity> gallery,
+      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+      GalleryGroupCLEntity<ViewerEntityMixin> gallery,
     ) labelBuilder,
     required List<Widget> Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
     ) bannersBuilder,
     DraggableMenuBuilderType? draggableMenuBuilder,
   }) builder;
 
-  final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
-  final void Function(List<CLEntity>)? onSelectionChanged;
-  final void Function(List<CLEntity>? candidates, {bool? deselect})
+  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
+      contextMenuOf;
+  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
+  final void Function(List<ViewerEntityMixin>? candidates, {bool? deselect})
       onUpdateSelection;
   final void Function() onDone;
 
@@ -172,8 +180,10 @@ class SelectionContol0 extends StatelessWidget {
       itemBuilder: (
         context,
         item, {
-        required CLEntity? Function(CLEntity entity)? onGetParent,
-        required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+        required ViewerEntityMixin? Function(ViewerEntityMixin entity)?
+            onGetParent,
+        required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+            onGetChildren,
       }) {
         final itemWidget = itemBuilder(
           context,
@@ -237,7 +247,7 @@ class SelectionBanner extends StatelessWidget {
   });
   final CLSelector selector;
   final List<GalleryGroupCLEntity> galleryMap;
-  final void Function(List<CLEntity>? candidates, {bool? deselect})
+  final void Function(List<ViewerEntityMixin>? candidates, {bool? deselect})
       onUpdateSelection;
   final VoidCallback? onClose;
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart' show CLEntity, CLMedia, GalleryGroupCLEntity;
+import 'package:store/store.dart'
+    show ViewerEntityMixin, CLMedia, GalleryGroupCLEntity;
 
 import '../../db_service/builders/w3_get_collection.dart';
 
@@ -22,14 +23,15 @@ class GetGroupedMedia extends ConsumerWidget {
   });
   final ViewIdentifier viewIdentifier;
   final int columns;
-  final List<CLEntity> incoming;
+  final List<ViewerEntityMixin> incoming;
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final Widget Function(
     List<LabelledEntityGroups> galleryMap, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
+    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
+        onGetChildren,
   }) builder;
   final bool viewableAsCollection;
 
@@ -110,8 +112,8 @@ class GetGroupedMedia extends ConsumerWidget {
 }
 
 final groupedMediaProvider = StateProvider.family<
-    List<GalleryGroupCLEntity<CLEntity>>,
-    MapEntry<TabIdentifier, List<CLEntity>>>((ref, mapEntry) {
+    List<GalleryGroupCLEntity<ViewerEntityMixin>>,
+    MapEntry<TabIdentifier, List<ViewerEntityMixin>>>((ref, mapEntry) {
   final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
 
   return groupBy.getGrouped(mapEntry.value);
