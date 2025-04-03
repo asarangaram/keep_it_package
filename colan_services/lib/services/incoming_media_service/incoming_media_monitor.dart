@@ -33,7 +33,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
     if (pickedFileList.isNotEmpty) {
       final items = pickedFileList
           .map(
-            (xfile) => CLMediaBase(
+            (xfile) => CLMediaCandidate(
               path: xfile.path,
               type: CLMediaType.file,
             ),

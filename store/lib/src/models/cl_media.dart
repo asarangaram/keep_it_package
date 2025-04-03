@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
-import 'cl_entities.dart';
-import 'cl_media_base.dart';
-import 'cl_media_type.dart';
+import 'data_types.dart';
+import 'viewer_entity_mixin.dart';
 
 @immutable
 class CLMedia implements ViewerEntityMixin {

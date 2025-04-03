@@ -709,8 +709,8 @@ class MediaUpdater {
     }
   }
 
-  static Future<CLMediaBase> _tryDownloadMedia(
-    CLMediaBase mediaFile, {
+  static Future<CLMediaCandidate> _tryDownloadMedia(
+    CLMediaCandidate mediaFile, {
     required CLDirectories deviceDirectories,
   }) async {
     if (mediaFile.type != CLMediaType.url) {
@@ -740,8 +740,8 @@ class MediaUpdater {
     );
   }
 
-  static Future<CLMediaBase> _identifyType(
-    CLMediaBase mediaFile, {
+  static Future<CLMediaCandidate> _identifyType(
+    CLMediaCandidate mediaFile, {
     required CLDirectories deviceDirectories,
   }) async {
     if (mediaFile.type != CLMediaType.file) {
@@ -760,7 +760,7 @@ class MediaUpdater {
   }
 
   Stream<Progress> analyseMultiple({
-    required List<CLMediaBase> mediaFiles,
+    required List<CLMediaCandidate> mediaFiles,
     required void Function({
       required List<CLMedia> existingItems,
       required List<CLMedia> newItems,

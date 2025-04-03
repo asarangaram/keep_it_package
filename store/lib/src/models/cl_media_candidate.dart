@@ -3,13 +3,11 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 
 import '../extensions/ext_file.dart';
-import 'cl_media_type.dart';
-
-typedef ValueGetter<T> = T Function();
+import 'data_types.dart';
 
 @immutable
-class CLMediaBase {
-  const CLMediaBase({
+class CLMediaCandidate {
+  const CLMediaCandidate({
     required this.path,
     required this.type,
   });
@@ -21,7 +19,7 @@ class CLMediaBase {
     await File(path).deleteIfExists();
   }
 
-  CLMediaBase copyWith({
+  CLMediaCandidate copyWith({
     ValueGetter<String>? path,
     ValueGetter<CLMediaType>? type,
     ValueGetter<String?>? description,
@@ -33,7 +31,7 @@ class CLMediaBase {
     ValueGetter<int?>? parentId,
     ValueGetter<bool>? isAuxDELETE,
   }) {
-    return CLMediaBase(
+    return CLMediaCandidate(
       path: path != null ? path() : this.path,
       type: type != null ? type() : this.type,
     );
@@ -43,7 +41,7 @@ class CLMediaBase {
   String toString() => 'CLMediaBase(path: $path, type: $type)';
 
   @override
-  bool operator ==(covariant CLMediaBase other) {
+  bool operator ==(covariant CLMediaCandidate other) {
     if (identical(this, other)) return true;
 
     return other.path == path && other.type == type;

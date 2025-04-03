@@ -9,7 +9,7 @@ abstract class ViewerEntityMixin {
   DateTime get sortDate;
 }
 
-extension Filter on List<ViewerEntityMixin> {
+extension EntityFilter on List<ViewerEntityMixin> {
   Map<String, List<ViewerEntityMixin>> filterByDate() {
     final filterredMedia = <String, List<ViewerEntityMixin>>{};
     final noDate = <ViewerEntityMixin>[];

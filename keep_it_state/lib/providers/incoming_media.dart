@@ -61,14 +61,14 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
             fExt: '.txt',
           ), */
       if (media.imageFilePath != null)
-        CLMediaBase(
+        CLMediaCandidate(
           path: media.imageFilePath!,
           type: CLMediaType.image,
         ),
       if (media.attachments != null)
         ...media.attachments!.where((e) => e != null).map(
           (e) {
-            return CLMediaBase(
+            return CLMediaCandidate(
               path: e!.path,
               type: toCLMediaType(e.type),
             );

@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'cl_entities.dart';
+import 'viewer_entity_mixin.dart';
 
 @immutable
 class GalleryGroup<T> {
