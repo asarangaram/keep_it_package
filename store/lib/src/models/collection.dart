@@ -14,8 +14,8 @@ class Collection implements CLEntity {
       label: map['label'] as String,
       description:
           map['description'] != null ? map['description'] as String : null,
-      createdDate: map['createdDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['createdDate'] as int)
+      addedDate: map['addedDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['addedDate'] as int)
           : timeNow,
       updatedDate: map['updatedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedDate'] as int)
@@ -28,7 +28,7 @@ class Collection implements CLEntity {
       Collection.fromMap(json.decode(source) as Map<String, dynamic>);
   const Collection._({
     required this.label,
-    required this.createdDate,
+    required this.addedDate,
     required this.updatedDate,
     required this.isDeleted,
     this.id,
@@ -40,7 +40,7 @@ class Collection implements CLEntity {
     required bool isDeleted,
     required int? id,
     required String? description,
-    DateTime? createdDate,
+    DateTime? addedDate,
     DateTime? updatedDate,
   }) {
     final time = DateTime.now();
@@ -48,14 +48,14 @@ class Collection implements CLEntity {
       id: id,
       description: description,
       label: label,
-      createdDate: createdDate ?? time,
+      addedDate: addedDate ?? time,
       updatedDate: updatedDate ?? time,
       isDeleted: isDeleted,
     );
   }
   factory Collection.byLabel(
     String label, {
-    DateTime? createdDate,
+    DateTime? addedDate,
     DateTime? updatedDate,
     String? description,
   }) {
@@ -63,14 +63,14 @@ class Collection implements CLEntity {
       id: null,
       description: description,
       label: label,
-      createdDate: createdDate,
+      addedDate: addedDate,
       updatedDate: updatedDate,
       isDeleted: false,
     );
   }
   final String label;
   final String? description;
-  final DateTime createdDate;
+  final DateTime addedDate;
   final DateTime updatedDate;
   final int? id;
 
@@ -79,7 +79,7 @@ class Collection implements CLEntity {
   Collection copyWith({
     String? label,
     ValueGetter<String?>? description,
-    DateTime? createdDate,
+    DateTime? addedDate,
     DateTime? updatedDate,
     ValueGetter<int?>? id,
     bool? isDeleted,
@@ -88,7 +88,7 @@ class Collection implements CLEntity {
     return Collection._(
       label: label ?? this.label,
       description: description != null ? description.call() : this.description,
-      createdDate: createdDate ?? this.createdDate,
+      addedDate: addedDate ?? this.addedDate,
       updatedDate: updatedDate ?? this.updatedDate,
       id: id != null ? id.call() : this.id,
       isDeleted: isDeleted ?? this.isDeleted,
@@ -97,7 +97,7 @@ class Collection implements CLEntity {
 
   @override
   String toString() {
-    return 'Collection(label: $label, description: $description, createdDate: $createdDate, updatedDate: $updatedDate, id: $id, isDeleted: $isDeleted)';
+    return 'Collection(label: $label, description: $description, addedDate: $addedDate, updatedDate: $updatedDate, id: $id, isDeleted: $isDeleted)';
   }
 
   @override
@@ -106,7 +106,7 @@ class Collection implements CLEntity {
 
     return other.label == label &&
         other.description == description &&
-        other.createdDate == createdDate &&
+        other.addedDate == addedDate &&
         other.updatedDate == updatedDate &&
         other.id == id &&
         other.isDeleted == isDeleted;
@@ -116,7 +116,7 @@ class Collection implements CLEntity {
   int get hashCode {
     return label.hashCode ^
         description.hashCode ^
-        createdDate.hashCode ^
+        addedDate.hashCode ^
         updatedDate.hashCode ^
         id.hashCode ^
         isDeleted.hashCode;
@@ -127,7 +127,7 @@ class Collection implements CLEntity {
       'id': id,
       'label': label,
       'description': description,
-      'createdDate': createdDate.millisecondsSinceEpoch,
+      'addedDate': addedDate.millisecondsSinceEpoch,
       'updatedDate': updatedDate.millisecondsSinceEpoch,
       'isDeleted': isDeleted ? 1 : 0,
     };
@@ -138,7 +138,7 @@ class Collection implements CLEntity {
       'id': id,
       'label': label,
       'description': description,
-      'createdDate': createdDate,
+      'addedDate': addedDate,
       'updatedDate': updatedDate,
       'isDeleted': isDeleted,
     };
@@ -149,7 +149,7 @@ class Collection implements CLEntity {
     final serverFields = <String>[
       'label',
       'description',
-      'createdDate',
+      'addedDate',
       'updatedDate',
       'isDeleted',
     ];
@@ -162,13 +162,8 @@ class Collection implements CLEntity {
   String toJson() => json.encode(toMap());
 
   @override
-  bool get isMarkedDeleted => isDeleted;
-
-  @override
   int? get entityId => id;
 
   @override
-  DateTime? get entityOriginalDate => null;
-  @override
-  DateTime get entityCreatedDate => createdDate;
+  DateTime get sortDate => addedDate;
 }

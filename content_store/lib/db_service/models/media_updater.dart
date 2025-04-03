@@ -690,7 +690,7 @@ class MediaUpdater {
       );
       updatedCollection = await getCollectionByLabel(
         collection.label,
-        createdDate: collection.createdDate,
+        createdDate: collection.addedDate,
         updatedDate: collection.updatedDate,
         shouldRefresh: false,
         restoreIfNeeded: true,

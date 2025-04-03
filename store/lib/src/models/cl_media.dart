@@ -314,13 +314,8 @@ class CLMedia implements CLEntity {
   }
 
   @override
-  bool get isMarkedDeleted => isDeleted ?? false;
-
-  @override
   int? get entityId => id;
 
   @override
-  DateTime? get entityOriginalDate => createDate;
-  @override
-  DateTime get entityCreatedDate => createdDate;
+  DateTime get sortDate => createDate ?? updatedDate;
 }

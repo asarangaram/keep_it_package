@@ -38,7 +38,7 @@ class CollectionUpdater {
         isEdited: isEdited,
         label: label,
         description: description,
-        createdDate: createdDate,
+        addedDate: createdDate,
         updatedDate: updatedDate,
         isDeleted: isDeleted,
       ),
@@ -140,7 +140,7 @@ class CollectionUpdater {
         await upsert(
           Collection.byLabel(
             label,
-            createdDate: createdDate,
+            addedDate: createdDate,
             updatedDate: updatedDate,
           ),
           shouldRefresh: shouldRefresh,

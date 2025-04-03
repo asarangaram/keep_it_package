@@ -4,12 +4,8 @@ import 'package:store/src/extensions/ext_list.dart';
 import 'gallery_group.dart';
 
 abstract class CLEntity {
-  bool get isMarkedDeleted;
-
   int? get entityId;
-
-  DateTime? get entityOriginalDate;
-  DateTime get entityCreatedDate;
+  DateTime get sortDate;
 }
 
 extension Filter on List<CLEntity> {
@@ -18,14 +14,10 @@ extension Filter on List<CLEntity> {
     final noDate = <CLEntity>[];
     for (final entry in this) {
       final String formattedDate;
-      if (entry.entityOriginalDate != null) {
-        formattedDate =
-            entry.entityOriginalDate!.toDisplayFormat(dataOnly: true);
-      } else {
-        formattedDate =
-            '${entry.entityCreatedDate.toDisplayFormat(dataOnly: true)} '
-            '(upload date)';
-      }
+
+      formattedDate = '${entry.sortDate.toDisplayFormat(dataOnly: true)} '
+          '(upload date)';
+
       if (!filterredMedia.containsKey(formattedDate)) {
         filterredMedia[formattedDate] = [];
       }
