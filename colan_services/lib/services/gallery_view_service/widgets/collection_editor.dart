@@ -164,7 +164,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           validator: (value) => validateName(
                             newLabel: value,
                             existingLabel: collection.label,
-                            collections: collections.entries,
+                            collections: collections,
                           ),
                           showCursor: true,
                           inputFormatters: [
