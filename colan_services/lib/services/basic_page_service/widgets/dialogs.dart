@@ -83,7 +83,7 @@ class DialogService {
         context,
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete '
-            'this ${media.type.name}?',
+            'this ${media.type}?',
         entity: [media],
       );
 
@@ -102,7 +102,7 @@ class DialogService {
       );
     } else {
       final String msg;
-    
+
       msg = 'Are you sure you want to delete ${media.length} items?';
       return template(
         context,
@@ -121,7 +121,7 @@ class DialogService {
         context,
         title: 'Confirm Delete',
         message: 'Are you sure you want to PERMANENTLY delete '
-            'this ${media.type.name}?',
+            'this ${media.type}?',
       );
 
   static Future<bool?> permanentlyDeleteMediaMultiple(
@@ -157,7 +157,7 @@ class DialogService {
         context,
         title: 'Confirm Restore',
         message: 'Are you sure you want to restore '
-            'this ${media.type.name}?',
+            'this ${media.type}?',
       );
 
   static Future<bool?> restoreMediaMultiple(

@@ -153,7 +153,7 @@ class MediaView0 extends ConsumerWidget {
                         bottom: showControl.showNotes,
                         left: showControl.showNotes,
                         right: showControl.showNotes,
-                        child: switch (media.type) {
+                        child: switch (media.mediaType) {
                           CLMediaType.image => ImageViewer.guesture(
                               uri: mediaUri!,
                               onLockPage: onLockPage,

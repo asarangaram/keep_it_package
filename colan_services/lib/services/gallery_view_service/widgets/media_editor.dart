@@ -150,7 +150,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
   void initState() {
     nameController = TextEditingController();
     refController = TextEditingController();
-    nameController.text = widget.media.label;
+    nameController.text = widget.media.label ?? '';
     refController.text = widget.media.description ?? '';
     super.initState();
   }
@@ -177,7 +177,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
       child: ShadSheet(
         draggable: true,
         title: Text(
-          'Edit Media "${widget.media.label.capitalizeFirstLetter()}"',
+          'Edit Media "${widget.media.label?.capitalizeFirstLetter() ?? widget.media.id}"',
         ),
         description: const Text(
           'Change the label and add/update description here',
@@ -191,8 +191,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                 final name = formValue['name'] as String;
                 final ref = formValue['ref'] as String?;
                 final updated = widget.media.updateContent(
-                  name: () => name,
-                  ref: () => ref == null
+                  label: () => name,
+                  description: () => ref == null
                       ? null
                       : ref.isEmpty
                           ? null

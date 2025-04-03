@@ -13,7 +13,7 @@ extension StoreExtCLMediaList on List<CLMedia> {
         }
         filterredMedia[formattedDate]!.add(entry);
       } else {
-        formattedDate = '${entry.createdDate.toDisplayFormat(dataOnly: true)} '
+        formattedDate = '${entry.addedDate.toDisplayFormat(dataOnly: true)} '
             '(upload date)';
       }
       if (!filterredMedia.containsKey(formattedDate)) {

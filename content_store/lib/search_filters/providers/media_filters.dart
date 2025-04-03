@@ -65,7 +65,7 @@ final List<CLFilter<CLMedia>> allFilters = List.unmodifiable([
     labels: {
       for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
     },
-    fieldSelector: (media) => media.type,
+    fieldSelector: (media) => media.mediaType,
     enabled: true,
   ),
   EnumFilter<CLMedia, MediaAvailability>(
@@ -80,7 +80,7 @@ final List<CLFilter<CLMedia>> allFilters = List.unmodifiable([
   ),
   DDMMYYYYFilter<CLMedia>(
     name: 'Search by Date',
-    fieldSelector: (media) => media.createdDate,
+    fieldSelector: (media) => media.addedDate,
     enabled: false,
   ),
 ]);

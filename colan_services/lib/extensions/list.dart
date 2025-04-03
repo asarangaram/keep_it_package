@@ -23,7 +23,7 @@ extension Filter on List<CLMedia> {
       if (entry.createDate != null) {
         formattedDate = entry.createDate!.toDisplayFormat(dataOnly: true);
       } else {
-        formattedDate = '${entry.createdDate.toDisplayFormat(dataOnly: true)} '
+        formattedDate = '${entry.addedDate.toDisplayFormat(dataOnly: true)} '
             '(upload date)';
       }
       if (!filterredMedia.containsKey(formattedDate)) {

@@ -44,7 +44,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                       .foreground
                       .withValues(alpha: 0.5),
                   child: Text(
-                    media.label,
+                    media.label ?? 'Unnamed',
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -75,7 +75,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                     },
                   ),
                 ),
-              if (media.type == CLMediaType.video)
+              if (media.mediaType == CLMediaType.video)
                 OverlayWidgets.dimension(
                   alignment: Alignment.center,
                   child: DecoratedBox(

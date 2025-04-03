@@ -187,7 +187,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                     collections.where((e) => e.id == m.parentId).firstOrNull;
                 final String currCollectionLabel;
 
-                if (m.isDeleted ?? false) {
+                if (m.isDeleted) {
                   currCollectionLabel = 'Deleted Items';
                 } else {
                   currCollectionLabel =

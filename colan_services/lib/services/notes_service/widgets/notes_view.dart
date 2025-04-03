@@ -70,12 +70,12 @@ class _NotesViewState extends State<NotesView> {
                 builder: (notes) {
                   final textNotes = notes.where(
                     (e) {
-                      return e.type == CLMediaType.text;
+                      return e.mediaType == CLMediaType.text;
                     },
                   ).toList();
                   final audioNotes = notes.where(
                     (e) {
-                      return e.type == CLMediaType.audio;
+                      return e.mediaType == CLMediaType.audio;
                     },
                   ).toList();
                   return Column(

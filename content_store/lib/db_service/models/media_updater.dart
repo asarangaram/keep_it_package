@@ -49,7 +49,7 @@ class MediaUpdater {
     String? path,
     List<CLMedia>? parents,
   }) async {
-    final CLMedia media;
+    final CLMedia? media;
     if (path != null) {
       final currentMediaPath = directories.getMediaAbsolutePath(media0);
       if (currentMediaPath != path) {
@@ -57,10 +57,7 @@ class MediaUpdater {
       }
 
       media = await _generateMediaPreview(
-        media: media0.updateStatus(
-          isMediaCached: () => true,
-          isMediaOriginal: () => true,
-        ),
+        media: media0.updateStatus(),
       );
     } else {
       /* final currentMediaPath = directories.getMediaAbsolutePath(media0);
@@ -73,6 +70,8 @@ class MediaUpdater {
       ); */
       media = media0;
     }
+
+    if (media == null) return null;
 
     CLMedia? c;
     if (media.id != null) {
@@ -257,9 +256,9 @@ class MediaUpdater {
         if (path != null) {
           final pin = await albumManager.addMedia(
             path,
-            title: media.label,
-            isImage: media.type == CLMediaType.image,
-            isVideo: media.type == CLMediaType.video,
+            title: media.label ?? 'unnamed',
+            isImage: media.mediaType == CLMediaType.image,
+            isVideo: media.mediaType == CLMediaType.video,
             desc: 'KeepIT',
           );
           if (pin != null) {
@@ -345,20 +344,23 @@ class MediaUpdater {
     } else {
       fExt0 = fExt != null ? fExt() : p.extension(path);
     }
-
-    final updated0 = CLMedia.strict(
+    final timeNow = DateTime.now();
+    final updated0 = CLMedia(
       id: null,
-      md5String: computedMD5String,
-      name: defaultName,
-      type: type,
-      collectionId: collectionId1,
-      isHidden: isHidden0 ?? (isHidden != null ? isHidden() : false),
-      fExt: fExt0,
+      md5: computedMD5String,
+      label: defaultName,
+      type: type.name,
+      parentId: collectionId1,
+      isHidden: isHidden0 ?? isHidden?.call() ?? false,
+      extension: fExt0,
       isAux: isAux0,
-      ref: ref != null ? ref() : null,
-      originalDate: originalDate0 != null ? originalDate0() : null,
-      isDeleted: isDeleted != null ? isDeleted() : false,
+      description: ref != null ? ref() : null,
+      createDate: originalDate0 != null ? originalDate0() : null,
+      isDeleted: isDeleted?.call() ?? false,
       pin: pin != null ? pin() : null,
+      addedDate: timeNow,
+      updatedDate: timeNow,
+      isCollection: false,
     );
     return upsert(
       updated0,
@@ -417,7 +419,7 @@ class MediaUpdater {
     }
     final String fExt0;
     final String computedMD5String;
-    final String defaultName;
+    final String? defaultName;
     final ValueGetter<DateTime?>? originalDate0;
     if (path != null) {
       // File changed
@@ -438,7 +440,7 @@ class MediaUpdater {
           : id == null
               ? media.label
               : p.basename(path);
-      final metadata = switch (media.type) {
+      final metadata = switch (media.mediaType) {
         CLMediaType.image => await File(path).getImageMetaData(),
         CLMediaType.video => await File(path).getVideoMetaData(),
         _ => null
@@ -447,7 +449,7 @@ class MediaUpdater {
           (metadata == null ? null : () => metadata.originalDate);
     } else {
       computedMD5String = media.md5!;
-      fExt0 = media.extension;
+      fExt0 = media.extension!;
       defaultName = name != null ? name() : media.label;
       originalDate0 = originalDate;
     }
@@ -459,13 +461,13 @@ class MediaUpdater {
         .updateContent(
           id: id,
           md5String: () => computedMD5String,
-          name: () => defaultName,
-          type: type == null ? null : () => type,
+          label: () => defaultName,
+          type: type == null ? null : () => type.name,
           collectionId: () => collectionId1,
-          fExt: () => fExt0,
+          extension: () => fExt0,
           isAux: () => isAux0,
           // Set defaults if not provided
-          ref: ref,
+          description: ref,
           originalDate: originalDate0,
           isDeleted: isDeleted,
 
@@ -474,13 +476,6 @@ class MediaUpdater {
         .updateStatus(
           isHidden: () =>
               isHidden0 ?? (isHidden != null ? isHidden() : media.isHidden),
-          isPreviewCached: isPreviewCached,
-          isMediaCached: isMediaCached,
-          isMediaOriginal: isMediaOriginal,
-          previewLog: previewLog,
-          mediaLog: mediaLog,
-          haveItOffline: haveItOffline,
-          mustDownloadOriginal: mustDownloadOriginal,
           pin: () => (pin != null
               ? pin()
               : (path != null)
@@ -502,32 +497,26 @@ class MediaUpdater {
   Future<Collection> get _defaultCollection async =>
       getCollectionByLabel(tempCollectionName, restoreIfNeeded: true);
 
-  Future<CLMedia> _generateMediaPreview({
+  Future<CLMedia?> _generateMediaPreview({
     required CLMedia media,
     int dimension = 256,
   }) async {
-    var updateMedia = media;
+    final updateMedia = media;
     try {
       final currentMediaPath = directories.getMediaAbsolutePath(media);
       final currentPreviewPath = directories.getPreviewAbsolutePath(media);
 
-      final preveiwLog = await generatePreview(
+      await generatePreview(
         inputFile: currentMediaPath,
         outputFile: currentPreviewPath,
-        type: media.type,
+        type: media.mediaType,
         dimension: dimension,
       );
-      updateMedia = updateMedia.updateStatus(
-        isPreviewCached: () => preveiwLog == null,
-        previewLog: () => preveiwLog,
-      );
+
+      return updateMedia;
     } catch (e) {
-      updateMedia = updateMedia.updateStatus(
-        isPreviewCached: () => false,
-        previewLog: () => 'decodeError: ' 'Exception while generating preview',
-      );
+      return null;
     }
-    return updateMedia;
   }
 
   static Future<String?> generatePreview({
@@ -667,8 +656,8 @@ class MediaUpdater {
   }) async {
     return (await create(
           path,
-          type: media.type,
-          fExt: () => media.extension,
+          type: media.mediaType,
+          fExt: () => media.extension!,
           originalDate: () => media.createDate,
           collectionId: () => media.parentId,
           isAux: () => media.isAux,
@@ -720,7 +709,7 @@ class MediaUpdater {
 
         yield Progress(
           fractCompleted: i / media.length,
-          currentItem: m.label,
+          currentItem: m.label ?? 'unnamed',
         );
         await Future<void>.delayed(const Duration(milliseconds: 1000));
       }
@@ -885,37 +874,4 @@ class MediaUpdater {
         directories.thumbnail.pathString,
         media.previewFileName,
       );
-
-  Future<CLMedia?> markHaveItOffline(
-    CLMedia media, {
-    bool shouldRefresh = true,
-  }) async {
-    final m = await upsert(
-      media.updateStatus(haveItOffline: () => true),
-      shouldRefresh: shouldRefresh,
-    );
-
-    return m;
-  }
-
-  Future<bool> deleteLocalCopy(
-    CLMedia media, {
-    ValueGetter<bool?>? haveItOffline,
-    bool shouldRefresh = true,
-  }) async {
-    final m = await upsert(
-      media.updateStatus(
-        haveItOffline: haveItOffline ?? () => false,
-        isMediaCached: () => false,
-        mediaLog: () => null,
-      ),
-      shouldRefresh: shouldRefresh,
-    );
-    if (m != null) {
-      final file = fileAbsolutePath(media);
-      await File(file).deleteIfExists();
-    }
-
-    return m != null;
-  }
 }

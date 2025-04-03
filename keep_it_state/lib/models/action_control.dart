@@ -166,7 +166,7 @@ class ActionControl {
       CLMedia media, Collection parentCollection, bool hasOnlineService) {
     final canDeleteLocalCopy = false;
 
-    final editSupported = switch (media.type) {
+    final editSupported = switch (media.mediaType) {
       CLMediaType.text => false,
       CLMediaType.image => true,
       CLMediaType.video => ColanPlatformSupport.isMobilePlatform,

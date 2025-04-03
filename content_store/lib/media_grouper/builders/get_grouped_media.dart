@@ -37,10 +37,8 @@ class GetGroupedMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     incoming.sort(
-      (a, b) => (a as CLMedia)
-          .label
-          .toLowerCase()
-          .compareTo((b as CLMedia).label.toLowerCase()),
+      (a, b) => ((a as CLMedia).label?.toLowerCase() ?? '')
+          .compareTo((b as CLMedia).label?.toLowerCase() ?? ''),
     );
     final ids = incoming
         .map((e) => (e as CLMedia).parentId)

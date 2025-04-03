@@ -72,7 +72,7 @@ class MediaControls extends ConsumerWidget {
         if (showControl.showMenu)
           if ([onEdit, onDelete, onMove, onShare, onPin]
                   .any((e) => e != null) ||
-              (media.type == CLMediaType.video))
+              (media.mediaType == CLMediaType.video))
             Positioned(
               bottom: 0,
               left: 0,
@@ -176,7 +176,7 @@ class ControllerMenu extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (media.type == CLMediaType.video)
+              if (media.mediaType == CLMediaType.video)
                 GetMediaUri(
                   errorBuilder: (_, __) {
                     throw UnimplementedError('errorBuilder');

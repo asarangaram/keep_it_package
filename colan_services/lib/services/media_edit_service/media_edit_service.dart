@@ -57,11 +57,11 @@ class MediaEditService extends ConsumerWidget {
                       builder: (theStore) {
                         return InvokeEditor(
                           mediaUri: mediaUri!,
-                          mediaType: media.type,
+                          mediaType: media.mediaType,
                           canDuplicateMedia: canDuplicateMedia,
                           onCreateNewFile: () async {
                             return theStore.createTempFile(
-                              ext: media.extension,
+                              ext: media.extension!,
                             );
                           },
                           onCancel: () async {
