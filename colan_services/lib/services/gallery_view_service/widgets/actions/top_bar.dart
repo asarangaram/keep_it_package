@@ -14,12 +14,12 @@ import '../popover_menu.dart';
 class KeepItTopBar extends ConsumerWidget {
   const KeepItTopBar({
     required this.parentIdentifier,
-    required this.clmedias,
+    required this.entities,
     required this.theStore,
     super.key,
   });
   final String parentIdentifier;
-  final CLMedias clmedias;
+  final List<CLEntity> entities;
   final StoreUpdater theStore;
 
   @override
@@ -86,7 +86,7 @@ class KeepItTopBar extends ConsumerWidget {
                     onPressed: theStore.store.reloadStore,
                     child: const Icon(LucideIcons.refreshCcw, size: 25),
                   ),
-                if (clmedias.isNotEmpty)
+                if (entities.isNotEmpty)
                   PopOverMenu(
                     viewIdentifier: viewIdentifier,
                   )
@@ -97,7 +97,7 @@ class KeepItTopBar extends ConsumerWidget {
                   ),
               ],
             ),
-            if (clmedias.isNotEmpty)
+            if (entities.isNotEmpty)
               TextFilterBox(
                 parentIdentifier: parentIdentifier,
               ),

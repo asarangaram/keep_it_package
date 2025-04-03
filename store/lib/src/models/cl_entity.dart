@@ -24,6 +24,7 @@ class CLEntity implements ViewerEntityMixin {
     this.isAux = false,
     this.pin,
   });
+  // Change to factory!
   const CLEntity.collection({
     required this.id,
     required this.label,

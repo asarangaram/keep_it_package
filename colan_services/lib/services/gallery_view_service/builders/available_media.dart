@@ -14,7 +14,7 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
     this.collectionId,
   });
   final int? collectionId;
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -36,7 +36,7 @@ class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 

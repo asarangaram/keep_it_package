@@ -17,14 +17,14 @@ import 'when_empty.dart';
 class KeepItMainGrid extends ConsumerWidget {
   const KeepItMainGrid({
     required this.parentIdentifier,
-    required this.clmedias,
+    required this.entities,
     required this.theStore,
     required this.loadingBuilder,
     required this.errorBuilder,
     super.key,
   });
   final String parentIdentifier;
-  final CLMedias clmedias;
+  final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final StoreUpdater theStore;
@@ -36,7 +36,7 @@ class KeepItMainGrid extends ConsumerWidget {
       parentID: parentIdentifier,
       viewId: collectionId.toString(),
     );
-    if (clmedias.isEmpty && collectionId != null) {
+    if (entities.isEmpty && collectionId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(activeCollectionProvider.notifier).state = null;
       });
@@ -45,18 +45,18 @@ class KeepItMainGrid extends ConsumerWidget {
       children: [
         KeepItTopBar(
           parentIdentifier: parentIdentifier,
-          clmedias: clmedias,
+          entities: entities,
           theStore: theStore,
         ),
         Expanded(
           child: RefreshIndicator(
             onRefresh: /* isSelectionMode ? null : */
                 () async => theStore.store.reloadStore(),
-            child: clmedias.entries.isEmpty
+            child: entities.isEmpty
                 ? const WhenEmpty()
                 : ViewModifierBuilder(
                     viewIdentifier: viewIdentifier,
-                    entities: clmedias.entries,
+                    entities: entities,
                     filtersDisabled: false,
                     onSelectionChanged: null,
                     bannersBuilder: (context, _) {

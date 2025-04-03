@@ -13,7 +13,7 @@ import '../media_view_service1.dart';
 class KeepItMediaCorouselView extends ConsumerWidget {
   const KeepItMediaCorouselView({
     required this.parentIdentifier,
-    required this.clmedias,
+    required this.entities,
     required this.theStore,
     required this.loadingBuilder,
     required this.errorBuilder,
@@ -21,7 +21,7 @@ class KeepItMediaCorouselView extends ConsumerWidget {
     super.key,
   });
   final String parentIdentifier;
-  final CLMedias clmedias;
+  final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final StoreUpdater theStore;
@@ -35,15 +35,15 @@ class KeepItMediaCorouselView extends ConsumerWidget {
       viewId: collectionId.toString(),
     );
 
-    if (clmedias.isEmpty) {
+    if (entities.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         PageManager.of(context).pop();
       });
     }
-    return clmedias.isEmpty
+    return entities.isEmpty
         ? const WhenEmpty()
         : GetSortedEntity(
-            entities: clmedias.entries,
+            entities: entities,
             builder: (sorted) {
               return GetFilterredMedia(
                 viewIdentifier: viewIdentifier,

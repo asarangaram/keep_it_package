@@ -13,7 +13,6 @@ export 'db_service/models/media_updater.dart';
 export 'db_service/models/store_updater.dart';
 export 'db_service/widgets/broken_image.dart';
 export 'db_service/widgets/shimmer.dart';
-export 'extensions/ext_cl_medias.dart';
 export 'media_grouper/builders/get_grouped_media.dart';
 export 'media_grouper/builders/get_media_groupers.dart';
 export 'media_grouper/builders/get_sorted_entities.dart';

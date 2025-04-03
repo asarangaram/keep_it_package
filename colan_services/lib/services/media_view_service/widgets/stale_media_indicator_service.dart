@@ -20,12 +20,12 @@ class StaleMediaIndicatorService extends ConsumerWidget {
       builder: (staleMedia) {
         if (staleMedia.isEmpty) return const SizedBox.shrink();
         return BannerView(
-          staleMediaCount: staleMedia.entries.length,
+          staleMediaCount: staleMedia.length,
           onTap: () => MediaWizardService.openWizard(
             context,
             ref,
             CLSharedMedia(
-              entries: staleMedia.entries,
+              entries: staleMedia,
               type: UniversalMediaSource.unclassified,
             ),
           ),

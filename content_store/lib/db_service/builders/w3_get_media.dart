@@ -68,7 +68,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
     this.collectionId,
     super.key,
   });
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int? collectionId;
@@ -91,13 +91,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (media) {
-            /* log(
-              media.map((e) => e.md5String).join(','),
-              name: 'GetMediaByCollectionId',
-            ); */
-            return builder(CLMedias(media));
-          },
+          builder: builder,
         );
       },
     );
@@ -112,7 +106,7 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     required this.idList,
     super.key,
   });
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final List<int> idList;
@@ -132,9 +126,7 @@ class GetMediaMultipleByIds extends ConsumerWidget {
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (media) {
-            return builder(CLMedias(media));
-          },
+          builder: builder,
         );
       },
     );
@@ -148,7 +140,7 @@ class GetPinnedMedia extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -166,9 +158,7 @@ class GetPinnedMedia extends ConsumerWidget {
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (media) {
-            return builder(CLMedias(media));
-          },
+          builder: builder,
         );
       },
     );
@@ -182,7 +172,7 @@ class GetStaleMedia extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -200,9 +190,7 @@ class GetStaleMedia extends ConsumerWidget {
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (media) {
-            return builder(CLMedias(media));
-          },
+          builder: builder,
         );
       },
     );
@@ -216,7 +204,7 @@ class GetDeletedMedia extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -234,9 +222,7 @@ class GetDeletedMedia extends ConsumerWidget {
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (media) {
-            return builder(CLMedias(media));
-          },
+          builder: builder,
         );
       },
     );

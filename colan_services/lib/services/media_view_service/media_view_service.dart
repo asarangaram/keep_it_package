@@ -39,7 +39,7 @@ class MediaViewService extends StatelessWidget {
                 debugMessage: 'GetAvailableMediaByCollectionId',
               ),
               errorBuilder: errorBuilder,
-              builder: (clmedias) => AnimatedSwitcher(
+              builder: (entities) => AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 switchInCurve: Curves.easeInOut,
                 switchOutCurve: Curves.easeInOut,
@@ -48,11 +48,11 @@ class MediaViewService extends StatelessWidget {
                   Animation<double> animation,
                 ) =>
                     FadeTransition(opacity: animation, child: child),
-                child: clmedias.isEmpty
+                child: entities.isEmpty
                     ? const WhenEmpty()
                     : KeepItMediaCorouselView(
                         parentIdentifier: parentIdentifier,
-                        clmedias: clmedias,
+                        entities: entities,
                         initialMediaIndex: id,
                         theStore: theStore,
                         loadingBuilder: () => CLLoader.widget(

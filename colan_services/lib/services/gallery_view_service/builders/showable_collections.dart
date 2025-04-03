@@ -12,7 +12,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     this.queries = DBQueries.mediaAll, // FIXME
   });
   final Widget Function(
-    CLMedias collections, {
+    List<CLEntity> collections, {
     required bool isAllAvailable,
   }) builder;
   final Widget Function(Object, StackTrace) errorBuilder;

@@ -38,7 +38,7 @@ class GalleryViewService extends StatelessWidget {
                     debugMessage: 'GetAvailableMediaByCollectionId',
                   ),
                   errorBuilder: errorBuilder,
-                  builder: (clmedias) => AnimatedSwitcher(
+                  builder: (entities) => AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     switchInCurve: Curves.easeInOut,
                     switchOutCurve: Curves.easeInOut,
@@ -49,7 +49,7 @@ class GalleryViewService extends StatelessWidget {
                         FadeTransition(opacity: animation, child: child),
                     child: KeepItMainGrid(
                       parentIdentifier: parentIdentifier,
-                      clmedias: clmedias,
+                      entities: entities,
                       theStore: theStore,
                       loadingBuilder: () => CLLoader.widget(
                         debugMessage: 'KeepItMainGrid',

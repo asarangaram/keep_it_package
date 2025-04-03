@@ -48,12 +48,12 @@ class DBWriter {
     await mediaTable.delete(tx, media);
   }
 
-  Future<CLMedias> upsertMedias(
+  Future<List<CLEntity>> upsertMedias(
     SqliteWriteContext tx, {
-    required CLMedias medias,
+    required List<CLEntity> medias,
   }) async {
-    final cs = medias.entries.where((e) => e.isCollection);
-    final ms = medias.entries.where((e) => !e.isCollection);
+    final cs = medias.where((e) => e.isCollection);
+    final ms = medias.where((e) => !e.isCollection);
 
     final items = <CLEntity>[];
 
@@ -75,7 +75,7 @@ class DBWriter {
         ),
       );
     }
-    return CLMedias(items);
+    return items;
   }
 }
 

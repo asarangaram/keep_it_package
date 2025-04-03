@@ -42,13 +42,13 @@ class SettingsService extends ConsumerWidget {
                         context,
                         ref,
                         CLSharedMedia(
-                          entries: deletedMedia.entries,
+                          entries: deletedMedia,
                           type: UniversalMediaSource.deleted,
                         ),
                       );
                     },
                   ),
-                  title: Text('Deleted Items (${deletedMedia.entries.length})'),
+                  title: Text('Deleted Items (${deletedMedia.length})'),
                 ),
               const StorageMonitor(),
               const ServerSettings(),

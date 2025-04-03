@@ -73,7 +73,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
         debugMessage: 'GetCollectionMultiple',
       ),
       builder: (collections) {
-        final newCollection = collections.entries
+        final newCollection = collections
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;
         final collectionLablel = newCollection?.label != null
@@ -116,7 +116,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
               children: [
                 Flexible(
                   child: ExistInDifferentCollection(
-                    collections: collections.entries,
+                    collections: collections,
                     parentIdentifier: widget.parentIdentifier,
                     media: currentMedia,
                     onRemove: (m) {

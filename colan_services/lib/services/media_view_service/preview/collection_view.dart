@@ -63,7 +63,7 @@ class CollectionView extends ConsumerWidget {
                                 .colorScheme
                                 .mutedForeground,
                             child: Text(
-                              '${containingMedia.length}/${allMedia.entries.length} matches',
+                              '${containingMedia.length}/${allMedia.length} matches',
                             ),
                           ),
                         ),

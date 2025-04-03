@@ -88,7 +88,7 @@ class GetCollectionMultiple extends ConsumerWidget {
     required this.query,
     super.key,
   });
-  final Widget Function(CLMedias collections) builder;
+  final Widget Function(List<CLEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final DBQueries query;
@@ -106,7 +106,7 @@ class GetCollectionMultiple extends ConsumerWidget {
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (list) => builder(CLMedias(list)),
+          builder: builder,
         );
       },
     );
