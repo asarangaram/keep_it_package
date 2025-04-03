@@ -149,7 +149,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     return actor(
       currMedia: currMedia,
       confirmAction: () async =>
-          await DialogService.deleteMediaMultiple(
+          await DialogService.deleteMultipleEntities(
             context,
             media: currMedia,
           ) ??

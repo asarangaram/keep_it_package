@@ -47,12 +47,8 @@ class PickCollection extends StatelessWidget {
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
             onCreateByLabel: (label) async {
-              final timeNow = DateTime.now();
               return CLEntity.collection(
                 label: label,
-                id: null,
-                addedDate: timeNow,
-                updatedDate: timeNow,
               );
             },
             onValidate: (value) {
@@ -104,12 +100,8 @@ class PickCollectionWizard extends StatelessWidget {
         initialValues: collection,
         onSelectSuggestion: (item) async => item,
         onCreateByLabel: (label) async {
-          final timeNow = DateTime.now();
           return CLEntity.collection(
-            id: null,
             label: label,
-            addedDate: timeNow,
-            updatedDate: timeNow,
           );
         },
         onValidate: (value) {

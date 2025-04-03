@@ -73,10 +73,7 @@ class DBManager extends Store {
   }
 
   @override
-  Future<CLEntity> upsertMedia(
-    CLEntity media, {
-    List<CLEntity>? parents,
-  }) async =>
+  Future<CLEntity> upsertMedia(CLEntity media) async =>
       db.writeTransaction((tx) async {
         return dbWriter.upsertMedia(tx, media);
       });

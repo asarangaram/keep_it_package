@@ -73,7 +73,7 @@ class KeepItBottomBar extends ConsumerWidget {
                             ),
                             onPressed: () {
                               PageManager.of(context).openCamera(
-                                collectionId: collection?.id,
+                                parentId: collection?.id,
                               );
                             },
                           ),

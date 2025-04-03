@@ -87,7 +87,7 @@ class PageManager {
   }
 
   Future<bool?> openCamera({
-    int? collectionId,
+    int? parentId,
   }) async {
     await CLCameraService0.invokeWithSufficientPermission(
       context,
@@ -95,9 +95,7 @@ class PageManager {
         if (context.mounted) {
           await navigator.pushNamed(
             context,
-            collectionId == null
-                ? '/camera'
-                : '/camera?collectionId=$collectionId',
+            parentId == null ? '/camera' : '/camera?parentId=$parentId',
           );
         }
       },
@@ -126,11 +124,11 @@ class PageManager {
   }
 
   Future<CLEntity?> openCollection(
-    int collectionId,
+    int parentId,
   ) async {
     await navigator.pushNamed(
       context,
-      '/items_by_collection?id=$collectionId',
+      '/items_by_collection?id=$parentId',
     );
     return null;
   }
@@ -138,12 +136,12 @@ class PageManager {
   Future<CLEntity?> openMedia(
     int mediaId, {
     required String parentIdentifier,
-    int? collectionId,
+    int? parentId,
   }) async {
     final queryMap = [
       'id=$mediaId',
       'parentIdentifier=$parentIdentifier',
-      if (collectionId != null) 'collectionId=$collectionId',
+      if (parentId != null) 'parentId=$parentId',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
 

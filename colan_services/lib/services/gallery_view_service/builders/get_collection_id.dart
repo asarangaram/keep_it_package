@@ -5,11 +5,11 @@ import '../providers/active_collection.dart';
 
 class GetActiveCollectionId extends ConsumerWidget {
   const GetActiveCollectionId({required this.builder, super.key});
-  final Widget Function(int? collectionId) builder;
+  final Widget Function(int? parentId) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
-    return builder(collectionId);
+    final parentId = ref.watch(activeCollectionProvider);
+    return builder(parentId);
   }
 }

@@ -72,5 +72,5 @@ class CLSelector {
 
   @override
   String toString() => 'CLSelector(entities: ${entities.length}, '
-      'items: ${items.map((e) => e.entityId).toList()})';
+      'items: ${items.map((e) => e.id).toList()})';
 }

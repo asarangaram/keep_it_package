@@ -31,12 +31,12 @@ class KeepItMainGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider);
     final viewIdentifier = ViewIdentifier(
       parentID: parentIdentifier,
-      viewId: collectionId.toString(),
+      viewId: parentId.toString(),
     );
-    if (entities.isEmpty && collectionId != null) {
+    if (entities.isEmpty && parentId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(activeCollectionProvider.notifier).state = null;
       });
@@ -61,7 +61,7 @@ class KeepItMainGrid extends ConsumerWidget {
                     onSelectionChanged: null,
                     bannersBuilder: (context, _) {
                       return [
-                        if (collectionId == null)
+                        if (parentId == null)
                           const StaleMediaIndicatorService(),
                       ];
                     },
@@ -103,7 +103,7 @@ class KeepItMainGrid extends ConsumerWidget {
                         loadingBuilder: loadingBuilder,
                         incoming: incoming,
                         columns: 3,
-                        viewableAsCollection: collectionId == null,
+                        viewableAsCollection: parentId == null,
                         itemBuilder: itemBuilder,
                         labelBuilder: labelBuilder,
                         bannersBuilder: bannersBuilder,

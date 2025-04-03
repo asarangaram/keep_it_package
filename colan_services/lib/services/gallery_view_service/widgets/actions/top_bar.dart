@@ -24,13 +24,13 @@ class KeepItTopBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider);
     final viewIdentifier = ViewIdentifier(
       parentID: parentIdentifier,
-      viewId: collectionId.toString(),
+      viewId: parentId.toString(),
     );
     return GetCollection(
-      id: collectionId,
+      id: parentId,
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetCollection',
       ),
@@ -46,7 +46,7 @@ class KeepItTopBar extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (collectionId != null)
+                if (parentId != null)
                   GetSelectionMode(
                     viewIdentifier: viewIdentifier,
                     builder: ({

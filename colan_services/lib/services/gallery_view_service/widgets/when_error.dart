@@ -19,8 +19,8 @@ class WhenError extends ConsumerWidget {
   final CLMenuItem? onRecover;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
-    final onRecover = collectionId == null
+    final parentId = ref.watch(activeCollectionProvider);
+    final onRecover = parentId == null
         ? null
         : CLMenuItem(
             title: 'Reset',

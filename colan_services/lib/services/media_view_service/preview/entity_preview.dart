@@ -112,7 +112,7 @@ class EntityPreview extends ConsumerWidget {
           onTap: () async {
             await PageManager.of(context).openMedia(
               m.id!,
-              collectionId: m.parentId,
+              parentId: m.parentId,
               parentIdentifier: viewIdentifier.parentID,
             );
             return true;

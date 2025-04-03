@@ -17,11 +17,11 @@ import 'widgets/preview.dart';
 
 class CLCameraService extends ConsumerWidget {
   const CLCameraService({
-    required this.collectionId,
+    required this.parentId,
     super.key,
   });
 
-  final int? collectionId;
+  final int? parentId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,7 +36,7 @@ class CLCameraService extends ConsumerWidget {
         ),
         builder: (theStore) {
           return GetCollection(
-            id: collectionId,
+            id: parentId,
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');
             },
@@ -51,7 +51,7 @@ class CLCameraService extends ConsumerWidget {
                   return theStore.mediaUpdater.create(
                     path,
                     type: isVideo ? CLMediaType.video : CLMediaType.image,
-                    collectionId: () => collection?.id,
+                    parentId: () => collection?.id,
                   );
                 },
                 onDone: (mediaList) async {

@@ -73,13 +73,13 @@ class OnSwipe extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider);
     return GestureDetector(
       onHorizontalDragEnd: (DragEndDetails details) {
         if (details.primaryVelocity == null) return;
         // pop on Swipe
         if (details.primaryVelocity! > 0) {
-          if (collectionId != null) {
+          if (parentId != null) {
             ref.read(activeCollectionProvider.notifier).state = null;
           }
         }

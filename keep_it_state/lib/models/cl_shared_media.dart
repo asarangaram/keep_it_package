@@ -46,8 +46,8 @@ class CLSharedMedia {
   CLSharedMedia mergeMismatch() {
     final items = entries.map(
       (e) => e.updateContent(
-        isDeleted: () => false,
-        collectionId: () => collection?.id,
+        isDeleted: false,
+        parentId: () => collection?.id,
       ),
     );
     return copyWith(entries: items.toList());

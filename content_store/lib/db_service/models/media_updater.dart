@@ -47,7 +47,6 @@ class MediaUpdater {
     CLEntity media0, {
     bool shouldRefresh = true,
     String? path,
-    List<CLEntity>? parents,
   }) async {
     final CLEntity? media;
     if (path != null) {
@@ -90,10 +89,9 @@ class MediaUpdater {
     final mediaFromDB = await store.upsertMedia(
       (media.id != null)
           ? media
-          : media.updateContent(
+          : media.clone(
               id: () => c?.id,
             ),
-      parents: parents,
     );
     if (shouldRefresh) {
       store.reloadStore();
@@ -110,7 +108,7 @@ class MediaUpdater {
     if (m != null) {
       await store.upsertMedia(
         m.updateContent(
-          isDeleted: () => true,
+          isDeleted: true,
         ),
       );
     }
@@ -160,7 +158,7 @@ class MediaUpdater {
     for (final m in mediaMultiple) {
       await store.upsertMedia(
         m.updateContent(
-          isDeleted: () => true,
+          isDeleted: true,
         ),
       );
     }
@@ -187,7 +185,7 @@ class MediaUpdater {
     for (final m in mediaMultiple) {
       await store.upsertMedia(
         m.updateContent(
-          isDeleted: () => false,
+          isDeleted: false,
         ),
       );
     }
@@ -270,17 +268,6 @@ class MediaUpdater {
     return true;
   }
 
-  /* Future<bool> removeFromGallery(
-    String ids, {
-    bool shouldRefresh = true,
-  }) async {
-    final res = await albumManager.removeMedia(ids);
-    if (shouldRefresh) {
-      store.reloadStore();
-    }
-    return res;
-  } */
-
   Future<CLEntity?> create(
     String path, {
     required CLMediaType type,
@@ -294,23 +281,14 @@ class MediaUpdater {
     ValueGetter<bool?>? isDeleted,
     ValueGetter<bool?>? isHidden,
     ValueGetter<String?>? pin,
-    ValueGetter<int?>? collectionId,
+    ValueGetter<int?>? parentId,
     ValueGetter<bool>? isAux,
     /* ValueGetter<int?>? id, */
-    ValueGetter<bool>? isPreviewCached,
-    ValueGetter<bool>? isMediaCached,
-    ValueGetter<String?>? previewLog,
-    ValueGetter<String?>? mediaLog,
-    ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<bool?>? isEdited,
-    ValueGetter<bool?>? haveItOffline,
-    ValueGetter<bool>? mustDownloadOriginal,
-    List<CLEntity>? parents,
   }) async {
     final defaultName = name != null ? name() : p.basename(path);
     final computedMD5String = await File(path).checksum;
-    final isAux0 = isAux?.call() ?? false;
-    final collectionId0 = collectionId != null ? collectionId() : null;
+
+    final collectionId0 = parentId != null ? parentId() : null;
     final int collectionId1;
     final bool? isHidden0;
     final metadata = switch (type) {
@@ -338,26 +316,23 @@ class MediaUpdater {
     } else {
       fExt0 = fExt != null ? fExt() : p.extension(path);
     }
-    final timeNow = DateTime.now();
-    final updated0 = CLEntity(
-      id: null,
+
+    final updated0 = CLEntity.media(
       md5: computedMD5String,
       label: defaultName,
       type: type.name,
+      fileSize: 0,
+      mimeType: 'TODO',
       parentId: collectionId1,
       isHidden: isHidden0 ?? isHidden?.call() ?? false,
       extension: fExt0,
-      isAux: isAux0,
       description: ref != null ? ref() : null,
       createDate: originalDate0 != null ? originalDate0() : null,
       isDeleted: isDeleted?.call() ?? false,
       pin: pin != null ? pin() : null,
-      addedDate: timeNow,
-      updatedDate: timeNow,
     );
     return upsert(
       updated0,
-      parents: parents,
       path: path,
     );
   }
@@ -374,20 +349,13 @@ class MediaUpdater {
     ValueGetter<DateTime?>? createdDate,
     ValueGetter<DateTime?>? updatedDate,
     /*  ValueGetter<String?>? md5String, */
-    ValueGetter<bool?>? isDeleted,
-    ValueGetter<bool?>? isHidden,
+    ValueGetter<bool>? isDeleted,
+    ValueGetter<bool>? isHidden,
     ValueGetter<String?>? pin,
-    ValueGetter<int?>? collectionId,
+    ValueGetter<int?>? parentId,
     ValueGetter<bool>? isAux,
     ValueGetter<int?>? id, // id is overwritten only to clone
-    ValueGetter<bool>? isPreviewCached,
-    ValueGetter<bool>? isMediaCached,
-    ValueGetter<String?>? previewLog,
-    ValueGetter<String?>? mediaLog,
-    ValueGetter<bool>? isMediaOriginal,
-    ValueGetter<bool?>? haveItOffline,
-    ValueGetter<bool>? mustDownloadOriginal,
-    List<CLEntity>? parents,
+
     bool shouldRefresh = true,
   }) async {
     if (media.pin != null && path == null) {
@@ -397,9 +365,7 @@ class MediaUpdater {
       throw Exception('id can only be cleared');
     }
 
-    final isAux0 = isAux?.call() ?? media.isAux;
-    final collectionId0 =
-        collectionId != null ? collectionId() : media.parentId!;
+    final collectionId0 = parentId != null ? parentId() : media.parentId!;
     final int collectionId1;
     final bool? isHidden0;
     if (collectionId0 == null) {
@@ -451,17 +417,16 @@ class MediaUpdater {
 
     final updated0 = media
         .updateContent(
-          id: id,
-          md5String: () => computedMD5String,
+          md5: () => computedMD5String,
           label: () => defaultName,
           type: type == null ? null : () => type.name,
-          collectionId: () => collectionId1,
+          parentId: () => collectionId1,
           extension: () => fExt0,
-          isAux: () => isAux0,
+
           // Set defaults if not provided
           description: ref,
-          originalDate: originalDate0,
-          isDeleted: isDeleted,
+          createDate: originalDate0,
+          isDeleted: isDeleted?.call(),
 
           // clear pin if new path provided
         )
@@ -477,7 +442,6 @@ class MediaUpdater {
 
     return upsert(
       updated0,
-      parents: parents,
       path: path,
       shouldRefresh: shouldRefresh,
     );
@@ -648,8 +612,7 @@ class MediaUpdater {
           type: media.mediaType,
           fExt: () => media.extension!,
           originalDate: () => media.createDate,
-          collectionId: () => media.parentId,
-          isAux: () => media.isAux,
+          parentId: () => media.parentId,
         )) ??
         media;
   }
@@ -688,7 +651,7 @@ class MediaUpdater {
         final updated = await update(
           m,
           isHidden: () => false,
-          collectionId: () => updatedCollection.id,
+          parentId: () => updatedCollection.id,
           isEdited: true,
           shouldRefresh: false,
         );

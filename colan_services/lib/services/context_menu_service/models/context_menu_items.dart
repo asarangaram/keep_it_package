@@ -125,9 +125,9 @@ class CLContextMenu {
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
-            final confirmed = await DialogService.deleteCollection(
+            final confirmed = await DialogService.deleteEntity(
                   context,
-                  collection: collection,
+                  entity: collection,
                 ) ??
                 false;
             if (!confirmed) return confirmed;
@@ -206,9 +206,9 @@ class CLContextMenu {
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
-            final confirmed = await DialogService.deleteMedia(
+            final confirmed = await DialogService.deleteEntity(
                   context,
-                  media: media,
+                  entity: media,
                 ) ??
                 false;
             if (!confirmed) return confirmed;
@@ -287,7 +287,7 @@ class CLContextMenu {
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
-            final confirmed = await DialogService.deleteMediaMultiple(
+            final confirmed = await DialogService.deleteMultipleEntities(
                   context,
                   media: items,
                 ) ??

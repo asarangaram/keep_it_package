@@ -29,10 +29,10 @@ class KeepItMediaCorouselView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider);
     final viewIdentifier = ViewIdentifier(
       parentID: parentIdentifier,
-      viewId: collectionId.toString(),
+      viewId: parentId.toString(),
     );
 
     if (entities.isEmpty) {
@@ -59,8 +59,8 @@ class KeepItMediaCorouselView extends ConsumerWidget {
                   return MediaViewService1.pageView(
                     media: filterred.map((e) => e as CLEntity).toList(),
                     parentIdentifier: viewIdentifier.toString(),
-                    initialMediaIndex: filterred
-                        .indexWhere((e) => e.entityId == initialMediaIndex),
+                    initialMediaIndex:
+                        filterred.indexWhere((e) => e.id == initialMediaIndex),
                     errorBuilder: errorBuilder,
                     loadingBuilder: () => CLLoader.widget(
                       debugMessage: 'MediaViewService.pageView',

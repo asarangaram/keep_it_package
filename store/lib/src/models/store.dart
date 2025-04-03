@@ -49,10 +49,10 @@ abstract class StoreReader {
         parameters: ['(${idList.join(', ')})'],
       );
 
-  Future<List<CLEntity>> getEntitiesByParentId(int? collectionId) async =>
+  Future<List<CLEntity>> getEntitiesByParentId(int? parentId) async =>
       getMultiple(
         DBQueries.mediaByCollectionId,
-        parameters: [collectionId],
+        parameters: [parentId],
       );
 
   Future<CLEntity?> getEntity({int? id, String? md5, String? label}) async {
@@ -76,9 +76,7 @@ abstract class Store {
   const Store(this.reader);
   final StoreReader reader;
 
-  Future<CLEntity?> upsertMedia(CLEntity media, {List<CLEntity>? parents});
-  //Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
-
+  Future<CLEntity?> upsertMedia(CLEntity media);
   Future<CLEntity?> updateMediaFromMap(
     Map<String, dynamic> map,
   );
@@ -87,7 +85,9 @@ abstract class Store {
 
   void reloadStore();
 
-  Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
+  Stream<List<T?>> storeReaderStream<T>(
+    StoreQuery<T> storeQuery,
+  ); // Move to Reader
 
   void dispose();
 }

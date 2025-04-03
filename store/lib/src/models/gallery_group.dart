@@ -93,7 +93,7 @@ class GalleryGroupCLEntity<T extends ViewerEntityMixin> {
   final String? label;
   final List<T> items;
 
-  Set<int?> get getEntityIds => items.map((e) => e.entityId).toSet();
+  Set<int?> get getEntityIds => items.map((e) => e.id).toSet();
 }
 
 extension GalleryGroupCLEntityListQuery<T extends ViewerEntityMixin>

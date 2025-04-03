@@ -63,31 +63,22 @@ class DialogService {
         ),
       );
 
-  static Future<bool?> deleteCollection(
+  static Future<bool?> deleteEntity(
     BuildContext context, {
-    required CLEntity collection,
+    required CLEntity entity,
   }) async =>
       template(
         context,
         title: 'Confirm Delete',
-        message: 'Are you sure you want to delete '
-            '"${collection.label}" and its content?',
-        entity: [collection],
+        message: entity.isCollection
+            ? 'Are you sure you want to delete '
+                '"${entity.label}" and its content?'
+            : 'Are you sure you want to delete '
+                'this ${entity.mediaType}?',
+        entity: [entity],
       );
 
-  static Future<bool?> deleteMedia(
-    BuildContext context, {
-    required CLEntity media,
-  }) async =>
-      template(
-        context,
-        title: 'Confirm Delete',
-        message: 'Are you sure you want to delete '
-            'this ${media.type}?',
-        entity: [media],
-      );
-
-  static Future<bool?> deleteMediaMultiple(
+  static Future<bool?> deleteMultipleEntities(
     BuildContext context, {
     required List<CLEntity> media,
   }) async {
@@ -96,9 +87,9 @@ class DialogService {
     }
 
     if (media.length == 1) {
-      return DialogService.deleteMedia(
+      return DialogService.deleteEntity(
         context,
-        media: media[0],
+        entity: media[0],
       );
     } else {
       final String msg;

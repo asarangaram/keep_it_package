@@ -12,11 +12,11 @@ import 'widgets/keep_it_media_carousel_view.dart';
 class MediaViewService extends StatelessWidget {
   const MediaViewService({
     required this.id,
-    required this.collectionId,
+    required this.parentId,
     required this.parentIdentifier,
     super.key,
   });
-  final int? collectionId;
+  final int? parentId;
   final int id;
   final String parentIdentifier;
 

@@ -56,9 +56,7 @@ class CollectionUpdater {
 
       for (final m in mediaMultiple) {
         await store.upsertMedia(
-          m.updateContent(
-            isDeleted: () => true,
-          ),
+          m.updateContent(isDeleted: true),
         );
       }
 
@@ -135,15 +133,10 @@ class CollectionUpdater {
     if (restoreIfNeeded && collectionInDB?.isDeleted != null) {
       collectionInDB = await upsert(collectionInDB!.copyWith(isDeleted: false));
     }
-    final timeNow = DateTime.now();
+
     return collectionInDB ??
         await upsert(
-          CLEntity.collection(
-            id: null,
-            label: label,
-            addedDate: createdDate ?? timeNow,
-            updatedDate: updatedDate ?? timeNow,
-          ),
+          CLEntity.collection(label: label),
           shouldRefresh: shouldRefresh,
         );
   }

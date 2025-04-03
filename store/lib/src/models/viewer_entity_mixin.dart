@@ -4,7 +4,7 @@ import 'package:store/src/extensions/ext_list.dart';
 import 'gallery_group.dart';
 
 abstract class ViewerEntityMixin {
-  int? get entityId;
+  int? get id;
   bool get isCollection;
   DateTime get sortDate;
 }

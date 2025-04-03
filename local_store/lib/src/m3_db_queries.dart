@@ -30,7 +30,7 @@ class Queries {
         ),
       DBQueries.mediaByCollectionId => DBQuery<CLEntity>.map(
           sql:
-              'SELECT * FROM Media WHERE collectionId = ? AND isHidden = 0 AND isDeleted = 0',
+              'SELECT * FROM Media WHERE parentId = ? AND isHidden = 0 AND isDeleted = 0',
           triggerOnTables: const {'Media'},
           fromMap: CLEntity.fromMap,
         ),

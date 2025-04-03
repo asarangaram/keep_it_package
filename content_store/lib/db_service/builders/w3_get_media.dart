@@ -65,17 +65,17 @@ class GetMediaByCollectionId extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    this.collectionId,
+    this.parentId,
     super.key,
   });
   final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final int? collectionId;
+  final int? parentId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qid = (collectionId == null)
+    final qid = (parentId == null)
         ? DBQueries.entitiesVisible
         : DBQueries.mediaByCollectionId;
 
@@ -85,7 +85,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
       builder: (dbReader) {
         final q = dbReader.getQuery(
           qid,
-          parameters: (collectionId == null) ? [] : [collectionId],
+          parameters: (parentId == null) ? [] : [parentId],
         ) as StoreQuery<CLEntity>;
         return GetFromStore<CLEntity>(
           query: q,

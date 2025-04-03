@@ -11,13 +11,13 @@ import 'package:store/store.dart';
 
 class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
-    required int collectionId,
+    required int parentId,
     required void Function(CLEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      collectionId: collectionId,
+      parentId: parentId,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: false,
@@ -25,13 +25,13 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   factory CollectionEditor.dialog({
-    required int collectionId,
+    required int parentId,
     required void Function(CLEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      collectionId: collectionId,
+      parentId: parentId,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: true,
@@ -39,14 +39,14 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   const CollectionEditor._({
-    required this.collectionId,
+    required this.parentId,
     required this.isDialog,
     required this.onSubmit,
     required this.onCancel,
     super.key,
   });
 
-  final int collectionId;
+  final int parentId;
 
   final void Function(CLEntity collection) onSubmit;
   final void Function() onCancel;
@@ -63,7 +63,7 @@ class CollectionEditor extends StatefulWidget {
     return showShadSheet<CLEntity>(
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
-        collectionId: collection.id!,
+        parentId: collection.id!,
         onSubmit: (collection) {
           PageManager.of(context).pop(collection);
         },
@@ -100,7 +100,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetCollection(
-        id: widget.collectionId,
+        id: widget.parentId,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading('GetCollection'),
         builder: (collection) {

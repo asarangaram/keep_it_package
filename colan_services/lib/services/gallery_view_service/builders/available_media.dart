@@ -11,9 +11,9 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
-    this.collectionId,
+    this.parentId,
   });
-  final int? collectionId;
+  final int? parentId;
   final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
@@ -23,7 +23,7 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
     return GetMediaByCollectionId(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      collectionId: collectionId,
+      parentId: parentId,
       builder: builder,
     );
   }
@@ -42,12 +42,12 @@ class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider);
 
     return GetAvailableMediaByCollectionId(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      collectionId: collectionId,
+      parentId: parentId,
       builder: builder,
     );
   }
