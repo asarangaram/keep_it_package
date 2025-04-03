@@ -10,7 +10,6 @@ import 'cl_media_type.dart';
 class CLMedia implements CLEntity {
   const CLMedia({
     required this.id,
-    required this.isCollection,
     required this.label,
     required this.type,
     required this.extension,
@@ -21,6 +20,7 @@ class CLMedia implements CLEntity {
     required this.createDate,
     required this.md5,
     required this.isDeleted,
+    this.isCollection = false,
     this.isHidden = false,
     this.isAux = false,
     this.pin,
