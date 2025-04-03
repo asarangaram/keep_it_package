@@ -26,7 +26,7 @@ class PickCollection extends StatelessWidget {
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetCollectionMultiple',
       ),
-      query: DBQueries.mediaAll,
+      query: DBQueries.entitiesVisible,
       builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(

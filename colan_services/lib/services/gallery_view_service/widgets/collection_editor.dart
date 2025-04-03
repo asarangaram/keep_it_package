@@ -112,7 +112,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
             }
           }
           return GetCollectionMultiple(
-            query: DBQueries.mediaAll, // FIXME
+            query: DBQueries.entitiesVisible, // FIXME
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading('GetCollectionMultiple'),
             builder: (collections) {

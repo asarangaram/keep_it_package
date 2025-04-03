@@ -8,8 +8,7 @@ extension ExtSqliteDatabase on SqliteDatabase {
     List<Object?> parameters = const [],
   }) async* {
     yield await getAll(sql, parameters);
-    if (triggerOnTables.isNotEmpty) {}
-    {
+    if (triggerOnTables.isNotEmpty) {
       final stream = watch(
         sql,
         parameters: parameters,

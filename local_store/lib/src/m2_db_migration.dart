@@ -4,7 +4,7 @@ final migrations = SqliteMigrations()
   ..add(
     SqliteMigration(1, (tx) async {
       await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Media (
+      CREATE TABLE IF NOT EXISTS Entity (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         isCollection INTEGER NOT NULL,
         addedDate DATETIME NOT NULL,
@@ -22,7 +22,7 @@ final migrations = SqliteMigrations()
         
         isHidden INTEGER NOT NULL,
         pin TEXT ,
-        FOREIGN KEY (parentId) REFERENCES Media(id)
+        FOREIGN KEY (parentId) REFERENCES Entity(id)
       )
 
       -- Constraints

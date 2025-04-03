@@ -52,7 +52,7 @@ class CollectionUpdater {
   }) async {
     final collection = await store.reader.getEntity(id: id);
     if (collection != null) {
-      final mediaMultiple = await store.reader.getMediaByCollectionId(id);
+      final mediaMultiple = await store.reader.getEntitiesByParentId(id);
 
       for (final m in mediaMultiple) {
         await store.upsertMedia(
@@ -83,7 +83,7 @@ class CollectionUpdater {
   }) async {
     final collection = await store.reader.getEntity(id: id);
     if (collection != null) {
-      final medias = await store.reader.getMediaByCollectionId(id);
+      final medias = await store.reader.getEntitiesByParentId(id);
       if (medias.isNotEmpty) {
         if (onDeleteMedia != null) {
           await onDeleteMedia(

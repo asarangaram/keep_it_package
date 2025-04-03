@@ -65,7 +65,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
       );
     }
     return GetCollectionMultiple(
-      query: DBQueries.mediaAll,
+      query: DBQueries.entitiesVisible,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },

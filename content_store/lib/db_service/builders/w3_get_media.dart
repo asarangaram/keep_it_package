@@ -76,7 +76,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qid = (collectionId == null)
-        ? DBQueries.mediaAll
+        ? DBQueries.entitiesVisible
         : DBQueries.mediaByCollectionId;
 
     return GetDBReader(

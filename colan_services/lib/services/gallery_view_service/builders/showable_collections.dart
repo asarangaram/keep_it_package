@@ -9,7 +9,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
-    this.queries = DBQueries.mediaAll, // FIXME
+    this.queries = DBQueries.entitiesVisible, // FIXME
   });
   final Widget Function(
     List<CLEntity> collections, {
@@ -24,7 +24,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     return GetCollectionMultiple(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      query: DBQueries.mediaAll,
+      query: DBQueries.entitiesVisible,
       builder: (collections) {
         return builder(
           collections,

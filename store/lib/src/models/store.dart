@@ -4,28 +4,17 @@ import '../extensions/ext_list.dart';
 import 'cl_entity.dart';
 
 enum DBQueries {
-  // Fetch the complete table!
-
-  medias,
-
   mediaById,
-
-  mediaAll,
-  mediaAllIncludingAux,
-  mediaByCollectionId,
-
   mediaByMD5,
   mediaByLabel,
+
+  entitiesVisible,
+  mediaByCollectionId,
+  mediaByIdList,
+
   mediaPinned,
   mediaStaled,
   mediaDeleted,
-  mediaByIdList,
-
-  // Raw values
-
-  mediaOnDevice,
-
-  localMediaAll,
 }
 
 abstract class StoreQuery<T> {
@@ -50,22 +39,17 @@ abstract class StoreReader {
     return (await readMultiple<T>(q)).nonNullableList;
   }
 
-  Future<List<CLEntity>> get mediaOnDevice async =>
-      getMultiple(DBQueries.mediaOnDevice);
-
-  Future<List<CLEntity>> getMediasByIDList(List<int> idList) async =>
+  Future<List<CLEntity>> getEntitiesByIdList(List<int> idList) async =>
       getMultiple(
         DBQueries.mediaByIdList,
         parameters: ['(${idList.join(', ')})'],
       );
 
-  Future<List<CLEntity>> getMediaByCollectionId(int collectionId) async =>
+  Future<List<CLEntity>> getEntitiesByParentId(int collectionId) async =>
       getMultiple(
         DBQueries.mediaByCollectionId,
         parameters: [collectionId],
       );
-
-  Future<List<CLEntity>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
 
   Future<CLEntity?> getEntity({int? id, String? md5, String? label}) async {
     CLEntity? entity;

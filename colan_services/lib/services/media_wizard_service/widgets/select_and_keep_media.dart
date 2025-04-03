@@ -331,7 +331,7 @@ class KeepWithProgress extends StatelessWidget {
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetStoreUpdater',
       ),
-      query: DBQueries.mediaAll,
+      query: DBQueries.entitiesVisible,
       builder: (collections) {
         return StreamBuilder<Progress>(
           stream: mediaUpdater.moveMultiple(

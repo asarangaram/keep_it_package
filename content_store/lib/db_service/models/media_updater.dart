@@ -133,7 +133,7 @@ class MediaUpdater {
     bool shouldRefresh = true,
   }) async {
     final mediaMultiple =
-        await store.reader.getMediasByIDList(ids2Delete.toList());
+        await store.reader.getEntitiesByIdList(ids2Delete.toList());
 
     // Gather Notes
 
@@ -156,7 +156,7 @@ class MediaUpdater {
     bool shouldRefresh = true,
   }) async {
     final mediaMultiple =
-        await store.reader.getMediasByIDList(ids2Delete.toList());
+        await store.reader.getEntitiesByIdList(ids2Delete.toList());
     for (final m in mediaMultiple) {
       await store.upsertMedia(
         m.updateContent(
@@ -183,7 +183,7 @@ class MediaUpdater {
     bool shouldRefresh = true,
   }) async {
     final mediaMultiple =
-        await store.reader.getMediasByIDList(ids2Delete.toList());
+        await store.reader.getEntitiesByIdList(ids2Delete.toList());
     for (final m in mediaMultiple) {
       await store.upsertMedia(
         m.updateContent(
@@ -203,7 +203,7 @@ class MediaUpdater {
     bool shouldRefresh = true,
   }) async {
     final media =
-        await store.reader.getMediasByIDList(ids2Delete.nonNullableList);
+        await store.reader.getEntitiesByIdList(ids2Delete.nonNullableList);
     final bool res;
     if (media.any((e) => e.pin == null)) {
       res = await pinCreateMultiple(media, onGetPath: onGetPath);
