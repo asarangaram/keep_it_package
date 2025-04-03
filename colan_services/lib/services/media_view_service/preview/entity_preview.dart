@@ -32,23 +32,24 @@ class EntityPreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final parent = onGetParent?.call(item);
     final children = onGetChildren?.call(item);
-    switch (item) {
-      case final Collection c:
+    switch (item.isCollection) {
+      case true: // What if empty collection?
         if (children == null) {
           throw Exception(
-            'Failed to get media list of collection ${c.id}',
+            'Failed to get media list of collection ${(item as CLMedia).id}',
           );
         }
-      case final CLMedia m:
+      case false:
         if (parent == null) {
           throw Exception(
-            'Failed to get collection of media ${m.id}',
+            'Failed to get collection of media ${(item as CLMedia).id}',
           );
         }
     }
-
-    return switch (item) {
-      final Collection c => Padding(
+    final c = item as CLMedia;
+    final m = item as CLMedia;
+    return switch (item.isCollection) {
+      true => Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
@@ -84,7 +85,7 @@ class EntityPreview extends ConsumerWidget {
                   Expanded(
                     child: Center(
                       child: Text(
-                        c.label.capitalizeFirstLetter(),
+                        c.label!.capitalizeFirstLetter(),
                         style: const TextStyle(fontSize: 14),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -105,7 +106,7 @@ class EntityPreview extends ConsumerWidget {
             ],
           ),
         ),
-      final CLMedia m => CLBasicContextMenu(
+      false => CLBasicContextMenu(
           viewIdentifier: viewIdentifier,
           onTap: () async {
             await PageManager.of(context).openMedia(
@@ -119,7 +120,7 @@ class EntityPreview extends ConsumerWidget {
             context,
             ref,
             media: m,
-            parentCollection: parent! as Collection,
+            parentCollection: parent! as CLMedia,
             hasOnlineService: false,
             theStore: theStore,
           ),
@@ -128,7 +129,6 @@ class EntityPreview extends ConsumerWidget {
             parentIdentifier: viewIdentifier.toString(),
           ),
         ),
-      _ => throw UnimplementedError(),
     };
   }
 }

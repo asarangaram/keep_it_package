@@ -19,7 +19,7 @@ class CollectionView extends ConsumerWidget {
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final Collection collection;
+  final CLMedia collection;
   final List<CLMedia> containingMedia;
 
   @override
@@ -38,7 +38,7 @@ class CollectionView extends ConsumerWidget {
               CLLoader.hide(debugMessage: 'GetMediaByCollectionId'),
           builder: (allMedia) {
             return FolderItem(
-              name: collection.label,
+              name: collection.label!,
               borderColor: borderColor,
               avatarAsset: 'assets/icon/not_on_server.png',
               counter: (filters.isActive || filters.isTextFilterActive)
@@ -79,7 +79,7 @@ class CollectionView extends ConsumerWidget {
                 ),
                 whenNopreview: Center(
                   child: CLText.veryLarge(
-                    collection.label.characters.first,
+                    collection.label!.characters.first,
                   ),
                 ),
               ),

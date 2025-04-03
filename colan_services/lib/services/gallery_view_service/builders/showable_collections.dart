@@ -9,10 +9,10 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
-    this.queries = DBQueries.collectionsVisibleNotDeleted,
+    this.queries = DBQueries.mediaAll, // FIXME
   });
   final Widget Function(
-    Collections collections, {
+    CLMedias collections, {
     required bool isAllAvailable,
   }) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
@@ -24,7 +24,7 @@ class GetShowableCollectionMultiple extends ConsumerWidget {
     return GetCollectionMultiple(
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      query: DBQueries.collectionsVisibleNotDeleted,
+      query: DBQueries.mediaAll,
       builder: (collections) {
         return builder(
           collections,

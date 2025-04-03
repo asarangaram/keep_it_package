@@ -1,4 +1,4 @@
-import 'dart:convert';
+/* import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
@@ -86,3 +86,4 @@ class Collections {
   String toJson() => json.encode(toMap());
   String toJsonList() => json.encode(toList());
 }
+ */

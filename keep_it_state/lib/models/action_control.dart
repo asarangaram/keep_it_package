@@ -145,7 +145,7 @@ class ActionControl {
   }
 
   static ActionControl onGetCollectionActionControl(
-    Collection collection,
+    CLMedia collection,
     bool hasOnlineService, {
     List<CLEntity>? Function(CLEntity entity)? onGetChildren,
   }) {
@@ -163,7 +163,7 @@ class ActionControl {
   }
 
   static ActionControl onGetMediaActionControl(
-      CLMedia media, Collection parentCollection, bool hasOnlineService) {
+      CLMedia media, CLMedia parentCollection, bool hasOnlineService) {
     final canDeleteLocalCopy = false;
 
     final editSupported = switch (media.mediaType) {

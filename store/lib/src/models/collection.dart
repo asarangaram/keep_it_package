@@ -1,4 +1,4 @@
-import 'dart:convert';
+/* import 'dart:convert';
 
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
@@ -167,3 +167,4 @@ class Collection implements CLEntity {
   @override
   DateTime get sortDate => addedDate;
 }
+ */

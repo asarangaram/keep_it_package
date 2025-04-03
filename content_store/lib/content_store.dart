@@ -5,7 +5,6 @@ export 'adapters/widgets/server_ui_adapter.dart';
 export 'db_service/builders/get_db_reader.dart';
 export 'db_service/builders/get_media_text.dart';
 export 'db_service/builders/get_media_uri.dart';
-export 'db_service/builders/get_notes.dart';
 export 'db_service/builders/get_preview_uri.dart';
 export 'db_service/builders/get_store_updater.dart';
 export 'db_service/builders/w3_get_collection.dart';

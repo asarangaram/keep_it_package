@@ -11,8 +11,8 @@ class EditCollectionDescription extends StatelessWidget {
     required this.onDone,
     super.key,
   });
-  final Collection collection;
-  final void Function(Collection collection) onDone;
+  final CLMedia collection;
+  final void Function(CLMedia collection) onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class EditCollectionDescription extends StatelessWidget {
       descriptor: CLFormTextFieldDescriptor(
         title: 'Description',
         label: 'About "${collection.label}"',
-        initialValue: collection.label,
+        initialValue: collection.label!,
         hint: 'What is the best thing,'
             ' you can say about "${collection.label}"?',
         onValidate: (val) => null,

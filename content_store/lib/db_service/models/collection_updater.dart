@@ -6,24 +6,24 @@ class CollectionUpdater {
   Store store;
 
   /// Method: upsert
-  Future<Collection> upsert(
-    Collection collection, {
+  Future<CLMedia> upsert(
+    CLMedia collection, {
     bool shouldRefresh = true,
   }) async {
     if (collection.id != null) {
-      final c = await store.reader.getCollectionById(collection.id!);
+      final c = await store.reader.getMediaById(collection.id!);
       if (collection == c) return collection;
     }
 
-    final updated = await store.upsertCollection(collection);
+    final updated = await store.upsertMedia(collection);
     if (shouldRefresh) {
       store.reloadStore();
     }
-    return updated;
+    return updated!;
   }
 
-  Future<Collection> update(
-    Collection collection, {
+  Future<CLMedia> update(
+    CLMedia collection, {
     required bool isEdited,
     bool shouldRefresh = true,
     String? label,
@@ -35,8 +35,7 @@ class CollectionUpdater {
   }) {
     return upsert(
       collection.copyWith(
-        isEdited: isEdited,
-        label: label,
+        label: () => label,
         description: description,
         addedDate: createdDate,
         updatedDate: updatedDate,
@@ -51,7 +50,7 @@ class CollectionUpdater {
     int id, {
     bool shouldRefresh = true,
   }) async {
-    final collection = await store.reader.getCollectionById(id);
+    final collection = await store.reader.getMediaById(id);
     if (collection != null) {
       final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
@@ -82,7 +81,7 @@ class CollectionUpdater {
       bool shouldRefresh,
     })? onDeleteMedia,
   }) async {
-    final collection = await store.reader.getCollectionById(id);
+    final collection = await store.reader.getMediaById(id);
     if (collection != null) {
       final medias = await store.reader.getMediaByCollectionId(id);
       if (medias.isNotEmpty) {
@@ -95,7 +94,7 @@ class CollectionUpdater {
           throw Exception("can't delete a collection with media");
         }
       }
-      await store.deleteCollection(collection);
+      await store.deleteMedia(collection);
       return true;
     }
     return false;
@@ -125,7 +124,7 @@ class CollectionUpdater {
     throw UnimplementedError();
   }
 
-  Future<Collection> getCollectionByLabel(
+  Future<CLMedia> getCollectionByLabel(
     String label, {
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -136,12 +135,14 @@ class CollectionUpdater {
     if (restoreIfNeeded && collectionInDB?.isDeleted != null) {
       collectionInDB = await upsert(collectionInDB!.copyWith(isDeleted: false));
     }
+    final timeNow = DateTime.now();
     return collectionInDB ??
         await upsert(
-          Collection.byLabel(
-            label,
-            addedDate: createdDate,
-            updatedDate: updatedDate,
+          CLMedia.collection(
+            id: null,
+            label: label,
+            addedDate: createdDate ?? timeNow,
+            updatedDate: updatedDate ?? timeNow,
           ),
           shouldRefresh: shouldRefresh,
         );

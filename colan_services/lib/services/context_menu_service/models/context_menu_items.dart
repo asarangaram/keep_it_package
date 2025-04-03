@@ -89,7 +89,7 @@ class CLContextMenu {
   factory CLContextMenu.ofCollection(
     BuildContext context,
     WidgetRef ref, {
-    required Collection collection,
+    required CLMedia collection,
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
@@ -143,7 +143,7 @@ class CLContextMenu {
       onGetChildren: onGetChildren,
     );
     return CLContextMenu.template(
-      name: collection.label,
+      name: collection.label!,
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
@@ -159,7 +159,7 @@ class CLContextMenu {
     BuildContext context,
     WidgetRef ref, {
     required CLMedia media,
-    required Collection parentCollection,
+    required CLMedia parentCollection,
     required bool hasOnlineService,
     required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
@@ -369,6 +369,7 @@ class CLContextMenu {
     List<CLEntity> entities,
     StoreUpdater theStore,
   ) {
+    // FIXME
     return switch (entities) {
       final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
           return CLContextMenu.ofMultipleMedia(
@@ -379,7 +380,7 @@ class CLContextMenu {
             theStore: theStore,
           );
         }(),
-      final List<CLEntity> e when e.every((e) => e is Collection) => () {
+      final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
           return CLContextMenu.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')

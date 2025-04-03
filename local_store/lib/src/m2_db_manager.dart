@@ -18,18 +18,6 @@ class DBManager extends Store {
     required SqliteDatabase db,
     required void Function() onReload,
   }) {
-    final collectionTable = DBExec<Collection>(
-      table: 'Collection',
-      toMap: (obj) => obj.toMap(),
-      readBack: (tx, collection) async {
-        return (Queries.getQuery(
-          DBQueries.collectionByLabel,
-          parameters: [collection.label],
-        ) as DBQuery<Collection>)
-            .read(tx);
-      },
-    );
-
     final mediaTable = DBExec<CLMedia>(
       table: 'Media',
       toMap: (CLMedia obj) => obj.toMap(),
@@ -42,18 +30,8 @@ class DBManager extends Store {
       },
     );
 
-    final notesOnMediaTable = DBExec<NotesOnMedia>(
-      table: 'MediaNote',
-      toMap: (NotesOnMedia obj) => obj.toMap(),
-      readBack: (tx, item) async {
-        return item;
-      },
-    );
-
     final dbWriter = DBWriter(
-      collectionTable: collectionTable,
       mediaTable: mediaTable,
-      notesOnMediaTable: notesOnMediaTable,
     );
     final dbReader = DBReader(db);
     return DBManager._(
@@ -95,18 +73,12 @@ class DBManager extends Store {
   }
 
   @override
-  Future<Collection> upsertCollection(Collection collection) async =>
-      db.writeTransaction((tx) async {
-        return dbWriter.upsertCollection(tx, collection);
-      });
-
-  @override
   Future<CLMedia> upsertMedia(
     CLMedia media, {
     List<CLMedia>? parents,
   }) async =>
       db.writeTransaction((tx) async {
-        return dbWriter.upsertMedia(tx, media, parents: parents);
+        return dbWriter.upsertMedia(tx, media);
       });
 
   @override
@@ -121,12 +93,6 @@ class DBManager extends Store {
           return DBReader(tx).read(q);
         }
         return null;
-      });
-
-  @override
-  Future<void> deleteCollection(Collection collection) async =>
-      db.writeTransaction((tx) async {
-        await dbWriter.deleteCollection(tx, collection);
       });
 
   @override

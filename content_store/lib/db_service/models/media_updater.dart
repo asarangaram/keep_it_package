@@ -33,7 +33,7 @@ class MediaUpdater {
   Store store;
   CLDirectories directories;
   final AlbumManager albumManager;
-  final Future<Collection> Function(
+  final Future<CLMedia> Function(
     String label, {
     DateTime? createdDate,
     DateTime? updatedDate,
@@ -138,13 +138,7 @@ class MediaUpdater {
     // Gather Notes
 
     if (mediaMultiple.isNotEmpty) {
-      final notes = <CLMedia>{};
       for (final m in mediaMultiple) {
-        notes.addAll(await store.reader.getNotesByMediaId(m.id!));
-      }
-
-      final medias2Remove = [...mediaMultiple, ...notes];
-      for (final m in medias2Remove) {
         await store.deleteMedia(m);
         await File(directories.getMediaAbsolutePath(m)).deleteIfExists();
         await File(directories.getPreviewAbsolutePath(m)).deleteIfExists();
@@ -330,8 +324,8 @@ class MediaUpdater {
       log('originalDate is set as ${originalDate0()}');
     }
     if (collectionId0 == null) {
-      collectionId1 =
-          (isAux0 ? (await _notesCollection) : (await _defaultCollection)).id!;
+      collectionId1 = (await _defaultCollection).id!;
+
       isHidden0 = true;
     } else {
       collectionId1 = collectionId0;
@@ -360,7 +354,6 @@ class MediaUpdater {
       pin: pin != null ? pin() : null,
       addedDate: timeNow,
       updatedDate: timeNow,
-      isCollection: false,
     );
     return upsert(
       updated0,
@@ -410,8 +403,7 @@ class MediaUpdater {
     final int collectionId1;
     final bool? isHidden0;
     if (collectionId0 == null) {
-      collectionId1 =
-          (isAux0 ? (await _notesCollection) : (await _defaultCollection)).id!;
+      collectionId1 = (await _defaultCollection).id!;
       isHidden0 = true;
     } else {
       collectionId1 = collectionId0;
@@ -491,10 +483,7 @@ class MediaUpdater {
     );
   }
 
-  Future<Collection> get _notesCollection async =>
-      getCollectionByLabel('*** Notes', restoreIfNeeded: true);
-
-  Future<Collection> get _defaultCollection async =>
+  Future<CLMedia> get _defaultCollection async =>
       getCollectionByLabel(tempCollectionName, restoreIfNeeded: true);
 
   Future<CLMedia?> _generateMediaPreview({
@@ -667,18 +656,18 @@ class MediaUpdater {
 
   Stream<Progress> moveMultiple({
     required List<CLMedia> media,
-    required Collection collection,
+    required CLMedia collection,
     Future<void> Function({required List<CLMedia> mediaMultiple})? onDone,
     bool shouldRefresh = true,
   }) async* {
-    final Collection updatedCollection;
+    final CLMedia updatedCollection;
     if (collection.id == null) {
       yield const Progress(
         fractCompleted: 0,
         currentItem: 'Creating new collection',
       );
       updatedCollection = await getCollectionByLabel(
-        collection.label,
+        collection.label!,
         createdDate: collection.addedDate,
         updatedDate: collection.updatedDate,
         shouldRefresh: false,
@@ -699,7 +688,7 @@ class MediaUpdater {
         final updated = await update(
           m,
           isHidden: () => false,
-          collectionId: () => updatedCollection.id!,
+          collectionId: () => updatedCollection.id,
           isEdited: true,
           shouldRefresh: false,
         );

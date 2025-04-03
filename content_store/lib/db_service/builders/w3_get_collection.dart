@@ -13,7 +13,7 @@ class GetCollection extends ConsumerWidget {
     this.id,
     super.key,
   });
-  final Widget Function(Collection? collections) builder;
+  final Widget Function(CLMedia? collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int? id;
@@ -27,9 +27,9 @@ class GetCollection extends ConsumerWidget {
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
-        final q = dbReader.getQuery(DBQueries.collectionById, parameters: [id])
-            as StoreQuery<Collection>;
-        return GetFromStore<Collection>(
+        final q = dbReader.getQuery(DBQueries.mediaById, parameters: [id])
+            as StoreQuery<CLMedia>;
+        return GetFromStore<CLMedia>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -51,7 +51,7 @@ class GetCollectionsByIdList extends ConsumerWidget {
     required this.ids,
     super.key,
   });
-  final Widget Function(List<Collection> collections) builder;
+  final Widget Function(List<CLMedia> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final List<int> ids;
@@ -66,10 +66,10 @@ class GetCollectionsByIdList extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q = dbReader.getQuery(
-          DBQueries.collectionByIdList,
+          DBQueries.mediaByIdList,
           parameters: ['(${ids.join(', ')})'],
-        ) as StoreQuery<Collection>;
-        return GetFromStore<Collection>(
+        ) as StoreQuery<CLMedia>;
+        return GetFromStore<CLMedia>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
@@ -88,7 +88,7 @@ class GetCollectionMultiple extends ConsumerWidget {
     required this.query,
     super.key,
   });
-  final Widget Function(Collections collections) builder;
+  final Widget Function(CLMedias collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final DBQueries query;
@@ -100,13 +100,13 @@ class GetCollectionMultiple extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q =
-            dbReader.getQuery(query, parameters: []) as StoreQuery<Collection>;
+            dbReader.getQuery(query, parameters: []) as StoreQuery<CLMedia>;
 
-        return GetFromStore<Collection>(
+        return GetFromStore<CLMedia>(
           query: q,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (list) => builder(Collections(list)),
+          builder: (list) => builder(CLMedias(list)),
         );
       },
     );

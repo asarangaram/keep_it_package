@@ -33,7 +33,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
 
 class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
-  late Collection? targetCollection;
+  late CLMedia? targetCollection;
   late bool actionConfirmed;
 
   @override
@@ -319,7 +319,7 @@ class KeepWithProgress extends StatelessWidget {
     required this.onDone,
     super.key,
   });
-  final Collection targetCollection;
+  final CLMedia targetCollection;
   final MediaUpdater mediaUpdater;
   final List<CLMedia> currMedia;
   final void Function({required bool enable}) onUpdateSelectionmode;
@@ -331,7 +331,7 @@ class KeepWithProgress extends StatelessWidget {
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetStoreUpdater',
       ),
-      query: DBQueries.collections,
+      query: DBQueries.mediaAll,
       builder: (collections) {
         return StreamBuilder<Progress>(
           stream: mediaUpdater.moveMultiple(

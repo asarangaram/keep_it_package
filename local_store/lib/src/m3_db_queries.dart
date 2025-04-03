@@ -8,64 +8,10 @@ class Queries {
     List<Object?>? parameters,
   }) {
     final rawQuery = switch (query) {
-      DBQueries.collections => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection ',
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionsVisible => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection '
-              "WHERE label NOT LIKE '***%'",
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionsVisibleNotDeleted => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection '
-              "WHERE label NOT LIKE '***%'  AND IsDeleted = 0",
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
       DBQueries.medias => DBQuery<CLMedia>.map(
           sql: 'SELECT * FROM Media ',
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.collectionById => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection WHERE id = ? ',
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionByLabel => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection WHERE label = ? ',
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionOnDevice => DBQuery<Collection>.map(
-          sql: "SELECT * FROM Collection WHERE label NOT LIKE '***%'",
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionsExcludeEmpty => DBQuery<Collection>.map(
-          sql: 'SELECT DISTINCT Collection.* FROM Collection '
-              'JOIN Media ON Collection.id = Media.collectionId '
-              "WHERE label NOT LIKE '***%' AND "
-              'Media.isDeleted = 0 AND Collection.IsDeleted = 0',
-          triggerOnTables: const {'Collection', 'Media'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionsEmpty => DBQuery<Collection>.map(
-          sql: 'SELECT Collection.* FROM Collection '
-              'LEFT JOIN Media ON Collection.id = Media.collectionId '
-              'WHERE Media.collectionId IS NULL AND '
-              "label NOT LIKE '***%' AND "
-              'Media.isDeleted = 0 AND Collection.IsDeleted = 0',
-          triggerOnTables: const {'Collection', 'Media'},
-          fromMap: Collection.fromMap,
-        ),
-      DBQueries.collectionByIdList => DBQuery<Collection>.map(
-          sql: 'SELECT * FROM Collection WHERE id IN (?)',
-          triggerOnTables: const {'Collection'},
-          fromMap: Collection.fromMap,
         ),
       DBQueries.mediaById => DBQuery<CLMedia>.map(
           sql: 'SELECT * FROM Media WHERE id = ?',
@@ -94,6 +40,11 @@ class Queries {
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
+      DBQueries.mediaByLabel => DBQuery<CLMedia>.map(
+          sql: 'SELECT * FROM Media WHERE label = ?',
+          triggerOnTables: const {'Media'},
+          fromMap: CLMedia.fromMap,
+        ),
       DBQueries.mediaPinned => DBQuery<CLMedia>.map(
           sql:
               "SELECT * FROM Media WHERE NULLIF(pin, 'null') IS NOT NULL AND isHidden = 0 AND isDeleted = 0",
@@ -111,38 +62,9 @@ class Queries {
           triggerOnTables: const {'Media'},
           fromMap: CLMedia.fromMap,
         ),
-      DBQueries.mediaByPath => DBQuery<CLMedia>.map(
-          sql: 'SELECT * FROM Media WHERE name = ?',
-          triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
       DBQueries.mediaByIdList => DBQuery<CLMedia>.map(
           sql: 'SELECT * FROM Media WHERE id IN (?)',
           triggerOnTables: const {'Media'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.mediaByNoteID => DBQuery<CLMedia>.map(
-          sql:
-              'SELECT Media.* FROM Media JOIN MediaNote ON Media.id = MediaNote.mediaId WHERE MediaNote.noteId = ?;',
-          triggerOnTables: const {'Media', 'MediaNote'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.notesByMediaId => DBQuery<CLMedia>.map(
-          sql:
-              'SELECT Media.* FROM Media JOIN MediaNote ON Media.id = MediaNote.noteId WHERE MediaNote.mediaId = ?;',
-          triggerOnTables: const {'Media', 'MediaNote'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.notesAll => DBQuery<CLMedia>.map(
-          sql:
-              'SELECT Media.* FROM Media WHERE id IN (SELECT noteId FROM MediaNote);',
-          triggerOnTables: const {'Media', 'MediaNote'},
-          fromMap: CLMedia.fromMap,
-        ),
-      DBQueries.notesOrphan => DBQuery<CLMedia>.map(
-          sql:
-              'SELECT Media.* FROM Media WHERE isAux = 1 AND id NOT IN (SELECT noteId FROM MediaNote);',
-          triggerOnTables: const {'Media', 'MediaNote'},
           fromMap: CLMedia.fromMap,
         ),
       DBQueries.mediaOnDevice => DBQuery<CLMedia>.map(

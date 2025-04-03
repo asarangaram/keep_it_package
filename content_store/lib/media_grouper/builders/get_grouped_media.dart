@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart'
-    show CLEntity, CLMedia, Collection, GalleryGroupCLEntity;
+import 'package:store/store.dart' show CLEntity, CLMedia, GalleryGroupCLEntity;
 
 import '../../db_service/builders/w3_get_collection.dart';
 
@@ -97,7 +96,7 @@ class GetGroupedMedia extends ConsumerWidget {
                 _ => null
               },
               onGetChildren: (entity) => switch (entity) {
-                Collection _ => incoming
+                CLMedia _ => incoming
                     .where((e) => (e as CLMedia).parentId == entity.id)
                     .toList(),
                 _ => null

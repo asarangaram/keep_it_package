@@ -65,7 +65,7 @@ class DialogService {
 
   static Future<bool?> deleteCollection(
     BuildContext context, {
-    required Collection collection,
+    required CLMedia collection,
   }) async =>
       template(
         context,

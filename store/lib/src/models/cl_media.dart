@@ -25,6 +25,23 @@ class CLMedia implements CLEntity {
     this.isAux = false,
     this.pin,
   });
+  const CLMedia.collection({
+    required this.id,
+    required this.label,
+    required this.addedDate,
+    required this.updatedDate,
+    this.parentId,
+    this.type,
+    this.extension,
+    this.description,
+    this.createDate,
+    this.md5,
+    this.isDeleted = false,
+    this.isCollection = true,
+    this.isHidden = false,
+    this.isAux = false,
+    this.pin,
+  });
 
   factory CLMedia.fromMap(Map<String, dynamic> map) {
     return CLMedia(
@@ -55,6 +72,7 @@ class CLMedia implements CLEntity {
       );
 
   final int? id;
+  @override
   final bool isCollection;
   final DateTime addedDate;
   final DateTime updatedDate;

@@ -16,9 +16,9 @@ class CreateCollectionWizard extends StatefulWidget {
   });
   final bool fixedHeight;
   final void Function({
-    required Collection collection,
+    required CLMedia collection,
   }) onDone;
-  final bool Function(Collection collection)? isValidSuggestion;
+  final bool Function(CLMedia collection)? isValidSuggestion;
 
   @override
   State<StatefulWidget> createState() => PickCollectionState();
@@ -26,7 +26,7 @@ class CreateCollectionWizard extends StatefulWidget {
 
 class PickCollectionState extends State<CreateCollectionWizard> {
   bool onEditLabel = true;
-  Collection? collection;
+  CLMedia? collection;
 
   late bool hasDescription;
 

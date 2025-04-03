@@ -125,7 +125,7 @@ class PageManager {
     }
   }
 
-  Future<Collection?> openCollection(
+  Future<CLMedia?> openCollection(
     int collectionId,
   ) async {
     await navigator.pushNamed(

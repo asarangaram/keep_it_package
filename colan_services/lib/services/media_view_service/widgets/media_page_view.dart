@@ -1,7 +1,6 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import 'media_view.dart';
@@ -54,7 +53,7 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
       });
       return BasicPageService.withNavBar(message: 'Media seems deleted');
     }
-    final showControl = ref.watch(showControlsProvider);
+
     return PageView.builder(
       controller: _pageController,
       itemCount: widget.items.length,
@@ -80,19 +79,6 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
                 loadingBuilder: widget.loadingBuilder,
               ),
             ),
-            if (showControl.showNotes && !widget.isLocked)
-              GestureDetector(
-                onVerticalDragEnd: (DragEndDetails details) {
-                  if (details.primaryVelocity == null) return;
-                  // pop on Swipe
-                  if (details.primaryVelocity! > 0) {
-                    ref.read(showControlsProvider.notifier).hideNotes();
-                  }
-                },
-                child: NotesService(
-                  media: media,
-                ),
-              ),
           ],
         );
       },

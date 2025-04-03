@@ -5,6 +5,7 @@ import 'gallery_group.dart';
 
 abstract class CLEntity {
   int? get entityId;
+  bool get isCollection;
   DateTime get sortDate;
 }
 

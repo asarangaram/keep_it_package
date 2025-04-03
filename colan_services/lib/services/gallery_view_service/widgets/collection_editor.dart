@@ -12,7 +12,7 @@ import 'package:store/store.dart';
 class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
     required int collectionId,
-    required void Function(Collection collection) onSubmit,
+    required void Function(CLMedia collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -26,7 +26,7 @@ class CollectionEditor extends StatefulWidget {
   }
   factory CollectionEditor.dialog({
     required int collectionId,
-    required void Function(Collection collection) onSubmit,
+    required void Function(CLMedia collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
@@ -48,19 +48,19 @@ class CollectionEditor extends StatefulWidget {
 
   final int collectionId;
 
-  final void Function(Collection collection) onSubmit;
+  final void Function(CLMedia collection) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
   @override
   State<CollectionEditor> createState() => _CollectionEditorState();
 
-  static Future<Collection?> openSheet(
+  static Future<CLMedia?> openSheet(
     BuildContext context,
     WidgetRef ref, {
-    required Collection collection,
+    required CLMedia collection,
   }) async {
-    return showShadSheet<Collection>(
+    return showShadSheet<CLMedia>(
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
         collectionId: collection.id!,
@@ -112,7 +112,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
             }
           }
           return GetCollectionMultiple(
-            query: DBQueries.collections,
+            query: DBQueries.mediaAll, // FIXME
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading('GetCollectionMultiple'),
             builder: (collections) {
@@ -123,7 +123,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                 child: ShadSheet(
                   draggable: true,
                   title: Text(
-                    'Edit Collection "${collection.label.capitalizeFirstLetter()}"',
+                    'Edit Collection "${collection.label!.capitalizeFirstLetter()}"',
                   ),
                   description: const Text(
                     'Change the label and add/update description here',
@@ -137,7 +137,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           final label = formValue['label'] as String;
                           final desc = formValue['description'] as String?;
                           final updated = collection.copyWith(
-                            label: label,
+                            label: () => label,
                             description: () => desc == null
                                 ? null
                                 : desc.isEmpty
@@ -211,7 +211,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
   String? validateName({
     required String? newLabel,
     required String? existingLabel,
-    required List<Collection> collections,
+    required List<CLMedia> collections,
   }) {
     final newLabel0 = newLabel?.trim();
 
@@ -226,7 +226,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
         return null;
       }
       if (collections
-          .map((e) => e.label.trim().toLowerCase())
+          .map((e) => e.label!.trim().toLowerCase())
           .contains(newLabel0.toLowerCase())) {
         return '$newLabel0 already exists';
       }

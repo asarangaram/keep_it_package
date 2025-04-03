@@ -65,7 +65,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
       );
     }
     return GetCollectionMultiple(
-      query: DBQueries.collectionsVisible,
+      query: DBQueries.mediaAll,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
@@ -151,7 +151,7 @@ class ExistInDifferentCollection extends StatelessWidget {
 
   final CLSharedMedia media;
   final String parentIdentifier;
-  final List<Collection> collections;
+  final List<CLMedia> collections;
   final void Function(CLMedia media) onRemove;
 
   @override

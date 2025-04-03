@@ -13,9 +13,9 @@ class PickCollection extends StatelessWidget {
     super.key,
     this.isValidSuggestion,
   });
-  final Collection? collection;
-  final void Function(Collection) onDone;
-  final bool Function(Collection collection)? isValidSuggestion;
+  final CLMedia? collection;
+  final void Function(CLMedia) onDone;
+  final bool Function(CLMedia collection)? isValidSuggestion;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class PickCollection extends StatelessWidget {
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetCollectionMultiple',
       ),
-      query: DBQueries.collectionsVisible,
+      query: DBQueries.mediaAll,
       builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
@@ -37,8 +37,8 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as Collection).label,
-            descriptionBuilder: (e) => (e as Collection).description,
+            labelBuilder: (e) => (e as CLMedia).label!,
+            descriptionBuilder: (e) => (e as CLMedia).description,
             suggestionsAvailable: [
               if (isValidSuggestion != null)
                 ...collections.entries.where((e) => isValidSuggestion!(e))
@@ -47,7 +47,15 @@ class PickCollection extends StatelessWidget {
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
-            onCreateByLabel: (label) async => Collection.byLabel(label),
+            onCreateByLabel: (label) async {
+              final timeNow = DateTime.now();
+              return CLMedia.collection(
+                label: label,
+                id: null,
+                addedDate: timeNow,
+                updatedDate: timeNow,
+              );
+            },
             onValidate: (value) {
               if (value == null) {
                 return "can't be empty";
@@ -59,8 +67,8 @@ class PickCollection extends StatelessWidget {
             },
           ),
           onSubmit: (CLFormFieldResult result) async {
-            final collection = (result as CLFormSelectSingleResult)
-                .selectedEntitry as Collection;
+            final collection =
+                (result as CLFormSelectSingleResult).selectedEntitry as CLMedia;
 
             onDone(collection);
           },
@@ -77,8 +85,8 @@ class PickCollectionWizard extends StatelessWidget {
     super.key,
   });
 
-  final Collection? collection;
-  final void Function(Collection p1) onDone;
+  final CLMedia? collection;
+  final void Function(CLMedia p1) onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +99,20 @@ class PickCollectionWizard extends StatelessWidget {
       descriptor: CLFormSelectSingleDescriptors(
         title: 'Collection',
         label: 'Select Collection',
-        labelBuilder: (e) => (e as Collection).label,
-        descriptionBuilder: (e) => (e as Collection).description,
+        labelBuilder: (e) => (e as CLMedia).label!,
+        descriptionBuilder: (e) => (e as CLMedia).description,
         suggestionsAvailable: const [],
         initialValues: collection,
         onSelectSuggestion: (item) async => item,
-        onCreateByLabel: (label) async => Collection.byLabel(label),
+        onCreateByLabel: (label) async {
+          final timeNow = DateTime.now();
+          return CLMedia.collection(
+            id: null,
+            label: label,
+            addedDate: timeNow,
+            updatedDate: timeNow,
+          );
+        },
         onValidate: (value) {
           if (value == null) {
             return "can't be empty";
@@ -109,7 +125,7 @@ class PickCollectionWizard extends StatelessWidget {
       ),
       onSubmit: (CLFormFieldResult result) async {
         final collection =
-            (result as CLFormSelectSingleResult).selectedEntitry as Collection;
+            (result as CLFormSelectSingleResult).selectedEntitry as CLMedia;
 
         onDone(collection);
       },

@@ -4,43 +4,34 @@ final migrations = SqliteMigrations()
   ..add(
     SqliteMigration(1, (tx) async {
       await tx.execute('''
-      CREATE TABLE IF NOT EXISTS Collection (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        label TEXT NOT NULL UNIQUE,
-        description TEXT,
-        createdDate DATETIME NOT NULL,
-        updatedDate DATETIME NOT NULL,
-        isDeleted INTEGER NOT NULL,
-        
-      )
-    ''');
-      await tx.execute('''
       CREATE TABLE IF NOT EXISTS Media (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL ,
-        md5String TEXT NOT NULL UNIQUE,
-        type TEXT NOT NULL,
-        fExt TEXT CHECK(length(fExt) BETWEEN 2 AND 6),
-        ref TEXT,
-        collectionId INTEGER,
-        originalDate DATETIME,
-        createdDate DATETIME,
-        updatedDate DATETIME,
+        isCollection INTEGER NOT NULL,
+        addedDate DATETIME NOT NULL,
+        updatedDate DATETIME NOT NULL,
         isDeleted INTEGER NOT NULL,
+
+        label TEXT ,
+        description TEXT,
+        parentId INTEGER,
+
+        md5 TEXT UNIQUE,
+        type TEXT,
+        extension TEXT CHECK(length(fExt) BETWEEN 2 AND 6),
+        createDate DATETIME,
+        
         isHidden INTEGER NOT NULL,
         pin TEXT ,
-        isAux INTEGER NOT NULL,
-        FOREIGN KEY (collectionId) REFERENCES Collection(id)
+        FOREIGN KEY (parentId) REFERENCES Media(id)
       )
-    ''');
-      await tx.execute('''
-      CREATE TABLE IF NOT EXISTS MediaNote (
-        noteId INTEGER,
-        mediaId INTEGER,
-        PRIMARY KEY (noteId, mediaId),
-        FOREIGN KEY (noteId) REFERENCES Media(id) ON DELETE CASCADE,
-        FOREIGN KEY (mediaId) REFERENCES Media(id) ON DELETE CASCADE
-      )
+
+      -- Constraints
+        CHECK ( 
+          (isCollection = 1 AND label IS NOT NULL AND label != '') OR 
+          (isCollection = 0 AND md5 IS NOT NULL AND type IS NOT NULL AND extension IS NOT NULL)
+        ),
+        UNIQUE(label) WHERE isCollection = 1
+        
     ''');
     }),
   );

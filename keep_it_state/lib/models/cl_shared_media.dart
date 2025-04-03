@@ -12,7 +12,7 @@ class CLMediaFileGroup {
     this.collection,
   });
   final List<CLMediaBase> entries;
-  final Collection? collection;
+  final CLMedia? collection;
   final UniversalMediaSource? type;
 
   bool get isEmpty => entries.isEmpty;
@@ -27,7 +27,7 @@ class CLSharedMedia {
     this.type,
   });
   final List<CLMedia> entries;
-  final Collection? collection;
+  final CLMedia? collection;
   final UniversalMediaSource? type;
 
   bool get isEmpty => entries.isEmpty;
@@ -39,7 +39,7 @@ class CLSharedMedia {
 
   CLSharedMedia copyWith({
     List<CLMedia>? entries,
-    Collection? collection,
+    CLMedia? collection,
     UniversalMediaSource? type,
   }) {
     return CLSharedMedia(

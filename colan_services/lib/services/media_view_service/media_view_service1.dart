@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-import '../notes_service/notes_service.dart';
-
 import 'widgets/media_page_view.dart';
 import 'widgets/media_view.dart';
 
@@ -28,7 +26,7 @@ class MediaViewService1 extends StatelessWidget {
       loadingBuilder: loadingBuilder,
     );
   }
-  
+
   factory MediaViewService1.pageView({
     required int initialMediaIndex,
     required List<CLMedia> media,
@@ -178,9 +176,6 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                       ref.read(showControlsProvider.notifier).hideNotes();
                     }
                   },
-                  child: NotesService(
-                    media: widget.media[0],
-                  ),
                 ),
             ],
           )
