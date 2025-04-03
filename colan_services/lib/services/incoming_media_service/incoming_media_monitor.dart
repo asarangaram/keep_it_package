@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:path/path.dart' as path_handler;
+
 import 'package:store/store.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
@@ -34,9 +34,8 @@ class IncomingMediaMonitor extends ConsumerWidget {
       final items = pickedFileList
           .map(
             (xfile) => CLMediaBase(
-              label: xfile.path,
+              path: xfile.path,
               type: CLMediaType.file,
-              extension: path_handler.extension(xfile.path),
             ),
           )
           .toList();

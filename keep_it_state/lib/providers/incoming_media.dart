@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/extensions/ext_list.dart';
 
-import 'package:path/path.dart' as path_handler;
 import 'package:share_handler/share_handler.dart';
 import 'package:store/store.dart';
 
@@ -63,17 +62,15 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
           ), */
       if (media.imageFilePath != null)
         CLMediaBase(
-          label: media.imageFilePath!,
+          path: media.imageFilePath!,
           type: CLMediaType.image,
-          extension: path_handler.extension(media.imageFilePath!),
         ),
       if (media.attachments != null)
         ...media.attachments!.where((e) => e != null).map(
           (e) {
             return CLMediaBase(
-              label: e!.path,
+              path: e!.path,
               type: toCLMediaType(e.type),
-              extension: path_handler.extension(e.path),
             );
           },
         ),
