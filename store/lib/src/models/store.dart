@@ -15,6 +15,10 @@ enum DBQueries {
   mediaPinned,
   mediaStaled,
   mediaDeleted,
+
+  collections,
+  rootCollections,
+  visibleCollections
 }
 
 abstract class StoreQuery<T> {
@@ -45,7 +49,7 @@ abstract class StoreReader {
         parameters: ['(${idList.join(', ')})'],
       );
 
-  Future<List<CLEntity>> getEntitiesByParentId(int collectionId) async =>
+  Future<List<CLEntity>> getEntitiesByParentId(int? collectionId) async =>
       getMultiple(
         DBQueries.mediaByCollectionId,
         parameters: [collectionId],

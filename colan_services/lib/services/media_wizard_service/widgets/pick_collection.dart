@@ -19,14 +19,13 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetCollectionMultiple(
+    return GetAllVisibleCollection(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
       loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetCollectionMultiple',
+        debugMessage: 'GetAllVisibleCollection',
       ),
-      query: DBQueries.entitiesVisible,
       builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(

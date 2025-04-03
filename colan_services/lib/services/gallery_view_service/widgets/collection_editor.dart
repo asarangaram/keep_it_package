@@ -111,11 +111,10 @@ class _CollectionEditorState extends State<CollectionEditor> {
               return errorBuilder(e, st);
             }
           }
-          return GetCollectionMultiple(
-            query: DBQueries.entitiesVisible, // FIXME
+          return GetAllCollection(
             errorBuilder: errorBuilder,
-            loadingBuilder: () => loading('GetCollectionMultiple'),
-            builder: (collections) {
+            loadingBuilder: () => loading('GetAllCollection'),
+            builder: (allCollections) {
               return Padding(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -164,7 +163,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           validator: (value) => validateName(
                             newLabel: value,
                             existingLabel: collection.label,
-                            collections: collections,
+                            collections: allCollections,
                           ),
                           showCursor: true,
                           inputFormatters: [

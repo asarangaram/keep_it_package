@@ -108,7 +108,7 @@ class MediaMetadataEditor extends StatelessWidget {
           return GetCollection(
             id: media.parentId,
             errorBuilder: errorBuilder,
-            loadingBuilder: () => loading(context, 'GetCollectionMultiple'),
+            loadingBuilder: () => loading(context, 'GetCollection'),
             builder: (collection) {
               return StatefulMediaEditor(
                 media: media,

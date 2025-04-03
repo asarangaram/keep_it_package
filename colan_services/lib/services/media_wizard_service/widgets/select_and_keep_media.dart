@@ -236,10 +236,9 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                             currMedia: currMedia,
                           )
                         : KeepWithProgress(
-                            targetCollection: targetCollection!,
+                            media2Move: currMedia,
+                            newParent: targetCollection!,
                             mediaUpdater: theStore.mediaUpdater,
-                            onUpdateSelectionmode: onUpdateSelectionmode,
-                            currMedia: currMedia,
                             onDone: () async {
                               await ref
                                   .read(
@@ -312,42 +311,32 @@ class WizardView extends ConsumerWidget {
 
 class KeepWithProgress extends StatelessWidget {
   const KeepWithProgress({
-    required this.targetCollection,
+    required this.media2Move,
+    required this.newParent,
     required this.mediaUpdater,
-    required this.currMedia,
-    required this.onUpdateSelectionmode,
     required this.onDone,
     super.key,
   });
-  final CLEntity targetCollection;
+  final List<CLEntity> media2Move;
+  final CLEntity newParent;
   final MediaUpdater mediaUpdater;
-  final List<CLEntity> currMedia;
-  final void Function({required bool enable}) onUpdateSelectionmode;
+
   final Future<void> Function() onDone;
   @override
   Widget build(BuildContext context) {
-    return GetCollectionMultiple(
-      errorBuilder: (_, __) => throw UnimplementedError('errorBuilder'),
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetStoreUpdater',
+    return StreamBuilder<Progress>(
+      stream: mediaUpdater.moveMultiple(
+        media: media2Move,
+        collection: newParent,
+        shouldRefresh: false,
+        onDone: ({
+          required List<CLEntity> mediaMultiple,
+        }) async =>
+            onDone(),
       ),
-      query: DBQueries.entitiesVisible,
-      builder: (collections) {
-        return StreamBuilder<Progress>(
-          stream: mediaUpdater.moveMultiple(
-            media: currMedia,
-            collection: targetCollection,
-            shouldRefresh: false,
-            onDone: ({
-              required List<CLEntity> mediaMultiple,
-            }) async =>
-                onDone(),
-          ),
-          builder: (context, snapShot) {
-            return ProgressBar(
-              progress: snapShot.hasData ? snapShot.data?.fractCompleted : null,
-            );
-          },
+      builder: (context, snapShot) {
+        return ProgressBar(
+          progress: snapShot.hasData ? snapShot.data?.fractCompleted : null,
         );
       },
     );

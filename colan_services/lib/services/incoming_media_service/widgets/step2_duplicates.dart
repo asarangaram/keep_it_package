@@ -64,13 +64,12 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
         message: 'Should not have seen this.',
       );
     }
-    return GetCollectionMultiple(
-      query: DBQueries.entitiesVisible,
+    return GetAllCollection(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
       loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetCollectionMultiple',
+        debugMessage: 'GetAllCollection',
       ),
       builder: (collections) {
         final newCollection = collections

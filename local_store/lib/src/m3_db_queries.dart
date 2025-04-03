@@ -55,6 +55,23 @@ class Queries {
           triggerOnTables: const {'Media'},
           fromMap: CLEntity.fromMap,
         ),
+      DBQueries.collections => DBQuery<CLEntity>.map(
+          sql: 'SELECT * FROM Media WHERE isCollection = 1',
+          triggerOnTables: const {'Media'},
+          fromMap: CLEntity.fromMap,
+        ),
+      DBQueries.rootCollections => DBQuery<CLEntity>.map(
+          sql:
+              'SELECT * FROM Media WHERE isCollection = 1 AND parentId IS NULL',
+          triggerOnTables: const {'Media'},
+          fromMap: CLEntity.fromMap,
+        ),
+      DBQueries.visibleCollections => DBQuery<CLEntity>.map(
+          sql:
+              'SELECT * FROM Media WHERE isCollection = 1 AND isHidden = 0 AND isDeleted = 0',
+          triggerOnTables: const {'Media'},
+          fromMap: CLEntity.fromMap,
+        ),
     };
     if (parameters == null) {
       return rawQuery as StoreQuery<T>;

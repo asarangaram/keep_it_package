@@ -80,18 +80,78 @@ class GetCollectionsByIdList extends ConsumerWidget {
   }
 }
 
-class GetCollectionMultiple extends ConsumerWidget {
-  const GetCollectionMultiple({
+class GetAllCollection extends ConsumerWidget {
+  const GetAllCollection({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.query,
     super.key,
   });
   final Widget Function(List<CLEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final DBQueries query;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      builder: (dbReader) {
+        final q = dbReader.getQuery(DBQueries.collections, parameters: [])
+            as StoreQuery<CLEntity>;
+
+        return GetFromStore<CLEntity>(
+          query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
+          builder: builder,
+        );
+      },
+    );
+  }
+}
+
+class GetRootCollection extends ConsumerWidget {
+  const GetRootCollection({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    super.key,
+  });
+  final Widget Function(List<CLEntity> collections) builder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetDBReader(
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      builder: (dbReader) {
+        final q = dbReader.getQuery(DBQueries.rootCollections, parameters: [])
+            as StoreQuery<CLEntity>;
+
+        return GetFromStore<CLEntity>(
+          query: q,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
+          builder: builder,
+        );
+      },
+    );
+  }
+}
+
+class GetAllVisibleCollection extends ConsumerWidget {
+  const GetAllVisibleCollection({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    super.key,
+  });
+  final Widget Function(List<CLEntity> collections) builder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -100,7 +160,8 @@ class GetCollectionMultiple extends ConsumerWidget {
       loadingBuilder: loadingBuilder,
       builder: (dbReader) {
         final q =
-            dbReader.getQuery(query, parameters: []) as StoreQuery<CLEntity>;
+            dbReader.getQuery(DBQueries.visibleCollections, parameters: [])
+                as StoreQuery<CLEntity>;
 
         return GetFromStore<CLEntity>(
           query: q,
