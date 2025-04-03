@@ -75,10 +75,10 @@ class MediaUpdater {
 
     CLEntity? c;
     if (media.id != null) {
-      c = await store.reader.getMediaById(media.id!);
+      c = await store.reader.getEntity(id: media.id);
     }
     if (c == null && media.md5 != null) {
-      c ??= await store.reader.getMediaByMD5String(media.md5!);
+      c ??= await store.reader.getEntity(md5: media.md5);
     }
 
     if (c != null) {
@@ -106,7 +106,7 @@ class MediaUpdater {
     int id, {
     bool shouldRefresh = true,
   }) async {
-    final m = await store.reader.getMediaById(id);
+    final m = await store.reader.getEntity(id: id);
     if (m != null) {
       await store.upsertMedia(
         m.updateContent(
@@ -787,7 +787,7 @@ class MediaUpdater {
         final file = File(item.path);
         if (file.existsSync()) {
           final md5String = await file.checksum;
-          final duplicate = await store.reader.getMediaByMD5String(md5String);
+          final duplicate = await store.reader.getEntity(md5: md5String);
           if (duplicate != null) {
             // multiple duplicate may be imported together
             if (existingItems.where((e) => e.id == duplicate.id!).firstOrNull ==

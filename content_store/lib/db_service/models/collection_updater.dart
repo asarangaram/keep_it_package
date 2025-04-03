@@ -11,7 +11,7 @@ class CollectionUpdater {
     bool shouldRefresh = true,
   }) async {
     if (collection.id != null) {
-      final c = await store.reader.getMediaById(collection.id!);
+      final c = await store.reader.getEntity(id: collection.id);
       if (collection == c) return collection;
     }
 
@@ -50,7 +50,7 @@ class CollectionUpdater {
     int id, {
     bool shouldRefresh = true,
   }) async {
-    final collection = await store.reader.getMediaById(id);
+    final collection = await store.reader.getEntity(id: id);
     if (collection != null) {
       final mediaMultiple = await store.reader.getMediaByCollectionId(id);
 
@@ -81,7 +81,7 @@ class CollectionUpdater {
       bool shouldRefresh,
     })? onDeleteMedia,
   }) async {
-    final collection = await store.reader.getMediaById(id);
+    final collection = await store.reader.getEntity(id: id);
     if (collection != null) {
       final medias = await store.reader.getMediaByCollectionId(id);
       if (medias.isNotEmpty) {
@@ -131,7 +131,7 @@ class CollectionUpdater {
     bool shouldRefresh = true,
     bool restoreIfNeeded = false,
   }) async {
-    var collectionInDB = await store.reader.getCollectionByLabel(label);
+    var collectionInDB = await store.reader.getEntity(label: label);
     if (restoreIfNeeded && collectionInDB?.isDeleted != null) {
       collectionInDB = await upsert(collectionInDB!.copyWith(isDeleted: false));
     }

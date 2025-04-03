@@ -15,7 +15,7 @@ final mediaUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
 
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
-      final media = await theStore.store.reader.getMediaById(id);
+      final media = await theStore.store.reader.getEntity(id: id);
       if (media != null) {
         /* log(
           'media : ${media.md5String}',
@@ -26,7 +26,7 @@ final mediaUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
       }
     }
   });
-  final media = await theStore.store.reader.getMediaById(id);
+  final media = await theStore.store.reader.getEntity(id: id);
   if (media == null) {
     throw Exception('media not found!');
   }
@@ -46,7 +46,7 @@ final previewUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
 
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
-      final media = await theStore.store.reader.getMediaById(id);
+      final media = await theStore.store.reader.getEntity(id: id);
       if (media != null) {
         /* log(
           'media : ${media.md5String}',
@@ -57,7 +57,7 @@ final previewUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
       } else {}
     }
   });
-  final media = await theStore.store.reader.getMediaById(id);
+  final media = await theStore.store.reader.getEntity(id: id);
   if (media == null) {
     throw Exception('media not found!');
   }

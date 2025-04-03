@@ -53,9 +53,6 @@ abstract class StoreReader {
   Future<List<CLEntity>> get mediaOnDevice async =>
       getMultiple(DBQueries.mediaOnDevice);
 
-  Future<CLEntity?> getMediaById(int id) async =>
-      get(DBQueries.mediaById, parameters: [id]);
-
   Future<List<CLEntity>> getMediasByIDList(List<int> idList) async =>
       getMultiple(
         DBQueries.mediaByIdList,
@@ -70,13 +67,19 @@ abstract class StoreReader {
 
   Future<List<CLEntity>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
 
-  Future<CLEntity?> getMediaByMD5String(String md5String) async => get(
-        DBQueries.mediaByMD5,
-        parameters: [md5String],
-      );
+  Future<CLEntity?> getEntity({int? id, String? md5, String? label}) async {
+    CLEntity? entity;
+    if (id != null) {
+      entity = await get<CLEntity>(DBQueries.mediaById, parameters: [id]);
+    }
+    if (entity != null && md5 != null) {
+      entity = await get<CLEntity>(DBQueries.mediaByMD5, parameters: [md5]);
+    }
+    if (entity != null && label != null) {
+      entity = await get<CLEntity>(DBQueries.mediaByLabel, parameters: [label]);
+    }
 
-  Future<CLEntity?> getCollectionByLabel(String label) {
-    return get(DBQueries.mediaByLabel, parameters: [label]);
+    return entity;
   }
 }
 
