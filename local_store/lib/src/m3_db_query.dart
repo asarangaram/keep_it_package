@@ -8,7 +8,6 @@ class DBQuery<T> extends StoreQuery<T> {
   factory DBQuery({
     required String sql,
     required Set<String> triggerOnTables,
-    String dbPathDELETE = 'Not specified',
     List<Object?>? parameters,
   }) {
     final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
@@ -17,7 +16,6 @@ class DBQuery<T> extends StoreQuery<T> {
       triggerOnTables: triggerOnTables,
       fromMap: null,
       parameters: parameters0,
-      dbPathDELETE: dbPathDELETE,
     );
   }
   factory DBQuery.map({
@@ -26,7 +24,6 @@ class DBQuery<T> extends StoreQuery<T> {
     required T? Function(
       Map<String, dynamic> map,
     ) fromMap,
-    String dbPathDELETE = 'Not specified',
     List<Object?>? parameters,
   }) {
     final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
@@ -35,14 +32,12 @@ class DBQuery<T> extends StoreQuery<T> {
       triggerOnTables: triggerOnTables,
       fromMap: fromMap,
       parameters: parameters0,
-      dbPathDELETE: dbPathDELETE,
     );
   }
   const DBQuery._({
     required this.sql,
     required this.triggerOnTables,
     required this.fromMap,
-    required this.dbPathDELETE,
     this.parameters,
   });
 
@@ -50,27 +45,24 @@ class DBQuery<T> extends StoreQuery<T> {
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
   final T? Function(Map<String, dynamic> map)? fromMap;
-  final String dbPathDELETE;
 
   DBQuery<T> copyWith({
     String? sql,
     Set<String>? triggerOnTables,
     List<Object?>? parameters,
     T? Function(Map<String, dynamic> map)? fromMap,
-    String? dbPathDELETE,
   }) {
     return DBQuery._(
       sql: sql ?? this.sql,
       triggerOnTables: triggerOnTables ?? this.triggerOnTables,
       parameters: parameters ?? this.parameters,
       fromMap: fromMap ?? this.fromMap,
-      dbPathDELETE: dbPathDELETE ?? this.dbPathDELETE,
     );
   }
 
   @override
   String toString() {
-    return 'DBQuery(sql: $sql, triggerOnTables: $triggerOnTables, parameters: $parameters, fromMap: $fromMap, dbPathDELETE: $dbPathDELETE)';
+    return 'DBQuery(sql: $sql, triggerOnTables: $triggerOnTables, parameters: $parameters, fromMap: $fromMap)';
   }
 
   @override
@@ -81,8 +73,7 @@ class DBQuery<T> extends StoreQuery<T> {
     return other.sql == sql &&
         collectionEquals(other.triggerOnTables, triggerOnTables) &&
         collectionEquals(other.parameters, parameters) &&
-        other.fromMap == fromMap &&
-        other.dbPathDELETE == dbPathDELETE;
+        other.fromMap == fromMap;
   }
 
   /// Fix:
@@ -96,8 +87,7 @@ class DBQuery<T> extends StoreQuery<T> {
         triggerOnTables.hashCode ^
         (parameters?.fold(0, (hashInit, next) => hashInit! ^ next.hashCode) ??
             parameters.hashCode) ^
-        fromMap.hashCode ^
-        dbPathDELETE.hashCode;
+        fromMap.hashCode;
   }
 
   static Map<String, dynamic> fixedMap(Map<String, dynamic> map) {
