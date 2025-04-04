@@ -9,7 +9,6 @@ import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
 
 import 'cl_media_info_extractor_platform_interface.dart';
-import 'url_handler.dart';
 
 enum CLMediaType {
   text,

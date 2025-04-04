@@ -35,10 +35,12 @@ class AnalysePage extends StatelessWidget {
             title: 'Analysing Shared Media',
             onCancel: onCancel,
             child: StreamProgressView(
-              stream: () => theStore.mediaUpdater.analyseMultiple(
+              stream: () => throw Exception('Unimplemented')
+              /* theStore.mediaUpdater.analyseMultiple(
                 mediaFiles: incomingMedia.entries,
                 onDone: onDone,
-              ),
+              ) */
+              ,
               onCancel: onCancel,
             ),
           ),

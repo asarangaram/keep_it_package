@@ -69,6 +69,10 @@ abstract class StoreReader {
 
     return entity;
   }
+
+  Future<List<CLEntity>> storeQuery(
+    Map<String, dynamic>? queryMap,
+  );
 }
 
 @immutable

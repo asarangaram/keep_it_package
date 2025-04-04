@@ -1,6 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
-import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -184,7 +183,8 @@ class CLContextMenu {
               media: media,
             );
             if (updated != null && context.mounted) {
-              await theStore.mediaUpdater.update(updated, isEdited: true);
+              throw Exception('Unimplemented');
+              /* await theStore.mediaUpdater.update(updated, isEdited: true); */
             }
 
             return true;
@@ -213,19 +213,21 @@ class CLContextMenu {
                 false;
             if (!confirmed) return confirmed;
             if (context.mounted) {
-              return theStore.mediaUpdater.delete(media.id!);
+              throw Exception('Unimplemented');
+              /* return theStore.mediaUpdater.delete(media.id!); */
             }
             return null;
           };
 
-    final onPin0 = onPin != null
-        ? onPin()
-        : () async => theStore.mediaUpdater.pinToggleMultiple(
+    final onPin0 =
+        onPin != null ? onPin() : () async => throw Exception('Unimplemented');
+    /* theStore.mediaUpdater.pinToggleMultiple(
               {media.id},
               onGetPath: (media) {
-                return theStore.directories.getMediaAbsolutePath(media);
+                
+                /* return theStore.directories.getMediaAbsolutePath(media); */
               },
-            );
+            ); */
 
     final ac = ActionControl.onGetMediaActionControl(
       media,
@@ -274,16 +276,17 @@ class CLContextMenu {
     final onShare0 = onShare != null
         ? onShare()
         : () => theStore.mediaUpdater.share(context, items);
-    final onPin0 = onPin != null
-        ? onPin()
-        : () => theStore.mediaUpdater.pinToggleMultiple(
+    final onPin0 =
+        onPin != null ? onPin() : () => throw Exception('Unimplemented')
+        /* theStore.mediaUpdater.pinToggleMultiple(
               items.map((e) => e.id).toSet(),
               onGetPath: (media) {
                 throw UnimplementedError(
                   'onGetPath not yet implemented',
                 );
               },
-            );
+            ) */
+        ;
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
@@ -294,9 +297,10 @@ class CLContextMenu {
                 false;
             if (!confirmed) return confirmed;
             if (context.mounted) {
-              return theStore.mediaUpdater.deleteMultiple(
+              throw Exception('Unimplemented');
+              /* return theStore.mediaUpdater.deleteMultiple(
                 {...items.map((e) => e.id!)},
-              );
+              ); */
             }
             return null;
           };

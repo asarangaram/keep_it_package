@@ -107,9 +107,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             media: currMedia,
           )) ??
           false,
-      action: () => mediaUpdater.restoreMultiple(
+      action: () => throw Exception('Unimplemented')
+      /* mediaUpdater.restoreMultiple(
         currMedia.map((e) => e.id!).toSet(),
-      ),
+      ) */
+      ,
       onUpdateSelectionmode: onUpdateSelectionmode,
     );
   }
@@ -127,9 +129,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             media: currMedia,
           ) ??
           false,
-      action: () async => mediaUpdater.deletePermanentlyMultiple(
+      action: () async => throw Exception('Unimplemented')
+      /* mediaUpdater.deletePermanentlyMultiple(
         currMedia.map((e) => e.id!).toSet(),
-      ),
+      ) */
+      ,
       onUpdateSelectionmode: onUpdateSelectionmode,
     );
   }
@@ -154,9 +158,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             media: currMedia,
           ) ??
           false,
-      action: () async => mediaUpdater.deleteMultiple(
+      action: () async => throw Exception('Unimplemented')
+      /* mediaUpdater.deleteMultiple(
         {...currMedia.map((e) => e.id!)},
-      ),
+      ) */
+      ,
       onUpdateSelectionmode: onUpdateSelectionmode,
     );
   }
@@ -324,7 +330,8 @@ class KeepWithProgress extends StatelessWidget {
   final Future<void> Function() onDone;
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Progress>(
+    throw Exception('Unimplemented');
+    /* return StreamBuilder<Progress>(
       stream: mediaUpdater.moveMultiple(
         media: media2Move,
         collection: newParent,
@@ -339,6 +346,6 @@ class KeepWithProgress extends StatelessWidget {
           progress: snapShot.hasData ? snapShot.data?.fractCompleted : null,
         );
       },
-    );
+    ); */
   }
 }

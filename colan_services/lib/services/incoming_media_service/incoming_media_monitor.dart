@@ -1,3 +1,4 @@
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,10 +34,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
     if (pickedFileList.isNotEmpty) {
       final items = pickedFileList
           .map(
-            (xfile) => CLMediaCandidate(
-              path: xfile.path,
-              type: CLMediaType.file,
-            ),
+            (xfile) => CLMediaUnknown(xfile.path),
           )
           .toList();
       final sharedMedia = CLMediaFileGroup(

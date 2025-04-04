@@ -48,11 +48,12 @@ class CLCameraService extends ConsumerWidget {
                 parentIdentifier: 'CLCameraService',
                 onCancel: () => PageManager.of(context).pop(),
                 onNewMedia: (path, {required isVideo}) async {
-                  return theStore.mediaUpdater.create(
+                  throw Exception('Unimplemented');
+                  /* return theStore.mediaUpdater.create(
                     path,
                     type: isVideo ? CLMediaType.video : CLMediaType.image,
                     parentId: () => collection?.id,
-                  );
+                  ); */
                 },
                 onDone: (mediaList) async {
                   await MediaWizardService.openWizard(

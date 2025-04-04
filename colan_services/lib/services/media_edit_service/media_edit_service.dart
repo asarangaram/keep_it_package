@@ -77,8 +77,9 @@ class MediaEditService extends ConsumerWidget {
                                       ) ??
                                       false;
                               if (confirmed && context.mounted) {
-                                resultMedia = await theStore.mediaUpdater
-                                    .replaceContent(file, media: media);
+                                throw Exception('Unimplemented');
+                                /* resultMedia = await theStore.mediaUpdater
+                                    .replaceContent(file, media: media); */
                               } else {
                                 resultMedia = media;
                               }
@@ -90,11 +91,12 @@ class MediaEditService extends ConsumerWidget {
                                       ) ??
                                       false;
                               if (confirmed && context.mounted) {
-                                resultMedia = await theStore.mediaUpdater
+                                throw Exception('Unimplemented');
+                                /* resultMedia = await theStore.mediaUpdater
                                     .updateCloneAndReplaceContent(
                                   file,
                                   media: media,
-                                );
+                                ); */
                               } else {
                                 resultMedia = media;
                               }

@@ -14,6 +14,8 @@ dependencies:
   camera: ^0.11.0+1
   cl_camera:
     path: ../cl_camera
+  cl_media_info_extractor:
+    path: ../cl_media_info_extractor
   cl_media_viewers_flutter:
     path: ../cl_media_viewers_flutter
   colan_widgets:

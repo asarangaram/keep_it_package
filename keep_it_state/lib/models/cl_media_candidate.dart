@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:keep_it_state/keep_it_state.dart';
