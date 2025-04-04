@@ -9,8 +9,6 @@ import 'package:content_store/extensions/ext_cldirectories.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:keep_it_state/keep_it_state.dart';
-
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
@@ -64,44 +62,109 @@ class MediaUpdater {
   }
 
   Future<CLEntity?> upsertCollection({
-    required String label, // Mandatory if isCollection
+    required String label,
     String? description,
     int? parentId,
-    UpdateStrategy strategy = UpdateStrategy.overwrite,
-  }) {
+    UpdateStrategy strategy = UpdateStrategy.skip,
+  }) async {
+    // FIXME: How to ensure this searches only for collections?
+    final collectionInDB = await getEntity(label: label);
 
+    if (collectionInDB != null && collectionInDB.id != null) {
+      if (!collectionInDB.isCollection) {
+        throw Exception(
+          'Entity with label $label is not a collection.',
+        );
+      }
+      if (strategy == UpdateStrategy.skip) {
+        return collectionInDB;
+      } else {
+        return (await updateCollectionMultiple(
+          [collectionInDB.id!],
+          description: () => description,
+          parentId: () => parentId,
+          strategy: strategy,
+        ))[0];
+      }
+    }
     throw UnimplementedError('create');
   }
 
-  /// Updates multiple collection entities with the provided metadata.
+  /// Updates multiple collection entities.
   ///
-  /// This method allows batch updating of existing collections objects,
+  /// This method allows batch updating of existing collection objects,
   /// applies the same `parentId`
   /// applying the same `description`, `parentId`, and update `strategy` to all.
   ///
-  /// [entities] is the list of entities to update.
+  /// [entityIds] is the list of IDs of entities to update.
   ///   All entries must be collections and exist.
-  ///   if any entity is not a collection or does not exist, an error will be thrown.
-  /// [description] is the new description to apply, depending on [strategy].
-  ///   * Merges (appends) the description if [strategy] is [UpdateStrategy.mergeAppend]
-  ///   * Replaces the description if [strategy] is [UpdateStrategy.overwrite]
-  ///   *  [UpdateStrategy.skip] is not allowed.
-  /// [parentId] is the new parent collection ID to assign, if applicable.
-  ///   can be null if you want to make the collection a root collection.
-  /// Returns a list of updated [CLEntity] objects
-
+  ///   If any entity is not a collection or does not exist, an error will be thrown.
+  /// [description] is a function that provides the new description to apply, depending on [strategy].
+  ///   * Merges (appends) the description if [strategy] is [UpdateStrategy.mergeAppend].
+  ///   * Replaces the description if [strategy] is [UpdateStrategy.overwrite].
+  ///   * [UpdateStrategy.skip] is not allowed.
+  ///   If null, the description will not be updated.
+  /// [parentId] is a function that provides the new parent collection ID to assign, if applicable.
+  ///   Can return null if you want to make the collection a root collection.
+  ///   If null, the parent ID will not be updated.
+  /// [isDeleted] is a function that provides the new deletion status.
+  /// [isHidden] is a function that provides the new hidden status.
+  /// Returns a list of updated [CLEntity] objects.
   Future<List<CLEntity>> updateCollectionMultiple(
-    List<CLEntity> entities, {
+    List<int> entityIds, {
     ValueGetter<String?>? description,
     ValueGetter<int?>? parentId,
     ValueGetter<bool>? isDeleted,
     ValueGetter<bool>? isHidden,
     UpdateStrategy strategy = UpdateStrategy.mergeAppend,
-  }) {
-    
+  }) async {
+    if (strategy == UpdateStrategy.skip) {
+      throw Exception(
+        'UpdateStrategy.skip is not allowed for updateCollectionMultiple',
+      );
+    }
+    if (entityIds.isEmpty) {
+      throw Exception('No entity IDs provided.');
+    }
+    final entitiesIdsSet = entityIds.toSet();
+    if (entitiesIdsSet.length != entityIds.length) {
+      throw Exception('Duplicate entity IDs provided.');
+    }
+    if (entitiesIdsSet.any((e) => e <= 0)) {
+      throw Exception('Invalid entity ID provided.');
+    }
+    final entities0 = await Future.wait(entityIds.map((e) => getEntity(id: e)));
+    if (entities0.any((e) => e == null)) {
+      throw Exception('One or more entities do not exist.');
+    }
+    if (entities0.any((e) => e!.isCollection == false)) {
+      throw Exception(
+        'All entities must be collections. One or more entities are not collections.',
+      );
+    }
+    if (parentId != null) {
+      final parentIdValue = parentId.call();
+      if (parentIdValue != null && parentIdValue <= 0) {
+        throw Exception('Invalid parent ID provided.');
+      }
+      if (entities0.any((e) => e!.id == parentIdValue)) {
+        throw Exception(
+          'Parent ID cannot be the same as any of the entity IDs.',
+        );
+      }
+      if (parentIdValue != null) {
+        final parent = await getEntity(id: parentIdValue);
+        if (parent == null) {
+          throw Exception('Parent entity does not exist.');
+        }
+        if (!parent.isCollection) {
+          throw Exception('Parent entity must be a collection.');
+        }
+      }
+    }
+    final entities = entities0.cast<CLEntity>();
 
     final updated = entities
-        .where((e) => e.isCollection)
         .map(
           (e) => e.copyWith(
             description: description != null
@@ -110,7 +173,7 @@ class MediaUpdater {
                         '${e.descriptionText}\n${description()}'.trim(),
                       UpdateStrategy.overwrite => description.call(),
                       UpdateStrategy.skip =>
-                        throw Exception('skip not allowed'),
+                        throw Exception('UpdateStrategy.skip is not allowed'),
                     }
                 : null,
             parentId: parentId,
@@ -119,9 +182,15 @@ class MediaUpdater {
           ),
         )
         .toList();
-    // FIXME: Save all collections here.
-    upsertMultiple(updated)
-    throw UnimplementedError('create');
+
+    return upsertMultiple(updated);
+  }
+
+  /// This method allows batch updating of existing media objects,
+  Future<List<CLEntity>> upsertMultiple(
+    List<CLEntity> entities,
+  ) async {
+    throw UnimplementedError('upsertMultiple');
   }
 
   Future<CLEntity?> createMedia({
