@@ -4,9 +4,8 @@ import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
-import 'ext_sqlite_database.dart';
 import 'm2_db_migration.dart';
-import 'm3_db_queries.dart';
+
 import 'm3_db_query.dart';
 import 'm3_db_reader.dart';
 import 'm4_db_exec.dart';
@@ -21,13 +20,7 @@ class DBManager extends Store {
     final mediaTable = DBExec<CLEntity>(
       table: 'Media',
       toMap: (CLEntity obj) => obj.toMap(),
-      readBack: (tx, media) {
-        return (Queries.getQuery(
-          DBQueries.mediaByMD5,
-          parameters: [media.md5],
-        ) as DBQuery<CLEntity>)
-            .read(tx);
-      },
+      readBack: readBack,
     );
 
     final dbWriter = DBWriter(
@@ -52,6 +45,32 @@ class DBManager extends Store {
   final DBWriter dbWriter;
 
   final void Function() onReload;
+
+  static Future<CLEntity?> readBack(
+    SqliteWriteContext tx,
+    CLEntity media,
+  ) async {
+    final dbReader = DBReader(tx);
+    final q = await dbReader.formQuery<CLEntity>(
+      {
+        if (media.isCollection) 'label': media.label else 'md5': media.md5,
+      },
+    );
+    return (q as DBQuery<CLEntity>).get(tx);
+  }
+
+  static Future<CLEntity?> readBackById(
+    SqliteWriteContext tx,
+    int id,
+  ) async {
+    final dbReader = DBReader(tx);
+    final q = await dbReader.formQuery<CLEntity>(
+      {
+        'id': id,
+      },
+    );
+    return (q as DBQuery<CLEntity>).get(tx);
+  }
 
   static Future<DBManager> createInstances({
     required String dbpath,
@@ -82,12 +101,7 @@ class DBManager extends Store {
   Future<CLEntity?> updateMediaFromMap(Map<String, dynamic> map) async =>
       db.writeTransaction((tx) async {
         if (await dbWriter.updateMediaFromMap(tx, map)) {
-          final q = reader.getQuery(
-            DBQueries.mediaById,
-            parameters: [map['id'] as int],
-          ) as StoreQuery<CLEntity>;
-
-          return DBReader(tx).read(q);
+          return readBackById(tx, map['id'] as int);
         }
         return null;
       });
@@ -101,6 +115,8 @@ class DBManager extends Store {
   @override
   Future<void> reloadStore() async => onReload();
 
+  /* 
+  Unused, but preserved for logic.
   @override
   Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery) async* {
     final dbQuery = storeQuery as DBQuery<T>;
@@ -112,9 +128,9 @@ class DBManager extends Store {
     )
         .map(
       (rows) {
-        if (dbQuery.fromMap != null) {
+        if (dbQuery.getFromMap() != null) {
           return rows
-              .map((e) => dbQuery.fromMap!.call(DBQuery.fixedMap(e)))
+              .map((e) => dbQuery.getFromMap()!(DBQuery.fixedMap(e)))
               .where((e) => e != null)
               .toList();
         } else {
@@ -125,7 +141,7 @@ class DBManager extends Store {
     await for (final res in sub) {
       yield res;
     }
-  }
+  } */
 
   DBManager copyWith({
     SqliteDatabase? db,

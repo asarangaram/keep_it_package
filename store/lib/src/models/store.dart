@@ -1,6 +1,5 @@
 import 'package:meta/meta.dart';
 
-import '../extensions/ext_list.dart';
 import 'cl_entity.dart';
 
 enum DBQueries {
@@ -26,53 +25,23 @@ abstract class StoreQuery<T> {
 }
 
 abstract class StoreReader {
-  Future<T?> read<T>(StoreQuery<T> query);
-  Future<List<T?>> readMultiple<T>(StoreQuery<T> query);
-  StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
+  Future<T?> get<T>(
+    Map<String, dynamic>? queryMap, {
+    required T? Function(Map<String, dynamic>) fromMap,
+  });
 
-  Future<T?> get<T>(DBQueries query, {List<Object?>? parameters}) async {
-    final q = getQuery(query, parameters: parameters) as StoreQuery<T>;
-    return read(q);
-  }
-
-  Future<List<T>> getMultiple<T>(
-    DBQueries query, {
-    List<Object?>? parameters,
-  }) async {
-    final q = getQuery(query, parameters: parameters) as StoreQuery<T>;
-    return (await readMultiple<T>(q)).nonNullableList;
-  }
+  Future<List<T>> getAll<T>(
+    Map<String, dynamic>? queryMap, {
+    required T? Function(Map<String, dynamic>) fromMap,
+  });
 
   Future<List<CLEntity>> getEntitiesByIdList(List<int> idList) async =>
-      getMultiple(
-        DBQueries.mediaByIdList,
-        parameters: ['(${idList.join(', ')})'],
+      getAll({'id': idList}, fromMap: CLEntity.fromMap);
+
+  Future<List<CLEntity>> getEntitiesByParentId(int? parentId) async => getAll(
+        {'parentId': parentId},
+        fromMap: CLEntity.fromMap,
       );
-
-  Future<List<CLEntity>> getEntitiesByParentId(int? parentId) async =>
-      getMultiple(
-        DBQueries.mediaByCollectionId,
-        parameters: [parentId],
-      );
-
-  Future<CLEntity?> getEntity({int? id, String? md5, String? label}) async {
-    CLEntity? entity;
-    if (id != null) {
-      entity = await get<CLEntity>(DBQueries.mediaById, parameters: [id]);
-    }
-    if (entity != null && md5 != null) {
-      entity = await get<CLEntity>(DBQueries.mediaByMD5, parameters: [md5]);
-    }
-    if (entity != null && label != null) {
-      entity = await get<CLEntity>(DBQueries.mediaByLabel, parameters: [label]);
-    }
-
-    return entity;
-  }
-
-  Future<List<CLEntity>> storeQuery(
-    Map<String, dynamic>? queryMap,
-  );
 }
 
 @immutable
@@ -88,10 +57,6 @@ abstract class Store {
   Future<void> deleteMedia(CLEntity media);
 
   void reloadStore();
-
-  Stream<List<T?>> storeReaderStream<T>(
-    StoreQuery<T> storeQuery,
-  ); // Move to Reader
 
   void dispose();
 }

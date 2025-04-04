@@ -3,6 +3,8 @@ import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
+import 'm3_db_reader.dart';
+
 @immutable
 class DBQuery<T> extends StoreQuery<T> {
   factory DBQuery({
@@ -10,59 +12,48 @@ class DBQuery<T> extends StoreQuery<T> {
     required Set<String> triggerOnTables,
     List<Object?>? parameters,
   }) {
-    final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
     return DBQuery._(
-      sql: sql0,
+      sql: sql,
       triggerOnTables: triggerOnTables,
-      fromMap: null,
-      parameters: parameters0,
+      parameters: parameters,
     );
   }
   factory DBQuery.map({
     required String sql,
     required Set<String> triggerOnTables,
-    required T? Function(
-      Map<String, dynamic> map,
-    ) fromMap,
     List<Object?>? parameters,
   }) {
-    final (sql0, parameters0) = preprocessSqlAndParams(sql, parameters);
     return DBQuery._(
-      sql: sql0,
+      sql: sql,
       triggerOnTables: triggerOnTables,
-      fromMap: fromMap,
-      parameters: parameters0,
+      parameters: parameters,
     );
   }
   const DBQuery._({
     required this.sql,
     required this.triggerOnTables,
-    required this.fromMap,
     this.parameters,
   });
 
   final String sql;
   final Set<String> triggerOnTables;
   final List<Object?>? parameters;
-  final T? Function(Map<String, dynamic> map)? fromMap;
 
   DBQuery<T> copyWith({
     String? sql,
     Set<String>? triggerOnTables,
     List<Object?>? parameters,
-    T? Function(Map<String, dynamic> map)? fromMap,
   }) {
     return DBQuery._(
       sql: sql ?? this.sql,
       triggerOnTables: triggerOnTables ?? this.triggerOnTables,
       parameters: parameters ?? this.parameters,
-      fromMap: fromMap ?? this.fromMap,
     );
   }
 
   @override
   String toString() {
-    return 'DBQuery(sql: $sql, triggerOnTables: $triggerOnTables, parameters: $parameters, fromMap: $fromMap)';
+    return 'DBQuery(sql: $sql, triggerOnTables: $triggerOnTables, parameters: $parameters)';
   }
 
   @override
@@ -72,8 +63,7 @@ class DBQuery<T> extends StoreQuery<T> {
 
     return other.sql == sql &&
         collectionEquals(other.triggerOnTables, triggerOnTables) &&
-        collectionEquals(other.parameters, parameters) &&
-        other.fromMap == fromMap;
+        collectionEquals(other.parameters, parameters);
   }
 
   /// Fix:
@@ -86,8 +76,16 @@ class DBQuery<T> extends StoreQuery<T> {
     return sql.hashCode ^
         triggerOnTables.hashCode ^
         (parameters?.fold(0, (hashInit, next) => hashInit! ^ next.hashCode) ??
-            parameters.hashCode) ^
-        fromMap.hashCode;
+            parameters.hashCode);
+  }
+
+  T? Function(Map<String, dynamic>)? getFromMap() {
+    final fromMap =
+        runtimeTypeMapper[T]?['fromMap'] as T? Function(Map<String, dynamic>)?;
+    if (fromMap == null) {
+      return null;
+    }
+    return fromMap;
   }
 
   static Map<String, dynamic> fixedMap(Map<String, dynamic> map) {
@@ -108,13 +106,14 @@ class DBQuery<T> extends StoreQuery<T> {
   }
 
   // Use this only to pick specific items, not cached.
-  Future<List<T>> readMultiple(
+  Future<List<T>> getAll(
     SqliteWriteContext tx,
   ) async {
     _infoLogger('cmd: $sql, $parameters');
+    final fromMap = getFromMap();
     final fectched = await tx.getAll(sql, parameters ?? []);
     final objs = fectched
-        .map((e) => (fromMap != null) ? fromMap!(fixedMap(e)) : e as T)
+        .map((e) => (fromMap != null) ? fromMap(fixedMap(e)) : e as T)
         .where((e) => e != null)
         .map((e) => e! as T)
         .toList();
@@ -122,66 +121,14 @@ class DBQuery<T> extends StoreQuery<T> {
     return objs;
   }
 
-  Future<T?> read(SqliteWriteContext tx) async {
+  Future<T?> get(SqliteWriteContext tx) async {
     _infoLogger('cmd: $sql, $parameters');
+    final fromMap = getFromMap();
     final obj = (await tx.getAll(sql, parameters ?? []))
-        .map((e) => (fromMap != null) ? fromMap!(fixedMap(e)) : e as T)
+        .map((e) => (fromMap != null) ? fromMap(fixedMap(e)) : e as T)
         .firstOrNull;
     _infoLogger('read $obj');
     return obj;
-  }
-
-  static List<String> _extractContentInsideParentheses(String input) {
-    final regex = RegExp(r'\(([^)]*)\)');
-    final Match? match = regex.firstMatch(input);
-    final matchedString = match?.group(1) ?? '';
-    final res = matchedString.split(',').map((e) => e.trim()).toList();
-
-    return res;
-  }
-
-  static (String, List<dynamic>?) preprocessSqlAndParams(
-    String sql,
-    List<Object?>? parameters,
-  ) {
-    if (parameters == null) {
-      return (sql, parameters);
-    }
-    try {
-      var paramIndex = 0;
-      final processedParameters = <Object?>[];
-
-      final processedSql = sql.replaceAllMapped(
-        RegExp(r'\?|\(\?\)'),
-        (match) {
-          if (match.group(0) == '(?)') {
-            final parameter = parameters[paramIndex]! as String;
-            final splittedParams = _extractContentInsideParentheses(parameter);
-
-            for (var i = 0; i < splittedParams.length; i++) {
-              processedParameters.add(splittedParams[i]);
-            }
-
-            final processed = "(${splittedParams.map((e) => '?').join(', ')})";
-            paramIndex++;
-            return processed;
-          } else {
-            processedParameters.add(parameters[paramIndex]);
-            paramIndex++;
-            return match.group(0)!;
-          }
-        },
-      );
-
-      return (processedSql, processedParameters);
-    } catch (e) {
-      return (sql, parameters);
-    }
-  }
-
-  DBQuery<T> insertParameters(List<Object?> parameters) {
-    final (sql0, parameters0) = DBQuery.preprocessSqlAndParams(sql, parameters);
-    return copyWith(sql: sql0, parameters: parameters0);
   }
 }
 

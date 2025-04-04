@@ -1,35 +1,39 @@
-import 'package:local_store/src/m3_db_queries.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
 import 'm3_db_query.dart';
 
+final Map<Type, Map<String, dynamic>> runtimeTypeMapper = {
+  CLEntity: {
+    'table': 'Entity',
+    'fromMap': CLEntity.fromMap,
+  },
+};
+
+final Map<Type, dynamic> fromMapMethods = {
+  CLEntity: CLEntity.fromMap,
+};
+
 @immutable
 class DBReader extends StoreReader {
-  DBReader(this.tx, {this.tableName = 'Entity'});
+  DBReader(this.tx);
   final SqliteWriteContext tx;
-  final String tableName;
 
-  @override
-  Future<T?> read<T>(StoreQuery<T> query) {
-    return (query as DBQuery<T>).read(tx);
+  String getTableName<T>() {
+    final tableName = runtimeTypeMapper[T]?['table'] as String?;
+    if (tableName == null) {
+      throw Exception('No table name mapping found for type $T');
+    }
+    return tableName;
   }
-
-  @override
-  Future<List<T>> readMultiple<T>(StoreQuery<T> query) {
-    return (query as DBQuery<T>).readMultiple(tx);
-  }
-
-  @override
-  StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters}) =>
-      Queries.getQuery(query, parameters: parameters);
 
   Future<StoreQuery<T>> formQuery<T>(
-    Map<String, dynamic>? queryMap,
-    Set<String> triggerOnTables,
-  ) async {
-    // Step 1: Get valid columns from the table
+    Map<String, dynamic>? queryMap, {
+    Set<String> triggerOnTables = const {},
+  }) async {
+    final tableName = getTableName<T>();
+
     final columnInfo = await tx.execute('PRAGMA table_info($tableName)');
     final validColumns = columnInfo.map((row) => row['name'] as String).toSet();
 
@@ -38,36 +42,33 @@ class DBReader extends StoreReader {
     final params = <dynamic>[];
 
     if (queryMap != null) {
-      queryMap.forEach((key, value) {
-        if (!validColumns.contains(key)) return; // skip unknown keys
-
-        if (value is List && value.isNotEmpty) {
-          final placeholders = List.filled(value.length, '?').join(', ');
-          whereParts.add('$key IN ($placeholders)');
-          params.addAll(value);
-        } else if (value != null) {
-          whereParts.add('$key = ?');
-          params.add(value);
+      for (final query in queryMap.entries) {
+        final key = query.key;
+        final value = query.value;
+        if (validColumns.contains(key)) {
+          if (value == null) {
+            whereParts.add('$key IS NULL');
+          } else if (value is List && value.isNotEmpty) {
+            final placeholders = List.filled(value.length, '?').join(', ');
+            whereParts.add('$key IN ($placeholders)');
+            params.addAll(value);
+          } else {
+            whereParts.add('$key = ?');
+            params.add(value);
+          }
         }
-      });
+      }
     }
 
     final whereClause =
         whereParts.isNotEmpty ? 'WHERE ${whereParts.join(' AND ')}' : '';
     final sql = 'SELECT * FROM $tableName $whereClause';
 
-    return DBQuery<T>(
+    return DBQuery<T>.map(
       sql: sql,
       parameters: params,
-      triggerOnTables: triggerOnTables,
+      triggerOnTables: {...triggerOnTables, tableName},
     );
-  }
-
-  @override
-  Future<List<CLEntity>> storeQuery(
-    Map<String, dynamic>? queryMap,
-  ) async {
-    return [];
   }
 
   Future<List<String>> getColumnNames(
@@ -83,5 +84,23 @@ class DBReader extends StoreReader {
     ];
 
     return columns;
+  }
+
+  @override
+  Future<T?> get<T>(
+    Map<String, dynamic>? queryMap, {
+    required T? Function(Map<String, dynamic>) fromMap,
+  }) {
+    final q = formQuery<T>(queryMap);
+    return (q as DBQuery<T>).get(tx);
+  }
+
+  @override
+  Future<List<T>> getAll<T>(
+    Map<String, dynamic>? queryMap, {
+    required T? Function(Map<String, dynamic>) fromMap,
+  }) {
+    final q = formQuery<T>(queryMap);
+    return (q as DBQuery<T>).getAll(tx);
   }
 }
