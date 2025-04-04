@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 
 void main() {
@@ -16,35 +16,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  final _clMediaInfoExtractorPlugin = ClMediaInfoExtractor();
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _clMediaInfoExtractorPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
@@ -55,9 +29,34 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: FutureBuilder(
+              future: ClMediaInfoExtractor.getMediaInfo(
+                "'/Users/anandasarangaram/Downloads/WhatsApp Image 2025-03-30 at 17.28.28.temp'",
+              ),
+              builder: (context, snapShot) {
+                return SingleChildScrollView(
+                  child: [
+                    if (snapShot.connectionState == ConnectionState.waiting)
+                      const CircularProgressIndicator()
+                    else if (snapShot.hasError)
+                      Text('Error: ${snapShot.error}')
+                    else if (snapShot.hasData)
+                      Text(prettyJson(snapShot.data!.toMap()))
+                    else
+                      const Text('No data')
+                  ][0],
+                );
+              }),
         ),
       ),
     );
   }
+}
+
+String prettyJson(dynamic json) {
+  var spaces = ' ' * 4;
+  var encoder = JsonEncoder.withIndent(spaces);
+  String output = encoder.convert(json);
+  print(output);
+  return output;
 }

@@ -68,7 +68,7 @@ abstract class ClMediaInfoExtractorPlatform extends PlatformInterface {
     if (result['exitCode'] == '0') {
       try {
         final jsonString = result['stdout'] ?? '';
-        final jsonData = json.decode(jsonString);
+        final jsonData = json.decode('{ "exiftool": $jsonString }');
 
         return jsonData as Map<String, dynamic>;
       } catch (e) {
