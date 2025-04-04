@@ -426,4 +426,26 @@ class CLEntity implements ViewerEntityMixin {
       'pin': pin,
     }..removeWhere((key, value) => value == null);
   }
+
+  String get descriptionText => description ?? '';
+  /* String get labelText => label ?? '';
+  String get pinText => pin ?? '';
+  String get fileSizeText =>
+      fileSize != null ? '${fileSize! / 1024} KB' : 'Unknown Size';
+  String get mimeTypeText => mimeType ?? '';
+  String get typeText => type ?? '';
+  String get extensionText => extension ?? '';
+  String get createDateText => createDate != null
+      ? '${createDate!.day}/${createDate!.month}/${createDate!.year}'
+      : '';
+  String get heightText => height != null ? '$height px' : '';
+  String get widthText => width != null ? '$width px' : '';
+  String get durationText => duration != null ? '$duration sec' : '';
+  String get addedDateText =>
+      '${addedDate.day}/${addedDate.month}/${addedDate.year}';
+  String get updatedDateText =>
+      '${updatedDate.day}/${updatedDate.month}/${updatedDate.year}';
+  String get isDeletedText => isDeleted ? 'Deleted' : 'Not Deleted';
+  String get isHiddenText => isHidden ? 'Hidden' : 'Not Hidden';
+  String get isCollectionText => isCollection ? 'Collection' : 'Not Collection'; */
 }

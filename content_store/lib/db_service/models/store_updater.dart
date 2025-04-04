@@ -22,7 +22,6 @@ class StoreUpdater {
       store: store,
       directories: directories,
       albumManager: albumManager,
-      getCollectionByLabel: collectionUpdater.getCollectionByLabel,
       tempCollectionName: tempCollectionName,
     );
   }

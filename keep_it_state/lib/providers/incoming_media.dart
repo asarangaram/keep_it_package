@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/extensions/ext_list.dart';
 
 import 'package:share_handler/share_handler.dart';
-import 'package:store/store.dart';
 
 import '../models/cl_media_candidate.dart';
 import '../models/platform_support.dart';
@@ -46,34 +46,20 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     };
   }
 
-  void receiveSharedMedia(SharedMedia? media) {
+  void receiveSharedMedia(SharedMedia? media) async {
     if (media == null) return;
     final attachements = [
-      /* 
-        not supported yet
       if (media.content != null && media.content!.isNotEmpty)
-        if (media.content!.isURL())
-          CLMediaBase(name: media.content!, type: CLMediaType.url, fExt: '.url')
+        if (CLMediaContent.isURL(media.content!))
+          CLMediaURI(Uri.parse(media.content!))
         else
-          CLMediaBase(
-            name: 'text:${media.content!}',
-            type: CLMediaType.text,
-            fExt: '.txt',
-          ), */
+          CLMediaText(media.content!),
       if (media.imageFilePath != null)
-        CLMediaCandidate(
-          path: media.imageFilePath!,
-          type: CLMediaType.image,
+        CLMediaUnknown(
+          media.imageFilePath!,
         ),
       if (media.attachments != null)
-        ...media.attachments!.where((e) => e != null).map(
-          (e) {
-            return CLMediaCandidate(
-              path: e!.path,
-              type: toCLMediaType(e.type),
-            );
-          },
-        ),
+        ...media.attachments!.map((e) => CLMediaUnknown(e!.path)),
     ];
 
     if (attachements.isNotEmpty) {
@@ -95,7 +81,9 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     if (media != null) {
       if (ColanPlatformSupport.isMobilePlatform && media.isNotEmpty) {
         for (final item in media.entries) {
-          item.deleteFile();
+          if (item is CLMediaFile) {
+            item.deleteFile();
+          }
         }
       }
       state = state.removeFirstItem();
