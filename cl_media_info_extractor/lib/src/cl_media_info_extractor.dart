@@ -102,10 +102,8 @@ class CLMediaFile {
 
   factory CLMediaFile.fromJson(String source) =>
       CLMediaFile.fromMap(json.decode(source) as Map<String, dynamic>);
-}
 
-class ClMediaInfoExtractor {
-  static Future<CLMediaFile?> getMediaInfo(
+  static Future<CLMediaFile?> fromPath(
     String mediaPath, {
     String exiftoolPath = "/usr/local/bin/exiftool",
   }) async {

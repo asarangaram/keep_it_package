@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: FutureBuilder(
-              future: ClMediaInfoExtractor.getMediaInfo(
+              future: CLMediaFile.fromPath(
                 "'/Users/anandasarangaram/Downloads/WhatsApp Image 2025-03-30 at 17.28.28.temp'",
               ),
               builder: (context, snapShot) {
