@@ -1,8 +1,9 @@
 import 'package:meta/meta.dart';
+import 'package:store/store.dart';
 
 @immutable
 class StoreQuery<T> {
-  StoreQuery(Map<String, dynamic> map) : map = Map.unmodifiable(map);
+  const StoreQuery(this.map);
   final Map<String, dynamic> map;
 
   @override
@@ -30,9 +31,22 @@ abstract class Store {
 
   Future<T?> upsert<T>(T item);
   Future<void> delete<T>(T item);
-  Future<T?> get<T>(StoreQuery<T>? query);
-  Future<List<T>> getAll<T>(StoreQuery<T>? query);
+  Future<T?> get<T>([StoreQuery<T>? query]);
+  Future<List<T>> getAll<T>([StoreQuery<T>? query]);
+  Future<void> reloadStore();
+  Future<void> dispose();
+}
 
-  void reloadStore();
-  void dispose();
+class Shortcuts {
+  static StoreQuery<CLEntity> mediaQuery(CLEntity media) {
+    return StoreQuery<CLEntity>({
+      if (media.id != null)
+        'id': media.id
+      else if (media.isCollection)
+        'label': media.label
+      else
+        'md5': media.md5,
+      'isCollection': media.isCollection,
+    });
+  }
 }

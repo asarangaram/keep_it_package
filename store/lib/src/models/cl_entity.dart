@@ -64,7 +64,6 @@ class CLEntity implements ViewerEntityMixin {
   // Change to factory!
   factory CLEntity.collection({
     required String label,
-    bool isDeleted = false,
     int? id,
     String? description,
     int? parentId,
@@ -75,7 +74,7 @@ class CLEntity implements ViewerEntityMixin {
       isCollection: true,
       addedDate: addedDate,
       updatedDate: updatedDate,
-      isDeleted: isDeleted,
+      isDeleted: false,
       id: id,
       label: label,
       description: description,

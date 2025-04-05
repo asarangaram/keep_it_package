@@ -1,4 +1,16 @@
 /// Implementation using sqlite async
 library;
 
-export 'src/create.dart' show createStoreInstance;
+import 'package:store/store.dart';
+
+import 'src/db_store.dart';
+
+Future<Store> createDBStoreInstance(
+  String fullPath, {
+  required void Function() onReload,
+}) async {
+  return DBStore.createInstances(
+    dbpath: fullPath,
+    onReload: onReload,
+  );
+}

@@ -3,13 +3,13 @@ import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
-import 'm3_db_reader.dart';
+import 'table_resources.dart';
 
 @immutable
-class DBQuery<T> extends StoreQuery<T> {
+class DBQuery<T> {
   factory DBQuery({
     required String sql,
-    required Set<String> triggerOnTables,
+    Set<String> triggerOnTables = const {},
     List<Object?>? parameters,
   }) {
     return DBQuery._(
@@ -20,7 +20,7 @@ class DBQuery<T> extends StoreQuery<T> {
   }
   factory DBQuery.map({
     required String sql,
-    required Set<String> triggerOnTables,
+    Set<String> triggerOnTables = const {},
     List<Object?>? parameters,
   }) {
     return DBQuery._(
@@ -31,7 +31,7 @@ class DBQuery<T> extends StoreQuery<T> {
   }
   const DBQuery._({
     required this.sql,
-    required this.triggerOnTables,
+    this.triggerOnTables = const {},
     this.parameters,
   });
 
@@ -79,15 +79,6 @@ class DBQuery<T> extends StoreQuery<T> {
             parameters.hashCode);
   }
 
-  T? Function(Map<String, dynamic>)? getFromMap() {
-    final fromMap =
-        runtimeTypeMapper[T]?['fromMap'] as T? Function(Map<String, dynamic>)?;
-    if (fromMap == null) {
-      return null;
-    }
-    return fromMap;
-  }
-
   static Map<String, dynamic> fixedMap(Map<String, dynamic> map) {
     final updatedMap = <String, dynamic>{};
     const removeValues = ['null'];
@@ -105,12 +96,12 @@ class DBQuery<T> extends StoreQuery<T> {
     return updatedMap;
   }
 
-  // Use this only to pick specific items, not cached.
   Future<List<T>> getAll(
     SqliteWriteContext tx,
   ) async {
     _infoLogger('cmd: $sql, $parameters');
-    final fromMap = getFromMap();
+    final resources = tableResources[T] as DBResources<T>;
+    final fromMap = resources.fromMap;
     final fectched = await tx.getAll(sql, parameters ?? []);
     final objs = fectched
         .map((e) => (fromMap != null) ? fromMap(fixedMap(e)) : e as T)
@@ -123,7 +114,8 @@ class DBQuery<T> extends StoreQuery<T> {
 
   Future<T?> get(SqliteWriteContext tx) async {
     _infoLogger('cmd: $sql, $parameters');
-    final fromMap = getFromMap();
+    final resources = tableResources[T] as DBResources<T>;
+    final fromMap = resources.fromMap;
     final obj = (await tx.getAll(sql, parameters ?? []))
         .map((e) => (fromMap != null) ? fromMap(fixedMap(e)) : e as T)
         .firstOrNull;
