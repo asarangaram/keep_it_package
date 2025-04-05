@@ -59,7 +59,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   sizeFactor: 0.15,
                   child: FutureBuilder(
-                    future: theStore.albumManager.isPinBroken(media.pin),
+                    future: isPinBroken(media.pin),
                     builder: (context, snapshot) {
                       return Transform.rotate(
                         angle: math.pi / 4,
@@ -125,4 +125,8 @@ class MediaThumbnail extends StatelessWidget {
       },
     );
   }
+}
+
+Future<bool> isPinBroken(String? pin) {
+  throw UnimplementedError();
 }

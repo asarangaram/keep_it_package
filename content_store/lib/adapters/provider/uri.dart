@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../../db_service/providers/db_reader.dart';
+import '../../db_service/providers/store_query_result.dart';
 import '../../db_service/providers/store_updater.dart';
 
 import 'media_path.dart';
@@ -15,18 +16,19 @@ final mediaUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
 
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
-      final media = await theStore.store.reader.getEntity(id: id);
-      if (media != null) {
-        /* log(
-          'media : ${media.md5String}',
-          name: 'mediaUriProvider',
-        ); */
-
-        controller.add(mediaPathDeterminer.getPreviewUri(media));
+      final media = await theStore.get(EntityQuery({'id': id}));
+      /* log(
+        'media : ${media.md5String}',
+        name: 'mediaUriProvider',
+      ); */
+      if (media == null) {
+        throw Exception('media not found!');
       }
+
+      controller.add(mediaPathDeterminer.getPreviewUri(media));
     }
   });
-  final media = await theStore.store.reader.getEntity(id: id);
+  final media = await theStore.get(EntityQuery({'id': id}));
   if (media == null) {
     throw Exception('media not found!');
   }
@@ -46,7 +48,7 @@ final previewUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
 
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
-      final media = await theStore.store.reader.getEntity(id: id);
+      final media = await theStore.get(EntityQuery({'id': id}));
       if (media != null) {
         /* log(
           'media : ${media.md5String}',
@@ -57,7 +59,7 @@ final previewUriProvider = StreamProvider.family<Uri, int>((ref, id) async* {
       } else {}
     }
   });
-  final media = await theStore.store.reader.getEntity(id: id);
+  final media = await theStore.get(EntityQuery({'id': id}));
   if (media == null) {
     throw Exception('media not found!');
   }

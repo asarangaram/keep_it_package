@@ -24,7 +24,7 @@ class KeepItMediaCorouselView extends ConsumerWidget {
   final List<CLEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-  final StoreUpdater theStore;
+  final LocalStore theStore;
   final int initialMediaIndex;
 
   @override

@@ -228,7 +228,7 @@ class CLMediaFile extends CLMediaContent {
     }
   }
 
-  // TODO(anandas): : use filetype and implement specific md5 computation
+  // fix_me: use filetype and implement specific md5 computation
   static Future<String> checksum(File file) async {
     try {
       final stream = file.openRead();

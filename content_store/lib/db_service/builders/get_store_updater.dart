@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/store_updater.dart';
+import '../models/local_store.dart';
 import '../providers/store_updater.dart';
 
 class GetStoreUpdater extends ConsumerWidget {
@@ -11,7 +11,7 @@ class GetStoreUpdater extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(StoreUpdater store) builder;
+  final Widget Function(LocalStore store) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 

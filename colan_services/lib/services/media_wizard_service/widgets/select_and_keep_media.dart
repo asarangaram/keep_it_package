@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -76,13 +77,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> keep({
-    required MediaUpdater mediaUpdater,
+    required EntityStoreModel theStore,
     required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return restore(
-        mediaUpdater: mediaUpdater,
+        theStore: theStore,
         currMedia: currMedia,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
@@ -95,7 +96,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> restore({
-    required MediaUpdater mediaUpdater,
+    required EntityStoreModel theStore,
     required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
@@ -117,7 +118,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> permanentlyDelete({
-    required MediaUpdater mediaUpdater,
+    required EntityStoreModel theStore,
     required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
@@ -139,14 +140,14 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> delete({
-    required MediaUpdater mediaUpdater,
+    required EntityStoreModel theStore,
     required List<CLEntity> currMedia,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return permanentlyDelete(
         currMedia: currMedia,
-        mediaUpdater: mediaUpdater,
+        theStore: theStore,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
     }
@@ -210,7 +211,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                 keepAction: currMedia.isEmpty
                     ? null
                     : () => keep(
-                          mediaUpdater: theStore.mediaUpdater,
+                          theStore: theStore,
                           onUpdateSelectionmode: onUpdateSelectionmode,
                           currMedia: currMedia,
                         ),
@@ -224,7 +225,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                 deleteAction: currMedia.isEmpty
                     ? null
                     : () => delete(
-                          mediaUpdater: theStore.mediaUpdater,
+                          theStore: theStore,
                           onUpdateSelectionmode: onUpdateSelectionmode,
                           currMedia: currMedia,
                         ),
@@ -244,7 +245,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                         : KeepWithProgress(
                             media2Move: currMedia,
                             newParent: targetCollection!,
-                            mediaUpdater: theStore.mediaUpdater,
+                            theStore: theStore,
                             onDone: () async {
                               await ref
                                   .read(
@@ -258,7 +259,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                               onUpdateSelectionmode(enable: false);
                               setState(() {});
 
-                              theStore.store.reloadStore();
+                              await theStore.store.reloadStore();
                             },
                           )
                     : null
@@ -319,13 +320,13 @@ class KeepWithProgress extends StatelessWidget {
   const KeepWithProgress({
     required this.media2Move,
     required this.newParent,
-    required this.mediaUpdater,
+    required this.theStore,
     required this.onDone,
     super.key,
   });
   final List<CLEntity> media2Move;
   final CLEntity newParent;
-  final MediaUpdater mediaUpdater;
+  final EntityStoreModel theStore;
 
   final Future<void> Function() onDone;
   @override

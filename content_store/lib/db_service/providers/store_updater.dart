@@ -5,12 +5,12 @@ import 'package:local_store/local_store.dart';
 import 'package:path/path.dart' as p;
 
 import '../../storage_service/providers/directories.dart';
-import '../models/store_updater.dart';
+import '../models/local_store.dart';
 import 'store_query_result.dart';
 
-class StoreUpdaterNotifier extends AsyncNotifier<StoreUpdater> {
+class StoreUpdaterNotifier extends AsyncNotifier<LocalStore> {
   @override
-  FutureOr<StoreUpdater> build() async {
+  FutureOr<LocalStore> build() async {
     //  final store = await ref.watch(storeProvider.future);
     final directories = await ref.watch(deviceDirectoriesProvider.future);
     final deviceDirectories = await ref.watch(deviceDirectoriesProvider.future);
@@ -18,14 +18,14 @@ class StoreUpdaterNotifier extends AsyncNotifier<StoreUpdater> {
     const dbName = 'keepIt.db';
     final fullPath = p.join(db.pathString, dbName);
 
-    final store = await createStoreInstance(
+    final store = await createDBStoreInstance(
       fullPath,
       onReload: () {
         ref.read(refreshReaderProvider.notifier).state =
             DateTime.now().toIso8601String();
       },
     );
-    return StoreUpdater(
+    return LocalStore(
       store: store,
       directories: directories,
     );
@@ -33,6 +33,6 @@ class StoreUpdaterNotifier extends AsyncNotifier<StoreUpdater> {
 }
 
 final storeUpdaterProvider =
-    AsyncNotifierProvider<StoreUpdaterNotifier, StoreUpdater>(
+    AsyncNotifierProvider<StoreUpdaterNotifier, LocalStore>(
   StoreUpdaterNotifier.new,
 );

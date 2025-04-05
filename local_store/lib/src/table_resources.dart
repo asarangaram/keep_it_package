@@ -86,15 +86,18 @@ class DBResources<T> {
         final key = query.key;
         final value = query.value;
         if (validColumns.contains(key)) {
-          if (value == null) {
-            whereParts.add('$key IS NULL');
-          } else if (value is List && value.isNotEmpty) {
-            final placeholders = List.filled(value.length, '?').join(', ');
-            whereParts.add('$key IN ($placeholders)');
-            params.addAll(value);
-          } else {
-            whereParts.add('$key = ?');
-            params.add(value);
+          switch (value) {
+            case null:
+              whereParts.add('$key IS NULL');
+            case (final List<dynamic> e) when value.isNotEmpty:
+              whereParts
+                  .add('$key IN (${List.filled(e.length, '?').join(', ')})');
+              params.addAll(e);
+            case (final NotNullValues _):
+              whereParts.add('$key IS NOT NULL');
+            default:
+              whereParts.add('$key IS ?');
+              params.add(value);
           }
         }
       }

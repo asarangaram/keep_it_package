@@ -29,7 +29,7 @@ class VideoTrimmerView extends StatefulWidget {
 class _VideoTrimmerViewState extends State<VideoTrimmerView> {
   @override
   Widget build(BuildContext context) {
-    // TODO(anandas): : implement build
+    // TODO(anandas): implement build
     throw UnimplementedError();
   }
 

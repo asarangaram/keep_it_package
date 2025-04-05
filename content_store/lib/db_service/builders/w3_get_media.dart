@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'get_db_reader.dart';
 import 'w3_get_from_store.dart';
 
 /* void _log(
@@ -38,23 +37,15 @@ class GetMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetDBReader(
+    final q =
+        EntityQuery({'id': id, 'isCollection': 1}) as StoreQuery<CLEntity>;
+    return GetFromStore<CLEntity>(
+      query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      builder: (dbReader) {
-        final q = dbReader.getQuery(DBQueries.mediaById, parameters: [id])
-            as StoreQuery<CLEntity>;
-
-        return GetFromStore<CLEntity>(
-          query: q,
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: (data) {
-            final media = data.where((e) => e.id == id).firstOrNull;
-            //_log(media?.md5String, name: 'GetMedia');
-            return builder(media);
-          },
-        );
+      builder: (data) {
+        final media = data.where((e) => e.id == id).firstOrNull;
+        return builder(media);
       },
     );
   }
@@ -75,25 +66,15 @@ class GetMediaByCollectionId extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qid = (parentId == null)
-        ? DBQueries.entitiesVisible
-        : DBQueries.mediaByCollectionId;
+    final query = (parentId == null)
+        ? const EntityQuery({'isCollection': false})
+        : EntityQuery({'isCollection': false, 'parentId': parentId});
 
-    return GetDBReader(
+    return GetFromStore<CLEntity>(
+      query: query,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      builder: (dbReader) {
-        final q = dbReader.getQuery(
-          qid,
-          parameters: (parentId == null) ? [] : [parentId],
-        ) as StoreQuery<CLEntity>;
-        return GetFromStore<CLEntity>(
-          query: q,
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: builder,
-        );
-      },
+      builder: builder,
     );
   }
 }
@@ -103,32 +84,26 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.idList,
+    required this.ids,
     super.key,
   });
   final Widget Function(List<CLEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final List<int> idList;
+  final List<int> ids;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaByIdList;
-
-    return GetDBReader(
+    if (ids.isEmpty) {
+      return builder([]);
+    }
+    final q =
+        EntityQuery({'id': ids, 'isCollection': 0}) as StoreQuery<CLEntity>;
+    return GetFromStore<CLEntity>(
+      query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      builder: (dbReader) {
-        final q = dbReader.getQuery(qid, parameters: ['(${idList.join(', ')})'])
-            as StoreQuery<CLEntity>;
-
-        return GetFromStore<CLEntity>(
-          query: q,
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: builder,
-        );
-      },
+      builder: builder,
     );
   }
 }
@@ -146,22 +121,7 @@ class GetPinnedMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaPinned;
-
-    return GetDBReader(
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      builder: (dbReader) {
-        final q =
-            dbReader.getQuery(qid, parameters: []) as StoreQuery<CLEntity>;
-        return GetFromStore<CLEntity>(
-          query: q,
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: builder,
-        );
-      },
-    );
+    throw UnimplementedError();
   }
 }
 
@@ -178,21 +138,12 @@ class GetStaleMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaStaled;
-
-    return GetDBReader(
+    const q = EntityQuery({'isHidden': 1});
+    return GetFromStore<CLEntity>(
+      query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      builder: (dbReader) {
-        final q =
-            dbReader.getQuery(qid, parameters: []) as StoreQuery<CLEntity>;
-        return GetFromStore<CLEntity>(
-          query: q,
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: builder,
-        );
-      },
+      builder: builder,
     );
   }
 }
@@ -210,21 +161,12 @@ class GetDeletedMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const qid = DBQueries.mediaDeleted;
-
-    return GetDBReader(
+    const q = EntityQuery({'isDeleted': 1});
+    return GetFromStore<CLEntity>(
+      query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      builder: (dbReader) {
-        final q =
-            dbReader.getQuery(qid, parameters: []) as StoreQuery<CLEntity>;
-        return GetFromStore<CLEntity>(
-          query: q,
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: builder,
-        );
-      },
+      builder: builder,
     );
   }
 }

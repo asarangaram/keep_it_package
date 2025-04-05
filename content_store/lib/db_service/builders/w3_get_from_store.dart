@@ -1,10 +1,8 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../providers/db_reader.dart';
+import '../providers/store_query_result.dart';
 
 class GetFromStore<T> extends ConsumerWidget {
   const GetFromStore({
@@ -21,7 +19,7 @@ class GetFromStore<T> extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dataAsync = ref.watch(dbReaderProvider(query));
+    final dataAsync = ref.watch(storeQueryResultProvider(query));
     return dataAsync.when(
       error: errorBuilder,
       loading: loadingBuilder,

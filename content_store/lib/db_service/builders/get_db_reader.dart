@@ -4,29 +4,6 @@ import 'package:store/store.dart';
 
 import '../providers/store_updater.dart';
 
-class GetDBReader extends ConsumerWidget {
-  const GetDBReader({
-    required this.builder,
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    super.key,
-  });
-  final Widget Function(StoreReader dbReader) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final storeAsync = ref.watch(storeUpdaterProvider);
-
-    return storeAsync.when(
-      data: (storeUpdater) => builder(storeUpdater.store.reader),
-      error: errorBuilder,
-      loading: loadingBuilder,
-    );
-  }
-}
-
 class GetStore extends ConsumerWidget {
   const GetStore({
     required this.builder,

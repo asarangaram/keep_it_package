@@ -57,6 +57,6 @@ String prettyJson(dynamic json) {
   var spaces = ' ' * 4;
   var encoder = JsonEncoder.withIndent(spaces);
   String output = encoder.convert(json);
-  print(output);
+
   return output;
 }

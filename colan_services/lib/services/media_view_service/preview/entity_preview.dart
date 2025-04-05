@@ -27,7 +27,7 @@ class EntityPreview extends ConsumerWidget {
   final ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent;
   final List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
       onGetChildren;
-  final StoreUpdater theStore;
+  final LocalStore theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -123,7 +123,6 @@ class EntityPreview extends ConsumerWidget {
             media: m,
             parentCollection: parent! as CLEntity,
             hasOnlineService: false,
-            theStore: theStore,
           ),
           child: MediaPreviewWithOverlays(
             media: m,

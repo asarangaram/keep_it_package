@@ -90,7 +90,7 @@ class CLContextMenu {
     WidgetRef ref, {
     required CLEntity collection,
     required bool hasOnlineService,
-    required StoreUpdater theStore,
+    required LocalStore theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
@@ -109,7 +109,9 @@ class CLContextMenu {
               collection: collection,
             );
             if (updated != null && context.mounted) {
-              await theStore.collectionUpdater.update(updated, isEdited: true);
+              await theStore.updateCollection(
+                updated.id!,
+              );
             }
 
             return true;
@@ -131,7 +133,8 @@ class CLContextMenu {
                 false;
             if (!confirmed) return confirmed;
             if (context.mounted) {
-              return theStore.collectionUpdater.delete(collection.id!);
+              await theStore.delete(collection.id!);
+              return true;
             }
             return false;
           };
@@ -160,7 +163,6 @@ class CLContextMenu {
     required CLEntity media,
     required CLEntity parentCollection,
     required bool hasOnlineService,
-    required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
@@ -200,9 +202,8 @@ class CLContextMenu {
               ),
             );
 
-    final onShare0 = onShare != null
-        ? onShare()
-        : () => theStore.mediaUpdater.share(context, [media]);
+    final onShare0 =
+        onShare != null ? onShare() : () => share(context, [media]);
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
@@ -253,7 +254,6 @@ class CLContextMenu {
     required List<CLEntity> items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
-    required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
@@ -273,9 +273,7 @@ class CLContextMenu {
                 type: UniversalMediaSource.move,
               ),
             );
-    final onShare0 = onShare != null
-        ? onShare()
-        : () => theStore.mediaUpdater.share(context, items);
+    final onShare0 = onShare != null ? onShare() : () => share(context, items);
     final onPin0 =
         onPin != null ? onPin() : () => throw Exception('Unimplemented')
         /* theStore.mediaUpdater.pinToggleMultiple(
@@ -371,7 +369,7 @@ class CLContextMenu {
     BuildContext context,
     WidgetRef ref,
     List<ViewerEntityMixin> entities,
-    StoreUpdater theStore,
+    LocalStore theStore,
   ) {
     // FIXME
     return switch (entities) {
@@ -381,7 +379,6 @@ class CLContextMenu {
             ref,
             items: e.map((e) => e as CLEntity).toList(),
             hasOnlineService: true,
-            theStore: theStore,
           );
         }(),
       final List<ViewerEntityMixin> e when e.every((e) => e is CLEntity) => () {
@@ -389,6 +386,22 @@ class CLContextMenu {
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')
     };
+  }
+
+  static Future<bool?> share(
+    BuildContext context,
+    List<CLEntity> media,
+  ) {
+    throw UnimplementedError();
+    /* final files = media.where((e)=>e.isCollection ==false)
+        .map(directories.getMediaAbsolutePath)
+        .where((e) => File(e).existsSync());
+    final box = context.findRenderObject() as RenderBox?;
+    return ShareManager.onShareFiles(
+      context,
+      files.toList(),
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    ); */
   }
 }
 
