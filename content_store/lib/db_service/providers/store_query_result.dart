@@ -6,7 +6,7 @@ import 'package:store/store.dart';
 
 import 'store_updater.dart';
 
-final dbReaderProvider =
+final storeQueryResultProvider =
     StreamProvider.family<List<dynamic>, StoreQuery<dynamic>>(
         (ref, dbQuery) async* {
   final storeUpdater = await ref.watch(storeUpdaterProvider.future);
@@ -14,23 +14,13 @@ final dbReaderProvider =
   final controller = StreamController<List<dynamic>>();
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
-      final res = await storeUpdater.store.reader.readMultiple(dbQuery);
-      /* log(
-        'Query triggered $dbQuery : $res',
-        name: 'dbReaderProvider',
-        time: DateTime.now(),
-      ); */
+      final res = await storeUpdater.store.getAll<dynamic>(dbQuery);
+
       controller.add(res);
     }
   });
 
-  // Handling 'IN ???'
-  final res = await storeUpdater.store.reader.readMultiple(dbQuery);
-  /* log(
-    'Query triggered $dbQuery : $res',
-    name: 'dbReaderProvider',
-    time: DateTime.now(),
-  ); */
+  final res = await storeUpdater.store.getAll<dynamic>(dbQuery);
   yield res;
   yield* controller.stream;
 });
