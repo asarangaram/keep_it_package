@@ -1,62 +1,38 @@
 import 'package:meta/meta.dart';
 
-import 'cl_entity.dart';
+@immutable
+class StoreQuery<T> {
+  StoreQuery(Map<String, dynamic> map) : map = Map.unmodifiable(map);
+  final Map<String, dynamic> map;
 
-enum DBQueries {
-  mediaById,
-  mediaByMD5,
-  mediaByLabel,
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is StoreQuery && _mapEquals(other.map, map);
+  }
 
-  entitiesVisible,
-  mediaByCollectionId,
-  mediaByIdList,
+  @override
+  int get hashCode => map.entries
+      .fold(0, (prev, e) => prev ^ e.key.hashCode ^ e.value.hashCode);
 
-  mediaPinned,
-  mediaStaled,
-  mediaDeleted,
-
-  collections,
-  rootCollections,
-  visibleCollections
-}
-
-abstract class StoreQuery<T> {
-  const StoreQuery();
-}
-
-abstract class StoreReader {
-  Future<T?> get<T>(
-    Map<String, dynamic>? queryMap, {
-    required T? Function(Map<String, dynamic>) fromMap,
-  });
-
-  Future<List<T>> getAll<T>(
-    Map<String, dynamic>? queryMap, {
-    required T? Function(Map<String, dynamic>) fromMap,
-  });
-
-  Future<List<CLEntity>> getEntitiesByIdList(List<int> idList) async =>
-      getAll({'id': idList}, fromMap: CLEntity.fromMap);
-
-  Future<List<CLEntity>> getEntitiesByParentId(int? parentId) async => getAll(
-        {'parentId': parentId},
-        fromMap: CLEntity.fromMap,
-      );
+  bool _mapEquals(Map<String, dynamic> a, Map<String, dynamic> b) {
+    if (a.length != b.length) return false;
+    for (final key in a.keys) {
+      if (!b.containsKey(key) || a[key] != b[key]) return false;
+    }
+    return true;
+  }
 }
 
 @immutable
 abstract class Store {
-  const Store(this.reader);
-  final StoreReader reader;
+  const Store();
 
-  Future<CLEntity?> upsertMedia(CLEntity media);
-  Future<CLEntity?> updateMediaFromMap(
-    Map<String, dynamic> map,
-  );
-
-  Future<void> deleteMedia(CLEntity media);
+  Future<T?> upsert<T>(T item);
+  Future<void> delete<T>(T item);
+  Future<T?> get<T>(StoreQuery<T>? query);
+  Future<List<T>> getAll<T>(StoreQuery<T>? query);
 
   void reloadStore();
-
   void dispose();
 }
