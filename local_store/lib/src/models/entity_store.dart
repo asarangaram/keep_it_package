@@ -9,7 +9,7 @@ import 'db_query.dart';
 @immutable
 class LocalSQLiteEntityStore extends EntityStore
     with SQLiteDBTableMixin<CLEntity> {
-  LocalSQLiteEntityStore(this.agent);
+  LocalSQLiteEntityStore(super.identity, this.agent);
   final SQLiteTableAgent<CLEntity> agent;
 
   @override
@@ -44,7 +44,7 @@ class LocalSQLiteEntityStore extends EntityStore
   }) async =>
       dbUpsert(agent, curr);
 
-  static Future<EntityStore> create(DBModel db) async {
+  static Future<EntityStore> create(DBModel db, String name) async {
     const tableName = 'entity';
     final sqliteDB = db as SQLiteDB;
     final columnInfo = await db.db.execute('PRAGMA table_info($tableName)');
@@ -66,13 +66,13 @@ class LocalSQLiteEntityStore extends EntityStore
       validColumns: validColumns,
     );
 
-    return LocalSQLiteEntityStore(agent);
+    return LocalSQLiteEntityStore(name, agent);
   }
 }
 
-Future<EntityStore> createEntityStore(DBModel db) {
+Future<EntityStore> createEntityStore(DBModel db, String name) {
   return switch (db) {
-    (final SQLiteDB db) => LocalSQLiteEntityStore.create(db),
+    (final SQLiteDB db) => LocalSQLiteEntityStore.create(db, name),
     _ => throw Exception('Unsupported DB')
   };
 }

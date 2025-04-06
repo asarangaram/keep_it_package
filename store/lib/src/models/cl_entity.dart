@@ -28,6 +28,7 @@ class CLEntity implements ViewerEntityMixin {
     required this.duration,
     required this.isHidden,
     required this.pin,
+    required this.storeIdentity,
   });
 
   factory CLEntity.fromMap(Map<String, dynamic> map) {
@@ -56,6 +57,7 @@ class CLEntity implements ViewerEntityMixin {
       duration: map['duration'] != null ? map['duration'] as double : null,
       isHidden: (map['isHidden'] ?? false) as bool,
       pin: map['pin'] != null ? map['pin'] as String : null,
+      storeIdentity: null,
     );
   }
 
@@ -65,6 +67,7 @@ class CLEntity implements ViewerEntityMixin {
   // Change to factory!
   factory CLEntity.collection({
     required String label,
+    required String? storeIdentity,
     int? id,
     String? description,
     int? parentId,
@@ -91,6 +94,7 @@ class CLEntity implements ViewerEntityMixin {
       duration: null,
       isHidden: false,
       pin: null,
+      storeIdentity: storeIdentity,
     );
   }
 
@@ -101,6 +105,7 @@ class CLEntity implements ViewerEntityMixin {
     required String mimeType,
     required String type,
     required String extension,
+    required String? storeIdentity,
     int? id,
     String? label,
     String? description,
@@ -134,6 +139,7 @@ class CLEntity implements ViewerEntityMixin {
       duration: duration,
       isHidden: isHidden,
       pin: pin,
+      storeIdentity: storeIdentity,
     );
   }
 
@@ -163,6 +169,8 @@ class CLEntity implements ViewerEntityMixin {
   final bool isHidden;
   final String? pin;
 
+  final String? storeIdentity;
+
   CLEntity copyWith({
     ValueGetter<int?>? id,
     bool? isCollection,
@@ -183,6 +191,7 @@ class CLEntity implements ViewerEntityMixin {
     ValueGetter<double?>? duration,
     bool? isHidden,
     ValueGetter<String?>? pin,
+    ValueGetter<String?>? storeIdentity,
   }) {
     return CLEntity(
       id: id != null ? id.call() : this.id,
@@ -204,12 +213,13 @@ class CLEntity implements ViewerEntityMixin {
       duration: duration != null ? duration.call() : this.duration,
       isHidden: isHidden ?? this.isHidden,
       pin: pin != null ? pin.call() : this.pin,
+      storeIdentity: storeIdentity != null ? storeIdentity.call() : this.pin,
     );
   }
 
   @override
   String toString() {
-    return 'CLEntity(id: $id, isCollection: $isCollection, addedDate: $addedDate, updatedDate: $updatedDate, isDeleted: $isDeleted, label: $label, description: $description, parentId: $parentId, md5: $md5, fileSize: $fileSize, mimeType: $mimeType, type: $type, extension: $extension, createDate: $createDate, height: $height, width: $width, duration: $duration, isHidden: $isHidden, pin: $pin)';
+    return 'CLEntity(id: $id, isCollection: $isCollection, addedDate: $addedDate, updatedDate: $updatedDate, isDeleted: $isDeleted, label: $label, description: $description, parentId: $parentId, md5: $md5, fileSize: $fileSize, mimeType: $mimeType, type: $type, extension: $extension, createDate: $createDate, height: $height, width: $width, duration: $duration, isHidden: $isHidden, pin: $pin, storeIdentity: $storeIdentity)';
   }
 
   @override
@@ -234,7 +244,8 @@ class CLEntity implements ViewerEntityMixin {
         other.width == width &&
         other.duration == duration &&
         other.isHidden == isHidden &&
-        other.pin == pin;
+        other.pin == pin &&
+        other.storeIdentity == storeIdentity;
   }
 
   @override
@@ -257,7 +268,8 @@ class CLEntity implements ViewerEntityMixin {
         width.hashCode ^
         duration.hashCode ^
         isHidden.hashCode ^
-        pin.hashCode;
+        pin.hashCode ^
+        storeIdentity.hashCode;
   }
 
   @override
@@ -319,12 +331,14 @@ class CLEntity implements ViewerEntityMixin {
       duration: duration != null ? duration.call() : this.duration,
       isHidden: isHidden,
       pin: pin,
+      storeIdentity: storeIdentity,
     );
   }
 
   CLEntity updateStatus({
     ValueGetter<bool>? isHidden,
     ValueGetter<String?>? pin,
+    ValueGetter<String?>? storeIdentity,
   }) {
     return CLEntity(
       id: id,
@@ -346,6 +360,8 @@ class CLEntity implements ViewerEntityMixin {
       duration: duration,
       isHidden: isHidden != null ? isHidden() : this.isHidden,
       pin: pin != null ? pin() : this.pin,
+      storeIdentity:
+          storeIdentity != null ? storeIdentity() : this.storeIdentity,
     );
   }
 
@@ -374,6 +390,7 @@ class CLEntity implements ViewerEntityMixin {
       duration: duration,
       isHidden: isHidden,
       pin: pin,
+      storeIdentity: storeIdentity,
     );
   }
 
@@ -398,6 +415,7 @@ class CLEntity implements ViewerEntityMixin {
       'duration': duration,
       'isHidden': isHidden,
       'pin': pin,
+      'storeIdentity': storeIdentity,
     };
   }
 
@@ -424,6 +442,7 @@ class CLEntity implements ViewerEntityMixin {
       'duration': duration,
       'isHidden': isHidden,
       'pin': pin,
+      'storeIdentity': storeIdentity,
     }..removeWhere((key, value) => value == null);
   }
 

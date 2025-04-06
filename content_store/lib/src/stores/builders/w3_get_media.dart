@@ -37,9 +37,8 @@ class GetMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final q =
-        EntityQuery({'id': id, 'isCollection': 1}) as StoreQuery<CLEntity>;
-    return GetFromStore<CLEntity>(
+    final q = EntityQuery({'id': id, 'isCollection': 1});
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -70,7 +69,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
         ? const EntityQuery({'isCollection': false})
         : EntityQuery({'isCollection': false, 'parentId': parentId});
 
-    return GetFromStore<CLEntity>(
+    return GetFromStore(
       query: query,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -97,9 +96,8 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     if (ids.isEmpty) {
       return builder([]);
     }
-    final q =
-        EntityQuery({'id': ids, 'isCollection': 0}) as StoreQuery<CLEntity>;
-    return GetFromStore<CLEntity>(
+    final q = EntityQuery({'id': ids, 'isCollection': 0});
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -121,7 +119,13 @@ class GetPinnedMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    throw UnimplementedError();
+    const q = EntityQuery({'pin': NotNullValues});
+    return GetFromStore(
+      query: q,
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      builder: builder,
+    );
   }
 }
 
@@ -139,7 +143,7 @@ class GetStaleMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const q = EntityQuery({'isHidden': 1});
-    return GetFromStore<CLEntity>(
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -162,7 +166,7 @@ class GetDeletedMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const q = EntityQuery({'isDeleted': 1});
-    return GetFromStore<CLEntity>(
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,

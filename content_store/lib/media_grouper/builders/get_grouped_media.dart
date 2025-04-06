@@ -4,8 +4,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart'
     show CLEntity, GalleryGroupCLEntity, ViewerEntityMixin;
 
-import '../../db_service/builders/w3_get_collection.dart';
-
+import '../../src/stores/builders/w3_get_collection.dart';
 import '../models/labeled_entity_groups.dart';
 import '../providers/media_grouper.dart';
 import 'get_sorted_entities.dart';

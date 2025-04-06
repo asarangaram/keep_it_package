@@ -8,58 +8,35 @@ import 'data_types.dart';
 class CLStore {
   const CLStore({
     required this.store,
-    required this.downloadDir,
-    required this.tempDir,
     this.tempCollectionName = '*** Recently Captured',
   });
   final EntityStore store;
-  final String downloadDir;
-  final String tempDir;
   final String tempCollectionName;
 
   CLStore copyWith({
     EntityStore? store,
-    String? downloadDir,
-    String? tempDir,
     String? tempCollectionName,
   }) {
     return CLStore(
       store: store ?? this.store,
-      downloadDir: downloadDir ?? this.downloadDir,
-      tempDir: tempDir ?? this.tempDir,
       tempCollectionName: tempCollectionName ?? this.tempCollectionName,
     );
   }
 
   @override
-  String toString() {
-    return 'CLStore(store: $store, downloadDir: $downloadDir, tempDir: $tempDir, tempCollectionName: $tempCollectionName)';
-  }
+  String toString() =>
+      'CLStore(store: $store, tempCollectionName: $tempCollectionName)';
 
   @override
   bool operator ==(covariant CLStore other) {
     if (identical(this, other)) return true;
 
     return other.store == store &&
-        other.downloadDir == downloadDir &&
-        other.tempDir == tempDir &&
         other.tempCollectionName == tempCollectionName;
   }
 
   @override
-  int get hashCode {
-    return store.hashCode ^
-        downloadDir.hashCode ^
-        tempDir.hashCode ^
-        tempCollectionName.hashCode;
-  }
-
-  String createTempFile({required String ext}) {
-    final fileBasename = 'keep_it_${DateTime.now().millisecondsSinceEpoch}';
-    final absolutePath = '$tempDir/$fileBasename.$ext';
-
-    return absolutePath;
-  }
+  int get hashCode => store.hashCode ^ tempCollectionName.hashCode;
 
   Future<CLEntity?> createCollection({
     required String label,
@@ -87,13 +64,16 @@ class CLStore {
         );
       }
     }
-    return store.upsert(
+    final entityFromDB = await store.upsert(
       CLEntity.collection(
         label: label,
         description: description?.call(),
         parentId: parentId?.call(),
+        storeIdentity: null,
       ),
     );
+
+    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
   }
 
   Future<CLEntity?> createMedia({
@@ -134,12 +114,13 @@ class CLStore {
       width: mediaFile.width,
       duration: mediaFile.duration,
       isDeleted: false,
+      storeIdentity: null,
     );
 
-    final newMediaInDB =
+    final entityFromDB =
         await store.upsert(newMedia, mediaFile: mediaFile.path);
 
-    return newMediaInDB;
+    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
   }
 
   Future<CLEntity?> updateCollection(
@@ -199,7 +180,8 @@ class CLStore {
       isDeleted: isDeleted?.call(),
       isHidden: isHidden?.call(),
     );
-    return store.upsert(updated, prev: entity);
+    final entityFromDB = await store.upsert(updated, prev: entity);
+    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
   }
 
   Future<CLEntity> updateMedia(
@@ -276,12 +258,13 @@ class CLStore {
       duration: mediaFile == null ? null : () => mediaFile.duration,
     );
 
-    return await store.upsert(
+    final entityFromDB = await store.upsert(
           updated,
           prev: entity,
           mediaFile: mediaFile?.path,
         ) ??
         entity;
+    return entityFromDB.copyWith(storeIdentity: () => store.identity);
   }
 
   Future<List<CLEntity?>> updateMultiple(
@@ -364,7 +347,12 @@ class CLStore {
       updatedEntitites.add(await store.upsert(updated));
     }
 
-    return updatedEntitites;
+    return updatedEntitites
+        .map(
+          (entityFromDB) =>
+              entityFromDB?.copyWith(storeIdentity: () => store.identity),
+        )
+        .toList();
   }
 
   Future<void> delete(int entityId) async {
@@ -376,11 +364,18 @@ class CLStore {
     await store.delete(entity);
   }
 
-  Future<CLEntity?> get([EntityQuery? query]) {
-    return store.get(query as StoreQuery<CLEntity>?);
+  Future<CLEntity?> get([EntityQuery? query]) async {
+    final entityFromDB = await store.get(query as StoreQuery<CLEntity>?);
+    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
   }
 
-  Future<List<CLEntity>> getAll([EntityQuery? query]) {
-    return store.getAll(query as StoreQuery<CLEntity>?);
+  Future<List<CLEntity>> getAll([EntityQuery? query]) async {
+    final entititesFromDB = await store.getAll(query as StoreQuery<CLEntity>?);
+    return entititesFromDB
+        .map(
+          (entityFromDB) =>
+              entityFromDB.copyWith(storeIdentity: () => store.identity),
+        )
+        .toList();
   }
 }

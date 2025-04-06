@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-import '../../adapters/provider/uri.dart';
+import '../providers/store_query_result.dart';
 
-class GetPreviewUri extends ConsumerWidget {
-  const GetPreviewUri({
-    required this.id,
+class GetFromStore extends ConsumerWidget {
+  const GetFromStore({
+    required this.query,
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
   });
-  final int id;
-  final Widget Function(Uri uri) builder;
+  final EntityQuery query;
+  final Widget Function(List<CLEntity> entities) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final previewUri = ref.watch(previewUriProvider(id));
-    return previewUri.when(
-      data: builder,
+    final dataAsync = ref.watch(entitiesProvider(query));
+    return dataAsync.when(
       error: errorBuilder,
       loading: loadingBuilder,
+      data: builder,
     );
   }
 }

@@ -22,9 +22,8 @@ class GetCollection extends ConsumerWidget {
     if (id == null) {
       return builder(null);
     }
-    final q =
-        EntityQuery({'id': id, 'isCollection': 1}) as StoreQuery<CLEntity>;
-    return GetFromStore<CLEntity>(
+    final q = EntityQuery({'id': id, 'isCollection': 1});
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -54,9 +53,8 @@ class GetCollectionsByIdList extends ConsumerWidget {
     if (ids.isEmpty) {
       return builder([]);
     }
-    final q =
-        EntityQuery({'id': ids, 'isCollection': 1}) as StoreQuery<CLEntity>;
-    return GetFromStore<CLEntity>(
+    final q = EntityQuery({'id': ids, 'isCollection': 1});
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -78,9 +76,9 @@ class GetAllCollection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery({'isCollection': 1}) as StoreQuery<CLEntity>;
+    const q = EntityQuery({'isCollection': 1});
 
-    return GetFromStore<CLEntity>(
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -102,10 +100,9 @@ class GetRootCollection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery({'isCollection': 1, 'parentId': null})
-        as StoreQuery<CLEntity>;
+    const q = EntityQuery({'isCollection': 1, 'parentId': null});
 
-    return GetFromStore<CLEntity>(
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -129,9 +126,9 @@ class GetAllVisibleCollection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const q = EntityQuery(
       {'isCollection': 1, 'isDeleted': false, 'isHidden': false},
-    ) as StoreQuery<CLEntity>;
+    );
 
-    return GetFromStore<CLEntity>(
+    return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
