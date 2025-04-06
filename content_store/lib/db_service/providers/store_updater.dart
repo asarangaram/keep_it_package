@@ -18,7 +18,7 @@ class StoreUpdaterNotifier extends AsyncNotifier<TheStore> {
     const dbName = 'keepIt.db';
     final fullPath = p.join(db.pathString, dbName);
 
-    final store = await createDBStoreInstance(
+    final store = await createDBInstance(
       fullPath,
       onReload: () {
         ref.read(refreshReaderProvider.notifier).state =

@@ -28,6 +28,19 @@ class StoreQuery<T> {
   }
 }
 
+abstract class EntityTable {
+  Future<CLEntity?> upsert<CLEntity>(
+    CLEntity item, {
+    CLMediaFile? content,
+  });
+
+  Future<void> delete<CLEntity>(CLEntity item);
+  Future<CLEntity?> get<CLEntity>([covariant StoreQuery<CLEntity>? query]);
+  Future<List<CLEntity>> getAll<CLEntity>([
+    covariant StoreQuery<CLEntity>? query,
+  ]);
+}
+
 class Shortcuts {
   static StoreQuery<CLEntity> mediaQuery(CLEntity media) {
     return StoreQuery<CLEntity>({
