@@ -8,9 +8,9 @@ import '../../storage_service/providers/directories.dart';
 import '../models/local_store.dart';
 import 'store_query_result.dart';
 
-class StoreUpdaterNotifier extends AsyncNotifier<LocalStore> {
+class StoreUpdaterNotifier extends AsyncNotifier<TheStore> {
   @override
-  FutureOr<LocalStore> build() async {
+  FutureOr<TheStore> build() async {
     //  final store = await ref.watch(storeProvider.future);
     final directories = await ref.watch(deviceDirectoriesProvider.future);
     final deviceDirectories = await ref.watch(deviceDirectoriesProvider.future);
@@ -25,14 +25,15 @@ class StoreUpdaterNotifier extends AsyncNotifier<LocalStore> {
             DateTime.now().toIso8601String();
       },
     );
-    return LocalStore(
+    return TheStore(
       store: store,
-      directories: directories,
+      downloadDir: directories.download.pathString,
+      tempDir: directories.download.pathString,
     );
   }
 }
 
 final storeUpdaterProvider =
-    AsyncNotifierProvider<StoreUpdaterNotifier, LocalStore>(
+    AsyncNotifierProvider<StoreUpdaterNotifier, TheStore>(
   StoreUpdaterNotifier.new,
 );

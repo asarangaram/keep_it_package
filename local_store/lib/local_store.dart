@@ -5,7 +5,7 @@ import 'package:store/store.dart';
 
 import 'src/db_store.dart';
 
-Future<Store> createDBStoreInstance(
+Future<DBStoreBase> createDBStoreInstance(
   String fullPath, {
   required void Function() onReload,
 }) async {

@@ -90,7 +90,7 @@ class CLContextMenu {
     WidgetRef ref, {
     required CLEntity collection,
     required bool hasOnlineService,
-    required LocalStore theStore,
+    required EntityStore theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
@@ -369,7 +369,7 @@ class CLContextMenu {
     BuildContext context,
     WidgetRef ref,
     List<ViewerEntityMixin> entities,
-    LocalStore theStore,
+    EntityStore theStore,
   ) {
     // FIXME
     return switch (entities) {

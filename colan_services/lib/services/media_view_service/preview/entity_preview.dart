@@ -27,7 +27,7 @@ class EntityPreview extends ConsumerWidget {
   final ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent;
   final List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
       onGetChildren;
-  final LocalStore theStore;
+  final EntityStore theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

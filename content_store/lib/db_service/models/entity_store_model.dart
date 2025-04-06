@@ -1,9 +1,6 @@
-import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:store/store.dart';
-
-import 'data_types.dart';
 
 enum UpdateStrategy {
   skip,
@@ -16,7 +13,7 @@ class EntityQuery extends StoreQuery<CLEntity> {
   const EntityQuery(super.map);
 }
 
-abstract class EntityStoreModel {
+/* abstract class EntityStoreModel {
   Future<CLEntity?> get([EntityQuery? query]);
   Future<List<CLEntity>> getAll([EntityQuery? query]);
 
@@ -72,8 +69,8 @@ abstract class EntityStoreModel {
   Future<CLEntity?> createMedia({
     required CLMediaFile mediaFile,
     required int parentId,
-    String? label,
-    String? description,
+    ValueGetter<String?>? label,
+    ValueGetter<String?>? description,
     UpdateStrategy strategy = UpdateStrategy.skip,
   });
 
@@ -86,18 +83,18 @@ abstract class EntityStoreModel {
     ValueGetter<bool>? isHidden,
     UpdateStrategy strategy = UpdateStrategy.mergeAppend,
   });
-  Future<List<CLEntity>> updateMedia(
+  Future<CLEntity> updateMedia(
     int entityId, {
     CLMediaFile? mediaFile,
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
-    ValueGetter<int?> parentId,
+    ValueGetter<int?>? parentId,
     ValueGetter<bool>? isDeleted,
     ValueGetter<bool>? isHidden,
-    UpdateStrategy strategy = UpdateStrategy.mergeAppend,
     ValueGetter<String>? pin,
+    UpdateStrategy strategy = UpdateStrategy.mergeAppend,
   });
 
   Future<void> delete(int entityId);
   Future<void> deleteMultiple(List<int> entityId);
-}
+} */

@@ -1,12 +1,17 @@
-enum CLMediaType {
-  text,
-  image,
-  video,
-  url,
-  audio,
-  file;
+import 'package:meta/meta.dart';
 
-  bool get isFile => switch (this) { text => false, url => false, _ => true };
-}
+import 'cl_entity.dart';
+import 'store.dart';
 
 typedef ValueGetter<T> = T Function();
+
+enum UpdateStrategy {
+  skip,
+  overwrite,
+  mergeAppend,
+}
+
+@immutable
+class EntityQuery extends StoreQuery<CLEntity> {
+  const EntityQuery(super.map);
+}

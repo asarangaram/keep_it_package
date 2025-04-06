@@ -1,3 +1,4 @@
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
@@ -25,18 +26,6 @@ class StoreQuery<T> {
     }
     return true;
   }
-}
-
-@immutable
-abstract class Store {
-  const Store();
-
-  Future<T?> upsert<T>(T item);
-  Future<void> delete<T>(T item);
-  Future<T?> get<T>([StoreQuery<T>? query]);
-  Future<List<T>> getAll<T>([StoreQuery<T>? query]);
-  Future<void> reloadStore();
-  Future<void> dispose();
 }
 
 class Shortcuts {

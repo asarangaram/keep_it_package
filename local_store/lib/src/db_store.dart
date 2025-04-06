@@ -1,3 +1,5 @@
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
+import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
@@ -23,20 +25,30 @@ class DBTable<T> {
 
   Future<T?> upsert(T item) {
     final resources = tableResources[T] as DBResources<T>;
-    resources.writer
+    return resources.writer
         .upsert(tx, item, uniqueColumn: resources.uniqueColumn(item));
-    throw UnimplementedError();
   }
 
   Future<void> delete(T item) {
     final resources = tableResources[T] as DBResources<T>;
-    resources.writer.delete(tx, item);
-
-    throw UnimplementedError();
+    return resources.writer.delete(tx, item);
   }
 }
 
-class DBStore extends Store {
+@immutable
+abstract class DBStoreBase {
+  const DBStoreBase();
+
+  Future<T?> upsert<T>(T item);
+  Future<void> delete<T>(T item);
+  Future<T?> get<T>([covariant StoreQuery<T>? query]);
+  Future<List<T>> getAll<T>([StoreQuery<T>? query]);
+  Future<void> reloadStore();
+  Future<void> dispose();
+}
+
+@immutable
+class DBStore extends DBStoreBase {
   factory DBStore({
     required SqliteDatabase db,
     required void Function() onReload,
@@ -69,7 +81,7 @@ class DBStore extends Store {
   }
 
   @override
-  Future<T?> upsert<T>(T item) {
+  Future<T?> upsert<T>(T item, {CLMediaContent? content}) {
     return db.writeTransaction((tx) async {
       return DBTable<T>(tx).upsert(item);
     });

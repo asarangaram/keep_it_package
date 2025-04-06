@@ -11,7 +11,7 @@ class GetStoreUpdater extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(LocalStore store) builder;
+  final Widget Function(TheStore store) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
