@@ -12,10 +12,3 @@ Future<DBModel> createSQLiteDBInstance(
     onReload: onReload,
   );
 }
-
-Future<EntityStore> createEntityStore(DBModel db) {
-  return switch (db) {
-    (final SQLiteDB db) => LocalSQLiteEntityStore.create(db),
-    _ => throw Exception('Unsupported DB')
-  };
-}

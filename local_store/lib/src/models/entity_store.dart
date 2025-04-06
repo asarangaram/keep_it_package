@@ -69,3 +69,10 @@ class LocalSQLiteEntityStore extends EntityStore
     return LocalSQLiteEntityStore(agent);
   }
 }
+
+Future<EntityStore> createEntityStore(DBModel db) {
+  return switch (db) {
+    (final SQLiteDB db) => LocalSQLiteEntityStore.create(db),
+    _ => throw Exception('Unsupported DB')
+  };
+}
