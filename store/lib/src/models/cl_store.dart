@@ -1,95 +1,49 @@
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
-import 'entity_store_model.dart';
-
-class LocalStore extends EntityStore {
-  @override
-  Future<CLEntity?> upsert(
-    CLEntity curr, {
-    CLEntity? prev,
-    CLMediaContent? content,
-  }) async {
-    return store.upsert(curr);
-  }
-
-  @override
-  Future<List<CLEntity>> upsertAll(List<CLEntity> entitites) async {
-    final mediaInDB = <CLEntity>[];
-    for (final m in entitites) {
-      var fromDB = await store.upsert(m);
-      fromDB ??= await get(
-        EntityQuery({
-          if (m.id != null)
-            'id': m.id
-          else if (m.isCollection)
-            'label': m.label
-          else
-            'md5': m.md5,
-        }),
-      );
-      mediaInDB.add(fromDB!);
-    }
-    return mediaInDB;
-  }
-}
+import 'data_types.dart';
 
 @immutable
-class TheStore {
-  const TheStore({
+class CLStore {
+  const CLStore({
     required this.store,
     required this.downloadDir,
     required this.tempDir,
     this.tempCollectionName = '*** Recently Captured',
-    this.onDelete,
-    this.onCreate,
-    this.onUpdate,
   });
   final EntityStore store;
   final String downloadDir;
   final String tempDir;
   final String tempCollectionName;
-  final Future<bool> Function(CLEntity entity)? onDelete;
-  final Future<bool> Function(CLEntity entity)? onCreate;
-  final Future<bool> Function(CLEntity prev, CLEntity curr)? onUpdate;
 
-  TheStore copyWith({
+  CLStore copyWith({
     EntityStore? store,
     String? downloadDir,
     String? tempDir,
     String? tempCollectionName,
-    ValueGetter<Future<bool> Function(CLEntity entity)?>? onDelete,
-    ValueGetter<Future<bool> Function(CLEntity entity)?>? onCreate,
-    ValueGetter<Future<bool> Function(CLEntity prev, CLEntity curr)?>? onUpdate,
   }) {
-    return TheStore(
+    return CLStore(
       store: store ?? this.store,
       downloadDir: downloadDir ?? this.downloadDir,
       tempDir: tempDir ?? this.tempDir,
       tempCollectionName: tempCollectionName ?? this.tempCollectionName,
-      onDelete: onDelete != null ? onDelete.call() : this.onDelete,
-      onCreate: onCreate != null ? onCreate.call() : this.onCreate,
-      onUpdate: onUpdate != null ? onUpdate.call() : this.onUpdate,
     );
   }
 
   @override
   String toString() {
-    return 'LocalStore(store: $store, downloadDir: $downloadDir, tempDir: $tempDir, tempCollectionName: $tempCollectionName, onDelete: $onDelete, onCreate: $onCreate, onUpdate: $onUpdate)';
+    return 'CLStore(store: $store, downloadDir: $downloadDir, tempDir: $tempDir, tempCollectionName: $tempCollectionName)';
   }
 
   @override
-  bool operator ==(covariant TheStore other) {
+  bool operator ==(covariant CLStore other) {
     if (identical(this, other)) return true;
 
     return other.store == store &&
         other.downloadDir == downloadDir &&
         other.tempDir == tempDir &&
-        other.tempCollectionName == tempCollectionName &&
-        other.onDelete == onDelete &&
-        other.onCreate == onCreate &&
-        other.onUpdate == onUpdate;
+        other.tempCollectionName == tempCollectionName;
   }
 
   @override
@@ -97,10 +51,7 @@ class TheStore {
     return store.hashCode ^
         downloadDir.hashCode ^
         tempDir.hashCode ^
-        tempCollectionName.hashCode ^
-        onDelete.hashCode ^
-        onCreate.hashCode ^
-        onUpdate.hashCode;
+        tempCollectionName.hashCode;
   }
 
   String createTempFile({required String ext}) {
@@ -110,7 +61,6 @@ class TheStore {
     return absolutePath;
   }
 
-  @override
   Future<CLEntity?> createCollection({
     required String label,
     ValueGetter<String?>? description,
@@ -137,7 +87,7 @@ class TheStore {
         );
       }
     }
-    return upsert(
+    return store.upsert(
       CLEntity.collection(
         label: label,
         description: description?.call(),
@@ -146,149 +96,6 @@ class TheStore {
     );
   }
 
-  @override
-  Future<CLEntity?> updateCollection(
-    int entityId, {
-    ValueGetter<String?>? label,
-    ValueGetter<String?>? description,
-    ValueGetter<int?>? parentId,
-    ValueGetter<bool>? isDeleted,
-    ValueGetter<bool>? isHidden,
-    UpdateStrategy strategy = UpdateStrategy.mergeAppend,
-  }) async {
-    if (strategy == UpdateStrategy.skip) {
-      throw Exception(
-        'UpdateStrategy.skip is not allowed for updateCollectionMultiple',
-      );
-    }
-
-    final entity = await get(EntityQuery({'id': entityId}));
-
-    if (entity == null) {
-      throw Exception('entities do not exist.');
-    }
-    if (entity.isCollection == false) {
-      throw Exception(
-        'All entities must be collections. One or more entities are not collections.',
-      );
-    }
-    if (parentId != null) {
-      final parentIdValue = parentId.call();
-      if (parentIdValue != null && parentIdValue <= 0) {
-        throw Exception('Invalid parent ID provided.');
-      }
-      if (entity.id == parentIdValue) {
-        throw Exception(
-          'Parent ID cannot be the same of the entity IDs.',
-        );
-      }
-      if (parentIdValue != null) {
-        final parent = await get(EntityQuery({'parentId': parentIdValue}));
-        if (parent == null) {
-          throw Exception('Parent entity does not exist.');
-        }
-        if (!parent.isCollection) {
-          throw Exception('Parent entity must be a collection.');
-        }
-      }
-    }
-
-    final updated = entity.copyWith(
-      label: label,
-      description: description != null
-          ? () => switch (strategy) {
-                UpdateStrategy.mergeAppend =>
-                  '${entity.descriptionText}\n${description()}'.trim(),
-                UpdateStrategy.overwrite => description.call(),
-                UpdateStrategy.skip =>
-                  throw Exception('UpdateStrategy.skip is not allowed'),
-              }
-          : null,
-      parentId: parentId,
-      isDeleted: isDeleted?.call(),
-      isHidden: isHidden?.call(),
-    );
-    return upsert(updated);
-  }
-
-  @override
-  Future<List<CLEntity>> updateCollectionMultiple(
-    List<int> entityIds, {
-    ValueGetter<String?>? description,
-    ValueGetter<int?>? parentId,
-    ValueGetter<bool>? isDeleted,
-    ValueGetter<bool>? isHidden,
-    UpdateStrategy strategy = UpdateStrategy.mergeAppend,
-  }) async {
-    if (strategy == UpdateStrategy.skip) {
-      throw Exception(
-        'UpdateStrategy.skip is not allowed for updateCollectionMultiple',
-      );
-    }
-    if (entityIds.isEmpty) {
-      throw Exception('No entity IDs provided.');
-    }
-    final entitiesIdsSet = entityIds.toSet();
-    if (entitiesIdsSet.length != entityIds.length) {
-      throw Exception('Duplicate entity IDs provided.');
-    }
-    if (entitiesIdsSet.any((e) => e <= 0)) {
-      throw Exception('Invalid entity ID provided.');
-    }
-    final entities0 = await getAll(EntityQuery({'id': entityIds}));
-
-    if (entities0.length != entityIds.length) {
-      throw Exception('One or more entities do not exist.');
-    }
-    if (entities0.any((e) => e.isCollection == false)) {
-      throw Exception(
-        'All entities must be collections. One or more entities are not collections.',
-      );
-    }
-    if (parentId != null) {
-      final parentIdValue = parentId.call();
-      if (parentIdValue != null && parentIdValue <= 0) {
-        throw Exception('Invalid parent ID provided.');
-      }
-      if (entities0.any((e) => e.id == parentIdValue)) {
-        throw Exception(
-          'Parent ID cannot be the same as any of the entity IDs.',
-        );
-      }
-      if (parentIdValue != null) {
-        final parent = await get(EntityQuery({'parentId': parentIdValue}));
-        if (parent == null) {
-          throw Exception('Parent entity does not exist.');
-        }
-        if (!parent.isCollection) {
-          throw Exception('Parent entity must be a collection.');
-        }
-      }
-    }
-    final entities = entities0.cast<CLEntity>();
-
-    final updated = entities
-        .map(
-          (e) => e.copyWith(
-            description: description != null
-                ? () => switch (strategy) {
-                      UpdateStrategy.mergeAppend =>
-                        '${e.descriptionText}\n${description()}'.trim(),
-                      UpdateStrategy.overwrite => description.call(),
-                      UpdateStrategy.skip =>
-                        throw Exception('UpdateStrategy.skip is not allowed'),
-                    }
-                : null,
-            parentId: parentId,
-            isDeleted: isDeleted?.call(),
-            isHidden: isHidden?.call(),
-          ),
-        )
-        .toList();
-    return upsertAll(updated);
-  }
-
-  @override
   Future<CLEntity?> createMedia({
     required CLMediaFile mediaFile,
     required int parentId,
@@ -328,15 +135,73 @@ class TheStore {
       duration: mediaFile.duration,
       isDeleted: false,
     );
-    // Copy files here (mediaFile, previewFile)
-    final newMediaInDB = await upsert(newMedia);
-    if (newMediaInDB == null) {
-      // remove Files here
-    }
+
+    final newMediaInDB =
+        await store.upsert(newMedia, mediaFile: mediaFile.path);
+
     return newMediaInDB;
   }
 
-  @override
+  Future<CLEntity?> updateCollection(
+    int entityId, {
+    ValueGetter<String?>? label,
+    ValueGetter<String?>? description,
+    ValueGetter<int?>? parentId,
+    ValueGetter<bool>? isDeleted,
+    ValueGetter<bool>? isHidden,
+    UpdateStrategy strategy = UpdateStrategy.mergeAppend,
+  }) async {
+    if (strategy == UpdateStrategy.skip) {
+      throw Exception(
+        'UpdateStrategy.skip is not allowed for updateCollectionMultiple',
+      );
+    }
+
+    final entity = await get(EntityQuery({'id': entityId}));
+
+    if (entity == null) {
+      throw Exception('entities do not exist.');
+    }
+    if (entity.isCollection) {}
+    if (parentId != null) {
+      final parentIdValue = parentId.call();
+      if (parentIdValue != null && parentIdValue <= 0) {
+        throw Exception('Invalid parent ID provided.');
+      }
+      if (entity.id == parentIdValue) {
+        throw Exception(
+          'Parent ID cannot be the same of the entity IDs.',
+        );
+      }
+      if (parentIdValue != null) {
+        final parent = await get(EntityQuery({'parentId': parentIdValue}));
+        if (parent == null) {
+          throw Exception('Parent entity does not exist.');
+        }
+        if (!parent.isCollection) {
+          throw Exception('Parent entity must be a collection.');
+        }
+      }
+    }
+
+    final updated = entity.copyWith(
+      label: label,
+      description: description != null
+          ? () => switch (strategy) {
+                UpdateStrategy.mergeAppend =>
+                  '${entity.descriptionText}\n${description()}'.trim(),
+                UpdateStrategy.overwrite => description.call(),
+                UpdateStrategy.skip =>
+                  throw Exception('UpdateStrategy.skip is not allowed'),
+              }
+          : null,
+      parentId: parentId,
+      isDeleted: isDeleted?.call(),
+      isHidden: isHidden?.call(),
+    );
+    return store.upsert(updated, prev: entity);
+  }
+
   Future<CLEntity> updateMedia(
     int entityId, {
     CLMediaFile? mediaFile,
@@ -410,29 +275,16 @@ class TheStore {
       width: mediaFile == null ? null : () => mediaFile.width,
       duration: mediaFile == null ? null : () => mediaFile.duration,
     );
-    if (mediaFile != null) {
-      // copy file here
-      acceptMediaFiles(updated, mediaFile);
-    }
-    try {
-      final mediaInDB = await upsert(updated);
 
-      if (mediaInDB == null) {
-        // failed. delete the new files
-        releaseMediaFiles();
-        throw Exception('media (id: ${updated.id}) update failed');
-      } else {
-        //delete old file here
-
-        return mediaInDB;
-      }
-    } catch (e) {
-      return entity;
-    }
+    return await store.upsert(
+          updated,
+          prev: entity,
+          mediaFile: mediaFile?.path,
+        ) ??
+        entity;
   }
 
-  @override
-  Future<List<CLEntity>> updateMediaMultiple(
+  Future<List<CLEntity?>> updateMultiple(
     List<int> entityIds, {
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
@@ -440,29 +292,94 @@ class TheStore {
     ValueGetter<bool>? isDeleted,
     ValueGetter<bool>? isHidden,
     UpdateStrategy strategy = UpdateStrategy.mergeAppend,
-  }) {
-    // TODO: implement updateMediaMultiple
-    throw UnimplementedError();
+  }) async {
+    if (strategy == UpdateStrategy.skip) {
+      throw Exception(
+        'UpdateStrategy.skip is not allowed for updateCollectionMultiple',
+      );
+    }
+    if (entityIds.isEmpty) {
+      throw Exception('No entity IDs provided.');
+    }
+    final entitiesIdsSet = entityIds.toSet();
+    if (entitiesIdsSet.length != entityIds.length) {
+      throw Exception('Duplicate entity IDs provided.');
+    }
+    if (entitiesIdsSet.any((e) => e <= 0)) {
+      throw Exception('Invalid entity ID provided.');
+    }
+    final entities0 = await getAll(EntityQuery({'id': entityIds}));
+
+    if (entities0.length != entityIds.length) {
+      throw Exception('One or more entities do not exist.');
+    }
+
+    if (entities0.any((e) => e.isCollection)) {
+      throw Exception("label can't be updated for collection");
+    }
+    // Don't support mix
+    if (entities0.any((e) => entities0[0].isCollection)) {
+      throw Exception("mix of collections and media can't be updated");
+    }
+    if (parentId != null) {
+      final parentIdValue = parentId.call();
+      if (parentIdValue != null && parentIdValue <= 0) {
+        throw Exception('Invalid parent ID provided.');
+      }
+      if (entities0.any((e) => e.id == parentIdValue)) {
+        throw Exception(
+          'Parent ID cannot be the same as any of the entity IDs.',
+        );
+      }
+      if (parentIdValue != null) {
+        final parent = await get(EntityQuery({'parentId': parentIdValue}));
+        if (parent == null) {
+          throw Exception('Parent entity does not exist.');
+        }
+        if (!parent.isCollection) {
+          throw Exception('Parent entity must be a collection.');
+        }
+      }
+    }
+    final entities = entities0.cast<CLEntity>();
+
+    final updatedEntitites = <CLEntity?>[];
+    for (final entity in entities) {
+      final updated = entity
+        ..copyWith(
+          description: description != null
+              ? () => switch (strategy) {
+                    UpdateStrategy.mergeAppend =>
+                      '${entity.descriptionText}\n${description()}'.trim(),
+                    UpdateStrategy.overwrite => description.call(),
+                    UpdateStrategy.skip =>
+                      throw Exception('UpdateStrategy.skip is not allowed'),
+                  }
+              : null,
+          parentId: parentId,
+          isDeleted: isDeleted?.call(),
+          isHidden: isHidden?.call(),
+        );
+
+      updatedEntitites.add(await store.upsert(updated));
+    }
+
+    return updatedEntitites;
   }
 
-  @override
-  Future<void> delete(int entityId) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<void> delete(int entityId) async {
+    final entity = await get(EntityQuery({'id': entityId}));
+
+    if (entity == null) {
+      throw Exception('entities do not exist.');
+    }
+    await store.delete(entity);
   }
 
-  @override
-  Future<void> deleteMultiple(List<int> entityId) {
-    // TODO: implement deleteMultiple
-    throw UnimplementedError();
-  }
-
-  @override
   Future<CLEntity?> get([EntityQuery? query]) {
     return store.get(query as StoreQuery<CLEntity>?);
   }
 
-  @override
   Future<List<CLEntity>> getAll([EntityQuery? query]) {
     return store.getAll(query as StoreQuery<CLEntity>?);
   }

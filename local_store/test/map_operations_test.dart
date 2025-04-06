@@ -1,4 +1,4 @@
-import 'package:store/store.dart';
+import 'package:local_store/src/implementations/sqlite_db/db_utils/map_operations.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -9,7 +9,7 @@ export 'db_service/builders/get_store_updater.dart';
 export 'db_service/builders/w3_get_collection.dart';
 export 'db_service/builders/w3_get_media.dart';
 
-export 'db_service/models/local_store.dart';
+export '../../store/lib/src/models/local_store.dart';
 export 'db_service/widgets/broken_image.dart';
 export 'db_service/widgets/shimmer.dart';
 export 'media_grouper/builders/get_grouped_media.dart';

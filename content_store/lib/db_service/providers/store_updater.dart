@@ -5,7 +5,7 @@ import 'package:local_store/local_store.dart';
 import 'package:path/path.dart' as p;
 
 import '../../storage_service/providers/directories.dart';
-import '../models/local_store.dart';
+import 'package:content_store/store/lib/src/models/local_store.dart';
 import 'store_query_result.dart';
 
 class StoreUpdaterNotifier extends AsyncNotifier<TheStore> {
@@ -18,7 +18,7 @@ class StoreUpdaterNotifier extends AsyncNotifier<TheStore> {
     const dbName = 'keepIt.db';
     final fullPath = p.join(db.pathString, dbName);
 
-    final store = await createDBInstance(
+    final store = await createSQLiteDBInstance(
       fullPath,
       onReload: () {
         ref.read(refreshReaderProvider.notifier).state =

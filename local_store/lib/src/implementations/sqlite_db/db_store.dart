@@ -1,28 +1,21 @@
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
+import 'package:store/store.dart';
 
 import 'm2_db_migration.dart';
 
 @immutable
-abstract class DBStoreBase {
-  const DBStoreBase();
-
-  Future<void> reloadStore();
-  Future<void> dispose();
-}
-
-@immutable
-class DBStore extends DBStoreBase {
-  factory DBStore({
+class SQLiteDB extends DBModel {
+  factory SQLiteDB({
     required SqliteDatabase db,
     required void Function() onReload,
   }) {
-    return DBStore._(
+    return SQLiteDB._(
       db: db,
       onReload: onReload,
     );
   }
-  const DBStore._({
+  const SQLiteDB._({
     required this.db,
     required this.onReload,
   });
@@ -30,13 +23,13 @@ class DBStore extends DBStoreBase {
   final SqliteDatabase db;
   final void Function() onReload;
 
-  static Future<DBStore> createInstances({
+  static Future<SQLiteDB> create({
     required String dbpath,
     required void Function() onReload,
   }) async {
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    final dbManager = DBStore(
+    final dbManager = SQLiteDB(
       db: db,
       onReload: onReload,
     );

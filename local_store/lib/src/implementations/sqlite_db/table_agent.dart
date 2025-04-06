@@ -3,20 +3,20 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
-import 'package:store/store.dart';
 
+import '../../models/db_query.dart';
 import 'db_utils/db_command.dart';
-import 'm3_db_query.dart';
 
 @immutable
-class TableAgent<T> {
-  const TableAgent({
+class SQLiteTableAgent<T> {
+  const SQLiteTableAgent({
     required this.db,
     required this.table,
     required this.fromMap,
     required this.toMap,
-    required this.getByItem,
-    required this.getUniqueColumn,
+    required this.dbQueryForItem,
+    required this.getUniqueColumns,
+    required this.validColumns,
     this.autoIncrementId = true,
   });
 
@@ -24,8 +24,9 @@ class TableAgent<T> {
   final String table;
   final T Function(Map<String, dynamic>)? fromMap;
   final Map<String, dynamic>? Function(T obj) toMap;
-  final StoreQuery<T> Function(T obj) getByItem;
-  final List<String> Function(T obj) getUniqueColumn;
+  final Future<DBQuery<T>> Function(T obj) dbQueryForItem;
+  final List<String> Function(T obj) getUniqueColumns;
+  final Set<String> validColumns;
   final bool autoIncrementId;
 
   Future<bool> updateFromMap(
@@ -35,7 +36,8 @@ class TableAgent<T> {
     return DBCommand.update(map, table: table).execute(tx);
   }
 
-  Future<T?> readBack(SqliteWriteContext tx, T obj) => get(tx, getByItem(obj));
+  Future<T?> readBack(SqliteWriteContext tx, T obj) async =>
+      get(tx, await dbQueryForItem(obj));
 
   Future<T?> upsert(
     SqliteWriteContext tx,
@@ -72,14 +74,14 @@ class TableAgent<T> {
                   .getAll('SELECT * FROM $table WHERE $key = ?', [value]))
               .firstOrNull;
         },
-        uniqueColumn: getUniqueColumn(obj),
+        uniqueColumn: getUniqueColumns(obj),
       );
 
       if (!insertStatus) {
         throw Exception("couldn't not upsert");
       }
 
-      result = await readBack.call(tx, obj);
+      result = await readBack(tx, obj);
     }
     _infoLogger('upsertNote: Done :  $result');
     return result;
@@ -134,10 +136,9 @@ class TableAgent<T> {
     return updatedMap;
   }
 
-  Future<List<T>> getAll(SqliteWriteContext tx, [StoreQuery<T>? query]) async {
-    final q = await toDBQuery(tx, query);
-    final sql = q.sql;
-    final parameters = q.parameters;
+  Future<List<T>> getAll(SqliteWriteContext tx, DBQuery<T> query) async {
+    final sql = query.sql;
+    final parameters = query.parameters;
 
     _infoLogger('cmd: $sql, $parameters');
 
@@ -151,10 +152,9 @@ class TableAgent<T> {
     return objs;
   }
 
-  Future<T?> get(SqliteWriteContext tx, [StoreQuery<T>? query]) async {
-    final q = await toDBQuery(tx, query);
-    final sql = q.sql;
-    final parameters = q.parameters;
+  Future<T?> get(SqliteWriteContext tx, DBQuery<T> query) async {
+    final sql = query.sql;
+    final parameters = query.parameters;
 
     _infoLogger('cmd: $sql, $parameters');
 
@@ -163,49 +163,6 @@ class TableAgent<T> {
         .firstOrNull;
     _infoLogger('read $obj');
     return obj;
-  }
-
-  Future<DBQuery<T>> toDBQuery(
-    SqliteWriteContext tx, [
-    StoreQuery<T>? query,
-  ]) async {
-    final columnInfo = await tx.execute('PRAGMA table_info($table)');
-    final validColumns = columnInfo.map((row) => row['name'] as String).toSet();
-
-    // Step 2: Build WHERE clause
-    final whereParts = <String>[];
-    final params = <dynamic>[];
-
-    if (query != null) {
-      for (final query in query.map.entries) {
-        final key = query.key;
-        final value = query.value;
-        if (validColumns.contains(key)) {
-          switch (value) {
-            case null:
-              whereParts.add('$key IS NULL');
-            case (final List<dynamic> e) when value.isNotEmpty:
-              whereParts
-                  .add('$key IN (${List.filled(e.length, '?').join(', ')})');
-              params.addAll(e);
-            case (final NotNullValues _):
-              whereParts.add('$key IS NOT NULL');
-            default:
-              whereParts.add('$key IS ?');
-              params.add(value);
-          }
-        }
-      }
-    }
-
-    final whereClause =
-        whereParts.isNotEmpty ? 'WHERE ${whereParts.join(' AND ')}' : '';
-    final sql = 'SELECT * FROM $table $whereClause';
-
-    return DBQuery<T>.map(
-      sql: sql,
-      parameters: params,
-    );
   }
 }
 
