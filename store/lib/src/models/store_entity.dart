@@ -59,4 +59,6 @@ class StoreEntity {
     }
     await store.delete(entity.id!);
   }
+
+  int get id => entity.id!;
 }

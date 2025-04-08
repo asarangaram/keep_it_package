@@ -30,7 +30,7 @@ class GetMedia extends ConsumerWidget {
     required this.id,
     super.key,
   });
-  final Widget Function(CLEntity? media) builder;
+  final Widget Function(StoreEntity? media) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int id;
@@ -58,7 +58,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
     this.parentId,
     super.key,
   });
-  final Widget Function(List<CLEntity> items) builder;
+  final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int? parentId;
@@ -86,7 +86,7 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     required this.ids,
     super.key,
   });
-  final Widget Function(List<CLEntity> items) builder;
+  final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final List<int> ids;
@@ -113,7 +113,7 @@ class GetPinnedMedia extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLEntity> items) builder;
+  final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -136,7 +136,7 @@ class GetStaleMedia extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLEntity> items) builder;
+  final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -159,7 +159,7 @@ class GetDeletedMedia extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLEntity> items) builder;
+  final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 

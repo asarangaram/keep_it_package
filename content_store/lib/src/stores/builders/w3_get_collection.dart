@@ -12,7 +12,7 @@ class GetCollection extends ConsumerWidget {
     this.id,
     super.key,
   });
-  final Widget Function(CLEntity? collections) builder;
+  final Widget Function(StoreEntity? collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int? id;
@@ -43,7 +43,7 @@ class GetCollectionsByIdList extends ConsumerWidget {
     required this.ids,
     super.key,
   });
-  final Widget Function(List<CLEntity> collections) builder;
+  final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final List<int> ids;
@@ -70,7 +70,7 @@ class GetAllCollection extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLEntity> collections) builder;
+  final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -94,7 +94,7 @@ class GetRootCollection extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLEntity> collections) builder;
+  final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -118,7 +118,7 @@ class GetAllVisibleCollection extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(List<CLEntity> collections) builder;
+  final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 

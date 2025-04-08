@@ -6,16 +6,16 @@ import 'package:store/store.dart';
 
 import '../refresh_cache.dart';
 
-final entitiesProvider =
-    StreamProvider.family<List<CLEntity>, EntityQuery>((ref, dbQuery) async* {
+final entitiesProvider = StreamProvider.family<List<StoreEntity>, EntityQuery>(
+    (ref, dbQuery) async* {
   final stores = await ref.watch(storesProvider.future);
-  Future<List<CLEntity>> getentities() async {
+  Future<List<StoreEntity>> getentities() async {
     return [
       for (final store in stores.values) ...(await store.getAll(dbQuery)),
     ];
   }
 
-  final controller = StreamController<List<CLEntity>>();
+  final controller = StreamController<List<StoreEntity>>();
   ref.listen(refreshReaderProvider, (prev, curr) async {
     if (prev != curr) {
       controller.add(await getentities());

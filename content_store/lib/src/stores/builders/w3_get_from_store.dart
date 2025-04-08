@@ -13,7 +13,7 @@ class GetFromStore extends ConsumerWidget {
     super.key,
   });
   final EntityQuery query;
-  final Widget Function(List<CLEntity> entities) builder;
+  final Widget Function(List<StoreEntity> entities) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
