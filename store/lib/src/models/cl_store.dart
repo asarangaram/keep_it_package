@@ -69,11 +69,10 @@ class CLStore {
         label: label,
         description: description?.call(),
         parentId: parentId?.call(),
-        storeIdentity: null,
       ),
     );
 
-    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
+    return entityFromDB;
   }
 
   Future<CLEntity?> createMedia({
@@ -114,13 +113,12 @@ class CLStore {
       width: mediaFile.width,
       duration: mediaFile.duration,
       isDeleted: false,
-      storeIdentity: null,
     );
 
     final entityFromDB =
         await store.upsert(newMedia, mediaFile: mediaFile.path);
 
-    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
+    return entityFromDB;
   }
 
   Future<CLEntity?> updateCollection(
@@ -181,7 +179,7 @@ class CLStore {
       isHidden: isHidden?.call(),
     );
     final entityFromDB = await store.upsert(updated, prev: entity);
-    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
+    return entityFromDB;
   }
 
   Future<CLEntity> updateMedia(
@@ -264,7 +262,7 @@ class CLStore {
           mediaFile: mediaFile?.path,
         ) ??
         entity;
-    return entityFromDB.copyWith(storeIdentity: () => store.identity);
+    return entityFromDB;
   }
 
   Future<List<CLEntity?>> updateMultiple(
@@ -349,8 +347,7 @@ class CLStore {
 
     return updatedEntitites
         .map(
-          (entityFromDB) =>
-              entityFromDB?.copyWith(storeIdentity: () => store.identity),
+          (entityFromDB) => entityFromDB,
         )
         .toList();
   }
@@ -366,15 +363,14 @@ class CLStore {
 
   Future<CLEntity?> get([EntityQuery? query]) async {
     final entityFromDB = await store.get(query as StoreQuery<CLEntity>?);
-    return entityFromDB?.copyWith(storeIdentity: () => store.identity);
+    return entityFromDB;
   }
 
   Future<List<CLEntity>> getAll([EntityQuery? query]) async {
     final entititesFromDB = await store.getAll(query as StoreQuery<CLEntity>?);
     return entititesFromDB
         .map(
-          (entityFromDB) =>
-              entityFromDB.copyWith(storeIdentity: () => store.identity),
+          (entityFromDB) => entityFromDB,
         )
         .toList();
   }
