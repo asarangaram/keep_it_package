@@ -1,3 +1,4 @@
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';

@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
@@ -170,9 +171,10 @@ class ActionControl {
       CLMediaType.text => false,
       CLMediaType.image => true,
       CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
-      CLMediaType.url => false,
+      CLMediaType.uri => false,
       CLMediaType.audio => false,
       CLMediaType.file => false,
+      CLMediaType.unknown => false,
     };
 
     return ActionControl(
