@@ -1,6 +1,7 @@
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
+
+import 'cl_entity.dart';
 
 class NotNullValues {}
 

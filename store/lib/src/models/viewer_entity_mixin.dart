@@ -10,7 +10,7 @@ abstract class ViewerEntityMixin {
   int? get parentId;
 }
 
-extension EntityFilter on List<ViewerEntityMixin> {
+extension EntityGrouper on List<ViewerEntityMixin> {
   Map<String, List<ViewerEntityMixin>> filterByDate() {
     final filterredMedia = <String, List<ViewerEntityMixin>>{};
     final noDate = <ViewerEntityMixin>[];

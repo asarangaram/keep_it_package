@@ -1,8 +1,10 @@
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
 
+import 'cl_entity.dart';
 import 'data_types.dart';
+import 'entity_store.dart';
+import 'store.dart';
 import 'store_entity.dart';
 
 @immutable
