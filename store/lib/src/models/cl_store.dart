@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
 import 'data_types.dart';
+import 'store_entity.dart';
 
 @immutable
 class CLStore {
@@ -38,7 +39,7 @@ class CLStore {
   @override
   int get hashCode => store.hashCode ^ tempCollectionName.hashCode;
 
-  Future<CLEntity?> createCollection({
+  Future<StoreEntity?> createCollection({
     required String label,
     ValueGetter<String?>? description,
     ValueGetter<int?>? parentId,
@@ -54,7 +55,7 @@ class CLStore {
         );
       }
       if (strategy == UpdateStrategy.skip) {
-        return collectionInDB;
+        return StoreEntity(entity: collectionInDB, store: this);
       } else {
         return updateCollection(
           collectionInDB.id!,
@@ -71,11 +72,11 @@ class CLStore {
         parentId: parentId?.call(),
       ),
     );
-
-    return entityFromDB;
+    if (entityFromDB == null) return null;
+    return StoreEntity(entity: entityFromDB, store: this);
   }
 
-  Future<CLEntity?> createMedia({
+  Future<StoreEntity?> createMedia({
     required CLMediaFile mediaFile,
     required int parentId,
     ValueGetter<String?>? label,
@@ -87,7 +88,7 @@ class CLStore {
 
     if (mediaInDB != null && mediaInDB.id != null) {
       if (strategy == UpdateStrategy.skip) {
-        return mediaInDB;
+        return StoreEntity(entity: mediaInDB, store: this);
       } else {
         return updateMedia(
           mediaInDB.id!,
@@ -118,10 +119,11 @@ class CLStore {
     final entityFromDB =
         await store.upsert(newMedia, mediaFile: mediaFile.path);
 
-    return entityFromDB;
+    if (entityFromDB == null) return null;
+    return StoreEntity(entity: entityFromDB, store: this);
   }
 
-  Future<CLEntity?> updateCollection(
+  Future<StoreEntity?> updateCollection(
     int entityId, {
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
@@ -136,7 +138,7 @@ class CLStore {
       );
     }
 
-    final entity = await get(EntityQuery({'id': entityId}));
+    final entity = await store.get(EntityQuery({'id': entityId}));
 
     if (entity == null) {
       throw Exception('entities do not exist.');
@@ -153,7 +155,8 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
-        final parent = await get(EntityQuery({'parentId': parentIdValue}));
+        final parent =
+            (await get(EntityQuery({'parentId': parentIdValue})))?.entity;
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -179,10 +182,11 @@ class CLStore {
       isHidden: isHidden?.call(),
     );
     final entityFromDB = await store.upsert(updated, prev: entity);
-    return entityFromDB;
+    if (entityFromDB == null) return null;
+    return StoreEntity(entity: entityFromDB, store: this);
   }
 
-  Future<CLEntity> updateMedia(
+  Future<StoreEntity?> updateMedia(
     int entityId, {
     CLMediaFile? mediaFile,
     ValueGetter<String?>? label,
@@ -199,7 +203,7 @@ class CLStore {
       );
     }
 
-    final entity = await get(EntityQuery({'id': entityId}));
+    final entity = await store.get(EntityQuery({'id': entityId}));
 
     if (entity == null) {
       throw Exception('entities do not exist.');
@@ -220,7 +224,8 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
-        final parent = await get(EntityQuery({'parentId': parentIdValue}));
+        final parent =
+            await store.get(EntityQuery({'parentId': parentIdValue}));
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -262,10 +267,10 @@ class CLStore {
           mediaFile: mediaFile?.path,
         ) ??
         entity;
-    return entityFromDB;
+    return StoreEntity(entity: entityFromDB, store: this);
   }
 
-  Future<List<CLEntity?>> updateMultiple(
+  Future<List<StoreEntity?>> updateMultiple(
     List<int> entityIds, {
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
@@ -289,7 +294,7 @@ class CLStore {
     if (entitiesIdsSet.any((e) => e <= 0)) {
       throw Exception('Invalid entity ID provided.');
     }
-    final entities0 = await getAll(EntityQuery({'id': entityIds}));
+    final entities0 = await store.getAll(EntityQuery({'id': entityIds}));
 
     if (entities0.length != entityIds.length) {
       throw Exception('One or more entities do not exist.');
@@ -313,7 +318,8 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
-        final parent = await get(EntityQuery({'parentId': parentIdValue}));
+        final parent =
+            await store.get(EntityQuery({'parentId': parentIdValue}));
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -347,13 +353,15 @@ class CLStore {
 
     return updatedEntitites
         .map(
-          (entityFromDB) => entityFromDB,
+          (entityFromDB) => entityFromDB == null
+              ? null
+              : StoreEntity(entity: entityFromDB, store: this),
         )
         .toList();
   }
 
   Future<void> delete(int entityId) async {
-    final entity = await get(EntityQuery({'id': entityId}));
+    final entity = await store.get(EntityQuery({'id': entityId}));
 
     if (entity == null) {
       throw Exception('entities do not exist.');
@@ -361,16 +369,23 @@ class CLStore {
     await store.delete(entity);
   }
 
-  Future<CLEntity?> get([EntityQuery? query]) async {
+  Future<StoreEntity?> get([EntityQuery? query]) async {
     final entityFromDB = await store.get(query as StoreQuery<CLEntity>?);
-    return entityFromDB;
+    if (entityFromDB == null) {
+      return null;
+    }
+    return StoreEntity(
+      entity: entityFromDB,
+      store: this,
+    );
   }
 
-  Future<List<CLEntity>> getAll([EntityQuery? query]) async {
+  Future<List<StoreEntity>> getAll([EntityQuery? query]) async {
     final entititesFromDB = await store.getAll(query as StoreQuery<CLEntity>?);
     return entititesFromDB
+        .cast<CLEntity>()
         .map(
-          (entityFromDB) => entityFromDB,
+          (entityFromDB) => StoreEntity(entity: entityFromDB, store: this),
         )
         .toList();
   }

@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';
+
 import 'store.dart';
 
 @immutable
