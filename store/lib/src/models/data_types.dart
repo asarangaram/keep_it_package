@@ -13,5 +13,5 @@ enum UpdateStrategy {
 
 @immutable
 class EntityQuery extends StoreQuery<CLEntity> {
-  const EntityQuery(super.map);
+  const EntityQuery(super.storeIdentity, super.map);
 }

@@ -67,14 +67,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           ? null
           : (items) => onSelectionChanged
               ?.call(items.map((e) => e as CLEntity).toList()),
-      itemBuilder: (
-        context,
-        item, {
-        required ViewerEntityMixin? Function(ViewerEntityMixin entity)?
-            onGetParent,
-        required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
-            onGetChildren,
-      }) {
+      itemBuilder: (context, item) {
         return GetCollection(
           id: (item as CLEntity).parentId,
           loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),

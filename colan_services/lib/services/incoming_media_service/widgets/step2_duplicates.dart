@@ -64,7 +64,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
         message: 'Should not have seen this.',
       );
     }
-    return GetAllCollection(
+    return GetAllCollections(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
@@ -75,8 +75,8 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
         final newCollection = collections
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;
-        final collectionLablel = newCollection?.label != null
-            ? '"${newCollection?.label}"'
+        final collectionLablel = newCollection?.entity.label != null
+            ? '"${newCollection?.entity.label}"'
             : 'a new collection';
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -150,8 +150,8 @@ class ExistInDifferentCollection extends StatelessWidget {
 
   final CLSharedMedia media;
   final String parentIdentifier;
-  final List<CLEntity> collections;
-  final void Function(CLEntity media) onRemove;
+  final List<StoreEntity> collections;
+  final void Function(StoreEntity media) onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -186,17 +186,17 @@ class ExistInDifferentCollection extends StatelessWidget {
                     collections.where((e) => e.id == m.parentId).firstOrNull;
                 final String currCollectionLabel;
 
-                if (m.isDeleted) {
+                if (m.entity.isDeleted) {
                   currCollectionLabel = 'Deleted Items';
                 } else {
                   currCollectionLabel =
-                      currCollection?.label ?? 'somethig wrong';
+                      currCollection?.entity.label ?? 'somethig wrong';
                 }
 
                 return SizedBox(
                   height: 80,
                   child: Dismissible(
-                    key: Key(m.md5!),
+                    key: Key(m.entity.md5!),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
                       onRemove(m);

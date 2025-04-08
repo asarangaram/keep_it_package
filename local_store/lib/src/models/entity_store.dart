@@ -58,7 +58,7 @@ class LocalSQLiteEntityStore extends EntityStore
       dbQueryForItem: (CLEntity obj) async => DBQuery.fromStoreQuery(
         tableName,
         validColumns,
-        Shortcuts.mediaQuery(obj),
+        Shortcuts.mediaQuery('ignore', obj), // We use this inside the server.
       ),
       getUniqueColumns: (CLEntity obj) {
         return ['id', if (obj.isCollection) 'label' else 'md5'];

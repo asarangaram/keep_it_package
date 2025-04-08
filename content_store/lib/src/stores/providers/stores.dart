@@ -4,17 +4,20 @@ import 'package:store/store.dart';
 import 'local_store.dart';
 
 final storeProvider =
-    FutureProvider.family<CLStore, EntityStore>((ref, store) async {
-  return CLStore(
-    store: store,
-  );
+    FutureProvider.family<CLStore, String>((ref, storeIdentity) async {
+  final stores = await ref.watch(storesProvider.future);
+
+  if (stores.containsKey(storeIdentity)) {
+    return stores[storeIdentity]!;
+  } else {
+    throw Exception('Store with identity $storeIdentity not found');
+  }
 });
 
 final storesProvider = FutureProvider<Map<String, CLStore>>((ref) async {
   final localStore = await ref.watch(localStoreProvider.future);
-  final store = await ref.watch(storeProvider(localStore).future);
 
   // add online store here..
 
-  return {store.store.identity: store};
+  return {localStore.identity: CLStore(store: localStore)};
 });

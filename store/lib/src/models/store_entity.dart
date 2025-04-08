@@ -1,6 +1,7 @@
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
+import 'package:store/src/models/store.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
@@ -61,6 +62,19 @@ class StoreEntity implements ViewerEntityMixin {
     await store.delete(entity.id!);
   }
 
+  Future<StoreEntity?> getParent() async {
+    final entity =
+        await store.get(EntityQuery(store.store.identity, {'id': parentId}));
+    return entity;
+  }
+
+  Future<List<StoreEntity>?> getChildren() async {
+    if (!entity.isCollection) return null;
+    final entities = await store
+        .getAll(EntityQuery(store.store.identity, {'parentId': parentId}));
+    return entities;
+  }
+
   @override
   int get id => entity.id!;
 
@@ -72,4 +86,6 @@ class StoreEntity implements ViewerEntityMixin {
 
   @override
   int? get parentId => entity.parentId;
+
+  Uri? get uri => throw UnimplementedError();
 }

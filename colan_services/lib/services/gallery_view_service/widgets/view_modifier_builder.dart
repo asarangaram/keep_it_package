@@ -24,11 +24,8 @@ class ViewModifierBuilder extends StatelessWidget {
 
   final Widget Function(
     BuildContext,
-    ViewerEntityMixin, {
-    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
-    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
-        onGetChildren,
-  }) itemBuilder;
+    ViewerEntityMixin,
+  ) itemBuilder;
 
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuOf;
@@ -43,12 +40,8 @@ class ViewModifierBuilder extends StatelessWidget {
     required List<ViewerEntityMixin> incoming,
     required Widget Function(
       BuildContext,
-      ViewerEntityMixin, {
-      required ViewerEntityMixin? Function(ViewerEntityMixin entity)?
-          onGetParent,
-      required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
-          onGetChildren,
-    }) itemBuilder,
+      ViewerEntityMixin,
+    ) itemBuilder,
     required Widget? Function(
       BuildContext context,
       List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,

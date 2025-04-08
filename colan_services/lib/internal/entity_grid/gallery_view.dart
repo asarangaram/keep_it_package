@@ -25,13 +25,7 @@ class EntityGridView extends StatelessWidget {
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final Widget Function(
-    BuildContext,
-    ViewerEntityMixin, {
-    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
-    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
-        onGetChildren,
-  }) itemBuilder;
+  final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
   final Widget? Function(
     BuildContext context,
     List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
@@ -58,25 +52,15 @@ class EntityGridView extends StatelessWidget {
       columns: columns,
       viewableAsCollection: viewableAsCollection,
       builder: (
-        tabs /* columns */, {
-        required ViewerEntityMixin? Function(ViewerEntityMixin entity)?
-            onGetParent,
-        required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
-            onGetChildren,
-      }) {
+        tabs,
+        /* columns */
+      ) {
         return RawCLEntityGalleryView(
           viewIdentifier: viewIdentifier,
           tabs: tabs,
           bannersBuilder: bannersBuilder,
           labelBuilder: labelBuilder,
-          itemBuilder: (context, item) {
-            return itemBuilder(
-              context,
-              item,
-              onGetParent: onGetParent,
-              onGetChildren: onGetChildren,
-            );
-          },
+          itemBuilder: itemBuilder,
           columns: columns,
           draggableMenuBuilder: draggableMenuBuilder,
         );

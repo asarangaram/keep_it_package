@@ -26,13 +26,7 @@ class CLEntityGalleryView extends StatelessWidget {
   final List<ViewerEntityMixin> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function(
-    BuildContext,
-    ViewerEntityMixin, {
-    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
-    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
-        onGetChildren,
-  }) itemBuilder;
+  final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
   final int columns;
 
   final Widget emptyWidget;

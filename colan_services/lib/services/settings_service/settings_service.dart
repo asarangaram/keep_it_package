@@ -51,7 +51,6 @@ class SettingsService extends ConsumerWidget {
                   title: Text('Deleted Items (${deletedMedia.length})'),
                 ),
               const StorageMonitor(),
-              const ServerSettings(),
             ],
           );
         },

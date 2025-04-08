@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import '../../../../storage_service/providers/directories.dart';
-import '../refresh_cache.dart';
+import 'refresh_cache.dart';
 
 final dbProvider = FutureProvider<DBModel>((ref) async {
   final deviceDirectories = await ref.watch(deviceDirectoriesProvider.future);

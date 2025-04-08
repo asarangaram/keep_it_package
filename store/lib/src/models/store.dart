@@ -1,4 +1,5 @@
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';
@@ -7,26 +8,33 @@ class NotNullValues {}
 
 @immutable
 class StoreQuery<T> {
-  const StoreQuery(this.map);
+  const StoreQuery(this.storeIdentity, this.map);
+  final String? storeIdentity;
   final Map<String, dynamic> map;
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(covariant StoreQuery<T> other) {
     if (identical(this, other)) return true;
-    return other is StoreQuery && _mapEquals(other.map, map);
+    final mapEquals = const DeepCollectionEquality().equals;
+
+    return other.storeIdentity == storeIdentity && mapEquals(other.map, map);
   }
 
   @override
-  int get hashCode => map.entries
-      .fold(0, (prev, e) => prev ^ e.key.hashCode ^ e.value.hashCode);
+  int get hashCode => storeIdentity.hashCode ^ map.hashCode;
 
-  bool _mapEquals(Map<String, dynamic> a, Map<String, dynamic> b) {
-    if (a.length != b.length) return false;
-    for (final key in a.keys) {
-      if (!b.containsKey(key) || a[key] != b[key]) return false;
-    }
-    return true;
+  StoreQuery<T> copyWith({
+    String? storeIdentity,
+    Map<String, dynamic>? map,
+  }) {
+    return StoreQuery<T>(
+      storeIdentity ?? this.storeIdentity,
+      map ?? this.map,
+    );
   }
+
+  @override
+  String toString() => 'StoreQuery(storeIdentity: $storeIdentity, map: $map)';
 }
 
 abstract class EntityTable {
@@ -43,8 +51,8 @@ abstract class EntityTable {
 }
 
 class Shortcuts {
-  static StoreQuery<CLEntity> mediaQuery(CLEntity media) {
-    return StoreQuery<CLEntity>({
+  static StoreQuery<CLEntity> mediaQuery(String storeIdentity, CLEntity media) {
+    return StoreQuery<CLEntity>(storeIdentity, {
       if (media.id != null)
         'id': media.id
       else if (media.isCollection)

@@ -26,12 +26,7 @@ class GetGroupedMedia extends ConsumerWidget {
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final Widget Function(
-    List<LabelledEntityGroups> galleryMap, {
-    required ViewerEntityMixin? Function(ViewerEntityMixin entity)? onGetParent,
-    required List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)?
-        onGetChildren,
-  }) builder;
+  final Widget Function(List<LabelledEntityGroups> galleryMap) builder;
   final bool viewableAsCollection;
 
   @override
@@ -48,6 +43,7 @@ class GetGroupedMedia extends ConsumerWidget {
         .toList();
 
     return GetCollectionsByIdList(
+      serverIdentity: 'NONE', //FIXME
       ids: ids,
       loadingBuilder: loadingBuilder,
       errorBuilder: errorBuilder,
@@ -89,20 +85,7 @@ class GetGroupedMedia extends ConsumerWidget {
               ),
             );
 
-            return builder(
-              result,
-              onGetParent: (entity) => switch (entity) {
-                StoreEntity _ =>
-                  collections.where((e) => e.id == entity.parentId).first,
-                _ => null
-              },
-              onGetChildren: (entity) => switch (entity) {
-                CLEntity _ => incoming
-                    .where((e) => (e as CLEntity).parentId == entity.id)
-                    .toList(),
-                _ => null
-              },
-            );
+            return builder(result);
           },
         );
       },

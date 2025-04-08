@@ -51,7 +51,7 @@ class KeepItMainGrid extends ConsumerWidget {
         Expanded(
           child: RefreshIndicator(
             onRefresh: /* isSelectionMode ? null : */
-                () async => theStore.store.reloadStore(),
+                () async => ref.read(reloadProvider.notifier).reload(),
             child: entities.isEmpty
                 ? const WhenEmpty()
                 : ViewModifierBuilder(
@@ -72,22 +72,10 @@ class KeepItMainGrid extends ConsumerWidget {
                       entities,
                       theStore,
                     ),
-                    itemBuilder: (
-                      context,
-                      item, {
-                      required ViewerEntityMixin? Function(
-                        ViewerEntityMixin entity,
-                      )? onGetParent,
-                      required List<ViewerEntityMixin>? Function(
-                        ViewerEntityMixin entity,
-                      )? onGetChildren,
-                    }) =>
-                        EntityPreview(
+                    itemBuilder: (context, item) => EntityPreview(
                       viewIdentifier: viewIdentifier,
                       item: item,
                       theStore: theStore,
-                      onGetChildren: onGetChildren,
-                      onGetParent: onGetParent,
                     ),
                     builder: ({
                       required incoming,

@@ -72,19 +72,3 @@ class KeepItMediaCorouselView extends ConsumerWidget {
           );
   }
 }
-/* 
-itemBuilder: (
-              context,
-              item, {
-              required CLEntity? Function(CLEntity entity)? onGetParent,
-              required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-            }) =>
-                EntityPreview(
-              viewIdentifier: viewIdentifier,
-              item: item,
-              theStore: theStore,
-              onGetChildren: onGetChildren,
-              onGetParent: onGetParent,
-            ),
-
-*/

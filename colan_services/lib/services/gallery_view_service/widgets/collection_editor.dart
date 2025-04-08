@@ -11,13 +11,15 @@ import 'package:store/store.dart';
 
 class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
-    required int parentId,
-    required void Function(CLEntity collection) onSubmit,
+    required String serverIdentity,
+    required int id,
+    required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      parentId: parentId,
+      serverIdentity: serverIdentity,
+      id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: false,
@@ -25,13 +27,15 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   factory CollectionEditor.dialog({
-    required int parentId,
-    required void Function(CLEntity collection) onSubmit,
+    required String serverIdentity,
+    required int id,
+    required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      parentId: parentId,
+      serverIdentity: serverIdentity,
+      id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: true,
@@ -39,31 +43,34 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   const CollectionEditor._({
-    required this.parentId,
+    required this.serverIdentity,
+    required this.id,
     required this.isDialog,
     required this.onSubmit,
     required this.onCancel,
     super.key,
   });
 
-  final int parentId;
+  final String serverIdentity;
+  final int id;
 
-  final void Function(CLEntity collection) onSubmit;
+  final void Function(StoreEntity collection) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
   @override
   State<CollectionEditor> createState() => _CollectionEditorState();
 
-  static Future<CLEntity?> openSheet(
+  static Future<StoreEntity?> openSheet(
     BuildContext context,
     WidgetRef ref, {
-    required CLEntity collection,
+    required StoreEntity collection,
   }) async {
-    return showShadSheet<CLEntity>(
+    return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
-        parentId: collection.id!,
+        serverIdentity: collection.store.store.identity,
+        id: collection.id,
         onSubmit: (collection) {
           PageManager.of(context).pop(collection);
         },
@@ -100,7 +107,8 @@ class _CollectionEditorState extends State<CollectionEditor> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetCollection(
-        id: widget.parentId,
+        serverIdentity: widget.serverIdentity,
+        id: widget.id,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading('GetCollection'),
         builder: (collection) {
@@ -111,7 +119,8 @@ class _CollectionEditorState extends State<CollectionEditor> {
               return errorBuilder(e, st);
             }
           }
-          return GetAllCollection(
+          return GetAllCollections(
+            serverIdentity: widget.serverIdentity,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading('GetAllCollection'),
             builder: (allCollections) {
@@ -122,7 +131,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                 child: ShadSheet(
                   draggable: true,
                   title: Text(
-                    'Edit Collection "${collection.label!.capitalizeFirstLetter()}"',
+                    'Edit Collection "${collection.entity.label!.capitalizeFirstLetter()}"',
                   ),
                   description: const Text(
                     'Change the label and add/update description here',
@@ -135,7 +144,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           formValue = formKey.currentState!.value;
                           final label = formValue['label'] as String;
                           final desc = formValue['description'] as String?;
-                          final updated = collection.copyWith(
+                          final updated = collection.entity.copyWith(
                             label: () => label,
                             description: () => desc == null
                                 ? null
@@ -143,7 +152,13 @@ class _CollectionEditorState extends State<CollectionEditor> {
                                     ? null
                                     : desc,
                           );
-                          widget.onSubmit(updated);
+                          //
+                          widget.onSubmit(
+                            StoreEntity(
+                              entity: updated,
+                              store: collection.store,
+                            ),
+                          );
                         }
                       },
                     ),
@@ -158,11 +173,11 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           id: 'label',
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' Collection Name'),
-                          initialValue: collection.label,
+                          initialValue: collection.entity.label,
                           placeholder: const Text('Enter collection name'),
                           validator: (value) => validateName(
                             newLabel: value,
-                            existingLabel: collection.label,
+                            existingLabel: collection.entity.label,
                             collections: allCollections,
                           ),
                           showCursor: true,
@@ -174,7 +189,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           id: 'description',
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' About'),
-                          initialValue: collection.description,
+                          initialValue: collection.entity.description,
                           placeholder:
                               const Text('Describe about this collection'),
                           maxLines: 4,
@@ -210,7 +225,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
   String? validateName({
     required String? newLabel,
     required String? existingLabel,
-    required List<CLEntity> collections,
+    required List<StoreEntity> collections,
   }) {
     final newLabel0 = newLabel?.trim();
 
@@ -225,7 +240,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
         return null;
       }
       if (collections
-          .map((e) => e.label!.trim().toLowerCase())
+          .map((e) => e.entity.label!.trim().toLowerCase())
           .contains(newLabel0.toLowerCase())) {
         return '$newLabel0 already exists';
       }

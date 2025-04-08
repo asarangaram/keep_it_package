@@ -47,8 +47,8 @@ class CLStore {
     ValueGetter<int?>? parentId,
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
-    final collectionInDB =
-        await store.get(EntityQuery({'label': label, 'isCollection': 1}));
+    final collectionInDB = await store
+        .get(EntityQuery(store.identity, {'label': label, 'isCollection': 1}));
 
     if (collectionInDB != null && collectionInDB.id != null) {
       if (!collectionInDB.isCollection) {
@@ -85,8 +85,9 @@ class CLStore {
     ValueGetter<String?>? description,
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
-    final mediaInDB =
-        await store.get(EntityQuery({'md5': mediaFile.md5, 'isCollection': 1}));
+    final mediaInDB = await store.get(
+      EntityQuery(store.identity, {'md5': mediaFile.md5, 'isCollection': 1}),
+    );
 
     if (mediaInDB != null && mediaInDB.id != null) {
       if (strategy == UpdateStrategy.skip) {
@@ -140,7 +141,8 @@ class CLStore {
       );
     }
 
-    final entity = await store.get(EntityQuery({'id': entityId}));
+    final entity =
+        await store.get(EntityQuery(store.identity, {'id': entityId}));
 
     if (entity == null) {
       throw Exception('entities do not exist.');
@@ -157,8 +159,10 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
-        final parent =
-            (await get(EntityQuery({'parentId': parentIdValue})))?.entity;
+        final parent = (await get(
+          EntityQuery(store.identity, {'parentId': parentIdValue}),
+        ))
+            ?.entity;
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -205,7 +209,8 @@ class CLStore {
       );
     }
 
-    final entity = await store.get(EntityQuery({'id': entityId}));
+    final entity =
+        await store.get(EntityQuery(store.identity, {'id': entityId}));
 
     if (entity == null) {
       throw Exception('entities do not exist.');
@@ -226,8 +231,8 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
-        final parent =
-            await store.get(EntityQuery({'parentId': parentIdValue}));
+        final parent = await store
+            .get(EntityQuery(store.identity, {'parentId': parentIdValue}));
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -296,7 +301,8 @@ class CLStore {
     if (entitiesIdsSet.any((e) => e <= 0)) {
       throw Exception('Invalid entity ID provided.');
     }
-    final entities0 = await store.getAll(EntityQuery({'id': entityIds}));
+    final entities0 =
+        await store.getAll(EntityQuery(store.identity, {'id': entityIds}));
 
     if (entities0.length != entityIds.length) {
       throw Exception('One or more entities do not exist.');
@@ -320,8 +326,8 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
-        final parent =
-            await store.get(EntityQuery({'parentId': parentIdValue}));
+        final parent = await store
+            .get(EntityQuery(store.identity, {'parentId': parentIdValue}));
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -363,7 +369,8 @@ class CLStore {
   }
 
   Future<void> delete(int entityId) async {
-    final entity = await store.get(EntityQuery({'id': entityId}));
+    final entity =
+        await store.get(EntityQuery(store.identity, {'id': entityId}));
 
     if (entity == null) {
       throw Exception('entities do not exist.');

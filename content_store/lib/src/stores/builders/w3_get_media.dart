@@ -27,17 +27,19 @@ class GetMedia extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    required this.serverIdentity,
     required this.id,
     super.key,
   });
   final Widget Function(StoreEntity? media) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String serverIdentity;
   final int id;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final q = EntityQuery({'id': id, 'isCollection': 1});
+    final q = EntityQuery(serverIdentity, {'id': id, 'isCollection': 1});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -55,19 +57,22 @@ class GetMediaByCollectionId extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    this.parentId,
+    required this.serverIdentity,
+    required this.parentId,
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final int? parentId;
+  final String serverIdentity;
+  final int parentId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final query = (parentId == null)
-        ? const EntityQuery({'isCollection': false})
-        : EntityQuery({'isCollection': false, 'parentId': parentId});
+    final query = EntityQuery(
+      serverIdentity,
+      {'isCollection': false, 'parentId': parentId},
+    );
 
     return GetFromStore(
       query: query,
@@ -84,11 +89,13 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.ids,
+    required this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String serverIdentity;
   final List<int> ids;
 
   @override
@@ -96,7 +103,7 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     if (ids.isEmpty) {
       return builder([]);
     }
-    final q = EntityQuery({'id': ids, 'isCollection': 0});
+    final q = EntityQuery(serverIdentity, {'id': ids, 'isCollection': 0});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -111,15 +118,17 @@ class GetPinnedMedia extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery({'pin': NotNullValues});
+    final q = EntityQuery(serverIdentity, const {'pin': NotNullValues});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -134,15 +143,17 @@ class GetStaleMedia extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery({'isHidden': 1});
+    final q = EntityQuery(serverIdentity, const {'isHidden': 1});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -157,15 +168,17 @@ class GetDeletedMedia extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery({'isDeleted': 1});
+    final q = EntityQuery(serverIdentity, const {'isDeleted': 1});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,

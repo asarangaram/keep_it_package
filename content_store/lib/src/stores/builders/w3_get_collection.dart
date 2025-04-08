@@ -9,12 +9,14 @@ class GetCollection extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    required this.serverIdentity,
     this.id,
     super.key,
   });
   final Widget Function(StoreEntity? collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String serverIdentity;
   final int? id;
 
   @override
@@ -22,7 +24,7 @@ class GetCollection extends ConsumerWidget {
     if (id == null) {
       return builder(null);
     }
-    final q = EntityQuery({'id': id, 'isCollection': 1});
+    final q = EntityQuery(serverIdentity, {'id': id, 'isCollection': 1});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -41,11 +43,13 @@ class GetCollectionsByIdList extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.ids,
+    required this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String serverIdentity;
   final List<int> ids;
 
   @override
@@ -53,7 +57,7 @@ class GetCollectionsByIdList extends ConsumerWidget {
     if (ids.isEmpty) {
       return builder([]);
     }
-    final q = EntityQuery({'id': ids, 'isCollection': 1});
+    final q = EntityQuery(serverIdentity, {'id': ids, 'isCollection': 1});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -63,20 +67,22 @@ class GetCollectionsByIdList extends ConsumerWidget {
   }
 }
 
-class GetAllCollection extends ConsumerWidget {
-  const GetAllCollection({
+class GetAllCollections extends ConsumerWidget {
+  const GetAllCollections({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery({'isCollection': 1});
+    final q = EntityQuery(serverIdentity, const {'isCollection': 1});
 
     return GetFromStore(
       query: q,
@@ -87,20 +93,25 @@ class GetAllCollection extends ConsumerWidget {
   }
 }
 
-class GetRootCollection extends ConsumerWidget {
-  const GetRootCollection({
+class GetRootCollections extends ConsumerWidget {
+  const GetRootCollections({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery({'isCollection': 1, 'parentId': null});
+    final q = EntityQuery(
+      serverIdentity,
+      const {'isCollection': 1, 'parentId': null},
+    );
 
     return GetFromStore(
       query: q,
@@ -116,16 +127,19 @@ class GetAllVisibleCollection extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    this.serverIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const q = EntityQuery(
-      {'isCollection': 1, 'isDeleted': false, 'isHidden': false},
+    final q = EntityQuery(
+      serverIdentity,
+      const {'isCollection': 1, 'isDeleted': false, 'isHidden': false},
     );
 
     return GetFromStore(

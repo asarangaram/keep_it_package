@@ -18,6 +18,7 @@ class KeepItBottomBar extends ConsumerWidget {
     final id = ref.watch(activeCollectionProvider);
 
     return GetCollection(
+      serverIdentity: 'NONE', // FIXME
       id: id,
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.hide(
@@ -34,15 +35,6 @@ class KeepItBottomBar extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: ServerSpeedDial(),
-                  ),
-                ),
-              ),
               Expanded(
                 child: Center(
                   child: ShadButton.secondary(

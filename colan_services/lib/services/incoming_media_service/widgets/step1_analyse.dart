@@ -14,38 +14,28 @@ class AnalysePage extends StatelessWidget {
   });
   final CLMediaFileGroup incomingMedia;
   final void Function({
-    required List<CLEntity> existingItems,
-    required List<CLEntity> newItems,
+    required List<StoreEntity> existingItems,
+    required List<StoreEntity> newItems,
   }) onDone;
   final void Function() onCancel;
 
   @override
   Widget build(BuildContext context) {
-    return GetStoreUpdater(
-      errorBuilder: (_, __) {
-        throw UnimplementedError('errorBuilder');
-      },
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetStoreUpdater',
-      ),
-      builder: (theStore) {
-        return Padding(
-          padding: const EdgeInsets.all(8),
-          child: WizardLayout(
-            title: 'Analysing Shared Media',
-            onCancel: onCancel,
-            child: StreamProgressView(
-              stream: () => throw Exception('Unimplemented')
-              /* theStore.mediaUpdater.analyseMultiple(
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: WizardLayout(
+        title: 'Analysing Shared Media',
+        onCancel: onCancel,
+        child: StreamProgressView(
+          stream: () => throw Exception('Unimplemented')
+          /* theStore.mediaUpdater.analyseMultiple(
                 mediaFiles: incomingMedia.entries,
                 onDone: onDone,
               ) */
-              ,
-              onCancel: onCancel,
-            ),
-          ),
-        );
-      },
+          ,
+          onCancel: onCancel,
+        ),
+      ),
     );
   }
 }
