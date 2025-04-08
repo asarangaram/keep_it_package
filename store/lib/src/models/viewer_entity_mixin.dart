@@ -7,6 +7,7 @@ abstract class ViewerEntityMixin {
   int? get id;
   bool get isCollection;
   DateTime get sortDate;
+  int? get parentId;
 }
 
 extension EntityFilter on List<ViewerEntityMixin> {

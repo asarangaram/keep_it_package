@@ -4,9 +4,10 @@ import 'package:store/src/models/cl_store.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
+import 'viewer_entity_mixin.dart';
 
 @immutable
-class StoreEntity {
+class StoreEntity implements ViewerEntityMixin {
   const StoreEntity({
     required this.entity,
     required this.store,
@@ -60,5 +61,15 @@ class StoreEntity {
     await store.delete(entity.id!);
   }
 
+  @override
   int get id => entity.id!;
+
+  @override
+  bool get isCollection => entity.isCollection;
+
+  @override
+  DateTime get sortDate => entity.createDate ?? entity.updatedDate;
+
+  @override
+  int? get parentId => entity.parentId;
 }

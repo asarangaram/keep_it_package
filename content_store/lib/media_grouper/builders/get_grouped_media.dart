@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart'
-    show CLEntity, GalleryGroupCLEntity, ViewerEntityMixin;
+    show CLEntity, GalleryGroupCLEntity, StoreEntity, ViewerEntityMixin;
 
 import '../../src/stores/builders/w3_get_collection.dart';
 import '../models/labeled_entity_groups.dart';
@@ -92,7 +92,7 @@ class GetGroupedMedia extends ConsumerWidget {
             return builder(
               result,
               onGetParent: (entity) => switch (entity) {
-                CLEntity _ =>
+                StoreEntity _ =>
                   collections.where((e) => e.id == entity.parentId).first,
                 _ => null
               },
