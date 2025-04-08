@@ -17,17 +17,20 @@ import 'widgets/preview.dart';
 
 class CLCameraService extends ConsumerWidget {
   const CLCameraService({
+    required this.serverIdentity,
     required this.parentId,
     super.key,
   });
 
+  final String serverIdentity;
   final int? parentId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       useSafeArea: false,
-      child: GetStoreUpdater(
+      child: GetStore(
+        storeIdentity: serverIdentity,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },
@@ -36,6 +39,7 @@ class CLCameraService extends ConsumerWidget {
         ),
         builder: (theStore) {
           return GetCollection(
+            serverIdentity: serverIdentity,
             id: parentId,
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');
@@ -90,8 +94,9 @@ class CLCameraService0 extends ConsumerWidget {
   });
   final String parentIdentifier;
   final VoidCallback? onCancel;
-  final Future<void> Function(List<CLEntity> mediaList) onDone;
-  final Future<CLEntity?> Function(String, {required bool isVideo}) onNewMedia;
+  final Future<void> Function(List<StoreEntity> mediaList) onDone;
+  final Future<StoreEntity?> Function(String, {required bool isVideo})
+      onNewMedia;
 
   final void Function(String message, {required dynamic error})? onError;
   static Future<bool> invokeWithSufficientPermission(

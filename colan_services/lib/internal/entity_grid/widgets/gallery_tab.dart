@@ -25,12 +25,12 @@ class CLEntityGalleryTab extends ConsumerStatefulWidget {
 
   final Widget? Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
-    GalleryGroupCLEntity<ViewerEntityMixin> gallery,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+    GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
   ) labelBuilder;
   final List<Widget> Function(
     BuildContext,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>>,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
   ) bannersBuilder;
 
   @override

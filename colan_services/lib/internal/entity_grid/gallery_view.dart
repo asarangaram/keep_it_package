@@ -1,7 +1,8 @@
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart' show GalleryGroupCLEntity, ViewerEntityMixin;
+import 'package:store/store.dart'
+    show GalleryGroupStoreEntity, ViewerEntityMixin;
 
 import 'widgets/gallery_view.dart';
 
@@ -28,12 +29,12 @@ class EntityGridView extends StatelessWidget {
   final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
   final Widget? Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
-    GalleryGroupCLEntity<ViewerEntityMixin> gallery,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+    GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
   ) labelBuilder;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
   final Widget Function(
     BuildContext, {

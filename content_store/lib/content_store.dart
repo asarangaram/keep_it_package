@@ -11,6 +11,7 @@ export 'search_filters/builders/get_filtered_media.dart';
 export 'search_filters/builders/get_filters.dart';
 export 'search_filters/models/filters.dart';
 export 'search_filters/widgets/filters_view.dart';
+export 'src/stores/builders/get_stores.dart';
 export 'src/stores/builders/w3_get_collection.dart';
 export 'src/stores/builders/w3_get_media.dart';
 export 'src/stores/providers/refresh_cache.dart' show reloadProvider;

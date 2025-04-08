@@ -6,8 +6,8 @@ import '../../../internal/entity_grid/gallery_view.dart';
 import '../../context_menu_service/models/context_menu_items.dart';
 import '../../gallery_view_service/widgets/view_modifier_builder.dart';
 
-class CLEntityGalleryView extends StatelessWidget {
-  const CLEntityGalleryView({
+class CLGalleryView extends StatelessWidget {
+  const CLGalleryView({
     required this.viewIdentifier,
     required this.entities,
     required this.loadingBuilder,
@@ -37,7 +37,7 @@ class CLEntityGalleryView extends StatelessWidget {
   final bool viewableAsCollection;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
 
   @override

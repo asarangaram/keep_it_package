@@ -32,8 +32,8 @@ extension EntityGrouper on List<ViewerEntityMixin> {
     return filterredMedia;
   }
 
-  List<GalleryGroupCLEntity<ViewerEntityMixin>> groupByTime(int columns) {
-    final galleryGroups = <GalleryGroupCLEntity<ViewerEntityMixin>>[];
+  List<GalleryGroupStoreEntity<ViewerEntityMixin>> groupByTime(int columns) {
+    final galleryGroups = <GalleryGroupStoreEntity<ViewerEntityMixin>>[];
 
     for (final entry in filterByDate().entries) {
       if (entry.value.length > columns) {
@@ -41,7 +41,7 @@ extension EntityGrouper on List<ViewerEntityMixin> {
 
         for (final (index, group) in groups.indexed) {
           galleryGroups.add(
-            GalleryGroupCLEntity(
+            GalleryGroupStoreEntity(
               group,
               label: (index == 0) ? entry.key : null,
               groupIdentifier: entry.key,
@@ -51,7 +51,7 @@ extension EntityGrouper on List<ViewerEntityMixin> {
         }
       } else {
         galleryGroups.add(
-          GalleryGroupCLEntity(
+          GalleryGroupStoreEntity(
             entry.value,
             label: entry.key,
             groupIdentifier: entry.key,
@@ -63,16 +63,16 @@ extension EntityGrouper on List<ViewerEntityMixin> {
     return galleryGroups;
   }
 
-  List<GalleryGroupCLEntity<ViewerEntityMixin>> group(int columns) {
-    final galleryGroups = <GalleryGroupCLEntity<ViewerEntityMixin>>[];
+  List<GalleryGroupStoreEntity<ViewerEntityMixin>> group(int columns) {
+    final galleryGroups = <GalleryGroupStoreEntity<ViewerEntityMixin>>[];
 
     for (final rows in convertTo2D(columns)) {
       galleryGroups.add(
-        GalleryGroupCLEntity(
+        GalleryGroupStoreEntity(
           rows,
           label: null,
-          groupIdentifier: 'CLEntity',
-          chunkIdentifier: 'CLEntity',
+          groupIdentifier: 'StoreEntity',
+          chunkIdentifier: 'StoreEntity',
         ),
       );
     }

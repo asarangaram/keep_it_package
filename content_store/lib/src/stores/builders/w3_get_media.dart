@@ -52,6 +52,32 @@ class GetMedia extends ConsumerWidget {
   }
 }
 
+class GetAllMedia extends ConsumerWidget {
+  const GetAllMedia({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    this.serverIdentity,
+    super.key,
+  });
+  final Widget Function(List<StoreEntity> collections) builder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
+  final String? serverIdentity;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final q = EntityQuery(serverIdentity, const {'isCollection': 0});
+
+    return GetFromStore(
+      query: q,
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
+      builder: builder,
+    );
+  }
+}
+
 class GetMediaByCollectionId extends ConsumerWidget {
   const GetMediaByCollectionId({
     required this.builder,

@@ -50,7 +50,7 @@ class GroupBy implements ViewModifier {
   @override
   String get name => 'Group By';
 
-  List<GalleryGroupCLEntity<ViewerEntityMixin>> getGrouped(
+  List<GalleryGroupStoreEntity<ViewerEntityMixin>> getGrouped(
     List<ViewerEntityMixin> entities,
   ) {
     return switch (method) {

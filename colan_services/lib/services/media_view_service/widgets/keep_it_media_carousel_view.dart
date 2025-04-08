@@ -14,17 +14,16 @@ class KeepItMediaCorouselView extends ConsumerWidget {
   const KeepItMediaCorouselView({
     required this.parentIdentifier,
     required this.entities,
-    required this.theStore,
     required this.loadingBuilder,
     required this.errorBuilder,
     this.initialMediaIndex = 0,
     super.key,
   });
   final String parentIdentifier;
-  final List<CLEntity> entities;
+  final List<StoreEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-  final EntityStore theStore;
+
   final int initialMediaIndex;
 
   @override
@@ -53,11 +52,11 @@ class KeepItMediaCorouselView extends ConsumerWidget {
                   List<ViewerEntityMixin> filterred, {
                   required List<Widget> Function(
                     BuildContext,
-                    List<GalleryGroupCLEntity<ViewerEntityMixin>>,
+                    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
                   ) bannersBuilder,
                 }) {
                   return MediaViewService1.pageView(
-                    media: filterred.map((e) => e as CLEntity).toList(),
+                    media: filterred.map((e) => e as StoreEntity).toList(),
                     parentIdentifier: viewIdentifier.toString(),
                     initialMediaIndex:
                         filterred.indexWhere((e) => e.id == initialMediaIndex),

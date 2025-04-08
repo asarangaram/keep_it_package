@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/services/basic_page_service/widgets/page_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -20,7 +21,7 @@ class MediaControls extends ConsumerWidget {
     this.onTap,
     this.onPin,
   });
-  final CLEntity media;
+  final StoreEntity media;
 
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;
@@ -72,7 +73,7 @@ class MediaControls extends ConsumerWidget {
         if (showControl.showMenu)
           if ([onEdit, onDelete, onMove, onShare, onPin]
                   .any((e) => e != null) ||
-              (media.mediaType == CLMediaType.video))
+              (media.entity.mediaType == CLMediaType.video))
             Positioned(
               bottom: 0,
               left: 0,
@@ -156,7 +157,7 @@ class ControllerMenu extends StatelessWidget {
     super.key,
   });
 
-  final CLEntity media;
+  final StoreEntity media;
 
   final Future<bool?> Function()? onEdit;
   final Future<bool?> Function()? onDelete;
@@ -176,24 +177,13 @@ class ControllerMenu extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (media.mediaType == CLMediaType.video)
-                GetMediaUri(
-                  errorBuilder: (_, __) {
-                    throw UnimplementedError('errorBuilder');
-                  },
+              if (media.entity.mediaType == CLMediaType.video)
+                VideoDefaultControls(
+                  uri: media.mediaUri!,
+                  errorBuilder: (_, __) => Container(),
                   loadingBuilder: () => CLLoader.widget(
-                    debugMessage: 'GetMediaUri',
+                    debugMessage: 'VideoDefaultControls',
                   ),
-                  id: media.id!,
-                  builder: (uri) {
-                    return VideoDefaultControls(
-                      uri: uri!,
-                      errorBuilder: (_, __) => Container(),
-                      loadingBuilder: () => CLLoader.widget(
-                        debugMessage: 'VideoDefaultControls',
-                      ),
-                    );
-                  },
                 ),
               if ([onEdit, onDelete, onMove, onShare, onPin]
                   .any((e) => e != null))
@@ -231,10 +221,10 @@ class ControllerMenu extends StatelessWidget {
                         Transform.rotate(
                           angle: math.pi / 4,
                           child: CLButtonIcon.small(
-                            media.pin != null
+                            media.entity.pin != null
                                 ? clIcons.pinned
                                 : clIcons.notPinned,
-                            color: media.pin != null
+                            color: media.entity.pin != null
                                 ? Colors.blue
                                 : Theme.of(context).colorScheme.surface,
                             onTap: onPin,

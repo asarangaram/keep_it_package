@@ -15,12 +15,14 @@ import '../../media_view_service/preview/media_preview_service.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
+    required String serverIdentity,
     required int mediaId,
-    required void Function(CLEntity media) onSubmit,
+    required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
+      serverIdentity: serverIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -29,12 +31,14 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   factory MediaMetadataEditor.dialog({
+    required String serverIdentity,
     required int mediaId,
-    required void Function(CLEntity media) onSubmit,
+    required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
+      serverIdentity: serverIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -43,6 +47,7 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   const MediaMetadataEditor._({
+    required this.serverIdentity,
     required this.mediaId,
     required this.isDialog,
     required this.onSubmit,
@@ -50,20 +55,22 @@ class MediaMetadataEditor extends StatelessWidget {
     super.key,
   });
 
+  final String serverIdentity;
   final int mediaId;
 
-  final void Function(CLEntity media) onSubmit;
+  final void Function(StoreEntity media) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
-  static Future<CLEntity?> openSheet(
+  static Future<StoreEntity?> openSheet(
     BuildContext context,
     WidgetRef ref, {
-    required CLEntity media,
+    required StoreEntity media,
   }) async {
-    return showShadSheet<CLEntity>(
+    return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => MediaMetadataEditor.dialog(
+        serverIdentity: media.store.store.identity,
         mediaId: media.id!,
         onSubmit: (media) {
           PageManager.of(context).pop(media);
@@ -94,6 +101,7 @@ class MediaMetadataEditor extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetMedia(
+        serverIdentity: serverIdentity,
         id: mediaId,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading(context, 'GetCollection'),
@@ -106,6 +114,7 @@ class MediaMetadataEditor extends StatelessWidget {
             }
           }
           return GetCollection(
+            serverIdentity: serverIdentity,
             id: media.parentId,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading(context, 'GetCollection'),
@@ -131,9 +140,9 @@ class StatefulMediaEditor extends StatefulWidget {
     super.key,
   });
 
-  final CLEntity media;
+  final StoreEntity media;
 
-  final void Function(CLEntity media) onSubmit;
+  final void Function(StoreEntity media) onSubmit;
   final void Function() onCancel;
 
   @override
@@ -150,8 +159,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
   void initState() {
     nameController = TextEditingController();
     refController = TextEditingController();
-    nameController.text = widget.media.label ?? '';
-    refController.text = widget.media.description ?? '';
+    nameController.text = widget.media.entity.label ?? '';
+    refController.text = widget.media.entity.description ?? '';
     super.initState();
   }
 
@@ -177,7 +186,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
       child: ShadSheet(
         draggable: true,
         title: Text(
-          'Edit Media "${widget.media.label?.capitalizeFirstLetter() ?? widget.media.id}"',
+          'Edit Media "${widget.media.entity.label?.capitalizeFirstLetter() ?? widget.media.id}"',
         ),
         description: const Text(
           'Change the label and add/update description here',
@@ -190,13 +199,16 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                 formValue = formKey.currentState!.value;
                 final name = formValue['name'] as String;
                 final ref = formValue['ref'] as String?;
-                final updated = widget.media.updateContent(
-                  label: () => name,
-                  description: () => ref == null
-                      ? null
-                      : ref.isEmpty
-                          ? null
-                          : ref,
+                final updated = StoreEntity(
+                  entity: widget.media.entity.updateContent(
+                    label: () => name,
+                    description: () => ref == null
+                        ? null
+                        : ref.isEmpty
+                            ? null
+                            : ref,
+                  ),
+                  store: widget.media.store,
                 );
                 widget.onSubmit(updated);
               }
@@ -226,7 +238,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                       placeholder: const Text('Enter media name'),
                       validator: (value) => validateName(
                         newLabel: value,
-                        existingLabel: widget.media.label,
+                        existingLabel: widget.media.entity.label,
                       ),
                       showCursor: true,
                       inputFormatters: [
@@ -251,7 +263,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                         child: const Icon(LucideIcons.delete),
                       ),
                     ),
-                    if (kDebugMode) MapInfo(widget.media.toMapForDisplay()),
+                    if (kDebugMode)
+                      MapInfo(widget.media.entity.toMapForDisplay()),
                     if (formValue.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 24, left: 12),

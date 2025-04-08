@@ -38,15 +38,15 @@ extension Filter on List<CLEntity> {
     return filterredMedia;
   }
 
-  List<GalleryGroupCLEntity<CLEntity>> groupByDate() {
-    final galleryGroups = <GalleryGroupCLEntity<CLEntity>>[];
+  List<GalleryGroupStoreEntity<CLEntity>> groupByDate() {
+    final galleryGroups = <GalleryGroupStoreEntity<CLEntity>>[];
     for (final entry in filterByDate().entries) {
       if (entry.value.length > 20) {
         final groups = entry.value.convertTo2D(20);
 
         for (final (index, group) in groups.indexed) {
           galleryGroups.add(
-            GalleryGroupCLEntity(
+            GalleryGroupStoreEntity(
               group,
               label: (index == 0) ? entry.key : null,
               groupIdentifier: entry.key,
@@ -56,7 +56,7 @@ extension Filter on List<CLEntity> {
         }
       } else {
         galleryGroups.add(
-          GalleryGroupCLEntity(
+          GalleryGroupStoreEntity(
             entry.value,
             label: entry.key,
             groupIdentifier: entry.key,

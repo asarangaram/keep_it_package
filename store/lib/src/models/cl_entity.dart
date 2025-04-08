@@ -147,6 +147,7 @@ class CLEntity implements ViewerEntityMixin {
 
   final String? label;
   final String? description;
+  @override
   final int? parentId;
 
   final String? md5;
@@ -448,4 +449,46 @@ class CLEntity implements ViewerEntityMixin {
   String get isDeletedText => isDeleted ? 'Deleted' : 'Not Deleted';
   String get isHiddenText => isHidden ? 'Hidden' : 'Not Hidden';
   String get isCollectionText => isCollection ? 'Collection' : 'Not Collection'; */
+
+  bool isSame(covariant CLEntity other) {
+    if (identical(this, other)) return true;
+
+    return other.id == id &&
+        other.isCollection == isCollection &&
+        other.isDeleted == isDeleted &&
+        other.label == label &&
+        other.description == description &&
+        other.parentId == parentId &&
+        other.md5 == md5 &&
+        other.fileSize == fileSize &&
+        other.mimeType == mimeType &&
+        other.type == type &&
+        other.extension == extension &&
+        other.createDate == createDate &&
+        other.height == height &&
+        other.width == width &&
+        other.duration == duration &&
+        other.isHidden == isHidden &&
+        other.pin == pin;
+  }
+
+  bool isContentSame(covariant CLEntity other) {
+    if (identical(this, other)) return true;
+
+    return other.id == id &&
+        other.isCollection == isCollection &&
+        other.isDeleted == isDeleted &&
+        other.label == label &&
+        other.description == description &&
+        other.parentId == parentId &&
+        other.md5 == md5 &&
+        other.fileSize == fileSize &&
+        other.mimeType == mimeType &&
+        other.type == type &&
+        other.extension == extension &&
+        other.createDate == createDate &&
+        other.height == height &&
+        other.width == width &&
+        other.duration == duration;
+  }
 }

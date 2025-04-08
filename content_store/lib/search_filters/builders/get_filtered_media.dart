@@ -19,14 +19,14 @@ class GetFilterredMedia extends ConsumerWidget {
     List<ViewerEntityMixin> filterred, {
     required List<Widget> Function(
       BuildContext,
-      List<GalleryGroupCLEntity<ViewerEntityMixin>>,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
     ) bannersBuilder,
   }) builder;
 
   final List<ViewerEntityMixin> incoming;
   final List<Widget> Function(
     BuildContext,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>>,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
   ) bannersBuilder;
   final bool disabled;
   final ViewIdentifier viewIdentifier;

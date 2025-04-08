@@ -88,9 +88,8 @@ class CLContextMenu {
   factory CLContextMenu.ofCollection(
     BuildContext context,
     WidgetRef ref, {
-    required CLEntity collection,
+    required StoreEntity collection,
     required bool hasOnlineService,
-    required EntityStore theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
@@ -109,8 +108,26 @@ class CLContextMenu {
               collection: collection,
             );
             if (updated != null && context.mounted) {
-              await theStore.updateCollection(
-                updated.id!,
+              await collection.updateWith(
+                label: (updated.entity.label == collection.entity.label)
+                    ? null
+                    : () => updated.entity.label,
+                description: (updated.entity.description ==
+                        collection.entity.description)
+                    ? null
+                    : () => updated.entity.description,
+                parentId:
+                    (updated.entity.parentId == collection.entity.parentId)
+                        ? null
+                        : () => updated.entity.parentId,
+                isDeleted:
+                    (updated.entity.isDeleted == collection.entity.isDeleted)
+                        ? null
+                        : () => updated.entity.isDeleted,
+                isHidden:
+                    (updated.entity.isHidden == collection.entity.isHidden)
+                        ? null
+                        : () => updated.entity.isHidden,
               );
             }
 
@@ -128,12 +145,12 @@ class CLContextMenu {
         : () async {
             final confirmed = await DialogService.deleteEntity(
                   context,
-                  entity: collection,
+                  entity: collection.entity,
                 ) ??
                 false;
             if (!confirmed) return confirmed;
             if (context.mounted) {
-              await theStore.delete(collection.id!);
+              await collection.delete();
               return true;
             }
             return false;
@@ -145,7 +162,7 @@ class CLContextMenu {
       onGetChildren: onGetChildren,
     );
     return CLContextMenu.template(
-      name: collection.label!,
+      name: collection.entity.label!,
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
@@ -153,15 +170,15 @@ class CLContextMenu {
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
       onDelete: ac.onDelete(onDelete0),
-      infoMap: collection.toMapForDisplay(),
+      infoMap: collection.entity.toMapForDisplay(),
       isPinned: false,
     );
   }
   factory CLContextMenu.ofMedia(
     BuildContext context,
     WidgetRef ref, {
-    required CLEntity media,
-    required CLEntity parentCollection,
+    required StoreEntity media,
+    required StoreEntity parentCollection,
     required bool hasOnlineService,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
@@ -251,7 +268,7 @@ class CLContextMenu {
   factory CLContextMenu.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
-    required List<CLEntity> items,
+    required List<StoreEntity> items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
     ValueGetter<Future<bool?> Function()?>? onEdit,
@@ -373,15 +390,17 @@ class CLContextMenu {
   ) {
     // FIXME
     return switch (entities) {
-      final List<ViewerEntityMixin> e when e.every((e) => e is CLEntity) => () {
+      final List<ViewerEntityMixin> e when e.every((e) => e is StoreEntity) =>
+        () {
           return CLContextMenu.ofMultipleMedia(
             context,
             ref,
-            items: e.map((e) => e as CLEntity).toList(),
+            items: e.map((e) => e as StoreEntity).toList(),
             hasOnlineService: true,
           );
         }(),
-      final List<ViewerEntityMixin> e when e.every((e) => e is CLEntity) => () {
+      final List<ViewerEntityMixin> e when e.every((e) => e is StoreEntity) =>
+        () {
           return CLContextMenu.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')
@@ -390,7 +409,7 @@ class CLContextMenu {
 
   static Future<bool?> share(
     BuildContext context,
-    List<CLEntity> media,
+    List<StoreEntity> media,
   ) {
     throw UnimplementedError();
     /* final files = media.where((e)=>e.isCollection ==false)

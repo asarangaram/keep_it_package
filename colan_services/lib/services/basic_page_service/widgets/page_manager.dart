@@ -104,18 +104,18 @@ class PageManager {
     return null;
   }
 
-  Future<CLEntity?> openEditor(
-    CLEntity media, {
+  Future<StoreEntity?> openEditor(
+    StoreEntity media, {
     bool canDuplicateMedia = true,
   }) async {
-    if (media.pin != null) {
+    if (media.entity.pin != null) {
       return media;
     } else {
       final edittedMedia = await navigator.pushNamed(
         context,
         '/mediaEditor?id=${media.id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
       );
-      if (edittedMedia is CLEntity?) {
+      if (edittedMedia is StoreEntity?) {
         return edittedMedia ?? media;
       } else {
         throw Exception(UnsupportedError);
@@ -123,7 +123,7 @@ class PageManager {
     }
   }
 
-  Future<CLEntity?> openCollection(
+  Future<StoreEntity?> openCollection(
     int parentId,
   ) async {
     await navigator.pushNamed(
@@ -133,7 +133,7 @@ class PageManager {
     return null;
   }
 
-  Future<CLEntity?> openMedia(
+  Future<StoreEntity?> openMedia(
     int mediaId, {
     required String parentIdentifier,
     int? parentId,

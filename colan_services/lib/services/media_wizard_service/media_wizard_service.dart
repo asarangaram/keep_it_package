@@ -3,6 +3,7 @@ import 'package:colan_services/services/media_wizard_service/widgets/select_and_
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:store/store.dart';
 
 import '../../internal/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
@@ -62,7 +63,7 @@ class MediaWizardService extends ConsumerWidget {
       return const FullscreenLayout(child: SizedBox.expand());
     }
 
-    final galleryMap = media.entries.groupByDate();
+    final galleryMap = media.entries.cast<ViewerEntityMixin>().groupByTime(3);
     return FullscreenLayout(
       child: SelectAndKeepMedia(
         viewIdentifier: ViewIdentifier(

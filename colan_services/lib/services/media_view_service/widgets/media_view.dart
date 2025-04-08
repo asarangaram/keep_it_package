@@ -13,7 +13,7 @@ import 'media_controls.dart';
 
 class MediaView extends StatelessWidget {
   factory MediaView({
-    required CLEntity media,
+    required StoreEntity media,
     required String parentIdentifier,
     required bool autoStart,
     required bool autoPlay,
@@ -37,7 +37,7 @@ class MediaView extends StatelessWidget {
     );
   }
   factory MediaView.preview(
-    CLEntity media, {
+    StoreEntity media, {
     required String parentIdentifier,
   }) {
     return MediaView._(
@@ -61,7 +61,7 @@ class MediaView extends StatelessWidget {
     this.errorBuilder,
     this.loadingBuilder,
   });
-  final CLEntity media;
+  final StoreEntity media;
 
   final String parentIdentifier;
 
@@ -113,7 +113,7 @@ class MediaView0 extends ConsumerWidget {
     this.onLockPage,
     super.key,
   });
-  final CLEntity media;
+  final StoreEntity media;
 
   final String parentIdentifier;
 
@@ -126,74 +126,54 @@ class MediaView0 extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    return GetMediaUri(
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      id: media.id!,
-      builder: (mediaUri) {
-        /* log(
-              'id: ${media.id!} ${media.md5String} ',
-              name: 'MediaView0 | build',
-            ); */
-        return GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
-          child: Stack(
-            children: [
-              const MediaBackground(),
-              Positioned.fill(
-                child: Hero(
-                  tag: '$parentIdentifier /item/${media.id}',
-                  child: SafeArea(
-                    top: showControl.showNotes,
-                    bottom: showControl.showNotes,
-                    left: showControl.showNotes,
-                    right: showControl.showNotes,
-                    child: switch (media.mediaType) {
-                      CLMediaType.image => ImageViewer.guesture(
-                          uri: mediaUri!,
-                          onLockPage: onLockPage,
-                          isLocked: isLocked,
-                        ),
-                      CLMediaType.video => VideoPlayer(
-                          uri: mediaUri!,
-                          autoStart: autoStart,
-                          autoPlay: autoPlay,
-                          onLockPage: onLockPage,
-                          isLocked: isLocked,
-                          placeHolder: GetPreviewUri(
-                            errorBuilder: BrokenImage.show,
-                            loadingBuilder: () => CLLoader.widget(
-                              debugMessage: 'GetPreviewUri',
-                            ),
-                            id: media.id!,
-                            builder: (previewUri) {
-                              return ImageViewer.basic(
-                                uri: previewUri,
-                              );
-                            },
-                          ),
-                          errorBuilder: BrokenImage.show,
-                          loadingBuilder: () => CLLoader.widget(
-                            debugMessage: 'VideoPlayer',
-                          ),
-                        ),
-                      CLMediaType.text => const BrokenImage(),
-                      CLMediaType.audio => const BrokenImage(),
-                      CLMediaType.file => const BrokenImage(),
-                      CLMediaType.uri => const BrokenImage(),
-                      CLMediaType.unknown => const BrokenImage(),
-                    },
-                  ),
-                ),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
+      child: Stack(
+        children: [
+          const MediaBackground(),
+          Positioned.fill(
+            child: Hero(
+              tag: '$parentIdentifier /item/${media.id}',
+              child: SafeArea(
+                top: showControl.showNotes,
+                bottom: showControl.showNotes,
+                left: showControl.showNotes,
+                right: showControl.showNotes,
+                child: switch (media.entity.mediaType) {
+                  CLMediaType.image => ImageViewer.guesture(
+                      uri: media.mediaUri!,
+                      onLockPage: onLockPage,
+                      isLocked: isLocked,
+                    ),
+                  CLMediaType.video => VideoPlayer(
+                      uri: media.mediaUri!,
+                      autoStart: autoStart,
+                      autoPlay: autoPlay,
+                      onLockPage: onLockPage,
+                      isLocked: isLocked,
+                      placeHolder: ImageViewer.basic(
+                        uri: media.previewUri!, // FIXME
+                      ),
+                      errorBuilder: BrokenImage.show,
+                      loadingBuilder: () => CLLoader.widget(
+                        debugMessage: 'VideoPlayer',
+                      ),
+                    ),
+                  CLMediaType.text => const BrokenImage(),
+                  CLMediaType.audio => const BrokenImage(),
+                  CLMediaType.file => const BrokenImage(),
+                  CLMediaType.uri => const BrokenImage(),
+                  CLMediaType.unknown => const BrokenImage(),
+                },
               ),
-              MediaControls(
-                media: media,
-              ),
-            ],
+            ),
           ),
-        );
-      },
+          MediaControls(
+            media: media,
+          ),
+        ],
+      ),
     );
   }
 }

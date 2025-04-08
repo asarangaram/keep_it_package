@@ -81,8 +81,8 @@ extension ExtListGalleryGroupMutableBool<bool>
 }
 
 @immutable
-class GalleryGroupCLEntity<T extends ViewerEntityMixin> {
-  const GalleryGroupCLEntity(
+class GalleryGroupStoreEntity<T extends ViewerEntityMixin> {
+  const GalleryGroupStoreEntity(
     this.items, {
     required this.chunkIdentifier,
     required this.groupIdentifier,
@@ -96,8 +96,8 @@ class GalleryGroupCLEntity<T extends ViewerEntityMixin> {
   Set<int?> get getEntityIds => items.map((e) => e.id).toSet();
 }
 
-extension GalleryGroupCLEntityListQuery<T extends ViewerEntityMixin>
-    on List<GalleryGroupCLEntity<T>> {
+extension GalleryGroupStoreEntityListQuery<T extends ViewerEntityMixin>
+    on List<GalleryGroupStoreEntity<T>> {
   Set<int?> get getEntityIds => expand((item) => item.getEntityIds).toSet();
   Set<T> get getEntities => expand((item) => item.items).toSet();
 

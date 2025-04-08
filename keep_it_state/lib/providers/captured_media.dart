@@ -3,10 +3,10 @@ import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class CapturedMediaNotifier extends StateNotifier<List<CLEntity>> {
+class CapturedMediaNotifier extends StateNotifier<List<StoreEntity>> {
   CapturedMediaNotifier() : super([]);
 
-  void add(CLEntity media) {
+  void add(StoreEntity media) {
     log('adding media with id ${media.id}');
     state = [...state, media];
   }
@@ -35,6 +35,6 @@ class CapturedMediaNotifier extends StateNotifier<List<CLEntity>> {
 }
 
 final capturedMediaProvider =
-    StateNotifierProvider<CapturedMediaNotifier, List<CLEntity>>((ref) {
+    StateNotifierProvider<CapturedMediaNotifier, List<StoreEntity>>((ref) {
   return CapturedMediaNotifier();
 });

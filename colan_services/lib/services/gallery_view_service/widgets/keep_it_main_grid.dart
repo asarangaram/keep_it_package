@@ -24,7 +24,7 @@ class KeepItMainGrid extends ConsumerWidget {
     super.key,
   });
   final String parentIdentifier;
-  final List<CLEntity> entities;
+  final List<StoreEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final EntityStore theStore;

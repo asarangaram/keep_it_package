@@ -33,7 +33,7 @@ class ViewModifierBuilder extends StatelessWidget {
   final bool filtersDisabled;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
   final Widget Function({
     required ViewIdentifier viewIdentifier,
@@ -44,12 +44,12 @@ class ViewModifierBuilder extends StatelessWidget {
     ) itemBuilder,
     required Widget? Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
-      GalleryGroupCLEntity<ViewerEntityMixin> gallery,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+      GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
     ) labelBuilder,
     required List<Widget> Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
     ) bannersBuilder,
     required Widget Function(
       BuildContext, {
@@ -93,7 +93,7 @@ class ViewModifierBuilder extends StatelessWidget {
                 List<ViewerEntityMixin> filterred, {
                 required List<Widget> Function(
                   BuildContext,
-                  List<GalleryGroupCLEntity<ViewerEntityMixin>>,
+                  List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
                 ) bannersBuilder,
               }) {
                 return builder(

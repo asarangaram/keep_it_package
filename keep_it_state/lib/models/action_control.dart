@@ -146,7 +146,7 @@ class ActionControl {
   }
 
   static ActionControl onGetCollectionActionControl(
-    CLEntity collection,
+    StoreEntity collection,
     bool hasOnlineService, {
     List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
   }) {

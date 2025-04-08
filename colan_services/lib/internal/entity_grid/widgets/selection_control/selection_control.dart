@@ -35,12 +35,12 @@ class SelectionControl extends ConsumerWidget {
   ) itemBuilder;
   final Widget? Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
-    GalleryGroupCLEntity<ViewerEntityMixin> gallery,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+    GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
   ) labelBuilder;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
   final Widget Function({
     required List<ViewerEntityMixin> items,
@@ -50,12 +50,12 @@ class SelectionControl extends ConsumerWidget {
     ) itemBuilder,
     required Widget? Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
-      GalleryGroupCLEntity<ViewerEntityMixin> gallery,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+      GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
     ) labelBuilder,
     required List<Widget> Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
     ) bannersBuilder,
     Widget Function(
       BuildContext, {
@@ -129,8 +129,8 @@ class SelectionContol0 extends StatelessWidget {
   ) itemBuilder;
   final Widget? Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
-    GalleryGroupCLEntity<ViewerEntityMixin> gallery,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+    GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
   ) labelBuilder;
   final Widget Function({
     required List<ViewerEntityMixin> items,
@@ -140,12 +140,12 @@ class SelectionContol0 extends StatelessWidget {
     ) itemBuilder,
     required Widget? Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
-      GalleryGroupCLEntity<ViewerEntityMixin> gallery,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+      GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
     ) labelBuilder,
     required List<Widget> Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<ViewerEntityMixin>> galleryMap,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
     ) bannersBuilder,
     DraggableMenuBuilderType? draggableMenuBuilder,
   }) builder;
@@ -226,7 +226,7 @@ class SelectionBanner extends StatelessWidget {
     this.galleryMap = const [],
   });
   final CLSelector selector;
-  final List<GalleryGroupCLEntity> galleryMap;
+  final List<GalleryGroupStoreEntity> galleryMap;
   final void Function(List<ViewerEntityMixin>? candidates, {bool? deselect})
       onUpdateSelection;
   final VoidCallback? onClose;

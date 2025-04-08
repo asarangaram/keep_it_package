@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart'
-    show CLEntity, GalleryGroupCLEntity, StoreEntity, ViewerEntityMixin;
+    show GalleryGroupStoreEntity, StoreEntity, ViewerEntityMixin;
 
 import '../../src/stores/builders/w3_get_collection.dart';
 import '../models/labeled_entity_groups.dart';
@@ -32,11 +32,11 @@ class GetGroupedMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     incoming.sort(
-      (a, b) => ((a as CLEntity).label?.toLowerCase() ?? '')
-          .compareTo((b as CLEntity).label?.toLowerCase() ?? ''),
+      (a, b) => ((a as StoreEntity).entity.label?.toLowerCase() ?? '')
+          .compareTo((b as StoreEntity).entity.label?.toLowerCase() ?? ''),
     );
     final ids = incoming
-        .map((e) => (e as CLEntity).parentId)
+        .map((e) => (e as StoreEntity).parentId)
         .where((e) => e != null)
         .map((e) => e!)
         .toSet()
@@ -94,7 +94,7 @@ class GetGroupedMedia extends ConsumerWidget {
 }
 
 final groupedMediaProvider = StateProvider.family<
-    List<GalleryGroupCLEntity<ViewerEntityMixin>>,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
     MapEntry<TabIdentifier, List<ViewerEntityMixin>>>((ref, mapEntry) {
   final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
 

@@ -25,3 +25,27 @@ class GetStores extends ConsumerWidget {
     );
   }
 }
+
+class GetStore extends ConsumerWidget {
+  const GetStore({
+    required this.storeIdentity,
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    super.key,
+  });
+  final String storeIdentity;
+  final Widget Function(Map<String, CLStore>) builder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stores = ref.watch(storesProvider);
+    return stores.when(
+      data: builder,
+      error: errorBuilder,
+      loading: loadingBuilder,
+    );
+  }
+}

@@ -10,7 +10,7 @@ import 'widgets/media_view.dart';
 
 class MediaViewService1 extends StatelessWidget {
   factory MediaViewService1({
-    required CLEntity media,
+    required StoreEntity media,
     required String parentIdentifier,
     required Widget Function(Object, StackTrace) errorBuilder,
     required Widget Function() loadingBuilder,
@@ -29,7 +29,7 @@ class MediaViewService1 extends StatelessWidget {
 
   factory MediaViewService1.pageView({
     required int initialMediaIndex,
-    required List<CLEntity> media,
+    required List<StoreEntity> media,
     required String parentIdentifier,
     required Widget Function(Object, StackTrace) errorBuilder,
     required Widget Function() loadingBuilder,
@@ -55,7 +55,7 @@ class MediaViewService1 extends StatelessWidget {
     this.loadingBuilder,
   });
 
-  final List<CLEntity> media;
+  final List<StoreEntity> media;
   final int initialMediaIndex;
   final String parentIdentifier;
   final bool isPreview;
@@ -108,7 +108,7 @@ class MediaViewService0 extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final List<CLEntity> media;
+  final List<StoreEntity> media;
   final int initialMediaIndex;
   final String parentIdentifier;
   final Widget Function(Object, StackTrace) errorBuilder;

@@ -43,7 +43,7 @@ class EntityPreview extends ConsumerWidget {
           builder: (children) {
             if (parent == null && (item as StoreEntity).isCollection == false) {
               throw Exception(
-                'Failed to get collection of media ${(item as CLEntity).id}',
+                'Failed to get collection of media ${(item as StoreEntity).id}',
               );
             }
 
@@ -66,15 +66,14 @@ class EntityPreview extends ConsumerWidget {
                           contextMenu: CLContextMenu.ofCollection(
                             context,
                             ref,
-                            collection: entity.entity,
+                            collection: entity,
                             hasOnlineService: false,
                             theStore: theStore,
                           ),
                           child: CollectionView.preview(
-                            entity.entity,
+                            entity,
                             viewIdentifier: viewIdentifier,
-                            containingMedia:
-                                children.map((e) => e as CLEntity).toList(),
+                            containingMedia: children.map((e) => e).toList(),
                           ),
                         ),
                       ),
@@ -94,7 +93,7 @@ class EntityPreview extends ConsumerWidget {
                             contextMenu: CLContextMenu.ofCollection(
                               context,
                               ref,
-                              collection: entity.entity,
+                              collection: entity,
                               hasOnlineService: false,
                               theStore: theStore,
                             ),
@@ -118,12 +117,12 @@ class EntityPreview extends ConsumerWidget {
                   contextMenu: CLContextMenu.ofMedia(
                     context,
                     ref,
-                    media: entity.entity,
-                    parentCollection: parent! as CLEntity,
+                    media: entity,
+                    parentCollection: parent!,
                     hasOnlineService: false,
                   ),
                   child: MediaPreviewWithOverlays(
-                    media: entity.entity,
+                    media: entity,
                     parentIdentifier: viewIdentifier.toString(),
                   ),
                 ),

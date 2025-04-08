@@ -1,7 +1,6 @@
 import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
-import 'package:store/src/models/store.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
@@ -9,13 +8,26 @@ import 'viewer_entity_mixin.dart';
 
 @immutable
 class StoreEntity implements ViewerEntityMixin {
-  const StoreEntity({
+  factory StoreEntity({
+    required CLEntity entity,
+    required CLStore store,
+    String? path,
+  }) {
+    return StoreEntity._(
+      entity: entity,
+      store: store,
+      path: path,
+    );
+  }
+  const StoreEntity._({
     required this.entity,
     required this.store,
+    this.path,
   });
 
   final CLEntity entity;
   final CLStore store;
+  final String? path;
 
   Future<StoreEntity?> updateWith({
     CLMediaFile? mediaFile,
@@ -26,12 +38,14 @@ class StoreEntity implements ViewerEntityMixin {
     ValueGetter<bool>? isHidden,
     ValueGetter<String>? pin,
     UpdateStrategy? strategy,
+    bool autoSave = false,
   }) async {
     if (entity.id == null) {
       throw Exception("id can't be null");
     }
+    StoreEntity? updated;
     if (entity.isCollection) {
-      return store.updateCollection(
+      updated = await store.updateCollection(
         entity.id!,
         label: label,
         description: description,
@@ -41,7 +55,7 @@ class StoreEntity implements ViewerEntityMixin {
         strategy: strategy ?? UpdateStrategy.mergeAppend,
       );
     } else {
-      return store.updateMedia(
+      updated = await store.updateMedia(
         entity.id!,
         mediaFile: mediaFile,
         label: label,
@@ -53,6 +67,14 @@ class StoreEntity implements ViewerEntityMixin {
         strategy: strategy ?? UpdateStrategy.mergeAppend,
       );
     }
+    if (updated != null && autoSave) {
+      return dbSave(mediaFile?.path);
+    }
+    return updated;
+  }
+
+  Future<StoreEntity?> dbSave([String? path]) {
+    return store.dbSave(this, path: path);
   }
 
   Future<void> delete() async {
@@ -76,7 +98,7 @@ class StoreEntity implements ViewerEntityMixin {
   }
 
   @override
-  int get id => entity.id!;
+  int? get id => entity.id;
 
   @override
   bool get isCollection => entity.isCollection;
@@ -87,5 +109,20 @@ class StoreEntity implements ViewerEntityMixin {
   @override
   int? get parentId => entity.parentId;
 
-  Uri? get uri => throw UnimplementedError();
+  Uri? get mediaUri => throw UnimplementedError();
+  Uri? get previewUri => throw UnimplementedError();
+
+  @override
+  String toString() =>
+      'StoreEntity(entity: $entity, store: $store, path: $path)';
+
+  @override
+  bool operator ==(covariant StoreEntity other) {
+    if (identical(this, other)) return true;
+
+    return other.entity == entity && other.store == store && other.path == path;
+  }
+
+  @override
+  int get hashCode => entity.hashCode ^ store.hashCode ^ path.hashCode;
 }

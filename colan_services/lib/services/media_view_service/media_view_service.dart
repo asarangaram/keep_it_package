@@ -1,5 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
 import '../../internal/fullscreen_layout.dart';
@@ -14,8 +13,10 @@ class MediaViewService extends StatelessWidget {
     required this.id,
     required this.parentId,
     required this.parentIdentifier,
+    required this.serverIdentity,
     super.key,
   });
+  final String serverIdentity;
   final int? parentId;
   final int id;
   final String parentIdentifier;
@@ -28,41 +29,33 @@ class MediaViewService extends StatelessWidget {
 
     return AppTheme(
       child: FullscreenLayout(
-        child: GetStoreUpdater(
-          errorBuilder: errorBuilder,
+        child: GetAvailableMediaByActiveCollectionId(
+          serverIdentity: serverIdentity,
           loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GetStore',
+            debugMessage: 'GetAvailableMediaByCollectionId',
           ),
-          builder: (theStore) {
-            return GetAvailableMediaByActiveCollectionId(
-              loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'GetAvailableMediaByCollectionId',
-              ),
-              errorBuilder: errorBuilder,
-              builder: (entities) => AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                switchInCurve: Curves.easeInOut,
-                switchOutCurve: Curves.easeInOut,
-                transitionBuilder: (
-                  Widget child,
-                  Animation<double> animation,
-                ) =>
-                    FadeTransition(opacity: animation, child: child),
-                child: entities.isEmpty
-                    ? const WhenEmpty()
-                    : KeepItMediaCorouselView(
-                        parentIdentifier: parentIdentifier,
-                        entities: entities,
-                        initialMediaIndex: id,
-                        theStore: theStore,
-                        loadingBuilder: () => CLLoader.widget(
-                          debugMessage: 'KeepItMainGrid',
-                        ),
-                        errorBuilder: errorBuilder,
-                      ),
-              ),
-            );
-          },
+          errorBuilder: errorBuilder,
+          builder: (entities) => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeInOut,
+            switchOutCurve: Curves.easeInOut,
+            transitionBuilder: (
+              Widget child,
+              Animation<double> animation,
+            ) =>
+                FadeTransition(opacity: animation, child: child),
+            child: entities.isEmpty
+                ? const WhenEmpty()
+                : KeepItMediaCorouselView(
+                    parentIdentifier: parentIdentifier,
+                    entities: entities,
+                    initialMediaIndex: id,
+                    loadingBuilder: () => CLLoader.widget(
+                      debugMessage: 'KeepItMainGrid',
+                    ),
+                    errorBuilder: errorBuilder,
+                  ),
+          ),
         ),
       ),
     );

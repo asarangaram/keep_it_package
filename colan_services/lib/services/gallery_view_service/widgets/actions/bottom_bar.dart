@@ -15,11 +15,11 @@ class KeepItBottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final id = ref.watch(activeCollectionProvider);
+    final parent = ref.watch(activeCollectionProvider);
 
     return GetCollection(
       serverIdentity: 'NONE', // FIXME
-      id: id,
+      id: parent?.id,
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetCollection',

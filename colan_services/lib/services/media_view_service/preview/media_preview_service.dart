@@ -103,11 +103,11 @@ class MediaThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (media.uri == null) {
+    if (media.mediaUri == null) {
       return const BrokenImage();
     }
     return ImageViewer.basic(
-      uri: media.uri!,
+      uri: media.mediaUri!,
       fit: BoxFit.cover,
       overlays: overlays,
     );

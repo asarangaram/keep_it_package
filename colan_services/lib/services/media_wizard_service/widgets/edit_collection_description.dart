@@ -11,8 +11,8 @@ class EditCollectionDescription extends StatelessWidget {
     required this.onDone,
     super.key,
   });
-  final CLEntity collection;
-  final void Function(CLEntity collection) onDone;
+  final StoreEntity collection;
+  final void Function(StoreEntity collection) onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -24,17 +24,19 @@ class EditCollectionDescription extends StatelessWidget {
       ),
       descriptor: CLFormTextFieldDescriptor(
         title: 'Description',
-        label: 'About "${collection.label}"',
-        initialValue: collection.label!,
+        label: 'About "${collection.entity.label}"',
+        initialValue: collection.entity.label!,
         hint: 'What is the best thing,'
-            ' you can say about "${collection.label}"?',
+            ' you can say about "${collection.entity.label}"?',
         onValidate: (val) => null,
         maxLines: 4,
       ),
       onSubmit: (CLFormFieldResult result) async {
         final description = (result as CLFormTextFieldResult).value;
 
-        onDone(collection.copyWith(description: () => description));
+        onDone(StoreEntity(
+            entity: collection.entity.copyWith(description: () => description),
+            store: collection.store));
       },
     );
   }

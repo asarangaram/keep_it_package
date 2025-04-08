@@ -30,7 +30,7 @@ class DialogService {
                         vCount: 3,
                         itemBuilder: (context, index) {
                           return MediaThumbnail(
-                            media: entity[index] as CLEntity,
+                            media: entity[index] as StoreEntity,
                           );
                         },
                         whenNopreview: const Center(),

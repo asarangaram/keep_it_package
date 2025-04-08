@@ -12,7 +12,7 @@ import 'package:store/store.dart';
 class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
     required String serverIdentity,
-    required int id,
+    required int? id,
     required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
@@ -52,7 +52,7 @@ class CollectionEditor extends StatefulWidget {
   });
 
   final String serverIdentity;
-  final int id;
+  final int? id;
 
   final void Function(StoreEntity collection) onSubmit;
   final void Function() onCancel;
@@ -70,7 +70,7 @@ class CollectionEditor extends StatefulWidget {
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
         serverIdentity: collection.store.store.identity,
-        id: collection.id,
+        id: collection.id!,
         onSubmit: (collection) {
           PageManager.of(context).pop(collection);
         },

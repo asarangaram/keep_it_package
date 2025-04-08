@@ -13,9 +13,9 @@ class PickCollection extends StatelessWidget {
     super.key,
     this.isValidSuggestion,
   });
-  final CLEntity? collection;
-  final void Function(CLEntity) onDone;
-  final bool Function(CLEntity collection)? isValidSuggestion;
+  final StoreEntity? collection;
+  final void Function(StoreEntity) onDone;
+  final bool Function(StoreEntity collection)? isValidSuggestion;
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +36,21 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as CLEntity).label!,
-            descriptionBuilder: (e) => (e as CLEntity).description,
+            labelBuilder: (e) => (e as StoreEntity).entity.label!,
+            descriptionBuilder: (e) => (e as StoreEntity).entity.description,
             suggestionsAvailable: [
               if (isValidSuggestion != null)
-                ...collections.where((e) => isValidSuggestion!(e.entity))
+                ...collections.where((e) => isValidSuggestion!(e))
               else
                 ...collections,
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
             onCreateByLabel: (label) async {
-              return CLEntity.collection(
+              throw UnimplementedError('Need a store create function here ');
+              /* return StoreEntity.collection(
                 label: label,
-              );
+              ); */
             },
             onValidate: (value) {
               if (value == null) {
@@ -63,7 +64,7 @@ class PickCollection extends StatelessWidget {
           ),
           onSubmit: (CLFormFieldResult result) async {
             final collection = (result as CLFormSelectSingleResult)
-                .selectedEntitry as CLEntity;
+                .selectedEntitry as StoreEntity;
 
             onDone(collection);
           },
@@ -80,8 +81,8 @@ class PickCollectionWizard extends StatelessWidget {
     super.key,
   });
 
-  final CLEntity? collection;
-  final void Function(CLEntity p1) onDone;
+  final StoreEntity? collection;
+  final void Function(StoreEntity p1) onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -94,15 +95,16 @@ class PickCollectionWizard extends StatelessWidget {
       descriptor: CLFormSelectSingleDescriptors(
         title: 'Collection',
         label: 'Select Collection',
-        labelBuilder: (e) => (e as CLEntity).label!,
-        descriptionBuilder: (e) => (e as CLEntity).description,
+        labelBuilder: (e) => (e as StoreEntity).entity.label!,
+        descriptionBuilder: (e) => (e as StoreEntity).entity.description,
         suggestionsAvailable: const [],
         initialValues: collection,
         onSelectSuggestion: (item) async => item,
         onCreateByLabel: (label) async {
-          return CLEntity.collection(
-            label: label,
-          );
+          throw UnimplementedError('Need a store create function here ');
+          /* return StoreEntity.collection(
+                label: label,
+              ); */
         },
         onValidate: (value) {
           if (value == null) {
@@ -116,7 +118,7 @@ class PickCollectionWizard extends StatelessWidget {
       ),
       onSubmit: (CLFormFieldResult result) async {
         final collection =
-            (result as CLFormSelectSingleResult).selectedEntitry as CLEntity;
+            (result as CLFormSelectSingleResult).selectedEntitry as StoreEntity;
 
         onDone(collection);
       },
