@@ -35,15 +35,25 @@ class GetStore extends ConsumerWidget {
     super.key,
   });
   final String storeIdentity;
-  final Widget Function(Map<String, CLStore>) builder;
+  final Widget Function(CLStore) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stores = ref.watch(storesProvider);
-    return stores.when(
-      data: builder,
+    final storesAsync = ref.watch(storesProvider);
+
+    return storesAsync.when(
+      data: (stores) {
+        try {
+          if (stores.keys.contains(storeIdentity)) {
+            return builder(stores[storeIdentity]!);
+          }
+          throw Exception('store not found');
+        } catch (e, st) {
+          return errorBuilder(e, st);
+        }
+      },
       error: errorBuilder,
       loading: loadingBuilder,
     );

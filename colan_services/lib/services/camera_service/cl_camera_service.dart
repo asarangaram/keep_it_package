@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cl_camera/cl_camera.dart';
+import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -52,12 +53,17 @@ class CLCameraService extends ConsumerWidget {
                 parentIdentifier: 'CLCameraService',
                 onCancel: () => PageManager.of(context).pop(),
                 onNewMedia: (path, {required isVideo}) async {
-                  throw Exception('Unimplemented');
-                  /* return theStore.mediaUpdater.create(
-                    path,
-                    type: isVideo ? CLMediaType.video : CLMediaType.image,
-                    parentId: () => collection?.id,
-                  ); */
+                  final mediaFile = await CLMediaFile.fromPath(path);
+
+                  if (mediaFile != null) {
+                    return theStore.createMedia(
+                      mediaFile: mediaFile,
+                      parentId: parentId,
+                      label: () => p.basenameWithoutExtension(mediaFile.path),
+                      description: () => 'captured with Camera',
+                    );
+                  }
+                  return null;
                 },
                 onDone: (mediaList) async {
                   await MediaWizardService.openWizard(

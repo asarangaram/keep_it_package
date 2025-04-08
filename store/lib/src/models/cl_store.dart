@@ -178,7 +178,7 @@ class CLStore {
 
   Future<StoreEntity?> createMedia({
     required CLMediaFile mediaFile,
-    required int parentId,
+    required int? parentId,
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
     UpdateStrategy strategy = UpdateStrategy.skip,
@@ -186,6 +186,28 @@ class CLStore {
     final mediaInDB = await store.get(
       EntityQuery(null, {'md5': mediaFile.md5, 'isCollection': 1}),
     );
+    int? parentId0;
+    if (parentId != null) {
+      var parent = (await get(
+        EntityQuery(null, {'id': parentId}),
+      ))
+          ?.entity;
+      if (parent == null) {
+        final tempParent = await createCollection(label: tempCollectionName);
+        if (tempParent != null) {
+          parent = (await tempParent.dbSave())?.entity;
+        }
+      }
+      if (parent == null || parent.id == null) {
+        throw Exception('missing parent; unable to create default collection');
+      }
+      if (!parent.isCollection) {
+        throw Exception('Parent entity must be a collection.');
+      }
+      parentId0 = parent.id;
+    } else {
+      parentId0 = parentId;
+    }
 
     if (mediaInDB != null && mediaInDB.id != null) {
       if (strategy == UpdateStrategy.skip) {
@@ -195,7 +217,7 @@ class CLStore {
           mediaInDB.id!,
           label: label,
           description: description,
-          parentId: () => parentId,
+          parentId: () => parentId0,
           strategy: strategy,
         );
       }
@@ -295,7 +317,7 @@ class CLStore {
     ValueGetter<int?>? parentId,
     ValueGetter<bool>? isDeleted,
     ValueGetter<bool>? isHidden,
-    ValueGetter<String>? pin,
+    ValueGetter<String?>? pin,
     UpdateStrategy strategy = UpdateStrategy.mergeAppend,
   }) async {
     if (strategy == UpdateStrategy.skip) {

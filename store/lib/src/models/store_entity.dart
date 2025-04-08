@@ -36,7 +36,7 @@ class StoreEntity implements ViewerEntityMixin {
     ValueGetter<int?>? parentId,
     ValueGetter<bool>? isDeleted,
     ValueGetter<bool>? isHidden,
-    ValueGetter<String>? pin,
+    ValueGetter<String?>? pin,
     UpdateStrategy? strategy,
     bool autoSave = false,
   }) async {
@@ -73,6 +73,37 @@ class StoreEntity implements ViewerEntityMixin {
     return updated;
   }
 
+  Future<StoreEntity?> cloneWith({
+    required CLMediaFile mediaFile,
+    ValueGetter<String?>? label,
+    ValueGetter<String?>? description,
+    ValueGetter<int?>? parentId,
+    ValueGetter<bool>? isDeleted,
+    ValueGetter<bool>? isHidden,
+    ValueGetter<String?>? pin,
+    UpdateStrategy? strategy,
+    bool autoSave = false,
+  }) async {
+    final updated = await store.updateMedia(
+      entity.id!,
+      mediaFile: mediaFile,
+      label: label,
+      description: description,
+      parentId: parentId,
+      isDeleted: isDeleted,
+      isHidden: isHidden,
+      pin: pin,
+      strategy: strategy ?? UpdateStrategy.mergeAppend,
+    );
+    if (updated == null) {
+      return null;
+    }
+
+    return StoreEntity(
+            entity: updated.entity.clone(id: () => null), store: store)
+        .dbSave(mediaFile.path);
+  }
+
   Future<StoreEntity?> dbSave([String? path]) {
     return store.dbSave(this, path: path);
   }
@@ -82,6 +113,16 @@ class StoreEntity implements ViewerEntityMixin {
       throw Exception("id can't be null");
     }
     await store.delete(entity.id!);
+  }
+
+  Future<StoreEntity?> onPin() async {
+    // Pin here, if not pinned
+    return updateWith(pin: () => 'PIN TEST');
+  }
+
+  Future<StoreEntity?> onUnpin() async {
+    // remove Pin here, if not pinned
+    return updateWith(pin: () => null);
   }
 
   Future<StoreEntity?> getParent() async {

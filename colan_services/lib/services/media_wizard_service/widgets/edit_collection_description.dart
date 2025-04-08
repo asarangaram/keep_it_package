@@ -34,9 +34,12 @@ class EditCollectionDescription extends StatelessWidget {
       onSubmit: (CLFormFieldResult result) async {
         final description = (result as CLFormTextFieldResult).value;
 
-        onDone(StoreEntity(
-            entity: collection.entity.copyWith(description: () => description),
-            store: collection.store));
+        final updated =
+            await collection.updateWith(description: () => description);
+        if (updated != null) {
+          onDone(updated);
+        }
+        throw Exception('update Failed');
       },
     );
   }

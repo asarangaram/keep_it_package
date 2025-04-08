@@ -1,5 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -108,27 +107,7 @@ class CLContextMenu {
               collection: collection,
             );
             if (updated != null && context.mounted) {
-              await collection.updateWith(
-                label: (updated.entity.label == collection.entity.label)
-                    ? null
-                    : () => updated.entity.label,
-                description: (updated.entity.description ==
-                        collection.entity.description)
-                    ? null
-                    : () => updated.entity.description,
-                parentId:
-                    (updated.entity.parentId == collection.entity.parentId)
-                        ? null
-                        : () => updated.entity.parentId,
-                isDeleted:
-                    (updated.entity.isDeleted == collection.entity.isDeleted)
-                        ? null
-                        : () => updated.entity.isDeleted,
-                isHidden:
-                    (updated.entity.isHidden == collection.entity.isHidden)
-                        ? null
-                        : () => updated.entity.isHidden,
-              );
+              await updated.dbSave();
             }
 
             return true;
@@ -148,8 +127,8 @@ class CLContextMenu {
                   entity: collection.entity,
                 ) ??
                 false;
-            if (!confirmed) return confirmed;
-            if (context.mounted) {
+
+            if (context.mounted && confirmed) {
               await collection.delete();
               return true;
             }
@@ -187,27 +166,25 @@ class CLContextMenu {
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
   }) {
-    final onEdit0 = onEdit != null
-        ? onEdit()
-        : () async {
-            await PageManager.of(context).openEditor(media);
-            return true;
-          };
-    final onEditInfo0 = onEditInfo != null
-        ? onEditInfo()
-        : () async {
-            final updated = await MediaMetadataEditor.openSheet(
-              context,
-              ref,
-              media: media,
-            );
-            if (updated != null && context.mounted) {
-              throw Exception('Unimplemented');
-              /* await theStore.mediaUpdater.update(updated, isEdited: true); */
-            }
+    Future<bool> onEdit0() async {
+      await PageManager.of(context).openEditor(media);
+      return true;
+    }
 
-            return true;
-          };
+    Future<bool> onEditInfo0() async {
+      final updated = await MediaMetadataEditor.openSheet(
+        context,
+        ref,
+        media: media,
+      );
+      if (updated != null && context.mounted) {
+        await updated.dbSave();
+        return true;
+      }
+
+      return false;
+    }
+
     final onMove0 = onMove != null
         ? onMove()
         : () => MediaWizardService.openWizard(
@@ -226,34 +203,28 @@ class CLContextMenu {
         : () async {
             final confirmed = await DialogService.deleteEntity(
                   context,
-                  entity: media,
+                  entity: media.entity,
                 ) ??
                 false;
             if (!confirmed) return confirmed;
-            if (context.mounted) {
-              throw Exception('Unimplemented');
-              /* return theStore.mediaUpdater.delete(media.id!); */
+            if (confirmed && context.mounted) {
+              await media.delete();
             }
-            return null;
+            return false;
           };
 
-    final onPin0 =
-        onPin != null ? onPin() : () async => throw Exception('Unimplemented');
-    /* theStore.mediaUpdater.pinToggleMultiple(
-              {media.id},
-              onGetPath: (media) {
-                
-                /* return theStore.directories.getMediaAbsolutePath(media); */
-              },
-            ); */
+    Future<bool> onPin0() async {
+      await media.onPin();
+      return true;
+    }
 
     final ac = ActionControl.onGetMediaActionControl(
-      media,
-      parentCollection,
+      media.entity,
+      parentCollection.entity,
       hasOnlineService,
     );
     return CLContextMenu.template(
-      name: media.label ?? 'Unnamed',
+      name: media.entity.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
@@ -261,8 +232,8 @@ class CLContextMenu {
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
       onDelete: ac.onDelete(onDelete0),
-      infoMap: media.toMapForDisplay(),
-      isPinned: media.pin != null,
+      infoMap: media.entity.toMapForDisplay(),
+      isPinned: media.entity.pin != null,
     );
   }
   factory CLContextMenu.ofMultipleMedia(
@@ -280,57 +251,49 @@ class CLContextMenu {
   }) {
     final onEdit0 = onEdit?.call();
     final onEditInfo0 = onEditInfo?.call();
-    final onMove0 = onMove != null
-        ? onMove()
-        : () => MediaWizardService.openWizard(
-              context,
-              ref,
-              CLSharedMedia(
-                entries: items,
-                type: UniversalMediaSource.move,
-              ),
-            );
-    final onShare0 = onShare != null ? onShare() : () => share(context, items);
-    final onPin0 =
-        onPin != null ? onPin() : () => throw Exception('Unimplemented')
-        /* theStore.mediaUpdater.pinToggleMultiple(
-              items.map((e) => e.id).toSet(),
-              onGetPath: (media) {
-                throw UnimplementedError(
-                  'onGetPath not yet implemented',
-                );
-              },
-            ) */
-        ;
-    final onDelete0 = onDelete != null
-        ? onDelete()
-        : () async {
-            final confirmed = await DialogService.deleteMultipleEntities(
-                  context,
-                  media: items,
-                ) ??
-                false;
-            if (!confirmed) return confirmed;
-            if (context.mounted) {
-              throw Exception('Unimplemented');
-              /* return theStore.mediaUpdater.deleteMultiple(
-                {...items.map((e) => e.id!)},
-              ); */
-            }
-            return null;
-          };
+    Future<bool?> onMove0() => MediaWizardService.openWizard(
+          context,
+          ref,
+          CLSharedMedia(
+            entries: items,
+            type: UniversalMediaSource.move,
+          ),
+        );
+    Future<bool?> onShare0() => share(context, items);
+    Future<bool> onPin0() async {
+      for (final item in items) {
+        await item.onPin();
+      }
+      return true;
+    }
+
+    Future<bool> onDelete0() async {
+      final confirmed = await DialogService.deleteMultipleEntities(
+            context,
+            media: items.map((e) => e.entity).toList(),
+          ) ??
+          false;
+      if (!confirmed) return confirmed;
+      if (context.mounted) {
+        for (final item in items) {
+          await item.delete();
+        }
+        return true;
+      }
+      return false;
+    }
 
     return CLContextMenu.template(
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
-      onEdit: onEdit0,
-      onEditInfo: onEditInfo0,
-      onMove: onMove0,
-      onShare: onShare0,
-      onPin: onPin0,
-      onDelete: onDelete0,
+      onEdit: onEdit != null ? onEdit() : onEdit0,
+      onEditInfo: onEditInfo != null ? onEditInfo() : onEditInfo0,
+      onMove: onMove != null ? onMove() : onMove0,
+      onShare: onShare != null ? onShare() : onShare0,
+      onPin: onPin != null ? onPin() : onPin0,
+      onDelete: onDelete != null ? onDelete() : onDelete0,
       infoMap: const {},
-      isPinned: items.any((media) => media.pin != null),
+      isPinned: items.any((media) => media.entity.pin != null),
     );
   }
   final String name;

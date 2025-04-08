@@ -139,12 +139,12 @@ class _CollectionEditorState extends State<CollectionEditor> {
                   actions: [
                     ShadButton(
                       child: const Text('Save changes'),
-                      onPressed: () {
+                      onPressed: () async {
                         if (formKey.currentState!.saveAndValidate()) {
                           formValue = formKey.currentState!.value;
                           final label = formValue['label'] as String;
                           final desc = formValue['description'] as String?;
-                          final updated = collection.entity.copyWith(
+                          final updated = await collection.updateWith(
                             label: () => label,
                             description: () => desc == null
                                 ? null
@@ -152,13 +152,10 @@ class _CollectionEditorState extends State<CollectionEditor> {
                                     ? null
                                     : desc,
                           );
-                          //
-                          widget.onSubmit(
-                            StoreEntity(
-                              entity: updated,
-                              store: collection.store,
-                            ),
-                          );
+                          if (updated != null) {
+                            widget.onSubmit(updated);
+                          }
+                          throw Exception('update failed');
                         }
                       },
                     ),
