@@ -205,6 +205,9 @@ class CLMediaFile extends CLMediaContent {
   static Future<CLMediaFile?> fromExifInfo(Map<String, dynamic> map) async {
     try {
       final exifmap = map['exiftool'][0];
+      if ("0000:00:00 00:00:00" == exifmap['CreateDate']) {
+        exifmap['CreateDate'] = null;
+      }
       return CLMediaFile(
         path: exifmap['SourceFile'] as String,
         md5: await checksum(File(exifmap['SourceFile'] as String)),
@@ -218,9 +221,8 @@ class CLMediaFile extends CLMediaContent {
             : null,
         height: exifmap['ImageHeight'] as int,
         width: exifmap['ImageWidth'] as int,
-        duration: exifmap['Duration'] != null
-            ? double.tryParse(exifmap['Duration'] as String)
-            : null,
+        duration:
+            exifmap['Duration'] != null ? exifmap['Duration'] as double : null,
       );
     } catch (e) {
       debugPrint("Error parsing exif info: $e");
@@ -247,7 +249,7 @@ class CLMediaFile extends CLMediaContent {
       'md5': md5,
       'fileSize': fileSize,
       'mimeType': mimeType,
-      'type': type,
+      'type': type.name,
       'fileSuffix': fileSuffix,
       'createDate': createDate?.millisecondsSinceEpoch,
       'height': height,
@@ -262,7 +264,10 @@ class CLMediaFile extends CLMediaContent {
       md5: (map['md5'] ?? '') as String,
       fileSize: (map['fileSize'] ?? 0) as int,
       mimeType: (map['mimeType'] ?? '') as String,
-      type: map['type'] as CLMediaType? ?? CLMediaType.file,
+      type: CLMediaType.values.firstWhere(
+        (e) => e.name == map['name'],
+        orElse: () => throw ArgumentError('Invalid MediaType: ${map['name']}'),
+      ),
       fileSuffix: (map['fileSuffix'] ?? '') as String,
       createDate: map['createDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch((map['createDate'] ?? 0) as int)

@@ -6,3 +6,5 @@ export 'src/cl_media_info_extractor.dart'
         CLMediaURI,
         CLMediaType,
         CLMediaUnknown;
+
+export 'src/ffmpeg_utils.dart' show FfmpegUtils;

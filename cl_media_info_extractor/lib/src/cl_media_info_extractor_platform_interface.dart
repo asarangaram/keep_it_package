@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -76,6 +77,85 @@ abstract class ClMediaInfoExtractorPlatform extends PlatformInterface {
       }
     } else {
       throw Exception('Failed to get media info: ${result['stderr']}');
+    }
+  }
+
+  String get ffprobeEntries =>
+      '-show_entries stream=width,height,codec_name,r_frame_rate,duration -show_entries format=duration,size';
+  Future<Map<String, dynamic>> ffprobeVideo(
+      String ffprobePath, String mediaPath) async {
+    final result = await runCommand(
+        "$ffprobePath  -v error -select_streams v:0 $ffprobeEntries -print_format json  $mediaPath");
+    if (result['exitCode'] == '0') {
+      try {
+        final jsonString = result['stdout'] ?? '';
+        final jsonData = json.decode('{ "ffprobeVideo": $jsonString }');
+
+        return jsonData as Map<String, dynamic>;
+      } catch (e) {
+        throw Exception('Failed to parse JSON: $e');
+      }
+    } else {
+      throw Exception('Failed to get media info: ${result['stderr']}');
+    }
+  }
+
+  Future<Map<String, dynamic>> ffprobeAudio(
+      String ffprobePath, String mediaPath) async {
+    final result = await runCommand(
+        "$ffprobePath  -v error -select_streams a:0 $ffprobeEntries -print_format json  $mediaPath");
+    if (result['exitCode'] == '0') {
+      try {
+        final jsonString = result['stdout'] ?? '';
+        final jsonData = json.decode('{ "ffprobeAudio": $jsonString }');
+
+        return jsonData as Map<String, dynamic>;
+      } catch (e) {
+        throw Exception('Failed to parse JSON: $e');
+      }
+    } else {
+      throw Exception('Failed to get media info: ${result['stderr']}');
+    }
+  }
+
+  Future<Map<String, dynamic>> ffprobe(
+      String ffprobePath, String mediaPath) async {
+    Map<String, dynamic> result = await ffprobeVideo(ffprobePath, mediaPath);
+
+    result.addAll(await ffprobeAudio(ffprobePath, mediaPath));
+
+    return result;
+  }
+
+  String escapePath(String path) =>
+      Platform.isWindows ? '"$path"' : path.replaceAll(' ', '\\ ');
+
+  Future<String> ffmpegGeneratePreview(String ffmpegPath, String mediaPath,
+      {required String previewPath,
+      required int frameFreq,
+      required int dimension,
+      required int tileSize}) async {
+    //print(mediaPath.replaceAll(' ', '\\ '));
+    final result = await runCommand(
+      '$ffmpegPath '
+      '-y '
+      '-i '
+      '$mediaPath '
+      '-frames '
+      '1 '
+      '-q:v '
+      '1 '
+      '-vf '
+      //'""select=not(mod(n,$frameFreq)),scale=-1:$dimension,tile=${tileSize}x$tileSize"" '
+      "select='not(mod(n,\\$frameFreq))',scale=-1:$dimension,tile=${tileSize}x$tileSize "
+      '-update 1 '
+      "'$previewPath'",
+    );
+
+    if (result['exitCode'] == '0') {
+      return previewPath;
+    } else {
+      throw Exception('Failed to generate media preview: ${result['stderr']}');
     }
   }
 }
