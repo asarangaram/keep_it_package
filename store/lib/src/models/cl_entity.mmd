@@ -1,0 +1,50 @@
+classDiagram
+    class CLEntity {
+        +int? id
+        +bool isCollection
+        +DateTime addedDate
+        +DateTime updatedDate
+        +bool isDeleted
+        +String? label
+        +String? description
+        +int? parentId
+        +String? md5
+        +int? fileSize
+        +String? mimeType
+        +String? type
+        +String? extension
+        +DateTime? createDate
+        +int? height
+        +int? width
+        +double? duration
+        +bool isHidden
+        +String? pin
+        +DateTime get sortDate()
+        +CLMediaType get mediaType()
+        +CLEntity copyWith(...)
+        +CLEntity clone(...)
+        +Map<String, dynamic> toMap()
+        +String toJson()
+        +Map<String, dynamic> toMapForDisplay()
+        +bool isSame(CLEntity other)
+        +bool isContentSame(CLEntity other)
+        +String? get path()
+        +String? get previewPath()
+    }
+
+    class ViewerEntityMixin {
+        <<interface>>
+        +int? id
+        +bool isCollection
+        +int? parentId
+        +DateTime get sortDate()
+    }
+
+    class CLMediaType {
+        <<enum>>
+        +values
+        +asNameMap()
+    }
+
+    CLEntity ..|> ViewerEntityMixin
+    CLEntity --> CLMediaType : mediaType

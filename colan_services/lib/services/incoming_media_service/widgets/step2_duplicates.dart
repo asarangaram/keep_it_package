@@ -93,7 +93,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
                   title: 'Move',
                   onTap: () async {
                     widget.onDone(
-                      mg: currentMedia.mergeMismatch(),
+                      mg: await currentMedia.mergeMismatch(),
                     );
                     return true;
                   },

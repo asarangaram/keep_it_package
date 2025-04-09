@@ -44,13 +44,12 @@ class CLSharedMedia {
 
   bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
 
-  CLSharedMedia mergeMismatch() {
-    final items = entries.map((e) => StoreEntity(
-        entity: e.data.updateContent(
-          isDeleted: false,
-          parentId: () => collection?.id,
-        ),
-        store: e.store));
+  Future<CLSharedMedia> mergeMismatch() async {
+    final items = <StoreEntity>[];
+    for (final e in entries) {
+      await e.updateWith(
+          isDeleted: () => false, parentId: () => collection?.id);
+    }
     return copyWith(entries: items.toList());
   }
 

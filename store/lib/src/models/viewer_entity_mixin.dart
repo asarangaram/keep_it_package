@@ -8,4 +8,6 @@ abstract class ViewerEntityMixin {
   bool get isCollection;
   DateTime get sortDate;
   int? get parentId;
+  Uri? get mediaUri;
+  Uri? get previewUri;
 }

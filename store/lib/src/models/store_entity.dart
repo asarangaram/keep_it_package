@@ -151,7 +151,9 @@ class StoreEntity implements ViewerEntityMixin {
   @override
   int? get parentId => data.parentId;
 
+  @override
   Uri? get mediaUri => throw UnimplementedError();
+  @override
   Uri? get previewUri => throw UnimplementedError();
 
   @override

@@ -4,10 +4,9 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
 
 import 'data_types.dart';
-import 'viewer_entity_mixin.dart';
 
 @immutable
-class CLEntity implements ViewerEntityMixin {
+class CLEntity {
   const CLEntity({
     required this.isCollection,
     required this.addedDate,
@@ -137,9 +136,7 @@ class CLEntity implements ViewerEntityMixin {
     );
   }
 
-  @override
   final int? id;
-  @override
   final bool isCollection;
   final DateTime addedDate;
   final DateTime updatedDate;
@@ -147,7 +144,6 @@ class CLEntity implements ViewerEntityMixin {
 
   final String? label;
   final String? description;
-  @override
   final int? parentId;
 
   final String? md5;
@@ -261,94 +257,9 @@ class CLEntity implements ViewerEntityMixin {
         pin.hashCode;
   }
 
-  @override
   DateTime get sortDate => createDate ?? updatedDate;
 
   CLMediaType get mediaType => CLMediaType.values.asNameMap()[type]!;
-
-  CLEntity updateContent({
-    bool? isDeleted,
-    ValueGetter<String?>? label,
-    ValueGetter<String?>? description,
-    ValueGetter<int?>? parentId,
-    ValueGetter<String?>? md5,
-    ValueGetter<int?>? fileSize,
-    ValueGetter<String?>? mimeType,
-    ValueGetter<String?>? type,
-    ValueGetter<String?>? extension,
-    ValueGetter<DateTime?>? createDate,
-    ValueGetter<int?>? height,
-    ValueGetter<int?>? width,
-    ValueGetter<double?>? duration,
-  }) {
-    if (md5 != null && pin != null) {
-      throw Exception("Can't update content when its pinned");
-    }
-    if (md5 == null &&
-        [
-          fileSize,
-          mimeType,
-          type,
-          extension,
-          createDate,
-          height,
-          width,
-          duration,
-        ].any((e) => e != null)) {
-      throw Exception(
-        "file parameters can't be updated when the file is not changed",
-      );
-    }
-    final updatedDate = DateTime.now();
-    return CLEntity(
-      id: id,
-      isCollection: isCollection,
-      addedDate: addedDate,
-      updatedDate: updatedDate,
-      isDeleted: isDeleted ?? this.isDeleted,
-      label: label != null ? label.call() : this.label,
-      description: description != null ? description.call() : this.description,
-      parentId: parentId != null ? parentId.call() : this.parentId,
-      md5: md5 != null ? md5.call() : this.md5,
-      fileSize: fileSize != null ? fileSize.call() : this.fileSize,
-      mimeType: mimeType != null ? mimeType.call() : this.mimeType,
-      type: type != null ? type.call() : this.type,
-      extension: extension != null ? extension.call() : this.extension,
-      createDate: createDate != null ? createDate.call() : this.createDate,
-      height: height != null ? height.call() : this.height,
-      width: width != null ? width.call() : this.width,
-      duration: duration != null ? duration.call() : this.duration,
-      isHidden: isHidden,
-      pin: pin,
-    );
-  }
-
-  CLEntity updateStatus({
-    ValueGetter<bool>? isHidden,
-    ValueGetter<String?>? pin,
-  }) {
-    return CLEntity(
-      id: id,
-      isCollection: isCollection,
-      addedDate: addedDate,
-      updatedDate: updatedDate,
-      isDeleted: isDeleted,
-      label: label,
-      description: description,
-      parentId: parentId,
-      md5: md5,
-      fileSize: fileSize,
-      mimeType: mimeType,
-      type: type,
-      extension: extension,
-      createDate: createDate,
-      height: height,
-      width: width,
-      duration: duration,
-      isHidden: isHidden != null ? isHidden() : this.isHidden,
-      pin: pin != null ? pin() : this.pin,
-    );
-  }
 
   CLEntity clone({
     ValueGetter<int?>? id,

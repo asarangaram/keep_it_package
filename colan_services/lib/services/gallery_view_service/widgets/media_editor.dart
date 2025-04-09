@@ -194,23 +194,23 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
         actions: [
           ShadButton(
             child: const Text('Save changes'),
-            onPressed: () {
+            onPressed: () async {
               if (formKey.currentState!.saveAndValidate()) {
                 formValue = formKey.currentState!.value;
                 final name = formValue['name'] as String;
                 final ref = formValue['ref'] as String?;
-                final updated = StoreEntity(
-                  entity: widget.media.data.updateContent(
-                    label: () => name,
-                    description: () => ref == null
-                        ? null
-                        : ref.isEmpty
-                            ? null
-                            : ref,
-                  ),
-                  store: widget.media.store,
+                final updated = await widget.media.updateWith(
+                  label: () => name,
+                  description: () => ref == null
+                      ? null
+                      : ref.isEmpty
+                          ? null
+                          : ref,
                 );
-                widget.onSubmit(updated);
+                if (updated != null) {
+                  widget.onSubmit(updated);
+                }
+                throw Exception('updated should not be null!');
               }
             },
           ),
