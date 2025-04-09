@@ -14,18 +14,18 @@ class StoreEntity implements ViewerEntityMixin {
     String? path,
   }) {
     return StoreEntity._(
-      entity: entity,
+      data: entity,
       store: store,
       path: path,
     );
   }
   const StoreEntity._({
-    required this.entity,
+    required this.data,
     required this.store,
     this.path,
   });
 
-  final CLEntity entity;
+  final CLEntity data;
   final CLStore store;
   final String? path;
 
@@ -40,13 +40,13 @@ class StoreEntity implements ViewerEntityMixin {
     UpdateStrategy? strategy,
     bool autoSave = false,
   }) async {
-    if (entity.id == null) {
+    if (data.id == null) {
       throw Exception("id can't be null");
     }
     StoreEntity? updated;
-    if (entity.isCollection) {
+    if (data.isCollection) {
       updated = await store.updateCollection(
-        entity.id!,
+        data.id!,
         label: label,
         description: description,
         parentId: parentId,
@@ -56,7 +56,7 @@ class StoreEntity implements ViewerEntityMixin {
       );
     } else {
       updated = await store.updateMedia(
-        entity.id!,
+        data.id!,
         mediaFile: mediaFile,
         label: label,
         description: description,
@@ -85,7 +85,7 @@ class StoreEntity implements ViewerEntityMixin {
     bool autoSave = false,
   }) async {
     final updated = await store.updateMedia(
-      entity.id!,
+      data.id!,
       mediaFile: mediaFile,
       label: label,
       description: description,
@@ -100,7 +100,7 @@ class StoreEntity implements ViewerEntityMixin {
     }
 
     return StoreEntity(
-      entity: updated.entity.clone(id: () => null),
+      entity: updated.data.clone(id: () => null),
       store: store,
     ).dbSave(mediaFile.path);
   }
@@ -110,10 +110,10 @@ class StoreEntity implements ViewerEntityMixin {
   }
 
   Future<void> delete() async {
-    if (entity.id == null) {
+    if (data.id == null) {
       throw Exception("id can't be null");
     }
-    await store.delete(entity.id!);
+    await store.delete(data.id!);
   }
 
   Future<StoreEntity?> onPin() async {
@@ -133,38 +133,37 @@ class StoreEntity implements ViewerEntityMixin {
   }
 
   Future<List<StoreEntity>?> getChildren() async {
-    if (!entity.isCollection) return null;
+    if (!data.isCollection) return null;
     final entities = await store
         .getAll(EntityQuery(store.store.identity, {'parentId': parentId}));
     return entities;
   }
 
   @override
-  int? get id => entity.id;
+  int? get id => data.id;
 
   @override
-  bool get isCollection => entity.isCollection;
+  bool get isCollection => data.isCollection;
 
   @override
-  DateTime get sortDate => entity.createDate ?? entity.updatedDate;
+  DateTime get sortDate => data.createDate ?? data.updatedDate;
 
   @override
-  int? get parentId => entity.parentId;
+  int? get parentId => data.parentId;
 
   Uri? get mediaUri => throw UnimplementedError();
   Uri? get previewUri => throw UnimplementedError();
 
   @override
-  String toString() =>
-      'StoreEntity(entity: $entity, store: $store, path: $path)';
+  String toString() => 'StoreEntity(entity: $data, store: $store, path: $path)';
 
   @override
   bool operator ==(covariant StoreEntity other) {
     if (identical(this, other)) return true;
 
-    return other.entity == entity && other.store == store && other.path == path;
+    return other.data == data && other.store == store && other.path == path;
   }
 
   @override
-  int get hashCode => entity.hashCode ^ store.hashCode ^ path.hashCode;
+  int get hashCode => data.hashCode ^ store.hashCode ^ path.hashCode;
 }

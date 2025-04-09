@@ -82,7 +82,7 @@ class EntityPreview extends ConsumerWidget {
                           Expanded(
                             child: Center(
                               child: Text(
-                                entity.entity.label!.capitalizeFirstLetter(),
+                                entity.data.label!.capitalizeFirstLetter(),
                                 style: const TextStyle(fontSize: 14),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -106,8 +106,8 @@ class EntityPreview extends ConsumerWidget {
                   viewIdentifier: viewIdentifier,
                   onTap: () async {
                     await PageManager.of(context).openMedia(
-                      entity.entity.id!,
-                      parentId: entity.entity.parentId,
+                      entity.data.id!,
+                      parentId: entity.data.parentId,
                       parentIdentifier: viewIdentifier.parentID,
                     );
                     return true;

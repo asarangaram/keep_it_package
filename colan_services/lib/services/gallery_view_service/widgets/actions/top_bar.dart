@@ -64,7 +64,7 @@ class KeepItTopBar extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
-                    parentCollection?.entity.label!.capitalizeFirstLetter() ??
+                    parentCollection?.data.label!.capitalizeFirstLetter() ??
                         'Keep It',
                     style: Theme.of(context).textTheme.headlineLarge,
                     overflow: TextOverflow.ellipsis,

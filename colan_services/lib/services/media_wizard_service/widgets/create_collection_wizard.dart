@@ -63,7 +63,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
       child = Column(
         children: [
           LabelViewer(
-            label: 'Collection: ${collection!.entity.label}',
+            label: 'Collection: ${collection!.data.label}',
             icon: clIcons.editCollectionLabel,
             onTap: () {
               setState(() {

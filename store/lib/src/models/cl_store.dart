@@ -53,7 +53,7 @@ class CLStore {
     StoreEntity entity, {
     String? path,
   }) async {
-    final saved = await store.upsert(entity.entity, path: path);
+    final saved = await store.upsert(entity.data, path: path);
     if (saved == null) {
       return null;
     }
@@ -142,11 +142,11 @@ class CLStore {
       var parent = (await get(
         EntityQuery(null, {'id': parentId}),
       ))
-          ?.entity;
+          ?.data;
       if (parent == null) {
         final tempParent = await createCollection(label: tempCollectionName);
         if (tempParent != null) {
-          parent = (await tempParent.dbSave())?.entity;
+          parent = (await tempParent.dbSave())?.data;
         }
       }
       if (parent == null || parent.id == null) {
@@ -230,7 +230,7 @@ class CLStore {
         final parent = (await get(
           EntityQuery(null, {'parentId': parentIdValue}),
         ))
-            ?.entity;
+            ?.data;
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }

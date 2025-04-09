@@ -102,7 +102,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       confirmAction: () async =>
           (await DialogService.restoreMediaMultiple(
             context,
-            media: currMedia.map((e) => e.entity).toList(),
+            media: currMedia.map((e) => e.data).toList(),
           )) ??
           false,
       action: () async {
@@ -124,7 +124,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       confirmAction: () async =>
           await DialogService.permanentlyDeleteMediaMultiple(
             context,
-            media: currMedia.map((e) => e.entity).toList(),
+            media: currMedia.map((e) => e.data).toList(),
           ) ??
           false,
       action: () async {
@@ -152,7 +152,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       confirmAction: () async =>
           await DialogService.deleteMultipleEntities(
             context,
-            media: currMedia.map((e) => e.entity).toList(),
+            media: currMedia.map((e) => e.data).toList(),
           ) ??
           false,
       action: () async {
@@ -168,7 +168,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   Widget getCollection({required List<StoreEntity> currMedia}) {
     return CreateCollectionWizard(
       isValidSuggestion: (collection) {
-        return !collection.entity.isDeleted;
+        return !collection.data.isDeleted;
       },
       onDone: ({required collection}) => setState(() {
         targetCollection = collection;

@@ -131,7 +131,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                 child: ShadSheet(
                   draggable: true,
                   title: Text(
-                    'Edit Collection "${collection.entity.label!.capitalizeFirstLetter()}"',
+                    'Edit Collection "${collection.data.label!.capitalizeFirstLetter()}"',
                   ),
                   description: const Text(
                     'Change the label and add/update description here',
@@ -170,11 +170,11 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           id: 'label',
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' Collection Name'),
-                          initialValue: collection.entity.label,
+                          initialValue: collection.data.label,
                           placeholder: const Text('Enter collection name'),
                           validator: (value) => validateName(
                             newLabel: value,
-                            existingLabel: collection.entity.label,
+                            existingLabel: collection.data.label,
                             collections: allCollections,
                           ),
                           showCursor: true,
@@ -186,7 +186,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           id: 'description',
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' About'),
-                          initialValue: collection.entity.description,
+                          initialValue: collection.data.description,
                           placeholder:
                               const Text('Describe about this collection'),
                           maxLines: 4,
@@ -237,7 +237,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
         return null;
       }
       if (collections
-          .map((e) => e.entity.label!.trim().toLowerCase())
+          .map((e) => e.data.label!.trim().toLowerCase())
           .contains(newLabel0.toLowerCase())) {
         return '$newLabel0 already exists';
       }

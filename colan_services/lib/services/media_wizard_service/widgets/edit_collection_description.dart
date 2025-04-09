@@ -24,10 +24,10 @@ class EditCollectionDescription extends StatelessWidget {
       ),
       descriptor: CLFormTextFieldDescriptor(
         title: 'Description',
-        label: 'About "${collection.entity.label}"',
-        initialValue: collection.entity.label!,
+        label: 'About "${collection.data.label}"',
+        initialValue: collection.data.label!,
         hint: 'What is the best thing,'
-            ' you can say about "${collection.entity.label}"?',
+            ' you can say about "${collection.data.label}"?',
         onValidate: (val) => null,
         maxLines: 4,
       ),

@@ -36,8 +36,8 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) => (e as StoreEntity).entity.label!,
-            descriptionBuilder: (e) => (e as StoreEntity).entity.description,
+            labelBuilder: (e) => (e as StoreEntity).data.label!,
+            descriptionBuilder: (e) => (e as StoreEntity).data.description,
             suggestionsAvailable: [
               if (isValidSuggestion != null)
                 ...collections.where((e) => isValidSuggestion!(e))
@@ -95,8 +95,8 @@ class PickCollectionWizard extends StatelessWidget {
       descriptor: CLFormSelectSingleDescriptors(
         title: 'Collection',
         label: 'Select Collection',
-        labelBuilder: (e) => (e as StoreEntity).entity.label!,
-        descriptionBuilder: (e) => (e as StoreEntity).entity.description,
+        labelBuilder: (e) => (e as StoreEntity).data.label!,
+        descriptionBuilder: (e) => (e as StoreEntity).data.description,
         suggestionsAvailable: const [],
         initialValues: collection,
         onSelectSuggestion: (item) async => item,

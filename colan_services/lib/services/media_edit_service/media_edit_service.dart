@@ -52,11 +52,11 @@ class MediaEditService extends ConsumerWidget {
                   builder: (theStore) {
                     return InvokeEditor(
                       mediaUri: media.mediaUri!,
-                      mediaType: media.entity.mediaType,
+                      mediaType: media.data.mediaType,
                       canDuplicateMedia: canDuplicateMedia,
                       onCreateNewFile: () async {
                         return theStore.createTempFile(
-                          ext: media.entity.extension!,
+                          ext: media.data.extension!,
                         );
                       },
                       onCancel: () async {
@@ -72,7 +72,7 @@ class MediaEditService extends ConsumerWidget {
                         if (overwrite && context.mounted) {
                           final confirmed = await DialogService.replaceMedia(
                                 context,
-                                media: media.entity,
+                                media: media.data,
                               ) ??
                               false;
                           if (confirmed && context.mounted) {
@@ -87,7 +87,7 @@ class MediaEditService extends ConsumerWidget {
                           final confirmed =
                               await DialogService.cloneAndReplaceMedia(
                                     context,
-                                    media: media.entity,
+                                    media: media.data,
                                   ) ??
                                   false;
                           if (confirmed && context.mounted) {

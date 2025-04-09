@@ -159,8 +159,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
   void initState() {
     nameController = TextEditingController();
     refController = TextEditingController();
-    nameController.text = widget.media.entity.label ?? '';
-    refController.text = widget.media.entity.description ?? '';
+    nameController.text = widget.media.data.label ?? '';
+    refController.text = widget.media.data.description ?? '';
     super.initState();
   }
 
@@ -186,7 +186,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
       child: ShadSheet(
         draggable: true,
         title: Text(
-          'Edit Media "${widget.media.entity.label?.capitalizeFirstLetter() ?? widget.media.id}"',
+          'Edit Media "${widget.media.data.label?.capitalizeFirstLetter() ?? widget.media.id}"',
         ),
         description: const Text(
           'Change the label and add/update description here',
@@ -200,7 +200,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                 final name = formValue['name'] as String;
                 final ref = formValue['ref'] as String?;
                 final updated = StoreEntity(
-                  entity: widget.media.entity.updateContent(
+                  entity: widget.media.data.updateContent(
                     label: () => name,
                     description: () => ref == null
                         ? null
@@ -238,7 +238,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                       placeholder: const Text('Enter media name'),
                       validator: (value) => validateName(
                         newLabel: value,
-                        existingLabel: widget.media.entity.label,
+                        existingLabel: widget.media.data.label,
                       ),
                       showCursor: true,
                       inputFormatters: [
@@ -264,7 +264,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                       ),
                     ),
                     if (kDebugMode)
-                      MapInfo(widget.media.entity.toMapForDisplay()),
+                      MapInfo(widget.media.data.toMapForDisplay()),
                     if (formValue.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 24, left: 12),

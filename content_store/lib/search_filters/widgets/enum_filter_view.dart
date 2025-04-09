@@ -13,7 +13,7 @@ class EnumFilterViewRow extends ConsumerWidget {
     required this.identifier,
     super.key,
   });
-  final CLFilter<CLEntity> filter;
+  final CLFilter<StoreEntity> filter;
   final String identifier;
 
   @override

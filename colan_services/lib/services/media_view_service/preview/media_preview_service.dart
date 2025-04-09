@@ -39,7 +39,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                   .foreground
                   .withValues(alpha: 0.5),
               child: Text(
-                media.entity.label ?? 'Unnamed',
+                media.data.label ?? 'Unnamed',
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -49,12 +49,12 @@ class MediaPreviewWithOverlays extends StatelessWidget {
               ),
             ),
           ),
-          if (media.entity.pin != null)
+          if (media.data.pin != null)
             OverlayWidgets.dimension(
               alignment: Alignment.bottomRight,
               sizeFactor: 0.15,
               child: FutureBuilder(
-                future: isPinBroken(media.entity.pin),
+                future: isPinBroken(media.data.pin),
                 builder: (context, snapshot) {
                   return Transform.rotate(
                     angle: math.pi / 4,
@@ -70,7 +70,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                 },
               ),
             ),
-          if (media.entity.mediaType == CLMediaType.video)
+          if (media.data.mediaType == CLMediaType.video)
             OverlayWidgets.dimension(
               alignment: Alignment.center,
               child: DecoratedBox(

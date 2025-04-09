@@ -32,7 +32,7 @@ class FiltersView extends ConsumerStatefulWidget {
     super.key,
     this.filters,
   });
-  final List<CLFilter<CLEntity>>? filters;
+  final List<CLFilter<StoreEntity>>? filters;
   final String parentIdentifier;
 
   @override

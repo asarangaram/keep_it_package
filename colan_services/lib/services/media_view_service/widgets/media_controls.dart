@@ -72,7 +72,7 @@ class MediaControls extends ConsumerWidget {
         if (showControl.showMenu)
           if ([onEdit, onDelete, onMove, onShare, onPin]
                   .any((e) => e != null) ||
-              (media.entity.mediaType == CLMediaType.video))
+              (media.data.mediaType == CLMediaType.video))
             Positioned(
               bottom: 0,
               left: 0,
@@ -176,7 +176,7 @@ class ControllerMenu extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (media.entity.mediaType == CLMediaType.video)
+              if (media.data.mediaType == CLMediaType.video)
                 VideoDefaultControls(
                   uri: media.mediaUri!,
                   errorBuilder: (_, __) => Container(),
@@ -220,10 +220,10 @@ class ControllerMenu extends StatelessWidget {
                         Transform.rotate(
                           angle: math.pi / 4,
                           child: CLButtonIcon.small(
-                            media.entity.pin != null
+                            media.data.pin != null
                                 ? clIcons.pinned
                                 : clIcons.notPinned,
-                            color: media.entity.pin != null
+                            color: media.data.pin != null
                                 ? Colors.blue
                                 : Theme.of(context).colorScheme.surface,
                             onTap: onPin,

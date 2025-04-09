@@ -36,8 +36,8 @@ class CLSharedMedia {
   }
 
   Iterable<StoreEntity> get _stored => entries.where((e) => e.id != null);
-  Iterable<StoreEntity> get _targetMismatch => _stored
-      .where((e) => e.parentId != collection?.id && !(e.entity.isHidden));
+  Iterable<StoreEntity> get _targetMismatch =>
+      _stored.where((e) => e.parentId != collection?.id && !(e.data.isHidden));
 
   List<StoreEntity> get targetMismatch => _targetMismatch.toList();
   List<StoreEntity> get stored => _stored.toList();
@@ -46,7 +46,7 @@ class CLSharedMedia {
 
   CLSharedMedia mergeMismatch() {
     final items = entries.map((e) => StoreEntity(
-        entity: e.entity.updateContent(
+        entity: e.data.updateContent(
           isDeleted: false,
           parentId: () => collection?.id,
         ),
@@ -56,7 +56,7 @@ class CLSharedMedia {
 
   CLSharedMedia? removeMismatch() {
     final items = entries.where(
-      (e) => e.parentId == collection?.id || (e.entity.isHidden),
+      (e) => e.parentId == collection?.id || (e.data.isHidden),
     );
     if (items.isEmpty) return null;
 
@@ -71,13 +71,13 @@ class CLSharedMedia {
   }
 
   List<StoreEntity> itemsByType(CLMediaType type) =>
-      entries.where((e) => e.entity.mediaType == type).toList();
+      entries.where((e) => e.data.mediaType == type).toList();
 
   List<StoreEntity> get videos => itemsByType(CLMediaType.video);
   List<StoreEntity> get images => itemsByType(CLMediaType.image);
 
   List<CLMediaType> get contentTypes =>
-      Set<CLMediaType>.from(entries.map((e) => e.entity.type)).toList();
+      Set<CLMediaType>.from(entries.map((e) => e.data.type)).toList();
 
   @override
   bool operator ==(covariant CLSharedMedia other) {

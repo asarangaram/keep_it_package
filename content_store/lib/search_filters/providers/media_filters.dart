@@ -9,7 +9,7 @@ import '../models/filter/ddmmyyyy_filter.dart';
 import '../models/filter/enum_filter.dart';
 import '../models/filter/string_filter.dart';
 
-class MediaFiltersNotifier extends StateNotifier<SearchFilters<CLEntity>> {
+class MediaFiltersNotifier extends StateNotifier<SearchFilters<StoreEntity>> {
   MediaFiltersNotifier()
       : super(
           SearchFilters(
@@ -23,7 +23,7 @@ class MediaFiltersNotifier extends StateNotifier<SearchFilters<CLEntity>> {
   void enableEdit() => state = state.enableEdit();
   void disableEdit() => state = state.disableEdit();
 
-  void updateFilter(CLFilter<CLEntity> filter, String key, dynamic value) =>
+  void updateFilter(CLFilter<StoreEntity> filter, String key, dynamic value) =>
       state = state.updateFilter(filter.name, key, value);
 
   void updateDefautTextSearchFilter(
@@ -45,31 +45,31 @@ class MediaFiltersNotifier extends StateNotifier<SearchFilters<CLEntity>> {
     return state.filters?.map((e) => e.name).toList() ?? [];
   }
 
-  Map<String, CLFilter<CLEntity>> get unusedFiltersMap => Map.fromEntries(
+  Map<String, CLFilter<StoreEntity>> get unusedFiltersMap => Map.fromEntries(
         allFiltersMap.entries
             .where((entry) => !availableFilters.contains(entry.key)),
       );
 
-  List<CLFilter<CLEntity>> get unusedFilters => List.from(
+  List<CLFilter<StoreEntity>> get unusedFilters => List.from(
         allFilters.where((e) => !availableFilters.contains(e.name)),
       );
 }
 
 final mediaFiltersProvider = StateNotifierProvider.family<MediaFiltersNotifier,
-    SearchFilters<CLEntity>, String>((ref, identifier) {
+    SearchFilters<StoreEntity>, String>((ref, identifier) {
   return MediaFiltersNotifier();
 });
 
-final List<CLFilter<CLEntity>> allFilters = List.unmodifiable([
-  EnumFilter<CLEntity, CLMediaType>(
+final List<CLFilter<StoreEntity>> allFilters = List.unmodifiable([
+  EnumFilter<StoreEntity, CLMediaType>(
     name: 'Search By MediaType',
     labels: {
       for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
     },
-    fieldSelector: (media) => media.mediaType,
+    fieldSelector: (media) => media.data.mediaType,
     enabled: true,
   ),
-  EnumFilter<CLEntity, MediaAvailability>(
+  EnumFilter<StoreEntity, MediaAvailability>(
     name: 'Search By Location',
     labels: {
       for (var e in MediaAvailability.values) e: e.name,
@@ -79,26 +79,26 @@ final List<CLFilter<CLEntity>> allFilters = List.unmodifiable([
     },
     enabled: true,
   ),
-  DDMMYYYYFilter<CLEntity>(
+  DDMMYYYYFilter<StoreEntity>(
     name: 'Search by Date',
-    fieldSelector: (media) => media.addedDate,
+    fieldSelector: (media) => media.data.addedDate,
     enabled: false,
   ),
 ]);
 
-Map<String, CLFilter<CLEntity>> get allFiltersMap =>
+Map<String, CLFilter<StoreEntity>> get allFiltersMap =>
     Map.unmodifiable({for (final e in allFilters) e.name: e});
 
-final StringFilter<CLEntity> textSearchFilter = StringFilter(
+final StringFilter<StoreEntity> textSearchFilter = StringFilter(
   name: 'TextSearch',
   fieldSelector: (media) =>
-      [media.label, media.description].join(' ').toLowerCase(),
+      [media.data.label, media.data.description].join(' ').toLowerCase(),
   query: '',
   enabled: true,
 );
 
-final filterredMediaProvider = StateProvider.family<List<CLEntity>,
-    MapEntry<ViewIdentifier, List<CLEntity>>>((ref, mediaMap) {
+final filterredMediaProvider = StateProvider.family<List<StoreEntity>,
+    MapEntry<ViewIdentifier, List<StoreEntity>>>((ref, mediaMap) {
   final mediaFilters = ref.watch(mediaFiltersProvider(mediaMap.key.parentID));
   return mediaFilters.apply(mediaMap.value);
 });

@@ -39,7 +39,7 @@ class CollectionView extends ConsumerWidget {
               CLLoader.hide(debugMessage: 'GetMediaByCollectionId'),
           builder: (allMedia) {
             return FolderItem(
-              name: collection.entity.label!,
+              name: collection.data.label!,
               borderColor: borderColor,
               avatarAsset: 'assets/icon/not_on_server.png',
               counter: (filters.isActive || filters.isTextFilterActive)
@@ -80,7 +80,7 @@ class CollectionView extends ConsumerWidget {
                 ),
                 whenNopreview: Center(
                   child: CLText.veryLarge(
-                    collection.entity.label!.characters.first,
+                    collection.data.label!.characters.first,
                   ),
                 ),
               ),

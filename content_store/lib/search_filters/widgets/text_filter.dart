@@ -14,7 +14,7 @@ class TextFilterView extends ConsumerStatefulWidget {
     required this.parentIdentifier,
     super.key,
   });
-  final CLFilter<CLEntity> filter;
+  final CLFilter<StoreEntity> filter;
   final String parentIdentifier;
 
   @override
@@ -30,7 +30,7 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
       throw Exception('filter is not EnumFilter');
     }
     controller = TextEditingController(
-      text: (widget.filter as StringFilter<CLEntity>).query,
+      text: (widget.filter as StringFilter<StoreEntity>).query,
     );
     controller.addListener(updateFilter);
     super.initState();

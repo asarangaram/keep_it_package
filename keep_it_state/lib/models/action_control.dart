@@ -164,10 +164,10 @@ class ActionControl {
   }
 
   static ActionControl onGetMediaActionControl(
-      CLEntity media, CLEntity parentCollection, bool hasOnlineService) {
+      StoreEntity media, StoreEntity parentCollection, bool hasOnlineService) {
     final canDeleteLocalCopy = false;
 
-    final editSupported = switch (media.mediaType) {
+    final editSupported = switch (media.data.mediaType) {
       CLMediaType.text => false,
       CLMediaType.image => true,
       CLMediaType.video => ColanPlatformSupport.isMobilePlatform,

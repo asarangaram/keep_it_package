@@ -108,7 +108,7 @@ class PageManager {
     StoreEntity media, {
     bool canDuplicateMedia = true,
   }) async {
-    if (media.entity.pin != null) {
+    if (media.data.pin != null) {
       return media;
     } else {
       final edittedMedia = await navigator.pushNamed(

@@ -124,7 +124,7 @@ class CLContextMenu {
         : () async {
             final confirmed = await DialogService.deleteEntity(
                   context,
-                  entity: collection.entity,
+                  entity: collection.data,
                 ) ??
                 false;
 
@@ -141,7 +141,7 @@ class CLContextMenu {
       onGetChildren: onGetChildren,
     );
     return CLContextMenu.template(
-      name: collection.entity.label!,
+      name: collection.data.label!,
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
@@ -149,7 +149,7 @@ class CLContextMenu {
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
       onDelete: ac.onDelete(onDelete0),
-      infoMap: collection.entity.toMapForDisplay(),
+      infoMap: collection.data.toMapForDisplay(),
       isPinned: false,
     );
   }
@@ -200,7 +200,7 @@ class CLContextMenu {
         : () async {
             final confirmed = await DialogService.deleteEntity(
                   context,
-                  entity: media.entity,
+                  entity: media.data,
                 ) ??
                 false;
             if (!confirmed) return confirmed;
@@ -216,12 +216,12 @@ class CLContextMenu {
     }
 
     final ac = ActionControl.onGetMediaActionControl(
-      media.entity,
-      parentCollection.entity,
+      media.data,
+      parentCollection.data,
       hasOnlineService,
     );
     return CLContextMenu.template(
-      name: media.entity.label ?? 'Unnamed',
+      name: media.data.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
@@ -229,8 +229,8 @@ class CLContextMenu {
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
       onDelete: ac.onDelete(onDelete0),
-      infoMap: media.entity.toMapForDisplay(),
-      isPinned: media.entity.pin != null,
+      infoMap: media.data.toMapForDisplay(),
+      isPinned: media.data.pin != null,
     );
   }
   factory CLContextMenu.ofMultipleMedia(
@@ -267,7 +267,7 @@ class CLContextMenu {
     Future<bool> onDelete0() async {
       final confirmed = await DialogService.deleteMultipleEntities(
             context,
-            media: items.map((e) => e.entity).toList(),
+            media: items.map((e) => e.data).toList(),
           ) ??
           false;
       if (!confirmed) return confirmed;
@@ -290,7 +290,7 @@ class CLContextMenu {
       onPin: onPin != null ? onPin() : onPin0,
       onDelete: onDelete != null ? onDelete() : onDelete0,
       infoMap: const {},
-      isPinned: items.any((media) => media.entity.pin != null),
+      isPinned: items.any((media) => media.data.pin != null),
     );
   }
   final String name;
@@ -350,7 +350,10 @@ class CLContextMenu {
   ) {
     // FIXME
     return switch (entities) {
-      final List<ViewerEntityMixin> e when e.every((e) => e is StoreEntity) =>
+      final List<ViewerEntityMixin> e
+          when e.every(
+            (e) => e is StoreEntity && e.data.isCollection == false,
+          ) =>
         () {
           return CLContextMenu.ofMultipleMedia(
             context,
@@ -359,7 +362,10 @@ class CLContextMenu {
             hasOnlineService: true,
           );
         }(),
-      final List<ViewerEntityMixin> e when e.every((e) => e is StoreEntity) =>
+      final List<ViewerEntityMixin> e
+          when e.every(
+            (e) => e is StoreEntity && e.data.isCollection == true,
+          ) =>
         () {
           return CLContextMenu.empty();
         }(),

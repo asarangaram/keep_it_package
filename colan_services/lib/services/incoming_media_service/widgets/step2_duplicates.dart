@@ -75,8 +75,8 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
         final newCollection = collections
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;
-        final collectionLablel = newCollection?.entity.label != null
-            ? '"${newCollection?.entity.label}"'
+        final collectionLablel = newCollection?.data.label != null
+            ? '"${newCollection?.data.label}"'
             : 'a new collection';
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -186,17 +186,17 @@ class ExistInDifferentCollection extends StatelessWidget {
                     collections.where((e) => e.id == m.parentId).firstOrNull;
                 final String currCollectionLabel;
 
-                if (m.entity.isDeleted) {
+                if (m.data.isDeleted) {
                   currCollectionLabel = 'Deleted Items';
                 } else {
                   currCollectionLabel =
-                      currCollection?.entity.label ?? 'somethig wrong';
+                      currCollection?.data.label ?? 'somethig wrong';
                 }
 
                 return SizedBox(
                   height: 80,
                   child: Dismissible(
-                    key: Key(m.entity.md5!),
+                    key: Key(m.data.md5!),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
                       onRemove(m);
