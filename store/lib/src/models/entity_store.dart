@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';
 
-import 'store.dart';
+import 'store_query.dart';
 
 @immutable
 abstract class EntityStore {

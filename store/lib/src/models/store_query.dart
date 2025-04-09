@@ -1,4 +1,3 @@
-import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
@@ -35,19 +34,6 @@ class StoreQuery<T> {
 
   @override
   String toString() => 'StoreQuery(storeIdentity: $storeIdentity, map: $map)';
-}
-
-abstract class EntityTable {
-  Future<CLEntity?> upsert<CLEntity>(
-    CLEntity item, {
-    CLMediaFile? content,
-  });
-
-  Future<void> delete<CLEntity>(CLEntity item);
-  Future<CLEntity?> get<CLEntity>([covariant StoreQuery<CLEntity>? query]);
-  Future<List<CLEntity>> getAll<CLEntity>([
-    covariant StoreQuery<CLEntity>? query,
-  ]);
 }
 
 class Shortcuts {

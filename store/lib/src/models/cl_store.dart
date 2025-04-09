@@ -4,8 +4,8 @@ import 'package:meta/meta.dart';
 import 'cl_entity.dart';
 import 'data_types.dart';
 import 'entity_store.dart';
-import 'store.dart';
 import 'store_entity.dart';
+import 'store_query.dart';
 
 class ClStoreInterface {}
 
