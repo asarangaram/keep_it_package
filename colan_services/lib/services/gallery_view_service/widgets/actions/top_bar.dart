@@ -20,7 +20,7 @@ class KeepItTopBar extends ConsumerWidget {
   });
   final String parentIdentifier;
   final List<StoreEntity> entities;
-  final EntityStore theStore;
+  final CLStore theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

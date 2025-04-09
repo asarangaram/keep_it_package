@@ -15,14 +15,14 @@ import '../../media_view_service/preview/media_preview_service.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
-    required String serverIdentity,
+    required String storeIdentity,
     required int mediaId,
     required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
-      serverIdentity: serverIdentity,
+      storeIdentity: storeIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -31,14 +31,14 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   factory MediaMetadataEditor.dialog({
-    required String serverIdentity,
+    required String storeIdentity,
     required int mediaId,
     required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
-      serverIdentity: serverIdentity,
+      storeIdentity: storeIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -47,7 +47,7 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   const MediaMetadataEditor._({
-    required this.serverIdentity,
+    required this.storeIdentity,
     required this.mediaId,
     required this.isDialog,
     required this.onSubmit,
@@ -55,7 +55,7 @@ class MediaMetadataEditor extends StatelessWidget {
     super.key,
   });
 
-  final String serverIdentity;
+  final String storeIdentity;
   final int mediaId;
 
   final void Function(StoreEntity media) onSubmit;
@@ -70,7 +70,7 @@ class MediaMetadataEditor extends StatelessWidget {
     return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => MediaMetadataEditor.dialog(
-        serverIdentity: media.store.store.identity,
+        storeIdentity: media.store.store.identity,
         mediaId: media.id!,
         onSubmit: (media) {
           PageManager.of(context).pop(media);
@@ -101,7 +101,7 @@ class MediaMetadataEditor extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetMedia(
-        serverIdentity: serverIdentity,
+        storeIdentity: storeIdentity,
         id: mediaId,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading(context, 'GetCollection'),
@@ -114,7 +114,7 @@ class MediaMetadataEditor extends StatelessWidget {
             }
           }
           return GetCollection(
-            serverIdentity: serverIdentity,
+            storeIdentity: storeIdentity,
             id: media.parentId,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading(context, 'GetCollection'),

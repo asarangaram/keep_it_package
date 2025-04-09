@@ -20,7 +20,9 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const GalleryViewService(),
+          builder: (context, parameters) => const GalleryViewService(
+            storeIdentity: 'local',
+          ),
         ),
         CLRouteDescriptor(
           name: 'settings',
@@ -35,7 +37,7 @@ class KeepItApp implements AppDescriptor {
             } else {
               parentId = null;
             }
-            return CLCameraService(parentId: parentId);
+            return CLCameraService(storeIdentity: 'local', parentId: parentId);
           },
         ),
         CLRouteDescriptor(
@@ -55,6 +57,7 @@ class KeepItApp implements AppDescriptor {
             }
 
             return MediaEditService(
+              storeIdentity: 'local',
               mediaId: mediaId,
               canDuplicateMedia: canDuplicateMedia,
             );
@@ -78,6 +81,7 @@ class KeepItApp implements AppDescriptor {
             }
 
             return MediaViewService(
+              storeIdentity: 'local',
               parentId: parentId,
               id: int.parse(parameters['id']!),
               parentIdentifier: parentIdentifier,

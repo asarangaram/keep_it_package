@@ -10,7 +10,7 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.serverIdentity,
+    required this.storeIdentity,
     super.key,
     this.parentId,
   });
@@ -18,20 +18,20 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final String serverIdentity;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (parentId == null) {
       return GetAllMedia(
-        serverIdentity: serverIdentity,
+        storeIdentity: storeIdentity,
         errorBuilder: errorBuilder,
         loadingBuilder: loadingBuilder,
         builder: builder,
       );
     }
     return GetMediaByCollectionId(
-      serverIdentity: serverIdentity,
+      storeIdentity: storeIdentity,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       parentId: parentId!,
@@ -45,20 +45,20 @@ class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.serverIdentity,
+    required this.storeIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final String serverIdentity;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final parent = ref.watch(activeCollectionProvider);
 
     return GetAvailableMediaByCollectionId(
-      serverIdentity: serverIdentity,
+      storeIdentity: storeIdentity,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       parentId: parent?.id,

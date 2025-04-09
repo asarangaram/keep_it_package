@@ -491,4 +491,7 @@ class CLEntity implements ViewerEntityMixin {
         other.width == width &&
         other.duration == duration;
   }
+
+  String? get path => isCollection ? null : '$mimeType/$md5.$extension';
+  String? get previewPath => isCollection ? null : '$path.tn.jpg';
 }

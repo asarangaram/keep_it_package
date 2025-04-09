@@ -100,8 +100,9 @@ class StoreEntity implements ViewerEntityMixin {
     }
 
     return StoreEntity(
-            entity: updated.entity.clone(id: () => null), store: store)
-        .dbSave(mediaFile.path);
+      entity: updated.entity.clone(id: () => null),
+      store: store,
+    ).dbSave(mediaFile.path);
   }
 
   Future<StoreEntity?> dbSave([String? path]) {

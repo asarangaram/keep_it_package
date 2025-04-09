@@ -4,7 +4,6 @@ import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/services/basic_page_service/widgets/page_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';

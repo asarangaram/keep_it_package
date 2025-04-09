@@ -18,7 +18,7 @@ class KeepItBottomBar extends ConsumerWidget {
     final parent = ref.watch(activeCollectionProvider);
 
     return GetCollection(
-      serverIdentity: 'NONE', // FIXME
+      storeIdentity: 'NONE', // FIXME
       id: parent?.id,
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.hide(

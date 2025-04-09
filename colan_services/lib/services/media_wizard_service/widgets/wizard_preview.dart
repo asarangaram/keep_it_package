@@ -69,7 +69,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               ?.call(items.map((e) => e as StoreEntity).toList()),
       itemBuilder: (context, item) {
         return GetCollection(
-          serverIdentity: (item as StoreEntity).store.store.identity,
+          storeIdentity: (item as StoreEntity).store.store.identity,
           id: item.parentId,
           loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),
           errorBuilder: (p0, p1) =>

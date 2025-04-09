@@ -13,33 +13,28 @@ class ClStoreInterface {}
 class CLStore {
   const CLStore({
     required this.store,
-    required this.mediaPath,
-    required this.previewPath,
+    required this.tempFilePath,
     this.tempCollectionName = '*** Recently Captured',
   });
   final EntityStore store;
   final String tempCollectionName;
-  final String mediaPath;
-  final String previewPath;
+  final String tempFilePath;
 
   CLStore copyWith({
     EntityStore? store,
     String? tempCollectionName,
-    String? mediaPath,
-    String? previewPath,
+    String? tempFilePath,
   }) {
     return CLStore(
       store: store ?? this.store,
       tempCollectionName: tempCollectionName ?? this.tempCollectionName,
-      mediaPath: mediaPath ?? this.mediaPath,
-      previewPath: previewPath ?? this.previewPath,
+      tempFilePath: tempFilePath ?? this.tempFilePath,
     );
   }
 
   @override
-  String toString() {
-    return 'CLStore(store: $store, tempCollectionName: $tempCollectionName, mediaPath: $mediaPath, previewPath: $previewPath)';
-  }
+  String toString() =>
+      'CLStore(store: $store, tempCollectionName: $tempCollectionName, tempFilePath: $tempFilePath)';
 
   @override
   bool operator ==(covariant CLStore other) {
@@ -47,75 +42,31 @@ class CLStore {
 
     return other.store == store &&
         other.tempCollectionName == tempCollectionName &&
-        other.mediaPath == mediaPath &&
-        other.previewPath == previewPath;
+        other.tempFilePath == tempFilePath;
   }
 
   @override
-  int get hashCode {
-    return store.hashCode ^
-        tempCollectionName.hashCode ^
-        mediaPath.hashCode ^
-        previewPath.hashCode;
-  }
+  int get hashCode =>
+      store.hashCode ^ tempCollectionName.hashCode ^ tempFilePath.hashCode;
 
   Future<StoreEntity?> dbSave(
     StoreEntity entity, {
     String? path,
   }) async {
-    final CLEntity? prev;
-    final curr = entity.entity;
-    CLEntity? updated;
-
-    if (entity.id == null) {
-      prev = null;
-      final timeNow = DateTime.now();
-      updated = curr.copyWith(createDate: () => timeNow, updatedDate: timeNow);
-    } else {
-      prev = await store.get(
-        EntityQuery(
-          null,
-          {'id': entity.entity.id},
-        ),
-      );
-      if (prev == null) {
-        throw Exception('Entity with id not found');
-      }
-      if ((prev.md5 == curr.md5) && path != null) {
-        throw Exception('path is not expected');
-      }
-      if (curr.isSame(prev)) {
-        // nothing to update!
-        return StoreEntity(entity: prev, store: this);
-      } else if (curr.isContentSame(prev)) {
-        updated = curr.copyWith(
-          updatedDate: DateTime.now(),
-        );
-      } else {
-        updated = curr;
-      }
+    final saved = await store.upsert(entity.entity, path: path);
+    if (saved == null) {
+      return null;
     }
-
-    /// FIXME: Copy the file [path] to destination.
-    try {
-      final entityFromDB = await store.upsert(updated);
-      if (entityFromDB == null) throw Exception('failed to update DB');
-      // FIXME remove file from prev
-      return StoreEntity(entity: updated, store: this);
-    } catch (e) {
-      // FIXME Remove recently updated file
-      if (prev == null) return null;
-      return StoreEntity(entity: prev, store: this);
-    }
+    return StoreEntity(entity: saved, store: this);
   }
 
-  Future<void> delete(int entityId) async {
+  Future<bool> delete(int entityId) async {
     final entity = await store.get(EntityQuery(null, {'id': entityId}));
 
     if (entity == null) {
-      throw Exception('entities do not exist.');
+      return false;
     }
-    await store.delete(entity);
+    return store.delete(entity);
   }
 
   Future<StoreEntity?> get([EntityQuery? query]) async {
@@ -387,5 +338,12 @@ class CLStore {
       store: this,
       path: mediaFile?.path,
     );
+  }
+
+  String createTempFile({required String ext}) {
+    final fileBasename =
+        'keep_it_temp_${DateTime.now().millisecondsSinceEpoch}';
+
+    return '$tempFilePath/$fileBasename.$ext';
   }
 }

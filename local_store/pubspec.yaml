@@ -8,6 +8,8 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  cl_media_info_extractor:
+    path: ../cl_media_info_extractor
   collection: ^1.19.0
   http: ^1.2.2
   meta: ^1.12.0

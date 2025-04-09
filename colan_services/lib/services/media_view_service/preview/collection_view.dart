@@ -31,6 +31,7 @@ class CollectionView extends ConsumerWidget {
       identifier: viewIdentifier.parentID,
       builder: (filters) {
         return GetAvailableMediaByCollectionId(
+          storeIdentity: collection.store.store.identity,
           parentId: collection.id,
           errorBuilder: (_, __) =>
               throw UnimplementedError('GetMediaByCollectionId'),

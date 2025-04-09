@@ -159,11 +159,8 @@ class CLContextMenu {
     required StoreEntity media,
     required StoreEntity parentCollection,
     required bool hasOnlineService,
-    ValueGetter<Future<bool?> Function()?>? onEdit,
-    ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
-    ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
   }) {
     Future<bool> onEdit0() async {
@@ -349,7 +346,7 @@ class CLContextMenu {
     BuildContext context,
     WidgetRef ref,
     List<ViewerEntityMixin> entities,
-    EntityStore theStore,
+    CLStore theStore,
   ) {
     // FIXME
     return switch (entities) {

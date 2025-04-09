@@ -12,8 +12,10 @@ import 'widgets/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
   const GalleryViewService({
+    required this.storeIdentity,
     super.key,
   });
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +29,15 @@ class GalleryViewService extends StatelessWidget {
         body: OnSwipe(
           child: SafeArea(
             bottom: false,
-            child: GetStoreUpdater(
+            child: GetStore(
+              storeIdentity: storeIdentity,
               errorBuilder: errorBuilder,
               loadingBuilder: () => CLLoader.widget(
                 debugMessage: 'GetStore',
               ),
               builder: (theStore) {
                 return GetAvailableMediaByActiveCollectionId(
+                  storeIdentity: storeIdentity,
                   loadingBuilder: () => CLLoader.widget(
                     debugMessage: 'GetAvailableMediaByCollectionId',
                   ),

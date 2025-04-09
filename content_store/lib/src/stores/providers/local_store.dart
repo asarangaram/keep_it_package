@@ -18,5 +18,11 @@ final dbProvider = FutureProvider<DBModel>((ref) async {
 final localStoreProvider = FutureProvider<EntityStore>((ref) async {
   //final deviceDirectories = await ref.watch(deviceDirectoriesProvider.future);
   final db = await ref.watch(dbProvider.future);
-  return createEntityStore(db, 'local');
+  final directories = await ref.watch(deviceDirectoriesProvider.future);
+  return createEntityStore(
+    db,
+    'local',
+    mediaPath: directories.media.pathString,
+    previewPath: directories.media.pathString,
+  );
 });

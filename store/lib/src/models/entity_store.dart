@@ -12,8 +12,7 @@ abstract class EntityStore {
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]);
   Future<CLEntity?> upsert(
     CLEntity curr, {
-    CLEntity? prev,
-    String? mediaFile,
+    String? path,
   });
 
   Future<bool> delete(CLEntity item);

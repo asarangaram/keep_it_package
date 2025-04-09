@@ -43,7 +43,7 @@ class GetGroupedMedia extends ConsumerWidget {
         .toList();
 
     return GetCollectionsByIdList(
-      serverIdentity: 'NONE', //FIXME
+      storeIdentity: 'NONE', //FIXME
       ids: ids,
       loadingBuilder: loadingBuilder,
       errorBuilder: errorBuilder,

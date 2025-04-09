@@ -11,14 +11,14 @@ import 'package:store/store.dart';
 
 class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
-    required String serverIdentity,
+    required String storeIdentity,
     required int? id,
     required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      serverIdentity: serverIdentity,
+      storeIdentity: storeIdentity,
       id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -27,14 +27,14 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   factory CollectionEditor.dialog({
-    required String serverIdentity,
+    required String storeIdentity,
     required int id,
     required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      serverIdentity: serverIdentity,
+      storeIdentity: storeIdentity,
       id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -43,7 +43,7 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   const CollectionEditor._({
-    required this.serverIdentity,
+    required this.storeIdentity,
     required this.id,
     required this.isDialog,
     required this.onSubmit,
@@ -51,7 +51,7 @@ class CollectionEditor extends StatefulWidget {
     super.key,
   });
 
-  final String serverIdentity;
+  final String storeIdentity;
   final int? id;
 
   final void Function(StoreEntity collection) onSubmit;
@@ -69,7 +69,7 @@ class CollectionEditor extends StatefulWidget {
     return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
-        serverIdentity: collection.store.store.identity,
+        storeIdentity: collection.store.store.identity,
         id: collection.id!,
         onSubmit: (collection) {
           PageManager.of(context).pop(collection);
@@ -107,7 +107,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetCollection(
-        serverIdentity: widget.serverIdentity,
+        storeIdentity: widget.storeIdentity,
         id: widget.id,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading('GetCollection'),
@@ -120,7 +120,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
             }
           }
           return GetAllCollections(
-            serverIdentity: widget.serverIdentity,
+            storeIdentity: widget.storeIdentity,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading('GetAllCollection'),
             builder: (allCollections) {

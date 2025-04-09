@@ -13,10 +13,10 @@ class MediaViewService extends StatelessWidget {
     required this.id,
     required this.parentId,
     required this.parentIdentifier,
-    required this.serverIdentity,
+    required this.storeIdentity,
     super.key,
   });
-  final String serverIdentity;
+  final String storeIdentity;
   final int? parentId;
   final int id;
   final String parentIdentifier;
@@ -30,7 +30,7 @@ class MediaViewService extends StatelessWidget {
     return AppTheme(
       child: FullscreenLayout(
         child: GetAvailableMediaByActiveCollectionId(
-          serverIdentity: serverIdentity,
+          storeIdentity: storeIdentity,
           loadingBuilder: () => CLLoader.widget(
             debugMessage: 'GetAvailableMediaByCollectionId',
           ),

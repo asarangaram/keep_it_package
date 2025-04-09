@@ -18,12 +18,12 @@ import 'widgets/preview.dart';
 
 class CLCameraService extends ConsumerWidget {
   const CLCameraService({
-    required this.serverIdentity,
+    required this.storeIdentity,
     required this.parentId,
     super.key,
   });
 
-  final String serverIdentity;
+  final String storeIdentity;
   final int? parentId;
 
   @override
@@ -31,7 +31,7 @@ class CLCameraService extends ConsumerWidget {
     return FullscreenLayout(
       useSafeArea: false,
       child: GetStore(
-        storeIdentity: serverIdentity,
+        storeIdentity: storeIdentity,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },
@@ -40,7 +40,7 @@ class CLCameraService extends ConsumerWidget {
         ),
         builder: (theStore) {
           return GetCollection(
-            serverIdentity: serverIdentity,
+            storeIdentity: storeIdentity,
             id: parentId,
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');

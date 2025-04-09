@@ -11,13 +11,13 @@ import '../../internal/fullscreen_layout.dart';
 
 class MediaEditService extends ConsumerWidget {
   const MediaEditService({
-    required this.serverIdentity,
+    required this.storeIdentity,
     required this.mediaId,
     required this.canDuplicateMedia,
     super.key,
   });
 
-  final String serverIdentity;
+  final String storeIdentity;
   final int? mediaId;
   final bool canDuplicateMedia;
 
@@ -28,7 +28,7 @@ class MediaEditService extends ConsumerWidget {
       child: (mediaId == null)
           ? BasicPageService.nothingToShow(message: 'No Media Provided')
           : GetMedia(
-              serverIdentity: serverIdentity,
+              storeIdentity: storeIdentity,
               id: mediaId!,
               errorBuilder: (_, __) {
                 throw UnimplementedError('errorBuilder');
@@ -42,7 +42,7 @@ class MediaEditService extends ConsumerWidget {
                 }
 
                 return GetStore(
-                  storeIdentity: serverIdentity,
+                  storeIdentity: storeIdentity,
                   errorBuilder: (_, __) {
                     throw UnimplementedError('errorBuilder');
                   },

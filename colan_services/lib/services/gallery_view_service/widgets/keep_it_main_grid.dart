@@ -27,7 +27,7 @@ class KeepItMainGrid extends ConsumerWidget {
   final List<StoreEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-  final EntityStore theStore;
+  final CLStore theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

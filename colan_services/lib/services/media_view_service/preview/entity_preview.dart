@@ -23,21 +23,21 @@ class EntityPreview extends ConsumerWidget {
   final ViewIdentifier viewIdentifier;
   final ViewerEntityMixin item;
 
-  final EntityStore theStore;
+  final CLStore theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entity = item as StoreEntity; // FIXME
 
     return GetCollection(
-      serverIdentity: (item as StoreEntity).store.store.identity,
+      storeIdentity: (item as StoreEntity).store.store.identity,
       id: (item as StoreEntity).id,
       loadingBuilder: GreyShimmer.new,
       errorBuilder: (e, st) => const BrokenImage(),
       builder: (parent) {
         return GetMediaByCollectionId(
-          serverIdentity: (item as StoreEntity).store.store.identity,
-          parentId: (item as StoreEntity).id,
+          storeIdentity: (item as StoreEntity).store.store.identity,
+          parentId: (item as StoreEntity).id!,
           loadingBuilder: GreyShimmer.new,
           errorBuilder: (e, st) => const BrokenImage(),
           builder: (children) {
@@ -60,7 +60,7 @@ class EntityPreview extends ConsumerWidget {
                                 .read(
                                   activeCollectionProvider.notifier,
                                 )
-                                .state = entity.id;
+                                .state = entity;
                             return null;
                           },
                           contextMenu: CLContextMenu.ofCollection(
@@ -68,7 +68,6 @@ class EntityPreview extends ConsumerWidget {
                             ref,
                             collection: entity,
                             hasOnlineService: false,
-                            theStore: theStore,
                           ),
                           child: CollectionView.preview(
                             entity,
@@ -95,7 +94,6 @@ class EntityPreview extends ConsumerWidget {
                               ref,
                               collection: entity,
                               hasOnlineService: false,
-                              theStore: theStore,
                             ),
                             child: const Icon(LucideIcons.ellipsis),
                           ),

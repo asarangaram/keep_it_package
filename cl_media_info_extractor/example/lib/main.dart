@@ -60,9 +60,6 @@ class _MyAppState extends State<MyApp> {
                     filename = file;
                     previewFilename =
                         "/Users/anandasarangaram/Work/keep_it_package/${p.basenameWithoutExtension(filename!)}.tn.jpg";
-
-                    print("filename: $filename");
-                    print("previewFilename:$previewFilename");
                   });
                 }),
                 if (filename != null)
@@ -209,9 +206,7 @@ class _WatchedImageState extends State<WatchedImage> {
         setState(() {
           fileExists = exists;
         });
-        if (exists) {
-          print("file is ready!");
-        }
+
         if (exists) _timer?.cancel(); // Stop checking once file appears
       }
     });
