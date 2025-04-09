@@ -37,7 +37,7 @@ class KeepItApp implements AppDescriptor {
             } else {
               parentId = null;
             }
-            return CLCameraService(storeIdentity: 'local', parentId: parentId);
+            return CLCameraService(parentId: parentId);
           },
         ),
         CLRouteDescriptor(

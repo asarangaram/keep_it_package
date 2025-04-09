@@ -72,7 +72,7 @@ class MediaEditService extends ConsumerWidget {
                         if (overwrite && context.mounted) {
                           final confirmed = await DialogService.replaceMedia(
                                 context,
-                                media: media.data,
+                                media: media,
                               ) ??
                               false;
                           if (confirmed && context.mounted) {
@@ -87,7 +87,7 @@ class MediaEditService extends ConsumerWidget {
                           final confirmed =
                               await DialogService.cloneAndReplaceMedia(
                                     context,
-                                    media: media.data,
+                                    media: media,
                                   ) ??
                                   false;
                           if (confirmed && context.mounted) {

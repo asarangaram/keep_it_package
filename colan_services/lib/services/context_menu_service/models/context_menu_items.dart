@@ -124,7 +124,7 @@ class CLContextMenu {
         : () async {
             final confirmed = await DialogService.deleteEntity(
                   context,
-                  entity: collection.data,
+                  entity: collection,
                 ) ??
                 false;
 
@@ -200,7 +200,7 @@ class CLContextMenu {
         : () async {
             final confirmed = await DialogService.deleteEntity(
                   context,
-                  entity: media.data,
+                  entity: media,
                 ) ??
                 false;
             if (!confirmed) return confirmed;
@@ -216,8 +216,8 @@ class CLContextMenu {
     }
 
     final ac = ActionControl.onGetMediaActionControl(
-      media.data,
-      parentCollection.data,
+      media,
+      parentCollection,
       hasOnlineService,
     );
     return CLContextMenu.template(
@@ -267,7 +267,7 @@ class CLContextMenu {
     Future<bool> onDelete0() async {
       final confirmed = await DialogService.deleteMultipleEntities(
             context,
-            media: items.map((e) => e.data).toList(),
+            media: items,
           ) ??
           false;
       if (!confirmed) return confirmed;

@@ -46,7 +46,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> actor({
-    required List<StoreEntity> currMedia,
+    required List<StoreEntity> currEntities,
     required Future<bool> Function() confirmAction,
     required Future<bool> Function() action,
     required void Function({required bool enable}) onUpdateSelectionmode,
@@ -61,7 +61,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             .read(
               universalMediaProvider(widget.type).notifier,
             )
-            .remove(currMedia);
+            .remove(currEntities);
         onUpdateSelectionmode(enable: false);
         setState(() {});
         res = true;
@@ -77,12 +77,12 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> keep({
-    required List<StoreEntity> currMedia,
+    required List<StoreEntity> currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return restore(
-        currMedia: currMedia,
+        currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
     }
@@ -94,19 +94,19 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> restore({
-    required List<StoreEntity> currMedia,
+    required List<StoreEntity> currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     return actor(
-      currMedia: currMedia,
+      currEntities: currEntities,
       confirmAction: () async =>
           (await DialogService.restoreMediaMultiple(
             context,
-            media: currMedia.map((e) => e.data).toList(),
+            media: currEntities,
           )) ??
           false,
       action: () async {
-        for (final item in currMedia) {
+        for (final item in currEntities) {
           await item.updateWith(isDeleted: () => false);
         }
         return true;
@@ -116,19 +116,19 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> permanentlyDelete({
-    required List<StoreEntity> currMedia,
+    required List<StoreEntity> currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     return actor(
-      currMedia: currMedia,
+      currEntities: currEntities,
       confirmAction: () async =>
           await DialogService.permanentlyDeleteMediaMultiple(
             context,
-            media: currMedia.map((e) => e.data).toList(),
+            media: currEntities,
           ) ??
           false,
       action: () async {
-        for (final item in currMedia) {
+        for (final item in currEntities) {
           await item.delete();
         }
         return true;
@@ -138,25 +138,25 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> delete({
-    required List<StoreEntity> currMedia,
+    required List<StoreEntity> currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return permanentlyDelete(
-        currMedia: currMedia,
+        currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
     }
     return actor(
-      currMedia: currMedia,
+      currEntities: currEntities,
       confirmAction: () async =>
           await DialogService.deleteMultipleEntities(
             context,
-            media: currMedia.map((e) => e.data).toList(),
+            media: currEntities,
           ) ??
           false,
       action: () async {
-        for (final item in currMedia) {
+        for (final item in currEntities) {
           await item.updateWith(isDeleted: () => true);
         }
         return true;
@@ -165,7 +165,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     );
   }
 
-  Widget getCollection({required List<StoreEntity> currMedia}) {
+  Widget getCollection({required List<StoreEntity> currEntities}) {
     return CreateCollectionWizard(
       isValidSuggestion: (collection) {
         return !collection.data.isDeleted;
@@ -185,7 +185,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
         required selectionMode,
         required tabIdentifier,
       }) {
-        final currMedia =
+        final currEntities =
             (selectionMode ? selectedMedia.entries : widget.media.entries);
         return WizardView(
           viewIdentifier: widget.viewIdentifier,
@@ -199,11 +199,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               else
                 widget.media.entries.length > 1 ? 'All' : '',
             ].join(' '),
-            keepAction: currMedia.isEmpty
+            keepAction: currEntities.isEmpty
                 ? null
                 : () => keep(
                       onUpdateSelectionmode: onUpdateSelectionmode,
-                      currMedia: currMedia,
+                      currEntities: currEntities,
                     ),
             deleteActionLabel: [
               widget.type.deleteActionLabel,
@@ -212,11 +212,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
               else
                 widget.media.entries.length > 1 ? 'All' : '',
             ].join(' '),
-            deleteAction: currMedia.isEmpty
+            deleteAction: currEntities.isEmpty
                 ? null
                 : () => delete(
                       onUpdateSelectionmode: onUpdateSelectionmode,
-                      currMedia: currMedia,
+                      currEntities: currEntities,
                     ),
           ),
           freezeView: actionConfirmed,
@@ -229,17 +229,17 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             _ => actionConfirmed
                 ? (targetCollection == null)
                     ? getCollection(
-                        currMedia: currMedia,
+                        currEntities: currEntities,
                       )
                     : KeepWithProgress(
-                        media2Move: currMedia,
+                        media2Move: currEntities,
                         newParent: targetCollection!,
                         onDone: () async {
                           await ref
                               .read(
                                 universalMediaProvider(widget.type).notifier,
                               )
-                              .remove(currMedia);
+                              .remove(currEntities);
                           selectedMedia = const CLSharedMedia(entries: []);
                           actionConfirmed = false;
                           targetCollection = null;
